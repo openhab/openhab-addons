@@ -273,7 +273,7 @@ class AtagOneActionsTest {
     @Test
     void setChSchedulePeriodComposesAndSendsOnSuccess() throws ReflectiveOperationException {
         double[][][] entries = new double[7][][];
-        entries[0] = new double[][] { { 0, 1440, 18.0 } };
+        entries[0] = new double[][] { { 0, 360, 18.0 } };
         seedLastChScheduleEntries(entries);
         seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
 
@@ -291,6 +291,31 @@ class AtagOneActionsTest {
         seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
 
         boolean accepted = actions.setChSchedulePeriod("someday", 0, 0, 1440, 18.0);
+
+        assertFalse(accepted);
+        verify(handler, never()).sendComposedChSchedule(anyString(), any());
+    }
+
+    @Test
+    void setChSchedulePeriodRejectsOverlapWithAnotherPeriodWithoutSending() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 0, 600, 18.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setChSchedulePeriod("monday", 1, 300, 900, 20.0);
+
+        assertFalse(accepted);
+        verify(handler, never()).sendComposedChSchedule(anyString(), any());
+    }
+
+    @Test
+    void setChScheduleRejectsOverlappingPeriodsWithoutSending() throws ReflectiveOperationException {
+        seedLastChScheduleEntries(new double[7][][]);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setChSchedule(
+                "{\"days\":{\"monday\":[{\"start\":0,\"end\":600,\"temp\":18},{\"start\":300,\"end\":900,\"temp\":20}]}}");
 
         assertFalse(accepted);
         verify(handler, never()).sendComposedChSchedule(anyString(), any());
@@ -332,7 +357,7 @@ class AtagOneActionsTest {
     @Test
     void setDhwSchedulePeriodComposesAndSendsOnSuccess() throws ReflectiveOperationException {
         double[][][] entries = new double[7][][];
-        entries[5] = new double[][] { { 0, 1440, 45.0 } };
+        entries[5] = new double[][] { { 0, 360, 45.0 } };
         seedLastDhwScheduleEntries(entries);
         seedState(CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(48.0, SIUnits.CELSIUS));
 
@@ -364,5 +389,77 @@ class AtagOneActionsTest {
 
         assertTrue(accepted);
         verify(handler).sendComposedChSchedule(eq("action:clearChSchedulePeriod"), any());
+    }
+
+    @Test
+    void setChScheduleComposesAndSendsOnSuccess() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 0, 1440, 18.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions
+                .setChSchedule("{\"days\":{\"monday\":[{\"start\":360,\"end\":1200,\"temp\":20.0}]}}");
+
+        assertTrue(accepted);
+        ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
+        verify(handler).sendComposedChSchedule(eq("action:setChSchedule"), schedule.capture());
+        assertArrayEquals(new double[] { 360, 1200, 20.0 }, schedule.getValue().entries[0][0], 0.001);
+    }
+
+    @Test
+    void setChScheduleRejectsMalformedJsonWithoutSending() throws ReflectiveOperationException {
+        seedLastChScheduleEntries(new double[7][][]);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setChSchedule("not json");
+
+        assertFalse(accepted);
+        verify(handler, never()).sendComposedChSchedule(anyString(), any());
+    }
+
+    @Test
+    void setChScheduleWithNoBoundHandlerDoesNotThrow() {
+        AtagOneActions freshActions = new AtagOneActions();
+
+        assertDoesNotThrow(() -> freshActions.setChSchedule("{}"));
+    }
+
+    @Test
+    void setDhwScheduleComposesAndSendsOnSuccess() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[5] = new double[][] { { 0, 1440, 45.0 } };
+        seedLastDhwScheduleEntries(entries);
+        seedState(CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(48.0, SIUnits.CELSIUS));
+
+        boolean accepted = actions.setDhwSchedule(
+                "{\"baseTemp\":50.0,\"days\":{\"saturday\":[{\"start\":600,\"end\":1200,\"temp\":55.0}]}}");
+
+        assertTrue(accepted);
+        ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
+        verify(handler).sendComposedDhwSchedule(eq("action:setDhwSchedule"), schedule.capture());
+        assertEquals(50.0, schedule.getValue().base_temp, 0.001);
+        assertArrayEquals(new double[] { 600, 1200, 55.0 }, schedule.getValue().entries[5][0], 0.001);
+    }
+
+    @Test
+    void setDhwScheduleRejectsWithoutPriorPollWithoutSending() {
+        boolean accepted = actions.setDhwSchedule("{}");
+
+        assertFalse(accepted);
+        verify(handler, never()).sendComposedDhwSchedule(anyString(), any());
+    }
+
+    @Test
+    void staticSetChScheduleDelegateCallsThroughToInstanceMethod() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 0, 1440, 18.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        boolean accepted = AtagOneActions.setChSchedule(actions, "{}");
+
+        assertTrue(accepted);
+        verify(handler).sendComposedChSchedule(eq("action:setChSchedule"), any());
     }
 }

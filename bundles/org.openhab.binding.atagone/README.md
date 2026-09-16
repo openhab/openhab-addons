@@ -58,7 +58,6 @@ Populated from the device once it's paired, matching the portal's Account → De
 | `serialNumber` | Boiler serial number (P-number) |
 | `vendor` | Always `ATAG` |
 | `firmwareVersion` | Firmware version, parsed from the device's update-check URL |
-| `boilerDetectType` | Device-reported boiler detection type (raw integer, meaning not decoded) |
 | `installerId` | Installer identifier, if the installer has registered one on the device |
 
 ## Channels
@@ -82,8 +81,6 @@ modes — the one cross-cutting exception, since a mode isn't specific to heatin
 | `control#extend-remaining` | `Number:Time` | R | Time remaining in the current extend session (advanced) |
 | `control#fireplace-duration` | `Number:Time` | RW | Fireplace mode duration in hours, 1–24 — **value-setter only**, writing it does not activate fireplace mode. Reverts to the factory default (1 h) on cancel |
 | `control#fireplace-remaining` | `Number:Time` | R | Time remaining in the current fireplace session (advanced) |
-| `control#vacation-duration-default` | `Number:Time` | RW | Stored default vacation duration used when holiday mode starts with no explicit duration (advanced) |
-| `control#extend-duration-default` | `Number:Time` | RW | Stored default extend duration used when extend mode starts with no explicit duration, in 15-minute increments (advanced) |
 | `control#next-schedule-time` | `DateTime` | R | When the central heating schedule's next entry starts (advanced) |
 | `control#next-schedule-temperature` | `Number:Temperature` | R | Setpoint the central heating schedule's next entry sets (advanced) |
 
@@ -102,14 +99,13 @@ modes — the one cross-cutting exception, since a mode isn't specific to heatin
 | `heating#water-setpoint` | `Number:Temperature` | R | Boiler Target Water Temperature (advanced) |
 | `heating#control-mode` | `String` | RW | `thermostat` (room-sensor setpoint control) or `weather-dependent` (weather-compensated heating curve) — independent of `preset-mode` (advanced) |
 | `heating#flame` | `Switch` | R | Burner flame active |
-| `heating#burner-target` | `String` | R | `none`, `ch`, or `dhw` |
 | `heating#central-heating-active` | `Switch` | R | ON when the boiler is actively serving central heating demand |
 | `heating#weather-temperature` | `Number:Temperature` | R | Outside temperature from the local weather service (advanced) |
-| `heating#regulation-state` | `Switch` | R | Whether the weather-compensation regulation algorithm is active — inferred, not device-confirmed (advanced) |
 | `heating#modulation-level` | `Number:Dimensionless` | R | Burner modulation level (%) |
 | `heating#burning-hours` | `Number:Time` | R | Total burner hours |
 | `heating#time-to-target` | `Number:Time` | R | Estimated time to reach target temperature |
 | `heating#schedule-base-temperature` | `Number:Temperature` | RW | Central heating schedule's fallback temperature (advanced) |
+| `heating#schedule` | `String` | R | Full central heating week schedule as JSON (advanced) |
 | `heating#frost-protection` | `String` | RW | Which sensor(s) frost protection uses: `off`, `outside`, `inside`, `both` (advanced) |
 | `heating#frost-protection-temperature-room` | `Number:Temperature` | RW | Indoor threshold below which frost protection activates, 4–10 °C (advanced) |
 | `heating#frost-protection-temperature-outside` | `Number:Temperature` | RW | Outdoor threshold below which frost protection activates, -10–5 °C (advanced) |
@@ -128,9 +124,9 @@ modes — the one cross-cutting exception, since a mode isn't specific to heatin
 |------------|------|----|-------------|
 | `hotwater#target-temperature` | `Number:Temperature` | R | Hot Water Target Temperature — reflects the active schedule period |
 | `hotwater#temperature` | `Number:Temperature` | R | Hot Water Temperature |
-| `hotwater#water-pressure` | `Number:Pressure` | R | DHW circuit water pressure (advanced) |
 | `hotwater#hot-water-active` | `Switch` | R | ON when the boiler is actively serving hot water demand |
 | `hotwater#schedule-base-temperature` | `Number:Temperature` | RW | Hot water schedule's fallback temperature — its bounds come from the device (10–65 °C on a combi boiler, wider on a system boiler with a 3-port valve kit) (advanced) |
+| `hotwater#schedule` | `String` | R | Full hot water week schedule as JSON (advanced) |
 | `hotwater#legionella-protection` | `Switch` | RW | Periodically heats the tank above a threshold to kill legionella bacteria (advanced) |
 | `hotwater#legionella-protection-day` | `String` | RW | Weekday legionella protection runs on (advanced) |
 | `hotwater#legionella-protection-time` | `String` | RW | Time of day legionella protection starts at, as `HH:mm` (advanced) |
@@ -141,7 +137,7 @@ modes — the one cross-cutting exception, since a mode isn't specific to heatin
 |------------|------|----|-------------|
 | `device#display-brightness` | `Number:Dimensionless` | RW | Thermostat display brightness, 10–100% (advanced) |
 | `device#time-zone` | `String` | RW | Configured time zone. Only `berlin` is device-confirmed; the other 9 cities are unverified — write at your own risk (advanced) |
-| `device#language` | `String` | R | Display language: `english`, `dutch`, `french`, `italian`, or `german` (advanced) |
+| `device#language` | `String` | RW | Display language: `english`, `dutch`, `french`, `italian`, or `german` — verified against the app (advanced) |
 | `device#wifi-signal` | `Number:Dimensionless` | R | WiFi signal quality, `0` (no signal) to `4` (excellent) — bucketed rather than raw dBm, since openHAB has no display unit to pin dBm to and would otherwise render it as watts (advanced) |
 
 Further advanced diagnostic channels in the Device group (power supply, controller health) are also
@@ -169,9 +165,13 @@ device itself treats a duration field written alone.
 | `manual` | Hold the current target temperature indefinitely, ignoring the schedule. Reuses whichever temperature `target-temperature` last reported |
 | `holiday` | Hold a fixed low temperature for the vacation period, using the currently stored `vacation-duration` (or the device's own configured default if none has been set) |
 | `fireplace` | Temporarily reduce setpoint (fireplace warmth compensation), using the currently stored `fireplace-duration` (or 1 hour if none has been set) |
-| `extend` | Temporarily extend the current schedule block, using the currently stored `extend-duration` as **additional** time on top of whatever's left until the device's next programmed schedule change — not an absolute session length |
+| `extend` | Temporarily extend the current schedule block, using the currently stored `extend-duration` as **additional** time on top of whatever's left until the device's next programmed schedule change — not an absolute session length (or the device's own configured default if none has been set) |
 
 Writing an unknown value is rejected with a warning and the item reverts to its last known state.
+
+The "device's own configured default" for holiday and extend isn't itself a channel — it's a fixed
+value the device stores and this binding reads once per poll, purely as the fallback used when
+activating that mode with no duration set. There's nothing to configure from openHAB's side.
 
 To activate a mode with a **custom** duration in a single write, instead of first writing the duration
 channel and then `preset-mode`, use the [Actions](#actions) below.
@@ -231,10 +231,11 @@ binding logs a warning when this happens. The `cancelMode` action reports this e
 
 ## Actions
 
-The binding registers eight [Thing Actions](https://www.openhab.org/docs/configuration/rules-dsl.html#thing-actions)
+The binding registers ten [Thing Actions](https://www.openhab.org/docs/configuration/rules-dsl.html#thing-actions)
 under the `atagone` scope: four for activating or cancelling a mode with a custom duration in a single
 call, instead of the two-write channel pattern described above (set the duration channel, then
-`preset-mode`), and four for editing weekly schedules period-by-period, which no channel exposes at all.
+`preset-mode`); four for editing weekly schedules period-by-period, which no channel exposes at all;
+and two for replacing a whole week's schedule in one device write.
 
 | Action | Description |
 |--------|-------------|
@@ -246,6 +247,8 @@ call, instead of the two-write channel pattern described above (set the duration
 | `clearChSchedulePeriod(String weekday, int periodIndex)` | Removes one time period from a weekday's central heating schedule, shifting later periods down |
 | `setDhwSchedulePeriod(String weekday, int periodIndex, int startMinutes, int endMinutes, double temperatureCelsius)` | Same as `setChSchedulePeriod`, for the hot water schedule |
 | `clearDhwSchedulePeriod(String weekday, int periodIndex)` | Same as `clearChSchedulePeriod`, for the hot water schedule |
+| `setChSchedule(String json)` | Replaces the central heating schedule in one device write, same JSON shape as the `heating#schedule` channel |
+| `setDhwSchedule(String json)` | Same as `setChSchedule`, for the hot water schedule |
 
 Each activation/cancel action composes the same multi-field write the corresponding `preset-mode`
 channel value uses internally (e.g. `activateVacation` sets both `ch_mode` and the device's
@@ -259,11 +262,40 @@ two different, unrelated weekday numbering schemes internally, and a name sidest
 period changed; **writing a schedule has been observed to make the thermostat briefly unresponsive
 (around 100 seconds)**, so avoid calling these from a tight loop or in response to frequent events.
 
+**All four schedule-write actions reject a period that overlaps another period already on the same
+weekday** — two periods `[aStart, aEnd)` and `[bStart, bEnd)` overlap if `aStart < bEnd && aEnd >
+bStart` (half-open intervals, so one period ending exactly when the next starts is not an overlap).
+`setChSchedulePeriod`/`setDhwSchedulePeriod` exclude the period being replaced from that comparison.
+Rejection returns `false` (or, for `setChSchedule`/`setDhwSchedule`, `null` from the underlying
+compose step) with no write sent — the same generic failure signal every other invalid input on
+these actions already uses (unknown weekday, out-of-range index, malformed JSON, invalid bounds).
+There's no separate exception type or error code to catch a schedule conflict specifically; a caller
+that needs to tell the two apart has to check its own input against `heating#schedule`/
+`hotwater#schedule` before calling, the same way it must already avoid the other rejection cases.
+
+`setChSchedule`/`setDhwSchedule` take the same JSON shape `heating#schedule`/`hotwater#schedule`
+publish:
+
+```json
+{"baseTemp":22.5,"days":{"monday":[{"start":360,"end":1260,"temp":20.5}],"tuesday":[],"wednesday":[],"thursday":[],"friday":[],"saturday":[],"sunday":[]}}
+```
+
+`start`/`end` are minutes since midnight, matching the per-period actions' own units. A weekday absent
+from `days` is resent unchanged from the last poll, so a caller only needs to name the day(s) it
+actually edited — the device still requires the whole schedule object on every write, the binding
+composes that from the JSON given plus what it last polled. `baseTemp` is optional and defaults to the
+current value. One call replaces up to a full week in a single device write, rather than one write per
+period at the firmware's 2-second minimum interval between requests. Both actions return `true` once
+the write is parsed, validated and queued — not once the device has confirmed it, since confirmation
+can take up to the ~100 s mentioned above; watch the corresponding `schedule` channel, which republishes
+as soon as the device acknowledges the write, to see the confirmed result.
+
 Example from a rule:
 
 ```javascript
 actions.thingActions("atagone", "atagone:thermostat:boiler").activateFireplace(7200);
 actions.thingActions("atagone", "atagone:thermostat:boiler").setChSchedulePeriod("monday", 0, 360, 1320, 20.0);
+actions.thingActions("atagone", "atagone:thermostat:boiler").setChSchedule('{"days":{"monday":[{"start":360,"end":1320,"temp":20.0}]}}');
 ```
 
 ## Full example

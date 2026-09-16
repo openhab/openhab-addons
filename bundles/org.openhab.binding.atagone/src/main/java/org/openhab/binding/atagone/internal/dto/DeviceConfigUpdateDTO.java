@@ -46,6 +46,7 @@ public class DeviceConfigUpdateDTO {
     public @Nullable Long ch_mode_vacation;
     public @Nullable Long ch_mode_extend;
     public @Nullable Integer time_zone;
+    public @Nullable Integer language;
     public @Nullable Integer dhw_legion_day;
     public @Nullable Integer dhw_legion_time;
 
@@ -57,7 +58,7 @@ public class DeviceConfigUpdateDTO {
                 || outs_temp_offs != null || privacy_mode != null || ch_heating_type != null || ch_isolation != null
                 || ch_building_size != null || wdr_temps_influence != null || climate_zone != null
                 || wd_temp_offs != null || frost_prot_temp_outs != null || max_preheat != null
-                || ch_mode_vacation != null || ch_mode_extend != null || time_zone != null || dhw_legion_day != null
-                || dhw_legion_time != null;
+                || ch_mode_vacation != null || ch_mode_extend != null || time_zone != null || language != null
+                || dhw_legion_day != null || dhw_legion_time != null;
     }
 }

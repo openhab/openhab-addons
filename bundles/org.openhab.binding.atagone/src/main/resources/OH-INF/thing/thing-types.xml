@@ -42,8 +42,6 @@
 			<channel id="extend-remaining" typeId="extend-remaining"/>
 			<channel id="fireplace-duration" typeId="fireplace-duration"/>
 			<channel id="fireplace-remaining" typeId="fireplace-remaining"/>
-			<channel id="vacation-duration-default" typeId="vacation-duration-default"/>
-			<channel id="extend-duration-default" typeId="extend-duration-default"/>
 			<channel id="next-schedule-time" typeId="next-schedule-time"/>
 			<channel id="next-schedule-temperature" typeId="next-schedule-temperature"/>
 		</channels>
@@ -65,18 +63,15 @@
 			<channel id="water-setpoint" typeId="ch-setpoint"/>
 			<channel id="control-mode" typeId="ch-control-mode"/>
 			<channel id="flame" typeId="flame"/>
-			<channel id="burner-target" typeId="burner-target"/>
 			<channel id="central-heating-active" typeId="central-heating-active"/>
 			<channel id="weather-temperature" typeId="weather-temperature"/>
-			<channel id="regulation-state" typeId="regulation-state"/>
 			<channel id="modulation-level" typeId="modulation-level"/>
-			<channel id="min-modulation-level" typeId="min-modulation-level"/>
 			<channel id="burning-hours" typeId="burning-hours"/>
 			<channel id="time-to-target" typeId="time-to-target"/>
 			<channel id="boiler-temperature" typeId="boiler-temperature"/>
 			<channel id="boiler-return-temperature" typeId="boiler-return-temperature"/>
-			<channel id="max-boiler-temperature" typeId="max-boiler-temperature"/>
 			<channel id="schedule-base-temperature" typeId="ch-schedule-base-temperature"/>
+			<channel id="schedule" typeId="ch-schedule"/>
 			<channel id="frost-protection" typeId="frost-protection"/>
 			<channel id="frost-protection-temperature-room" typeId="frost-protection-temperature-room"/>
 			<channel id="frost-protection-temperature-outside" typeId="frost-protection-temperature-outside"/>
@@ -97,10 +92,10 @@
 		<channels>
 			<channel id="temperature" typeId="dhw-temperature"/>
 			<channel id="target-temperature" typeId="dhw-target-temperature"/>
-			<channel id="water-pressure" typeId="dhw-water-pressure"/>
 			<channel id="flow-rate" typeId="dhw-flow-rate"/>
 			<channel id="hot-water-active" typeId="hot-water-active"/>
 			<channel id="schedule-base-temperature" typeId="dhw-schedule-base-temperature"/>
+			<channel id="schedule" typeId="dhw-schedule"/>
 			<channel id="legionella-protection" typeId="legionella-protection"/>
 			<channel id="legionella-protection-day" typeId="legionella-protection-day"/>
 			<channel id="legionella-protection-time" typeId="legionella-protection-time"/>
@@ -114,7 +109,6 @@
 			<channel id="wifi-signal" typeId="wifi-signal"/>
 			<channel id="voltage" typeId="voltage"/>
 			<channel id="resets" typeId="resets"/>
-			<channel id="memory-allocation" typeId="memory-allocation"/>
 			<channel id="pcb-temperature" typeId="pcb-temperature"/>
 			<channel id="report-time" typeId="report-time"/>
 			<channel id="display-brightness" typeId="display-brightness"/>
@@ -219,6 +213,13 @@
 		<state pattern="%.1f %unit%" min="4" max="27" step="0.5"/>
 	</channel-type>
 
+	<channel-type id="ch-schedule" advanced="true">
+		<item-type>String</item-type>
+		<label>Schedule</label>
+		<description>Full central heating week schedule as JSON, for a rule or UI to read and compose edits from.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="ch-setpoint" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Boiler Target Water Temperature</label>
@@ -252,6 +253,13 @@
 			<tag>Temperature</tag>
 		</tags>
 		<state pattern="%.1f %unit%" min="10" max="65" step="0.5"/>
+	</channel-type>
+
+	<channel-type id="dhw-schedule" advanced="true">
+		<item-type>String</item-type>
+		<label>Schedule</label>
+		<description>Full hot water week schedule as JSON, for a rule or UI to read and compose edits from.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dhw-target-temperature">
@@ -316,18 +324,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="burner-target">
-		<item-type>String</item-type>
-		<label>Burner Target</label>
-		<description>What the burner is currently heating.</description>
-		<state readOnly="true">
-			<options>
-				<option value="none">None</option>
-				<option value="ch">Central Heating</option>
-				<option value="dhw">Hot Water</option>
-			</options>
-		</state>
-	</channel-type>
 
 	<channel-type id="modulation-level">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -523,12 +519,6 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="memory-allocation" advanced="true">
-		<item-type>Number</item-type>
-		<label>Memory Allocation</label>
-		<description>Thermostat memory usage indicator, for diagnostics only.</description>
-		<state readOnly="true" pattern="%d"/>
-	</channel-type>
 
 	<channel-type id="boiler-temperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
@@ -546,20 +536,6 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="min-modulation-level" advanced="true">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Minimum Modulation Level</label>
-		<description>Minimum output level the burner can sustain.</description>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-
-	<channel-type id="max-boiler-temperature" advanced="true">
-		<item-type>Number:Temperature</item-type>
-		<label>Maximum Boiler Temperature</label>
-		<description>Maximum boiler water temperature limit.</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
 
 	<channel-type id="vacation-remaining" advanced="true">
 		<item-type>Number:Time</item-type>
@@ -597,30 +573,6 @@
 	<!-- Below: set-once configuration channels, all advanced="true". Writing any one of them bundles
 		every writable configuration field at its current value alongside the one being changed —
 		the device rejects a configuration write that omits any of them. -->
-
-	<channel-type id="vacation-duration-default" advanced="true">
-		<item-type unitHint="d">Number:Time</item-type>
-		<label>Vacation Duration Default</label>
-		<description>The device's stored default vacation duration, used when activating holiday mode with no explicit
-			duration set.</description>
-		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
-		<state pattern="%.0f %unit%" min="1" max="365" step="1"/>
-	</channel-type>
-
-	<channel-type id="extend-duration-default" advanced="true">
-		<item-type unitHint="min">Number:Time</item-type>
-		<label>Extend Duration Default</label>
-		<description>The device's stored default extend duration, used when activating extend mode with no explicit duration
-			set.</description>
-		<category>Time</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
-		<state pattern="%.0f %unit%" min="15" max="360" step="15"/>
-	</channel-type>
 
 	<channel-type id="frost-protection" advanced="true">
 		<item-type>String</item-type>
@@ -840,7 +792,7 @@
 		<item-type>String</item-type>
 		<label>Display Language</label>
 		<description>The thermostat's display language.</description>
-		<state readOnly="true">
+		<state>
 			<options>
 				<option value="english">English</option>
 				<option value="dutch">Dutch</option>
@@ -883,16 +835,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="dhw-water-pressure" advanced="true">
-		<item-type>Number:Pressure</item-type>
-		<label>DHW Water Pressure</label>
-		<description>Domestic hot water circuit water pressure.</description>
-		<category>Pressure</category>
-		<tags>
-			<tag>Measurement</tag>
-		</tags>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-	</channel-type>
 
 	<channel-type id="weather-temperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
@@ -906,13 +848,6 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="regulation-state" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Regulation Active</label>
-		<description>Whether the weather-compensation regulation algorithm is currently active. Inferred from field naming,
-			not device-confirmed.</description>
-		<state readOnly="true"/>
-	</channel-type>
 
 	<channel-type id="next-schedule-time" advanced="true">
 		<item-type>DateTime</item-type>

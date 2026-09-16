@@ -131,7 +131,7 @@ public class AtagOneActions implements ThingActions {
         theHandler.sendComposedUpdate("action:activateFireplace", control, configUpdate);
     }
 
-    @RuleAction(label = "set CH schedule period", description = "Sets or replaces one time period in a weekday's central heating schedule, resending the rest of the week unchanged.")
+    @RuleAction(label = "set CH schedule period", description = "Sets or replaces one time period in a weekday's central heating schedule, resending the rest of the week unchanged. Rejected (returns false, no write sent) if the period overlaps another period already on that weekday.")
     public boolean setChSchedulePeriod(
             @ActionInput(name = "weekday", label = "Weekday", description = "monday..sunday") String weekday,
             @ActionInput(name = "periodIndex", label = "Period Index", description = "0-based position within the day's existing periods; equal to the current count to append a new one") int periodIndex,
@@ -171,7 +171,7 @@ public class AtagOneActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "set DHW schedule period", description = "Sets or replaces one time period in a weekday's hot water schedule, resending the rest of the week unchanged.")
+    @RuleAction(label = "set DHW schedule period", description = "Sets or replaces one time period in a weekday's hot water schedule, resending the rest of the week unchanged. Rejected (returns false, no write sent) if the period overlaps another period already on that weekday.")
     public boolean setDhwSchedulePeriod(
             @ActionInput(name = "weekday", label = "Weekday", description = "monday..sunday") String weekday,
             @ActionInput(name = "periodIndex", label = "Period Index", description = "0-based position within the day's existing periods; equal to the current count to append a new one") int periodIndex,
@@ -208,6 +208,40 @@ public class AtagOneActions implements ThingActions {
             return false;
         }
         theHandler.sendComposedDhwSchedule("action:clearDhwSchedulePeriod", schedule);
+        return true;
+    }
+
+    @RuleAction(label = "set CH schedule", description = "Replaces the central heating schedule in one device write from JSON ({\"baseTemp\":..,\"days\":{\"monday\":[{\"start\":..,\"end\":..,\"temp\":..}],...}}); weekdays the JSON omits are resent unchanged. Rejected (returns false, no write sent) if any two periods on the same weekday overlap. Returns true once the write is parsed, validated and queued — not once the device has confirmed it; watch heating#schedule for the confirmed result.")
+    public boolean setChSchedule(
+            @ActionInput(name = "json", label = "Schedule JSON", description = "Same shape as the heating#schedule channel") String json) {
+        AtagOneHandler theHandler = handler;
+        if (theHandler == null) {
+            logger.warn("setChSchedule called with no handler bound");
+            return false;
+        }
+        ScheduleDTO schedule = theHandler.composeChScheduleFromJson(json);
+        if (schedule == null) {
+            logger.warn("setChSchedule: malformed JSON, unknown weekday, or no CH schedule polled yet");
+            return false;
+        }
+        theHandler.sendComposedChSchedule("action:setChSchedule", schedule);
+        return true;
+    }
+
+    @RuleAction(label = "set DHW schedule", description = "Replaces the hot water schedule in one device write from JSON ({\"baseTemp\":..,\"days\":{\"monday\":[{\"start\":..,\"end\":..,\"temp\":..}],...}}); weekdays the JSON omits are resent unchanged. Rejected (returns false, no write sent) if any two periods on the same weekday overlap. Returns true once the write is parsed, validated and queued — not once the device has confirmed it; watch hotwater#schedule for the confirmed result.")
+    public boolean setDhwSchedule(
+            @ActionInput(name = "json", label = "Schedule JSON", description = "Same shape as the hotwater#schedule channel") String json) {
+        AtagOneHandler theHandler = handler;
+        if (theHandler == null) {
+            logger.warn("setDhwSchedule called with no handler bound");
+            return false;
+        }
+        ScheduleDTO schedule = theHandler.composeDhwScheduleFromJson(json);
+        if (schedule == null) {
+            logger.warn("setDhwSchedule: malformed JSON, unknown weekday, or no DHW schedule polled yet");
+            return false;
+        }
+        theHandler.sendComposedDhwSchedule("action:setDhwSchedule", schedule);
         return true;
     }
 
@@ -259,5 +293,13 @@ public class AtagOneActions implements ThingActions {
 
     public static boolean clearDhwSchedulePeriod(ThingActions actions, String weekday, int periodIndex) {
         return ((AtagOneActions) actions).clearDhwSchedulePeriod(weekday, periodIndex);
+    }
+
+    public static boolean setChSchedule(ThingActions actions, String json) {
+        return ((AtagOneActions) actions).setChSchedule(json);
+    }
+
+    public static boolean setDhwSchedule(ThingActions actions, String json) {
+        return ((AtagOneActions) actions).setDhwSchedule(json);
     }
 }

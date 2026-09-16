@@ -279,7 +279,7 @@ public class AtagOneApiClient {
         auth.addProperty("mac_address", clientId);
 
         JsonObject schedules = new JsonObject();
-        schedules.add(key, gson.toJsonTree(schedule));
+        schedules.add(key, scheduleToJson(schedule));
 
         JsonObject updateMsg = new JsonObject();
         updateMsg.addProperty("seqnr", 0);
@@ -296,6 +296,41 @@ public class AtagOneApiClient {
             throw new AtagOneCommunicationException("schedule update denied: acc_status=" + accStatus);
         }
         logger.debug("updateSchedule({}) succeeded", key);
+    }
+
+    /**
+     * Builds the {@code ch_schedule}/{@code dhw_schedule} JSON by hand instead of via
+     * {@code gson.toJsonTree(schedule)} on {@link ScheduleDTO} directly.
+     * <p>
+     * {@code entries} is a Java {@code double[][][]} because a period's three positions have no
+     * separate Java fields to carry distinct types — but the device's own wire format is mixed:
+     * {@code start}/{@code end} as bare integers, {@code temp} as a float (every {@code /retrieve}
+     * reply and every previously-confirmed-working write uses e.g. {@code [0,240,20.5]}, never
+     * {@code [0.0,240.0,20.5]}). Gson's default double serialization can't know that distinction and
+     * emits {@code 0.0}/{@code 240.0} for every position — confirmed live (2026-09-16) to make the
+     * device silently wipe the whole schedule to empty while still returning {@code acc_status:2}, no
+     * {@code resets} bump, and no other error signal. {@code base_temp} has no such ambiguity — it's
+     * always a genuine fractional value — so it's left to Gson via {@code addProperty(String, Number)}.
+     */
+    static JsonObject scheduleToJson(ScheduleDTO schedule) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("base_temp", schedule.base_temp);
+        JsonArray days = new JsonArray();
+        for (double[][] day : schedule.entries) {
+            JsonArray periods = new JsonArray();
+            if (day != null) {
+                for (double[] period : day) {
+                    JsonArray p = new JsonArray();
+                    p.add((long) period[0]);
+                    p.add((long) period[1]);
+                    p.add(period[2]);
+                    periods.add(p);
+                }
+            }
+            days.add(periods);
+        }
+        obj.add("entries", days);
+        return obj;
     }
 
     /**
@@ -328,13 +363,15 @@ public class AtagOneApiClient {
             try {
                 lastRequestMs = System.currentTimeMillis();
                 String url = baseUrl + path;
+                logger.trace("POST {} request (attempt {}): {}", path, attempt + 1, body);
                 byte[] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
                 ContentResponse response = httpClient.newRequest(url).method(HttpMethod.POST)
                         .version(HttpVersion.HTTP_1_0).header(HttpHeader.CONTENT_TYPE, "application/json")
                         .header(HttpHeader.CONNECTION, "close").content(new BytesContentProvider(bodyBytes))
                         .timeout(REQUEST_TIMEOUT_S, TimeUnit.SECONDS).send();
-                logger.trace("POST {} → HTTP {}", path, response.getStatus());
-                return response.getContentAsString();
+                String responseContent = response.getContentAsString();
+                logger.trace("POST {} → HTTP {}, response: {}", path, response.getStatus(), responseContent);
+                return responseContent;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new AtagOneCommunicationException("Interrupted during request to " + path, e);

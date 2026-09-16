@@ -214,7 +214,6 @@ class AtagOneHandlerTest {
         assertEquals(OnOffType.OFF, readState(CHANNEL_CH_ACTIVE));
         assertEquals(OnOffType.ON, readState(CHANNEL_DHW_ACTIVE));
         assertEquals(OnOffType.ON, readState(CHANNEL_FLAME));
-        assertEquals("dhw", ((StringType) readState(CHANNEL_BURNER_TARGET)).toString());
     }
 
     @Test
@@ -227,7 +226,6 @@ class AtagOneHandlerTest {
         assertEquals(OnOffType.ON, readState(CHANNEL_CH_ACTIVE));
         assertEquals(OnOffType.OFF, readState(CHANNEL_DHW_ACTIVE));
         assertEquals(OnOffType.OFF, readState(CHANNEL_FLAME));
-        assertEquals("ch", ((StringType) readState(CHANNEL_BURNER_TARGET)).toString());
     }
 
     @Test
@@ -240,17 +238,6 @@ class AtagOneHandlerTest {
         assertEquals(OnOffType.OFF, readState(CHANNEL_CH_ACTIVE));
         assertEquals(OnOffType.OFF, readState(CHANNEL_DHW_ACTIVE));
         assertEquals(OnOffType.OFF, readState(CHANNEL_FLAME));
-        assertEquals("none", ((StringType) readState(CHANNEL_BURNER_TARGET)).toString());
-    }
-
-    @Test
-    void dhwWaterPressureIsReadFromReportBlock() throws IOException, ReflectiveOperationException {
-        RetrieveReplyDTO reply = loadRetrieveReply();
-
-        invokeUpdateChannels(reply);
-
-        QuantityType<?> pressure = (QuantityType<?>) readState(CHANNEL_DHW_WATER_PRESSURE);
-        assertEquals(reply.report.dhw_water_pres, pressure.doubleValue(), 0.001);
     }
 
     @Test
@@ -261,16 +248,6 @@ class AtagOneHandlerTest {
 
         QuantityType<?> weatherTemp = (QuantityType<?>) readState(CHANNEL_WEATHER_TEMPERATURE);
         assertEquals(reply.control.weather_temp, weatherTemp.doubleValue(), 0.001);
-    }
-
-    @Test
-    void regulationStateIsReadFromReportDetails() throws IOException, ReflectiveOperationException {
-        RetrieveReplyDTO reply = loadRetrieveReply();
-        assertEquals(1, reply.report.details.regulation_state);
-
-        invokeUpdateChannels(reply);
-
-        assertEquals(OnOffType.ON, readState(CHANNEL_REGULATION_STATE));
     }
 
     @Test
@@ -914,6 +891,28 @@ class AtagOneHandlerTest {
     }
 
     @Test
+    void languageWriteBundlesFullConfiguration() throws ReflectiveOperationException {
+        seedLastConfiguration(sampleConfiguration());
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        boolean accepted = handler.buildControlUpdate(CHANNEL_LANGUAGE, new StringType("german"), control,
+                configUpdate);
+
+        assertTrue(accepted);
+        assertEquals(4, configUpdate.language);
+    }
+
+    @Test
+    void languageWriteRejectsUnknownValue() throws ReflectiveOperationException {
+        seedLastConfiguration(sampleConfiguration());
+        ControlUpdateDTO control = new ControlUpdateDTO();
+        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
+
+        assertFalse(handler.buildControlUpdate(CHANNEL_LANGUAGE, new StringType("klingon"), control, configUpdate));
+    }
+
+    @Test
     void unhandledChannelIsRejected() {
         ControlUpdateDTO control = new ControlUpdateDTO();
         DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
@@ -1090,8 +1089,6 @@ class AtagOneHandlerTest {
         reply.control.vacation_duration = 3 * 86400L;
         reply.control.extend_duration = 2 * 3600L;
         reply.control.fireplace_duration = 5 * 3600L;
-        reply.configuration.ch_mode_vacation = 7 * 86400L;
-        reply.configuration.ch_mode_extend = 90 * 60L;
 
         invokeUpdateChannels(reply);
 
@@ -1104,12 +1101,6 @@ class AtagOneHandlerTest {
         QuantityType<?> fireplace = (QuantityType<?>) readState(CHANNEL_FIREPLACE_DURATION);
         assertEquals(Units.HOUR, fireplace.getUnit());
         assertEquals(5.0, fireplace.doubleValue(), 0.001);
-        QuantityType<?> vacationDefault = (QuantityType<?>) readState(CHANNEL_VACATION_DURATION_DEFAULT);
-        assertEquals(Units.DAY, vacationDefault.getUnit());
-        assertEquals(7.0, vacationDefault.doubleValue(), 0.001);
-        QuantityType<?> extendDefault = (QuantityType<?>) readState(CHANNEL_EXTEND_DURATION_DEFAULT);
-        assertEquals(Units.MINUTE, extendDefault.getUnit());
-        assertEquals(90.0, extendDefault.doubleValue(), 0.001);
     }
 
     @Test
@@ -1329,32 +1320,6 @@ class AtagOneHandlerTest {
     }
 
     @Test
-    void vacationDurationDefaultWriteConvertsToSeconds() throws ReflectiveOperationException {
-        seedLastConfiguration(sampleConfiguration());
-        ControlUpdateDTO control = new ControlUpdateDTO();
-        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
-
-        boolean accepted = handler.buildControlUpdate(CHANNEL_VACATION_DURATION_DEFAULT,
-                new QuantityType<>(10, Units.DAY), control, configUpdate);
-
-        assertTrue(accepted);
-        assertEquals(10 * 86400L, configUpdate.ch_mode_vacation);
-    }
-
-    @Test
-    void extendDurationDefaultWriteConvertsToSeconds() throws ReflectiveOperationException {
-        seedLastConfiguration(sampleConfiguration());
-        ControlUpdateDTO control = new ControlUpdateDTO();
-        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
-
-        boolean accepted = handler.buildControlUpdate(CHANNEL_EXTEND_DURATION_DEFAULT,
-                new QuantityType<>(3, Units.HOUR), control, configUpdate);
-
-        assertTrue(accepted);
-        assertEquals(3 * 3600L, configUpdate.ch_mode_extend);
-    }
-
-    @Test
     void displayBrightnessWriteConvertsToPercent() throws ReflectiveOperationException {
         seedLastConfiguration(sampleConfiguration());
         ControlUpdateDTO control = new ControlUpdateDTO();
@@ -1365,5 +1330,203 @@ class AtagOneHandlerTest {
 
         assertTrue(accepted);
         assertEquals(75, configUpdate.disp_brightness);
+    }
+
+    @Test
+    void chSchedulePublishesJsonMatchingPolledEntries() throws IOException, ReflectiveOperationException {
+        RetrieveReplyDTO reply = loadRetrieveReply();
+
+        invokeUpdateChannels(reply);
+
+        JsonObject published = JsonParser.parseString(((StringType) readState(CHANNEL_CH_SCHEDULE)).toString())
+                .getAsJsonObject();
+        assertEquals(reply.schedules.ch_schedule.base_temp, published.get("baseTemp").getAsDouble(), 0.001);
+        JsonObject days = published.getAsJsonObject("days");
+        assertEquals(7, days.size());
+        // entries[0] = Monday — array order must match periodIndex order exactly (see ScheduleJson).
+        assertEquals(reply.schedules.ch_schedule.entries[0].length, days.getAsJsonArray("monday").size());
+        JsonObject firstPeriod = days.getAsJsonArray("monday").get(0).getAsJsonObject();
+        assertEquals((long) reply.schedules.ch_schedule.entries[0][0][0], firstPeriod.get("start").getAsLong());
+        assertEquals((long) reply.schedules.ch_schedule.entries[0][0][1], firstPeriod.get("end").getAsLong());
+        assertEquals(reply.schedules.ch_schedule.entries[0][0][2], firstPeriod.get("temp").getAsDouble(), 0.001);
+    }
+
+    @Test
+    void dhwSchedulePublishesJsonMatchingPolledEntries() throws IOException, ReflectiveOperationException {
+        RetrieveReplyDTO reply = loadRetrieveReply();
+
+        invokeUpdateChannels(reply);
+
+        JsonObject published = JsonParser.parseString(((StringType) readState(CHANNEL_DHW_SCHEDULE)).toString())
+                .getAsJsonObject();
+        assertEquals(reply.schedules.dhw_schedule.base_temp, published.get("baseTemp").getAsDouble(), 0.001);
+        assertEquals(reply.schedules.dhw_schedule.entries[0].length,
+                published.getAsJsonObject("days").getAsJsonArray("monday").size());
+    }
+
+    @Test
+    void chScheduleIsUndefWithoutAPriorPoll() throws ReflectiveOperationException {
+        Method method = AtagOneHandler.class.getDeclaredMethod("publishSchedule", String.class, double.class,
+                double[][][].class);
+        method.setAccessible(true);
+        method.invoke(handler, CHANNEL_CH_SCHEDULE, 22.5, (Object) null);
+
+        assertEquals(org.openhab.core.types.UnDefType.UNDEF, readState(CHANNEL_CH_SCHEDULE));
+    }
+
+    /**
+     * The contract that matters most for a UI editor: a period's position in the published JSON array
+     * must be exactly the {@code periodIndex} the per-period actions expect for that same period — see
+     * {@link ScheduleJson}. Picks a non-trivial position (not just index 0) and round-trips it.
+     */
+    @Test
+    void publishedScheduleArrayOrderMatchesPeriodIndexOrder() throws IOException, ReflectiveOperationException {
+        RetrieveReplyDTO reply = loadRetrieveReply();
+        reply.schedules.ch_schedule.entries[0] = new double[][] { { 0, 240, 18.0 }, { 240, 480, 19.0 },
+                { 480, 1440, 18.0 } };
+        invokeUpdateChannels(reply);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE,
+                new QuantityType<>(reply.schedules.ch_schedule.base_temp, SIUnits.CELSIUS));
+
+        JsonObject published = JsonParser.parseString(((StringType) readState(CHANNEL_CH_SCHEDULE)).toString())
+                .getAsJsonObject();
+        int position = 1;
+        JsonObject periodAtPosition = published.getAsJsonObject("days").getAsJsonArray("monday").get(position)
+                .getAsJsonObject();
+
+        // Replacement stays inside the original [240,480) slot so it can't overlap its neighbors —
+        // the point of this test is array-order/index agreement, not overlap rejection.
+        ScheduleDTO composed = handler.composeChSchedulePeriodSet("monday", position, 300, 400, 30.0);
+
+        assertNotNull(composed);
+        // Replacing at `position` must have overwritten exactly the period that sat at `position` in
+        // the published JSON, not some other one — confirming array order and periodIndex agree.
+        assertEquals(240, periodAtPosition.get("start").getAsLong());
+        assertArrayEquals(new double[] { 300, 400, 30.0 }, composed.entries[0][position], 0.001);
+        assertArrayEquals(reply.schedules.ch_schedule.entries[0][0], composed.entries[0][0], 0.001);
+        assertArrayEquals(reply.schedules.ch_schedule.entries[0][2], composed.entries[0][2], 0.001);
+    }
+
+    @Test
+    void chSchedulePeriodSetRejectsEndAtOrBeforeStart() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 0, 360, 18.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        assertNull(handler.composeChSchedulePeriodSet("monday", 0, 600, 600, 20.0));
+        assertNull(handler.composeChSchedulePeriodSet("monday", 0, 600, 500, 20.0));
+    }
+
+    @Test
+    void chSchedulePeriodSetRejectsOverlapWithAnotherPeriodOnTheSameDay() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        // Two existing periods; appending a third that overlaps the second must be rejected.
+        entries[0] = new double[][] { { 0, 240, 18.0 }, { 600, 1200, 20.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        assertNull(handler.composeChSchedulePeriodSet("monday", 2, 900, 1300, 21.0));
+    }
+
+    @Test
+    void chSchedulePeriodSetAllowsReplacingAPeriodWithSomethingOverlappingItsOwnOldSlot()
+            throws ReflectiveOperationException {
+        // The period being replaced must be excluded from the overlap comparison — otherwise editing
+        // a period's own time range even slightly would always "overlap" its own prior value.
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 0, 600, 18.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        ScheduleDTO schedule = handler.composeChSchedulePeriodSet("monday", 0, 100, 700, 19.0);
+
+        assertNotNull(schedule);
+        assertArrayEquals(new double[] { 100, 700, 19.0 }, schedule.entries[0][0], 0.001);
+    }
+
+    @Test
+    void chSchedulePeriodSetAllowsBackToBackNonOverlappingPeriods() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 0, 600, 18.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        // Appended period starts exactly when the existing one ends — half-open, not an overlap.
+        ScheduleDTO schedule = handler.composeChSchedulePeriodSet("monday", 1, 600, 900, 20.0);
+
+        assertNotNull(schedule);
+        assertEquals(2, schedule.entries[0].length);
+    }
+
+    @Test
+    void dhwSchedulePeriodSetRejectsOverlapWithAnotherPeriodOnTheSameDay() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[4] = new double[][] { { 0, 360, 45.0 }, { 360, 1260, 50.0 } };
+        seedLastDhwScheduleEntries(entries);
+        seedState(CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(48.0, SIUnits.CELSIUS));
+
+        assertNull(handler.composeDhwSchedulePeriodSet("friday", 0, 100, 500, 55.0));
+    }
+
+    @Test
+    void composeChScheduleFromJsonMergesPartialDaysFromLastPoll() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[0] = new double[][] { { 0, 1440, 18.0 } };
+        entries[1] = new double[][] { { 0, 720, 19.0 }, { 720, 1440, 18.0 } };
+        seedLastChScheduleEntries(entries);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        ScheduleDTO schedule = handler
+                .composeChScheduleFromJson("{\"days\":{\"monday\":[{\"start\":300,\"end\":900,\"temp\":21.0}]}}");
+
+        assertNotNull(schedule);
+        assertEquals(22.5, schedule.base_temp, 0.001); // baseTemp omitted -> falls back to current state
+        assertEquals(1, schedule.entries[0].length);
+        assertArrayEquals(new double[] { 300, 900, 21.0 }, schedule.entries[0][0], 0.001);
+        // Tuesday wasn't named in the JSON -> resent byte-for-byte from the last poll.
+        assertArrayEquals(entries[1], schedule.entries[1]);
+    }
+
+    @Test
+    void composeChScheduleFromJsonAppliesExplicitBaseTemp() throws ReflectiveOperationException {
+        seedLastChScheduleEntries(new double[7][][]);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        ScheduleDTO schedule = handler.composeChScheduleFromJson("{\"baseTemp\":19.5,\"days\":{}}");
+
+        assertNotNull(schedule);
+        assertEquals(19.5, schedule.base_temp, 0.001);
+    }
+
+    @Test
+    void composeChScheduleFromJsonRejectsMalformedInput() throws ReflectiveOperationException {
+        seedLastChScheduleEntries(new double[7][][]);
+        seedState(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(22.5, SIUnits.CELSIUS));
+
+        assertNull(handler.composeChScheduleFromJson("not json"));
+        assertNull(handler.composeChScheduleFromJson("[]"));
+        assertNull(handler.composeChScheduleFromJson("{\"days\":{\"someday\":[]}}"));
+        assertNull(handler
+                .composeChScheduleFromJson("{\"days\":{\"monday\":[{\"start\":600,\"end\":500,\"temp\":20.0}]}}"));
+    }
+
+    @Test
+    void composeChScheduleFromJsonRejectedWithoutPriorPoll() {
+        assertNull(handler.composeChScheduleFromJson("{}"));
+    }
+
+    @Test
+    void composeDhwScheduleFromJsonMirrorsChSchedule() throws ReflectiveOperationException {
+        double[][][] entries = new double[7][][];
+        entries[5] = new double[][] { { 0, 1440, 45.0 } };
+        seedLastDhwScheduleEntries(entries);
+        seedState(CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE, new QuantityType<>(48.0, SIUnits.CELSIUS));
+
+        ScheduleDTO schedule = handler
+                .composeDhwScheduleFromJson("{\"days\":{\"saturday\":[{\"start\":600,\"end\":1200,\"temp\":55.0}]}}");
+
+        assertNotNull(schedule);
+        assertArrayEquals(new double[] { 600, 1200, 55.0 }, schedule.entries[5][0], 0.001);
     }
 }

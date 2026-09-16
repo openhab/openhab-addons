@@ -348,7 +348,18 @@ public class AtagOneHandler extends BaseThingHandler {
         return schedule;
     }
 
-    /** Sends a CH schedule update and restarts polling afterwards, mirroring {@link #sendControlUpdate}. */
+    /**
+     * Sends a CH schedule update and restarts polling afterwards, mirroring {@link #sendControlUpdate}.
+     * <p>
+     * On a device-acknowledged write ({@code acc_status == 2}, verified by
+     * {@link AtagOneApiClient#updateChSchedule}, which throws otherwise), adopts the sent schedule as
+     * {@link #lastChScheduleEntries} and republishes {@code heating#schedule} immediately, rather than
+     * waiting for the next poll. This matters because writing {@code entries} (unlike {@code base_temp}
+     * alone) is documented to leave the device unresponsive for 10–100 s — well past
+     * {@link #POST_COMMAND_DELAY_S}'s fast re-poll — so without this, the channel would go stale for
+     * that whole window, and a second rapid edit would compose against pre-write data and silently lose
+     * the first one.
+     */
     private void sendChScheduleUpdate(AtagOneApiClient client, ScheduleDTO schedule) {
         if (disposing) {
             return;
@@ -357,6 +368,10 @@ public class AtagOneHandler extends BaseThingHandler {
             stopPollJob();
             try {
                 client.updateChSchedule(schedule);
+                lastChScheduleEntries = schedule.entries;
+                updateIfChanged(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE,
+                        new QuantityType<>(schedule.base_temp, SIUnits.CELSIUS));
+                publishSchedule(CHANNEL_CH_SCHEDULE, schedule.base_temp, schedule.entries);
             } catch (AtagOneCommunicationException e) {
                 logger.warn("CH schedule update failed: {}", e.getMessage());
             } catch (RuntimeException e) {
@@ -389,7 +404,7 @@ public class AtagOneHandler extends BaseThingHandler {
         return schedule;
     }
 
-    /** Sends a DHW schedule update and restarts polling afterwards, mirroring {@link #sendControlUpdate}. */
+    /** Sends a DHW schedule update and restarts polling afterwards — mirrors {@link #sendChScheduleUpdate}. */
     private void sendDhwScheduleUpdate(AtagOneApiClient client, ScheduleDTO schedule) {
         if (disposing) {
             return;
@@ -398,6 +413,10 @@ public class AtagOneHandler extends BaseThingHandler {
             stopPollJob();
             try {
                 client.updateDhwSchedule(schedule);
+                lastDhwScheduleEntries = schedule.entries;
+                updateIfChanged(CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE,
+                        new QuantityType<>(schedule.base_temp, SIUnits.CELSIUS));
+                publishSchedule(CHANNEL_DHW_SCHEDULE, schedule.base_temp, schedule.entries);
             } catch (AtagOneCommunicationException e) {
                 logger.warn("DHW schedule update failed: {}", e.getMessage());
             } catch (RuntimeException e) {
@@ -453,8 +472,10 @@ public class AtagOneHandler extends BaseThingHandler {
      * schedule's {@code base_temp} unchanged — the device requires the complete schedule object on
      * every write.
      *
-     * @return the composed schedule, or {@code null} if the weekday/index is out of range or no prior
-     *         poll has captured the current CH schedule yet
+     * @return the composed schedule, or {@code null} if the weekday/index is out of range, no prior
+     *         poll has captured the current CH schedule yet, or the given period overlaps another
+     *         period already on that weekday (see {@link #overlapsAnyOtherPeriod}) — rejected
+     *         outright, never trimmed or reordered
      */
     @Nullable
     public ScheduleDTO composeChSchedulePeriodSet(String weekday, int periodIndex, int startMinutes, int endMinutes,
@@ -491,13 +512,71 @@ public class AtagOneHandler extends BaseThingHandler {
     }
 
     /**
+     * Composes a whole-week CH schedule write from {@link ScheduleJson}-shaped input, one device write
+     * for the whole week instead of the per-period actions' one-write-per-period. Weekdays the JSON
+     * doesn't name are resent unchanged from the last poll.
+     *
+     * @return the composed schedule, or {@code null} if the JSON is malformed or no prior poll has
+     *         captured the current CH schedule yet
+     */
+    @Nullable
+    public ScheduleDTO composeChScheduleFromJson(String json) {
+        return composeScheduleFromJson(json, lastChScheduleEntries, CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE);
+    }
+
+    /** Composes a whole-week DHW schedule write — mirrors {@link #composeChScheduleFromJson}. */
+    @Nullable
+    public ScheduleDTO composeDhwScheduleFromJson(String json) {
+        return composeScheduleFromJson(json, lastDhwScheduleEntries, CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE);
+    }
+
+    @Nullable
+    private ScheduleDTO composeScheduleFromJson(String json, double @Nullable [][][] lastEntries,
+            String baseTempChannel) {
+        if (lastEntries == null) {
+            return null;
+        }
+        State storedBaseTemp = stateMap.get(baseTempChannel);
+        if (!(storedBaseTemp instanceof QuantityType<?> qt)) {
+            return null;
+        }
+        QuantityType<?> celsius = qt.toUnit(SIUnits.CELSIUS);
+        if (celsius == null) {
+            return null;
+        }
+        return ScheduleJson.parse(json, celsius.doubleValue(), lastEntries);
+    }
+
+    /**
+     * True if {@code candidate} overlaps any period in {@code dayEntries} other than the one at
+     * {@code excludeIndex} — the slot {@code candidate} is itself replacing (or appending past, for
+     * which {@code excludeIndex == dayEntries.length} never matches a real index, so nothing is
+     * excluded). Uses {@link ScheduleJson#periodsOverlap}, the same half-open-interval definition the
+     * whole-schedule write path checks entries against each other with.
+     */
+    private static boolean overlapsAnyOtherPeriod(double[][] dayEntries, int excludeIndex, double[] candidate) {
+        for (int i = 0; i < dayEntries.length; i++) {
+            if (i == excludeIndex) {
+                continue;
+            }
+            double[] other = dayEntries[i];
+            if (ScheduleJson.periodsOverlap(candidate[0], candidate[1], other[0], other[1])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Shared mutation for the four {@code composeXxxSchedulePeriodYyy} methods above. {@code newPeriod}
      * being {@code null} means "clear the period at {@code periodIndex}"; otherwise it replaces (or, if
-     * {@code periodIndex} equals the day's current length, appends) that period. {@code weekday} is a
-     * name (matching {@link AtagOneBindingConstants#WEEKDAY_BY_NAME}), not a raw index — the device
-     * uses two different, unrelated weekday numbering schemes across its protocol (this array is
-     * 0-indexed from Monday, {@code configuration.dhw_legion_day} is 1-indexed), and a name sidesteps
-     * that ambiguity for anyone calling these actions.
+     * {@code periodIndex} equals the day's current length, appends) that period, rejecting a period
+     * that overlaps any other period already on that weekday (see {@link #overlapsAnyOtherPeriod}) —
+     * clearing a period can never create an overlap, so that branch skips the check entirely.
+     * {@code weekday} is a name (matching {@link AtagOneBindingConstants#WEEKDAY_BY_NAME}), not a raw
+     * index — the device uses two different, unrelated weekday numbering schemes across its protocol
+     * (this array is 0-indexed from Monday, {@code configuration.dhw_legion_day} is 1-indexed), and a
+     * name sidesteps that ambiguity for anyone calling these actions.
      */
     @Nullable
     private ScheduleDTO composeSchedulePeriodChange(double @Nullable [][][] lastEntries, String baseTempChannel,
@@ -516,7 +595,8 @@ public class AtagOneHandler extends BaseThingHandler {
         }
         double[][] updatedDay;
         if (newPeriod != null) {
-            if (periodIndex > dayEntries.length) {
+            if (periodIndex > dayEntries.length || !ScheduleJson.isValidPeriod(newPeriod[0], newPeriod[1])
+                    || overlapsAnyOtherPeriod(dayEntries, periodIndex, newPeriod)) {
                 return null;
             }
             updatedDay = periodIndex < dayEntries.length ? dayEntries.clone()
@@ -795,6 +875,17 @@ public class AtagOneHandler extends BaseThingHandler {
                 }
                 return false;
 
+            case CHANNEL_LANGUAGE:
+                if (command instanceof StringType s) {
+                    Integer language = LANGUAGE_BY_NAME.get(s.toString().toLowerCase());
+                    if (language == null || !fillConfigBundle(configDto)) {
+                        return false;
+                    }
+                    configDto.language = language;
+                    return true;
+                }
+                return false;
+
             case CHANNEL_BUILDING_SIZE:
                 if (command instanceof StringType s) {
                     Integer size = BUILDING_SIZE_BY_NAME.get(s.toString().toLowerCase());
@@ -871,28 +962,6 @@ public class AtagOneHandler extends BaseThingHandler {
                 }
                 return false;
 
-            case CHANNEL_VACATION_DURATION_DEFAULT:
-                if (command instanceof QuantityType<?> qt) {
-                    QuantityType<?> seconds = qt.toUnit(Units.SECOND);
-                    if (seconds == null || !fillConfigBundle(configDto)) {
-                        return false;
-                    }
-                    configDto.ch_mode_vacation = seconds.longValue();
-                    return true;
-                }
-                return false;
-
-            case CHANNEL_EXTEND_DURATION_DEFAULT:
-                if (command instanceof QuantityType<?> qt) {
-                    QuantityType<?> seconds = qt.toUnit(Units.SECOND);
-                    if (seconds == null || !fillConfigBundle(configDto)) {
-                        return false;
-                    }
-                    configDto.ch_mode_extend = seconds.longValue();
-                    return true;
-                }
-                return false;
-
             case CHANNEL_DISPLAY_BRIGHTNESS:
                 if (command instanceof QuantityType<?> qt) {
                     QuantityType<?> percent = qt.toUnit(Units.PERCENT);
@@ -947,6 +1016,7 @@ public class AtagOneHandler extends BaseThingHandler {
         configDto.ch_mode_vacation = config.ch_mode_vacation;
         configDto.ch_mode_extend = config.ch_mode_extend;
         configDto.time_zone = config.time_zone;
+        configDto.language = config.language;
         configDto.dhw_legion_enabled = config.dhw_legion_enabled;
         configDto.dhw_legion_day = config.dhw_legion_day;
         configDto.dhw_legion_time = config.dhw_legion_time;
@@ -1246,7 +1316,6 @@ public class AtagOneHandler extends BaseThingHandler {
         updateIfChanged(CHANNEL_DELTA_TEMPERATURE,
                 new QuantityType<>(r.report.ch_water_temp - r.report.ch_return_temp, SIUnits.CELSIUS));
         updateIfChanged(CHANNEL_CH_WATER_PRESSURE, new QuantityType<>(r.report.ch_water_pres, Units.BAR));
-        updateIfChanged(CHANNEL_DHW_WATER_PRESSURE, new QuantityType<>(r.report.dhw_water_pres, Units.BAR));
         updateIfChanged(CHANNEL_CH_SETPOINT, new QuantityType<>(r.report.ch_setpoint, SIUnits.CELSIUS));
         updateIfChanged(CHANNEL_DHW_TEMPERATURE, new QuantityType<>(r.report.dhw_water_temp, SIUnits.CELSIUS));
         updateIfChanged(CHANNEL_AVERAGE_OUTSIDE_TEMPERATURE, new QuantityType<>(r.report.tout_avg, SIUnits.CELSIUS));
@@ -1257,7 +1326,6 @@ public class AtagOneHandler extends BaseThingHandler {
         boolean chActive = (r.report.boiler_status & BOILER_STATUS_CH_ACTIVE) != 0;
         boolean dhwActive = (r.report.boiler_status & BOILER_STATUS_DHW_ACTIVE) != 0;
         updateIfChanged(CHANNEL_FLAME, OnOffType.from(flame));
-        updateIfChanged(CHANNEL_BURNER_TARGET, new StringType(dhwActive ? "dhw" : chActive ? "ch" : "none"));
         updateIfChanged(CHANNEL_CH_ACTIVE, OnOffType.from(chActive));
         updateIfChanged(CHANNEL_DHW_ACTIVE, OnOffType.from(dhwActive));
         updateIfChanged(CHANNEL_MODULATION_LEVEL, new QuantityType<>(r.report.details.rel_mod_level, Units.PERCENT));
@@ -1285,23 +1353,20 @@ public class AtagOneHandler extends BaseThingHandler {
         // units and meaning could not be verified against this device.
         updateIfChanged(CHANNEL_DHW_FLOW_RATE, new QuantityType<>(r.report.dhw_flow_rate, Units.LITRE_PER_MINUTE));
         updateIfChanged(CHANNEL_RESETS, new DecimalType(r.report.resets));
-        updateIfChanged(CHANNEL_MEMORY_ALLOCATION, new DecimalType(r.report.memory_allocation));
         updateIfChanged(CHANNEL_BOILER_TEMPERATURE, new QuantityType<>(r.report.details.boiler_temp, SIUnits.CELSIUS));
         updateIfChanged(CHANNEL_BOILER_RETURN_TEMPERATURE,
                 new QuantityType<>(r.report.details.boiler_return_temp, SIUnits.CELSIUS));
-        updateIfChanged(CHANNEL_MODULATION_MIN, new QuantityType<>(r.report.details.min_mod_level, Units.PERCENT));
-        updateIfChanged(CHANNEL_MAX_BOILER_TEMPERATURE,
-                new QuantityType<>(r.report.details.max_boiler_temp, SIUnits.CELSIUS));
-        updateIfChanged(CHANNEL_REGULATION_STATE, OnOffType.from(r.report.details.regulation_state == 1));
         updateIfChanged(CHANNEL_REPORT_TIME, new DateTimeType(AtagEpoch.toZonedDateTime(r.report.report_time)));
 
         // Schedules — fallback setpoints outside any active entry
         updateIfChanged(CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE,
                 new QuantityType<>(r.schedules.ch_schedule.base_temp, SIUnits.CELSIUS));
         lastChScheduleEntries = r.schedules.ch_schedule.entries;
+        publishSchedule(CHANNEL_CH_SCHEDULE, r.schedules.ch_schedule.base_temp, r.schedules.ch_schedule.entries);
         updateIfChanged(CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE,
                 new QuantityType<>(r.schedules.dhw_schedule.base_temp, SIUnits.CELSIUS));
         lastDhwScheduleEntries = r.schedules.dhw_schedule.entries;
+        publishSchedule(CHANNEL_DHW_SCHEDULE, r.schedules.dhw_schedule.base_temp, r.schedules.dhw_schedule.entries);
         updateNextScheduleChannels(r.schedules.ch_schedule.entries, ZonedDateTime.now());
 
         // Control — setpoints and modes
@@ -1393,10 +1458,6 @@ public class AtagOneHandler extends BaseThingHandler {
         updateIfChanged(CHANNEL_LEGIONELLA_PROTECTION_DAY,
                 new StringType(WEEKDAY_NAMES.getOrDefault(config.dhw_legion_day, "unknown")));
         updateIfChanged(CHANNEL_LEGIONELLA_PROTECTION_TIME, new StringType(formatTimeOfDay(config.dhw_legion_time)));
-        updateIfChanged(CHANNEL_VACATION_DURATION_DEFAULT,
-                new QuantityType<>(config.ch_mode_vacation / (double) SECONDS_PER_DAY, Units.DAY));
-        updateIfChanged(CHANNEL_EXTEND_DURATION_DEFAULT,
-                new QuantityType<>(config.ch_mode_extend / (double) SECONDS_PER_MINUTE, Units.MINUTE));
         updateIfChanged(CHANNEL_DISPLAY_BRIGHTNESS, new QuantityType<>(config.disp_brightness, Units.PERCENT));
         updateIfChanged(CHANNEL_TIME_ZONE, new StringType(TIME_ZONE_NAMES.getOrDefault(config.time_zone, "unknown")));
         updateIfChanged(CHANNEL_LANGUAGE, new StringType(LANGUAGE_NAMES.getOrDefault(config.language, "unknown")));
@@ -1407,6 +1468,19 @@ public class AtagOneHandler extends BaseThingHandler {
         if (!state.equals(previous)) {
             updateState(channelId, state);
         }
+    }
+
+    /**
+     * Publishes the full-week JSON schedule ({@link ScheduleJson}) for {@code heating#schedule} /
+     * {@code hotwater#schedule}. {@code UNDEF} until the first successful poll has actually captured
+     * a schedule — an empty week would otherwise be indistinguishable from "no schedule configured".
+     */
+    private void publishSchedule(String channelId, double baseTemp, double @Nullable [][][] entries) {
+        if (entries == null) {
+            updateIfChanged(channelId, UnDefType.UNDEF);
+            return;
+        }
+        updateIfChanged(channelId, new StringType(ScheduleJson.toJson(baseTemp, entries)));
     }
 
     private void goOnline() {
@@ -1474,7 +1548,6 @@ public class AtagOneHandler extends BaseThingHandler {
         if (!r.configuration.installer_id.isEmpty()) {
             updateProperty(PROPERTY_INSTALLER_ID, r.configuration.installer_id);
         }
-        updateProperty(PROPERTY_BOILER_DETECT_TYPE, String.valueOf(r.configuration.boiler_det_type));
         updateProperty(Thing.PROPERTY_VENDOR, "ATAG");
         String firmwareVersion = parseFirmwareVersion(r.configuration.download_url);
         if (firmwareVersion != null) {

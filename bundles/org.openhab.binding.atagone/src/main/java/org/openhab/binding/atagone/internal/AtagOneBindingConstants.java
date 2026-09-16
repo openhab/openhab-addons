@@ -57,7 +57,6 @@ public class AtagOneBindingConstants {
     public static final String CHANNEL_FLAME = "heating#flame";
     public static final String CHANNEL_MODULATION_LEVEL = "heating#modulation-level";
     public static final String CHANNEL_BURNING_HOURS = "heating#burning-hours";
-    public static final String CHANNEL_BURNER_TARGET = "heating#burner-target";
     public static final String CHANNEL_VACATION_DURATION = "control#vacation-duration";
     public static final String CHANNEL_VACATION_START = "control#vacation-start";
     public static final String CHANNEL_VACATION_END = "control#vacation-end";
@@ -73,20 +72,19 @@ public class AtagOneBindingConstants {
     public static final String CHANNEL_AVERAGE_OUTSIDE_TEMPERATURE = "heating#average-outside-temperature";
     public static final String CHANNEL_PCB_TEMPERATURE = "device#pcb-temperature";
     public static final String CHANNEL_WIFI_SIGNAL = "device#wifi-signal";
-    public static final String CHANNEL_MODULATION_MIN = "heating#min-modulation-level";
     public static final String CHANNEL_BOILER_TEMPERATURE = "heating#boiler-temperature";
     public static final String CHANNEL_BOILER_RETURN_TEMPERATURE = "heating#boiler-return-temperature";
     public static final String CHANNEL_DHW_FLOW_RATE = "hotwater#flow-rate";
-    public static final String CHANNEL_MAX_BOILER_TEMPERATURE = "heating#max-boiler-temperature";
     public static final String CHANNEL_VACATION_REMAINING = "control#vacation-remaining";
     public static final String CHANNEL_EXTEND_REMAINING = "control#extend-remaining";
     public static final String CHANNEL_FIREPLACE_REMAINING = "control#fireplace-remaining";
     public static final String CHANNEL_REPORT_TIME = "device#report-time";
     public static final String CHANNEL_VOLTAGE = "device#voltage";
     public static final String CHANNEL_RESETS = "device#resets";
-    public static final String CHANNEL_MEMORY_ALLOCATION = "device#memory-allocation";
     public static final String CHANNEL_CH_SCHEDULE_BASE_TEMPERATURE = "heating#schedule-base-temperature";
     public static final String CHANNEL_DHW_SCHEDULE_BASE_TEMPERATURE = "hotwater#schedule-base-temperature";
+    public static final String CHANNEL_CH_SCHEDULE = "heating#schedule";
+    public static final String CHANNEL_DHW_SCHEDULE = "hotwater#schedule";
 
     // Settings channels (Phase F) — advanced="true", set-once configuration, not everyday channels.
     public static final String CHANNEL_FROST_PROTECTION = "heating#frost-protection";
@@ -103,8 +101,6 @@ public class AtagOneBindingConstants {
     public static final String CHANNEL_LEGIONELLA_PROTECTION = "hotwater#legionella-protection";
     public static final String CHANNEL_LEGIONELLA_PROTECTION_DAY = "hotwater#legionella-protection-day";
     public static final String CHANNEL_LEGIONELLA_PROTECTION_TIME = "hotwater#legionella-protection-time";
-    public static final String CHANNEL_VACATION_DURATION_DEFAULT = "control#vacation-duration-default";
-    public static final String CHANNEL_EXTEND_DURATION_DEFAULT = "control#extend-duration-default";
     public static final String CHANNEL_DISPLAY_BRIGHTNESS = "device#display-brightness";
     public static final String CHANNEL_TIME_ZONE = "device#time-zone";
     public static final String CHANNEL_LANGUAGE = "device#language";
@@ -113,9 +109,7 @@ public class AtagOneBindingConstants {
     public static final String CHANNEL_DELTA_TEMPERATURE = "heating#delta-temperature";
     public static final String CHANNEL_CH_ACTIVE = "heating#central-heating-active";
     public static final String CHANNEL_DHW_ACTIVE = "hotwater#hot-water-active";
-    public static final String CHANNEL_DHW_WATER_PRESSURE = "hotwater#water-pressure";
     public static final String CHANNEL_WEATHER_TEMPERATURE = "heating#weather-temperature";
-    public static final String CHANNEL_REGULATION_STATE = "heating#regulation-state";
     public static final String CHANNEL_NEXT_SCHEDULE_TIME = "control#next-schedule-time";
     public static final String CHANNEL_NEXT_SCHEDULE_TEMPERATURE = "control#next-schedule-temperature";
 
@@ -124,7 +118,6 @@ public class AtagOneBindingConstants {
     // Thing property key for the device's own identifier — also the representation-property, shared
     // with the discovery service so a manually-added Thing and a discovered one populate it the same way.
     public static final String PROPERTY_DEVICE_ID = "deviceId";
-    public static final String PROPERTY_BOILER_DETECT_TYPE = "boilerDetectType";
     public static final String PROPERTY_INSTALLER_ID = "installerId";
 
     public static final int CH_MODE_MANUAL = 1;
@@ -233,4 +226,6 @@ public class AtagOneBindingConstants {
     /** Verified 2026-09-13: the app's language dropdown is 0-indexed; index 4 confirmed German on this device. */
     public static final Map<Integer, String> LANGUAGE_NAMES = Map.of(0, "english", 1, "dutch", 2, "french", 3,
             "italian", 4, "german");
+    public static final Map<String, Integer> LANGUAGE_BY_NAME = Map.of("english", 0, "dutch", 1, "french", 2, "italian",
+            3, "german", 4);
 }

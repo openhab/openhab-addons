@@ -138,4 +138,39 @@ class AtagOneApiClientValidationTest {
         assertThrows(AtagOneCommunicationException.class,
                 () -> client.parseReplyObject("{\"something_else\":{}}", "pair_reply"));
     }
+
+    /**
+     * Confirmed live (2026-09-16): serializing {@code entries}' start/end as floats (Gson's default
+     * for a {@code double[][][]}, e.g. {@code 0.0}/{@code 240.0}) makes the device silently wipe the
+     * whole schedule to empty while still returning {@code acc_status:2} — no error, no {@code resets}
+     * bump, nothing to distinguish it from a real success except an independent read-back. The device's
+     * own wire format (every {@code /retrieve} reply, and every write that has ever actually applied)
+     * uses bare integers for start/end, a float only for temp.
+     */
+    @Test
+    void scheduleToJsonEmitsStartEndAsIntegersAndTempAsFloat() {
+        ScheduleDTO schedule = new ScheduleDTO();
+        schedule.base_temp = 22.5;
+        schedule.entries = new double[][][] { { { 0, 240, 20.5 }, { 1230, 1440, 20.5 } } };
+
+        String json = AtagOneApiClient.scheduleToJson(schedule).toString();
+
+        assertTrue(json.contains("[0,240,20.5]"), () -> "expected integer start/end, float temp, got: " + json);
+        assertFalse(json.contains("0.0"), () -> "start/end must not serialize with a decimal point: " + json);
+    }
+
+    @Test
+    void scheduleToJsonHandlesEmptyAndNullDaysWithoutThrowing() {
+        ScheduleDTO schedule = new ScheduleDTO();
+        schedule.base_temp = 22.5;
+        double[][][] entries = new double[3][][];
+        entries[0] = new double[0][]; // explicitly empty day
+        entries[1] = new double[][] { { 600, 900, 19.0 } };
+        // entries[2] stays null — a defensively-possible shape, mirrored from ScheduleJson's own handling.
+        schedule.entries = entries;
+
+        String json = AtagOneApiClient.scheduleToJson(schedule).toString();
+
+        assertTrue(json.contains("\"entries\":[[],[[600,900,19.0]],[]]"), () -> "unexpected shape: " + json);
+    }
 }
