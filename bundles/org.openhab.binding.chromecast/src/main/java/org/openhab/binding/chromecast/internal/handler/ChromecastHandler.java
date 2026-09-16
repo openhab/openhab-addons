@@ -43,6 +43,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**

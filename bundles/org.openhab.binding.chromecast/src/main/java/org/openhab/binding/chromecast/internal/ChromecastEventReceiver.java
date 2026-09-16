@@ -60,7 +60,8 @@ public class ChromecastEventReceiver implements CastEventListener {
                 break;
             case MEDIA_STATUS:
                 MediaStatusResponse mediaStatusResponse = event.getData(MediaStatusResponse.class);
-                List<MediaStatus> mediaStatuses = mediaStatusResponse == null ? null : mediaStatusResponse.getStatuses();
+                List<MediaStatus> mediaStatuses = mediaStatusResponse == null ? null
+                        : mediaStatusResponse.getStatuses();
                 if (mediaStatuses == null) {
                     statusUpdater.updateMediaStatus(null);
                 } else {
@@ -71,7 +72,8 @@ public class ChromecastEventReceiver implements CastEventListener {
                 break;
             case RECEIVER_STATUS:
                 ReceiverStatusResponse receiverStatusResponse = event.getData(ReceiverStatusResponse.class);
-                statusUpdater.processStatusUpdate(receiverStatusResponse == null ? null : receiverStatusResponse.getStatus());
+                statusUpdater.processStatusUpdate(
+                        receiverStatusResponse == null ? null : receiverStatusResponse.getStatus());
                 break;
             case UNKNOWN:
                 logger.debug("Received an 'UNKNOWN' event (class={})", event.getEventType().getDataClass());
