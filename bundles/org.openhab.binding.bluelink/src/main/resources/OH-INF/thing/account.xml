@@ -13,11 +13,11 @@
 		<config-description>
 			<parameter name="username" type="text" required="false">
 				<label>Username</label>
-				<description>Your Bluelink/Connect account email address (not required for EU region)</description>
+				<description>Your Bluelink/Connect account email address (EU: not required when using a refresh token)</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>Your Bluelink/Connect account password (for EU: refresh token)</description>
+				<description>Your Bluelink/Connect account password (EU: password or refresh token)</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="pin" type="text" required="false">

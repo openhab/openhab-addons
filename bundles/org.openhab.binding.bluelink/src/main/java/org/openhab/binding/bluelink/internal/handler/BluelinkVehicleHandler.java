@@ -366,7 +366,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             }
         } catch (final BluelinkApiException e) {
             logger.debug("Failed to refresh {}vehicle status: {}", forceRefresh ? "forced " : "", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
         } finally {
             lock.unlock();
         }
