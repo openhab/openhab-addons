@@ -18,6 +18,12 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -256,10 +262,19 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
                 }
                 return parseQueryResult(bodyString, itemName);
             }
-        } catch (IOException | JsonParseException | IllegalArgumentException e) {
+        } catch (IOException | JsonParseException | IllegalArgumentException | DateTimeParseException e) {
             logger.warn("Failed to execute query '{}': {}", filter, e.getMessage());
             return List.of();
         }
+    }
+
+    private static final DateTimeFormatter QUERY_TIME_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd'T'HH:mm:ss").appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
+            .toFormatter();
+
+    private Instant parseTime(String value) {
+        String withoutOffset = value.endsWith("Z") ? value.substring(0, value.length() - 1) : value;
+        return LocalDateTime.parse(withoutOffset, QUERY_TIME_FORMATTER).toInstant(ZoneOffset.UTC);
     }
 
     private List<InfluxRow> parseQueryResult(String bodyString, String defaultItemName) {
@@ -270,7 +285,7 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
         List<InfluxRow> result = new ArrayList<>(rows.size());
         for (JsonElement rowElement : rows) {
             JsonObject row = rowElement.getAsJsonObject();
-            Instant time = Instant.parse(row.get(COLUMN_TIME_NAME_V1).getAsString());
+            Instant time = parseTime(row.get(COLUMN_TIME_NAME_V1).getAsString());
             Object value = toJavaValue(row.get(COLUMN_VALUE_NAME_V1));
             JsonElement itemElement = row.get(TAG_ITEM_NAME);
             String itemName = itemElement != null && !itemElement.isJsonNull() ? itemElement.getAsString()
