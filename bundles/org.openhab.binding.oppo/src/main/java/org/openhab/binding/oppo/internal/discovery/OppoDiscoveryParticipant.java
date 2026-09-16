@@ -74,17 +74,17 @@ public class OppoDiscoveryParticipant implements UpnpDiscoveryParticipant {
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         if ("OPPO".equals(device.getDetails().getManufacturerDetails().getManufacturer())) {
-            logger.debug("OPPO UPnP device model {} found at {}",
-                    device.getDetails().getModelDetails().getModelNumber(),
+            final String id = device.getIdentity().getDescriptorURL().getHost().replace(".", "_");
+            final String modelName = device.getDetails().getModelDetails().getModelName();
+
+            logger.debug("OPPO UPnP device model {} found at {}", modelName,
                     device.getIdentity().getDescriptorURL().getHost());
 
-            final String id = device.getIdentity().getDescriptorURL().getHost().replace(".", "_");
-
-            return switch (device.getDetails().getModelDetails().getModelNumber()) {
-                case "103", "103D" -> new ThingUID(THING_TYPE_BDP103, id);
-                case "105", "105D" -> new ThingUID(THING_TYPE_BDP105, id);
-                case "203" -> new ThingUID(THING_TYPE_UDP203, id);
-                case "205" -> new ThingUID(THING_TYPE_UDP205, id);
+            return switch (modelName) {
+                case "OPPO BDP-103", "OPPO BDP-103D" -> new ThingUID(THING_TYPE_BDP103, id);
+                case "OPPO BDP-105", "OPPO BDP-105D" -> new ThingUID(THING_TYPE_BDP105, id);
+                case "OPPO UDP-203" -> new ThingUID(THING_TYPE_UDP203, id);
+                case "OPPO UDP-205" -> new ThingUID(THING_TYPE_UDP205, id);
                 default -> null;
             };
         }
