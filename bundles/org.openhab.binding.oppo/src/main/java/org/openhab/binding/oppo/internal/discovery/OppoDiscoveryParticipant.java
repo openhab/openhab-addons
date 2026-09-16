@@ -63,7 +63,7 @@ public class OppoDiscoveryParticipant implements UpnpDiscoveryParticipant {
             properties.put(PROPERTY_HOST, host);
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                    .withRepresentationProperty(PROPERTY_UUID).withLabel(label).build();
+                    .withRepresentationProperty(PROPERTY_HOST).withLabel(label).build();
 
             logger.debug("Created a DiscoveryResult for device '{}' with UID '{}'", label, uid.getId());
             return result;
