@@ -16,6 +16,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.bluelink.internal.MockApiData.DEVICE_REGISTRATION_RESPONSE_EU;
 import static org.openhab.binding.bluelink.internal.MockApiData.ENROLLMENT_RESPONSE_US;
@@ -37,9 +39,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.bluelink.internal.CciLoginStubs;
 import org.openhab.binding.bluelink.internal.MockApiData;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
 import org.openhab.binding.bluelink.internal.api.Region;
@@ -51,6 +55,8 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
@@ -63,6 +69,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
  *
  * @author Marcus Better - Initial contribution
  * @author Florian Hotze - Added tests for EU account
+ * @author Carlo Dischler - Added test for EU password login
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -224,6 +231,65 @@ class BluelinkAccountHandlerTest extends JavaTest {
 
             final var vehicle = handler.getVehicles().getFirst();
             assertTrue(handler.setChargeLimitAC(vehicle, 90));
+        }
+    }
+
+    @Nested
+    class EUPassword {
+        private final TimeZoneProvider timeZoneProvider = () -> ZoneId.of("Europe/Berlin");
+        private final LocaleProvider localeProvider = () -> Locale.GERMAN;
+
+        @BeforeAll
+        static void setUpStubs() {
+            WireMock.configureFor("localhost", WIREMOCK_SERVER.port());
+            WireMock.reset();
+            new CciLoginStubs(WIREMOCK_SERVER).stubLogin();
+            stubFor(post(urlEqualTo("/api/v1/spa/notifications/register")).willReturn(aResponse().withStatus(200)
+                    .withHeader("Content-Type", "application/json").withBody(DEVICE_REGISTRATION_RESPONSE_EU)));
+            stubFor(get(urlPathMatching("/api/v1/spa/vehicles")).willReturn(aResponse().withStatus(200)
+                    .withHeader("Content-Type", "application/json").withBody(VEHICLES_RESPONSE_EU)));
+        }
+
+        @BeforeEach
+        void setUp() {
+            final Configuration config = new Configuration(Map.of("username", MockApiData.TEST_USERNAME, "password",
+                    MockApiData.TEST_PASSWORD, "region", Region.EU.name(), "brand", Brand.KIA.name(), "apiBaseUrl",
+                    "http://localhost:" + WIREMOCK_SERVER.port()));
+            when(bridge.getConfiguration()).thenReturn(config);
+            when(bridge.getUID()).thenReturn(new ThingUID("bluelink:account:testaccount"));
+
+            handler = new BluelinkAccountHandler(bridge, HTTP_CLIENT, timeZoneProvider, localeProvider);
+            handler.setCallback(callback);
+            handler.initialize();
+        }
+
+        @Test
+        void testLoginAndGetVehicles() throws BluelinkApiException {
+            final var vehicles = handler.getVehicles();
+
+            assertEquals(2, vehicles.size());
+            assertEquals("VIN1234", vehicles.getFirst().vin());
+            verify(getRequestedFor(urlEqualTo("/api/v1/spa/vehicles")).withHeader("Authorization",
+                    equalTo("Bearer " + CciLoginStubs.CCS_ACCESS_TOKEN)));
+            verify(0, postRequestedFor(urlEqualTo("/auth/api/v2/user/oauth2/token")));
+        }
+
+        @Test
+        void testPasswordWithoutUsernameIsRejected() {
+            handler.dispose();
+            final Configuration config = new Configuration(
+                    Map.of("password", MockApiData.TEST_PASSWORD, "region", Region.EU.name(), "brand", Brand.KIA.name(),
+                            "apiBaseUrl", "http://localhost:" + WIREMOCK_SERVER.port()));
+            when(bridge.getConfiguration()).thenReturn(config);
+            handler = new BluelinkAccountHandler(bridge, HTTP_CLIENT, timeZoneProvider, localeProvider);
+            handler.setCallback(callback);
+
+            handler.initialize();
+
+            Mockito.verify(callback).statusUpdated(eq(bridge),
+                    argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                            && status.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
+            verify(0, postRequestedFor(urlEqualTo("/auth/api/v2/user/oauth2/token")));
         }
     }
 }
