@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * UPnP Discovery Service for OPPO BDP-10X and UDP-20X Blu-ray players.
  *
  * @author Michael Lobstein - Initial contribution
@@ -74,8 +73,8 @@ public class OppoDiscoveryParticipant implements UpnpDiscoveryParticipant {
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         if ("OPPO".equals(device.getDetails().getManufacturerDetails().getManufacturer())) {
-            final String id = device.getIdentity().getDescriptorURL().getHost().replace(".", "_");
             final String modelName = device.getDetails().getModelDetails().getModelName();
+            final String id = device.getIdentity().getDescriptorURL().getHost().replace(".", "_");
 
             logger.debug("OPPO UPnP device model {} found at {}", modelName,
                     device.getIdentity().getDescriptorURL().getHost());
