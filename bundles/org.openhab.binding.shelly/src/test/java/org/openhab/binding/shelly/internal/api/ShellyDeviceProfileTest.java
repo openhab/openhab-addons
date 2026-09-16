@@ -33,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
@@ -626,5 +627,26 @@ public class ShellyDeviceProfileTest {
         return Stream.of( //
                 Arguments.of(SHELLY_BTNT_MOMENTARY, true), // Input.type=button -> real button input
                 Arguments.of(SHELLY_BTNT_EDGE, false)); // Input.type=switch/analog -> stateful/PIR input
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForWatchdogPeriod")
+    void updateWatchdogPeriodAppliesSmokeMargin(ThingTypeUID thingTypeUID, int period, String unit, int expected) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.period = period;
+        sleepMode.unit = unit;
+        profile.settings.sleepMode = sleepMode;
+
+        profile.updateWatchdogPeriod();
+
+        assertThat(profile.updatePeriod, is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForWatchdogPeriod() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, 12, "h", (int) Math.round(12 * 3600 * 1.1) + 60 + 1800), //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, 12, "h", (int) Math.round(12 * 3600 * 1.1) + 60), //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, 10, "m", (int) Math.round(10 * 60 * 1.1) + 60));
     }
 }
