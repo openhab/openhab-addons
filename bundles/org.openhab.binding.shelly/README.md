@@ -2531,7 +2531,7 @@ then
     if (ShellyWS90_RainStatus.state == ON) {
         RainSwitch.postUpdate(ON)
     } else {
-        createTimer(now.plusMinutes(10), [ | RainSwitch.postUpdate(OFF) ])
+        createTimer(now.plusMinutes(10), [ RainSwitch.postUpdate(OFF) ])
     }
 end
 ```
@@ -2645,13 +2645,14 @@ end
 pre-requisites:
 
 - Install Send Mail Action
-- Define a group called gBatteries
+- Define a group called gBattery
 'Group   gBattery        "Batterien"         <battery>       (All)'
 - Link battery channel for all your Shelly battery powered devices
 - Add battery items to group gBattery
 
 ```java
-val String mailTo     = "alarm@openhab.me"
+val mailTo = "alarm@openhab.me"
+val lowBatteryThreshold = 20
 
 /* ------------- Battery Monitor ----------- */
 
@@ -2661,18 +2662,11 @@ when
     Time cron "0 0 10 * * ?"
 then
     logInfo("BatteryMon", "Check Battery state")
-
-    if (! gBattery.allMembers.filter([state < lowBatteryThreshold]).empty) {
-        message = "Battery levels:\n"
-
-        var report = gBattery.allMembers.filter([ state instanceof DecimalType ]).sortBy([ state instanceof DecimalType ]).map[
-        name + ": " + state.format("%d%%\n") ]
-        message = message + report
-
-        message = message + "\nBattery Level:\n"
-        gBattery?.allMembers.forEach([sw|
-            message = message + sw.name + ": " + state.format("%d%%\n")
-        ])
+    if (gBattery.allMembers.exists[ state instanceof Number && (state as Number).intValue < lowBatteryThreshold ]) {
+        val message = "Battery levels:\n" +
+            gBattery.allMembers.filter[ state instanceof Number ]
+                               .sortBy[ (state as Number).intValue ]
+                               .map[ name + ": " + state.format("%d%%\n") ].join
 
         sendMail(mailTo, "Home: LOW Battery Alert!", message)
     }
