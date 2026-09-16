@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -87,7 +88,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     private final AtomicBoolean isInternalThingUpdate = new AtomicBoolean();
     private String nvramCommands = "";
     private Map<String, @Nullable String> nvramValues = new HashMap<>();
-    private Map<String, ChannelUID> nvramChannelUIDMap = new HashMap<>();
+    private Map<String, ChannelUID> nvramChannelUIDMap = new ConcurrentHashMap<>();
 
     private int backoffDuration = RECONNECT_BACKOFF_START_S;
 
@@ -150,8 +151,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
      */
     @Override
     public void thingUpdated(Thing thing) {
-        logger.info("thingUpdated");
-        if (isInternalThingUpdate.compareAndSet(false, true)) {
+        if (isInternalThingUpdate.get()) {
             super.thingUpdated(thing);
             return;
         }
@@ -162,6 +162,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
         if (channelsNoGroup.isEmpty()) {
             logger.debug("({}) no extensible NVRAM channels found", getUID());
+            super.thingUpdated(thing);
             return;
         }
 
@@ -184,7 +185,11 @@ public class AsuswrtRouter extends BaseBridgeHandler {
             thingBuilder.withChannel(newChannel);
         });
         isInternalThingUpdate.set(true);
-        updateThing(thingBuilder.build());
+        try {
+            updateThing(thingBuilder.build());
+        } finally {
+            isInternalThingUpdate.set(false);
+        }
         updateChannelInfo();
     }
 
@@ -351,7 +356,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
             if (ThingStatus.OFFLINE.equals(thingStatus)) {
                 stopScheduler(pollingJob);
                 // Set channels to undef
-                getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.NULL));
+                getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
                 startReconnectScheduler();
             }
         }
@@ -411,7 +416,9 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             queryDeviceData();
+            return;
         }
+
         Channel channel = getThing().getChannel(channelUID);
         if (channel != null && CHANNEL_TYPE_EXTENSIBLE_NVRAM.equals(channel.getChannelTypeUID())) {
             handleNVRAMCommand(channel, command);
@@ -422,7 +429,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     public void handleNVRAMCommand(Channel channel, Command command) {
         AsuswrtNVRAMChannelConfig cfg = channel.getConfiguration().as(AsuswrtNVRAMChannelConfig.class);
         if (cfg.readonly()) {
-            logger.debug("handleNVRAMCommand: channel UID={} is read-only", channel.getUID());
+            logger.warn("handleNVRAMCommand: channel UID={} is read-only", channel.getUID());
             return;
         }
 
@@ -430,9 +437,9 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         if (cfg.service() != null) {
             asusCommand = asusCommand + "&action_script=" + cfg.service();
         }
-        logger.debug("handleNVRAMCommand: channel UID={}, asusCommand={}", channel.getUID(), asusCommand);
+        logger.debug("handleNVRAMCommand: channel UID={}, variable={}", channel.getUID(), cfg.name());
 
-        Objects.requireNonNull(connector).applyNVRAMCommand(cfg.name(), command.toString(), cfg.service(), false);
+        Objects.requireNonNull(connector).applyNVRAMCommand(cfg.name(), command.toString(), cfg.service(), true);
     }
 
     /***********************************

@@ -184,7 +184,7 @@
 		<config-description>
 			<parameter name="name" type="text" required="true">
 				<label>NVRAM Variable Name</label>
-				<description>The name of the NVRAM variable</description>
+				<description>Name of the NVRAM variable</description>
 			</parameter>
 			<parameter name="readonly" type="boolean">
 				<label>Read Only</label>
