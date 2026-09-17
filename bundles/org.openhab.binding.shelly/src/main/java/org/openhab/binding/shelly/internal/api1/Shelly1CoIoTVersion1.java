@@ -190,7 +190,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TILT,
                                 toQuantityType(s.value, DIGITS_NONE, Units.DEGREE_ANGLE));
                         break;
-                    case "vibration": // DW with FW1.6.5+
+                    case SHELLY_EVENT_VIBRATION: // DW with FW1.6.5+
                         if (profile.isMotion) {
                             // handle as status
                             updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
@@ -201,7 +201,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                                     EVENT_TYPE_VIBRATION);
                         }
                         break;
-                    case "temp": // Shelly Bulb
+                    case SHELLY_COLOR_TEMP: // Shelly Bulb
                     case "colortemperature": // Shelly Duo
                         updateChannel(updates,
                                 profile.inColor ? CHANNEL_GROUP_COLOR_CONTROL : CHANNEL_GROUP_WHITE_CONTROL,
@@ -271,7 +271,7 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
 
         // RGBW2 reports Power_0, Power_1, Power_2, Power_3; same for VSwitch and Brightness, all of them linkted to L:0
         // we break it up to Power with L:0, Power with L:1...
-        if (desc.contains("_") && (desc.contains("power") || desc.contains("vswitch") || desc.contains("brightness"))) {
+        if (desc.contains("_") && (desc.contains("power") || desc.contains("vswitch") || desc.contains(SHELLY_COLOR_BRIGHTNESS))) {
             String newDesc = substringBefore(sen.desc, "_");
             String newLink = substringAfter(sen.desc, "_");
             sen.desc = newDesc;
@@ -357,16 +357,16 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
                     sen.type = "S";
                     sen.desc = "Output";
                     break;
-                case "brightness":
+                case SHELLY_COLOR_BRIGHTNESS:
                     sen.type = "S";
                     sen.desc = "Brightness";
                     break;
-                case "red":
-                case "green":
-                case "blue":
-                case "white":
-                case "gain":
-                case "temp": // Bulb: Color temperature
+                case SHELLY_COLOR_RED:
+                case SHELLY_COLOR_GREEN:
+                case SHELLY_COLOR_BLUE:
+                case SHELLY_COLOR_WHITE:
+                case SHELLY_COLOR_GAIN:
+                case SHELLY_COLOR_TEMP: // Bulb: Color temperature
                     sen.desc = sen.type;
                     sen.type = "S";
                     break;

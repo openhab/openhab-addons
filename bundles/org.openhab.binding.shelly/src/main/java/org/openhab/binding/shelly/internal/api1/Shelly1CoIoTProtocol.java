@@ -105,7 +105,7 @@ public class Shelly1CoIoTProtocol {
                     case "input":
                         handleInput(sen, s, rGroup, updates);
                         break;
-                    case "brightness":
+                    case SHELLY_COLOR_BRIGHTNESS:
                         // already handled by state/output
                         break;
                     case "overtemp": // ++
@@ -125,7 +125,7 @@ public class Shelly1CoIoTProtocol {
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
                                 OnOffType.from(s.value == 1));
                         break;
-                    case "vibration": // DW with FW1.6.5+
+                    case SHELLY_EVENT_VIBRATION: // DW with FW1.6.5+
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                                 OnOffType.from(s.value == 1));
                         if (s.value == 1) {
@@ -141,23 +141,23 @@ public class Shelly1CoIoTProtocol {
                                 OnOffType.from(s.value == 1));
                         break;
                     // RGBW2/Bulb
-                    case "red":
+                    case SHELLY_COLOR_RED:
                         col.setRed((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.getPercentRed());
                         break;
-                    case "green":
+                    case SHELLY_COLOR_GREEN:
                         col.setGreen((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.getPercentGreen());
                         break;
-                    case "blue":
+                    case SHELLY_COLOR_BLUE:
                         col.setBlue((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.getPercentBlue());
                         break;
-                    case "white":
+                    case SHELLY_COLOR_WHITE:
                         col.setWhite((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.getPercentWhite());
                         break;
-                    case "gain":
+                    case SHELLY_COLOR_GAIN:
                         col.setGain((int) s.value);
                         updateChannel(updates, CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GAIN,
                                 ShellyColorUtils.toPercent((int) s.value, SHELLY_MIN_GAIN, SHELLY_MAX_GAIN));
@@ -259,7 +259,7 @@ public class Shelly1CoIoTProtocol {
                     // continue until we find the correct one
                     continue;
                 }
-                if ("brightness".equalsIgnoreCase(d.desc)) {
+                if (SHELLY_COLOR_BRIGHTNESS.equalsIgnoreCase(d.desc)) {
                     brightness = update.value;
                 } else if ("output".equalsIgnoreCase(d.desc) || "state".equalsIgnoreCase(d.desc)) {
                     power = update.value;
