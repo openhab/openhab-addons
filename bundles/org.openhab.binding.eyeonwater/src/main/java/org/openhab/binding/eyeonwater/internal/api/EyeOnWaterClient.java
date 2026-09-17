@@ -392,9 +392,11 @@ public class EyeOnWaterClient {
      * Build the user agent string dynamically
      */
     private String getUserAgent() {
-        return "openHAB/" + FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
+        org.osgi.framework.Bundle bundle = FrameworkUtil.getBundle(this.getClass());
+        String version = bundle != null ? bundle.getVersion().toString() : "5.3.0-SNAPSHOT";
+        return "openHAB/" + version;
     }
-    
+
     /**
      * DTO representing a physical meter's details and active state.
      */
