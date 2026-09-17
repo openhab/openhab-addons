@@ -13,8 +13,10 @@
 package org.openhab.binding.amazonechocontrol.internal.connection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Answers.RETURNS_SELF;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +44,7 @@ import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.dto.smarthome.JsonSmartHomeDevice;
@@ -56,6 +59,7 @@ import com.google.gson.JsonArray;
  * @author Martin Littkovsky - Initial contribution
  */
 @NonNullByDefault
+@Timeout(10)
 public class ConnectionSmartHomeStateTest {
     private static final String APPLIANCE_ID = "applianceOfTheDevice";
     private static final String MERGED_ID = "mergedApplianceOfTheDevice";
@@ -120,6 +124,13 @@ public class ConnectionSmartHomeStateTest {
         Map<String, JsonArray> states = connection.getSmartHomeDeviceStatesJson(Set.of(device(List.of(MERGED_ID))));
 
         assertThat(states.keySet(), contains(APPLIANCE_ID));
+    }
+
+    @Test
+    public void testAnAnswerWithoutDeviceStatesIsEmptyInsteadOfAFailure() throws ConnectionException {
+        responseBody = "{\"errors\":[{\"code\":\"ENDPOINT_UNREACHABLE\"}]}";
+
+        assertThat(connection.getSmartHomeDeviceStatesJson(Set.of(device(null))), is(anEmptyMap()));
     }
 
     @SuppressWarnings("null")

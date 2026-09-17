@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -640,6 +641,7 @@ public class Connection {
         JsonObject requestObject = new JsonObject();
         JsonArray stateRequests = new JsonArray();
         Map<String, String> mergedApplianceMap = new HashMap<>();
+        Set<String> pendingEntityIds = new HashSet<>();
         for (SmartHomeBaseDevice device : devices) {
             String applianceId = device.findId();
             if (applianceId != null) {
@@ -650,12 +652,14 @@ public class Connection {
                 if (!mergedApplianceIds.isEmpty()) {
                     for (String idToMerge : mergedApplianceIds) {
                         mergedApplianceMap.put(idToMerge, applianceId);
+                        pendingEntityIds.add(idToMerge);
                         stateRequest = new JsonObject();
                         stateRequest.addProperty("entityId", idToMerge);
                         stateRequest.addProperty("entityType", "APPLIANCE");
                         stateRequests.add(stateRequest);
                     }
                 } else {
+                    pendingEntityIds.add(applianceId);
                     stateRequest = new JsonObject();
                     stateRequest.addProperty("entityId", applianceId);
                     stateRequest.addProperty("entityType", "APPLIANCE");
@@ -664,10 +668,18 @@ public class Connection {
             }
         }
         requestObject.add("stateRequests", stateRequests);
+        logger.debug("Requesting smart home states for {} entities", pendingEntityIds.size());
+        logger.trace("Requesting smart home states for entities {}", pendingEntityIds);
         JsonObject responseObject = requestBuilder.post(getAlexaServer() + "/api/phoenix/state")
                 .withContent(requestObject).syncSend(JsonObject.class);
 
-        JsonArray deviceStates = (JsonArray) responseObject.get("deviceStates");
+        JsonElement deviceStatesElement = responseObject.get("deviceStates");
+        if (deviceStatesElement == null || !deviceStatesElement.isJsonArray()) {
+            logger.debug("Amazon answered the state request for {} without device states", pendingEntityIds);
+            logger.trace("Answer without device states: {}", responseObject);
+            return Map.of();
+        }
+        JsonArray deviceStates = deviceStatesElement.getAsJsonArray();
         Map<String, JsonArray> result = new HashMap<>();
         for (JsonElement deviceState : deviceStates) {
             JsonObject deviceStateObject = deviceState.getAsJsonObject();
@@ -675,6 +687,7 @@ public class Connection {
             String applianceId = entity.get("entityId").getAsString();
             JsonElement capabilityState = deviceStateObject.get("capabilityStates");
             if (capabilityState != null && capabilityState.isJsonArray()) {
+                pendingEntityIds.remove(applianceId);
                 String realApplianceId = mergedApplianceMap.get(applianceId);
                 if (realApplianceId != null) {
                     var capabilityArray = result.get(realApplianceId);
@@ -688,6 +701,9 @@ public class Connection {
                     result.put(applianceId, capabilityState.getAsJsonArray());
                 }
             }
+        }
+        if (!pendingEntityIds.isEmpty()) {
+            logger.debug("Amazon returned no state for requested entities {}", pendingEntityIds);
         }
         return result;
     }
