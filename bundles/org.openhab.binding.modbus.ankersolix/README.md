@@ -14,7 +14,7 @@ When manually side-loading a jar from `addons/`, make sure a matching Modbus bin
 ## Supported Things
 
 - `ankersolix-solarbank4`: Anker SOLIX Solarbank 4 E5000 Pro.
-- `ankersolix-solarbank-ac`: Anker SOLIX Solarbank Max AC / XE AC.
+- `ankersolix-solarbank`: Anker SOLIX Solarbank Max AC / XE / XE AC.
 - `ankersolix-smartmeter-gen2`: Anker SOLIX Smart Meter Gen 2.
 - `ankersolix-smartplug`: Anker SOLIX Smart Plug.
 - `ankersolix-ev-charger`: Anker SOLIX V1 Smart EV Charger.
@@ -73,7 +73,7 @@ In other words, connection parameters are bridge-level and can still be unique p
 
 ### Solarbank Channels
 
-The `ankersolix-solarbank4` and `ankersolix-solarbank-ac` things expose the following channels:
+The `ankersolix-solarbank4` and `ankersolix-solarbank` (Solarbank Max AC, XE, and XE AC) things expose the following channels:
 
 | Channel ID                    | Item Type              | Access      | Description                                                                                                                                                             |
 | ----------------------------- | ---------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -182,6 +182,16 @@ Registers marked as `Reserved for Future Use` are intentionally not bound:
 | `primary-phase-3-active-power`   | `Number:Power`             | read-only | Primary CT phase 3 active power.              |
 | `primary-phase-3-current`        | `Number:ElectricCurrent`   | read-only | Primary CT phase 3 current.                   |
 | `primary-phase-3-voltage`        | `Number:ElectricPotential` | read-only | Primary CT phase 3 voltage.                   |
+| `primary-total-reactive-power`   | `Number:Power`             | read-only | Primary CT total reactive power.              |
+| `primary-total-power-factor`     | `Number:Dimensionless`     | read-only | Primary CT total power factor.                |
+| `primary-phase-1-forward-active-energy` | `Number:Energy`      | read-only | Primary CT phase 1 import active energy (`kWh`). |
+| `primary-phase-2-forward-active-energy` | `Number:Energy`      | read-only | Primary CT phase 2 import active energy (`kWh`). |
+| `primary-phase-3-forward-active-energy` | `Number:Energy`      | read-only | Primary CT phase 3 import active energy (`kWh`). |
+| `primary-total-forward-active-energy` | `Number:Energy`        | read-only | Primary CT total import active energy (`kWh`). |
+| `primary-phase-1-reverse-active-energy` | `Number:Energy`      | read-only | Primary CT phase 1 export active energy (`kWh`). |
+| `primary-phase-2-reverse-active-energy` | `Number:Energy`      | read-only | Primary CT phase 2 export active energy (`kWh`). |
+| `primary-phase-3-reverse-active-energy` | `Number:Energy`      | read-only | Primary CT phase 3 export active energy (`kWh`). |
+| `primary-total-reverse-active-energy` | `Number:Energy`        | read-only | Primary CT total export active energy (`kWh`). |
 | `secondary-total-active-power`   | `Number:Power`             | read-only | Secondary CT total active power.              |
 | `secondary-phase-1-active-power` | `Number:Power`             | read-only | Secondary CT phase 1 active power.            |
 | `secondary-phase-1-current`      | `Number:ElectricCurrent`   | read-only | Secondary CT phase 1 current.                 |
@@ -192,6 +202,16 @@ Registers marked as `Reserved for Future Use` are intentionally not bound:
 | `secondary-phase-3-active-power` | `Number:Power`             | read-only | Secondary CT phase 3 active power.            |
 | `secondary-phase-3-current`      | `Number:ElectricCurrent`   | read-only | Secondary CT phase 3 current.                 |
 | `secondary-phase-3-voltage`      | `Number:ElectricPotential` | read-only | Secondary CT phase 3 voltage.                 |
+| `secondary-total-reactive-power` | `Number:Power`             | read-only | Secondary CT total reactive power.            |
+| `secondary-total-power-factor`   | `Number:Dimensionless`     | read-only | Secondary CT total power factor.              |
+| `secondary-phase-1-forward-active-energy` | `Number:Energy`    | read-only | Secondary CT phase 1 import active energy (`kWh`). |
+| `secondary-phase-2-forward-active-energy` | `Number:Energy`    | read-only | Secondary CT phase 2 import active energy (`kWh`). |
+| `secondary-phase-3-forward-active-energy` | `Number:Energy`    | read-only | Secondary CT phase 3 import active energy (`kWh`). |
+| `secondary-total-forward-active-energy` | `Number:Energy`      | read-only | Secondary CT total import active energy (`kWh`). |
+| `secondary-phase-1-reverse-active-energy` | `Number:Energy`    | read-only | Secondary CT phase 1 export active energy (`kWh`). |
+| `secondary-phase-2-reverse-active-energy` | `Number:Energy`    | read-only | Secondary CT phase 2 export active energy (`kWh`). |
+| `secondary-phase-3-reverse-active-energy` | `Number:Energy`    | read-only | Secondary CT phase 3 export active energy (`kWh`). |
+| `secondary-total-reverse-active-energy` | `Number:Energy`      | read-only | Secondary CT total export active energy (`kWh`). |
 
 The `secondary-phase-*-voltage` channels intentionally report the same per-phase voltage as the `primary-phase-*-voltage` channels.
 Both CT groups are connected to the same mains, so the line-to-neutral voltage per phase is physically identical, and the meter only exposes a single voltage measurement per phase.
@@ -206,6 +226,7 @@ This mirrors the upstream Home Assistant register map and is not a binding defec
 | `real-time-power`      | `Number:Power`             | read-only  | Real-time power.                                           |
 | `voltage`              | `Number:ElectricPotential` | read-only  | Voltage.                                                   |
 | `current`              | `Number:ElectricCurrent`   | read-only  | Current.                                                   |
+| `cumulative-energy`    | `Number:Energy`            | read-only  | Cumulative active energy (`kWh`).                          |
 | `temperature`          | `Number:Temperature`       | read-only  | Device temperature (`°C`) when exposed by device firmware. |
 | `power-switch`         | `Switch`                   | read-write | Switch command/state channel for socket power (`ON`/`OFF`).|
 

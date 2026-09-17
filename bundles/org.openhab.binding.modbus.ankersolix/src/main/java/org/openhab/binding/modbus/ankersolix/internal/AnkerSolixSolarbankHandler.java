@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
 
+    private static final int EMS_MODE_MASK_REGISTER = 32774;
     private static final int PARALLEL_CAPABILITY_MASK_REGISTER = 32775;
     private static final int CAPABILITY_CHARGING_LIMIT_SOC = 0;
     private static final int CAPABILITY_DISCHARGE_LIMIT_SOC = 1;
@@ -68,6 +69,9 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
             Map.entry(1, "tou_mode"), Map.entry(3, "third_party_control"), Map.entry(4, "custom_mode"),
             Map.entry(5, "socket_overlay_mode"), Map.entry(6, "smart_mode"), Map.entry(7, "dynamic_pricing"));
 
+    private static final Map<Integer, Integer> OPERATING_MODE_CAPABILITY_BITS = Map.ofEntries(Map.entry(0, 0),
+            Map.entry(1, 1), Map.entry(3, 5), Map.entry(4, 2), Map.entry(5, 4), Map.entry(6, 3), Map.entry(7, 6));
+
     private static final int OPERATING_MODE_REGISTER = 10064;
     private static final int THIRD_PARTY_CONTROL_MODE = 3;
 
@@ -91,9 +95,11 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
         if (CHANNEL_OPERATING_MODE.equals(channelId)) {
             if (command instanceof StringType stringType) {
                 Integer modeValue = OPERATING_MODE_VALUES.get(stringType.toString());
-                if (modeValue != null) {
+                if (modeValue != null && isOperatingModeSupported(modeValue)) {
                     writeInt16Holding(OPERATING_MODE_REGISTER, modeValue);
                     setShadowState(CHANNEL_OPERATING_MODE, stringType);
+                } else if (modeValue != null) {
+                    logger.warn("Operating mode {} is not supported by this device", command);
                 } else {
                     logger.warn("Unsupported operating mode command: {}", command);
                 }
@@ -153,7 +159,7 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
                 return;
             }
             Integer value = parseSetpointCommand(command);
-            if (value != null && value >= 80 && value <= 100) {
+            if (value != null && value >= 80 && value <= 100 && isChargingLimitSocValid(value)) {
                 writeInt16Holding(60000, value);
                 setShadowState(CHANNEL_CHARGING_LIMIT_SOC,
                         new QuantityType<>(BigDecimal.valueOf(value), Units.PERCENT));
@@ -169,7 +175,7 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
                 return;
             }
             Integer value = parseSetpointCommand(command);
-            if (value != null && value >= 0 && value <= 20) {
+            if (value != null && value >= 0 && value <= 20 && isDischargeLimitSocValid(value)) {
                 writeInt16Holding(60001, value);
                 setShadowState(CHANNEL_DISCHARGE_LIMIT_SOC,
                         new QuantityType<>(BigDecimal.valueOf(value), Units.PERCENT));
@@ -185,7 +191,7 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
                 return;
             }
             Integer value = parseSetpointCommand(command);
-            if (value != null && value >= 0 && value <= 100) {
+            if (value != null && value >= 0 && value <= 100 && isBackupReserveSocValid(value)) {
                 writeInt16Holding(60002, value);
                 setShadowState(CHANNEL_BACKUP_RESERVE_SOC,
                         new QuantityType<>(BigDecimal.valueOf(value), Units.PERCENT));
@@ -332,6 +338,82 @@ public class AnkerSolixSolarbankHandler extends AbstractAnkerSolixHandler {
 
     private int toSignedSetpoint(int setpointValue) {
         return "charge".equals(directionSelection) ? -Math.abs(setpointValue) : Math.abs(setpointValue);
+    }
+
+    private boolean isOperatingModeSupported(int modeValue) {
+        Integer requiredBit = OPERATING_MODE_CAPABILITY_BITS.get(modeValue);
+        if (requiredBit == null) {
+            return true;
+        }
+        Integer emsModeMask = readUInt16(EMS_MODE_MASK_REGISTER);
+        return emsModeMask == null || (emsModeMask & (1 << requiredBit)) != 0;
+    }
+
+    private boolean isChargingLimitSocValid(int chargingLimitSoc) {
+        if (!Boolean.TRUE.equals(isBackupSocEnabled())) {
+            return true;
+        }
+
+        Integer dischargeLimitSoc = getSocValue(CHANNEL_DISCHARGE_LIMIT_SOC, 60001);
+        if (dischargeLimitSoc != null && chargingLimitSoc <= dischargeLimitSoc) {
+            return false;
+        }
+
+        Integer backupReserveSoc = getSocValue(CHANNEL_BACKUP_RESERVE_SOC, 60002);
+        return backupReserveSoc == null || chargingLimitSoc > backupReserveSoc;
+    }
+
+    private boolean isDischargeLimitSocValid(int dischargeLimitSoc) {
+        if (!Boolean.TRUE.equals(isBackupSocEnabled())) {
+            return true;
+        }
+
+        Integer backupReserveSoc = getSocValue(CHANNEL_BACKUP_RESERVE_SOC, 60002);
+        if (backupReserveSoc != null && dischargeLimitSoc > backupReserveSoc) {
+            return false;
+        }
+
+        Integer chargingLimitSoc = getSocValue(CHANNEL_CHARGING_LIMIT_SOC, 60000);
+        return chargingLimitSoc == null || dischargeLimitSoc < chargingLimitSoc;
+    }
+
+    private boolean isBackupReserveSocValid(int backupReserveSoc) {
+        Boolean backupSocEnabled = isBackupSocEnabled();
+        if (Boolean.FALSE.equals(backupSocEnabled)) {
+            return false;
+        }
+        if (!Boolean.TRUE.equals(backupSocEnabled)) {
+            return true;
+        }
+
+        Integer dischargeLimitSoc = getSocValue(CHANNEL_DISCHARGE_LIMIT_SOC, 60001);
+        if (dischargeLimitSoc != null && backupReserveSoc < dischargeLimitSoc) {
+            return false;
+        }
+
+        Integer chargingLimitSoc = getSocValue(CHANNEL_CHARGING_LIMIT_SOC, 60000);
+        return chargingLimitSoc == null || backupReserveSoc < chargingLimitSoc;
+    }
+
+    private @Nullable Integer getSocValue(String channelId, int registerAddress) {
+        State shadow = getShadowState(channelId);
+        if (shadow instanceof QuantityType<?> quantityType) {
+            return quantityType.toBigDecimal().intValue();
+        }
+        return readUInt16(registerAddress);
+    }
+
+    private @Nullable Boolean isBackupSocEnabled() {
+        State shadow = getShadowState(CHANNEL_BACKUP_SOC_ENABLE);
+        if (shadow instanceof OnOffType onOffType) {
+            return onOffType == OnOffType.ON;
+        }
+
+        Integer backupSocEnableRaw = readUInt16(60003);
+        if (backupSocEnableRaw == null) {
+            return null;
+        }
+        return backupSocEnableRaw == 1;
     }
 
     // re-probes the capability mask after a firmware update, since a formerly rejected register may now answer

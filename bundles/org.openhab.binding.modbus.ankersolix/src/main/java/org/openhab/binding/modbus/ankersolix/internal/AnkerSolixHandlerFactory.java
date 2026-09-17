@@ -42,7 +42,7 @@ public class AnkerSolixHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SOLARBANK_4.equals(thingTypeUID) || THING_TYPE_SOLARBANK_AC.equals(thingTypeUID)) {
+        if (THING_TYPE_SOLARBANK_4.equals(thingTypeUID) || THING_TYPE_SOLARBANK.equals(thingTypeUID)) {
             return new AnkerSolixSolarbankHandler(thing);
         }
         if (THING_TYPE_SMART_METER_GEN2.equals(thingTypeUID)) {

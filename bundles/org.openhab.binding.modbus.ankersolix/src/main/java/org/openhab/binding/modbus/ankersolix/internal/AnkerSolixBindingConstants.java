@@ -32,8 +32,8 @@ public class AnkerSolixBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_SOLARBANK_4 = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
             "ankersolix-solarbank4");
-    public static final ThingTypeUID THING_TYPE_SOLARBANK_AC = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
-            "ankersolix-solarbank-ac");
+    public static final ThingTypeUID THING_TYPE_SOLARBANK = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
+            "ankersolix-solarbank");
     public static final ThingTypeUID THING_TYPE_SMART_METER_GEN2 = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
             "ankersolix-smartmeter-gen2");
     public static final ThingTypeUID THING_TYPE_SMART_PLUG = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
@@ -42,7 +42,7 @@ public class AnkerSolixBindingConstants {
             "ankersolix-ev-charger");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SOLARBANK_4,
-            THING_TYPE_SOLARBANK_AC, THING_TYPE_SMART_METER_GEN2, THING_TYPE_SMART_PLUG, THING_TYPE_EV_CHARGER);
+            THING_TYPE_SOLARBANK, THING_TYPE_SMART_METER_GEN2, THING_TYPE_SMART_PLUG, THING_TYPE_EV_CHARGER);
 
     public static final String DISCOVERY_PROPERTY_UNIQUE_ADDRESS = "uniqueAddress";
     public static final String DISCOVERY_PROPERTY_SERIAL_NUMBER = "serialNumber";
@@ -100,6 +100,10 @@ public class AnkerSolixBindingConstants {
     public static final String CHANNEL_PRIMARY_PHASE_3_CURRENT = "primary-phase-3-current";
     public static final String CHANNEL_PRIMARY_PHASE_3_VOLTAGE = "primary-phase-3-voltage";
     public static final String CHANNEL_SECONDARY_TOTAL_ACTIVE_POWER = "secondary-total-active-power";
+    public static final String CHANNEL_PRIMARY_TOTAL_REACTIVE_POWER = "primary-total-reactive-power";
+    public static final String CHANNEL_SECONDARY_TOTAL_REACTIVE_POWER = "secondary-total-reactive-power";
+    public static final String CHANNEL_PRIMARY_TOTAL_POWER_FACTOR = "primary-total-power-factor";
+    public static final String CHANNEL_SECONDARY_TOTAL_POWER_FACTOR = "secondary-total-power-factor";
     public static final String CHANNEL_SECONDARY_PHASE_1_ACTIVE_POWER = "secondary-phase-1-active-power";
     public static final String CHANNEL_SECONDARY_PHASE_1_CURRENT = "secondary-phase-1-current";
     public static final String CHANNEL_SECONDARY_PHASE_1_VOLTAGE = "secondary-phase-1-voltage";
@@ -109,10 +113,27 @@ public class AnkerSolixBindingConstants {
     public static final String CHANNEL_SECONDARY_PHASE_3_ACTIVE_POWER = "secondary-phase-3-active-power";
     public static final String CHANNEL_SECONDARY_PHASE_3_CURRENT = "secondary-phase-3-current";
     public static final String CHANNEL_SECONDARY_PHASE_3_VOLTAGE = "secondary-phase-3-voltage";
+    public static final String CHANNEL_PRIMARY_PHASE_1_FORWARD_ACTIVE_ENERGY = "primary-phase-1-forward-active-energy";
+    public static final String CHANNEL_PRIMARY_PHASE_2_FORWARD_ACTIVE_ENERGY = "primary-phase-2-forward-active-energy";
+    public static final String CHANNEL_PRIMARY_PHASE_3_FORWARD_ACTIVE_ENERGY = "primary-phase-3-forward-active-energy";
+    public static final String CHANNEL_PRIMARY_TOTAL_FORWARD_ACTIVE_ENERGY = "primary-total-forward-active-energy";
+    public static final String CHANNEL_PRIMARY_PHASE_1_REVERSE_ACTIVE_ENERGY = "primary-phase-1-reverse-active-energy";
+    public static final String CHANNEL_PRIMARY_PHASE_2_REVERSE_ACTIVE_ENERGY = "primary-phase-2-reverse-active-energy";
+    public static final String CHANNEL_PRIMARY_PHASE_3_REVERSE_ACTIVE_ENERGY = "primary-phase-3-reverse-active-energy";
+    public static final String CHANNEL_PRIMARY_TOTAL_REVERSE_ACTIVE_ENERGY = "primary-total-reverse-active-energy";
+    public static final String CHANNEL_SECONDARY_PHASE_1_FORWARD_ACTIVE_ENERGY = "secondary-phase-1-forward-active-energy";
+    public static final String CHANNEL_SECONDARY_PHASE_2_FORWARD_ACTIVE_ENERGY = "secondary-phase-2-forward-active-energy";
+    public static final String CHANNEL_SECONDARY_PHASE_3_FORWARD_ACTIVE_ENERGY = "secondary-phase-3-forward-active-energy";
+    public static final String CHANNEL_SECONDARY_TOTAL_FORWARD_ACTIVE_ENERGY = "secondary-total-forward-active-energy";
+    public static final String CHANNEL_SECONDARY_PHASE_1_REVERSE_ACTIVE_ENERGY = "secondary-phase-1-reverse-active-energy";
+    public static final String CHANNEL_SECONDARY_PHASE_2_REVERSE_ACTIVE_ENERGY = "secondary-phase-2-reverse-active-energy";
+    public static final String CHANNEL_SECONDARY_PHASE_3_REVERSE_ACTIVE_ENERGY = "secondary-phase-3-reverse-active-energy";
+    public static final String CHANNEL_SECONDARY_TOTAL_REVERSE_ACTIVE_ENERGY = "secondary-total-reverse-active-energy";
 
     public static final String CHANNEL_REAL_TIME_POWER = "real-time-power";
     public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_CURRENT = "current";
+    public static final String CHANNEL_CUMULATIVE_ENERGY = "cumulative-energy";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_POWER_SWITCH = "power-switch";
 

@@ -158,7 +158,7 @@ public class AnkerSolixDiscoveryProcess {
                 }
 
                 ThingTypeUID thingType = resolvedModel.contains("Solarbank 4") ? THING_TYPE_SOLARBANK_4
-                        : THING_TYPE_SOLARBANK_AC;
+                        : THING_TYPE_SOLARBANK;
                 emitDiscovery(thingType, DEVICE_FAMILY_SOLARBANK, serial, resolvedModel);
                 finish();
             }, failure -> finish());

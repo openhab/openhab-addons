@@ -14,6 +14,7 @@ package org.openhab.binding.modbus.ankersolix.internal;
 
 import static org.openhab.binding.modbus.ankersolix.internal.AnkerSolixBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -76,6 +78,11 @@ public class AnkerSolixSmartPlugHandler extends AbstractAnkerSolixHandler {
         updateScaledPowerChannel(CHANNEL_REAL_TIME_POWER, readScaledUInt16(30030, 10));
         updateVoltageChannel(CHANNEL_VOLTAGE, readScaledUInt16(30031, 10));
         updateCurrentChannel(CHANNEL_CURRENT, readScaledUInt16(30032, 100));
+        Long cumulativeEnergyRaw = readUInt32(30033);
+        if (cumulativeEnergyRaw != null) {
+            updateChannelState(CHANNEL_CUMULATIVE_ENERGY, new QuantityType<>(
+                    BigDecimal.valueOf(cumulativeEnergyRaw).divide(BigDecimal.valueOf(1000)), Units.KILOWATT_HOUR));
+        }
         var temperature = readScaledInt16(30037, 10);
         if (temperature != null) {
             updateChannelState(CHANNEL_TEMPERATURE, new QuantityType<>(temperature, SIUnits.CELSIUS));
