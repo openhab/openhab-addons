@@ -17,7 +17,6 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +24,9 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
+import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -66,12 +68,10 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = handler.getBaseURL();
             handler.register(this);
+            MessageRouter router = handler.getMessageRouter();
+            router.registerRoute(new HandlerRoute(JSON_KEY_FORECAST, new JsonPathExtraction("$." + subType), this,
+                    JSON_KEY_FORECAST));
         });
-    }
-
-    @Override
-    public Collection<String> getRootTypes() {
-        return List.of(JSON_KEY_FORECAST);
     }
 
     @Override
@@ -165,15 +165,18 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     private void propagate(JsonArray array, String key, Function<JsonObject, @Nullable ForecastData> parser) {
         ChannelUID uid = new ChannelUID(thing.getUID(), key);
         if (!isLinked(uid)) {
+            logger.debug("Channel {} not linked, skipping TimeSeries update", key);
             return;
         }
         TimeSeries ts = getTimeSeries(array, parser);
+        logger.debug("Sending TimeSeries for channel {} with {} entries", key, ts.size());
         setForecastChannelState(ts, uid);
         sendTimeSeries(uid, ts);
     }
 
     @Override
     public void handleUpdate(String key, JsonElement value) {
+        logger.debug("Forecast handler {} received update for key '{}'", subType, key);
         JsonArray forecastArray;
         if ("solar".equals(subType) && value instanceof JsonObject solar) {
             forecastArray = solar.has("timeseries") ? solar.getAsJsonArray("timeseries") : new JsonArray();
@@ -184,13 +187,18 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         } else if (value instanceof JsonArray forecast) {
             forecastArray = forecast;
         } else {
+            logger.warn("Forecast handler {} received unexpected value type: {}", subType,
+                    value.getClass().getSimpleName());
             return;
         }
         propagate(forecastArray, getThingKey(subType), obj -> parseForecast(obj, getThingKey(subType)));
+        logger.debug("Forecast handler {} updated successfully", subType);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private TimeSeries getTimeSeries(JsonArray forecastArray, Function<JsonObject, @Nullable ForecastData> parser) {
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
+        logger.debug("Processing forecast array with {} entries", forecastArray.size());
 
         for (JsonElement data : forecastArray) {
             ForecastData parsed = null;
@@ -243,11 +251,14 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 }
             }
         }
+        logger.debug("Created TimeSeries with {} entries from {} forecast array entries", timeSeries.size(),
+                forecastArray.size());
         return timeSeries;
     }
 
     private void setForecastChannelState(TimeSeries timeSeries, ChannelUID channelUID) {
         if (timeSeries.size() == 0) {
+            logger.debug("No TimeSeries entries for channel {}, skipping state update", channelUID.getId());
             return;
         }
         Instant now = Instant.now();
@@ -257,6 +268,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                         .orElse(new TimeSeries.Entry(now, UnDefType.UNDEF)));
 
         if (current != null && current.state() != UnDefType.UNDEF) {
+            logger.debug("Setting forecast channel {} to state {}", channelUID.getId(), current.state());
             updateState(channelUID, current.state());
         }
     }

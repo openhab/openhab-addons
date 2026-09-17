@@ -142,9 +142,8 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
         handler.initialize();
         handler.initializeThingFromLatestState(exampleResponse);
@@ -154,9 +153,8 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
     @SuppressWarnings("null")
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
         handler.initialize();
         handler.initializeThingFromLatestState(exampleResponse);
@@ -166,7 +164,7 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
     @SuppressWarnings("null")
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
-        handler.bridgeHandler = mock(EvccBridgeHandler.class);
+        handler.bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
 
         handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);

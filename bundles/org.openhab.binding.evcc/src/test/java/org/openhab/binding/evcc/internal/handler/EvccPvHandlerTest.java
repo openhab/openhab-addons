@@ -105,9 +105,8 @@ public class EvccPvHandlerTest extends AbstractThingHandlerTestClass<EvccPvHandl
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(testState);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(testState);
 
         handler.initialize();
         handler.initializeThingFromLatestState(testState);
@@ -117,9 +116,8 @@ public class EvccPvHandlerTest extends AbstractThingHandlerTestClass<EvccPvHandl
     @SuppressWarnings("null")
     @Test
     public void testInitializeThingFromLatestStateIsInitialized() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(testState);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(testState);
 
         handler.initialize();
         handler.initializeThingFromLatestState(testState);
@@ -129,7 +127,7 @@ public class EvccPvHandlerTest extends AbstractThingHandlerTestClass<EvccPvHandl
     @SuppressWarnings("null")
     @Test
     public void testInitializeThingFromLatestStateIsNotInitialized() {
-        handler.bridgeHandler = mock(EvccBridgeHandler.class);
+        handler.bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
 
         handler.initializeThingFromLatestState(testState);
         assertSame(ThingStatus.ONLINE, lastThingStatus);

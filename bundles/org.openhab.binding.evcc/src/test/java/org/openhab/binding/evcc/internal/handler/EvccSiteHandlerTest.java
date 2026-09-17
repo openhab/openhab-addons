@@ -34,6 +34,7 @@ import org.openhab.core.types.State;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * The {@link EvccSiteHandlerTest} is responsible for testing the EvccSiteHandler implementation
@@ -45,6 +46,7 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
     private final JsonObject gridConfigured = new JsonObject();
     private final JsonObject modifiedVerifyObject = verifyObject.deepCopy();
+    private boolean updateStateCalled = false;
 
     @Override
     protected EvccSiteHandler createHandler() {
@@ -77,6 +79,7 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
             @Override
             protected void updateState(ChannelUID channelUID, State state) {
+                updateStateCalled = true;
             }
         };
     }
@@ -116,9 +119,8 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
         handler.initialize();
         handler.initializeThingFromLatestState(exampleResponse);
@@ -131,9 +133,8 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
         @Test
         public void handlerIsInitialized() {
-            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+            EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
             handler.bridgeHandler = bridgeHandler;
-            when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
             handler.initialize();
             handler.initializeThingFromLatestState(exampleResponse);
@@ -142,7 +143,7 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
         @Test
         public void handlerIsNotInitialized() {
-            handler.bridgeHandler = mock(EvccBridgeHandler.class);
+            handler.bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
 
             handler.initializeThingFromLatestState(exampleResponse);
             assertSame(ThingStatus.ONLINE, lastThingStatus);
@@ -150,7 +151,7 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
         @Test
         public void stateContainsGridConfigured() {
-            handler.bridgeHandler = mock(EvccBridgeHandler.class);
+            handler.bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
 
             exampleResponse.addProperty("gridConfigured", true);
             exampleResponse.add("grid", gridConfigured);
@@ -164,5 +165,32 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
     public void testGetStateFromCachedState() {
         JsonObject result = handler.getStateFromCachedState(exampleResponse);
         assertSame(exampleResponse, result);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void topLevelPvPowerShouldUpdateThroughSiteHandler() {
+        updateStateCalled = false;
+        handler.handleUpdate("pvPower", new JsonPrimitive(8476.122));
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
+        assertSame(true, updateStateCalled);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void topLevelTariffGridShouldUpdateThroughSiteHandler() {
+        updateStateCalled = false;
+        handler.handleUpdate("tariffGrid", new JsonPrimitive(0.236));
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
+        assertSame(true, updateStateCalled);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void arbitraryTopLevelPrimitiveShouldUpdateThroughSiteHandler() {
+        updateStateCalled = false;
+        handler.handleUpdate("someNewField", new JsonPrimitive(42));
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
+        assertSame(true, updateStateCalled);
     }
 }

@@ -32,6 +32,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -64,6 +67,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -88,6 +92,15 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         this.channelTypeRegistry = channelTypeRegistry;
     }
 
+    /**
+     * Get a property value from the Thing configuration or properties.
+     *
+     * Attempts to retrieve the value from the Thing's configuration first.
+     * For property index and vehicle ID, falls back to Thing properties with defaults.
+     *
+     * @param propertyName The name of the property to retrieve
+     * @return The property value as a string, or empty string if not found
+     */
     protected String getPropertyOrConfigValue(String propertyName) {
         Object value = thing.getConfiguration().get(propertyName);
         if (value instanceof String s) {
@@ -103,6 +116,12 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
+    /**
+     * Initialize the Thing handler.
+     *
+     * Sets status to UNKNOWN and attempts to locate and store the bridge handler.
+     * If bridge is not available or not an EvccBridgeHandler, sets status to OFFLINE.
+     */
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
@@ -113,11 +132,26 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
+    /**
+     * Dispose of the Thing handler.
+     *
+     * Unregisters this handler from the bridge handler to stop receiving updates.
+     * Called when the handler is being removed or deactivated.
+     */
     @Override
     public void dispose() {
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> handler.unregister(this));
     }
 
+    /**
+     * Handle incoming commands from the openHAB framework.
+     *
+     * Supports REFRESH commands which re-query the cached state and update the channel.
+     * Other commands are ignored by the base implementation.
+     *
+     * @param channelUID The channel that received the command
+     * @param command The command to handle (typically RefreshType.REFRESH)
+     */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -138,6 +172,20 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
+    /**
+     * Handle partial updates from the websocket.
+     *
+     * Base implementation processes primitives, objects, and arrays:
+     * - Primitives update a single channel
+     * - Objects iterate entries and update individual channels
+     * - Arrays iterate elements and update numbered channels
+     *
+     * Handlers should override this method to provide specialized handling for their message structure.
+     * Updates Thing status to ONLINE on successful processing.
+     *
+     * @param key The update key (channel identifier)
+     * @param value The update value (primitive, object, or array)
+     */
     @Override
     public void handleUpdate(String key, JsonElement value) {
         if (value.isJsonPrimitive()) {
@@ -166,11 +214,24 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         updateStatus(ThingStatus.ONLINE);
     }
 
+    /**
+     * Get the handler type identifier.
+     *
+     * @return The type string (e.g., "battery", "pv", "loadpoint")
+     */
     @Override
     public String getType() {
         return type;
     }
 
+    /**
+     * Get the item type for a channel from the ChannelTypeRegistry.
+     *
+     * Queries the registry for the channel type definition and returns the item type.
+     *
+     * @param channelTypeUID The channel type to look up
+     * @return The item type (e.g., "Number", "String") or "Unknown" if not found
+     */
     private String getItemType(ChannelTypeUID channelTypeUID) {
         ChannelType channelType = channelTypeRegistry.getChannelType(channelTypeUID);
         if (null != channelType) {
@@ -180,6 +241,16 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         return "Unknown";
     }
 
+    /**
+     * Create a Channel for the specified Thing key and value.
+     *
+     * Looks up the channel type definition and constructs a Channel with proper configuration.
+     * Logs unknown channel types asynchronously for debugging.
+     *
+     * @param thingKey The channel identifier (e.g., "power", "soc")
+     * @param value The sample value (used for unknown channel logging)
+     * @return The created Channel, or null if channel type is unknown or already exists
+     */
     @Nullable
     protected Channel createChannel(String thingKey, JsonElement value) {
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, thingKey);
@@ -319,12 +390,149 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
+    /**
+     * Updates only the channels present in the provided JSON state without setting UNDEF for missing channels.
+     * This method is intended for partial updates from websocket messages where missing fields should preserve
+     * their current values rather than being reset to UNDEF.
+     * 
+     * Also creates channel definitions for any new fields encountered that don't yet have channels.
+     *
+     * @param partialState The partial JSON state containing only the fields to update
+     */
+    protected void updateOnlyPresentChannels(JsonObject partialState) {
+        // First, sync any new channels that may not exist yet
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        boolean channelsChanged = false;
+
+        for (Map.Entry<String, JsonElement> entry : partialState.entrySet()) {
+            String key = entry.getKey();
+            JsonElement value = entry.getValue();
+            if (value.isJsonPrimitive()) {
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), key);
+                Channel existingChannel = getThing().getChannel(channelUID);
+                if (existingChannel == null) {
+                    @Nullable
+                    Channel newChannel = createChannel(key, value);
+                    if (null != newChannel) {
+                        channels.add(newChannel);
+                        channelsChanged = true;
+                    }
+                }
+            }
+        }
+
+        if (channelsChanged) {
+            channels.sort(Comparator.comparing(c -> c.getUID().getId()));
+            updateThing(editThing().withChannels(channels).build());
+        }
+
+        // Then update all present channels
+        for (Map.Entry<String, JsonElement> entry : partialState.entrySet()) {
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), entry.getKey());
+            if (isLinked(channelUID)) {
+                resolveAndUpdateState(channelUID, entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * Transforms a phase array into individual phase channels.
+     * For example, [10, 20, 30] becomes: gridCurrentL1=10, gridCurrentL2=20, gridCurrentL3=30
+     *
+     * @param state The target JsonObject to add phase channels to
+     * @param values The phase array [L1, L2, L3]
+     * @param prefix The channel prefix (e.g., "grid", "charge")
+     * @param datapoint The measurement type (e.g., "Current", "Voltage", "Power")
+     */
+    protected void addPhaseChannels(JsonObject state, JsonArray values, String prefix, String datapoint) {
+        int phase = 1;
+        for (JsonElement value : values) {
+            state.add(prefix + datapoint + "L" + phase, value);
+            phase++;
+        }
+    }
+
+    /**
+     * Safely extracts an element from an indexed array with bounds checking.
+     *
+     * @param array The array to extract from
+     * @param index The index to extract
+     * @return The element at index, or empty JsonObject if out of bounds or not an object
+     */
+    @Nullable
+    protected JsonObject extractFromIndexedArray(JsonArray array, int index) {
+        if (index >= 0 && index < array.size() && array.get(index).isJsonObject()) {
+            return array.get(index).getAsJsonObject();
+        }
+        return null;
+    }
+
+    /**
+     * Safely extracts an object from a map with key existence check.
+     *
+     * @param map The map to extract from
+     * @param key The key to look up
+     * @return The object at key, or null if not found or not an object
+     */
+    @Nullable
+    protected JsonObject extractFromObjectMap(JsonObject map, String key) {
+        if (map.has(key) && map.get(key).isJsonObject()) {
+            return map.get(key).getAsJsonObject();
+        }
+        return null;
+    }
+
     protected void performApiRequest(String url, String method, JsonElement payload) {
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             HttpMethod httpMethod = HttpMethod.valueOf(method);
             handler.requestQueue.enqueueRequest(url, httpMethod, payload, this::checkResponse,
                     error -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
         });
+    }
+
+    protected @Nullable JsonElement performApiReadRequest(String url) {
+        EvccBridgeHandler currentBridgeHandler = bridgeHandler;
+        if (currentBridgeHandler == null) {
+            return null;
+        }
+
+        CountDownLatch completion = new CountDownLatch(1);
+        AtomicReference<@Nullable JsonElement> responseBody = new AtomicReference<>();
+        AtomicReference<@Nullable Exception> errorRef = new AtomicReference<>();
+
+        currentBridgeHandler.requestQueue.enqueueRequest(url, HttpMethod.GET, JsonNull.INSTANCE, response -> {
+            try {
+                responseBody.set(gson.fromJson(response.getContentAsString(), JsonElement.class));
+            } catch (Exception e) {
+                errorRef.set(e);
+            } finally {
+                completion.countDown();
+            }
+        }, error -> {
+            errorRef.set(error);
+            completion.countDown();
+        });
+
+        try {
+            if (!completion.await(6, TimeUnit.SECONDS)) {
+                logger.debug("Timed out reading evcc API response from {}", url);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return null;
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while reading evcc API response from {}", url, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return null;
+        }
+
+        Exception error = errorRef.get();
+        if (error != null) {
+            logger.debug("Failed to read evcc API response from {}", url, error);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return null;
+        }
+        return responseBody.get();
     }
 
     private void checkResponse(ContentResponse response) {

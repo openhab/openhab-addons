@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -62,6 +63,13 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
 
     protected static JsonObject exampleResponse = new JsonObject();
     protected static JsonObject verifyObject = new JsonObject();
+
+    protected EvccBridgeHandler mockBridgeHandlerWithCachedState(JsonObject cachedState) {
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        when(bridgeHandler.getCachedEvccState()).thenReturn(cachedState);
+        when(bridgeHandler.getMessageRouter()).thenReturn(mock(MessageRouter.class));
+        return bridgeHandler;
+    }
 
     /**
      * Implement this to provide a handler instance for testing.
@@ -108,9 +116,8 @@ public abstract class AbstractThingHandlerTestClass<T extends EvccBaseThingHandl
 
         @Test
         public void initializeWithBridgeHandlerWithoutCachedState() {
-            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+            EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(new JsonObject());
             handler.bridgeHandler = bridgeHandler;
-            when(bridgeHandler.getCachedEvccState()).thenReturn(new JsonObject());
             LocaleProvider lp = mock(LocaleProvider.class);
             TranslationProvider tp = mock(TranslationProvider.class);
             Bundle bundle = mock(Bundle.class);

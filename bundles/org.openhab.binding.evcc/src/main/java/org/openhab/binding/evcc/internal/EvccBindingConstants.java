@@ -63,6 +63,7 @@ public class EvccBindingConstants {
     public static final String PROPERTY_VEHICLE_ID = "vehicleId";
 
     public static final String API_PATH_LOADPOINTS = "loadpoints";
+    public static final String API_PATH_STATE = "state";
     public static final String API_PATH_VEHICLES = "vehicles";
     public static final String API_PATH_PLAN_SOC = "plan/soc";
     public static final String API_PATH_PLAN_REPEATING = "plan/repeating";

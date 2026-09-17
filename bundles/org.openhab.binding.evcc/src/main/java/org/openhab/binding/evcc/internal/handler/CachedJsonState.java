@@ -29,7 +29,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class CachedJsonState {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CachedJsonState.class);
+    private final Logger logger = LoggerFactory.getLogger(CachedJsonState.class);
 
     private final Object lock = new Object();
     private volatile JsonObject state = new JsonObject();
@@ -41,13 +41,13 @@ public class CachedJsonState {
             for (String key : newState.keySet()) {
                 updateState(key, newState.get(key));
             }
-            LOGGER.debug("Full state update: {}", abbreviateJson(state));
+            logger.debug("Full state update: {}", abbreviateJson(state));
         }
     }
 
     public void updatePartial(String key, JsonElement value) {
         synchronized (lock) {
-            LOGGER.debug("Partial state update: key='{}', value={}", key, abbreviateJson(value));
+            logger.debug("Partial state update: key='{}', value={}", key, abbreviateJson(value));
             updateState(key, value);
         }
     }

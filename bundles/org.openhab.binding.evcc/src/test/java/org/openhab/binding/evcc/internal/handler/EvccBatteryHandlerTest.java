@@ -90,9 +90,8 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
 
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         batteryState = exampleResponse.getAsJsonObject("battery").getAsJsonArray("devices").get(0).getAsJsonObject();
     }
 
@@ -128,6 +127,21 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         legacyState.add("battery", battery);
 
         handler.initializeThingFromLatestState(legacyState);
+
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testHandleUpdateWithNormalizedBatteryObject() {
+        handler.initializeThingFromLatestState(exampleResponse);
+
+        JsonObject batteryUpdate = new JsonObject();
+        batteryUpdate.addProperty("power", -222);
+        batteryUpdate.addProperty("capacity", 8.82);
+        batteryUpdate.addProperty("soc", 36.6);
+
+        handler.handleUpdate("battery", batteryUpdate);
 
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }

@@ -15,11 +15,15 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
+import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -56,6 +60,11 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
     @Override
     public void initialize() {
         super.initialize();
+        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+            MessageRouter router = handler.getMessageRouter();
+            router.registerRoute(
+                    new HandlerRoute(PROPERTY_TYPE_HEATING, new JsonPathExtraction("$"), this, PROPERTY_TYPE_HEATING));
+        });
     }
 
     @Override

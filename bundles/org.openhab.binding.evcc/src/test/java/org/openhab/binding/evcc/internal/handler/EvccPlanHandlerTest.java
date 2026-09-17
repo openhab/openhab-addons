@@ -42,6 +42,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -59,7 +60,6 @@ import com.google.gson.JsonObject;
 @SuppressWarnings("null")
 @NonNullByDefault
 public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanHandler> {
-
     private boolean updateStateCalled = false;
     private int updateStateCounter = 0;
     private String capturedUrl = "";
@@ -123,13 +123,12 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         LocaleProvider lp = mock(LocaleProvider.class);
         TranslationProvider tp = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
         BundleContext ctx = mock(BundleContext.class);
         when(bridgeHandler.getBaseURL()).thenReturn("http://evcc/api");
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         when(lp.getLocale()).thenReturn(Locale.ENGLISH);
         when(bridgeHandler.getLocaleProvider()).thenReturn(lp);
         when(bridgeHandler.getI18nProvider()).thenReturn(tp);
@@ -169,13 +168,12 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         LocaleProvider lp = mock(LocaleProvider.class);
         TranslationProvider tp = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
         BundleContext ctx = mock(BundleContext.class);
         when(bridgeHandler.getBaseURL()).thenReturn("http://evcc/api");
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         when(lp.getLocale()).thenReturn(Locale.ENGLISH);
         when(bridgeHandler.getLocaleProvider()).thenReturn(lp);
         when(bridgeHandler.getI18nProvider()).thenReturn(tp);
@@ -228,6 +226,22 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
     }
 
     @Test
+    void refreshShouldReadPlanViaRest() {
+        changeConfiguration(0);
+        handler.initialize();
+
+        capturedUrl = "";
+        capturedMethod = "";
+        updateStateCalled = false;
+        updateStateCounter = 0;
+
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PLAN_SOC), RefreshType.REFRESH);
+
+        assertTrue(updateStateCalled);
+        assertEquals(3, updateStateCounter);
+    }
+
+    @Test
     void updatingSocForRepeatingPlanShouldTriggerApiRequest() {
         changeConfiguration();
 
@@ -269,6 +283,25 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         assertEquals(1, w.get(0).getAsInt()); // Monday
         assertEquals(3, w.get(1).getAsInt()); // Wednesday
         assertEquals(0, w.get(2).getAsInt()); // Sunday
+    }
+
+    @Test
+    void handleUpdateShouldAcceptNormalizedOneTimePlan() {
+        changeConfiguration(0);
+        handler.initialize();
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
+
+        JsonObject plan = new JsonObject();
+        plan.addProperty(JSON_KEY_ACTIVE, true);
+        plan.addProperty(JSON_KEY_SOC, 82);
+
+        updateStateCalled = false;
+        updateStateCounter = 0;
+        handler.handleUpdate(JSON_KEY_PLAN, plan);
+
+        assertTrue(updateStateCalled);
+        assertEquals(2, updateStateCounter);
+        assertEquals(82, handler.getStateFromCachedState(exampleResponse).get(JSON_KEY_SOC).getAsInt());
     }
 
     @Test

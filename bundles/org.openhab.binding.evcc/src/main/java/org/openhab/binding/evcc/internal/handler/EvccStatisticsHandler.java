@@ -14,13 +14,14 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
+import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -52,17 +53,42 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             handler.register(this);
+            MessageRouter router = handler.getMessageRouter();
+            router.registerRoute(new HandlerRoute(JSON_KEY_STATISTICS, new JsonPathExtraction("$.statistics"), this,
+                    JSON_KEY_STATISTICS));
         });
-    }
-
-    @Override
-    public Collection<String> getRootTypes() {
-        return List.of(JSON_KEY_STATISTICS);
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
         return new JsonObject();
+    }
+
+    @Override
+    public void handleUpdate(String key, JsonElement value) {
+        if (JSON_KEY_STATISTICS.equals(key) && value.isJsonObject()) {
+            JsonObject statisticsUpdate = value.getAsJsonObject();
+            for (String statisticsKey : statisticsUpdate.keySet()) {
+                JsonObject statistic = statisticsUpdate.getAsJsonObject(statisticsKey);
+                logger.debug("Updating statistics for {}", statisticsKey);
+                for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : statistic.entrySet()) {
+                    String entryKey = entry.getKey();
+                    JsonElement entryValue = entry.getValue();
+                    if (null != entryKey && null != entryValue) {
+                        ChannelGroupUID channelGroupUID = new ChannelGroupUID(thing.getUID(),
+                                Utils.sanitizeChannelID(statisticsKey));
+                        if ("chargedKWh".equals(entryKey)) {
+                            entryKey = "chargedEnergy";
+                        }
+                        ChannelUID channelUID = new ChannelUID(channelGroupUID, Utils.sanitizeChannelID(entryKey));
+                        resolveAndUpdateState(channelUID, channelUID.getIdWithoutGroup(), entryValue);
+                    }
+                }
+            }
+            updateStatus(ThingStatus.ONLINE);
+            return;
+        }
+        super.handleUpdate(key, value);
     }
 
     @Override

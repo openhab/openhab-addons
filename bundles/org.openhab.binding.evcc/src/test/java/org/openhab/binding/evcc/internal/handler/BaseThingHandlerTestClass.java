@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import java.util.Collection;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Channel;
@@ -76,11 +74,6 @@ public class BaseThingHandlerTestClass extends EvccBaseThingHandler {
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
         return new JsonObject();
-    }
-
-    @Override
-    public Collection<String> getRootTypes() {
-        throw new UnsupportedOperationException("Unimplemented method 'getIdentifier'");
     }
 
     @Override

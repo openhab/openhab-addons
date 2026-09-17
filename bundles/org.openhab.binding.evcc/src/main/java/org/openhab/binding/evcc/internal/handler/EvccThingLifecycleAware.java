@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import java.util.Collection;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.JsonElement;
@@ -32,14 +30,6 @@ public interface EvccThingLifecycleAware {
      * @param state the responded JSON
      */
     void initializeThingFromLatestState(JsonObject state);
-
-    /**
-     *
-     * This method shall return the possible JSON root object keys that the handler will process
-     *
-     * @return Collection of root keys
-     */
-    Collection<String> getRootTypes();
 
     /**
      * This method shall return the to the thing corresponding JSON object

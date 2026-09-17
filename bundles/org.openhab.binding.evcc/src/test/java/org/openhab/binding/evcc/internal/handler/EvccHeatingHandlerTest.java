@@ -91,9 +91,8 @@ public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHe
         when(configuration.get("id")).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
         heatingObject = verifyObject.getAsJsonArray(JSON_KEY_LOADPOINTS).get(0).getAsJsonObject();
         heatingObject.remove(JSON_KEY_EFFECTIVE_LIMIT_SOC);

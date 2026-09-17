@@ -100,9 +100,8 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         when(bridgeHandler.getBaseURL()).thenReturn("http://localhost:8080/api");
 
         handler.initialize();
@@ -127,9 +126,8 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
     public void testInitializeWithBridgeHandlerWithMissingVehicleData() {
         // Test when state is available but doesn't contain data for this vehicle
         // Should still go ONLINE and wait for data via handleUpdate()
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         when(bridgeHandler.getBaseURL()).thenReturn("http://localhost:8080/api");
 
         handler.initialize();
@@ -148,10 +146,8 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
         when(thing.getProperties()).thenReturn(Map.of("type", "vehicle"));
 
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         handler.bridgeHandler = bridgeHandler;
-
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         when(bridgeHandler.getBaseURL()).thenReturn("http://localhost:8080/api");
 
         handler.initialize();

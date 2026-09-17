@@ -14,15 +14,17 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
+import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -47,12 +49,11 @@ public class EvccPvHandler extends EvccBaseThingHandler {
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = handler.getBaseURL();
             handler.register(this);
-        });
-    }
 
-    @Override
-    public Collection<String> getRootTypes() {
-        return List.of(JSON_KEY_PV);
+            MessageRouter router = handler.getMessageRouter();
+            router.registerRoute(
+                    new HandlerRoute(JSON_KEY_PV, new JsonPathExtraction("$[" + index + "]"), this, JSON_KEY_PV));
+        });
     }
 
     @Override
@@ -71,7 +72,16 @@ public class EvccPvHandler extends EvccBaseThingHandler {
         createChannelsAndSetStatesFromApiResponse(state);
         logger.debug("PV handler initialized successfully");
         updateStatus(ThingStatus.ONLINE);
-        updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void handleUpdate(String key, JsonElement value) {
+        if (JSON_KEY_PV.equals(key) && value.isJsonObject()) {
+            updateOnlyPresentChannels(value.getAsJsonObject());
+            updateStatus(ThingStatus.ONLINE);
+            return;
+        }
+        super.handleUpdate(key, value);
     }
 
     @Override

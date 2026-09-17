@@ -14,13 +14,14 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
+import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -46,7 +47,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccLoadpointHandler.class);
 
-    // JSON keys that need a special treatment, in example for backwards compatibility
+    // Maps websocket/API field names to the normalized channel keys used by the handler.
     private static final Map<String, String> JSON_KEYS = Map.ofEntries(
             Map.entry(JSON_KEY_CHARGE_CURRENT, JSON_KEY_OFFERED_CURRENT),
             Map.entry(JSON_KEY_VEHICLE_PRESENT, JSON_KEY_CONNECTED),
@@ -66,6 +67,9 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_LOADPOINTS, String.valueOf(index + 1));
             handler.register(this);
+            MessageRouter router = handler.getMessageRouter();
+            router.registerRoute(new HandlerRoute(JSON_KEY_LOADPOINTS, new JsonPathExtraction("$[" + index + "]"), this,
+                    JSON_KEY_LOADPOINTS));
         });
     }
 
@@ -104,11 +108,6 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public Collection<String> getRootTypes() {
-        return List.of(JSON_KEY_LOADPOINTS);
-    }
-
-    @Override
     public Integer getIdentifier() {
         return (Integer) index;
     }
@@ -133,9 +132,9 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         JSON_KEYS.forEach((oldKey, newKey) -> {
             if (state.has(oldKey)) {
                 if (oldKey.equals(JSON_KEY_CHARGE_CURRENTS)) {
-                    addMeasurementDatapointToState(state, state.getAsJsonArray(oldKey), "Current");
+                    addPhaseChannels(state, state.getAsJsonArray(oldKey), "charge", "Current");
                 } else if (oldKey.equals(JSON_KEY_CHARGE_VOLTAGES)) {
-                    addMeasurementDatapointToState(state, state.getAsJsonArray(oldKey), "Voltage");
+                    addPhaseChannels(state, state.getAsJsonArray(oldKey), "charge", "Voltage");
                 } else {
                     state.add(newKey, state.get(oldKey));
                 }
@@ -145,11 +144,19 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     }
 
     protected void addMeasurementDatapointToState(JsonObject state, JsonArray values, String datapoint) {
-        int phase = 1;
-        for (JsonElement value : values) {
-            state.add("charge" + datapoint + "L" + phase, value);
-            phase++;
+        addPhaseChannels(state, values, "charge", datapoint);
+    }
+
+    @Override
+    public void handleUpdate(String key, JsonElement value) {
+        if (JSON_KEY_LOADPOINTS.equals(key) && value.isJsonObject()) {
+            JsonObject loadpointState = value.getAsJsonObject();
+            modifyJSON(loadpointState);
+            updateOnlyPresentChannels(loadpointState);
+            updateStatus(ThingStatus.ONLINE);
+            return;
         }
+        super.handleUpdate(key, value);
     }
 
     @Override

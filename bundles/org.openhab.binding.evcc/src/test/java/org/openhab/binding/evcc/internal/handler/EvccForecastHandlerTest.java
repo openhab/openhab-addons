@@ -125,9 +125,8 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             when(thing.getConfiguration()).thenReturn(configuration);
             when(thing.getChannels()).thenReturn(new ArrayList<>());
             handler = spy(createHandler());
-            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+            EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
             handler.bridgeHandler = bridgeHandler;
-            when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         }
 
         @Test
@@ -173,9 +172,8 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
                 when(thing.getChannel(uid)).thenReturn(forecastChannel);
             }
             handler = spy(createHandler());
-            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+            EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse.deepCopy());
             handler.bridgeHandler = bridgeHandler;
-            when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse.deepCopy());
         }
 
         @Test
@@ -260,10 +258,9 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             List<Channel> channels = new ArrayList<>(List.of(forecastChannel));
             when(thing.getChannels()).thenReturn(channels);
             handler = spy(createHandler());
-            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+            EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(
+                    readResponse("responses/ws_initial_response_message.json"));
             handler.bridgeHandler = bridgeHandler;
-            when(bridgeHandler.getCachedEvccState())
-                    .thenReturn(readResponse("responses/ws_initial_response_message.json"));
         }
 
         private Collection<Channel> channelsForSolarSubtype() {

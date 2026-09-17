@@ -14,7 +14,6 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -83,9 +82,8 @@ public class EvccStatisticsHandlerTest extends AbstractThingHandlerTestClass<Evc
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         handler = spy(createHandler());
         @Nullable
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
         handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
     }
 
     @SuppressWarnings("null")

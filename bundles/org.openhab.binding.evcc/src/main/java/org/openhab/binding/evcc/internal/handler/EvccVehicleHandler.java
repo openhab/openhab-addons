@@ -14,13 +14,14 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
+import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -32,6 +33,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
@@ -66,11 +68,6 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         } else {
             super.handleCommand(channelUID, command);
         }
-    }
-
-    @Override
-    public Collection<String> getRootTypes() {
-        return List.of(JSON_KEY_VEHICLES);
     }
 
     @Override
@@ -126,6 +123,10 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
             }
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
             handler.register(this);
+            MessageRouter router = handler.getMessageRouter();
+            router.registerRoute(new HandlerRoute(JSON_KEY_VEHICLES,
+                    new JsonPathExtraction("$." + getPropertyOrConfigValue(PROPERTY_VEHICLE_ID)), this,
+                    JSON_KEY_VEHICLES));
         }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED));
     }
 
@@ -137,5 +138,15 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         }
         JsonObject vehicleState = vehicles.getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
         return vehicleState != null ? vehicleState : new JsonObject();
+    }
+
+    @Override
+    public void handleUpdate(String key, JsonElement value) {
+        if (JSON_KEY_VEHICLES.equals(key) && value.isJsonObject()) {
+            updateOnlyPresentChannels(value.getAsJsonObject());
+            updateStatus(ThingStatus.ONLINE);
+            return;
+        }
+        super.handleUpdate(key, value);
     }
 }
