@@ -18,6 +18,9 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -38,6 +41,24 @@ public class FileReader {
                 buf.append(sCurrentLine);
             }
             return buf.toString();
+        } catch (IOException e) {
+            // fail if file cannot be read
+            fail();
+        }
+        return "ERR";
+    }
+
+    /**
+     * Reads a file into a String while preserving its original line breaks. Unlike
+     * {@link #readFileInString(String)} - which concatenates lines with no separator, harmless for JSON since
+     * every token is delimited by braces/quotes/commas - this is required for protobuf TextFormat fixtures
+     * ({@code .raw} files under {@code src/test/resources/vehiclestatusupdates}), where two adjacent lines
+     * concatenated without a newline (e.g. {@code full_update: true} + {@code auxheatwarnings {}) would merge
+     * into a single bogus token and fail to parse.
+     */
+    public static String readRawFileInString(String filename) {
+        try {
+            return Files.readString(Path.of(filename), StandardCharsets.UTF_8);
         } catch (IOException e) {
             // fail if file cannot be read
             fail();

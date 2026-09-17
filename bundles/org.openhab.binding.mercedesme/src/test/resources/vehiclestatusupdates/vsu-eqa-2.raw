@@ -784,7 +784,7 @@ position_heading {
   }
 }
 position_lat {
-  value: 50.556106
+  value: 1.23
   metadata {
     timestamp {
       seconds: 1785336627
@@ -793,7 +793,7 @@ position_lat {
   }
 }
 position_long {
-  value: 8.495522
+  value: 4.56
   metadata {
     timestamp {
       seconds: 1785336627

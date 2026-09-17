@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.mercedesme.internal.handler.ProtoConverter;
 import org.openhab.binding.mercedesme.internal.utils.ChannelStateMap;
 import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.core.library.types.OnOffType;
@@ -30,22 +31,22 @@ import org.openhab.core.types.UnDefType;
 import com.daimler.mbcarkit.proto.VehicleEvents.AttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
+import com.daimler.mbcarkit.proto.VehicleEvents.Ignitionstate;
+import com.daimler.mbcarkit.proto.VehicleEvents.IgnitionstateEnumAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.PrecondNow;
 import com.daimler.mbcarkit.proto.VehicleEvents.PrecondNowEnumAttribute;
-import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.VSUMetadata;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdate;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.util.JsonFormat;
 
 /**
- * {@link MapperTest} checks {@link Mapper#fromVehicleStatusUpdate(VehicleStatusUpdate)} against a captured
- * {@code VehicleStatusUpdate} fixture ({@code proto-json/VehicleStatusUpdate-EQA.json}). The fixture covers one
- * representative field per attribute-type category (bool/int64/double/enum/distance/pressure/speed/ratio/clock
- * hour/consumption) plus the three complex array-typed fields (temperature points, charge programs, auxiliary
- * warnings).
+ * {@link MapperTest} checks {@link Mapper#fromVehicleStatusUpdate(VehicleStatusUpdate)} against a real captured
+ * {@code VehicleStatusUpdate} fixture ({@code vehiclestatusupdates/vsu-eqa-2.raw}, a full-update TextFormat dump
+ * from a BEV, GPS position anonymized). The fixture covers one representative field per attribute-type category
+ * (bool/int64/double/distance/ratio/consumption) plus the three complex array-typed fields (temperature points,
+ * charge programs, auxiliary warnings). The enum-conversion regression guard is built directly, since this real
+ * capture's ignitionstate happens to sit at its proto3 default.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -53,23 +54,15 @@ import com.google.protobuf.util.JsonFormat;
 class MapperTest {
 
     private static Map<String, VehicleAttributeStatus> loadFixture() {
-        String json = FileReader.readFileInString("src/test/resources/proto-json/VehicleStatusUpdate-EQA.json");
-        PushMessage.Builder pmBuilder = PushMessage.newBuilder();
-        try {
-            JsonFormat.parser().ignoringUnknownFields().merge(json, pmBuilder);
-        } catch (InvalidProtocolBufferException e) {
-            fail(e.getMessage());
-        }
-        PushMessage pm = pmBuilder.build();
-        assertTrue(pm.hasVehicleStatusUpdates(), "fixture must contain a vehicleStatusUpdates push message");
-        VehicleStatusUpdate update = pm.getVehicleStatusUpdates().getVehicleStatusUpdatesMap().get("UNIT_TEST_VIN");
-        assertNotNull(update, "fixture must contain an entry for UNIT_TEST_VIN");
-        return Mapper.fromVehicleStatusUpdate(update);
+        String raw = FileReader.readRawFileInString("src/test/resources/vehiclestatusupdates/vsu-eqa-2.raw");
+        return ProtoConverter.raw2Proto(raw, true).attributes();
     }
 
     @Test
     void whenBoolAttributeConvertedThenBoolValueIsSet() {
-        // Arrange
+        // Arrange - vsu-eqa-2.raw reports chargingactive with no explicit "value:" line (proto3 default,
+        // matching the real vehicle's state: not charging), so the meaningful check here is that the
+        // bool_value oneof is the one actually populated, not a fabricated int/double default.
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act
@@ -77,7 +70,7 @@ class MapperTest {
 
         // Assert
         assertNotNull(chargingActive);
-        assertTrue(chargingActive.getBoolValue());
+        assertFalse(chargingActive.getBoolValue());
     }
 
     @Test
@@ -90,30 +83,38 @@ class MapperTest {
 
         // Assert
         assertNotNull(serviceIntervalDays);
-        assertEquals(365, serviceIntervalDays.getIntValue());
+        assertEquals(-14, serviceIntervalDays.getIntValue());
     }
 
     @Test
     void whenDoubleAttributeConvertedThenDoubleValueIsSet() {
-        // Arrange
+        // Arrange - positionHeading is a plain double_value attribute (no unit), real value from
+        // vsu-eqa-2.raw
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act
-        VehicleAttributeStatus chargingPower = attributes.get(MB_KEY_CHARGING_POWER);
+        VehicleAttributeStatus positionHeading = attributes.get(MB_KEY_POSITION_HEADING);
 
         // Assert
-        assertNotNull(chargingPower);
-        assertEquals(11.0, chargingPower.getDoubleValue(), 0.0001);
+        assertNotNull(positionHeading);
+        assertEquals(224.1, positionHeading.getDoubleValue(), 0.0001);
     }
 
     @Test
     void whenEnumAttributeConvertedThenProtoDeclaredNumberIsUsed() {
         // Arrange - Ignitionstate.IGNITIONSTATE_ON is explicitly declared as 4 in vehicle-events.proto (value 3
         // is intentionally unused), so this also guards against a regression back to ordinal/positional
-        // guessing instead of getValueValue().
-        Map<String, VehicleAttributeStatus> attributes = loadFixture();
+        // guessing instead of getValueValue(). vsu-eqa-2.raw's real ignitionstate sits at its proto3 default
+        // (IGNITIONSTATE_LOCK = 0), which can't discriminate ordinal-vs-declared-number bugs, so this one
+        // attribute is built directly instead of read from the fixture.
+        VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
+        IgnitionstateEnumAttribute ignition = IgnitionstateEnumAttribute.newBuilder()
+                .setValue(Ignitionstate.IGNITIONSTATE_ON).setMetadata(metadata).build();
+        VehicleStatusUpdate update = VehicleStatusUpdate.newBuilder().setFinOrVin("UNIT_TEST_VIN").setFullUpdate(true)
+                .setIgnitionstate(ignition).build();
 
         // Act
+        Map<String, VehicleAttributeStatus> attributes = Mapper.fromVehicleStatusUpdate(update);
         VehicleAttributeStatus ignitionState = attributes.get(MB_KEY_IGNITIONSTATE);
 
         // Assert
@@ -131,9 +132,9 @@ class MapperTest {
 
         // Assert
         assertNotNull(rangeElectric);
-        assertEquals(310, rangeElectric.getIntValue());
+        assertEquals(299, rangeElectric.getIntValue());
         assertEquals(VehicleAttributeStatus.DistanceUnit.KILOMETERS, rangeElectric.getDistanceUnit());
-        assertEquals("310", rangeElectric.getDisplayValue());
+        assertEquals("299", rangeElectric.getDisplayValue());
     }
 
     @Test
@@ -146,7 +147,7 @@ class MapperTest {
 
         // Assert
         assertNotNull(soc);
-        assertEquals(82, soc.getIntValue());
+        assertEquals(71, soc.getIntValue());
         assertEquals(VehicleAttributeStatus.RatioUnit.PERCENT, soc.getRatioUnit());
     }
 
@@ -209,9 +210,9 @@ class MapperTest {
 
     @Test
     void whenNilValueAttributeStillCarriesUnitThenObserverIsNotDropped() {
-        // Arrange - a BEV reports liquidconsumptionstart/reset as nil_value=true (no combustion engine)
+        // Arrange - a BEV reports liquidconsumptionstart/reset with a non-VALID status (no combustion engine)
         // while still carrying combustion_consumption_unit (real fixture data, see
-        // src/test/resources/proto-json/MB-BEV-EQA.json). The observer/unit lookup must not be nested
+        // src/test/resources/vehiclestatusupdates/vsu-eqa-2.raw). The observer/unit lookup must not be nested
         // inside the Utils.isNil() branch, or VehicleHandler.updateChannel() never calls
         // handleComplexTripPattern() for this update - the exact regression that made
         // VehicleHandlerTest's "Trip Update Count" assertions fail after this change was first written.
@@ -402,7 +403,7 @@ class MapperTest {
         TemperaturePointsValue value = temperaturePoints.getTemperaturePointsValue();
         assertEquals(1, value.getTemperaturePointsCount());
         assertEquals("frontCenter", value.getTemperaturePoints(0).getZone());
-        assertEquals(21.0, value.getTemperaturePoints(0).getTemperature(), 0.0001);
+        assertEquals(20.0, value.getTemperaturePoints(0).getTemperature(), 0.0001);
     }
 
     @Test
@@ -453,27 +454,26 @@ class MapperTest {
     }
 
     @Test
-    void whenFieldAbsentFromUpdateThenNotIncludedInMap() {
-        // Arrange - VehicleStatusUpdate-EQA.json sets exactly 25 of the ~95 convertible fields (5 bool + 8
-        // plain int64/double + 2 enum + 2 distance + 1 pressure + 1 speed + 1 ratio + 1 clock hour +
-        // 1 consumption + 3 complex array-typed).
+    void whenFullUpdateConvertedThenOnlyMappedFieldsAppearInMap() {
+        // Arrange - vsu-eqa-2.raw is a real full_update capture that happens to set every one of the
+        // currently mapped attributes (95 of them), plus roughly 68 further raw fields that have no
+        // MB_KEY_*/channel mapping at all (battery_health, min_soc, weekly_profile, vehicle_health_status,
+        // etc. - see docs/changes/remove-vepupdate/proposal.md, "Out of scope"). The meaningful regression
+        // guard with a comprehensive real capture like this one is therefore an exact map size: it catches
+        // both a fabricated entry sneaking in for an unmapped field and a mapped field silently dropping out.
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
-        // Act / Assert - a field genuinely absent from the fixture must not appear in the map at all,
-        // not with a fabricated default/zero value (the bug this change fixes)
-        assertNull(attributes.get(MB_KEY_OVERALL_RANGE), "overallRange was never set in the fixture");
-        assertNull(attributes.get(MB_KEY_MAX_SOC), "maxSoc was never set in the fixture");
-        assertNull(attributes.get(MB_KEY_TIREPRESSURE_FRONT_RIGHT), "tirepressureFrontRight was never set");
-        assertNull(attributes.get(MB_KEY_PARKBRAKESTATUS), "parkbrakestatus was never set in the fixture");
-        assertNull(attributes.get(MB_KEY_DOORLOCKSTATUSFRONTRIGHT), "doorlockstatusfrontright was never set");
-        assertEquals(25, attributes.size(), "map must contain exactly the fields actually present, not all ~95");
+        // Act / Assert
+        assertEquals(95, attributes.size(),
+                "map must contain exactly the currently-mapped fields, neither more (unmapped raw fields "
+                        + "leaking in) nor fewer (a mapped field silently dropped)");
     }
 
     @Test
     void whenPartialUpdateOnlyTouchesPrecondThenOtherAttributesAreAbsent() {
         // Arrange - mirrors a real captured trace: a delta VehicleStatusUpdate (full_update = false) whose
         // raw proto text dump only shows precond_now/precond_state/vtime as populated, yet the previous,
-        // unguarded implementation still emitted map entries for all 95 known fields.
+        // unguarded implementation still emitted map entries for all mapped fields.
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
         PrecondNowEnumAttribute precondNow = PrecondNowEnumAttribute.newBuilder()
                 .setValue(PrecondNow.PRECOND_NOW_ACTIVE).setMetadata(metadata).build();

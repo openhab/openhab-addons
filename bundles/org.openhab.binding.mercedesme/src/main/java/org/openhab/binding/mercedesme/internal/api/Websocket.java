@@ -83,7 +83,7 @@ public class Websocket extends RestApi {
     // missed-pong watchdog: if no pong is received within this window after a ping was sent, the
     // connection is treated as dead - matches Mercedes-Me App (OkHttp readTimeout(6s)), which (unlike
     // Jetty's WS_IDLE_TIMEOUT_MS above) is a pure read-side timeout not reset by our own outgoing pings
-    private static final long PONG_TIMEOUT_MS = 6 * 1000L;
+    static final long PONG_TIMEOUT_MS = 6 * 1000L;
     // additional 5 minutes after keep alive
     private static final int KEEP_ALIVE_ADDON = 5 * 60 * 1000;
     // max reconnect attempts before falling back to full re-authorization - matches Mercedes-Me App
@@ -109,7 +109,10 @@ public class Websocket extends RestApi {
     private @Nullable ScheduledFuture<?> refresher;
     private @Nullable WebSocketClient webSocketClient;
     private @Nullable Session session;
-    private @Nullable Instant pingSentAt;
+    // package-private (not private) so WebsocketTest can seed/inspect the missed-pong watchdog state
+    // directly instead of racing the real PING_INTERVAL_MS/PONG_TIMEOUT_MS scheduler timing.
+    @Nullable
+    Instant pingSentAt;
     private List<ClientMessage> commandQueue = new ArrayList<>();
     private Instant runTill = Instant.now();
     private WebsocketState state = WebsocketState.STOPPED;
@@ -402,8 +405,11 @@ public class Websocket extends RestApi {
      * Ping the server to keep the connection alive and to check if the connection is still valid.
      * No payload is sent - matches Mercedes-Me App behaviour (OkHttp's automatic pingInterval sends an
      * empty WebSocket ping control frame, not an application-level payload).
+     * <p>
+     * Package-private (not private) so WebsocketTest can drive it directly instead of racing the real
+     * PING_INTERVAL_MS scheduler timing.
      */
-    private void sendPing() {
+    void sendPing() {
         Session localSession = session;
         if (localSession != null) {
             try {
@@ -436,10 +442,13 @@ public class Websocket extends RestApi {
      * bidirectional and gets reset by our own outgoing pings, so it cannot by itself detect a server
      * that stopped answering. This checks directly whether a ping is still outstanding (no pong seen
      * yet) for longer than PONG_TIMEOUT_MS.
+     * <p>
+     * Package-private (not private) so WebsocketTest can assert the inclusive timeout boundary directly
+     * instead of racing the real PONG_TIMEOUT_MS scheduler timing.
      *
      * @return true if a ping was sent and no pong has been received within PONG_TIMEOUT_MS
      */
-    private boolean isPongOverdue() {
+    boolean isPongOverdue() {
         Instant sent = pingSentAt;
         // PR #21343 review (wborn): Duration.toMillis() truncates fractional milliseconds, so with ">"
         // a refresh landing at e.g. 6000.4ms still reads as exactly 6000 and is not considered overdue.

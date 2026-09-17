@@ -21,6 +21,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
@@ -40,7 +41,9 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.PressureU
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.RatioUnit;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.SpeedUnit;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TemperatureUnit;
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdate;
 import com.google.protobuf.Int32Value;
+import com.google.protobuf.TextFormat;
 
 /**
  * {@link ProtoConverter} Proto conversions for Unit Tests and not necessary for binding
@@ -177,6 +180,44 @@ public class ProtoConverter {
             updateMap.put(key, builder.build());
         }
         return new VehicleStatusAttributes(fullUpdate, updateMap);
+    }
+
+    /**
+     * Parses a real {@code VehicleStatusUpdate} capture in protobuf TextFormat (the {@code .raw} fixtures under
+     * {@code src/test/resources/vehiclestatusupdates}) and converts it via {@link Mapper#fromVehicleStatusUpdate}
+     * into the same internal carrier type produced by the live typed-push code path.
+     *
+     * @param rawText the TextFormat dump of a single {@code VehicleStatusUpdate} message
+     * @param fullUpdate the full/partial flag to attach, since a raw capture itself carries none
+     */
+    public static VehicleStatusAttributes raw2Proto(String rawText, boolean fullUpdate) {
+        String protoText = stripLogPrefix(rawText);
+        VehicleStatusUpdate.Builder vsuBuilder = VehicleStatusUpdate.newBuilder();
+        try {
+            TextFormat.getParser().merge(protoText, vsuBuilder);
+        } catch (TextFormat.ParseException e) {
+            throw new IllegalArgumentException("Failed to parse VehicleStatusUpdate raw fixture", e);
+        }
+        Map<String, VehicleAttributeStatus> updateMap = Mapper.fromVehicleStatusUpdate(vsuBuilder.build());
+        return new VehicleStatusAttributes(fullUpdate, updateMap);
+    }
+
+    /**
+     * Some {@code .raw} fixtures were captured by pasting directly out of the openHAB log and still carry the
+     * leading TRACE line (timestamp, logger name, "Raw VehicleStatusUpdate for &lt;vin&gt;:") before the actual
+     * protobuf TextFormat content, which starts on the next line. Strip it if present; a fixture already trimmed
+     * to just the proto content (first line starting directly with a field name) is left untouched.
+     */
+    private static String stripLogPrefix(String rawText) {
+        int firstNewline = rawText.indexOf('\n');
+        if (firstNewline < 0) {
+            return rawText;
+        }
+        String firstLine = rawText.substring(0, firstNewline);
+        if (firstLine.contains("Raw VehicleStatusUpdate for")) {
+            return rawText.substring(firstNewline + 1);
+        }
+        return rawText;
     }
 
     public static JSONObject clientMessage2Json(ClientMessage cm) {
