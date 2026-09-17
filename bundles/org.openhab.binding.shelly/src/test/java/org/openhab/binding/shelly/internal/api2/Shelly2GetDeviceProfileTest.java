@@ -28,11 +28,13 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRoller;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
@@ -218,6 +220,72 @@ public class Shelly2GetDeviceProfileTest {
             }
             throw new ShellyApiException("Unexpected apiRequest in test: " + method);
         }
+
+        ShellyStatusSensor sensorData() {
+            return sensorData;
+        }
+    }
+
+    private static Shelly2GetConfigResult presenceConfig(Gson gson, String presenceJson) {
+        return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"presence\":"
+                + presenceJson + "," + "\"presencezone:200\":{\"id\":200,\"name\":\"Main\",\"enable\":true}}");
+    }
+
+    @Test
+    void presenceMainZoneFromConfigOverridesDefault() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(),
+                presenceConfig(gson, "{\"enable\":true,\"main_zone\":\"presencezone:201\"}"));
+
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSPRESENCE, deviceInfo());
+
+        assertThat(profile.presenceMainZoneKey, is("presencezone:201"));
+        assertThat(client.sensorData().sensorEnable, is(true));
+    }
+
+    @Test
+    void presenceConfigWithoutMainZoneKeepsDefaultZone() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), presenceConfig(gson, "{\"enable\":true}"));
+
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSPRESENCE, deviceInfo());
+
+        assertThat(profile.presenceMainZoneKey, is("presencezone:200"));
+    }
+
+    @Test
+    void presenceConfigWithoutEnableKeepsCachedSensorState() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(),
+                presenceConfig(gson, "{\"main_zone\":\"presencezone:200\"}"));
+        client.sensorData().sensorEnable = true;
+
+        client.getDeviceProfile(THING_TYPE_SHELLYPLUSPRESENCE, deviceInfo());
+
+        assertThat("absent enable must not clear the cached sensor state", client.sensorData().sensorEnable, is(true));
+    }
+
+    @Test
+    void presenceConfigWithEnableFalseUpdatesCachedSensorState() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), presenceConfig(gson, "{\"enable\":false}"));
+        client.sensorData().sensorEnable = true;
+
+        client.getDeviceProfile(THING_TYPE_SHELLYPLUSPRESENCE, deviceInfo());
+
+        assertThat(client.sensorData().sensorEnable, is(false));
+    }
+
+    @Test
+    void nonPresenceThingTypeIgnoresPresenceConfig() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(),
+                presenceConfig(gson, "{\"enable\":true,\"main_zone\":\"presencezone:201\"}"));
+
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSSMOKE, deviceInfo());
+
+        assertThat(profile.presenceMainZoneKey, is("presencezone:200"));
+        assertThat(client.sensorData().sensorEnable, is(nullValue()));
     }
 
     @Test
@@ -649,5 +717,57 @@ public class Shelly2GetDeviceProfileTest {
         StubApiClient client = new StubApiClient(discoveryConfig(), parseConfig(gson, json));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM, deviceInfo());
         assertThat(profile.numInputs, is(5));
+    }
+
+    private static Shelly2GetConfigResult withLora100(Gson gson, boolean rxEnabled) {
+        return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"lora:100\":{\"id\":100,\"freq\":868000000,\"rx_enable\":" + rxEnabled + "}}");
+    }
+
+    @Test
+    void discoveryLoraComponentPresentLoraDetected() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLora100(gson, true));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraDetected, is(true));
+    }
+
+    @Test
+    void discoveryNoLoraComponentNotDetected() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), minimalConfig(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraDetected, is(false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void discoveryLoraRxEnabledFlagMatchesConfig(boolean rxEnabled) throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withLora100(gson, rxEnabled));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraRxEnabled, is(rxEnabled));
+    }
+
+    @Test
+    void discoveryLoraRxEnableAbsentDefaultsToEnabled() throws ShellyApiException {
+        Gson gson = new Gson();
+        Shelly2GetConfigResult config = parseConfig(gson,
+                "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},\"lora:100\":{\"id\":100,\"freq\":868000000}}");
+        StubApiClient client = new StubApiClient(discoveryConfig(), config);
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.settings.loraDetected, is(true));
+        assertThat(profile.settings.loraRxEnabled, is(true));
+    }
+
+    @Test
+    void discoveryLoraBandPlanParsedFromConfig() {
+        Gson gson = new Gson();
+        Shelly2GetConfigResult config = parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},"
+                + "\"lora:100\":{\"id\":100,\"band_plan\":\"US915\",\"rx_enable\":false}}");
+        assertThat(config.lora100 != null, is(true));
+        if (config.lora100 != null) {
+            assertThat(config.lora100.bandPlan, is("US915"));
+        }
     }
 }

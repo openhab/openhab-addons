@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * <li>{@link ControlFlowDirective}: Structural directives that alter control flow and unrolling (e.g., {@code !if},
  * {@code !for}).</li>
  * <li>{@link VarDirective}: Scope directives that declare local variables without producing output data nodes.</li>
+ * <li>Structural metadata is represented by value placeholders and handled by the structural composition engine.</li>
  * </ul>
  *
  * @author Jimmy Tanagra - Initial contribution

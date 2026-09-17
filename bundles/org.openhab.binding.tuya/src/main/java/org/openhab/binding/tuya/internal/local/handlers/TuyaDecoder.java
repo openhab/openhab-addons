@@ -14,6 +14,7 @@ package org.openhab.binding.tuya.internal.local.handlers;
 
 import static org.openhab.binding.tuya.internal.local.CommandType.BROADCAST_LPV34;
 import static org.openhab.binding.tuya.internal.local.CommandType.DP_QUERY;
+import static org.openhab.binding.tuya.internal.local.CommandType.DP_QUERY_NEW;
 import static org.openhab.binding.tuya.internal.local.CommandType.HEART_BEAT;
 import static org.openhab.binding.tuya.internal.local.CommandType.SESS_KEY_NEG_RESPONSE;
 import static org.openhab.binding.tuya.internal.local.CommandType.STATUS;
@@ -35,6 +36,7 @@ import org.openhab.binding.tuya.internal.local.CommandType;
 import org.openhab.binding.tuya.internal.local.MessageWrapper;
 import org.openhab.binding.tuya.internal.local.ProtocolVersion;
 import org.openhab.binding.tuya.internal.local.dto.DiscoveryMessage;
+import org.openhab.binding.tuya.internal.local.dto.RequestRefusal;
 import org.openhab.binding.tuya.internal.local.dto.TcpStatusPayload;
 import org.openhab.binding.tuya.internal.util.CryptoUtil;
 import org.openhab.core.util.HexUtils;
@@ -234,11 +236,9 @@ public class TuyaDecoder extends ByteToMessageDecoder {
 
             try {
                 if ("json obj data unvalid".equals(decodedString) || "data format error".equals(decodedString)) {
-                    // Some devices don't handle DP_QUERY. Using a CONTROL message with null values is a known
-                    // workaround, cf. https://github.com/codetheweb/tuyapi/blob/master/index.js#L156
-                    // Since already we sent a CONTROL as well we can ignore this error.
-                    return;
-                } else if (commandType == STATUS || commandType == DP_QUERY) {
+                    // Some devices don't handle DP_QUERY and reply with plain text instead
+                    m = new MessageWrapper<>(commandType, new RequestRefusal(decodedString));
+                } else if (commandType == STATUS || commandType == DP_QUERY || commandType == DP_QUERY_NEW) {
                     m = new MessageWrapper<>(commandType,
                             Objects.requireNonNull(gson.fromJson(decodedString, TcpStatusPayload.class)));
                 } else if (commandType == UDP_NEW || commandType == BROADCAST_LPV34) {

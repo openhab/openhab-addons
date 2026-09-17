@@ -88,8 +88,8 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
         Event event = createRollerShutterDimmerEvent(capability.dimmerChannel.getId(), 80);
         handler.onNodeStateChanged(event);
         assertEquals(80, capability.getCachedPosition());
-        assertTrue(capability.isMovingDown());
-        assertFalse(capability.isMovingUp());
+        assertTrue(capability.isMovingUp());
+        assertFalse(capability.isMovingDown());
     }
 
     // Without any inversion, 100% is fully open (up position) and 0% is fully closed (down position).
@@ -125,9 +125,9 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
 
         assertTrue(successfulHandling);
         assertEquals(80, capability.getCachedPosition());
-        // With inversion, increasing value means moving up
-        assertTrue(capability.isMovingUp());
-        assertFalse(capability.isMovingDown());
+        // With inversion, increasing value means moving down
+        assertTrue(capability.isMovingDown());
+        assertFalse(capability.isMovingUp());
     }
 
     @Test

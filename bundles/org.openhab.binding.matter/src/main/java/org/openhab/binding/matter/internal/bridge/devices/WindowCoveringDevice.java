@@ -150,6 +150,10 @@ public class WindowCoveringDevice extends BaseDevice {
     @Override
     public void updateState(Item item, State state) {
         int currentPercent = itemStateToPercent(state);
+        // movement is finished once the position stops arriving, so an update that repeats the position is not one
+        if (currentPercent == lastCurrentPercent) {
+            return;
+        }
         try {
             // check if this is matter initiated or openHAB initiated, if openHAB we will fake the target position so
             // operation direction is correct

@@ -169,6 +169,11 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
         } catch (IOException e) {
             logger.debug("{}: Exception on processing serviceInfo '{}'", serviceName, service.getNiceTextString(), e);
             return null;
+        } catch (IllegalStateException e) {
+            // ConfigurationAdmin is unregistered while the framework is shutting down; discovery is moot at this
+            // point, so skip this result instead of letting the exception surface as an unhandled ERROR
+            logger.debug("{}: Configuration Admin unavailable, skipping discovery result", serviceName);
+            return null;
         }
     }
 

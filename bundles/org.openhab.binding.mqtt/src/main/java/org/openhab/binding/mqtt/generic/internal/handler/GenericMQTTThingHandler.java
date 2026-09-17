@@ -153,6 +153,15 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
             final ChannelConfig channelConfig = channel.getConfiguration().as(ChannelConfig.class);
             ChannelBuilder channelBuilder = null;
 
+            boolean triggerChannel = channelConfig.trigger
+                    || MqttBindingConstants.TRIGGER.equals(channelTypeUID.getId());
+            if (channelConfig.stateTopic.isBlank() && (triggerChannel || channelConfig.commandTopic.isBlank())) {
+                String requiredTopics = triggerChannel ? "stateTopic" : "stateTopic or commandTopic";
+                logger.warn("Channel '{}' must define {}", channel.getUID(), requiredTopics);
+                configErrors.add(channel.getUID());
+                continue;
+            }
+
             if (channelTypeUID
                     .equals(new ChannelTypeUID(MqttBindingConstants.BINDING_ID, MqttBindingConstants.NUMBER))) {
                 Unit<?> unit = UnitUtils.parseUnit(channelConfig.unit);
@@ -210,7 +219,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         // If some channels could not start up, put the entire thing offline and display the channels
         // in question to the user.
         if (!configErrors.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Remove and recreate: "
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid channel configuration: "
                     + configErrors.stream().map(ChannelUID::getAsString).collect(Collectors.joining(",")));
             return;
         }

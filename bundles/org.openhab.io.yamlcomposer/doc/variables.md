@@ -266,11 +266,11 @@ label: ${room_label | default('Kitchen')}
 
 ### Custom Filters
 
-| Filter      | Description                                                                         |
-|:------------|:------------------------------------------------------------------------------------|
-| `label`     | Converts identifiers (camelCase, snake_case) into human-friendly titles.            |
-| `dig`       | Safely navigates deep maps; returns `null` instead of an error if a key is missing. |
-| `enumerate` | Maps collections, arrays, or maps into an indexed list of `[index, item]` pairs.    |
+| Filter      | Description                                                                                                                           |
+|:------------|:--------------------------------------------------------------------------------------------------------------------------------------|
+| `label`     | Converts identifiers (camelCase, snake_case) into human-friendly titles.                                                              |
+| `dig`       | Safely navigates deep maps; returns `null` instead of an error if a key is missing.                                                   |
+| `enumerate` | Maps collections, arrays, or maps into an indexed list of `[index, item]` pairs. Accepts an optional starting index (default is `0`). |
 
 **`dig` Example:**
 
@@ -283,6 +283,7 @@ host: ${ VARS | dig('config', 'servers', 1, 'host') | default('localhost') }
 **`enumerate` Example:**
 
 The `enumerate` filter and function map any collection, array, or map into a list of index-item pairs, making them fully compatible with `!for` loops and tuple unpacking.
+You can supply an optional starting index parameter (default is `0`).
 
 ```yaml
 variables:
@@ -296,14 +297,14 @@ devices:
   !for "index, item in items | enumerate":
     "dev_${index}": "${item}"
 
-# Using the function syntax with a !for loop
-items_mapped:
-  !for "index, item in enumerate(items)":
-    "item_${index}": "${item}"
+# Filter syntax with a custom starting index
+devices_one_indexed:
+  !for "index, item in items | enumerate(1)":
+    "dev_${index}": "${item}"
 
-# Enumerating maps yields index and Map.Entry pairs (.key and .value)
+# Enumerating maps yields index and map entry pairs (.key and .value)
 map_results:
-  !for "idx, entry in enumerate(mapping)":
+  !for "idx, entry in mapping | enumerate":
     "item_${idx}_${entry.key}": "${entry.value}"
 ```
 
@@ -356,7 +357,9 @@ Use whichever form is clearer for your template.
 
 **Syntax:**
 
-**`enumerate(target)`**: Maps collections, arrays, or maps into a list of indexed `[index, item]` pairs. When used with maps, it yields entry objects supporting `.key` and `.value` accessors.
+**`enumerate(target[, start])`**: Maps collections, arrays, or maps into a list of indexed `[index, item]` pairs.
+The optional `start` argument sets the initial index (defaults to `0`).
+When used with maps, it yields entry objects supporting `.key` and `.value` accessors.
 
 **Example:**
 
@@ -367,19 +370,17 @@ variables:
     alpha: "one"
     beta: "two"
 
-# Using the enumerate filter
-enumerated_list: ${items | enumerate}
+# Using the enumerate function (default starting index 0)
+enumerated_list: ${enumerate(items)}
 # Result: [[0, "alpha"], [1, "beta"], [2, "gamma"]]
 
-# Using the enumerate function
-enumerated_list_func: ${enumerate(items)}
-# Result: [[0, "alpha"], [1, "beta"], [2, "gamma"]]
+# Using the enumerate function with a custom starting index (1)
+enumerated_list_from_1: ${enumerate(items, 1)}
+# Result: [[1, "alpha"], [2, "beta"], [3, "gamma"]]
 
-# Enumerating maps yields indexed Map.Entry objects.
-# Each entry wraps the original key-value pair and provides explicit
-# property accessors: .key (for the map key) and .value (for the map value).
+# Enumerating maps yields indexed map entry objects (default starting index 0)
 enumerated_map: ${enumerate(mapping)}
-# Result Structure: [[0, alpha=one], [1, beta=two]]
+# Result Structure: [[0, {key=alpha, value=one}], [1, {key=beta, value=two}]]
 #
 # Accessing properties from a specific index (e.g., the first item):
 #   - Key access:   ${enumerated_map[0][1].key}   -> "alpha"
@@ -474,19 +475,30 @@ If the list item must remain a scalar, declare the variable in the parent mappin
 The Composer injects environmental and file-system context automatically.
 These variables can be interpolated just like regular ones and are helpful when constructing paths for directives.
 
-| Variable           | Description                                                             |
-|:-------------------|:------------------------------------------------------------------------|
-| `OPENHAB_CONF`     | Absolute path to openHAB's main configuration directory.                |
-| `OPENHAB_USERDATA` | Absolute path to openHAB's userdata directory.                          |
-| `__FILE__`         | Absolute path to the current file.                                      |
-| `__FILE_NAME__`    | Filename portion without the extension or leading path.                 |
-| `__FILE_EXT__`     | File extension portion of the current file name.                        |
-| `__DIRECTORY__`    | Directory portion of the current file.                                  |
-| `__DIR__`          | Alias for `__DIRECTORY__`.                                              |
-| `package_id`       | Automatically resolved to the Package ID within included package files. |
+| Variable           | Description                                                          |
+|:-------------------|:---------------------------------------------------------------------|
+| `OPENHAB_CONF`     | Absolute path to openHAB's main configuration directory.             |
+| `OPENHAB_USERDATA` | Absolute path to openHAB's userdata directory.                       |
+| `__FILE__`         | Absolute path to the current file.                                   |
+| `__FILE_NAME__`    | Filename portion without the extension or leading path.              |
+| `__FILE_EXT__`     | File extension portion of the current file name.                     |
+| `__DIRECTORY__`    | Directory portion of the current file.                               |
+| `__DIR__`          | Alias for `__DIRECTORY__`.                                           |
+| `VARS`             | Map containing all variables currently visible in the current scope. |
 
-::: warning System Variable Protection
-System variables (`OPENHAB_CONF`, `__FILE__`, etc.) cannot be overridden or redefined by `!var` directives or `variables:` blocks. Attempting to redefine a system variable logs a warning and leaves the system value intact.
+#### Contextual / Special Variables
+
+These variables are dynamically populated based on the current execution context and are not always present.
+
+| Variable     | Description                                                                                                                                                          |
+|:-------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ARGS`       | Map containing only variables explicitly injected at the immediate `!include`/`!insert` call site (excludes global variables and those injected by parent includes). |
+| `package_id` | Automatically resolved to the Package ID within included package context.                                                                                            |
+
+::: warning Predefined Variable Protection
+With the exception of `package_id`, all predefined and contextual variables listed above are reserved by the Composer.
+They cannot be overridden or redefined by `!var` directives or `variables:` blocks.
+Attempting to redefine any of these protected variables logs a warning and leaves the system value intact.
 :::
 
 ### Handling Reserved Keywords
@@ -500,12 +512,29 @@ foo: ${VARS['and']}
 
 ### ENV to Access Environment Variables
 
-A special variable `ENV` exposes a map of system environment variables.
-This is especially useful for configurations running within Docker containers.
+The YAML Composer provides a special variable map, **`ENV`**, which exposes system environment variables to your Composer source files.
+This is especially useful when running openHAB inside Docker, where environment variables are commonly used for deployment‑specific configuration.
 
 ```yaml
 mode: ${ENV.OPENHAB_MODE}   # Resolves to the environment value
 ```
+
+::: tip Note
+If a Composer source file references environment variables via standard lookups (e.g., `${ENV.VAR_NAME}` or `${ENV['VAR_NAME']}`), **changes to those variable values will automatically trigger regeneration** of the compiled YAML during openHAB startup.
+
+Advanced operations on `ENV`—such as checking key existence (`'VAR' in ENV` or `ENV.containsKey(...)`), iterating over the map, or querying map properties (e.g., `ENV.size()`)—are not tracked for auto-regeneration.
+:::
+
+This feature is **not the same** as [openHAB Core’s environment variable expansion](/docs/configuration/things.html#defining-things-using-files) used in `.things` files.
+
+#### Differences Between YAML Composer and Core ENV Expansion
+
+| Feature            | YAML Composer                                                                                                                                             | Core                                                                                                                                        |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| **Syntax**         | `${ENV.NAME}` or `${ENV["NAME"]}`                                                                                                                         | `${ENV:NAME}`                                                                                                                               |
+| **Where it works** | Anywhere in Composer YAML source: labels, UIDs, locations, conditions, parameters, keys, etc.                                                             | Only inside **Thing configuration values**. Can be used outside YAML Composer, directly inside `CONF/yaml/` files.                          |
+| **When applied**   | During **Composer generation**. The generated YAML contains the **resolved value**, not the `${ENV...}` expression. UI and Core see only the final value. | During **Thing initialization**. The YAML file still contains the literal `${ENV:NAME}` pattern; Core resolves it at runtime.               |
+| **How to use**     | Use Composer’s `${ENV.*}` syntax normally. It behaves like any other variable reference.                                                                  | Must wrap the literal `${ENV:NAME}` inside a [!literal](#the-literal-tag-and-sub-escape-hatch) block to prevent Composer from expanding it. |
 
 ### Calling Java Methods
 

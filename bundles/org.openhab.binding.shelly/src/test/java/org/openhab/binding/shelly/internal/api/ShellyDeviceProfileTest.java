@@ -100,7 +100,6 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBUTTON2, false, false), //
                 Arguments.of(THING_TYPE_SHELLYMOTION, false, false), //
                 Arguments.of(THING_TYPE_SHELLYTRV, false, false), //
-                Arguments.of(THING_TYPE_SHELLYEYE, false, false), //
 
                 // Shelly Plus
                 Arguments.of(THING_TYPE_SHELLYPLUS1, true, false), //
@@ -153,8 +152,39 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPRO3EM63, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO3EM400, true, false), //
 
+                // Shelly Gen3 Bulb series
+                Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, true, false), //
+
                 Arguments.of(THING_TYPE_SHELLYPROTECTED, false, false), // password protected device
                 Arguments.of(THING_TYPE_SHELLYUNKNOWN, false, false)); // unknown device
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForGen3BulbFlags")
+    void gen3BulbProfileFlags(ThingTypeUID thingTypeUID) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        assertThat(profile.isDuo, is(true));
+        assertThat(profile.isRGBCCT, is(THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID)));
+        assertThat(profile.isLight, is(true));
+        assertThat(profile.isGen2, is(true));
+    }
+
+    private static Stream<Arguments> provideTestCasesForGen3BulbFlags() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB), //
+                Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB));
+    }
+
+    @Test
+    void vintageIsDuoButNotCctCapable() {
+        ShellyDeviceProfile vintage = new ShellyDeviceProfile(THING_TYPE_SHELLYVINTAGE);
+        assertThat(vintage.isDuo, is(true));
+        assertThat(vintage.isVintage, is(true));
+
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYDUO).isVintage, is(false));
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYDUORGBW).isVintage, is(false));
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB).isVintage, is(false));
     }
 
     @ParameterizedTest
@@ -456,6 +486,12 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPROEM50, -1, -1, false, false, 0, false, 0, 0, false, 2), //
                 // ProEM50 capMap wins even when relay is present (relay gets its own slot via hasEM1Clamps override)
                 Arguments.of(THING_TYPE_SHELLYPROEM50, -1, -1, false, false, 0, true, 1, 0, false, 2), //
+                // no-PM relay-only devices: capMap wins over the relay-count fallback
+                Arguments.of(THING_TYPE_SHELLY1, 0, -1, false, false, 0, true, 1, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLY1L, 0, -1, false, false, 0, true, 1, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1, -1, -1, false, false, 0, true, 1, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLYPRO1, -1, -1, false, false, 0, true, 1, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLYMINI_1, -1, -1, false, false, 0, true, 1, 0, false, 0), //
 
                 // P3: device-config detection — thingType not in capMap
                 Arguments.of(THING_TYPE_SHELLYMINI_PM, -1, 1, false, false, 0, false, 0, 0, false, 1), // pm10 → 1
@@ -475,7 +511,6 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBULB, -1, -1, true, true, 1, false, 0, 0, false, 1), //
 
                 // P5: relay fallback (not in capMap, not a light, no config data)
-                Arguments.of(THING_TYPE_SHELLYPLUS1, -1, -1, false, false, 0, true, 1, 0, false, 1), //
                 Arguments.of(THING_TYPE_SHELLYPRO1PM, -1, -1, false, false, 0, true, 1, 0, false, 1), //
                 Arguments.of(THING_TYPE_SHELLYPRO4PM, -1, -1, false, false, 0, true, 4, 0, false, 4), //
                 Arguments.of(THING_TYPE_SHELLY25_ROLLER, -1, -1, false, false, 0, true, 0, 1, true, 1), //

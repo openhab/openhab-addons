@@ -306,7 +306,6 @@ public class Clip2Bridge implements Closeable {
             synchronized (this) {
                 eventData.append(frame.getData());
                 BufferedReader reader = new BufferedReader(eventData.contentStreamReader());
-                @SuppressWarnings("null")
                 List<String> receivedLines = reader.lines().toList();
 
                 // a blank line marks the end of an SSE message

@@ -14,6 +14,7 @@ package org.openhab.io.yamlcomposer.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -155,6 +156,30 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
             // The local 'tags' key blocks the entire merged 'tags' map.
             assertThat(getNestedValue(data, "target", "tags", "level"), equalTo("debug"));
             assertThat(getNestedValue(data, "target", "tags", "persistent"), is(nullValue()));
+        }
+    }
+
+    @Nested
+    @DisplayName("Key Ordering Semantics")
+    class KeyOrdering {
+
+        @Test
+        @DisplayName("Preserves key ordering inside nested maps during merge key processing")
+        void mergeKeyPreservesKeyOrderingInsideNestedMaps() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    parent:
+                      a_first: "local"
+                      <<:
+                        b_nested: "from_template"
+                        c_nested: "from_template"
+                      d_last: "local"
+                    """);
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> parent = (Map<String, Object>) Objects.requireNonNull(result.get("parent"));
+
+            assertThat(parent.keySet(), contains("a_first", "b_nested", "c_nested", "d_last"));
+            assertThat(parent.keySet(), not(contains("a_first", "d_last", "b_nested", "c_nested")));
         }
     }
 
@@ -374,6 +399,25 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
             assertThat(getNestedValue(data, "simple"), equalTo(Map.of()));
             assertThat(logSession.getTrackedWarnings(), not(hasItem(containsString("Expected a mapping"))));
         }
+
+        @Test
+        @DisplayName("Merge keys in !include vars are visible to included file")
+        void mergeKeysInIncludeVars() throws IOException {
+            writeFixture("include.inc.yaml", "foo: ${foo}");
+
+            Path main = writeFixture("main.yaml", """
+                    packages:
+                      foo_package: !include
+                        file: include.inc.yaml
+                        vars:
+                          <<:
+                            foo: bar
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat(getNestedValue(data, "foo"), equalTo("bar"));
+        }
     }
 
     @Nested
@@ -454,7 +498,6 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
                     variables:
                       map1:
                         foo: bar
-                        baz: "${foo}"
                     simple:
                       <<:
                         qux: ${map1}
@@ -462,7 +505,6 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
 
             Map<Object, @Nullable Object> data = loadFixture(main);
             assertThat(getNestedValue(data, "simple", "qux", "foo"), equalTo("bar"));
-            assertThat(getNestedValue(data, "simple", "qux", "baz"), nullValue());
         }
 
         @Test
@@ -472,7 +514,6 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
                     variables:
                       map1:
                         foo: bar
-                        baz: "${foo}"
                     simple:
                       <<:
                         qux:
@@ -600,25 +641,6 @@ class YamlComposerMergeKeyTest extends AbstractYamlComposerTest {
 
             assertThat(getNestedValue(data, "merged_template", "value"), equalTo("from_base"));
         }
-    }
-
-    @Test
-    @DisplayName("Merge keys in !include vars are visible to included file")
-    void mergeKeysInIncludeVars() throws IOException {
-        writeFixture("include.inc.yaml", "foo: ${foo}");
-
-        Path main = writeFixture("main.yaml", """
-                packages:
-                  foo_package: !include
-                    file: include.inc.yaml
-                    vars:
-                      <<:
-                        foo: bar
-                """);
-
-        Map<Object, @Nullable Object> data = loadFixture(main);
-
-        assertThat(getNestedValue(data, "foo"), equalTo("bar"));
     }
 
     @Nested

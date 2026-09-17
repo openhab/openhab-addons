@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2;
 
-import java.util.Objects;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 
 /**
  * DTO for 'on' state of a light.
@@ -27,15 +24,8 @@ import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 public class OnState {
     private @Nullable Boolean on;
 
-    /**
-     * @throws DTOPresentButEmptyException to indicate that the DTO is present but empty.
-     */
-    public boolean isOn() throws DTOPresentButEmptyException {
-        Boolean on = this.on;
-        if (Objects.nonNull(on)) {
-            return on;
-        }
-        throw new DTOPresentButEmptyException("'on' DTO is present but empty");
+    public @Nullable Boolean getOn() {
+        return on;
     }
 
     public OnState setOn(boolean on) {

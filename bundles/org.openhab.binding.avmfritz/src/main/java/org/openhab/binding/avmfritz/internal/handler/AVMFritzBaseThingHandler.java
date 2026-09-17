@@ -474,11 +474,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 } else if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 } else if (command instanceof IncreaseDecreaseType) {
-                    brightness = currentDevice.getLevelControlModel().getLevelPercentage();
-                    if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                        brightness.add(BigDecimal.TEN);
-                    } else {
-                        brightness.subtract(BigDecimal.TEN);
+                    LevelControlModel levelControlModel = currentDevice.getLevelControlModel();
+                    if (levelControlModel != null) {
+                        brightness = levelControlModel.getLevelPercentage();
+                        brightness = IncreaseDecreaseType.INCREASE.equals(command) ? brightness.add(BigDecimal.TEN)
+                                : brightness.subtract(BigDecimal.TEN);
+                        brightness = brightness.max(BigDecimal.ZERO).min(PercentType.HUNDRED.toBigDecimal());
                     }
                 }
                 if (brightness != null) {
@@ -520,33 +521,31 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 }
                 break;
             case CHANNEL_SETTEMP:
-                BigDecimal temperature = null;
+                BigDecimal fritzTemperature = null;
                 if (command instanceof DecimalType decimalCommand) {
-                    temperature = normalizeCelsius(decimalCommand.toBigDecimal());
+                    fritzTemperature = fromCelsius(normalizeCelsius(decimalCommand.toBigDecimal()));
                 } else if (command instanceof QuantityType quantityCommand) {
                     @SuppressWarnings("unchecked")
                     QuantityType<Temperature> convertedCommand = ((QuantityType<Temperature>) command)
                             .toUnit(SIUnits.CELSIUS);
                     if (convertedCommand != null) {
-                        temperature = normalizeCelsius(convertedCommand.toBigDecimal());
+                        fritzTemperature = fromCelsius(normalizeCelsius(convertedCommand.toBigDecimal()));
                     } else {
                         logger.warn("Unable to convert unit from '{}' to '{}'. Skipping command.",
                                 quantityCommand.getUnit(), SIUnits.CELSIUS);
                     }
                 } else if (command instanceof IncreaseDecreaseType) {
-                    temperature = currentDevice.getHkr().getTsoll();
-                    if (IncreaseDecreaseType.INCREASE.equals(command)) {
-                        temperature.add(BigDecimal.ONE);
-                    } else {
-                        temperature.subtract(BigDecimal.ONE);
-                    }
+                    BigDecimal temperature = toCelsius(currentDevice.getHkr().getTsoll());
+                    temperature = IncreaseDecreaseType.INCREASE.equals(command) ? temperature.add(BigDecimal.ONE)
+                            : temperature.subtract(BigDecimal.ONE);
+                    fritzTemperature = fromCelsius(temperature);
                 } else if (command instanceof OnOffType) {
-                    temperature = OnOffType.ON.equals(command) ? TEMP_FRITZ_ON : TEMP_FRITZ_OFF;
+                    fritzTemperature = OnOffType.ON.equals(command) ? TEMP_FRITZ_ON : TEMP_FRITZ_OFF;
                 }
-                if (temperature != null) {
-                    fritzBox.setSetTemp(ain, fromCelsius(temperature));
+                if (fritzTemperature != null) {
+                    fritzBox.setSetTemp(ain, fritzTemperature);
                     HeatingModel heatingModel = currentDevice.getHkr();
-                    heatingModel.setTsoll(temperature);
+                    heatingModel.setTsoll(fritzTemperature);
                     updateState(CHANNEL_RADIATOR_MODE, new StringType(heatingModel.getRadiatorMode()));
                 }
                 break;

@@ -41,6 +41,7 @@ import io.opentelemetry.api.logs.Severity;
  * The {@link OpenTelemetryLogListenerTest} class contains tests for logging mapping logic.
  *
  * @author Florian Hotze - Initial contribution
+ * @author Florian Lettner - Add unit tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -50,6 +51,31 @@ public class OpenTelemetryLogListenerTest {
 
     private @Mock @NonNullByDefault({}) Logger otelLogger;
     private @Mock(answer = Answers.RETURNS_SELF) @NonNullByDefault({}) LogRecordBuilder logRecordBuilder;
+
+    @Test
+    public void testOwnLoggerSuppression() {
+        OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
+
+        // Our bundle logger — must be suppressed
+        LogEntry bundleEntry = mock(LogEntry.class);
+        when(bundleEntry.getLogLevel()).thenReturn(LogLevel.WARN);
+        when(bundleEntry.getLoggerName()).thenReturn("org.openhab.io.opentelemetry.internal.OpenTelemetryService");
+        listener.logged(bundleEntry);
+
+        verify(otelLogger, never()).logRecordBuilder();
+
+        // Unrelated logger — must pass through
+        when(otelLogger.logRecordBuilder()).thenReturn(logRecordBuilder);
+        LogEntry otherEntry = mock(LogEntry.class);
+        when(otherEntry.getLogLevel()).thenReturn(LogLevel.INFO);
+        when(otherEntry.getTime()).thenReturn(0L);
+        when(otherEntry.getMessage()).thenReturn("test");
+        when(otherEntry.getLoggerName()).thenReturn("org.openhab.core.something");
+        when(otherEntry.getThreadInfo()).thenReturn("main");
+        when(otherEntry.getException()).thenReturn(null);
+        listener.logged(otherEntry);
+        verify(otelLogger, times(1)).logRecordBuilder();
+    }
 
     @Test
     public void testLoggedBasic() {
@@ -157,7 +183,7 @@ public class OpenTelemetryLogListenerTest {
     }
 
     @Test
-    public void testOpenTelemetryInternalLoggingIgnored() {
+    public void testOpenTelemetryExporterLoggingIgnored() {
         OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
 
         LogEntry logEntry = mock(LogEntry.class);
@@ -170,5 +196,51 @@ public class OpenTelemetryLogListenerTest {
 
         // Verify that the listener returns early and does not call any methods on the OTel Logger
         verifyNoInteractions(otelLogger);
+    }
+
+    @Test
+    public void testOpenTelemetrySdkLoggingIgnored() {
+        // SDK batch processors (e.g. BatchLogRecordProcessor) log under io.opentelemetry.sdk.*
+        // and must be suppressed to prevent re-ingesting export-failure log lines
+        OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
+
+        LogEntry logEntry = mock(LogEntry.class);
+        when(logEntry.getLoggerName()).thenReturn("io.opentelemetry.sdk.logs.export.BatchLogRecordProcessor");
+        when(logEntry.getLogLevel()).thenReturn(LogLevel.WARN);
+        when(logEntry.getMessage()).thenReturn("Timeout when waiting for signals to be sent to the exporter");
+        when(logEntry.getTime()).thenReturn(System.currentTimeMillis());
+
+        listener.logged(logEntry);
+
+        verifyNoInteractions(otelLogger);
+    }
+
+    @Test
+    public void testMicrometerLoggingIgnored() {
+        // The Micrometer OTLP registry logs metrics export failures under io.micrometer.*
+        // and must be suppressed for the same reason as the OTel SDK loggers
+        OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
+
+        LogEntry logEntry = mock(LogEntry.class);
+        when(logEntry.getLoggerName()).thenReturn("io.micrometer.registry.otlp.OtlpMeterRegistry");
+        when(logEntry.getLogLevel()).thenReturn(LogLevel.WARN);
+        when(logEntry.getMessage()).thenReturn("Failed to publish metrics to OTLP receiver");
+        when(logEntry.getTime()).thenReturn(System.currentTimeMillis());
+
+        listener.logged(logEntry);
+
+        verifyNoInteractions(otelLogger);
+    }
+
+    @Test
+    public void testRuntimeExceptionDuringLoggingIsSwallowed() {
+        when(otelLogger.logRecordBuilder()).thenThrow(new RuntimeException("boom"));
+        OpenTelemetryLogListener listener = new OpenTelemetryLogListener(otelLogger);
+
+        LogEntry logEntry = mock(LogEntry.class);
+        when(logEntry.getLogLevel()).thenReturn(LogLevel.INFO);
+        when(logEntry.getLoggerName()).thenReturn("org.openhab.test");
+
+        assertDoesNotThrow(() -> listener.logged(logEntry));
     }
 }

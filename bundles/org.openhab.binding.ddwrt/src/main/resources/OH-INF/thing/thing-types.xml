@@ -404,7 +404,7 @@
 	<channel-type id="if-in">
 		<item-type>Number:DataAmount</item-type>
 		<label>LAN In</label>
-		<description>Total bytes received on the LAN bridge interface (br0)</description>
+		<description>Total bytes received on the LAN or primary network interface</description>
 		<category>Network</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -415,7 +415,7 @@
 	<channel-type id="if-out">
 		<item-type>Number:DataAmount</item-type>
 		<label>LAN Out</label>
-		<description>Total bytes sent on the LAN bridge interface (br0)</description>
+		<description>Total bytes sent on the LAN or primary network interface</description>
 		<category>Network</category>
 		<tags>
 			<tag>Measurement</tag>

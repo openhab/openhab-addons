@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogListener;
+import org.slf4j.LoggerFactory;
 
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -32,9 +33,11 @@ import io.opentelemetry.api.logs.Severity;
  * and forwards logs to OpenTelemetry.
  *
  * @author Florian Hotze - Initial contribution
+ * @author Florian Lettner - Add own-logger suppression
  */
 @NonNullByDefault
 public class OpenTelemetryLogListener implements LogListener {
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(OpenTelemetryLogListener.class);
     private final Logger otelLogger;
 
     public OpenTelemetryLogListener(Logger otelLogger) {
@@ -43,47 +46,52 @@ public class OpenTelemetryLogListener implements LogListener {
 
     @Override
     public void logged(@NonNullByDefault({}) LogEntry logEntry) {
+        // Suppress our own bundle, the OTel SDK and Micrometer to break the export-failure feedback loop
+        // (e.g. a 403 from the OTLP endpoint would otherwise be re-ingested and re-exported).
         String loggerName = logEntry.getLoggerName();
-
-        // Prevent logging loop
-        if (loggerName.startsWith("io.opentelemetry.")) {
+        if (loggerName.startsWith("org.openhab.io.opentelemetry") || loggerName.startsWith("io.opentelemetry.")
+                || loggerName.startsWith("io.micrometer.")) {
             return;
         }
 
-        Severity severity = mapSeverity(logEntry.getLogLevel());
+        try {
+            Severity severity = mapSeverity(logEntry.getLogLevel());
 
-        var logRecordBuilder = otelLogger.logRecordBuilder().setTimestamp(Instant.ofEpochMilli(logEntry.getTime())) //
-                .setObservedTimestamp(Instant.now()) //
-                .setSeverity(severity) //
-                .setSeverityText(severity.name()) //
-                .setBody(logEntry.getMessage());
+            var logRecordBuilder = otelLogger.logRecordBuilder().setTimestamp(Instant.ofEpochMilli(logEntry.getTime())) //
+                    .setObservedTimestamp(Instant.now()) //
+                    .setSeverity(severity) //
+                    .setSeverityText(severity.name()) //
+                    .setBody(logEntry.getMessage());
 
-        AttributesBuilder attributesBuilder = Attributes.builder() //
-                .put("log.logger.name", loggerName) //
-                .put("thread.name", logEntry.getThreadInfo());
+            AttributesBuilder attributesBuilder = Attributes.builder() //
+                    .put("log.logger.name", loggerName) //
+                    .put("thread.name", logEntry.getThreadInfo());
 
-        @Nullable
-        Throwable exception = logEntry.getException();
-        if (exception != null) {
-            StringWriter sw = new StringWriter();
-            try (PrintWriter pw = new PrintWriter(sw)) {
-                exception.printStackTrace(pw);
+            @Nullable
+            Throwable exception = logEntry.getException();
+            if (exception != null) {
+                StringWriter sw = new StringWriter();
+                try (PrintWriter pw = new PrintWriter(sw)) {
+                    exception.printStackTrace(pw);
+                }
+                String stackTrace = sw.toString();
+
+                String exceptionMessage = exception.getMessage();
+                if (exceptionMessage == null) {
+                    exceptionMessage = exception.getClass().getName();
+                }
+
+                attributesBuilder //
+                        .put("exception.type", exception.getClass().getName()) //
+                        .put("exception.message", exceptionMessage) //
+                        .put("exception.stacktrace", stackTrace);
             }
-            String stackTrace = sw.toString();
 
-            String exceptionMessage = exception.getMessage();
-            if (exceptionMessage == null) {
-                exceptionMessage = exception.getClass().getName();
-            }
-
-            attributesBuilder //
-                    .put("exception.type", exception.getClass().getName()) //
-                    .put("exception.message", exceptionMessage) //
-                    .put("exception.stacktrace", stackTrace);
+            logRecordBuilder.setAllAttributes(attributesBuilder.build());
+            logRecordBuilder.emit();
+        } catch (RuntimeException e) {
+            logger.trace("Failed to forward log entry to OpenTelemetry: {}", e.getMessage());
         }
-
-        logRecordBuilder.setAllAttributes(attributesBuilder.build());
-        logRecordBuilder.emit();
     }
 
     private Severity mapSeverity(LogLevel logLevel) {

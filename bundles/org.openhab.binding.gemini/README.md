@@ -31,6 +31,7 @@ API keys can be created and managed under Google AI Studio: <https://aistudio.go
 | temperature     | decimal | A value between 0.0 and 1.0, where higher values make the output more random and lower values make it more focused and deterministic.    | 1.0                   | no       | yes      |
 | topP            | decimal | A value between 0.0 and 1.0 for nucleus sampling, where the model considers the results of the tokens with topP probability mass.        | 1.0                   | no       | yes      |
 | maxOutputTokens | integer | The maximum number of tokens to include in a candidate.                                                                                  | 2048                  | no       | yes      |
+| maxModelTurns   | integer | The maximum number of interaction turns with the model allowed in a single request to prevent infinite loops and excess resource usage.  | 10                    | no       | yes      |
 
 It is generally recommended to either alter temperature or topP, but not both.
 For Gemini 3.x models, Google recommends keeping both values at their default.
@@ -158,7 +159,7 @@ The `account` Thing automatically registers a human language interpreter impleme
 To configure the Gemini HLI as default, go to _Settings_ → _Voice_ and select _Gemini Human Language Interpreter_ as default.
 
 In that place, you can also configure the system prompt used to instruct the LLM on how to process the user's input.
-The used model, temperature, topP and maximum output tokens parameters can be configured in the thing configuration.
+The used model, temperature, topP, maximum output tokens and maximum model turns parameters can be configured in the thing configuration.
 
 For more information on human language interpreters, refer to the [Voice documentation](/docs/configuration/multimedia.html#human-language-interpreter).
 
@@ -167,7 +168,7 @@ For more information on human language interpreters, refer to the [Voice documen
 ### Thing Configuration
 
 ```java
-Thing gemini:account:myaccount [apiKey="xxx-yyy-zzz", model="gemini-3.1-flash-lite", temperature=1.0, topP=1.0, maxOutputTokens=2048, requestTimeout=30] {
+Thing gemini:account:myaccount [apiKey="xxx-yyy-zzz", model="gemini-3.1-flash-lite", temperature=1.0, topP=1.0, maxOutputTokens=2048, maxModelTurns=10, requestTimeout=30] {
   Channels:
     Type chat : chat "Chat" [model="gemini-3.1-flash-lite", temperature=1.0, topP=1.0, maxOutputTokens=2048, systemMessage="You are a helpful assistant."]
 }

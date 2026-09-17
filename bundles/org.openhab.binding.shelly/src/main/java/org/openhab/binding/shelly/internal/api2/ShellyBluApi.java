@@ -50,6 +50,8 @@ import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,8 +88,11 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private static final int PID_CYCLE_TRESHOLD = 50;
     private long lastTimeStampPacket = 0;
     private static final int PACKET_TIMESTAMP_TRESHOLD = 10;
+    private static final String[] COMPASS_POINTS = { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW",
+            "WSW", "W", "WNW", "NW", "NNW" };
     private @Nullable Integer warnedDataVersion;
     private boolean warnedDataVersionSet;
+    private final LocationProvider locationProvider;
 
     /**
      * Regular constructor - called by Thing handler
@@ -96,10 +101,14 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      * @param thingTable Table of known things (build at runtime)
      * @param thing Thing Handler (ThingHandlerInterface)
      * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
+     * @param locationProvider openHAB's system location service, used as a fallback to derive the WS90
+     *            station altitude when {@code altitude} is not manually configured
      */
     public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
-            ShellyApiConfiguration config, WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
+            ShellyApiConfiguration config, WebSocketClient webSocketClient, ScheduledExecutorService scheduler,
+            LocationProvider locationProvider) {
         super(thingName, thingTable, thing, config, webSocketClient, scheduler);
+        this.locationProvider = locationProvider;
 
         ThingTypeUID uid = thing.getThing().getThingTypeUID();
         profile.initializeInputs(uid, SHELLY_BTNT_MOMENTARY);
@@ -345,13 +354,13 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                             }
                         }
                         // BTHome sends the WS90's Direction object twice per packet: wind direction, then gust
-                        // direction
+                        // direction (the gust direction is not exposed - the device reports the same value as the
+                        // wind direction, so it carries no extra information)
                         Double[] directions = blu.directions;
                         if (directions != null && directions.length >= 1) {
-                            sensorData.windDirection = directions[0];
-                            if (directions.length >= 2) {
-                                sensorData.gustDirection = directions[1];
-                            }
+                            Double direction = directions[0];
+                            sensorData.windDirection = direction;
+                            sensorData.windDirectionStr = direction != null ? windDirectionLabel(direction) : null;
                         }
                         if (blu.uvIndex != null) {
                             sensorData.uvIndex = blu.uvIndex;
@@ -364,6 +373,21 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         }
                         if (blu.precipitation != null) {
                             sensorData.precipitation = blu.precipitation;
+                        }
+                        if (profile.isWS90) {
+                            ShellySensorTmp tmp = sensorData.tmp;
+                            ShellySensorHum hum = sensorData.hum;
+                            Double tC = tmp != null ? tmp.tC : null;
+                            Double rH = hum != null ? hum.value : null;
+                            Double windSpeed = sensorData.windSpeed;
+                            if (tC != null && rH != null && windSpeed != null) {
+                                sensorData.apparentTemp = apparentTemperature(tC, rH, windSpeed);
+                            }
+                            Double pressure = sensorData.pressure;
+                            if (pressure != null) {
+                                sensorData.seaLevelPressure = seaLevelPressure(pressure, tC,
+                                        resolveAltitude(t.getThingConfig().getAltitude()));
+                            }
                         }
                         Long firmware32 = blu.firmware32;
                         if (firmware32 != null) {
@@ -493,5 +517,42 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                 digit2 + "." + digit3 + "." + digit4; // 24 bit
         logger.debug("{}: Detected firmware version: {}", thingName, strFirmware);
         return strFirmware;
+    }
+
+    /** Maps a wind direction in degrees to a 16-point compass rose label, e.g. "NNE". */
+    static String windDirectionLabel(double degrees) {
+        int idx = (int) Math.floor((((degrees % 360) + 360) % 360 + 11.25) / 22.5) % 16;
+        return COMPASS_POINTS[idx];
+    }
+
+    /**
+     * Steadman Apparent Temperature (Australian Bureau of Meteorology), applied continuously so the result never
+     * jumps at a threshold. Takes °C, % and m/s, returns °C.
+     */
+    static double apparentTemperature(double tC, double rH, double windMs) {
+        double e = (rH / 100.0) * 6.105 * Math.exp(17.27 * tC / (237.7 + tC));
+        return tC + 0.33 * e - 0.70 * windMs - 4.00;
+    }
+
+    /**
+     * Reduces station pressure (hPa) to sea level (QNH) via the international barometric formula, so readings from
+     * stations at different altitudes are comparable. Temperature defaults to 15°C when unavailable.
+     */
+    static double seaLevelPressure(double stationHpa, @Nullable Double tC, int altitudeM) {
+        if (altitudeM == 0) {
+            return stationHpa;
+        }
+        double lapseRate = 0.0065; // K/m
+        double t0K = (tC != null ? tC : 15.0) + 273.15;
+        return stationHpa * Math.pow(1 - (lapseRate * altitudeM) / (t0K + lapseRate * altitudeM / 2.0), -5.255);
+    }
+
+    /** Falls back to openHAB's system location when the thing's altitude is not configured. */
+    private int resolveAltitude(int configuredAltitudeM) {
+        if (configuredAltitudeM != 0) {
+            return configuredAltitudeM;
+        }
+        PointType location = locationProvider.getLocation();
+        return location != null ? location.getAltitude().intValue() : 0;
     }
 }

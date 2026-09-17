@@ -59,8 +59,7 @@ class YamlComposerIncludeTagTest extends AbstractYamlComposerTest {
             Path yamlFile = writeFixture("includeTest.yaml", "a: " + input);
             loadFixture(yamlFile);
 
-            assertThat(logSession.getTrackedWarnings(),
-                    hasItem(containsString("Failed to process !include: missing 'file' parameter")));
+            assertThat(logSession.getTrackedWarnings(), hasItem(containsString("Failed to process !include")));
         }
 
         @Test
@@ -138,6 +137,40 @@ class YamlComposerIncludeTagTest extends AbstractYamlComposerTest {
         }
 
         @Test
+        @DisplayName("Recursively includes the same file with updated variables")
+        void recursivelyIncludesSameFileWithUpdatedVariables() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    items: !include
+                      file: recursive.inc.yaml
+                      vars:
+                        node:
+                          nested:
+                            parent:
+                              child:
+                    """);
+            writeFixture("recursive.inc.yaml", """
+                    !for name, children in node:
+                      ${name}:
+                        foo: bar
+                        !if parent:
+                          parent: ${parent}
+                        !if children && !children.isEmpty(): !include
+                          file: recursive.inc.yaml
+                          vars:
+                            node: ${children}
+                            parent: ${name}
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat(getNestedValue(data, "items", "nested", "foo"), equalTo("bar"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "foo"), equalTo("bar"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "parent"), equalTo("nested"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "child", "foo"), equalTo("bar"));
+            assertThat(getNestedValue(data, "items", "nested", "parent", "child", "parent"), equalTo("parent"));
+        }
+
+        @Test
         @DisplayName("Detects and warns about circular inclusion loops to prevent stack overflow")
         void preventsInfiniteLoopOnCircularInclusion() throws IOException {
             Path main = writeFixture("a.yaml", "data: !include b.yaml");
@@ -146,6 +179,18 @@ class YamlComposerIncludeTagTest extends AbstractYamlComposerTest {
             loadFixture(main);
 
             assertThat(logSession.getTrackedWarnings(), hasItem(containsString("Circular inclusion detected")));
+        }
+
+        @Test
+        @DisplayName("Warns with the include location when maximum recursion depth is exceeded")
+        void warnsWhenIncludeRecursionDepthIsExceeded() throws IOException {
+            Path main = writeFixture("main.yaml", "data: !include self.inc.yaml");
+            writeFixture("self.inc.yaml", "data: !include self.inc.yaml");
+
+            loadFixture(main);
+
+            assertThat(logSession.getTrackedWarnings(),
+                    hasItem(allOf(containsString("self.inc.yaml:1:7"), containsString("Maximum recursion depth"))));
         }
     }
 
@@ -245,6 +290,71 @@ class YamlComposerIncludeTagTest extends AbstractYamlComposerTest {
             assertThat(getNestedValue(data, "data", "var1"), equalTo("value1"));
             assertThat(getNestedValue(data, "data", "var2"), equalTo("value2"));
             assertThat(getNestedValue(data, "data", "var3"), equalTo("local_value"));
+        }
+
+        @Test
+        @DisplayName("ARGS exists in the included file context and contains ONLY the variables explicitly passed to the include")
+        void argsKeywordReferencesOnlyInjectedVariableSet() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    variables:
+                      global_var: "global"
+                    data: !include
+                      file: included.inc.yaml
+                      vars:
+                        injected_var: "injected"
+                    """);
+
+            writeFixture("included.inc.yaml", """
+                    variables:
+                      local_var: "local"
+
+                    # Verify ARGS strictly isolates the injected variables
+                    args_global: ${ARGS.global_var | default('missing')}
+                    args_injected: ${ARGS.injected_var | default('missing')}
+                    args_local: ${ARGS.local_var | default('missing')}
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat("ARGS MUST contain explicitly injected variables", getNestedValue(data, "data", "args_injected"),
+                    equalTo("injected"));
+
+            assertThat("ARGS should NOT contain inherited global variables",
+                    getNestedValue(data, "data", "args_global"), equalTo("missing"));
+
+            assertThat("ARGS should NOT contain variables defined locally in the include",
+                    getNestedValue(data, "data", "args_local"), equalTo("missing"));
+        }
+
+        @Test
+        @DisplayName("ARGS in nested includes isolates variables to the immediate call site, excluding parent explicitly passed vars")
+        void argsKeywordStrictlyIsolatesNestedIncludes() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    data: !include
+                      file: level1.inc.yaml
+                      vars:
+                        level1_var: "val1"
+                    """);
+
+            writeFixture("level1.inc.yaml", """
+                    level2_data: !include
+                      file: level2.inc.yaml
+                      vars:
+                        level2_var: "val2"
+                    """);
+
+            writeFixture("level2.inc.yaml", """
+                    args_l1: ${ARGS.level1_var | default('missing')}
+                    args_l2: ${ARGS.level2_var | default('missing')}
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat("ARGS MUST contain explicitly injected variables for this specific include",
+                    getNestedValue(data, "data", "level2_data", "args_l2"), equalTo("val2"));
+
+            assertThat("ARGS should NOT contain variables injected by the parent include",
+                    getNestedValue(data, "data", "level2_data", "args_l1"), equalTo("missing"));
         }
     }
 

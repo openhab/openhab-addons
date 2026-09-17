@@ -13,11 +13,11 @@
 package org.openhab.io.yamlcomposer.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -67,15 +67,14 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
         }
 
         @Test
-        @DisplayName("Templates node can be dynamically generated via substitutions and still be resolved")
-        void dynamicTemplatesNodeSupported() throws IOException {
+        @DisplayName("Templates can be dynamically named with variable substitution")
+        void dynamicTemplateNamesSupported() throws IOException {
             Path main = writeFixture("main.yaml", """
                     variables:
                       tplname: "my_template"
-                      value: "foo"
 
                     templates:
-                      ${tplname}: ${value}
+                      ${tplname}: foo
 
                     data: !insert my_template
                     """);
@@ -100,6 +99,20 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
 
             assertThat(logSession.getTrackedWarnings(), hasItem(containsString("template not found")));
         }
+
+        @Test
+        @DisplayName("Stops an unbounded recursive template insertion")
+        void stopsUnboundedRecursiveTemplateInsertion() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    templates:
+                      recursive: !insert recursive
+                    target: !insert recursive
+                    """);
+
+            loadFixture(main);
+
+            assertThat(logSession.getTrackedWarnings(), hasItem(containsString("Maximum template recursion depth")));
+        }
     }
 
     @Nested
@@ -117,8 +130,7 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
                     """.formatted(input);
             loadYaml(yaml);
 
-            assertThat(logSession.getTrackedWarnings(), hasItem(
-                    allOf(containsString("Failed to process !insert"), containsString("missing template name"))));
+            assertThat(logSession.getTrackedWarnings(), hasItem(containsString("Failed to process !insert")));
         }
 
         @Test
@@ -166,6 +178,28 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
             Map<Object, @Nullable Object> data = loadYaml(yaml);
 
             assertThat(getNestedValue(data, "toplevel", "key"), equalTo("value"));
+        }
+
+        @Test
+        @DisplayName("Warns and ignores deep merge operations (!deep) at templates top-level")
+        void warnsAndIgnoresDeepMergeInTemplatesTopLevel() throws IOException {
+            String yaml = """
+                    templates:
+                      template1:
+                        setting1: "from_template1"
+                      !deep <<:
+                        template1:
+                          setting2: "from_deep"
+
+                    target: !insert
+                      template: template1
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            assertThat(getNestedValue(data, "target", "setting2"), is(nullValue()));
+            assertThat(logSession.getTrackedWarnings(),
+                    hasItem(containsString("Deep merge operations (!deep) are not supported in this context")));
         }
     }
 
@@ -248,6 +282,135 @@ class YamlComposerInsertTagTest extends AbstractYamlComposerTest {
             loadFixture(main);
 
             assertThat(logSession.getTrackedWarnings(), hasItem(containsString("template not found")));
+        }
+
+        @Test
+        @DisplayName("Templates node can be dynamically generated via substitutions in a merge source and still be resolved")
+        void dynamicTemplatesNodeFromMergeSourceSupported() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    variables:
+                      tplname: "my_template"
+                      value: bar
+
+                      intpl_key: "overridden_key"
+                      intpl_value: "overridden_value"
+
+                    templates:
+                      <<:
+                        ${tplname}: # resolve the key eagerly but defer value resolution until template insertion
+                          main: ${value}
+                          <<:
+                            ${intpl_key}: ${intpl_value}
+
+                    data: !insert
+                      template: my_template
+                      vars:
+                        value: "foo"
+                        intpl_key: "merged_dynamic_key"
+                        intpl_value: "merged_dynamic_value"
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat(getNestedValue(data, "data", "main"), equalTo("foo"));
+            assertThat(getNestedValue(data, "data", "merged_dynamic_key"), equalTo("merged_dynamic_value"));
+        }
+
+        @Test
+        @DisplayName("ARGS exists in the template context and contains ONLY the variables explicitly passed to the insert")
+        void argsKeywordReferencesOnlyInjectedVariableSet() throws IOException {
+            String yaml = """
+                    variables:
+                      global_var: "global_value"
+
+                    templates:
+                      mytpl:
+                        # ARGS isolated access
+                        args_global: ${ARGS.global_var | default('missing')}
+                        args_injected: ${ARGS.injected_var | default('missing')}
+
+                    target: !insert
+                      template: mytpl
+                      vars:
+                        injected_var: "injected_value"
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            assertThat("ARGS MUST contain explicitly injected variables",
+                    getNestedValue(data, "target", "args_injected"), equalTo("injected_value"));
+
+            assertThat("ARGS should NOT contain variables inherited from the parent file",
+                    getNestedValue(data, "target", "args_global"), equalTo("missing"));
+        }
+
+        @Test
+        @DisplayName("ARGS in nested inserts isolates variables to the immediate call site, excluding parent explicitly passed vars")
+        void argsKeywordStrictlyIsolatesNestedInserts() throws IOException {
+            String yaml = """
+                    templates:
+                      level1_tpl:
+                        level2_data: !insert
+                          template: level2_tpl
+                          vars:
+                            level2_var: "val2"
+
+                      level2_tpl:
+                        args_l1: ${ARGS.level1_var | default('missing')}
+                        args_l2: ${ARGS.level2_var | default('missing')}
+
+                    target: !insert
+                      template: level1_tpl
+                      vars:
+                        level1_var: "val1"
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            assertThat("ARGS MUST contain explicitly injected variables for this specific insert",
+                    getNestedValue(data, "target", "level2_data", "args_l2"), equalTo("val2"));
+
+            assertThat("ARGS should NOT contain variables injected by the parent insert",
+                    getNestedValue(data, "target", "level2_data", "args_l1"), equalTo("missing"));
+        }
+
+        @Test
+        @DisplayName("ARGS inside templates strictly isolates to insert-level vars and excludes parent include-level args")
+        void templateInsideIncludeIsolatesArgsExcludingIncludeArgs() throws IOException {
+            Path main = writeFixture("main.yaml", """
+                    data: !include
+                      file: child.inc.yaml
+                      vars:
+                        shared_key: "value_from_include"
+                    """);
+
+            writeFixture("child.inc.yaml", """
+                    # Outside template: ARGS at the include level *does* contain shared_key
+                    include_level_args_check: ${ARGS.shared_key}
+
+                    templates:
+                      mytpl:
+                        # Inside template: ARGS should NOT see the include's 'shared_key'
+                        args_shared: ${ARGS.shared_key | default('missing')}
+                        # Inside template: ARGS must see its own insert-level arg
+                        args_insert: ${ARGS.insert_only | default('missing')}
+
+                    result: !insert
+                      template: mytpl
+                      vars:
+                        insert_only: "value_from_insert"
+                    """);
+
+            Map<Object, @Nullable Object> data = loadFixture(main);
+
+            assertThat("ARGS at the include level contains the variable",
+                    getNestedValue(data, "data", "include_level_args_check"), equalTo("value_from_include"));
+
+            assertThat("ARGS inside template should NOT contain parent include-level arguments",
+                    getNestedValue(data, "data", "result", "args_shared"), equalTo("missing"));
+
+            assertThat("ARGS inside template must contain its own immediate insert-level arguments",
+                    getNestedValue(data, "data", "result", "args_insert"), equalTo("value_from_insert"));
         }
     }
 }

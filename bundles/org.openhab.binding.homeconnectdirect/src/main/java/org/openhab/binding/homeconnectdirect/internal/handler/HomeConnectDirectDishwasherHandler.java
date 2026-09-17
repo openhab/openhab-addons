@@ -55,6 +55,11 @@ public class HomeConnectDirectDishwasherHandler extends BaseHomeConnectDirectHan
     }
 
     @Override
+    protected boolean isStopProgramCommandSupported() {
+        return true;
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
 

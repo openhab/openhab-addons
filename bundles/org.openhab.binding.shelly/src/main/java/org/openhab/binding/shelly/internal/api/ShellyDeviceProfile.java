@@ -16,6 +16,8 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_PRESENCE_ZONE_PREFIX;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -80,6 +82,7 @@ public class ShellyDeviceProfile {
     public String hwBatchId = "";
     public String fwVersion = "";
     public String fwDate = "";
+    public String addOnFw = "";
 
     public boolean hasRelays; // true if it has at least 1 power meter
     public int numRelays = 0; // number of relays/outputs
@@ -95,9 +98,11 @@ public class ShellyDeviceProfile {
     public boolean isLight; // true if it is a Shelly Bulb/RGBW2
     public boolean isBulb; // true only if it is a Bulb
     public boolean isDuo; // true only if it is a Duo
+    public boolean isVintage; // true only for Shelly Vintage (isDuo, but fixed warm-white, no CCT)
     public boolean isRGBW2; // true only if it a RGBW2
     public boolean isProRgbwwPm; // true only for a Shelly Pro RGBWW PM (device.profile alone can't tell it apart
                                  // from a Plus RGBW PM running the same rgb/rgbw/light profile)
+    public boolean isRGBCCT; // true for Gen3 Multicolor Bulb with rgbcct:0 component (RGB + CCT mode switching)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
     public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
 
@@ -116,6 +121,8 @@ public class ShellyDeviceProfile {
     public boolean isSmoke; // true for Shelly Smoke
     public boolean isFlood; // true for Shelly Flood (any generation)
     public boolean isWall; // true: Shelly Wall Display
+    public boolean isPresence; // true: Shelly Presence Gen4 (mmWave radar)
+    public String presenceMainZoneKey = SHELLY2_PRESENCE_ZONE_PREFIX + SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
     public boolean is3EM; // true for Shelly 3EM and Pro 3EM
     public String floodAlarmMode = ""; // Flood Gen4: alarm mode from Flood.GetConfig
     public int reportHoldoff = 0; // Flood Gen4: report holdoff in seconds
@@ -216,6 +223,8 @@ public class ShellyDeviceProfile {
         isDimmer = GROUP_DIMMER_THING_TYPES.contains(thingTypeUID);
         isBulb = THING_TYPE_SHELLYBULB.equals(thingTypeUID);
         isDuo = GROUP_DUO_THING_TYPES.contains(thingTypeUID);
+        isVintage = THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID);
+        isRGBCCT = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
         isProRgbwwPm = THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
@@ -239,13 +248,14 @@ public class ShellyDeviceProfile {
         isMultiButton = GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID);
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
+        isPresence = GROUP_PRESENCE_THING_TYPES.contains(thingTypeUID);
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
         isEM1 = GROUP_EM1_THING_TYPES.contains(thingTypeUID);
         isWS90 = THING_TYPE_SHELLYBLUWS90.equals(thingTypeUID);
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isMultiButton || isUNI || isMotion
-                || isSense || isTRV || isWall || isWS90;
+                || isSense || isTRV || isWall || isWS90 || isPresence;
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
         alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
                                                                    // sleep mode)

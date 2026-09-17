@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,7 +86,9 @@ public class ShellyChannelDefinitions {
     public static final String ITEMT_SPEED = "Number:Speed";
     public static final String ITEMT_VOLUME = "Number:Volume";
     public static final String ITEMT_TIME = "Number:Time"; // Seconds
+    public static final String ITEMT_DATA = "Number:DataAmount"; // Bytes
     public static final String ITEMT_PERCENT = "Number:Dimensionless"; // 0–100% (battery, humidity)
+    public static final String ITEMT_DIMENSIONLESS = "Number:Dimensionless"; // ratios (dB)
     public static final String ITEMT_PRESSURE = "Number:Pressure";
 
     // shortcuts to avoid line breaks (make code more readable)
@@ -101,6 +104,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_SENSOR = CHANNEL_GROUP_SENSOR;
     private static final String CHGR_CONTROL = CHANNEL_GROUP_CONTROL;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
+    private static final String CHGR_LORA = CHANNEL_GROUP_LORA;
 
     public static final String PREFIX_GROUP = "group-type." + BINDING_ID + ".";
     public static final String PREFIX_CHANNEL = "channel-type." + BINDING_ID + ".";
@@ -120,6 +124,9 @@ public class ShellyChannelDefinitions {
     private final CopyOnWriteArrayList<OptionEntry> stateOptions = new CopyOnWriteArrayList<>();
 
     private static final ChannelMap CHANNEL_DEFINITIONS = new ChannelMap();
+    // Channel types selected per device instead of per channel id, complete definitions keyed by channel type id
+    private static final Map<String, ShellyChannel> CHANNEL_TYPE_OVERRIDES = new HashMap<>();
+    public static final String CHANNEL_TYPE_WHITE_TEMP_DUO = "whiteTempDuo";
 
     @Activate
     public ShellyChannelDefinitions(@Reference ShellyTranslationProvider translationProvider) {
@@ -307,12 +314,16 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDSP, "sensorWindSpeed", ITEMT_SPEED))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDDIR, "sensorWindDirection", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_GUSTSP, "sensorGustSpeed", ITEMT_SPEED))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_GUSTDIR, "sensorGustDirection", ITEMT_ANGLE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_UV, "sensorUvIndex", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRESSURE, "sensorPressure", ITEMT_PRESSURE))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DEWPOINT, "sensorDewPoint", ITEMT_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRECIPITATION, "sensorPrecipitation",
                         ITEMT_DISTANCE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_WINDDIR_STR, "sensorWindDirectionStr",
+                        ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_APPARENT_TEMP, "sensorApparentTemp", ITEMT_TEMP))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SEALEVEL_PRESSURE, "sensorSeaLevelPressure",
+                        ITEMT_PRESSURE))
 
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEMT_STRING))
@@ -328,6 +339,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DIRECTION, "sensorDirection", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STEPS, "sensorSteps", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DISTANCE, "sensorDistance", ITEMT_DISTANCE))
+
+                // Presence sensor (mmWave)
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PRESENCE, "sensorPresence", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT, "sensorObjectCount", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CTRL_SENSOR_ENABLE, "presenceSensorEnable",
+                        ITEMT_SWITCH))
 
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
@@ -366,7 +383,22 @@ public class ShellyChannelDefinitions {
 
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_ALARM_MODE, "floodAlarmMode", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_REPORT_HOLDOFF, "floodReportHoldoff",
-                        ITEMT_TIME));
+                        ITEMT_TIME))
+
+                // LoRa Add-On
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXDATA, "loraRxData", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXDATARAW, "loraRxDataRaw", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RXBYTES, "loraRxBytes", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXDATA, "loraTxData", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXDATARAW, "loraTxDataRaw", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXBYTES, "loraTxBytes", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_TXERRORS, "loraTxErrors", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_SNR, "loraSNR", ITEMT_DIMENSIONLESS))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_AIRTIME, "loraAirtime", ITEMT_TIME))
+                .add(new ShellyChannel(m, CHGR_LORA, CHANNEL_LORA_RSSI, "loraSignal", ITEMT_POWER));
+
+        CHANNEL_TYPE_OVERRIDES.put(CHANNEL_TYPE_WHITE_TEMP_DUO, new ShellyChannel(m, CHANNEL_GROUP_WHITE_CONTROL,
+                CHANNEL_COLOR_TEMP, CHANNEL_TYPE_WHITE_TEMP_DUO, ITEMT_TEMP));
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
@@ -385,8 +417,8 @@ public class ShellyChannelDefinitions {
             group = CHANNEL_GROUP_STATUS; // map status1..n to meter
         }
 
-        if (channel.startsWith(CHANNEL_INPUT)) {
-            channel = CHANNEL_INPUT;
+        if (!CHGR_SENSOR.equals(group) && channel.startsWith(CHANNEL_INPUT)) {
+            channel = CHANNEL_INPUT; // status#input0..n -> status#input; sensors#input1 (Addon) is a fixed name
         } else if (channel.startsWith(CHANNEL_BUTTON_TRIGGER)) {
             channel = CHANNEL_BUTTON_TRIGGER;
         } else if (channel.startsWith(CHANNEL_STATUS_EVENTTYPE)) {
@@ -400,7 +432,7 @@ public class ShellyChannelDefinitions {
     }
 
     /**
-     * Auto-create relay channels depending on relay type/mode
+     * Auto-create device channels
      *
      * @return {@code ArrayList<Channel>} of channels to be added to the thing
      */
@@ -459,6 +491,51 @@ public class ShellyChannelDefinitions {
     }
 
     /**
+     * Auto-create channels for the LoRa Add-On
+     *
+     * @return {@code ArrayList<Channel>} of channels to be added to the thing
+     */
+    public static Map<String, Channel> createLoraChannels(final Thing thing, final ShellyDeviceProfile profile) {
+        Map<String, Channel> add = new LinkedHashMap<>();
+        if (!profile.settings.loraDetected) {
+            return add;
+        }
+
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RXDATA);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RXDATARAW);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RXBYTES);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXDATA);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXDATARAW);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXBYTES);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_TXERRORS);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_RSSI);
+        addChannel(thing, add, profile.settings.loraRxEnabled, CHGR_LORA, CHANNEL_LORA_SNR);
+        addChannel(thing, add, true, CHGR_LORA, CHANNEL_LORA_AIRTIME);
+
+        return add;
+    }
+
+    private static final Set<String> LORA_RX_ONLY_CHANNELS = Set.of(CHGR_LORA + "#" + CHANNEL_LORA_RXDATA,
+            CHGR_LORA + "#" + CHANNEL_LORA_RXDATARAW, CHGR_LORA + "#" + CHANNEL_LORA_RXBYTES,
+            CHGR_LORA + "#" + CHANNEL_LORA_RSSI, CHGR_LORA + "#" + CHANNEL_LORA_SNR);
+    private static final Set<String> LORA_ALL_CHANNELS = Set.of(CHGR_LORA + "#" + CHANNEL_LORA_RXDATA,
+            CHGR_LORA + "#" + CHANNEL_LORA_RXDATARAW, CHGR_LORA + "#" + CHANNEL_LORA_RXBYTES,
+            CHGR_LORA + "#" + CHANNEL_LORA_RSSI, CHGR_LORA + "#" + CHANNEL_LORA_SNR,
+            CHGR_LORA + "#" + CHANNEL_LORA_TXDATA, CHGR_LORA + "#" + CHANNEL_LORA_TXDATARAW,
+            CHGR_LORA + "#" + CHANNEL_LORA_TXBYTES, CHGR_LORA + "#" + CHANNEL_LORA_TXERRORS,
+            CHGR_LORA + "#" + CHANNEL_LORA_AIRTIME);
+
+    /**
+     * @return LoRa channel ids ("group#channel") stale for the current profile and to be removed
+     */
+    public static Set<String> getObsoleteLoraChannelIds(final ShellyDeviceProfile profile) {
+        if (!profile.settings.loraDetected) {
+            return LORA_ALL_CHANNELS;
+        }
+        return profile.settings.loraRxEnabled ? Set.of() : LORA_RX_ONLY_CHANNELS;
+    }
+
+    /**
      * Auto-create relay channels depending on relay type/mode
      *
      * @return {@code ArrayList<Channel>} of channels to be added to the thing
@@ -487,12 +564,14 @@ public class ShellyChannelDefinitions {
 
     private static void addAddonChannels(final Thing thing, final ShellyDeviceProfile profile, int idx,
             Map<String, Channel> add) {
-        // Shelly 1/1PM and Plus 1/1PM Addon
-        boolean addon = profile.settings.extSwitch != null && profile.settings.extSwitch.input0 != null
-                && idx == getInteger(profile.settings.extSwitch.input0.relayNum);
-        if (addon) {
-            addChannel(thing, add, addon, CHGR_SENSOR,
-                    CHANNEL_ESENSOR_INPUT + (profile.settings.extSwitch.input0.relayNum + 1));
+        // Shelly 1/1PM Addon as external switch (e.g. reed contact); relay_num -1 means standalone.
+        ShellyStatusSensor.ShellyExtSwitchSettings.ShellyExtSwitchSettingsInput extSwitchInput = profile.settings.extSwitch != null
+                ? profile.settings.extSwitch.input0
+                : null;
+        if (extSwitchInput != null) {
+            int relayNum = getInteger(extSwitchInput.relayNum);
+            boolean addon = idx == relayNum || (idx == 0 && relayNum == -1);
+            addChannel(thing, add, addon, CHGR_SENSOR, CHANNEL_ESENSOR_INPUT1);
         }
         ShellyStatusSensor.ShellyExtTemperature extTemp = profile.status.extTemperature;
         if (extTemp != null) {
@@ -541,13 +620,21 @@ public class ShellyChannelDefinitions {
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
             String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
-            // Create power channel in color mode and brightness channel in white mode
-            addChannel(thing, add, profile.hasColorTag(idx), group, CHANNEL_LIGHT_POWER);
+            // Gen3 Duo/Multicolor Bulb (isDuo && isGen2) has no power channel (brightness 0 = off); the Gen1 Duo RGBW
+            // keeps its documented one
+            addChannel(thing, add, profile.hasColorTag(idx) && !(profile.isDuo && profile.isGen2), group,
+                    CHANNEL_LIGHT_POWER);
             addChannel(thing, add, light.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, light.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
             addChannel(thing, add, status.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
             addChannel(thing, add, status.brightness != null, whiteGroup, CHANNEL_BRIGHTNESS);
-            addChannel(thing, add, status.temp != null, whiteGroup, CHANNEL_COLOR_TEMP);
+            // Gen3 Duo/Multicolor Bulb and Gen1 Bulb may omit ct while off, so their CCT channel is created
+            // unconditionally; the Gen3 bulbs get the Number:Temperature channel type (2700-6500K), Gen1 devices keep
+            // their Dimmer-based one
+            boolean isGen3Bulb = profile.isDuo && profile.isGen2;
+            boolean hasCCT = status.temp != null || isGen3Bulb || profile.isBulb;
+            addChannel(thing, add, hasCCT, whiteGroup, CHANNEL_COLOR_TEMP,
+                    isGen3Bulb ? CHANNEL_TYPE_WHITE_TEMP_DUO : null);
         }
 
         return add;
@@ -667,13 +754,38 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, hasMinute2, group, CHANNEL_METER_ENERGYHISTMIN2);
         addChannel(thing, newChannels, hasMinute3, group, CHANNEL_METER_ENERGYHISTMIN3);
         addChannel(thing, newChannels, hasMinute1 && hasMinute2 && hasMinute3, group, CHANNEL_METER_ENERGYAVGLAST3MIN);
+        // Non-PM Gen2 relays (e.g. Plus 1) report isEMeter=true but every emeter field stays permanently
+        // null, so a device actually has a power meter iff at least one of these fields is populated.
         // Per-meter reset is only meaningful when each meter has its own resettable counter component
         // (Switch/PM1/EM1Data). 3EM's emdata:0 aggregates all phases, so it resets at the device level only.
-        addChannel(thing, newChannels, !profile.is3EM, group, CHANNEL_EMETER_RESETTOTAL);
-        // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
-        // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
-        addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
+        boolean hasMeterData = always || emeter.total != null || emeter.totalReturned != null || hasMinute1
+                || hasMinute2 || hasMinute3;
+        addChannel(thing, newChannels, !profile.is3EM && hasMeterData, group, CHANNEL_EMETER_RESETTOTAL);
+        addChannel(thing, newChannels, hasMeterData, group, CHANNEL_LAST_UPDATE);
         return newChannels;
+    }
+
+    // Includes both the deprecated ids (currentWatts/totalKWH) and their replacements
+    // (currentPower/totalEnergy): ShellyChannelMigration adds the replacement alongside the
+    // deprecated channel on any Thing that already has it, so both must be reconciled away.
+    private static final Set<String> SIMPLE_METER_CHANNELS = Set.of(CHGR_METER + "#" + CHANNEL_METER_CURRENTWATTS,
+            CHGR_METER + "#" + CHANNEL_METER_CURRENTPOWER, CHGR_METER + "#" + CHANNEL_METER_TOTALKWH,
+            CHGR_METER + "#" + CHANNEL_METER_TOTALENERGY, CHGR_METER + "#" + CHANNEL_METER_ENERGYHISTMIN1,
+            CHGR_METER + "#" + CHANNEL_METER_ENERGYHISTMIN2, CHGR_METER + "#" + CHANNEL_METER_ENERGYHISTMIN3,
+            CHGR_METER + "#" + CHANNEL_METER_ENERGYAVGLAST3MIN, CHGR_METER + "#" + CHANNEL_LAST_UPDATE);
+
+    /**
+     * @return simple-meter channel ids ("group#channel") stale once resolveNumMeters() reports no metering
+     *         hardware for this device (numMeters == 0), left over on Things created before
+     *         THING_TYPE_CAP_NUM_METERS covered it, and to be removed. Never returned for EMeter/3EM or the
+     *         roller/RGBW2 aggregated-meter devices, which share several of the same channel ids under their
+     *         own code paths.
+     */
+    public static Set<String> getObsoleteMeterChannelIds(final ShellyDeviceProfile profile) {
+        if (profile.numMeters > 0 || profile.isEMeter || profile.isRoller || profile.isRGBW2) {
+            return Set.of();
+        }
+        return SIMPLE_METER_CHANNELS;
     }
 
     public static Map<String, Channel> createEMNCurrentChannels(final Thing thing,
@@ -704,6 +816,11 @@ public class ShellyChannelDefinitions {
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.flood != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD);
         addChannel(thing, newChannels, sdata.smoke != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE);
+        // Presence Gen4: the zone readings only appear once a zone matches the configured main zone,
+        // so gate them on the device type rather than on the value to keep the channel set complete.
+        addChannel(thing, newChannels, profile.isPresence, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESENCE);
+        addChannel(thing, newChannels, profile.isPresence, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_OBJECT_COUNT);
+        addChannel(thing, newChannels, profile.isPresence, CHANNEL_GROUP_CONTROL, CHANNEL_CTRL_SENSOR_ENABLE);
         // Flood Gen4 has no mute channel; a mute/unmute is reported via the device#alarm trigger instead
         addChannel(thing, newChannels, sdata.mute != null && profile.isSmoke, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_MUTE);
@@ -781,13 +898,17 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, ws90 || sdata.windDirection != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_WINDDIR);
         addChannel(thing, newChannels, ws90 || sdata.gustSpeed != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_GUSTSP);
-        addChannel(thing, newChannels, ws90 || sdata.gustDirection != null, CHANNEL_GROUP_SENSOR,
-                CHANNEL_SENSOR_GUSTDIR);
         addChannel(thing, newChannels, ws90 || sdata.uvIndex != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_UV);
         addChannel(thing, newChannels, ws90 || sdata.pressure != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PRESSURE);
         addChannel(thing, newChannels, ws90 || sdata.dewPoint != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DEWPOINT);
         addChannel(thing, newChannels, ws90 || sdata.precipitation != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_PRECIPITATION);
+        addChannel(thing, newChannels, ws90 || sdata.windDirectionStr != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_WINDDIR_STR);
+        addChannel(thing, newChannels, ws90 || sdata.apparentTemp != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_APPARENT_TEMP);
+        addChannel(thing, newChannels, ws90 || sdata.seaLevelPressure != null, CHANNEL_GROUP_SENSOR,
+                CHANNEL_SENSOR_SEALEVEL_PRESSURE);
 
         // Flood Gen4
         if (profile.isFlood && profile.isGen2) {
@@ -873,29 +994,42 @@ public class ShellyChannelDefinitions {
 
     private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
             String channelName) throws IllegalArgumentException {
+        addChannel(thing, newChannels, supported, group, channelName, null);
+    }
+
+    private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
+            String channelName, @Nullable String typeIdOverride) throws IllegalArgumentException {
         if (supported) {
-            String channelId = group + ChannelUID.CHANNEL_GROUP_SEPARATOR + channelName;
-            Channel channel = createChannel(thing, channelId, group, channelName);
+            // First-ever channel creation for a Thing: skip a deprecated name and create its replacement
+            // directly. Things that already have the deprecated channel get the replacement added
+            // alongside via ShellyChannelMigration instead.
+            String replacement = getReplacementChannelName(channelName);
+            String effectiveName = replacement != null ? replacement : channelName;
+            String channelId = group + ChannelUID.CHANNEL_GROUP_SEPARATOR + effectiveName;
+            Channel channel = createChannel(thing, channelId, group, effectiveName, typeIdOverride);
             if (channel != null) {
                 newChannels.put(channelId, channel);
-                String replacement = getReplacementChannelName(channelName);
-                if (replacement != null) {
-                    addChannel(thing, newChannels, true, group, replacement);
-                }
             }
         }
     }
 
     private static @Nullable Channel createChannel(Thing thing, String channelId, String group, String channelName)
             throws IllegalArgumentException {
+        return createChannel(thing, channelId, group, channelName, null);
+    }
+
+    private static @Nullable Channel createChannel(Thing thing, String channelId, String group, String channelName,
+            @Nullable String typeIdOverride) throws IllegalArgumentException {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-        ShellyChannel channelDef = getDefinition(channelId);
+        ShellyChannel channelDef = typeIdOverride != null ? CHANNEL_TYPE_OVERRIDES.get(typeIdOverride)
+                : getDefinition(channelId);
         if (channelDef == null) {
             return null;
         }
 
-        ChannelTypeUID channelTypeUID = channelDef.typeId.contains("system:") ? new ChannelTypeUID(channelDef.typeId)
-                : new ChannelTypeUID(BINDING_ID, channelDef.typeId);
+        String typeId = channelDef.typeId;
+        ChannelTypeUID channelTypeUID = typeId.contains("system:") ? new ChannelTypeUID(typeId)
+                : new ChannelTypeUID(BINDING_ID, typeId);
         ChannelBuilder builder;
         if ("system:button".equalsIgnoreCase(channelDef.typeId)) {
             builder = ChannelBuilder.create(channelUID, null).withKind(ChannelKind.TRIGGER);

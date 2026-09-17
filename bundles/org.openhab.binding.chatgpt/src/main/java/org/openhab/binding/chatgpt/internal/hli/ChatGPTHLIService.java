@@ -155,7 +155,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         }
         try {
             ChatResponse response = client.sendPrompt(config.model, text, DEFAULT_SYSTEM_MESSAGE, config.temperature,
-                    config.topP, config.maxTokens, config.requestTimeout);
+                    config.topP, config.maxTokens, config.reasoningEffort, config.requestTimeout);
             if (response.getChoices() != null && !response.getChoices().isEmpty()) {
                 ChatMessage responseMessage = response.getChoices().getFirst().getChatMessage();
                 if (responseMessage != null && responseMessage.getContent() != null) {
@@ -214,7 +214,8 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             ChatResponse chatResponse;
             try {
                 chatResponse = client.sendPrompt(config.model, conversation.getMessages(), tools, systemMessage,
-                        config.temperature, config.topP, config.maxTokens, config.requestTimeout);
+                        config.temperature, config.topP, config.maxTokens, config.reasoningEffort,
+                        config.requestTimeout);
             } catch (ChatGPTApiException e) {
                 logger.warn("Request to OpenAI failed: {}", e.getMessage(), e);
                 var ex = new InterpretationException(
