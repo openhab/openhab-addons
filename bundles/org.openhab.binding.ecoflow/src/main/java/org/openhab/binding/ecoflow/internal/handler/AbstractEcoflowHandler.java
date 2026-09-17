@@ -168,7 +168,6 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
 
     public void handleMqttConnected() {
         initTask.submit();
-        mqttMessageWatchdogTask.scheduleRecurring(2, TimeUnit.MINUTES, false);
     }
 
     public void handleQuotaMessage(JsonObject payload) {
@@ -212,11 +211,13 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
             logger.trace("{}: Update channel states from JSON data {}", serialNumber, data);
 
             updateStatesFromJson(data, mappingsByListId);
+            mqttMessageWatchdogTask.scheduleRecurring(2, TimeUnit.MINUTES, false);
             updateStatus(ThingStatus.ONLINE);
         } else {
             for (Channel channel : getThing().getChannels()) {
                 updateState(channel.getUID(), UnDefType.NULL);
             }
+            mqttMessageWatchdogTask.cancel();
             updateStatus(ThingStatus.OFFLINE);
         }
     }
