@@ -496,9 +496,16 @@ public class ShellyDeviceProfile {
             ShellySettingsInput input = inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {
-            if (dimmers != null && idx < dimmers.size()) {
-                // Gen2+: one input per dimmer channel, btnType derived from the Light component's in_mode
-                btnType = getString(dimmers.get(idx).btnType);
+            if (isGen2 && dimmers != null && !dimmers.isEmpty()) {
+                // Gen2+: inputs can be spread across multiple dimmer/light channels (e.g. Pro Dimmer 2PM:
+                // 4 inputs, 2 lights); map the input index to its channel the same way as getInputSuffix()
+                int numDimmer = dimmers.size();
+                int numChannels = numInputs / numDimmer; // inputs per dimmer channel
+                int dimmerIdx = numChannels == 0 ? idx : idx / numChannels;
+                if (dimmerIdx < numDimmer) {
+                    // btnType derived from the Light component's in_mode
+                    btnType = getString(dimmers.get(dimmerIdx).btnType);
+                }
             }
             if (btnType.isEmpty() && isGen2 && inputs != null && idx < inputs.size()) {
                 // in_mode not reported: fall back to button-vs-switch derived from the Input component type

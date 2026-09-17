@@ -741,6 +741,39 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 3, "2")); //
     }
 
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForDimmerButtonType")
+    void getButtonTypeForDimmer(ThingTypeUID thingTypeUID, int numDimmers, int numInputs, int inputIdx,
+            String expectedButtonType) throws Exception {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+        settingsGlobal.dimmers = IntStream.range(0, numDimmers).mapToObj(i -> {
+            ShellySettingsDimmer dimmer = new ShellySettingsDimmer();
+            dimmer.btnType = "light" + i;
+            return dimmer;
+        }).collect(Collectors.toCollection(ArrayList::new));
+        deviceProfile.initialize(thingTypeUID, gson.toJson(settingsGlobal), settingsDevice);
+        deviceProfile.numInputs = numInputs;
+
+        String actualButtonType = deviceProfile.getButtonType(inputIdx);
+        assertThat("thingType: " + thingTypeUID + ", numDimmers: " + numDimmers + ", numInputs: " + numInputs
+                + ", inputIdx: " + inputIdx, actualButtonType, is(equalTo(expectedButtonType)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForDimmerButtonType() {
+        return Stream.of( //
+                // Single dimmer channel: both inputs share the one light's in_mode
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, 1, 2, 0, "light0"), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, 1, 2, 1, "light0"), //
+                // Pro Dimmer 2PM: 4 inputs spread across 2 light channels, 2 inputs per channel
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 0, "light0"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 1, "light0"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 2, "light1"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 3, "light1"));
+    }
+
     @Test
     void inButtonModeForDualDimmerFallsBackToInputsWhenDimmerBtnTypeUnset() throws Exception {
         ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRODIMMER2PM);
