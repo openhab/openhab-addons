@@ -81,6 +81,7 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
             }
             mqttMappings.put(mapping.valueKey, mapping);
         }
+        initMqttMessageTimestamps();
     }
 
     @Override
@@ -236,15 +237,11 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
         final Instant now = Instant.now();
         Set<String> staleGroups = new HashSet<>();
         synchronized (mqttMessageTimestampsByGroup) {
-            if (mqttMessageTimestampsByGroup.isEmpty()) {
-                staleGroups.add("<all>");
-            } else {
-                for (Map.Entry<String, Instant> entry : mqttMessageTimestampsByGroup.entrySet()) {
-                    logger.trace("{}: MQTT message group {} last timestamp: {} ago", serialNumber, entry.getKey(),
-                            Duration.between(entry.getValue(), now));
-                    if (entry.getValue().plusSeconds(MQTT_MESSAGE_TIMEOUT_SECONDS).isBefore(now)) {
-                        staleGroups.add(entry.getKey());
-                    }
+            for (Map.Entry<String, Instant> entry : mqttMessageTimestampsByGroup.entrySet()) {
+                logger.trace("{}: MQTT message group {} last timestamp: {} ago", serialNumber, entry.getKey(),
+                        Duration.between(entry.getValue(), now));
+                if (entry.getValue().plusSeconds(MQTT_MESSAGE_TIMEOUT_SECONDS).isBefore(now)) {
+                    staleGroups.add(entry.getKey());
                 }
             }
         }
@@ -253,11 +250,20 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
                     staleGroups);
             final EcoflowApiHandler apiHandler = getApiHandler();
             if (apiHandler != null) {
-                mqttMessageWatchdogTask.cancel();
-                synchronized (mqttMessageTimestampsByGroup) {
-                    mqttMessageTimestampsByGroup.clear();
-                }
+                // We're cancelling our own task, so we need to make sure we allow completion of the current run
+                mqttMessageWatchdogTask.cancel(false);
+                initMqttMessageTimestamps();
                 apiHandler.resubscribeToDevice(serialNumber);
+            }
+        }
+    }
+
+    private void initMqttMessageTimestamps() {
+        synchronized (mqttMessageTimestampsByGroup) {
+            final Instant now = Instant.now();
+            mqttMessageTimestampsByGroup.clear();
+            for (String groupKey : mappingsByMqttId.keySet()) {
+                mqttMessageTimestampsByGroup.put(groupKey, now);
             }
         }
     }

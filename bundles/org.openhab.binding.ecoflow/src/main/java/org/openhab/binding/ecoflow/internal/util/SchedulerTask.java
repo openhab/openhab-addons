@@ -78,11 +78,15 @@ public class SchedulerTask implements Runnable {
         future = scheduler.scheduleWithFixedDelay(runnable, initialDelay, interval, unit);
     }
 
-    public synchronized void cancel() {
+    public void cancel() {
+        cancel(true);
+    }
+
+    public synchronized void cancel(boolean mayInterruptIfRunning) {
         Future<?> future = this.future;
         this.future = null;
         if (future != null) {
-            future.cancel(true);
+            future.cancel(mayInterruptIfRunning);
             logger.trace("{}: Cancelled", prefixedName);
         }
     }

@@ -189,12 +189,15 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
                 connection = mqttConnection;
                 handlerData = activeChildHandlers.remove(deviceHandler.getSerialNumber());
                 handlersLeft = !activeChildHandlers.isEmpty();
+                if (!handlersLeft) {
+                    mqttConnection = null;
+                }
             }
             if (connection != null) {
-                if (handlersLeft && handlerData != null && handlerData.subscribed) {
-                    connection.unsubscribeFromDevice(handlerData.serialNumber);
-                } else if (!handlersLeft) {
+                if (!handlersLeft) {
                     connection.disconnect();
+                } else if (handlerData != null && handlerData.subscribed) {
+                    connection.unsubscribeFromDevice(handlerData.serialNumber);
                 }
             }
         }
