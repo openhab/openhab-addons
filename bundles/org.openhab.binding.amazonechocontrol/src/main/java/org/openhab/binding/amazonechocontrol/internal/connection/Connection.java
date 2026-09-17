@@ -644,10 +644,10 @@ public class Connection {
             String applianceId = device.findId();
             if (applianceId != null) {
                 JsonObject stateRequest;
-                if (device instanceof JsonSmartHomeDevice
-                        && ((JsonSmartHomeDevice) device).mergedApplianceIds != null) {
-                    List<String> mergedApplianceIds = Objects
-                            .requireNonNullElse(((JsonSmartHomeDevice) device).mergedApplianceIds, List.of());
+                List<String> mergedApplianceIds = device instanceof JsonSmartHomeDevice smartHomeDevice
+                        ? Objects.requireNonNullElse(smartHomeDevice.mergedApplianceIds, List.<String> of())
+                        : List.of();
+                if (!mergedApplianceIds.isEmpty()) {
                     for (String idToMerge : mergedApplianceIds) {
                         mergedApplianceMap.put(idToMerge, applianceId);
                         stateRequest = new JsonObject();
