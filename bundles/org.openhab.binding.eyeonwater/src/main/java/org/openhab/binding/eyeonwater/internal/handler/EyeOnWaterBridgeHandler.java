@@ -37,6 +37,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -94,7 +95,10 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        HttpClient clientInstance = factory.createHttpClient(BINDING_ID);
+        // A dedicated HttpClient per bridge instance is required for session cookie isolation
+        // so multiple EyeOnWater account bridges do not overwrite each other's cookies in the shared cookie store.
+        String clientName = ThingWebClientUtil.buildWebClientConsumerName(getThing().getUID(), null);
+        HttpClient clientInstance = factory.createHttpClient(clientName);
         try {
             clientInstance.start();
             this.httpClient = clientInstance;
