@@ -181,7 +181,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                                 "@text/offline.initialization-interrupted");
                     }
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 synchronized (EyeOnWaterBridgeHandler.this) {
                     if (activeClient.equals(client)) {
                         logger.error("Unexpected error during EyeOnWater API initialization", e);
@@ -293,7 +293,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                     }
                 }
                 break;
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 synchronized (this) {
                     if (activeClient.equals(client)) {
                         logger.error("Unexpected error polling EyeOnWater meter {}", meterHandler.getMeterId(), e);
@@ -352,7 +352,7 @@ public class EyeOnWaterBridgeHandler extends BaseBridgeHandler {
                                     meterHandler.updateStatusOffline("@text/offline.poll-interrupted");
                                 }
                             }
-                        } catch (Exception e) {
+                        } catch (RuntimeException e) {
                             synchronized (EyeOnWaterBridgeHandler.this) {
                                 if (activeClient.equals(client) && registeredMeters.contains(meterHandler)) {
                                     logger.error("Unexpected error during initial poll for meter {}",

@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.eyeonwater.internal.api;
 
-import static org.eclipse.jetty.http.HttpHeader.*;
-import static org.eclipse.jetty.http.HttpMethod.*;
-import static org.eclipse.jetty.http.HttpStatus.*;
+import static org.eclipse.jetty.http.HttpHeader.CONTENT_TYPE;
+import static org.eclipse.jetty.http.HttpHeader.USER_AGENT;
+import static org.eclipse.jetty.http.HttpMethod.GET;
+import static org.eclipse.jetty.http.HttpMethod.POST;
+import static org.eclipse.jetty.http.HttpStatus.FOUND_302;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
+import static org.eclipse.jetty.http.HttpStatus.SEE_OTHER_303;
+import static org.eclipse.jetty.http.HttpStatus.UNAUTHORIZED_401;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -43,6 +48,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
@@ -238,9 +244,7 @@ public class EyeOnWaterClient {
                     }
                 }
             }
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (JsonParseException e) {
             throw new IOException("Failed to parse or validate new_search response: " + e.getMessage(), e);
         }
         return meters;
@@ -285,9 +289,7 @@ public class EyeOnWaterClient {
                     }
                 }
             }
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (JsonParseException | IllegalStateException | ClassCastException e) {
             throw new IOException("Failed to parse scraped meters JSON: " + e.getMessage(), e);
         }
         return meters;
@@ -304,7 +306,12 @@ public class EyeOnWaterClient {
 
         String responseBody = sendRequestWithReauth(searchUrl, POST, "application/json", jsonPayload);
 
-        SearchResponseDTO response = gson.fromJson(responseBody, SearchResponseDTO.class);
+        SearchResponseDTO response;
+        try {
+            response = gson.fromJson(responseBody, SearchResponseDTO.class);
+        } catch (JsonParseException e) {
+            throw new IOException("Failed to parse meter search response: " + e.getMessage(), e);
+        }
         if (response == null || response.elasticResults == null) {
             throw new IOException("Search response did not contain 'elastic_results'");
         }
