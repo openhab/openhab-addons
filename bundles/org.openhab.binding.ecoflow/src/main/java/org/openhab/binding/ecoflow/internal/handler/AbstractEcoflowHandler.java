@@ -81,7 +81,6 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
             }
             mqttMappings.put(mapping.valueKey, mapping);
         }
-        initMqttMessageTimestamps();
     }
 
     @Override
@@ -211,6 +210,7 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
             logger.trace("{}: Update channel states from JSON data {}", serialNumber, data);
 
             updateStatesFromJson(data, mappingsByListId);
+            initMqttMessageTimestamps();
             mqttMessageWatchdogTask.scheduleRecurring(2, TimeUnit.MINUTES, false);
             updateStatus(ThingStatus.ONLINE);
         } else {
