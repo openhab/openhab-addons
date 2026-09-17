@@ -49,14 +49,14 @@
 		<config-description-ref uri="thing-type:ankersolix:device"/>
 	</thing-type>
 
-	<thing-type id="ankersolix-solarbank-ac">
+	<thing-type id="ankersolix-solarbank">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serial"/>
 			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
 
-		<label>Anker SOLIX Solarbank Max AC / XE AC</label>
-		<description>Anker SOLIX Solarbank Max AC or XE AC connected through Modbus.</description>
+		<label>Anker SOLIX Solarbank Max AC / XE / XE AC</label>
+		<description>Anker SOLIX Solarbank Max AC, XE, or XE AC connected through Modbus.</description>
 		<category>Battery</category>
 		<semantic-equipment-tag>Battery</semantic-equipment-tag>
 
@@ -111,6 +111,12 @@
 			<channel id="primary-total-active-power" typeId="ankersolix-meter-active-power">
 				<label>Primary Total Active Power</label>
 			</channel>
+			<channel id="primary-total-reactive-power" typeId="ankersolix-meter-reactive-power">
+				<label>Primary Total Reactive Power</label>
+			</channel>
+			<channel id="primary-total-power-factor" typeId="ankersolix-meter-power-factor">
+				<label>Primary Total Power Factor</label>
+			</channel>
 			<channel id="primary-phase-1-active-power" typeId="ankersolix-meter-active-power">
 				<label>Primary Phase 1 Active Power</label>
 			</channel>
@@ -140,9 +146,39 @@
 			<channel id="primary-phase-3-voltage" typeId="ankersolix-meter-voltage">
 				<label>Primary Phase 3 Voltage</label>
 			</channel>
+			<channel id="primary-phase-1-forward-active-energy" typeId="ankersolix-meter-energy">
+				<label>Primary Phase 1 Forward Active Energy</label>
+			</channel>
+			<channel id="primary-phase-2-forward-active-energy" typeId="ankersolix-meter-energy">
+				<label>Primary Phase 2 Forward Active Energy</label>
+			</channel>
+			<channel id="primary-phase-3-forward-active-energy" typeId="ankersolix-meter-energy">
+				<label>Primary Phase 3 Forward Active Energy</label>
+			</channel>
+			<channel id="primary-total-forward-active-energy" typeId="ankersolix-meter-energy">
+				<label>Primary Total Forward Active Energy</label>
+			</channel>
+			<channel id="primary-phase-1-reverse-active-energy" typeId="ankersolix-meter-energy">
+				<label>Primary Phase 1 Reverse Active Energy</label>
+			</channel>
+			<channel id="primary-phase-2-reverse-active-energy" typeId="ankersolix-meter-energy">
+				<label>Primary Phase 2 Reverse Active Energy</label>
+			</channel>
+			<channel id="primary-phase-3-reverse-active-energy" typeId="ankersolix-meter-energy">
+				<label>Primary Phase 3 Reverse Active Energy</label>
+			</channel>
+			<channel id="primary-total-reverse-active-energy" typeId="ankersolix-meter-energy">
+				<label>Primary Total Reverse Active Energy</label>
+			</channel>
 
 			<channel id="secondary-total-active-power" typeId="ankersolix-meter-active-power">
 				<label>Secondary Total Active Power</label>
+			</channel>
+			<channel id="secondary-total-reactive-power" typeId="ankersolix-meter-reactive-power">
+				<label>Secondary Total Reactive Power</label>
+			</channel>
+			<channel id="secondary-total-power-factor" typeId="ankersolix-meter-power-factor">
+				<label>Secondary Total Power Factor</label>
 			</channel>
 			<channel id="secondary-phase-1-active-power" typeId="ankersolix-meter-active-power">
 				<label>Secondary Phase 1 Active Power</label>
@@ -172,6 +208,30 @@
 			</channel>
 			<channel id="secondary-phase-3-voltage" typeId="ankersolix-meter-voltage">
 				<label>Secondary Phase 3 Voltage</label>
+			</channel>
+			<channel id="secondary-phase-1-forward-active-energy" typeId="ankersolix-meter-energy">
+				<label>Secondary Phase 1 Forward Active Energy</label>
+			</channel>
+			<channel id="secondary-phase-2-forward-active-energy" typeId="ankersolix-meter-energy">
+				<label>Secondary Phase 2 Forward Active Energy</label>
+			</channel>
+			<channel id="secondary-phase-3-forward-active-energy" typeId="ankersolix-meter-energy">
+				<label>Secondary Phase 3 Forward Active Energy</label>
+			</channel>
+			<channel id="secondary-total-forward-active-energy" typeId="ankersolix-meter-energy">
+				<label>Secondary Total Forward Active Energy</label>
+			</channel>
+			<channel id="secondary-phase-1-reverse-active-energy" typeId="ankersolix-meter-energy">
+				<label>Secondary Phase 1 Reverse Active Energy</label>
+			</channel>
+			<channel id="secondary-phase-2-reverse-active-energy" typeId="ankersolix-meter-energy">
+				<label>Secondary Phase 2 Reverse Active Energy</label>
+			</channel>
+			<channel id="secondary-phase-3-reverse-active-energy" typeId="ankersolix-meter-energy">
+				<label>Secondary Phase 3 Reverse Active Energy</label>
+			</channel>
+			<channel id="secondary-total-reverse-active-energy" typeId="ankersolix-meter-energy">
+				<label>Secondary Total Reverse Active Energy</label>
 			</channel>
 		</channels>
 
@@ -203,6 +263,7 @@
 			<channel id="real-time-power" typeId="ankersolix-smartplug-power"/>
 			<channel id="voltage" typeId="ankersolix-smartplug-voltage"/>
 			<channel id="current" typeId="ankersolix-smartplug-current"/>
+			<channel id="cumulative-energy" typeId="ankersolix-smartplug-energy"/>
 			<channel id="temperature" typeId="ankersolix-smartplug-temperature"/>
 			<channel id="power-switch" typeId="ankersolix-smartplug-power-switch"/>
 		</channels>
@@ -630,6 +691,35 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
+	<channel-type id="ankersolix-meter-reactive-power">
+		<item-type>Number:Power</item-type>
+		<label>Reactive Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-meter-power-factor">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Power Factor</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-meter-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Active Energy</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
 	<channel-type id="ankersolix-meter-current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
@@ -678,6 +768,16 @@
 			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ankersolix-smartplug-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Cumulative Energy</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ankersolix-smartplug-temperature">

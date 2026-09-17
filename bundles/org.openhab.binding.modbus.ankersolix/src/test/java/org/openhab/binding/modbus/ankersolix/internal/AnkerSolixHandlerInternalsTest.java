@@ -228,6 +228,19 @@ class AnkerSolixHandlerInternalsTest {
     }
 
     @Test
+    void operatingModeCommandShouldRespectEmsModeMask() throws Exception {
+        Map<Integer, Integer> registerCache = getField(handler, "registerCache");
+        registerCache.put(32774, 1 << 0);
+
+        invokeVoid(handler, "handleDeviceCommand", "operating-mode", new StringType("third_party_control"));
+        assertNull(invoke(handler, "getShadowState", "operating-mode"));
+
+        invokeVoid(handler, "handleDeviceCommand", "operating-mode", new StringType("self_consumption"));
+        State modeShadow = invoke(handler, "getShadowState", "operating-mode");
+        assertEquals(new StringType("self_consumption"), modeShadow);
+    }
+
+    @Test
     void chargingLimitSocShouldOnlySetShadowWithinRange() throws Exception {
         invokeVoid(handler, "handleDeviceCommand", "charging-limit-soc", new DecimalType("80"));
         State minShadow = invoke(handler, "getShadowState", "charging-limit-soc");
@@ -269,6 +282,70 @@ class AnkerSolixHandlerInternalsTest {
     }
 
     @Test
+    void backupReserveSocShouldRequireBackupSocEnableWhenKnownDisabled() throws Exception {
+        Map<Integer, Integer> registerCache = getField(handler, "registerCache");
+        registerCache.put(32775, (1 << 2) | (1 << 3));
+        registerCache.put(60003, 0);
+
+        invokeVoid(handler, "handleDeviceCommand", "backup-reserve-soc", new DecimalType("40"));
+        assertNull(invoke(handler, "getShadowState", "backup-reserve-soc"));
+    }
+
+    @Test
+    void backupReserveSocShouldValidateRelationsWhenBackupSocEnabled() throws Exception {
+        Map<Integer, Integer> registerCache = getField(handler, "registerCache");
+        registerCache.put(32775, (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3));
+        registerCache.put(60003, 1);
+        registerCache.put(60001, 10);
+        registerCache.put(60000, 90);
+
+        invokeVoid(handler, "handleDeviceCommand", "backup-reserve-soc", new DecimalType("9"));
+        assertNull(invoke(handler, "getShadowState", "backup-reserve-soc"));
+
+        invokeVoid(handler, "handleDeviceCommand", "backup-reserve-soc", new DecimalType("90"));
+        assertNull(invoke(handler, "getShadowState", "backup-reserve-soc"));
+
+        invokeVoid(handler, "handleDeviceCommand", "backup-reserve-soc", new DecimalType("10"));
+        State validShadow = invoke(handler, "getShadowState", "backup-reserve-soc");
+        assertInstanceOf(QuantityType.class, validShadow);
+        assertEquals(10, ((QuantityType<?>) validShadow).toBigDecimal().intValue());
+    }
+
+    @Test
+    void chargingAndDischargeSocShouldValidateRelationsWhenBackupSocEnabled() throws Exception {
+        Map<Integer, Integer> registerCache = getField(handler, "registerCache");
+        registerCache.put(32775, (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3));
+        registerCache.put(60003, 1);
+        registerCache.put(60001, 10);
+        registerCache.put(60002, 85);
+        registerCache.put(60000, 90);
+
+        invokeVoid(handler, "handleDeviceCommand", "charging-limit-soc", new DecimalType("85"));
+        assertNull(invoke(handler, "getShadowState", "charging-limit-soc"));
+
+        invokeVoid(handler, "handleDeviceCommand", "charging-limit-soc", new DecimalType("86"));
+        State chargingShadow = invoke(handler, "getShadowState", "charging-limit-soc");
+        assertInstanceOf(QuantityType.class, chargingShadow);
+        assertEquals(86, ((QuantityType<?>) chargingShadow).toBigDecimal().intValue());
+
+        handler = newHandler();
+        registerCache = getField(handler, "registerCache");
+        registerCache.put(32775, (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3));
+        registerCache.put(60003, 1);
+        registerCache.put(60001, 10);
+        registerCache.put(60002, 15);
+        registerCache.put(60000, 90);
+
+        invokeVoid(handler, "handleDeviceCommand", "discharge-limit-soc", new DecimalType("16"));
+        assertNull(invoke(handler, "getShadowState", "discharge-limit-soc"));
+
+        invokeVoid(handler, "handleDeviceCommand", "discharge-limit-soc", new DecimalType("15"));
+        State dischargeShadow = invoke(handler, "getShadowState", "discharge-limit-soc");
+        assertInstanceOf(QuantityType.class, dischargeShadow);
+        assertEquals(15, ((QuantityType<?>) dischargeShadow).toBigDecimal().intValue());
+    }
+
+    @Test
     void capabilityMaskShouldGateBackupSocCommands() throws Exception {
         Map<Integer, Integer> registerCache = getField(handler, "registerCache");
         registerCache.put(32775, 0);
@@ -298,6 +375,50 @@ class AnkerSolixHandlerInternalsTest {
         assertEquals(Integer.valueOf(32775), startAddress);
         assertEquals(Integer.valueOf(1), length);
         assertEquals(true, optional);
+    }
+
+    @Test
+    void smartMeterPollRangesShouldCoverFullCtGroupMetrics() throws Exception {
+        AbstractAnkerSolixHandler smartMeterHandler = newSmartMeterHandler();
+        List<?> pollRanges = invoke(smartMeterHandler, "getPollRanges");
+
+        boolean coversPrimaryEnergyAndPowerFactor = false;
+        boolean coversSecondaryEnergyAndPowerFactor = false;
+        for (Object candidate : pollRanges) {
+            Object range = nonNull(candidate);
+            Integer startAddress = (Integer) nonNull(invoke(range, "startAddress"));
+            Integer length = (Integer) nonNull(invoke(range, "length"));
+            int endAddress = startAddress + length - 1;
+            if (startAddress <= 10648 && endAddress >= 10664) {
+                coversPrimaryEnergyAndPowerFactor = true;
+            }
+            if (startAddress <= 10679 && endAddress >= 10694) {
+                coversSecondaryEnergyAndPowerFactor = true;
+            }
+        }
+
+        assertTrue(coversPrimaryEnergyAndPowerFactor);
+        assertTrue(coversSecondaryEnergyAndPowerFactor);
+    }
+
+    @Test
+    void smartPlugPollRangesShouldCoverCumulativeEnergy() throws Exception {
+        AbstractAnkerSolixHandler smartPlugHandler = newSmartPlugHandler();
+        List<?> pollRanges = invoke(smartPlugHandler, "getPollRanges");
+
+        boolean coversCumulativeEnergy = false;
+        for (Object candidate : pollRanges) {
+            Object range = nonNull(candidate);
+            Integer startAddress = (Integer) nonNull(invoke(range, "startAddress"));
+            Integer length = (Integer) nonNull(invoke(range, "length"));
+            int endAddress = startAddress + length - 1;
+            if (startAddress <= 30034 && endAddress >= 30034) {
+                coversCumulativeEnergy = true;
+                break;
+            }
+        }
+
+        assertTrue(coversCumulativeEnergy);
     }
 
     @Test
@@ -446,6 +567,18 @@ class AnkerSolixHandlerInternalsTest {
         Thing thing = mock(Thing.class);
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
         return new AnkerSolixSolarbankHandler(thing);
+    }
+
+    private static AbstractAnkerSolixHandler newSmartMeterHandler() {
+        Thing thing = mock(Thing.class);
+        when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        return new AnkerSolixSmartMeterHandler(thing);
+    }
+
+    private static AbstractAnkerSolixHandler newSmartPlugHandler() {
+        Thing thing = mock(Thing.class);
+        when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        return new AnkerSolixSmartPlugHandler(thing);
     }
 
     private static ModbusSlaveErrorResponseException illegalDataAccessException() {

@@ -41,7 +41,7 @@ class AnkerSolixDiscoveryParticipantTest {
         Set<ThingTypeUID> supported = participant.getSupportedThingTypeUIDs();
 
         Set<ThingTypeUID> expected = Set.of(new ThingTypeUID("modbus", "ankersolix-solarbank4"),
-                new ThingTypeUID("modbus", "ankersolix-solarbank-ac"),
+                new ThingTypeUID("modbus", "ankersolix-solarbank"),
                 new ThingTypeUID("modbus", "ankersolix-smartmeter-gen2"),
                 new ThingTypeUID("modbus", "ankersolix-smartplug"),
                 new ThingTypeUID("modbus", "ankersolix-ev-charger"));
