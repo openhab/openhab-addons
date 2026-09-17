@@ -68,11 +68,11 @@ public class EyeOnWaterDiscoveryService extends AbstractDiscoveryService {
             }
         } catch (IOException | IllegalStateException e) {
             logger.warn("Failed to run EyeOnWater discovery scan: {}", e.getMessage());
-          if (logger.isDebugEnabled()) {
-              logger.debug("Failed to run EyeOnWater discovery scan", e);
-          } else {
-              logger.warn("Failed to run EyeOnWater discovery scan: {}", e.getMessage());
-          }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Failed to run EyeOnWater discovery scan", e);
+            } else {
+                logger.warn("Failed to run EyeOnWater discovery scan: {}", e.getMessage());
+            }
         } catch (InterruptedException e) {
             logger.debug("Discovery scan interrupted", e);
             Thread.currentThread().interrupt();
