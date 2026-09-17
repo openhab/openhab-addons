@@ -71,15 +71,16 @@ In other words, connection parameters are bridge-level and can still be unique p
 
 ## Channels
 
+Device metadata is exposed as thing properties, not channels.
+Depending on device type and firmware, this includes `model`, `serialNumber`, `softwareVersion`,
+`hardwareVersion`, and `productNumber`.
+
 ### Solarbank Channels
 
 The `ankersolix-solarbank4` and `ankersolix-solarbank` (Solarbank Max AC, XE, and XE AC) things expose the following channels:
 
 | Channel ID                    | Item Type              | Access      | Description                                                                                                                                                             |
 | ----------------------------- | ---------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `device-model`                | `String`               | read-only   | Device model string.                                                                                                                                                    |
-| `device-serial-number`        | `String`               | read-only   | Device serial number.                                                                                                                                                   |
-| `device-sw-version`           | `String`               | read-only   | Device firmware version.                                                                                                                                                |
 | `battery-soc`                 | `Number:Dimensionless` | read-only   | Battery state of charge in percent.                                                                                                                                     |
 | `pv-power`                    | `Number:Power`         | read-only   | Total PV input power.                                                                                                                                                   |
 | `battery-charging-power`      | `Number:Power`         | read-only   | Battery charging power (non-negative).                                                                                                                                  |
@@ -106,11 +107,6 @@ The `ankersolix-solarbank4` and `ankersolix-solarbank` (Solarbank Max AC, XE, an
 
 | Channel ID                                       | Item Type                  | Access     | Description                                                              |
 | ------------------------------------------------ | -------------------------- | ---------- | ------------------------------------------------------------------------ |
-| `product-number`                                 | `Number`                   | read-only  | Product number register value.                                           |
-| `device-model`                                   | `String`                   | read-only  | Model name.                                                              |
-| `device-serial-number`                           | `String`                   | read-only  | Serial number.                                                           |
-| `device-sw-version`                              | `String`                   | read-only  | Software version.                                                        |
-| `device-hw-version`                              | `String`                   | read-only  | Hardware version.                                                        |
 | `rated-power`                                    | `Number:Power`             | read-only  | Rated power (`Pn`).                                                      |
 | `minimum-output-current`                         | `Number:ElectricCurrent`   | read-only  | Minimum output current.                                                  |
 | `maximum-output-current`                         | `Number:ElectricCurrent`   | read-only  | Maximum output current.                                                  |
@@ -168,9 +164,6 @@ Registers marked as `Reserved for Future Use` are intentionally not bound:
 
 | Channel ID                       | Item Type                  | Access    | Description                                   |
 | -------------------------------- | -------------------------- | --------- | --------------------------------------------- |
-| `device-model`                   | `String`                   | read-only | Device model string.                          |
-| `device-serial-number`           | `String`                   | read-only | Device serial number.                         |
-| `device-sw-version`              | `String`                   | read-only | Device firmware version.                      |
 | `meter-type`                     | `String`                   | read-only | Meter type (`single_phase` or `three_phase`). |
 | `primary-total-active-power`     | `Number:Power`             | read-only | Primary CT total active power.                |
 | `primary-phase-1-active-power`   | `Number:Power`             | read-only | Primary CT phase 1 active power.              |
@@ -221,8 +214,6 @@ This mirrors the upstream Home Assistant register map and is not a binding defec
 
 | Channel ID             | Item Type                  | Access     | Description                                                |
 | ---------------------- | -------------------------- | ---------- | ---------------------------------------------------------- |
-| `device-model`         | `String`                   | read-only  | Device model string.                                       |
-| `device-serial-number` | `String`                   | read-only  | Device serial number.                                      |
 | `real-time-power`      | `Number:Power`             | read-only  | Real-time power.                                           |
 | `voltage`              | `Number:ElectricPotential` | read-only  | Voltage.                                                   |
 | `current`              | `Number:ElectricCurrent`   | read-only  | Current.                                                   |
