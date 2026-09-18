@@ -80,6 +80,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     private static final String HTTP_USER_AGENT = "okhttp/3.12.0";
     private static final DateTimeFormatter EU_DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     private static final String SPA_API_URL_V1 = "/api/v1/spa/";
+    public static final long CCS2_FORCE_REFRESH_DELAY_SECONDS = 25;
 
     private final BrandConfig brandConfig;
     private final String refreshToken;
@@ -204,16 +205,36 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         boolean ccs2Protocol = isCcsProtocol(vehicle);
 
         final @Nullable CommonVehicleStatus data;
-        if (forceRefresh && !ccs2Protocol) {
-            final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/status";
-            final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
-                    TimeUnit.SECONDS);
-            addStandardHeaders(request);
-            addAuthHeaders(request);
+        if (forceRefresh) {
+            if (ccs2Protocol) {
+                final String wakeUrl = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId
+                        + "/ccs2/carstatus";
+                final Request wakeRequest = httpClient.newRequest(wakeUrl).method(HttpMethod.GET)
+                        .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                addStandardHeaders(wakeRequest);
+                addAuthHeaders(wakeRequest);
+                addCcs2Headers(wakeRequest);
+                sendRequest(wakeRequest, "force refresh CCU/CCS2 vehicle status");
 
-            final BaseResponse<VehicleStatusData> response = sendRequest(request, new TypeToken<>() {
-            }, "get vehicle status (force refresh)");
-            data = response.result();
+                httpClient.getScheduler().schedule(() -> {
+                    try {
+                        getVehicleStatus(vehicle, false, cb);
+                    } catch (final BluelinkApiException e) {
+                        logger.debug("Failed to fetch CCU/CCS2 status after forced refresh: {}", e.getMessage());
+                    }
+                }, CCS2_FORCE_REFRESH_DELAY_SECONDS, TimeUnit.SECONDS);
+                return true;
+            } else {
+                final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/status";
+                final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
+                        TimeUnit.SECONDS);
+                addStandardHeaders(request);
+                addAuthHeaders(request);
+
+                final BaseResponse<VehicleStatusData> response = sendRequest(request, new TypeToken<>() {
+                }, "get vehicle status (force refresh)");
+                data = response.result();
+            }
         } else {
             final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId
                     + (ccs2Protocol ? "/ccs2/carstatus/latest" : "/status/latest");
