@@ -14,8 +14,18 @@ package org.openhab.binding.windhagerbiowin.internal;
 
 import static org.openhab.binding.windhagerbiowin.internal.WindhagerbiowinBindingConstants.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -39,6 +49,7 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
 
     private @Nullable WindhagerbiowinConfiguration config;
     private @Nullable WindhagerbiowinConnector connector;
+    private final Map<Integer, ScheduledFuture<?>> refreshJobs = new HashMap<>();
 
     public WindhagerbiowinHandler(Thing thing) {
         super(thing);
@@ -46,17 +57,8 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        if (command instanceof RefreshType) {
+            refreshChannel(channelUID);
         }
     }
 
@@ -78,10 +80,75 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
             boolean thingReachable = connector.connect();
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
+                scheduleChannelRefresh();
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to the BioWin webserver.");
             }
         });
+    }
+
+    private void scheduleChannelRefresh() {
+        WindhagerbiowinConnector localConnector = connector;
+        if (localConnector == null) {
+            return;
+        }
+
+        Map<Integer, List<Channel>> channelsByRefreshInterval = new HashMap<>();
+        for (Channel channel : getThing().getChannels()) {
+            WindhagerbiowinChannelConfiguration channelConfig = channel.getConfiguration()
+                    .as(WindhagerbiowinChannelConfiguration.class);
+            if (channelConfig.path.isBlank() || channelConfig.refreshInterval < 1) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Channel path and refresh interval must be configured.");
+                return;
+            }
+
+            channelsByRefreshInterval.computeIfAbsent(channelConfig.refreshInterval, key -> new ArrayList<>())
+                    .add(channel);
+        }
+
+        for (Map.Entry<Integer, List<Channel>> entry : channelsByRefreshInterval.entrySet()) {
+            int refreshInterval = entry.getKey();
+            List<Channel> channels = entry.getValue();
+            ScheduledFuture<?> existingJob = refreshJobs.get(refreshInterval);
+            if (existingJob != null && !existingJob.isCancelled()) {
+                continue;
+            }
+
+            logger.info("Scheduling {} channel(s) with refresh interval {} seconds", channels.size(), refreshInterval);
+            ScheduledFuture<?> job = scheduler.scheduleWithFixedDelay(() -> {
+                for (Channel channel : channels) {
+                    refreshChannel(channel.getUID());
+                }
+            }, 0, refreshInterval, TimeUnit.SECONDS);
+            refreshJobs.put(refreshInterval, job);
+        }
+    }
+
+    private void refreshChannel(ChannelUID channelUID) {
+        WindhagerbiowinConnector localConnector = connector;
+        Channel channel = getThing().getChannel(channelUID.getId());
+        if (localConnector == null || channel == null) {
+            return;
+        }
+
+        WindhagerbiowinChannelConfiguration channelConfig = channel.getConfiguration()
+                .as(WindhagerbiowinChannelConfiguration.class);
+        BigDecimal value = localConnector.readValue(channelConfig.path);
+        if (value != null) {
+            updateState(channelUID, new DecimalType(value));
+        } else {
+            logger.debug("Could not read configured BioWin path {}", channelConfig.path);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        for (ScheduledFuture<?> job : refreshJobs.values()) {
+            job.cancel(true);
+        }
+        refreshJobs.clear();
+        super.dispose();
     }
 }

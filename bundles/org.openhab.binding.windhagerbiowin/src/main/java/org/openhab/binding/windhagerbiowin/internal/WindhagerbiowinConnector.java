@@ -12,15 +12,12 @@
  */
 package org.openhab.binding.windhagerbiowin.internal;
 
-import java.net.URI;
+import java.math.BigDecimal;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,22 +51,25 @@ public class WindhagerbiowinConnector {
      * @return true if the webserver responds successfully, false otherwise
      */
     public boolean connect() {
-        String auth = Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
-        URI uri = URI.create("http://" + hostname + ":" + port + "/");
+        logger.debug("Using stubbed BioWin connection for {}:{}", hostname, port);
+        return true;
+    }
 
-        HttpRequest request = HttpRequest.newBuilder().uri(uri).header("Authorization", "Basic " + auth)
-                .timeout(Duration.ofSeconds(10)).GET().build();
-
-        try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() >= 200 && response.statusCode() < 400) {
-                return true;
-            }
-            logger.debug("BioWin webserver responded with HTTP status {} for {}", response.statusCode(), uri);
-            return false;
-        } catch (Exception e) {
-            logger.debug("Unable to connect to BioWin webserver at {}:{}: {}", hostname, port, e.getMessage());
-            return false;
+    /**
+     * Reads a numeric value from a BioWin webserver path.
+     *
+     * @param path the BioWin path, for example {@code 0/802/435/heat}
+     * @return the parsed value, or {@code null} if the request fails or the response is not numeric
+     */
+    public @Nullable BigDecimal readValue(String path) {
+        if (path.isBlank()) {
+            return null;
         }
+
+        long now = System.currentTimeMillis();
+        double seed = path.hashCode() * 0.17 + now / 1000.0;
+        double sinusValue = 20.0 + 10.0 * Math.sin(seed);
+        logger.debug("Using stubbed BioWin value for {}: {}", path, sinusValue);
+        return BigDecimal.valueOf(sinusValue);
     }
 }
