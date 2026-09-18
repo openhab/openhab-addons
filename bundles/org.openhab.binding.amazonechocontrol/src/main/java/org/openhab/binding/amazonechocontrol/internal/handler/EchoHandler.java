@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.handler;
 
+import static org.eclipse.jetty.http.HttpStatus.NOT_FOUND_404;
 import static org.eclipse.jetty.util.StringUtil.isNotBlank;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 import static org.openhab.binding.amazonechocontrol.internal.dto.push.PushAudioPlayerStateTO.AudioPlayerState.*;
@@ -105,6 +106,8 @@ import com.google.gson.JsonSyntaxException;
 public class EchoHandler extends BaseThingHandler {
     private static final Set<String> NOTIFICATION_CHANNELS = Set.of(CHANNEL_NEXT_ALARM, CHANNEL_NEXT_MUSIC_ALARM,
             CHANNEL_NEXT_REMINDER, CHANNEL_NEXT_TIMER);
+    private static final String UNSUPPORTED_PROVIDER = "UnsupportedProviderException";
+    private static final String NOW_PLAYING_MODEL = "coral.model.nowplaying";
 
     private final Logger logger = LoggerFactory.getLogger(EchoHandler.class);
     private final Gson gson;
@@ -622,16 +625,29 @@ public class EchoHandler extends BaseThingHandler {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
         } catch (ConnectionException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Failed to handle command '{}' to '{}' (device family {}): {}", command, channelUID,
-                        deviceFamily(), e.getMessage(), e);
-            } else {
-                logger.warn("Failed to handle command '{}' to '{}' (device family {}): {}", command, channelUID,
-                        deviceFamily(), e.getMessage());
-            }
+            logCommandFailure(command, channelUID, e);
         } catch (RuntimeException e) {
             logger.warn("RuntimeException in handle command for channel '{}': {}", channelUID, e.getMessage(), e);
         }
+    }
+
+    private void logCommandFailure(Command command, ChannelUID channelUID, ConnectionException e) {
+        if (isCommandToIdlePlayer(e)) {
+            logger.debug("Nothing is playing through Amazon on '{}', command '{}' had no effect: {}", channelUID,
+                    command, e.getMessage());
+        } else if (logger.isDebugEnabled()) {
+            logger.debug("Failed to handle command '{}' to '{}' (device family {}): {}", command, channelUID,
+                    deviceFamily(), e.getMessage(), e);
+        } else {
+            logger.warn("Failed to handle command '{}' to '{}' (device family {}): {}", command, channelUID,
+                    deviceFamily(), e.getMessage());
+        }
+    }
+
+    static boolean isCommandToIdlePlayer(ConnectionException e) {
+        String errorType = e.getAmazonErrorType();
+        return e.getHttpStatus() == NOT_FOUND_404 && errorType.startsWith(UNSUPPORTED_PROVIDER)
+                && errorType.contains(NOW_PLAYING_MODEL);
     }
 
     private String deviceFamily() {

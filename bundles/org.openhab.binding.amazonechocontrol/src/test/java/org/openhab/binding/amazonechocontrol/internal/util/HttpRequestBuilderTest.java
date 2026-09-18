@@ -45,6 +45,7 @@ import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.FailMode;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.HttpResponse;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.RequestParams;
@@ -61,6 +62,8 @@ import com.google.gson.Gson;
 public class HttpRequestBuilderTest {
     private static final String THROTTLING_ERROR_TYPE = "ThrottlingException:"
             + "http://internal.amazon.com/coral/com.amazon.alexa.exceptions/";
+    private static final String UNSUPPORTED_PROVIDER_ERROR_TYPE = "UnsupportedProviderException:"
+            + "http://internal.amazon.com/coral/com.amazon.dee.web.coral.model.nowplaying/";
     private static final URI REQUEST_URI = URI.create("https://alexa.amazon.de/api/notifications");
     private static final String BROWSER_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) "
             + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
@@ -140,6 +143,25 @@ public class HttpRequestBuilderTest {
     }
 
     @Test
+    public void testAFailedResponseCarriesItsStatusAndErrorTypeOnTheException() {
+        HttpFields headers = new HttpFields();
+        headers.add("x-amzn-ErrorType", UNSUPPORTED_PROVIDER_ERROR_TYPE);
+
+        ConnectionException failure = failureOf(resultWithStatus(404, headers));
+
+        assertThat(failure.getHttpStatus(), is(404));
+        assertThat(failure.getAmazonErrorType(), is(UNSUPPORTED_PROVIDER_ERROR_TYPE));
+    }
+
+    @Test
+    public void testAFailureWithoutAnErrorTypeHeaderCarriesAnEmptyErrorType() {
+        ConnectionException failure = failureOf(resultWithStatus(500, new HttpFields()));
+
+        assertThat(failure.getHttpStatus(), is(500));
+        assertThat(failure.getAmazonErrorType(), is(""));
+    }
+
+    @Test
     public void testARedirectIsHandedToTheCallerAndNotFollowedWhenAutoRedirectIsOff() throws Exception {
         HttpClient httpClient = mock(HttpClient.class);
         when(httpClient.newRequest(any(URI.class))).thenReturn(mock(Request.class, RETURNS_SELF));
@@ -202,6 +224,20 @@ public class HttpRequestBuilderTest {
         HttpClient httpClient = mock(HttpClient.class);
         when(httpClient.newRequest(any(URI.class))).thenReturn(request);
         return new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
+    }
+
+    @SuppressWarnings("null")
+    private ConnectionException failureOf(Result result) {
+        HttpRequestBuilder requestBuilder = requestBuilderFor(mock(Request.class, RETURNS_SELF));
+        CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
+        RequestParams params = new RequestParams(HttpMethod.GET, null, false, Map.of());
+        requestBuilder.new HttpResponseListener(httpResponse, params, false, FailMode.EXCEPTION).onComplete(result);
+
+        ExecutionException failure = assertThrows(ExecutionException.class, httpResponse::get);
+        if (failure.getCause() instanceof ConnectionException connectionFailure) {
+            return connectionFailure;
+        }
+        throw new AssertionError("expected a ConnectionException, got " + failure.getCause());
     }
 
     private Result throttledResult(HttpFields headers) {
