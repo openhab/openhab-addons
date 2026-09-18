@@ -286,8 +286,8 @@ public class BluelinkApiEUTest {
 
         final var doorOpen = status.doorOpen();
         assertNotNull(doorOpen);
-        assertTrue(doorOpen.frontLeft());
-        assertFalse(doorOpen.frontRight());
+        assertFalse(doorOpen.frontLeft()); // driver
+        assertTrue(doorOpen.frontRight()); // passenger
         assertFalse(doorOpen.backLeft());
         assertFalse(doorOpen.backRight());
 

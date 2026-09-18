@@ -157,11 +157,11 @@
           "Door": {
             "Row1": {
               "Passenger": {
-                "Lock": 0,
-                "Open": 0
+                "Lock": 1,
+                "Open": 1
               },
               "Driver": {
-                "Open": 1,
+                "Open": 0,
                 "Lock": 0
               }
             },
