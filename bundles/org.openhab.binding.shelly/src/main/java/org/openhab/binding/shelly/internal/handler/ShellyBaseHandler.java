@@ -345,7 +345,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     profile.isBlu, profile.alwaysOn, profile.hasBattery, apiConfig.getEnableCoIOT());
         }
 
-        if (profile.alwaysOn || !profile.isInitialized() && !isThingOnline()) {
+        // Skip the optimistic flip while the thing is already OFFLINE: reconnecting to an always-on device
+        // that's still unreachable would otherwise flash it back to ONLINE/CONFIGURATION_PENDING on every poll
+        // cycle before the reconnect attempt below fails again, flip-flopping the status without ever actually
+        // recovering. It'll move to ONLINE once the reconnect genuinely succeeds further down.
+        if (!isThingOffline() && (profile.alwaysOn || !profile.isInitialized() && !isThingOnline())) {
             ThingStatusDetail detail = getThingStatusDetail();
             if (detail != ThingStatusDetail.DUTY_CYCLE) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
