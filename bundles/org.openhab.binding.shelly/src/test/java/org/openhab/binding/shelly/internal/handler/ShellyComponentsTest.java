@@ -509,6 +509,23 @@ public class ShellyComponentsTest {
         ShellyComponents.updateDeviceStatus(handler, status);
 
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_MEDIA), anyString(), any());
+        // a bare media:{"rev":0} component (no playback) must not create phantom, never-updated channels
+        verify(handler, never()).updateThingChannels(any(), argThat(channels -> channels.keySet().stream()
+                .anyMatch(id -> id.startsWith(CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR))));
+    }
+
+    @Test
+    void updateDeviceStatusMediaNullPlaybackRemovesMediaChannels() throws Exception {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.media = new Shelly2DeviceStatusMedia();
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler).removeChannels(argThat(
+                ids -> ids.contains(CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_MEDIA_CONTROL)));
     }
 
     @Test

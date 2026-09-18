@@ -577,11 +577,15 @@ public class ShellyChannelDefinitions {
     }
 
     /**
-     * Auto-create the Wall Display Media Player channels when the device reports a media:0 component
+     * Auto-create the Wall Display Media Player channels once the device reports a populated media:0/playback
+     * component. Gating on {@code playback != null} (not just the presence of the media component itself) keeps
+     * this in sync with {@code ShellyComponents#updateDeviceStatus}, which only ever populates these channels
+     * when a playback object is present - a bare {@code media:{"rev":0}} component would otherwise create
+     * channels that are never written to.
      */
     public static Map<String, Channel> createMediaChannels(final Thing thing, final ShellySettingsStatus status) {
         Map<String, Channel> add = new LinkedHashMap<>();
-        boolean hasMedia = status.media != null;
+        boolean hasMedia = status.media != null && status.media.playback != null;
         addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_CONTROL);
         addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_VOLUME);
         addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_TITLE);
@@ -614,10 +618,14 @@ public class ShellyChannelDefinitions {
 
     /**
      * @return "group#channel" ids of the Media Player channels, stale once the device no longer reports a
-     *         media:0 component (media player disabled in the Shelly app) and to be removed
+     *         populated media:0/playback component and to be removed. Note: as of fw 2.7.4 the Shelly App/Cloud
+     *         "Media Player" enable toggle isn't observable via the API - {@code sys.media_player_enabled} in
+     *         GetConfig doesn't change when the toggle is flipped, and GetStatus keeps reporting media:0 with a
+     *         populated playback object even while the toggle is off - so this only reacts to the media
+     *         component (dis)appearing entirely, which happens across device/app variants, not per-toggle.
      */
     public static Set<String> getObsoleteMediaChannelIds(final ShellySettingsStatus status) {
-        return status.media == null ? MEDIA_CHANNELS : Set.of();
+        return status.media == null || status.media.playback == null ? MEDIA_CHANNELS : Set.of();
     }
 
     /**
