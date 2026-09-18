@@ -27,7 +27,7 @@ _If your binding requires or supports general configuration settings, please cre
 _In this section, you should link to this file and provide some information about the options._
 _The file could e.g. look like:_
 
-```
+```properties
 # Configuration for the Windhagerbiowin Binding
 #
 # Default secret key for the pairing of the Windhagerbiowin Thing.
@@ -49,12 +49,12 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ### `sample` Thing Configuration
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the BioWin webserver | N/A     | yes      | no       |
-| port            | integer | Port of the BioWin webserver                   | 80      | no       | yes      |
-| username        | text    | Username to access the BioWin webserver        | N/A     | yes      | no       |
-| password        | text    | Password to access the BioWin webserver        | N/A     | yes      | no       |
+| Name     | Type    | Description                                        | Default | Required | Advanced |
+|----------|---------|----------------------------------------------------|---------|----------|----------|
+| hostname | text    | Hostname or IP address of the BioWin webserver     | N/A     | yes      | no       |
+| port     | integer | Port of the BioWin webserver                       | 80      | no       | yes      |
+| username | text    | Username to access the BioWin webserver            | N/A     | yes      | no       |
+| password | text    | Password to access the BioWin webserver            | N/A     | yes      | no       |
 
 ## Channels
 
@@ -62,9 +62,9 @@ _Here you should provide information about available channel types, what their m
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Channel  | Type   | Read/Write | Description                                                            |
+|----------|--------|------------|------------------------------------------------------------------------|
+| channel1 | Number | R          | Reads a BioWin value using a configured path such as 0/802/435/heat. |
 
 ## Full Example
 

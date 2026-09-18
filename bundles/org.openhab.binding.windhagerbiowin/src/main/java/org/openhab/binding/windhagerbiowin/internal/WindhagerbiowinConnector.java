@@ -57,11 +57,8 @@ public class WindhagerbiowinConnector {
         String auth = Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
         URI uri = URI.create("http://" + hostname + ":" + port + "/");
 
-        HttpRequest request = HttpRequest.newBuilder().uri(uri)
-                .header("Authorization", "Basic " + auth)
-                .timeout(Duration.ofSeconds(10))
-                .GET()
-                .build();
+        HttpRequest request = HttpRequest.newBuilder().uri(uri).header("Authorization", "Basic " + auth)
+                .timeout(Duration.ofSeconds(10)).GET().build();
 
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());

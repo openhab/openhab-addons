@@ -16,7 +16,7 @@
 		<description>Sample thing for Windhagerbiowin Binding</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="channel1" typeId="biowin-value"/>
 		</channels>
 
 		<config-description>
@@ -43,10 +43,22 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for Windhagerbiowin Binding</description>
+	<!-- BioWin value channel type -->
+	<channel-type id="biowin-value">
+		<item-type>Number</item-type>
+		<label>BioWin Value</label>
+		<description>Reads a value from the BioWin webserver using a path like 0/802/435/heat.</description>
+		<config-description>
+			<parameter name="path" type="text" required="true">
+				<label>Path</label>
+				<description>BioWin channel path, for example 0/802/435/heat.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="true" min="1" unit="s">
+				<label>Refresh Interval</label>
+				<description>How often this value is refreshed from the BioWin webserver.</description>
+				<default>60</default>
+				<advanced>false</advanced>
+			</parameter>
+		</config-description>
 	</channel-type>
 </thing:thing-descriptions>
