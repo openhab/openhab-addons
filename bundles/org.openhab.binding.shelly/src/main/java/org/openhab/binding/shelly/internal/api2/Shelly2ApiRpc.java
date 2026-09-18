@@ -497,7 +497,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onConnect(InetSocketAddress deviceSocketAddr, boolean connected) {
-        thing = thingTable.getThing(deviceSocketAddr);
+        ShellyThingInterface thing = thingTable.getThing(deviceSocketAddr);
+        if (thing.isStopping()) {
+            logger.debug("{}: Thing is shutting down, ignore WebSocket connect", thingName);
+            return;
+        }
+        this.thing = thing;
         logger.debug("{}: Get thing from thingTable for {}", thingName, deviceSocketAddr);
 
         if (profile.initialized && alwaysOn) {
@@ -788,7 +793,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private void thingOffline(String reason) {
         ShellyThingInterface thing = this.thing;
-        if (thing != null) { // do not reinit of battery powered devices with sleep mode
+        if (thing != null && !thing.isStopping()) { // do not reinit of battery powered devices with sleep mode
             thing.setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR,
                     "offline.status-error-unexpected-error", reason);
         }
@@ -1155,14 +1160,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         apiRequest(new Shelly2RpcRequest().withMethod(resetCountersMethod(getProfile())).withId(id));
     }
 
-    // Order matters: Pro EM-50 has isEM1 + hasRelays, and roller-mode 2PM has isRoller + hasRelays —
-    // both must be checked before the generic hasRelays fallback.
+    // Order matters: Pro EM-50 has isEM1 + hasRelays, roller-mode 2PM has isRoller + hasRelays, and
+    // every dimmer has isDimmer + hasRelays (hasRelays is forced true for dimmers) — all three must be
+    // checked before the generic hasRelays fallback. Dimmers measure power on their light:N component,
+    // not switch:N, so they need Light.ResetCounters rather than Switch.ResetCounters.
     static String resetCountersMethod(ShellyDeviceProfile profile) {
         return profile.is3EM ? SHELLYRPC_METHOD_EMDATARESET
                 : profile.isEM1 ? SHELLYRPC_METHOD_EM1DATARESET
                         : profile.isRoller ? SHELLYRPC_METHOD_COVER_RESETCOUNTERS
-                                : profile.hasRelays ? SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS
-                                        : SHELLYRPC_METHOD_PM1_RESETCOUNTERS;
+                                : profile.isDimmer ? SHELLYRPC_METHOD_LIGHT_RESETCOUNTERS
+                                        : profile.hasRelays ? SHELLYRPC_METHOD_SWITCH_RESETCOUNTERS
+                                                : SHELLYRPC_METHOD_PM1_RESETCOUNTERS;
     }
 
     @Override
@@ -1624,6 +1632,16 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     public Shelly2RpctInterface getRpcHandler() {
         return this;
+    }
+
+    @Override
+    public void dispose() {
+        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        if (rpcSocket != null) {
+            rpcSocket.dispose();
+        }
+        initialized = false;
+        thing = null;
     }
 
     @Override

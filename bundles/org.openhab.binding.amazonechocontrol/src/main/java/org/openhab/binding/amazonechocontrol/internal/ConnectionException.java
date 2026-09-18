@@ -24,12 +24,35 @@ import org.eclipse.jdt.annotation.Nullable;
 public class ConnectionException extends Exception {
 
     private static final long serialVersionUID = 1L;
+    private static final int NO_HTTP_STATUS = 0;
+
+    private final int httpStatus;
+    private final String amazonErrorType;
 
     public ConnectionException(String message) {
-        super(message);
+        this(message, NO_HTTP_STATUS, "");
     }
 
     public ConnectionException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
+        this.httpStatus = NO_HTTP_STATUS;
+        this.amazonErrorType = "";
+    }
+
+    public ConnectionException(String message, int httpStatus, @Nullable String amazonErrorType) {
+        super(message);
+        this.httpStatus = httpStatus;
+        this.amazonErrorType = amazonErrorType == null ? "" : amazonErrorType;
+    }
+
+    /**
+     * @return the HTTP status Amazon answered with, or 0 if the request never reached one
+     */
+    public int getHttpStatus() {
+        return httpStatus;
+    }
+
+    public String getAmazonErrorType() {
+        return amazonErrorType;
     }
 }

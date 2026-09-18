@@ -229,6 +229,7 @@ public class ShellyComponents {
      */
     public static boolean updateMeters(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
+        reconcileMeterChannels(thingHandler, profile);
         if (status.meters == null && status.emeters == null) {
             return false;
         }
@@ -1066,8 +1067,12 @@ public class ShellyComponents {
                     ? fromJson(gson, Shelly1ApiJsonDTO.fixDimmerJson(orgStatus.json), ShellySettingsStatus.class)
                     : orgStatus;
 
+            List<ShellyShortLightStatus> statusDimmers = dstatus.dimmers;
+            if (statusDimmers == null) {
+                return updated;
+            }
             int l = 0;
-            for (ShellyShortLightStatus dimmer : dstatus.dimmers) {
+            for (ShellyShortLightStatus dimmer : statusDimmers) {
                 String groupName = profile.getControlGroup(l);
 
                 if (!thingHandler.areChannelsCreated()) {
@@ -1076,16 +1081,16 @@ public class ShellyComponents {
                 }
 
                 List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
-                if (dimmers != null) {
+                if (dimmers != null && l < dimmers.size()) {
                     ShellySettingsDimmer ds = dimmers.get(l);
                     if (ds.name != null) {
                         updated |= thingHandler.updateChannel(groupName, CHANNEL_OUTPUT_NAME, getStringType(ds.name));
                     }
                 }
 
-                // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's brightness
-                // and send an OFF status to the same channel.
-                // When the device's brightness is > 0 we send the new value to the channel and an ON command
+                // Map ison=false to brightness 0 (off); ison=true to device-reported brightness.
+                // $Switch tracks on/off separately from $Value (brightness level) so deduplication
+                // works correctly when only one of the two aspects changes.
                 if (dimmer.ison != null) {
                     if (dimmer.ison) {
                         updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
@@ -1099,7 +1104,7 @@ public class ShellyComponents {
                     updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_ACTIVE, getOnOff(dimmer.hasTimer));
                 }
 
-                if (dimmers != null) {
+                if (dimmers != null && l < dimmers.size()) {
                     ShellySettingsDimmer dsettings = dimmers.get(l);
                     updated |= thingHandler.updateChannel(groupName, CHANNEL_TIMER_AUTOON,
                             toQuantityType(getDouble(dsettings.autoOn), Units.SECOND));
@@ -1109,6 +1114,19 @@ public class ShellyComponents {
 
                 l++;
             }
+        }
+        return updated;
+    }
+
+    public static boolean updateDali(ShellyThingInterface thingHandler, ShellySettingsStatus status)
+            throws ShellyApiException {
+        boolean updated = false;
+        String groupName = thingHandler.getProfile().getControlGroup(0);
+        if (status.daliCgCount != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_DALI_DEVICES, getDecimal(status.daliCgCount));
+        }
+        if (status.daliScanActive != null) {
+            updated |= thingHandler.updateChannel(groupName, CHANNEL_DALI_SCAN_ACTIVE, getOnOff(status.daliScanActive));
         }
         return updated;
     }
@@ -1126,6 +1144,13 @@ public class ShellyComponents {
         if (!profile.settings.loraDetected) {
             profile.addOnFw = "";
             thingHandler.removeProperty(PROPERTY_ADDON_FIRMWARE);
+        }
+    }
+
+    private static void reconcileMeterChannels(ShellyThingInterface thingHandler, ShellyDeviceProfile profile) {
+        Set<String> obsolete = ShellyChannelDefinitions.getObsoleteMeterChannelIds(profile);
+        if (!obsolete.isEmpty()) {
+            thingHandler.removeChannels(obsolete);
         }
     }
 

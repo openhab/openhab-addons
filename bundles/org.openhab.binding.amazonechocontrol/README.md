@@ -158,7 +158,7 @@ You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/
 
 | Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description                                                                                                                                                                                                                             |
 |-----------------------|-------------|-------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| player                | Player      | R/W         | echo, echoshow, echospot, wha | Control the music player  (Supported commands: PLAY or ON, PAUSE or OFF, NEXT, PREVIOUS, REWIND, FASTFORWARD)                                                                                                                           |
+| player                | Player      | R/W         | echo, echoshow, echospot, wha | Control the music player  (Supported commands: PLAY or ON, PAUSE or OFF, NEXT, PREVIOUS, REWIND, FASTFORWARD). Only what Alexa plays through Amazon's own player is controlled. While nothing plays there, or while the source is outside it, Spotify for example, a command is answered with 404 and the media channels stay empty |
 | volume                | Dimmer      | R/W         | echo, echoshow, echospot      | Control the volume                                                                                                                                                                                                                      |
 | equalizerTreble       | Number      | R/W         | echo, echoshow, echospot      | Control the treble (value from -6 to 6)                                                                                                                                                                                                 |
 | equalizerMidrange     | Number      | R/W         | echo, echoshow, echospot      | Control the midrange (value from -6 to 6)                                                                                                                                                                                               |
@@ -634,7 +634,7 @@ then
     Echo_Living_Room_PlayAlarmSound.sendCommand('ECHO:system_alerts_repetitive01')
     if (stopAlarmTimer === null)
     {
-        stopAlarmTimer = createTimer(now.plusSeconds(15)) [|
+        stopAlarmTimer = createTimer(now.plusSeconds(15)) [
             stopAlarmTimer.cancel()
             stopAlarmTimer = null
             Echo_Living_Room_PlayAlarmSound.sendCommand('')

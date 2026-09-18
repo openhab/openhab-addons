@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,6 +31,10 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
+
+    private static final Pattern SAFE_COMMAND_IDENTIFIER = Objects.requireNonNull(Pattern.compile("[a-zA-Z0-9._-]+"));
+
+    private final Map<String, String> wirelessDevicesByInterface = new ConcurrentHashMap<>();
 
     public DDWRTOpenWrtDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
         super(cfg, logger);
@@ -44,7 +52,17 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
 
     @Override
     protected List<DDWRTRadio> enumerateRadios(SshRunner runner) {
-        return IwinfoParser.enumerateRadios(logger, runner, mac);
+        List<DDWRTRadio> radios = IwinfoParser.enumerateRadios(logger, runner, mac);
+        for (DDWRTRadio radio : radios) {
+            String iface = radio.getIfaceName();
+            if (SAFE_COMMAND_IDENTIFIER.matcher(iface).matches() && !wirelessDevicesByInterface.containsKey(iface)) {
+                String wirelessDevice = findWirelessDevice(runner, iface);
+                if (wirelessDevice != null) {
+                    wirelessDevicesByInterface.put(iface, wirelessDevice);
+                }
+            }
+        }
+        return radios;
     }
 
     @Override
@@ -59,12 +77,28 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) {
-        if (enabled) {
-            runner.execStdout("ifconfig " + iface + " up");
-        } else {
-            runner.execStdout("ifconfig " + iface + " down");
+    protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) throws IOException {
+        if (!SAFE_COMMAND_IDENTIFIER.matcher(iface).matches()) {
+            throw new IOException("Invalid wireless interface name");
         }
+
+        String wirelessDevice = findWirelessDevice(runner, iface);
+        if (wirelessDevice != null) {
+            wirelessDevicesByInterface.put(iface, wirelessDevice);
+        } else {
+            wirelessDevice = wirelessDevicesByInterface.get(iface);
+        }
+        if (wirelessDevice == null) {
+            throw new IOException("Could not determine OpenWrt wireless device for " + iface);
+        }
+
+        runner.exec("/sbin/wifi " + (enabled ? "up " : "down ") + wirelessDevice);
+    }
+
+    private @Nullable String findWirelessDevice(SshRunner runner, String iface) {
+        String wirelessDevice = safeTrim(runner.execStdout("ubus call network.wireless status | jsonfilter -e "
+                + "'@.*.interfaces[@.ifname=\"" + iface + "\"].config.device[0]'"));
+        return SAFE_COMMAND_IDENTIFIER.matcher(wirelessDevice).matches() ? wirelessDevice : null;
     }
 
     @Override

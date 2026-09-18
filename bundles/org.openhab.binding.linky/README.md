@@ -1,7 +1,7 @@
 ---
 children:
-  - ["doc/myelectricaldata/index", "MyElectricalData"]
-  - ["doc/enedis/index", "Enedis"]
+  - ["doc/myelectricaldata/", "MyElectricalData"]
+  - ["doc/enedis/", "Enedis"]
 ---
 
 # Linky Binding
