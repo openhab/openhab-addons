@@ -60,27 +60,26 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
         return new CommonVehicleStatus() {
             @Override
             public boolean engine() {
-                PowerSupply ps = v.electronics().powerSupply();
-                return (ps.ignition1() != 0 || ps.ignition3() != 0);
+                return v.drivingReady() != null && v.drivingReady() != 0;
             }
 
             @Override
             public boolean doorLock() {
-                var door = v.cabin().door();
+                var door = v.cabin() != null ? v.cabin().door() : null;
                 if (door == null) {
                     return false;
                 }
                 for (int val : extract(door.row1(), door.row2(), DoorState::lock)) {
-                    if (val > 0) {
-                        return true;
+                    if (val != 0) {
+                        return false;
                     }
                 }
-                return false;
+                return true;
             }
 
             @Override
             public IDoorStatus doorOpen() {
-                var door = v.cabin().door();
+                var door = v.cabin() != null ? v.cabin().door() : null;
                 if (door == null) {
                     return new DoorStatus(0, 0, 0, 0);
                 }
@@ -90,11 +89,12 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
 
             @Override
             public DoorStatus windowOpen() {
-                var window = v.cabin().window();
+                var window = v.cabin() != null ? v.cabin().window() : null;
                 if (window == null) {
                     return new DoorStatus(0, 0, 0, 0);
                 }
-                int[] states = extract(window.row1(), window.row2(), WindowState::open);
+                // see https://github.com/Hyundai-Kia-Connect/hyundai_kia_connect_api/issues/1215
+                int[] states = extract(window.row1(), window.row2(), s -> (s.open() > 0 || s.level() > 0) ? 1 : 0);
                 return new DoorStatus(states[0], states[1], states[2], states[3]);
             }
 
@@ -110,23 +110,33 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
 
             @Override
             public boolean airCtrlOn() {
-                return v.cabin().hvac().row1().driver().temperature().value().equals("ON");
+                if (v.cabin() != null && v.cabin().hvac() != null && v.cabin().hvac().row1() != null
+                        && v.cabin().hvac().row1().driver() != null) {
+                    var blower = v.cabin().hvac().row1().driver().blower();
+                    return blower != null && blower.speedLevel() > 0;
+                }
+                return false;
             }
 
             @Override
-            public TemperatureValue airTemp() {
+            public @Nullable TemperatureValue airTemp() {
                 // Note: Not available in CCS2
                 return null;
             }
 
             @Override
             public boolean defrost() {
-                return v.body().windshield().front().heat().state() > 0;
+                if (v.body() != null && v.body().windshield() != null && v.body().windshield().front() != null) {
+                    var defog = v.body().windshield().front().defog();
+                    return defog != null && defog.state() == 1;
+                }
+                return false;
             }
 
             @Override
             public int steerWheelHeat() {
-                return v.cabin().steeringWheel().heat().state();
+                return v.cabin() != null && v.cabin().steeringWheel() != null
+                        && v.cabin().steeringWheel().heat() != null ? v.cabin().steeringWheel().heat().state() : 0;
             }
 
             @Override
@@ -143,7 +153,7 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
 
             @Override
             public SeatHeaterState seatHeaterVentState() {
-                var seat = v.cabin().seat();
+                var seat = v.cabin() != null ? v.cabin().seat() : null;
                 if (seat == null) {
                     return new SeatHeaterState(0, 0, 0, 0);
                 }
@@ -152,23 +162,30 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
             }
 
             @Override
-            public BatteryStatus battery() {
-                return new BatteryStatus(v.electronics().battery().level());
+            public @Nullable BatteryStatus battery() {
+                if (v.electronics() == null || v.electronics().battery() == null) {
+                    return null;
+                }
+                var b = v.electronics().battery();
+                if (b.level() >= 255 || b.sensorReliability() != 0) {
+                    return null;
+                }
+                return new BatteryStatus(b.level());
             }
 
             @Override
-            public EvStatus evStatus() {
+            public @Nullable EvStatus evStatus() {
                 var g = v.green();
                 if (g == null) {
                     return null;
                 }
                 var ci = g.chargingInformation();
-                var fuelSystem = v.drivetrain().fuelSystem();
+                var fuelSystem = v.drivetrain() != null ? v.drivetrain().fuelSystem() : null;
 
-                int current = ci.charging() != null ? ci.charging().remainTime() : 0;
-                int fast = ci.estimatedTime() != null ? ci.estimatedTime().quick() : 0;
-                int portable = ci.estimatedTime() != null ? ci.estimatedTime().iccb() : 0;
-                int station = ci.estimatedTime() != null ? ci.estimatedTime().standard() : 0;
+                int current = ci != null && ci.charging() != null ? ci.charging().remainTime() : 0;
+                int fast = ci != null && ci.estimatedTime() != null ? ci.estimatedTime().quick() : 0;
+                int portable = ci != null && ci.estimatedTime() != null ? ci.estimatedTime().iccb() : 0;
+                int station = ci != null && ci.estimatedTime() != null ? ci.estimatedTime().standard() : 0;
 
                 EvStatus.ChargeRemainingTime remainTime = new EvStatus.ChargeRemainingTime(
                         new EvStatus.ChargeRemainingTime.TimeValue(current, 1),
@@ -177,7 +194,7 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
                         new EvStatus.ChargeRemainingTime.TimeValue(station, 1));
 
                 EvStatus.ReserveChargeInfo targetSoC = null;
-                if (ci.targetSoC() != null && ci.dte() != null) {
+                if (ci != null && ci.targetSoC() != null && ci.dte() != null) {
                     targetSoC = new EvStatus.ReserveChargeInfo(List.of(
                             new EvStatus.ReserveChargeInfo.TargetSOC(PlugType.AC.ordinal(), ci.targetSoC().standard(),
                                     new DrivingRange(ci.dte().targetSoC().standard(), 1)),
@@ -186,54 +203,81 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
                 }
 
                 List<EvStatus.DrivingDistance> drvDistance = null;
-                if (fuelSystem.dte() != null) {
-                    double totalRange = fuelSystem.dte().total();
-                    DrivingRange range = new DrivingRange(totalRange, 1);
-                    drvDistance = List.of(new EvStatus.DrivingDistance(new EvStatus.DrivingDistance.RangeByFuel(range,
-                            vehicle.isElectric() ? range : null, null)));
+                if (fuelSystem != null && fuelSystem.dte() != null) {
+                    var dte = fuelSystem.dte();
+                    int unit = dte.unit();
+                    DrivingRange totalRange = new DrivingRange(dte.total(), unit);
+                    Double evVal = dte.ev();
+                    DrivingRange evRange = evVal != null ? new DrivingRange(evVal, unit)
+                            : (vehicle.engineType() == IVehicle.EngineType.EV ? totalRange : null);
+                    drvDistance = List.of(new EvStatus.DrivingDistance(
+                            new EvStatus.DrivingDistance.RangeByFuel(totalRange, evRange, null)));
                 }
 
-                return new EvStatus(current > 0, g.batteryManagement().batteryRemain().ratio(),
-                        ci.connectorFastening().state(), targetSoC, drvDistance, remainTime);
+                return new EvStatus(current > 0,
+                        g.batteryManagement() != null && g.batteryManagement().batteryRemain() != null
+                                ? g.batteryManagement().batteryRemain().ratio()
+                                : 0,
+                        ci != null && ci.connectorFastening() != null ? ci.connectorFastening().state() : 0, targetSoC,
+                        drvDistance, remainTime);
             }
 
             @Override
             public DrivingRange dte() {
-                return new DrivingRange(v.drivetrain().fuelSystem().dte().total(), 1);
+                var dte = v.drivetrain() != null && v.drivetrain().fuelSystem() != null
+                        ? v.drivetrain().fuelSystem().dte()
+                        : null;
+                return dte != null ? new DrivingRange(dte.total(), dte.unit()) : new DrivingRange(0, 1);
             }
 
             @Override
             public int fuelLevel() {
-                return v.drivetrain().fuelSystem().fuelLevel();
+                return v.drivetrain() != null && v.drivetrain().fuelSystem() != null
+                        ? v.drivetrain().fuelSystem().fuelLevel()
+                        : 0;
             }
 
             @Override
             public boolean lowFuelLight() {
-                return v.drivetrain().fuelSystem().lowFuelWarning() > 0;
+                return v.drivetrain() != null && v.drivetrain().fuelSystem() != null
+                        && v.drivetrain().fuelSystem().lowFuelWarning() > 0;
             }
 
             @Override
             public boolean washerFluidStatus() {
-                return v.body().windshield().front().washerFluid().low() > 0;
+                return v.body() != null && v.body().windshield() != null && v.body().windshield().front() != null
+                        && v.body().windshield().front().washerFluid() != null
+                        && v.body().windshield().front().washerFluid().low() > 0;
             }
 
             @Override
             public boolean brakeOilStatus() {
-                return v.chassis().brake().fluid().warning() > 0;
+                return v.chassis() != null && v.chassis().brake() != null && v.chassis().brake().fluid() != null
+                        && v.chassis().brake().fluid().warning() > 0;
             }
 
             @Override
             public ITirePressureWarning tirePressureWarning() {
+                if (v.chassis() == null || v.chassis().axle() == null) {
+                    return new TirePressureWarning(0, 0, 0, 0, 0);
+                }
                 var tire = v.chassis().axle().tire();
                 var r1 = v.chassis().axle().row1();
                 var r2 = v.chassis().axle().row2();
 
-                int fl = (r1.left() != null && r1.left().tire() != null) ? r1.left().tire().pressureLow() : 0;
-                int fr = (r1.right() != null && r1.right().tire() != null) ? r1.right().tire().pressureLow() : 0;
-                int rl = (r2.left() != null && r2.left().tire() != null) ? r2.left().tire().pressureLow() : 0;
-                int rr = (r2.right() != null && r2.right().tire() != null) ? r2.right().tire().pressureLow() : 0;
+                int fl = (r1 != null && r1.left() != null && r1.left().tire() != null) ? r1.left().tire().pressureLow()
+                        : 0;
+                int fr = (r1 != null && r1.right() != null && r1.right().tire() != null)
+                        ? r1.right().tire().pressureLow()
+                        : 0;
+                int rl = (r2 != null && r2.left() != null && r2.left().tire() != null) ? r2.left().tire().pressureLow()
+                        : 0;
+                int rr = (r2 != null && r2.right() != null && r2.right().tire() != null)
+                        ? r2.right().tire().pressureLow()
+                        : 0;
 
-                return new TirePressureWarning(tire.pressureLow(), fl, fr, rl, rr);
+                int overall = tire != null ? tire.pressureLow() : 0;
+                return new TirePressureWarning(overall, fl, fr, rl, rr);
             }
         };
     }
@@ -244,7 +288,8 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
     public record Vehicle(@SerializedName("Location") VehicleLocation location,
             @SerializedName("Drivetrain") VehicleDrivetrain drivetrain, @SerializedName("Cabin") Cabin cabin,
             @SerializedName("Body") Body body, @SerializedName("Chassis") Chassis chassis,
-            @SerializedName("Electronics") Electronics electronics, @SerializedName("Green") Green green) {
+            @SerializedName("Electronics") Electronics electronics, @SerializedName("Green") Green green,
+            @SerializedName("DrivingReady") Integer drivingReady) {
     }
 
     public record ValueUnit(@SerializedName("Unit") int unit, @SerializedName("Value") double value) {
@@ -276,7 +321,8 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
             @SerializedName("FuelLevel") int fuelLevel) {
     }
 
-    public record Dte(@SerializedName("Unit") int unit, @SerializedName("Total") double total) {
+    public record Dte(@SerializedName("Unit") int unit, @SerializedName("Total") double total,
+            @SerializedName("EV") @Nullable Double ev) {
     }
 
     // Body (Windshield, Hood, Trunk)
@@ -287,8 +333,11 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
     public record Windshield(@SerializedName("Front") WindshieldFront front) {
     }
 
-    public record WindshieldFront(@SerializedName("Heat") Heat heat,
+    public record WindshieldFront(@SerializedName("Defog") Defog defog, @SerializedName("Heat") @Nullable Heat heat,
             @SerializedName("WasherFluid") WasherFluid washerFluid) {
+    }
+
+    public record Defog(@SerializedName("State") int state) {
     }
 
     public record WasherFluid(@SerializedName("LevelLow") int low) {
@@ -333,7 +382,11 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
     public record HvacRow1(@SerializedName("Driver") HvacDriver driver) {
     }
 
-    public record HvacDriver(@SerializedName("Temperature") Temperature temperature) {
+    public record HvacDriver(@SerializedName("Temperature") Temperature temperature,
+            @SerializedName("Blower") Blower blower) {
+    }
+
+    public record Blower(@SerializedName("SpeedLevel") int speedLevel) {
     }
 
     public record Temperature(@SerializedName("Value") String value) {
@@ -374,7 +427,8 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
             @SerializedName("Accessory") int accessory) {
     }
 
-    public record Battery(@SerializedName("Level") float level) {
+    public record Battery(@SerializedName("Level") float level,
+            @SerializedName("SensorReliability") int sensorReliability) {
     }
 
     public record FOB(@SerializedName("LowBattery") int batteryWarning) {

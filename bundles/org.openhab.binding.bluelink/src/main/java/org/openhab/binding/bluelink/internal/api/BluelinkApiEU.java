@@ -241,7 +241,9 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
                 final var odometer = drivetrain.odometer();
                 cb.acceptOdometer(new QuantityType<>(odometer, KILO(METRE)));
 
-                cb.acceptSmartKeyBatteryWarning(state.electronics().smartKey().batteryWarning() > 0);
+                if (state.electronics() != null && state.electronics().smartKey() != null) {
+                    cb.acceptSmartKeyBatteryWarning(state.electronics().smartKey().batteryWarning() > 0);
+                }
 
                 final var lastUpdateTime = result.lastUpdateTime();
                 if (lastUpdateTime != null) {
