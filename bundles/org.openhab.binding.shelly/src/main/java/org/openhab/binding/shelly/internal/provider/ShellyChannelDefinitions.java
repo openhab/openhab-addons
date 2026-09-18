@@ -31,7 +31,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentSettings;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyEMNCurrentStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
@@ -219,6 +218,10 @@ public class ShellyChannelDefinitions {
                 // Dimmer
                 .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_BRIGHTNESS, "dimmerBrightness",
                         ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_DALI_DEVICES, "daliDeviceCount",
+                        ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHANNEL_GROUP_DIMMER_CONTROL, CHANNEL_DALI_SCAN_ACTIVE, "daliScanActive",
+                        ITEMT_SWITCH))
 
                 // Roller
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_ROL_CONTROL_CONTROL, "rollerShutter", ITEMT_ROLLER))
@@ -600,13 +603,20 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, profile.isDimmer, group, CHANNEL_BRIGHTNESS);
 
         List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
-        if (dimmers != null) {
+        if (dimmers != null && idx < dimmers.size()) {
             ShellySettingsDimmer ds = dimmers.get(idx);
             addChannel(thing, add, ds.name != null, group, CHANNEL_OUTPUT_NAME);
             addChannel(thing, add, ds.autoOn != null, group, CHANNEL_TIMER_AUTOON);
             addChannel(thing, add, ds.autoOff != null, group, CHANNEL_TIMER_AUTOOFF);
-            ShellyShortLightStatus dss = dstatus.dimmers.get(idx);
-            addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            List<ShellyShortLightStatus> statusDimmers = dstatus.dimmers;
+            if (statusDimmers != null) {
+                ShellyShortLightStatus dss = statusDimmers.size() > idx ? statusDimmers.get(idx) : null;
+                addChannel(thing, add, dss != null && dss.hasTimer != null, group, CHANNEL_TIMER_ACTIVE);
+            }
+        }
+        if (idx == 0) {
+            addChannel(thing, add, dstatus.daliScanActive != null, group, CHANNEL_DALI_DEVICES);
+            addChannel(thing, add, dstatus.daliScanActive != null, group, CHANNEL_DALI_SCAN_ACTIVE);
         }
         return add;
     }
@@ -654,9 +664,11 @@ public class ShellyChannelDefinitions {
                 addChannel(thing, add, true, group,
                         (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
                 if (profile.inButtonMode(i)) {
-                    ShellyInputState input = status.inputs.get(i);
-                    addChannel(thing, add, input.event != null, group, CHANNEL_STATUS_EVENTTYPE + suffix);
-                    addChannel(thing, add, input.eventCount != null, group, CHANNEL_STATUS_EVENTCOUNT + suffix);
+                    // Create unconditionally: event/eventCount are null until the button is pressed for the
+                    // first time, so gating on the value (rather than button-mode itself) silently drops these
+                    // channels for inputs that haven't fired yet
+                    addChannel(thing, add, true, group, CHANNEL_STATUS_EVENTTYPE + suffix);
+                    addChannel(thing, add, true, group, CHANNEL_STATUS_EVENTCOUNT + suffix);
                 }
             }
         } else if (status.input != null) {
@@ -754,12 +766,14 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, hasMinute2, group, CHANNEL_METER_ENERGYHISTMIN2);
         addChannel(thing, newChannels, hasMinute3, group, CHANNEL_METER_ENERGYHISTMIN3);
         addChannel(thing, newChannels, hasMinute1 && hasMinute2 && hasMinute3, group, CHANNEL_METER_ENERGYAVGLAST3MIN);
+        // Non-PM Gen2 relays (e.g. Plus 1) report isEMeter=true but every emeter field stays permanently
+        // null, so a device actually has a power meter iff at least one of these fields is populated.
         // Per-meter reset is only meaningful when each meter has its own resettable counter component
         // (Switch/PM1/EM1Data). 3EM's emdata:0 aggregates all phases, so it resets at the device level only.
-        addChannel(thing, newChannels, !profile.is3EM, group, CHANNEL_EMETER_RESETTOTAL);
-        // Only add lastUpdate if this device actually has meter channels — guards against non-PM Gen2 relay
-        // devices (e.g. Plus 1) where isEMeter=true but all emeter fields are permanently null.
-        addChannel(thing, newChannels, !newChannels.isEmpty(), group, CHANNEL_LAST_UPDATE);
+        boolean hasMeterData = always || emeter.total != null || emeter.totalReturned != null || hasMinute1
+                || hasMinute2 || hasMinute3;
+        addChannel(thing, newChannels, !profile.is3EM && hasMeterData, group, CHANNEL_EMETER_RESETTOTAL);
+        addChannel(thing, newChannels, hasMeterData, group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }
 

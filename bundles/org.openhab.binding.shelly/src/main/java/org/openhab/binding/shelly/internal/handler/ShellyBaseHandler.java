@@ -241,6 +241,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         ThingStatusDetail errorCode = ThingStatusDetail.COMMUNICATION_ERROR;
         String status = "";
         boolean retry = true;
+        boolean calibrationError = false;
         if (e.isJsonError()) { // invalid JSON format
             logger.debug("{}: Unable to parse API response: {}; json={}", thingName, res.getUrl(), res.response, e);
             status = "offline.status-error-unexpected-error";
@@ -252,6 +253,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             retry = false;
         } else if (isWatchdogExpired()) {
             status = profile.isBlu ? "offline.status-error-blu-timeout" : "offline.status-error-watchdog";
+        } else if (res.isNotCalibrated()) {
+            calibrationError = true; // device needs calibration; don't go offline, keep retrying
         } else if (res.httpCode >= 400) {
             logger.debug("{}: Unexpected API result: {}/{}", thingName, res.httpCode, res.httpReason, e);
             status = "offline.status-error-unexpected-api-result";
@@ -262,6 +265,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         if (!status.isEmpty()) {
             setThingOfflineAndDisconnect(errorCode, status, e.toString());
+        } else if (calibrationError) {
+            logger.debug("{}: Device output not yet calibrated, will retry", thingName);
         } else {
             logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
         }
@@ -615,8 +620,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
 
             ShellyApiResult res = e.getApiResult();
-            if (res.isNotCalibrtated()) {
-                logger.warn("{}: {}", thingName, messages.get("roller.calibrating"));
+            if (res.isNotCalibrated()) {
+                String key = profile.isDimmer ? "dimmer.not-calibrated" : "roller.calibrating";
+                logger.warn("{}: {}", thingName, messages.get(key));
             } else if (e.isTimeout() && profile.isSensor) {
                 logger.debug(
                         "{}: Command {} for channel {} timed out, device is likely a sleeping battery-powered sensor: {}",
@@ -640,6 +646,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * Update device status and channels
      */
     protected void refreshStatus() {
+        if (stopping) {
+            // cancel(true) only interrupts the job, a cycle which is already running has to bail out itself
+            return;
+        }
         try {
             if (vibrationFilter > 0) {
                 vibrationFilter--;
@@ -660,6 +670,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
                 profile.updateFromStatus(status);
+                if (stopping) {
+                    // dispose() may have run while the blocking calls above were in flight
+                    return;
+                }
                 if (restarted) {
                     logger.debug("{}: Device restart #{} detected", thingName, stats.restarts);
                     stats.restarts.incrementAndGet();
@@ -687,6 +701,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 ShellyChannelMigration.migrateChannels(this);
             }
         } catch (ShellyApiException e) {
+            if (stopping) {
+                // dispose() may have run while the blocking calls above were in flight
+                return;
+            }
             // http call failed: go offline except for battery devices, which might be in
             // sleep mode. Once the next update is successful the device goes back online
             handleApiException(e);
@@ -1795,6 +1813,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         logger.debug("{}: Stopping Thing", thingName);
         stopping = true;
         stop();
+        api.dispose(); // detach async callbacks, they would otherwise still reach this disposed handler
         super.dispose();
     }
 

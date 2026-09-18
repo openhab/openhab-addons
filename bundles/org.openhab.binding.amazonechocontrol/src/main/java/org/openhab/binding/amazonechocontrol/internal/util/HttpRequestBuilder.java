@@ -423,8 +423,10 @@ public class HttpRequestBuilder {
                                 new ConnectionException(abortedMessage(requestUri, failure), failure));
                         return;
                     }
-                    httpResponse.completeExceptionally(new ConnectionException(requestUri + " failed with code "
-                            + responseStatus + ": " + buildFailureReason(response.getReason(), amznErrorType)));
+                    httpResponse.completeExceptionally(new ConnectionException(
+                            requestUri + " failed with code " + responseStatus + ": "
+                                    + buildFailureReason(response.getReason(), amznErrorType),
+                            responseStatus, amznErrorType));
                 } else if (failMode == NORMAL) {
                     httpResponse.complete(new HttpResponse(responseStatus, headers, content));
                 } else {

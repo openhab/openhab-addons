@@ -36,4 +36,6 @@ public class DeviceConfiguration {
     public String protocol = "";
 
     public int pollingInterval = 0;
+
+    public boolean reloadSchema = false;
 }

@@ -76,17 +76,20 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
     private final Gson gson = new Gson();
     private final UdpDiscoveryListener udpDiscoveryListener;
     private final EventLoopGroup eventLoopGroup;
+    private final TuyaSchemaService schemaService;
 
     @Activate
     public TuyaHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
             @Reference TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider,
-            @Reference StorageService storageService) throws InterruptedException {
+            @Reference StorageService storageService, @Reference TuyaSchemaService schemaService)
+            throws InterruptedException {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.dynamicCommandDescriptionProvider = dynamicCommandDescriptionProvider;
         this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
         this.eventLoopGroup = new NioEventLoopGroup();
         this.udpDiscoveryListener = new UdpDiscoveryListener(eventLoopGroup);
+        this.schemaService = schemaService;
 
         TuyaSchemaDB.setStorage(storageService, "org.openhab.binding.tuya.Schema");
     }
@@ -110,11 +113,11 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
             return new ProjectHandler(thing, httpClient, gson);
         } else if (THING_TYPE_TUYA_DEVICE.equals(thingTypeUID)) {
             return new TuyaDeviceHandler(thing, gson, dynamicCommandDescriptionProvider,
-                    dynamicStateDescriptionProvider, eventLoopGroup, udpDiscoveryListener);
+                    dynamicStateDescriptionProvider, eventLoopGroup, udpDiscoveryListener, schemaService);
         } else if (THING_TYPE_TUYA_GATEWAY.equals(thingTypeUID)) {
             if (thing instanceof Bridge bridge) {
                 return new TuyaGatewayHandler(bridge, gson, dynamicCommandDescriptionProvider,
-                        dynamicStateDescriptionProvider, eventLoopGroup, udpDiscoveryListener);
+                        dynamicStateDescriptionProvider, eventLoopGroup, udpDiscoveryListener, schemaService);
             }
             // A thing is created as a bridge only if the bridge type was known at the time, and whether it is one is
             // persisted with the thing. A gateway created before this binding was fully started stays a plain thing.
@@ -122,7 +125,7 @@ public class TuyaHandlerFactory extends BaseThingHandlerFactory {
                     thing.getUID());
         } else if (THING_TYPE_TUYA_SUB_DEVICE.equals(thingTypeUID)) {
             return new TuyaSubDeviceHandler(thing, gson, dynamicCommandDescriptionProvider,
-                    dynamicStateDescriptionProvider);
+                    dynamicStateDescriptionProvider, schemaService);
         }
 
         return null;

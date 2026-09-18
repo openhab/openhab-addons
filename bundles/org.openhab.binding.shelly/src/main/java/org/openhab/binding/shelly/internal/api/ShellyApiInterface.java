@@ -33,6 +33,15 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
  */
 @NonNullByDefault
 public interface ShellyApiInterface extends ShellyDiscoveryInterface {
+    /**
+     * Release the API for good, called when the Thing handler is disposed. In contrast to {@link #close()} the API
+     * is not meant to be re-connected afterwards, so implementations detach every asynchronous callback which could
+     * still reach the disposed handler.
+     */
+    default void dispose() {
+        close();
+    }
+
     boolean isInitialized();
 
     ShellySettingsStatus getStatus() throws ShellyApiException;
