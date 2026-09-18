@@ -45,7 +45,7 @@
                 "State": 0
               },
               "Defog": {
-                "State": 0
+                "State": 1
               },
               "WasherFluid": {
                 "LevelLow": 0
@@ -146,7 +146,7 @@
                   "Unit": 0
                 },
                 "Blower": {
-                  "SpeedLevel": 0
+                  "SpeedLevel": 3
                 }
               }
             },
@@ -206,7 +206,7 @@
             "Row1": {
               "Driver": {
                 "Open": 0,
-                "OpenLevel": 0
+                "OpenLevel": 1
               },
               "Passenger": {
                 "Open": 0,
@@ -281,7 +281,8 @@
           "FuelSystem": {
             "DTE": {
               "Unit": 1,
-              "Total": 247
+              "Total": 247,
+              "EV": 247
             },
             "LowFuelWarning": 0,
             "FuelLevel": 0,
@@ -546,7 +547,7 @@
             "ControllerStatus": 0
           }
         },
-        "DrivingReady": 0,
+        "DrivingReady": 1,
         "Version": "CCU2026022518073901",
         "Date": "20260225180739.000",
         "Offset": "1"

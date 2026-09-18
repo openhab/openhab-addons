@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluelink.internal.MockApiData;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
 import org.openhab.binding.bluelink.internal.dto.eu.Vehicle;
+import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2VehicleStatusResponse;
 import org.openhab.binding.bluelink.internal.model.Brand;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.binding.bluelink.internal.model.PlugType;
@@ -245,12 +246,13 @@ public class BluelinkApiEUTest {
 
         assertNotNull(status);
         assertFalse(status.doorLock());
-        assertFalse(status.engine());
+        assertTrue(status.engine());
         assertFalse(status.trunkOpen());
         assertTrue(status.hoodOpen());
+        assertNotNull(status.battery());
         assertEquals(88.5, status.battery().stateOfCharge(), 0.0001);
-        assertFalse(status.airCtrlOn());
-        assertFalse(status.defrost());
+        assertTrue(status.airCtrlOn());
+        assertTrue(status.defrost());
 
         final var evStatus = status.evStatus();
         assertNotNull(evStatus);
@@ -291,6 +293,13 @@ public class BluelinkApiEUTest {
         assertFalse(doorOpen.backLeft());
         assertFalse(doorOpen.backRight());
 
+        final var windowOpen = status.windowOpen();
+        assertNotNull(windowOpen);
+        assertTrue(windowOpen.frontLeft()); // driver vented window (Open: 0, OpenLevel: 1)
+        assertFalse(windowOpen.frontRight());
+        assertFalse(windowOpen.backLeft());
+        assertFalse(windowOpen.backRight());
+
         final var location = aLocation.get();
         assertNotNull(location);
         assertEquals(9.9, location.getLatitude().doubleValue(), 0.0001);
@@ -304,5 +313,58 @@ public class BluelinkApiEUTest {
         final var smartKey = aSmartKey.get();
         assertNotNull(smartKey);
         assertFalse(smartKey);
+    }
+
+    @Test
+    void testCcs2IgnitionOnlyEngineStatus() {
+        final var resp = new com.google.gson.Gson().fromJson(VEHICLE_STATUS_RESPONSE_EU_CCS2_IGNITION,
+                Ccs2VehicleStatusResponse.class);
+        assertNotNull(resp);
+
+        final IVehicle ev = new Vehicle(TEST_VEHICLE_ID, "VIN123", "EV", IVehicle.EngineType.EV, "EV6", 2024, true);
+        final var status = resp.toCommonVehicleStatus(ev);
+
+        assertNotNull(status);
+        assertFalse(status.engine());
+    }
+
+    @Test
+    void testCcs2BatterySentinel() {
+        final var resp = new com.google.gson.Gson().fromJson(VEHICLE_STATUS_RESPONSE_EU_CCS2_SENTINEL,
+                Ccs2VehicleStatusResponse.class);
+        assertNotNull(resp);
+
+        final IVehicle ev = new Vehicle(TEST_VEHICLE_ID, "VIN123", "EV", IVehicle.EngineType.EV, "EV6", 2024, true);
+        final var status = resp.toCommonVehicleStatus(ev);
+
+        assertNotNull(status);
+        assertNull(status.battery());
+    }
+
+    @Test
+    void testCcs2PhevRangesAndUnits() {
+        final var resp = new com.google.gson.Gson().fromJson(VEHICLE_STATUS_RESPONSE_EU_CCS2_PHEV,
+                Ccs2VehicleStatusResponse.class);
+        assertNotNull(resp);
+
+        final IVehicle phev = new Vehicle(TEST_VEHICLE_ID, "VIN123", "PHEV", IVehicle.EngineType.PHEV, "Sportage", 2025,
+                true);
+        final var status = resp.toCommonVehicleStatus(phev);
+
+        assertNotNull(status);
+        assertEquals(new QuantityType<>(600.0, KILO(METRE)), status.dte().getRange());
+
+        final var evStatus = status.evStatus();
+        assertNotNull(evStatus);
+
+        final var drvDistance = evStatus.drvDistance();
+        assertNotNull(drvDistance);
+        assertFalse(drvDistance.isEmpty());
+
+        final var rangeByFuel = drvDistance.getFirst().rangeByFuel();
+        assertNotNull(rangeByFuel);
+        assertEquals(new QuantityType<>(600.0, KILO(METRE)), rangeByFuel.totalAvailableRange().getRange());
+        assertNotNull(rangeByFuel.evModeRange());
+        assertEquals(new QuantityType<>(47.0, KILO(METRE)), rangeByFuel.evModeRange().getRange());
     }
 }

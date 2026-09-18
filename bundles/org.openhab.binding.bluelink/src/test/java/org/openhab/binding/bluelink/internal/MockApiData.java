@@ -33,6 +33,9 @@ public final class MockApiData {
     public static final String VEHICLE_STATUS_RESPONSE_US;
     public static final String VEHICLE_STATUS_RESPONSE_EU;
     public static final String VEHICLE_STATUS_RESPONSE_EU_CCS2;
+    public static final String VEHICLE_STATUS_RESPONSE_EU_CCS2_PHEV;
+    public static final String VEHICLE_STATUS_RESPONSE_EU_CCS2_SENTINEL;
+    public static final String VEHICLE_STATUS_RESPONSE_EU_CCS2_IGNITION;
     public static final String TEST_USERNAME = "test@example.com";
     public static final String TEST_PASSWORD = "testpassword";
     public static final String TEST_REFRESH_TOKEN = "test-refresh-token";
@@ -49,6 +52,9 @@ public final class MockApiData {
             VEHICLE_STATUS_RESPONSE_CA = loadResource("/vehicle-status-ca.json");
             VEHICLE_STATUS_RESPONSE_EU = loadResource("/vehicle-status-eu.json");
             VEHICLE_STATUS_RESPONSE_EU_CCS2 = loadResource("/vehicle-status-eu-ccs2.json");
+            VEHICLE_STATUS_RESPONSE_EU_CCS2_PHEV = loadResource("/vehicle-status-eu-ccs2-phev.json");
+            VEHICLE_STATUS_RESPONSE_EU_CCS2_SENTINEL = loadResource("/vehicle-status-eu-ccs2-sentinel.json");
+            VEHICLE_STATUS_RESPONSE_EU_CCS2_IGNITION = loadResource("/vehicle-status-eu-ccs2-ignition.json");
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
