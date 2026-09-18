@@ -34,7 +34,7 @@ public final class MockApiData {
     public static final String VEHICLE_STATUS_RESPONSE_EU;
     public static final String TEST_USERNAME = "test@example.com";
     public static final String TEST_PASSWORD = "testpassword";
-    public static final String TEST_REFRESH_TOKEN = "test-refresh-token";
+    public static final String TEST_REFRESH_TOKEN = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKL";
 
     static {
         try {

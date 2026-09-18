@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
@@ -42,6 +43,7 @@ import com.google.gson.reflect.TypeToken;
  * Abstract base class for Bluelink/Kia Connect API implementations.
  *
  * @author Marcus Better - Initial contribution
+ * @author Carlo Dischler - Shared request handling and token expiry
  */
 @NonNullByDefault
 public abstract class AbstractBluelinkApi<V extends IVehicle> {
@@ -49,6 +51,7 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
     protected static final String APPLICATION_JSON = "application/json;charset=UTF-8";
     protected static final int HTTP_TIMEOUT_SECONDS = 30;
     protected static final int DEFAULT_HEAT_DURATION_MINUTES = 5;
+    protected static final Duration TOKEN_EXPIRY_MARGIN = Duration.ofSeconds(60);
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected final Gson gson = new Gson();
@@ -205,36 +208,33 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
 
     protected <ResT> boolean doLogin(Request request, final Class<ResT> clazz,
             final Function<ResT, @Nullable Token> tokenExtractor) throws BluelinkApiException {
-        try {
-            final ContentResponse response = request.send();
-            if (response.getStatus() != HttpStatus.OK_200) {
-                logger.debug("Login failed with status {}: {}", response.getStatus(), response.getContentAsString());
-                final String msg = "Login failed: " + response.getStatus();
-                if (isRetryable(response)) {
-                    throw new RetryableRequestException(msg);
-                } else {
-                    throw new BluelinkApiException(msg);
-                }
+        final ContentResponse response = send(request, "login");
+        if (response.getStatus() != HttpStatus.OK_200) {
+            logger.debug("Login failed with status {}: {}", response.getStatus(), response.getContentAsString());
+            final String msg = "Login failed: " + response.getStatus();
+            if (isRetryable(response)) {
+                throw new RetryableRequestException(msg);
+            } else {
+                throw new BluelinkApiException(msg);
             }
-
-            final @Nullable ResT res = gson.fromJson(response.getContentAsString(), clazz);
-            if (res == null) {
-                throw new BluelinkApiException("empty response");
-            }
-            final Token token = tokenExtractor.apply(res);
-            if (token == null || token.accessToken() == null || token.expiresIn() == null) {
-                throw new BluelinkApiException("Invalid token response");
-            }
-            accessToken = token.accessToken();
-            accessTokenExpiry = Instant.now().plusSeconds(Integer.parseInt(token.expiresIn()) - 60);
-            logger.debug("Login successful, token valid until {}", accessTokenExpiry);
-            return true;
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new BluelinkApiException("Login interrupted", e);
-        } catch (TimeoutException | ExecutionException e) {
-            throw new BluelinkApiException("Login failed", e);
         }
+
+        final @Nullable ResT res = gson.fromJson(response.getContentAsString(), clazz);
+        if (res == null) {
+            throw new BluelinkApiException("empty response");
+        }
+        final Token token = tokenExtractor.apply(res);
+        if (token == null || token.accessToken() == null || token.expiresIn() == null) {
+            throw new BluelinkApiException("Invalid token response");
+        }
+        setAccessToken(token.accessToken(), Instant.now().plusSeconds(Integer.parseInt(token.expiresIn())));
+        return true;
+    }
+
+    protected void setAccessToken(final String token, final Instant expiry) {
+        accessToken = token;
+        accessTokenExpiry = expiry.minus(TOKEN_EXPIRY_MARGIN);
+        logger.debug("Login successful, token valid until {}", accessTokenExpiry);
     }
 
     /**
@@ -296,33 +296,41 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
      */
     private <T> @Nullable T sendRequestInternal(final Request request, final TypeToken<T> responseType, final String op)
             throws BluelinkApiException {
+        final ContentResponse response = checkStatus(send(request, op), op);
+        logger.debug("{} response: {}", op, response.getContentAsString());
+        return gson.fromJson(response.getContentAsString(), responseType);
+    }
+
+    // transport failures are transient, callers may retry them like a 5xx
+    static ContentResponse send(final Request request, final String op) throws BluelinkApiException {
         try {
-            final ContentResponse response = checkStatus(request.send(), op);
-            logger.debug("{} response: {}", op, response.getContentAsString());
-            return gson.fromJson(response.getContentAsString(), responseType);
+            return request.timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new BluelinkApiException(op + " interrupted", e);
         } catch (final TimeoutException | ExecutionException e) {
-            throw new BluelinkApiException(op + " request failed", e);
+            throw new RetryableRequestException(op + " request failed", e);
         }
     }
 
     protected ContentResponse checkStatus(final ContentResponse response, final String op) throws BluelinkApiException {
         if (response.getStatus() != HttpStatus.OK_200) {
             logger.debug("operation failed ({}): {} - {}", op, response.getStatus(), response.getContentAsString());
-            final String msg = "operation failed: %s - %d".formatted(op, response.getStatus());
-            if (isRetryable(response)) {
-                throw new RetryableRequestException(msg);
-            } else {
-                throw new BluelinkApiException(msg);
-            }
+            throw operationFailed(op, response.getStatus(), isRetryable(response));
         }
         return response;
     }
 
+    static BluelinkApiException operationFailed(final String op, final int status, final boolean retryable) {
+        final String msg = "operation failed: %s - %d".formatted(op, status);
+        return retryable ? new RetryableRequestException(msg) : new BluelinkApiException(msg);
+    }
+
     protected boolean isRetryable(final ContentResponse response) {
-        final int status = response.getStatus();
+        return isServerError(response.getStatus());
+    }
+
+    static boolean isServerError(final int status) {
         return status >= 500 && status < 600;
     }
 }

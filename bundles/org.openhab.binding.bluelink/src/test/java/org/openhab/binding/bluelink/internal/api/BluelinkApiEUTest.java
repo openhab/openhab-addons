@@ -31,6 +31,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.bluelink.internal.CciLoginStubs;
 import org.openhab.binding.bluelink.internal.MockApiData;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
 import org.openhab.binding.bluelink.internal.dto.EvStatus;
@@ -47,6 +48,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 /**
  * @author Florian Hotze - Initial contribution
+ * @author Carlo Dischler - Password login test
  */
 @NonNullByDefault
 public class BluelinkApiEUTest {
@@ -81,7 +83,7 @@ public class BluelinkApiEUTest {
     @Test
     void testLoginAndGetVehicleStatus() throws BluelinkApiException {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
-        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
+        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider, "",
                 MockApiData.TEST_REFRESH_TOKEN);
         assertTrue(api.login());
 
@@ -191,9 +193,49 @@ public class BluelinkApiEUTest {
     }
 
     @Test
-    void testControlActionsThrowForCcuCcs2Protocol() throws Exception {
+    void testPasswordLoginAndRefresh() throws Exception {
+        resetAllRequests();
+        final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
+        final CciLoginStubs stubs = new CciLoginStubs(WIREMOCK_SERVER);
+        stubs.stubLogin();
+
+        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
+                MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD);
+        assertTrue(api.login());
+        assertEquals("122c2e30-d642-4d34-ba07-7ce7d787349a", api.getProperties().get("deviceId"));
+        verify(postRequestedFor(urlEqualTo("/api/v1/spa/notifications/register")).withHeader("Authorization",
+                equalTo("Bearer " + CciLoginStubs.CCS_ACCESS_TOKEN)));
+
+        // expired token: refresh the CCI session instead of logging in again
+        stubs.stubTokenRefresh("cci-access-2", "cci-refresh-2");
+        stubs.stubTokenExchange("ccs-2", Instant.now().plusSeconds(3600).getEpochSecond());
+        api.accessTokenExpiry = Instant.now().minusSeconds(1);
+        assertTrue(api.login());
+
+        verify(0, postRequestedFor(urlEqualTo("/auth/api/v2/user/oauth2/token"))
+                .withRequestBody(containing("refresh_token=" + MockApiData.TEST_PASSWORD)));
+        verify(1, postRequestedFor(urlEqualTo("/auth/account/signin")));
+        verify(1, postRequestedFor(urlEqualTo("/domain/api/v2/auth/token-refresh")));
+        assertEquals("ccs-2", api.accessToken);
+    }
+
+    @Test
+    void testRefreshTokenIsUsedDespiteUsername() throws Exception {
+        resetAllRequests();
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
         final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
+                MockApiData.TEST_USERNAME, MockApiData.TEST_REFRESH_TOKEN);
+        assertTrue(api.login());
+
+        verify(postRequestedFor(urlEqualTo("/auth/api/v2/user/oauth2/token"))
+                .withRequestBody(containing("refresh_token=" + MockApiData.TEST_REFRESH_TOKEN)));
+        verify(0, postRequestedFor(urlEqualTo("/auth/account/signin")));
+    }
+
+    @Test
+    void testControlActionsThrowForCcuCcs2Protocol() throws Exception {
+        final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
+        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider, "",
                 MockApiData.TEST_REFRESH_TOKEN);
         assertTrue(api.login());
 
