@@ -86,9 +86,30 @@ OAuth site access is intended for accessing a specific SolarEdge site on behalf 
 The SolarEdge username and password are entered only on the SolarEdge authorization page and are never stored in openHAB.
 A browser is normally required only for the initial authorization; openHAB subsequently renews the access automatically using the stored refresh token.
 
+### SolarEdge Developer Account for Homeowners
+
+Private homeowners can use Monitoring API V2 without owning a company.
+Sign in to the [SolarEdge developer portal](https://developer.solaredge.com/) with your existing mySolarEdge or Monitoring credentials.
+Your existing login still needs a developer-account profile before you can register an application.
+
+Choose **Set up my company's developer account**, even for personal use.
+The company and address form is part of the normal registration process for homeowners, so seeing it does not mean you selected the wrong portal.
+SolarEdge's [Homeowner and Self-Access Guide](https://api-docs.solaredge.com/docs/developer-platform/df8kx5j4z9vi0-homeowner-and-self-access-guide) gives the following guidance:
+
+- **Company Name**: use your own name or a project name, such as `My Solar Dashboard`, if you do not have a company.
+  Use English letters and numbers without accents or umlauts.
+- **Type of Industry**: `Other / Hobbyist` is suitable for personal use.
+- **Expected Monthly API Usage**: `Low — personal project` is suggested for personal projects; check the [usage limits](#monitoring-api-v2-usage-limits) before choosing polling intervals.
+
+Complete the contact and address fields required by the portal with your own details.
+The official [Accounts and Sign Up documentation](https://api-docs.solaredge.com/docs/developer-platform/kwk7r9c01sdxm-accounts-and-sign-up) lists these fields but does not specify which may be left blank or document a way to skip the profile setup.
+It also requires English letters and numbers in the contact-name and address fields.
+After registration, the Free tier is activated automatically; your existing homeowner access remains unchanged.
+
 ### SolarEdge Application Setup
 
-1. Register an application in the [SolarEdge developer portal](https://developer.solaredge.com/).
+1. Register an application in the [SolarEdge developer portal](https://developer.solaredge.com/) and select **Site Access (OAuth)** for access to your own home installation.
+   **Fleet Access** is intended for installer or operator portfolios.
 1. Enable the `SITE_DATA` and `DEVICE_DATA` permissions described in the official [Authentication documentation](https://api-docs.solaredge.com/docs/developer-platform/b087f82c79d78-authentication).
    `DEVICE_DATA` is required for meter and storage telemetry.
 1. Configure the application's redirect URL as:
