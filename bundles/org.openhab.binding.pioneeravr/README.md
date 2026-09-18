@@ -47,6 +47,7 @@ pioneeravr:serialAvr:vsx921Serial [ serialPort="COM9" ]
 - mute: Mute/Unmute the AVR. Receive mute events.
 - setInputSource: Set the input source of the AVR. See input source mapping for more details. Receive source input change events with the input source ID.
 - displayInformation: Receive display events. Reflect the display on the AVR front panel.
+- speakerSelection: Select the speakers to be used: `0` (off), `1` (speakers A), `2` (speakers B) or `3` (speakers A+B). Receive speaker selection events.
 
 ## Input Source Mapping
 

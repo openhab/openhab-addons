@@ -16,6 +16,7 @@
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
 			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="speakerSelectionGroup" id="speakerSelection"/>
 			<channel-group typeId="zoneControls" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -47,6 +48,7 @@
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
 			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="speakerSelectionGroup" id="speakerSelection"/>
 			<channel-group typeId="controls2014" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -84,6 +86,7 @@
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
 			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="speakerSelectionGroup" id="speakerSelection"/>
 			<channel-group typeId="controls2015" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -121,6 +124,7 @@
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
 			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="speakerSelectionGroup" id="speakerSelection"/>
 			<channel-group typeId="controls2016" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -158,6 +162,7 @@
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
 			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="speakerSelectionGroup" id="speakerSelection"/>
 			<channel-group typeId="controls2017" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -193,6 +198,7 @@
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
 			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="speakerSelectionGroup" id="speakerSelection"/>
 			<channel-group typeId="controls2018" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -228,6 +234,7 @@
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
 			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="speakerSelectionGroup" id="speakerSelection"/>
 			<channel-group typeId="controls2019" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -263,6 +270,7 @@
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
 			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="speakerSelectionGroup" id="speakerSelection"/>
 			<channel-group typeId="controls2020" id="zone1">
 				<label>Zone 1</label>
 			</channel-group>
@@ -300,6 +308,7 @@
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
 			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="speakerSelectionGroup" id="speakerSelection"/>
 			<channel-group typeId="zoneControls" id="zone1"/>
 			<channel-group typeId="zoneControls" id="zone2"/>
 			<channel-group typeId="zoneControls" id="zone3"/>
@@ -327,6 +336,7 @@
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
 			<channel-group typeId="MCACCMemoryGroup" id="MCACCMemory"/>
+			<channel-group typeId="speakerSelectionGroup" id="speakerSelection"/>
 			<channel-group typeId="zone1Controls" id="zone1"/>
 			<channel-group typeId="zone2Controls" id="zone2"/>
 			<channel-group typeId="zone3Controls" id="zone3"/>
@@ -353,6 +363,13 @@
 		<label>MCACC Memory</label>
 		<channels>
 			<channel id="MCACCMemory" typeId="setMCACCMemoryChannel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="speakerSelectionGroup">
+		<label>Speaker Selection</label>
+		<channels>
+			<channel id="speakerSelection" typeId="setSpeakerSelectionChannel"/>
 		</channels>
 	</channel-group-type>
 
@@ -1521,6 +1538,20 @@
 				<option value="0004">MEMORY 4</option>
 				<option value="0005">MEMORY 5</option>
 				<option value="0006">MEMORY 6</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setSpeakerSelectionChannel">
+		<item-type>String</item-type>
+		<label>Speaker Selection</label>
+		<description>Select which speakers are used</description>
+		<state>
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">SPEAKERS A</option>
+				<option value="2">SPEAKERS B</option>
+				<option value="3">SPEAKERS A+B</option>
 			</options>
 		</state>
 	</channel-type>
