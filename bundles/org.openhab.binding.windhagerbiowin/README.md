@@ -51,9 +51,10 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| hostname        | text    | Hostname or IP address of the BioWin webserver | N/A     | yes      | no       |
+| port            | integer | Port of the BioWin webserver                   | 80      | no       | yes      |
+| username        | text    | Username to access the BioWin webserver        | N/A     | yes      | no       |
+| password        | text    | Password to access the BioWin webserver        | N/A     | yes      | no       |
 
 ## Channels
 

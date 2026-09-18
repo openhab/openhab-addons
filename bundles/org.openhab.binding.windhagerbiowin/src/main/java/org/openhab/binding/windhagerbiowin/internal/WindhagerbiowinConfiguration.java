@@ -23,9 +23,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class WindhagerbiowinConfiguration {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Hostname or IP address of the BioWin webserver.
      */
     public String hostname = "";
+
+    /**
+     * Optional port of the BioWin webserver. Defaults to 80.
+     */
+    public int port = 80;
+
+    /**
+     * Username for authenticating against the BioWin webserver.
+     */
+    public String username = "";
+
+    /**
+     * Password for authenticating against the BioWin webserver.
+     */
     public String password = "";
-    public int refreshInterval = 600;
 }
