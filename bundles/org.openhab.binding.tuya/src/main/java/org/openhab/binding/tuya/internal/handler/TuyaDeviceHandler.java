@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tuya.internal.TuyaDynamicCommandDescriptionProvider;
 import org.openhab.binding.tuya.internal.TuyaDynamicStateDescriptionProvider;
+import org.openhab.binding.tuya.internal.TuyaSchemaService;
 import org.openhab.binding.tuya.internal.local.DeviceInfoSubscriber;
 import org.openhab.binding.tuya.internal.local.DeviceStatusListener;
 import org.openhab.binding.tuya.internal.local.TuyaDevice;
@@ -55,8 +56,8 @@ public class TuyaDeviceHandler extends BaseTuyaDeviceHandler implements DeviceIn
     public TuyaDeviceHandler(Thing thing, Gson gson,
             TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
             TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider, EventLoopGroup eventLoopGroup,
-            UdpDiscoveryListener udpDiscoveryListener) {
-        super(thing, gson, dynamicCommandDescriptionProvider, dynamicStateDescriptionProvider);
+            UdpDiscoveryListener udpDiscoveryListener, TuyaSchemaService schemaService) {
+        super(thing, gson, dynamicCommandDescriptionProvider, dynamicStateDescriptionProvider, schemaService);
         this.gson = gson;
         this.udpDiscoveryListener = udpDiscoveryListener;
         this.eventLoopGroup = eventLoopGroup;

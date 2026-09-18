@@ -97,6 +97,13 @@ Some devices do not automatically refresh channels or only refresh at fairly lon
 The `pollingInterval` can be used to adjust how often channels are updated and can be set to `0` (off) or to any integer value of 10 seconds or higher. The default is 10 seconds.
 Note that this has no practical effect on battery powered devices. These only wake up when they have something to say and then go straight back to sleep.
 
+The advanced option `reloadSchema` acts as a trigger: enable it and save the Thing to retrieve the schema of the device from the cloud again.
+The stored schema of the product is replaced, all things of this product are re-initialized with the channels of the new schema and the option resets itself.
+Channels generated from the previous schema whose data point no longer exists are removed, manually added channels are kept.
+This requires a `project` Thing that is `ONLINE`; if several projects are `ONLINE`, each is tried until one knows the device.
+In textual configuration the option triggers the reload whenever the Thing is loaded from the file, so remove it after use.
+The option is available for `tuyaGateway` and `tuyaSubDevice` things as well.
+
 In case something is not working, please open an issue on [GitHub](https://github.com/openhab/openhab-addons/issues/new?title=[tuya]) and add TRACE level logs.
 
 ### `tuyaGateway`
@@ -217,6 +224,20 @@ After pressing buttons and copying codes, assign the codes to the Item which con
 
 After receiving the key code, learning mode automatically continues until you send the `study_exit` command or send a key code via the Item containing a code.
 
+## Console Commands
+
+The binding registers the console command `openhab:tuya` for inspecting and refreshing device schemas.
+
+| Command                           | Description                                                                                                                                                                                             |
+|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `openhab:tuya schema <productId>` | Shows the stored schema of a product: data point IDs, codes, types, access, units and ranges.                                                                                                            |
+| `openhab:tuya reload <thingUID>`  | Retrieves the schema of a device Thing from the cloud again, replaces the stored schema of its product, discards the generated channel types and re-initializes all things that use this product. |
+
+`reload` requires a `project` Thing that is `ONLINE`.
+Schemas that are built into the binding cannot be reloaded.
+Use `reload` when the channels of a device do not match the data points reported by the cloud, for example after updating to a binding version that supports additional data point types.
+The same can be done in the UI with the advanced option `reloadSchema` of a `tuyaDevice`, `tuyaGateway` or `tuyaSubDevice` Thing.
+
 ## Full Example
 
 tuya.things:
@@ -286,6 +307,8 @@ Switch Door_Contact     "Door"               { channel="tuya:tuyaSubDevice:gatew
 Remove the bridge reference (and any surrounding `Bridge { ... }` block) from the Thing definition, as described in [Supported Things](#supported-things).
 - If the `project` Thing is not coming `ONLINE`, check if you see your devices in the cloud account on `iot.tuya.com`.
 If the list is empty, most likely you selected the wrong data center.
+- If channels are missing or have an unexpected type (e.g. a `String` channel for a numeric fault data point), the stored schema may be outdated.
+Reload it from the cloud by enabling the advanced option `reloadSchema` of the Thing and saving (see [`tuyaDevice`](#tuyadevice)), or check it with `openhab:tuya schema <productId>` and refresh it with `openhab:tuya reload <thingUID>` (see [Console Commands](#console-commands)).
 - Check if there are errors in the log and if you see messages like `Configuring IP address '192.168.1.100' for Thing 'tuya:tuya:tuyaDevice:bf3122fba012345fc9pqa'`.
 If this is missing, try configuring the IP manually.
 The MAC of your device can be found in the auto-discovered Thing properties (this helps to identify the device in your router).
