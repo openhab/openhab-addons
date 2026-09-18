@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.measure.quantity.Temperature;
 
@@ -70,10 +71,11 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
     private final TimeZoneProvider timeZoneProvider;
     private final LocaleProvider localeProvider;
 
-    // guards api and loginTask so that a finishing login cannot reschedule itself after dispose()
+    // guards api, loginTask and loginGeneration so that a finishing login cannot reschedule itself after dispose()
     private final Object loginLock = new Object();
     private volatile @Nullable AbstractBluelinkApi<?> api;
     private volatile @Nullable ScheduledFuture<?> loginTask;
+    private final AtomicLong loginGeneration = new AtomicLong();
 
     public BluelinkAccountHandler(final Bridge bridge, final HttpClient httpClient,
             final TimeZoneProvider timeZoneProvider, final LocaleProvider localeProvider) {
@@ -166,19 +168,25 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
         synchronized (loginLock) {
             api = newApi;
+            loginGeneration.incrementAndGet();
             loginTask = scheduler.schedule(this::login, 0, TimeUnit.MILLISECONDS);
         }
     }
 
     private void login() {
-        final AbstractBluelinkApi<?> bluelinkApi = api;
+        final AbstractBluelinkApi<?> bluelinkApi;
+        final long generation;
+        synchronized (loginLock) {
+            bluelinkApi = api;
+            generation = loginGeneration.get();
+        }
         if (bluelinkApi == null) {
             return;
         }
 
         try {
             final boolean loggedIn = bluelinkApi.login();
-            if (isStale(bluelinkApi)) {
+            if (isStale(generation)) {
                 return;
             }
             if (loggedIn) {
@@ -195,32 +203,32 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                         "@text/account-handler.login.login-failed");
             }
         } catch (final RetryableRequestException e) {
-            if (!isStale(bluelinkApi)) {
+            if (!isStale(generation)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
-                scheduleLoginRetry(bluelinkApi);
+                scheduleLoginRetry(generation);
             }
         } catch (final LoginRejectedException e) {
-            if (!isStale(bluelinkApi)) {
+            if (!isStale(generation)) {
                 final ThingStatusDetail detail = e.getReason() == LoginRejectedException.Reason.BLOCKED
                         ? ThingStatusDetail.COMMUNICATION_ERROR
                         : ThingStatusDetail.CONFIGURATION_ERROR;
                 updateStatus(ThingStatus.OFFLINE, detail, e.getStatusDescription());
             }
         } catch (final BluelinkApiException e) {
-            if (!isStale(bluelinkApi)) {
+            if (!isStale(generation)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
             }
         }
     }
 
     // the handler was disposed or re-initialized while this login was running
-    private boolean isStale(final AbstractBluelinkApi<?> loginApi) {
-        return !loginApi.equals(api);
+    private boolean isStale(final long generation) {
+        return generation != loginGeneration.get();
     }
 
-    private void scheduleLoginRetry(final AbstractBluelinkApi<?> loginApi) {
+    private void scheduleLoginRetry(final long generation) {
         synchronized (loginLock) {
-            if (!isStale(loginApi)) {
+            if (!isStale(generation)) {
                 loginTask = scheduler.schedule(this::login, LOGIN_RETRY_DELAY.toSeconds(), TimeUnit.SECONDS);
             }
         }
@@ -258,6 +266,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                 loginTask = null;
             }
             api = null;
+            loginGeneration.incrementAndGet();
         }
     }
 
