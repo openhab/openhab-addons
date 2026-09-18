@@ -894,6 +894,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private boolean isWatchdogExpired() {
+        if (profile.isRcButton) {
+            // Pure event-driven remote: it has no periodic sleep/wakeup-and-report cycle to police, and can
+            // stay silent for days between button presses - a missed "wakeup" was never expected, so never
+            // force it offline for one.
+            return false;
+        }
         double delta = now() - watchdog;
         if ((watchdog > 0) && (delta > profile.updatePeriod)) {
             stats.remainingWatchdog.set((long) delta);
