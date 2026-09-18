@@ -91,7 +91,7 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
      *
      * @param vehicle the vehicle to query
      * @param forceRefresh if true, force a refresh from the vehicle instead of using cached data
-     * @return the vehicle status, or null if not available
+     * @return true if the vehicle status was retrieved successfully
      * @throws BluelinkApiException if the request fails
      */
     public abstract boolean getVehicleStatus(IVehicle vehicle, boolean forceRefresh, VehicleStatusCallback cb)
