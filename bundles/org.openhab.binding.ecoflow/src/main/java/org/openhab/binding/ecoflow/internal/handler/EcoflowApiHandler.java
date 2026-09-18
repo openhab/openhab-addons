@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.hivemq.client.mqtt.MqttClient;
+import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.datatypes.MqttTopic;
 import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedListener;
 import com.hivemq.client.mqtt.lifecycle.MqttDisconnectSource;
@@ -102,6 +103,31 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
         this.discoveryService = Optional.of(discoveryService);
     }
 
+    public void resubscribeToDevice(String serialNumber) {
+        synchronized (mqttConnectionLock) {
+            @Nullable
+            HandlerData data = activeChildHandlers.get(serialNumber);
+            if (data == null || !data.subscribed) {
+                logger.debug("{}: Ignoring subscription update request for unknown device", serialNumber);
+                return;
+            }
+            final MqttConnection mqttConnection = this.mqttConnection;
+            if (mqttConnection != null) {
+                try {
+                    logger.debug("{}: Unsubscribing from MQTT topics", serialNumber);
+                    mqttConnection.unsubscribeFromDevice(serialNumber).get(2, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } catch (ExecutionException | TimeoutException e) {
+                    logger.debug("{}: Could not unsubscribe from MQTT updates", serialNumber, e);
+                }
+                data.subscribed = false;
+                subscribeTask.cancel();
+                subscribeTask.schedule(2, TimeUnit.SECONDS);
+            }
+        }
+    }
+
     @Override
     public void initialize() {
         logger.debug("Initializing Ecoflow account '{}'", getThing().getUID().getId());
@@ -115,6 +141,8 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
         api = null;
         discoveryService.ifPresent(ds -> ds.stopScan());
         initTask.cancel();
+        mqttConnectTask.cancel();
+        subscribeTask.cancel();
     }
 
     @Override
@@ -126,7 +154,7 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
             logger.debug("Refreshing Ecoflow API account '{}'", getThing().getUID().getId());
-            scheduleApiInit(0);
+            scheduleApiInit(0, TimeUnit.SECONDS);
         }
     }
 
@@ -151,25 +179,30 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         super.childHandlerDisposed(childHandler, childThing);
         if (childHandler instanceof AbstractEcoflowHandler deviceHandler) {
-            final MqttConnection connectionToTearDown;
+            final MqttConnection connection;
+            final boolean handlersLeft;
+            final HandlerData handlerData;
             synchronized (mqttConnectionLock) {
-                activeChildHandlers.remove(deviceHandler.getSerialNumber());
-                if (activeChildHandlers.isEmpty()) {
-                    connectionToTearDown = mqttConnection;
+                connection = mqttConnection;
+                handlerData = activeChildHandlers.remove(deviceHandler.getSerialNumber());
+                handlersLeft = !activeChildHandlers.isEmpty();
+                if (!handlersLeft) {
                     mqttConnection = null;
-                } else {
-                    connectionToTearDown = null;
                 }
             }
-            if (connectionToTearDown != null) {
-                connectionToTearDown.disconnect();
+            if (connection != null) {
+                if (!handlersLeft) {
+                    connection.disconnect();
+                } else if (handlerData != null && handlerData.subscribed) {
+                    connection.unsubscribeFromDevice(handlerData.serialNumber);
+                }
             }
         }
     }
 
-    private void scheduleApiInit(long delaySeconds) {
+    private void scheduleApiInit(long delay, TimeUnit unit) {
         initTask.cancel();
-        initTask.schedule(delaySeconds);
+        initTask.schedule(delay, unit);
     }
 
     public synchronized EcoflowApi getApi() {
@@ -204,7 +237,7 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
         } catch (EcoflowApiException e) {
             logger.debug("Ecoflow API initialization failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            scheduleApiInit(RETRY_INTERVAL_SECONDS);
+            scheduleApiInit(RETRY_INTERVAL_SECONDS, TimeUnit.SECONDS);
         }
     }
 
@@ -248,7 +281,7 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
             Thread.currentThread().interrupt();
         } catch (EcoflowApiException e) {
             logger.debug("Could not establish MQTT connection", e);
-            mqttConnectTask.schedule(5);
+            mqttConnectTask.schedule(5, TimeUnit.SECONDS);
         }
     }
 
@@ -304,7 +337,7 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
             }
             if (!expectedShutdown) {
                 logger.debug("MQTT disconnected (source {}): {}", ctx.getSource(), ctx.getCause().getMessage());
-                mqttConnectTask.schedule(5);
+                mqttConnectTask.schedule(5, TimeUnit.SECONDS);
             }
         };
 
@@ -376,10 +409,17 @@ public class EcoflowApiHandler extends BaseBridgeHandler {
         CompletableFuture<Void> subscribeForDevice(String serialNumber, Consumer<@Nullable Mqtt3Publish> quotaHandler,
                 Consumer<@Nullable Mqtt3Publish> statusHandler) {
             String deviceTopicBase = topicBase + serialNumber + "/";
-            var quotaSubFuture = client.subscribeWith().topicFilter(deviceTopicBase + "quota").callback(quotaHandler)
-                    .send();
-            var statusSubFuture = client.subscribeWith().topicFilter(deviceTopicBase + "status").callback(statusHandler)
-                    .send();
+            var quotaSubFuture = client.subscribeWith().topicFilter(deviceTopicBase + "quota")
+                    .qos(MqttQos.AT_LEAST_ONCE).callback(quotaHandler).send();
+            var statusSubFuture = client.subscribeWith().topicFilter(deviceTopicBase + "status")
+                    .qos(MqttQos.AT_LEAST_ONCE).callback(statusHandler).send();
+            return CompletableFuture.allOf(quotaSubFuture, statusSubFuture);
+        }
+
+        CompletableFuture<Void> unsubscribeFromDevice(String serialNumber) {
+            String deviceTopicBase = topicBase + serialNumber + "/";
+            var quotaSubFuture = client.unsubscribeWith().topicFilter(deviceTopicBase + "quota").send();
+            var statusSubFuture = client.unsubscribeWith().topicFilter(deviceTopicBase + "status").send();
             return CompletableFuture.allOf(quotaSubFuture, statusSubFuture);
         }
 
