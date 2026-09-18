@@ -830,7 +830,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
             case "PUSH_LIST_ITEM_CHANGE":
                 break;
             default:
-                logger.warn("Detected unknown command from activity stream: {}", pushCommand);
+                logger.debug("Ignoring unknown push command {}", command);
         }
     }
 
