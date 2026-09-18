@@ -461,7 +461,8 @@ Check in the UI thing configurations, which channels are created.
 | geoLocation              | Location             | R           | smartHomeDevice                       | The location (e.g. of a Tile)                                                                                               |
 
 **Note:** the channels of `smartHomeDevices` and `smartHomeDeviceGroup` will be created dynamically based on the capabilities reported by the Amazon server. This can take a little bit of time.
-The polling intervals configured in the Account Thing to get the state are specified in seconds, with a minimum of 10 seconds for devices connected to Alexa directly and 60 seconds for devices connected through a skill. A state change therefore takes up to one interval to show. The minimum for skill devices is the higher one because polling them causes a big server load for the Smart Home Skills.
+The polling intervals configured in the Account Thing to get the state are specified in seconds, with a minimum of 10 seconds for devices connected to Alexa directly and 60 seconds for devices connected through a skill.
+A state change therefore takes up to one interval to show. The minimum for skill devices is the higher one because polling them causes a big server load for the Smart Home Skills.
 
 **Note:** The `color` channel is read-only by default because Alexa does only support setting colors by their name.
 It has a configuration parameter `matchColors` which enables writing to that channel and tries to find the closes available color when sending a command to Alexa.

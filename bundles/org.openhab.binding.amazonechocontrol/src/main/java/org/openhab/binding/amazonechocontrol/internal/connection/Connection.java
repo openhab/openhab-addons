@@ -669,14 +669,18 @@ public class Connection {
         }
         requestObject.add("stateRequests", stateRequests);
         logger.debug("Requesting smart home states for {} entities", pendingEntityIds.size());
-        logger.trace("Requesting smart home states for entities {}", pendingEntityIds);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Requesting smart home states for entities {}", pendingEntityIds);
+        }
         JsonObject responseObject = requestBuilder.post(getAlexaServer() + "/api/phoenix/state")
                 .withContent(requestObject).syncSend(JsonObject.class);
 
         JsonElement deviceStatesElement = responseObject.get("deviceStates");
         if (deviceStatesElement == null || !deviceStatesElement.isJsonArray()) {
             logger.debug("Amazon answered the state request for {} without device states", pendingEntityIds);
-            logger.trace("Answer without device states: {}", responseObject);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Answer without device states: {}", responseObject);
+            }
             return Map.of();
         }
         JsonArray deviceStates = deviceStatesElement.getAsJsonArray();
