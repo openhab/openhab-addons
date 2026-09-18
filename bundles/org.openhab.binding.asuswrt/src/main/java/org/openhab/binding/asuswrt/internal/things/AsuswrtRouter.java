@@ -17,11 +17,11 @@ import static org.openhab.binding.asuswrt.internal.constants.AsuswrtBindingSetti
 import static org.openhab.binding.asuswrt.internal.helpers.AsuswrtUtils.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -88,7 +88,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     private final AtomicBoolean isInternalThingUpdate = new AtomicBoolean();
     private String nvramCommands = "";
     private Map<String, @Nullable String> nvramValues = new HashMap<>();
-    private Map<String, ChannelUID> nvramChannelUIDMap = new ConcurrentHashMap<>();
+    private volatile Map<String, ChannelUID> nvramChannelUIDMap = new HashMap<>();
 
     private int backoffDuration = RECONNECT_BACKOFF_START_S;
 
@@ -111,7 +111,7 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
         // Initialize the handler.
         setState(ThingStatus.UNKNOWN);
-        updateChannelInfo();
+        updateChannelInfo(getThing());
 
         // background initialization (delay it a little bit):
         startupJob = scheduler.schedule(this::delayedStartUp, 1000, TimeUnit.MILLISECONDS);
@@ -134,16 +134,17 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         this.discoveryService = discoveryService;
     }
 
-    private void updateChannelInfo() {
-        nvramChannelUIDMap.clear();
-        for (var channel : getThing().getChannels()) {
+    private void updateChannelInfo(Thing thing) {
+        Map<String, ChannelUID> channelUIDMap = new HashMap<>();
+        for (var channel : thing.getChannels()) {
             if (CHANNEL_TYPE_EXTENSIBLE_NVRAM.equals(channel.getChannelTypeUID())) {
                 AsuswrtNVRAMChannelConfig cfg = channel.getConfiguration().as(AsuswrtNVRAMChannelConfig.class);
                 if (!cfg.name().isEmpty()) {
-                    nvramChannelUIDMap.put(cfg.name(), channel.getUID());
+                    channelUIDMap.put(cfg.name(), channel.getUID());
                 }
             }
         }
+        nvramChannelUIDMap = Collections.unmodifiableMap(channelUIDMap);
     }
 
     /**
@@ -168,7 +169,12 @@ public class AsuswrtRouter extends BaseBridgeHandler {
 
         logger.debug("({}) moving extensible NVRAM channels to the appropriate channel group", getUID());
 
-        ThingBuilder thingBuilder = editThing();
+        // base the builder on editThing() so updateThing() keeps the identity ThingManager tracks, but apply the
+        // contents of the externally supplied thing so its changes aren't discarded in favor of the stale internal
+        // thing
+        ThingBuilder thingBuilder = editThing().withConfiguration(thing.getConfiguration()).withLabel(thing.getLabel())
+                .withLocation(thing.getLocation()).withProperties(thing.getProperties())
+                .withBridge(thing.getBridgeUID()).withChannels(thing.getChannels());
 
         ChannelGroupUID groupID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_NVRAM);
         channelsNoGroup.forEach(channel -> {
@@ -184,13 +190,15 @@ public class AsuswrtRouter extends BaseBridgeHandler {
                     .build();
             thingBuilder.withChannel(newChannel);
         });
+        Thing groupedThing = thingBuilder.build();
         isInternalThingUpdate.set(true);
         try {
-            updateThing(thingBuilder.build());
+            updateThing(groupedThing);
         } finally {
             isInternalThingUpdate.set(false);
         }
-        updateChannelInfo();
+        // rebuild from the grouped thing directly rather than a subsequent getThing(), which may still lag
+        updateChannelInfo(groupedThing);
     }
 
     /*
