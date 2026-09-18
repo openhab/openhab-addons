@@ -159,9 +159,9 @@ class CciAuthenticator {
     private void authorize() throws BluelinkApiException {
         final String url = loginBaseUrl + "/auth/api/v2/user/oauth2/authorize?response_type=code&client_id="
                 + config.clientId() + "&redirect_uri=" + config.redirectUri() + "&lang=en&state=ccsp&country=de";
-        final ContentResponse response = send(
-                httpClient.newRequest(url).method(HttpMethod.GET).header(HttpHeader.USER_AGENT, USER_AGENT),
-                "authorize");
+        // a blocked login only shows on the page behind the redirect
+        final ContentResponse response = send(httpClient.newRequest(url).method(HttpMethod.GET)
+                .header(HttpHeader.USER_AGENT, USER_AGENT).followRedirects(true), "authorize");
         if (response.getContentAsString().toLowerCase(Locale.ROOT).contains("abusing")
                 || response.getRequest().getURI().toString().contains("/error?status=400")) {
             throw new LoginRejectedException(Reason.BLOCKED, "Login blocked by the Bluelink server");
