@@ -481,6 +481,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResource = Objects.nonNull(putResource) ? putResource : new Resource(lightResourceType);
                 if (command instanceof IncreaseDecreaseType incDecCommand) {
                     command = handleIncreaseDecreaseBrightnessCommand(incDecCommand, putResource, cache);
+                    if (command == null) {
+                        return; // error; do not send command
+                    }
                     // fall through
                 } else if (command instanceof PercentType brightnessCommand) {
                     putResource = putResource.setBrightness(brightnessCommand);
@@ -1900,17 +1903,17 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param command the {@link IncreaseDecreaseType} command.
      * @param putResource the resource to be sent to the bridge.
      * @param cache the cached resource with the current state, may be null.
-     * @return an adjunct {@link OnOffType.ON} .
+     * @return an adjunct {@link OnOffType.ON}, or null if the action failed.
      */
-    private OnOffType handleIncreaseDecreaseBrightnessCommand(IncreaseDecreaseType command, Resource putResource,
-            @Nullable Resource cache) {
-        boolean inc = IncreaseDecreaseType.INCREASE == command;
+    private @Nullable OnOffType handleIncreaseDecreaseBrightnessCommand(IncreaseDecreaseType command,
+            Resource putResource, @Nullable Resource cache) {
         if (cache != null) {
             Resource actual = getResource(cache.getType(), cache.getId());
             if (actual != null) {
                 double brightnessActual = (actual.getDimming() instanceof Dimming dim
                         && dim.getBrightness() instanceof Double bri) ? bri : -1;
                 if (brightnessActual >= 0.0) {
+                    boolean inc = IncreaseDecreaseType.INCREASE == command;
                     if (inc || (actual.getOnState() instanceof OnState on && Boolean.TRUE.equals(on.getOn()))) {
                         double brightnessTarget = inc //
                                 ? Math.min(100.0, brightnessActual + INCREASE_DECREASE_PERCENT)
@@ -1921,8 +1924,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
             }
         }
-        putResource.setBrightness(inc ? PercentType.HUNDRED : PercentType.ZERO);
-        return OnOffType.from(inc);
+        return null;
     }
 
     /**
