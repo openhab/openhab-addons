@@ -248,7 +248,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
                     try {
                         final Instant instant = Instant.ofEpochMilli(Long.parseLong(lastUpdateTime));
                         cb.acceptLastUpdateTimestamp(instant);
-                    } catch (final DateTimeParseException e) {
+                    } catch (final NumberFormatException e) {
                         logger.warn("unexpected time format: {}", lastUpdateTime);
                     }
                 }
