@@ -113,7 +113,8 @@ public class InfluxDB3RepositoryImpl implements InfluxDBRepository {
         }
         try {
             HttpUrl url = HttpUrl.get(configuration.getUrl()).newBuilder().addPathSegment("ping").build();
-            Request request = new Request.Builder().url(url).get().build();
+            Request request = new Request.Builder().url(url)
+                    .header("Authorization", "Bearer " + configuration.getToken()).get().build();
             try (Response response = currentClient.newCall(request).execute()) {
                 boolean isUp = response.isSuccessful();
                 if (isUp) {
