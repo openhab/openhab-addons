@@ -26,8 +26,8 @@ import org.openhab.binding.pioneeravr.internal.protocol.avr.AvrConnectionExcepti
 /**
  * Tests the speaker selection command and response of the Pioneer protocol.
  *
- * The commands are terminated by CR LF, as expected by the AVR, while the responses parsed from the AVR carry no
- * terminating characters.
+ * Commands are terminated by CR, as expected by the AVR, while responses passed to the parser have their CR/LF
+ * terminators removed by BufferedReader.readLine().
  *
  * @author william - Initial contribution
  */

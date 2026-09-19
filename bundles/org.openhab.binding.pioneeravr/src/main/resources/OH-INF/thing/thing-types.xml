@@ -28,6 +28,10 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<context>network-address</context>
@@ -62,6 +66,10 @@
 				<label>HD Zone</label>
 			</channel-group>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
@@ -101,6 +109,10 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<context>network-address</context>
@@ -138,6 +150,10 @@
 				<label>HD Zone</label>
 			</channel-group>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
@@ -177,6 +193,10 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<context>network-address</context>
@@ -212,6 +232,10 @@
 				<label>HD Zone</label>
 			</channel-group>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="address" type="text" required="true">
@@ -249,6 +273,10 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<context>network-address</context>
@@ -285,6 +313,10 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<context>network-address</context>
@@ -314,6 +346,10 @@
 			<channel-group typeId="zoneControls" id="zone3"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<context>network-address</context>
@@ -341,6 +377,10 @@
 			<channel-group typeId="zone2Controls" id="zone2"/>
 			<channel-group typeId="zone3Controls" id="zone3"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
@@ -1545,13 +1585,14 @@
 	<channel-type id="setSpeakerSelectionChannel">
 		<item-type>String</item-type>
 		<label>Speaker Selection</label>
-		<description>Select which speakers are used</description>
+		<description>Selects which speaker terminals are used. The meaning of the values depends on the speaker system
+			configured on the receiver.</description>
 		<state>
 			<options>
 				<option value="0">OFF</option>
-				<option value="1">SPEAKERS A</option>
-				<option value="2">SPEAKERS B</option>
-				<option value="3">SPEAKERS A+B</option>
+				<option value="1">SPEAKERS 1</option>
+				<option value="2">SPEAKERS 2</option>
+				<option value="3">SPEAKERS 1+2</option>
 			</options>
 		</state>
 	</channel-type>
