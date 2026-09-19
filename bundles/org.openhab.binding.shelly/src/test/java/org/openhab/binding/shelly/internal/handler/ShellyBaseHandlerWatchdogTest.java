@@ -13,25 +13,26 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYBLURCBUTTON4;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUS1PM;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.now;
 
 import java.lang.reflect.Field;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.LoggerFactory;
 
 /**
- * Verifies that the watchdog does not force a BLU RC Button 4 (a pure event-driven remote with no periodic
- * sleep/wakeup-and-report cycle) offline just because it has been silent for longer than a regular sensor's
- * expected wakeup interval, while a regular sleeping sensor of the same age is still flagged as expired.
+ * Verifies that the watchdog never forces event-driven BLU buttons/remotes offline for staying silent, while sleeping
+ * sensors and periodically broadcasting BLU devices are still flagged as expired.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -39,24 +40,22 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("null")
 class ShellyBaseHandlerWatchdogTest {
 
-    @Test
-    void refreshStatusSkipsOfflineForRcButtonDespiteStaleWatchdog() throws Exception {
+    static Stream<ThingTypeUID> eventDrivenBluTypes() {
+        return Stream.of(THING_TYPE_SHELLYBLUBUTTON1, THING_TYPE_SHELLYBLUWALLSWITCH4, THING_TYPE_SHELLYBLURCBUTTON4,
+                THING_TYPE_SHELLYBLUREMOTE);
+    }
+
+    static Stream<ThingTypeUID> policedTypes() {
+        return Stream.of(THING_TYPE_SHELLYPLUS1PM, THING_TYPE_SHELLYBLUDISTANCE, THING_TYPE_SHELLYBLUHT,
+                THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION, THING_TYPE_SHELLYBLUWS90);
+    }
+
+    @ParameterizedTest
+    @MethodSource("eventDrivenBluTypes")
+    void refreshStatusSkipsOfflineForEventDrivenBluDespiteStaleWatchdog(ThingTypeUID thingType) throws Exception {
         ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
         ShellyApiInterface api = mock(ShellyApiInterface.class);
-        Thing thing = mock(Thing.class);
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLURCBUTTON4);
-        profile.initialized = true;
-        profile.alwaysOn = false;
-        profile.updatePeriod = 60;
-
-        setField(handler, "api", api);
-        setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
-        setField(handler, "skipCount", 1);
-        setField(handler, "watchdog", now() - 999_999);
-        handler.profile = profile;
-        doReturn(thing).when(handler).getThing();
-        when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
-        doReturn(ThingStatusDetail.NONE).when(handler).getThingStatusDetail();
+        prepareHandler(handler, api, thingType);
 
         handler.refreshStatus();
 
@@ -64,12 +63,24 @@ class ShellyBaseHandlerWatchdogTest {
         verify(api, never()).getStatus();
     }
 
-    @Test
-    void refreshStatusFlagsRegularSleepingSensorOfflineOnStaleWatchdog() throws Exception {
+    @ParameterizedTest
+    @MethodSource("policedTypes")
+    void refreshStatusFlagsPeriodicDeviceOfflineOnStaleWatchdog(ThingTypeUID thingType) throws Exception {
         ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
         ShellyApiInterface api = mock(ShellyApiInterface.class);
+        prepareHandler(handler, api, thingType);
+        setField(handler, "stats", new ShellyDeviceStats());
+        doNothing().when(handler).setThingOfflineAndDisconnect(any(ThingStatusDetail.class), anyString());
+
+        handler.refreshStatus();
+
+        verify(handler).setThingOfflineAndDisconnect(eq(ThingStatusDetail.COMMUNICATION_ERROR), anyString());
+    }
+
+    private static void prepareHandler(ShellyBaseHandler handler, ShellyApiInterface api, ThingTypeUID thingType)
+            throws Exception {
         Thing thing = mock(Thing.class);
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingType);
         profile.initialized = true;
         profile.alwaysOn = false;
         profile.updatePeriod = 60;
@@ -78,16 +89,10 @@ class ShellyBaseHandlerWatchdogTest {
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
         setField(handler, "skipCount", 1);
         setField(handler, "watchdog", now() - 999_999);
-        setField(handler, "stats", new ShellyDeviceStats());
         handler.profile = profile;
         doReturn(thing).when(handler).getThing();
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
         doReturn(ThingStatusDetail.NONE).when(handler).getThingStatusDetail();
-        doNothing().when(handler).setThingOfflineAndDisconnect(any(ThingStatusDetail.class), anyString());
-
-        handler.refreshStatus();
-
-        verify(handler).setThingOfflineAndDisconnect(eq(ThingStatusDetail.COMMUNICATION_ERROR), anyString());
     }
 
     private static void setField(Object target, String fieldName, Object value) throws Exception {
