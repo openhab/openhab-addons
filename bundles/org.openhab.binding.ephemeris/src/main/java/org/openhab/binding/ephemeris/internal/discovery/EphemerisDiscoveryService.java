@@ -15,7 +15,6 @@ package org.openhab.binding.ephemeris.internal.discovery;
 import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +48,7 @@ public class EphemerisDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(EphemerisDiscoveryService.class);
 
-    private Optional<ScheduledFuture<?>> discoveryJob = Optional.empty();
+    private @Nullable ScheduledFuture<?> discoveryJob;
 
     @Activate
     public EphemerisDiscoveryService(final @Reference LocaleProvider localeProvider,
@@ -68,14 +67,16 @@ public class EphemerisDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        discoveryJob = Optional.of(scheduler.schedule(this::createResults, 2, TimeUnit.SECONDS));
+        discoveryJob = scheduler.schedule(this::createResults, 2, TimeUnit.SECONDS);
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Ephemeris device background discovery");
-        discoveryJob.ifPresent(job -> job.cancel(true));
-        discoveryJob = Optional.empty();
+        if (discoveryJob instanceof ScheduledFuture job) {
+            job.cancel(true);
+            discoveryJob = null;
+        }
     }
 
     public void createResults() {
