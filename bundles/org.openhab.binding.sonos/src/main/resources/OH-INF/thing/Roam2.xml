@@ -4,12 +4,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Amplifier CONNECT:AMP Thing Type -->
-	<thing-type id="CONNECTAMP" listed="false">
-		<!-- Label without colon (:) because of device pairing name restrictions -->
-		<label>CONNECT AMP</label>
-		<description>Represents SONOS CONNECT:AMP amplifier</description>
-		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
+	<!-- Sonos Roam 2 Thing Type -->
+	<thing-type id="Roam2" listed="false">
+		<label>Roam 2</label>
+		<description>Represents SONOS Roam 2 speaker</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>
 			<channel id="alarm" typeId="alarm"/>
@@ -38,7 +37,6 @@
 			<channel id="playqueue" typeId="playqueue"/>
 			<channel id="playtrack" typeId="playtrack"/>
 			<channel id="playuri" typeId="playuri"/>
-			<channel id="publicaddress" typeId="publicaddress"/>
 			<channel id="radio" typeId="radio"/>
 			<channel id="remove" typeId="remove"/>
 			<channel id="restore" typeId="restore"/>
@@ -59,12 +57,14 @@
 			<channel id="currenttransporturi" typeId="currenttransporturi"/>
 			<channel id="currenttrackuri" typeId="currenttrackuri"/>
 			<!-- Extended SONOS channels -->
-			<channel id="linein" typeId="linein"/>
+			<channel id="batterycharging" typeId="batterycharging"/>
+			<channel id="batterylevel" typeId="system.battery-level"/>
+			<channel id="microphone" typeId="microphone"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">SONOS</property>
-			<property name="modelId">CONNECT:AMP</property>
+			<property name="modelId">Roam 2</property>
 			<property name="thingTypeVersion">1</property>
 		</properties>
 
