@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -43,6 +44,24 @@ class ShellyBaseHandlerAlwaysOnReinitTest {
 
     @Test
     void initializeThingDoesNotFlipOfflineAlwaysOnDeviceToPendingWhileStillUnreachable() throws Exception {
+        ShellyBaseHandler handler = prepare(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+
+        assertThrows(ShellyApiException.class, () -> handler.initializeThing());
+
+        verify(handler, never()).updateStatus(eq(ThingStatus.ONLINE), eq(ThingStatusDetail.CONFIGURATION_PENDING),
+                any());
+    }
+
+    @Test
+    void initializeThingStillFlipsNonOfflineAlwaysOnDeviceToPending() throws Exception {
+        ShellyBaseHandler handler = prepare(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
+
+        assertThrows(ShellyApiException.class, () -> handler.initializeThing());
+
+        verify(handler).updateStatus(eq(ThingStatus.ONLINE), eq(ThingStatusDetail.CONFIGURATION_PENDING), any());
+    }
+
+    private static ShellyBaseHandler prepare(ThingStatus status, ThingStatusDetail detail) throws Exception {
         ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
         ShellyApiInterface api = mock(ShellyApiInterface.class);
         Thing thing = mock(Thing.class);
@@ -54,18 +73,15 @@ class ShellyBaseHandlerAlwaysOnReinitTest {
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
         setField(handler, "cache", mock(ShellyChannelCache.class));
         setField(handler, "thing", thing);
+        setField(handler, "messages", mock(ShellyTranslationProvider.class));
         handler.profile = profile;
         doReturn(thing).when(handler).getThing();
-        when(thing.getStatus()).thenReturn(ThingStatus.OFFLINE);
+        when(thing.getStatus()).thenReturn(status);
         when(thing.getThingTypeUID()).thenReturn(THING_TYPE_SHELLYPLUS1PM);
-        doReturn(ThingStatusDetail.COMMUNICATION_ERROR).when(handler).getThingStatusDetail();
+        doReturn(detail).when(handler).getThingStatusDetail();
         doNothing().when(handler).updateStatus(any(ThingStatus.class), any(ThingStatusDetail.class), any());
         doThrow(new ShellyApiException("device still unreachable")).when(api).getDeviceInfo();
-
-        assertThrows(ShellyApiException.class, () -> handler.initializeThing());
-
-        verify(handler, never()).updateStatus(eq(ThingStatus.ONLINE), eq(ThingStatusDetail.CONFIGURATION_PENDING),
-                any());
+        return handler;
     }
 
     private static void setField(Object target, String fieldName, Object value) throws Exception {
