@@ -145,6 +145,9 @@ public class AutomowerActions implements ThingActions {
             logger.warn("Automower Action service ThingHandler is null!");
         } else if (externalReason < 200000 || externalReason > 299999) {
             logger.warn("Invalid externalReason {}: must be in the range 200000-299999", externalReason);
+        } else if (durationMin > 1500) {
+            logger.warn("Invalid duration {}: must be <= 1500 minutes when using externalReason {}", durationMin,
+                    externalReason);
         } else {
             automowerHandler.sendAutomowerCommand(AutomowerCommand.PARK, null, durationMin, externalReason);
         }
