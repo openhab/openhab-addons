@@ -83,7 +83,7 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
     }
 
     @Test
-    public void testDimmerChannelUpdate_noInversion() {
+    public void testDimmerChannelUpdateNoInversion() {
         // Simulate event: dimmer channel updated to 80
         Event event = createRollerShutterDimmerEvent(capability.dimmerChannel.getId(), 80);
         handler.onNodeStateChanged(event);
@@ -94,7 +94,7 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
 
     // Without any inversion, 100% is fully open (up position) and 0% is fully closed (down position).
     @Test
-    public void testUpChannelUpdate_noInversion() {
+    public void testUpChannelUpdateNoInversion() {
         // Simulate event: up channel ON
         Event event = createRollerShutterUpEvent(capability.upChannel.getId(), true);
         boolean successfulHandling = handler.onNodeStateChanged(event);
@@ -105,7 +105,7 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
     }
 
     @Test
-    public void testDownChannelUpdate_noInversion() {
+    public void testDownChannelUpdateNoInversion() {
         // Simulate event: down channel ON
         Event event = createRollerShutterDownEvent(capability.downChannel.getId(), true);
         boolean successfulHandling = handler.onNodeStateChanged(event);
@@ -116,7 +116,7 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
     }
 
     @Test
-    public void testDimmerChannelUpdate_withInversion() {
+    public void testDimmerChannelUpdateWithInversion() {
         // Enable inversion
         handler.setRollerShutterInversion(capability, true);
         // Simulate event: dimmer channel updated to 80
@@ -131,7 +131,7 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
     }
 
     @Test
-    public void testUpChannelUpdate_withInversion() {
+    public void testUpChannelUpdateWithInversion() {
         handler.setRollerShutterInversion(capability, true);
         Event event = createRollerShutterUpEvent(capability.upChannel.getId(), true);
         boolean successfulHandling = handler.onNodeStateChanged(event);
@@ -143,7 +143,7 @@ public class ZwaveJSNodeHandlerRollerShutterStateTest {
     }
 
     @Test
-    public void testDownChannelUpdate_withInversion() {
+    public void testDownChannelUpdateWithInversion() {
         handler.setRollerShutterInversion(capability, true);
         Event event = createRollerShutterDownEvent(capability.downChannel.getId(), true);
         boolean successfulHandling = handler.onNodeStateChanged(event);

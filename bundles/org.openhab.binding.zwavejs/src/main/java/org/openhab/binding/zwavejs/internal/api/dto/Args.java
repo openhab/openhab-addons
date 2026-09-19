@@ -18,7 +18,7 @@ package org.openhab.binding.zwavejs.internal.api.dto;
 public class Args {
     public String commandClassName;
     public int commandClass;
-    public String property;
+    public Object property;
     public int endpoint;
     public Object newValue;
     public Object prevValue;
@@ -28,6 +28,8 @@ public class Args {
     public Object value;
     public String propertyName;
     public Object propertyKey;
+    public String propertyKeyName;
+    public Metadata metadata;
 
     public int event;
     public int type;
