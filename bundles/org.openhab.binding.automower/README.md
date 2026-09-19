@@ -145,17 +145,17 @@ These channels hold the different Work Area configurations.
 
 | channel                                                 | type                  | access mode | description                                         | advanced |
 |---------------------------------------------------------|-----------------------|-------------|-----------------------------------------------------|----------|
-| workarea#name                                           | String                | R/W         | Name of the Work Area                               | false    |
-| workarea#type                                           | String                | R           | The type of the Work Area, e.g. RANDOM              | true     |
-| workarea#cutting-height                                 | Number:Dimensionless  | R/W         | Cutting height of the Work Area in percent. 0-100   | false    |
-| workarea#use-global-cutting-height                      | Switch                | R           | If the Work Area uses the global cutting height instead of its own | true |
-| workarea#enabled                                        | Switch                | R/W         | If the Work Area is enabled or disabled             | false    |
-| workarea#schedulable                                    | Switch                | R           | If the Work Area can be scheduled                   | true     |
-| workarea#progress<sup id="a2">[2](#f2)</sup>            | Number                | R           | The progress on a Work Area                         | true     |
-| workarea#last-time-completed<sup id="a2">[2](#f2)</sup> | DateTime              | R           | Timestamp when the Work Area was last completed     | true     |
-| workarea#last-time-abandoned                            | DateTime              | R           | Timestamp when the Work Area was last abandoned     | true     |
-| workarea#orientation                                    | Number:Angle          | R/W         | Orientation of the mowing pattern in degrees. Pattern based Work Areas only | true |
-| workarea#orientation-shift                              | Number:Angle          | R/W         | Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only | true |
+| work-area#name                                           | String                | R/W         | Name of the Work Area                               | false    |
+| work-area#type                                           | String                | R           | The type of the Work Area, e.g. RANDOM              | true     |
+| work-area#cutting-height                                 | Number:Dimensionless  | R/W         | Cutting height of the Work Area in percent. 0-100   | false    |
+| work-area#use-global-cutting-height                      | Switch                | R           | If the Work Area uses the global cutting height instead of its own | true |
+| work-area#enabled                                        | Switch                | R/W         | If the Work Area is enabled or disabled             | false    |
+| work-area#schedulable                                    | Switch                | R           | If the Work Area can be scheduled                   | true     |
+| work-area#progress<sup id="a2">[2](#f2)</sup>            | Number                | R           | The progress on a Work Area                         | true     |
+| work-area#last-time-completed<sup id="a2">[2](#f2)</sup> | DateTime              | R           | Timestamp when the Work Area was last completed     | true     |
+| work-area#last-time-abandoned                            | DateTime              | R           | Timestamp when the Work Area was last abandoned     | true     |
+| work-area#orientation                                    | Number:Angle          | R/W         | Orientation of the mowing pattern in degrees. Pattern based Work Areas only | true |
+| work-area#orientation-shift                              | Number:Angle          | R/W         | Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only | true |
 
 #### Calendar Tasks Channels
 
