@@ -4,7 +4,7 @@ The Ecowitt WS90 is a solar-powered, all-in-one weather sensor (temperature, hum
 It does not talk to openHAB directly — a Shelly Plus/Pro device acts as a Bluetooth gateway and forwards the sensor's BTHome advertisements to the binding.
 
 This tutorial assumes you are already familiar with adding devices to openHAB in general.
-It focuses on the WS90-specific setup steps, a firmware quirk you should know about before building automations, and three example rules that react to sensor changes.
+It focuses on the WS90-specific setup steps, a firmware quirk you should know about before building automations, and four example rules that react to sensor changes.
 
 ## Prerequisites
 
@@ -34,7 +34,7 @@ Practical implications for automation:
 
 ## 4. Example Rules
 
-All three examples use the Rules DSL for consistency with the rest of the README; the same logic works in any other openHAB rule language.
+All four examples use the Rules DSL for consistency with the rest of the README; the same logic works in any other openHAB rule language.
 
 ### Example 1: React to a Sensor Value Change
 
@@ -48,7 +48,7 @@ then
     if ((WS90_GustSpeed.state as QuantityType<?>).doubleValue > 15.0) {
         logInfo("WS90", "Gust speed high: " + WS90_GustSpeed.state)
         sendBroadcastNotification("Storm warning: gusts over 15 m/s")
-    end
+    }
 end
 ```
 
@@ -94,8 +94,8 @@ then
         if (delta === null || delta <= 0) {
             WS90_IsRaining.postUpdate(OFF)
             logInfo("WS90", "No precipitation increase in the last 10 min — rain stopped (device still reports wet sensor)")
-        end
-    end
+        }
+    }
 end
 ```
 
@@ -136,6 +136,48 @@ end
 ```
 
 `deltaSince(timestamp)` uses the default persistence service; pass a service ID as a second argument (e.g. `.deltaSince(now.minusHours(1), "influxdb")`) if `precipitation` isn't stored in your default one.
+
+### Example 4: Daily Minimum / Maximum Temperature Since Midnight
+
+The WS90 reports the current temperature only, so the daily low and high are derived from persistence as well, using the `minimumSince()` and `maximumSince()` extension methods.
+The rule recalculates both values each time a new temperature arrives, starting from midnight of the current day.
+
+**Requirements:**
+
+- A persistence service (e.g. `rrd4j` or `influxdb`) must be configured to store `WS90_Temperature`, with a strategy that captures every update (`everyUpdate`/`everyChange`).
+  A coarser strategy (e.g. `everyMinute` or `everyHour`) works too, but the min/max then only reflect the persisted samples.
+- Two extra items to hold the daily extremes:
+
+```java
+Number:Temperature WS90_TemperatureMin "Temperature min today [%.1f °C]"
+Number:Temperature WS90_TemperatureMax "Temperature max today [%.1f °C]"
+```
+
+**Rule**, triggered on every temperature update:
+
+```java
+rule "WS90 Daily Temperature Min/Max"
+when
+    Item WS90_Temperature received update
+then
+    val dayStart = now.toLocalDate().atStartOfDay(now.getZone())
+
+    val minimum = WS90_Temperature.minimumSince(dayStart)
+    val maximum = WS90_Temperature.maximumSince(dayStart)
+
+    // minimumSince/maximumSince return null if nothing has been persisted since midnight yet
+    if (minimum !== null) {
+        WS90_TemperatureMin.postUpdate(minimum.state)
+    }
+
+    if (maximum !== null) {
+        WS90_TemperatureMax.postUpdate(maximum.state)
+    }
+end
+```
+
+`now.toLocalDate().atStartOfDay(now.getZone())` yields midnight in your local time zone, so the values reset automatically with the first temperature update after midnight.
+As in Example 3, pass a service ID as a second argument (e.g. `.minimumSince(dayStart, "influxdb")`) if `temperature` isn't stored in your default persistence service.
 
 ## 5. How Apparent Temperature Is Calculated
 
