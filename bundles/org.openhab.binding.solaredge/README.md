@@ -191,7 +191,7 @@ consumption = production + import + battery discharge - export - battery charge
 ```
 
 The same calculation is used for live power and the day, week, month, and year energy channels.
-Inputs used for one calculation must be no more than two minutes apart; until the complete balance is available, the binding keeps the previous channel state.
+Inputs used for one calculation must come from the same polling cycle; until the complete balance is available, the binding keeps the previous channel state.
 For aggregate periods, direct PV self-consumption and its coverage are derived as follows:
 
 ```text

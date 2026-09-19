@@ -46,6 +46,8 @@ public class SolarEdgeOAuthClient {
     private static final String ACCESS_TOKEN = "accessToken";
     private static final String REFRESH_TOKEN = "refreshToken";
     private static final String EXPIRES_AT = "expiresAt";
+    private static final String AUTHORIZED_SITE_ID = "authorizedSiteId";
+    private static final String AUTHORIZED_CLIENT_ID = "authorizedClientId";
     private static final long EXPIRY_MARGIN_SECONDS = 60;
 
     private final Logger logger = LoggerFactory.getLogger(SolarEdgeOAuthClient.class);
@@ -65,11 +67,14 @@ public class SolarEdgeOAuthClient {
         this.clock = clock;
     }
 
-    public synchronized boolean hasRefreshToken() {
-        return !value(REFRESH_TOKEN).isBlank();
+    public synchronized boolean hasRefreshToken(SolarEdgeConfiguration config) {
+        return hasMatchingAuthorization(config);
     }
 
     public synchronized String getAccessToken(SolarEdgeConfiguration config) throws SolarEdgeOAuthException {
+        if (!hasMatchingAuthorization(config)) {
+            throw new SolarEdgeOAuthException("SolarEdge authorization is required", true);
+        }
         String accessToken = value(ACCESS_TOKEN);
         if (!accessToken.isBlank() && getExpiry() > clock.instant().plusSeconds(EXPIRY_MARGIN_SECONDS).toEpochMilli()) {
             return accessToken;
@@ -78,13 +83,13 @@ public class SolarEdgeOAuthClient {
         if (refreshToken.isBlank()) {
             throw new SolarEdgeOAuthException("SolarEdge authorization is required");
         }
-        return requestToken(Map.of("grant_type", "refresh_token", "refresh_token", refreshToken, "client_id",
+        return requestToken(config, Map.of("grant_type", "refresh_token", "refresh_token", refreshToken, "client_id",
                 config.getOAuthClientId(), "client_secret", config.getOAuthClientSecret()));
     }
 
     public synchronized String exchangeAuthorizationCode(SolarEdgeConfiguration config, String code)
             throws SolarEdgeOAuthException {
-        return requestToken(Map.of("grant_type", "authorization_code", "code", code, "client_id",
+        return requestToken(config, Map.of("grant_type", "authorization_code", "code", code, "client_id",
                 config.getOAuthClientId(), "client_secret", config.getOAuthClientSecret()));
     }
 
@@ -93,7 +98,20 @@ public class SolarEdgeOAuthClient {
         storage.remove(EXPIRES_AT);
     }
 
-    private String requestToken(Map<String, String> payload) throws SolarEdgeOAuthException {
+    private boolean hasMatchingAuthorization(SolarEdgeConfiguration config) {
+        if (value(REFRESH_TOKEN).isBlank()) {
+            return false;
+        }
+        if (!config.getSolarId().equals(value(AUTHORIZED_SITE_ID))
+                || !config.getOAuthClientId().equals(value(AUTHORIZED_CLIENT_ID))) {
+            clearTokens();
+            return false;
+        }
+        return true;
+    }
+
+    private String requestToken(SolarEdgeConfiguration config, Map<String, String> payload)
+            throws SolarEdgeOAuthException {
         String grantType = payload.getOrDefault("grant_type", "unknown");
         logger.debug("Requesting SolarEdge OAuth token using {} grant", grantType);
         try {
@@ -117,6 +135,8 @@ public class SolarEdgeOAuthClient {
             }
             storage.put(ACCESS_TOKEN, token.accessToken);
             storage.put(REFRESH_TOKEN, token.refreshToken);
+            storage.put(AUTHORIZED_SITE_ID, config.getSolarId());
+            storage.put(AUTHORIZED_CLIENT_ID, config.getOAuthClientId());
             Instant expiresAt = clock.instant().plusSeconds(token.expiresIn);
             storage.put(EXPIRES_AT, Long.toString(expiresAt.toEpochMilli()));
             logger.debug("SolarEdge OAuth token acquired using {} grant; expires at {} and refresh token rotated",
@@ -142,6 +162,8 @@ public class SolarEdgeOAuthClient {
         storage.remove(ACCESS_TOKEN);
         storage.remove(REFRESH_TOKEN);
         storage.remove(EXPIRES_AT);
+        storage.remove(AUTHORIZED_SITE_ID);
+        storage.remove(AUTHORIZED_CLIENT_ID);
     }
 
     private String value(String key) {

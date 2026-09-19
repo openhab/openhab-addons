@@ -70,6 +70,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Alexander Friese - initial contribution
+ * @author Ronny Grun - Monitoring API V2 support
  */
 @NonNullByDefault
 public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEdgeHandler, AtomicReferenceTrait {
@@ -344,7 +345,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         updatePublicApiV2RequestCountProperty(publicApiV2RequestCounter.getRequestCount());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
-        if (isOAuthConfigured() && !oAuthClient.hasRefreshToken() && !config.getOAuthClientId().isBlank()
+        if (isOAuthConfigured() && !oAuthClient.hasRefreshToken(config) && !config.getOAuthClientId().isBlank()
                 && !config.getOAuthClientSecret().isBlank()) {
             setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, authorizationDescription());
@@ -550,7 +551,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
 
     @Override
     public boolean hasPublicApiV2Credential() {
-        return !isOAuthConfigured() || oAuthClient.hasRefreshToken();
+        return !isOAuthConfigured() || oAuthClient.hasRefreshToken(getConfiguration());
     }
 
     @Override

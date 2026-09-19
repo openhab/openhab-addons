@@ -15,11 +15,9 @@ package org.openhab.binding.solaredge.internal.command;
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
-import java.time.DayOfWeek;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -111,11 +109,6 @@ public class AggregateDataUpdatePublicApiV2 extends AbstractCommand {
     }
 
     private static OffsetDateTime aggregateStart(OffsetDateTime now, AggregatePeriod period) {
-        return switch (period) {
-            case DAY -> now.truncatedTo(ChronoUnit.DAYS);
-            case WEEK -> now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS);
-            case MONTH -> now.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(ChronoUnit.DAYS);
-            case YEAR -> now.with(TemporalAdjusters.firstDayOfYear()).truncatedTo(ChronoUnit.DAYS);
-        };
+        return AggregatePeriodStart.of(now, ZoneId.systemDefault(), period);
     }
 }

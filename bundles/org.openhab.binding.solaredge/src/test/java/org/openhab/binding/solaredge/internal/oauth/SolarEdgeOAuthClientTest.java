@@ -67,6 +67,7 @@ public class SolarEdgeOAuthClientTest {
 
     @Test
     public void reusesUnexpiredAccessToken() throws Exception {
+        authorizeStoredTokens();
         values.put("accessToken", "current-access-token");
         values.put("refreshToken", "current-refresh-token");
         values.put("expiresAt", Long.toString(NOW.plusSeconds(3600).toEpochMilli()));
@@ -77,6 +78,7 @@ public class SolarEdgeOAuthClientTest {
 
     @Test
     public void refreshesExpiredTokenAndStoresRotation() throws Exception {
+        authorizeStoredTokens();
         values.put("accessToken", "expired-access-token");
         values.put("refreshToken", "old-refresh-token");
         values.put("expiresAt", Long.toString(NOW.minusSeconds(1).toEpochMilli()));
@@ -94,6 +96,7 @@ public class SolarEdgeOAuthClientTest {
 
     @Test
     public void invalidationForcesRefresh() throws Exception {
+        authorizeStoredTokens();
         values.put("accessToken", "rejected-access-token");
         values.put("refreshToken", "refresh-token");
         values.put("expiresAt", Long.toString(NOW.plusSeconds(3600).toEpochMilli()));
@@ -110,6 +113,7 @@ public class SolarEdgeOAuthClientTest {
 
     @Test
     public void rejectsIncompleteTokenResponseWithoutReplacingRefreshToken() throws Exception {
+        authorizeStoredTokens();
         values.put("refreshToken", "existing-refresh-token");
         when(response.getStatus()).thenReturn(200);
         when(response.getContentAsString()).thenReturn("{\"access_token\":\"incomplete\"}");
@@ -120,6 +124,7 @@ public class SolarEdgeOAuthClientTest {
 
     @Test
     public void rejectedRefreshRequiresNewAuthorizationAndClearsTokens() throws Exception {
+        authorizeStoredTokens();
         values.put("accessToken", "expired-access-token");
         values.put("refreshToken", "rejected-refresh-token");
         values.put("expiresAt", Long.toString(NOW.minusSeconds(1).toEpochMilli()));
@@ -134,6 +139,7 @@ public class SolarEdgeOAuthClientTest {
 
     @Test
     public void temporaryRefreshFailureKeepsAuthorization() throws Exception {
+        authorizeStoredTokens();
         values.put("refreshToken", "existing-refresh-token");
         when(response.getStatus()).thenReturn(503);
 
@@ -142,6 +148,56 @@ public class SolarEdgeOAuthClientTest {
 
         assertFalse(exception.isAuthorizationRequired());
         assertEquals("existing-refresh-token", values.get("refreshToken"));
+    }
+
+    @Test
+    public void changedSiteInvalidatesStoredAuthorization() {
+        authorizeStoredTokens();
+        values.put("refreshToken", "old-refresh-token");
+        config.setSolarId("different-site");
+
+        assertFalse(client.hasRefreshToken(config));
+        assertTrue(values.isEmpty());
+        assertTrue(assertThrows(SolarEdgeOAuthException.class, () -> client.getAccessToken(config))
+                .isAuthorizationRequired());
+    }
+
+    @Test
+    public void changedClientInvalidatesStoredAuthorization() {
+        authorizeStoredTokens();
+        values.put("refreshToken", "old-refresh-token");
+        config.setOAuthClientId("different-client");
+
+        assertFalse(client.hasRefreshToken(config));
+        assertTrue(values.isEmpty());
+    }
+
+    @Test
+    public void legacyTokenWithoutAuthorizationContextRequiresAuthorization() {
+        values.put("refreshToken", "legacy-refresh-token");
+
+        assertFalse(client.hasRefreshToken(config));
+        assertTrue(values.isEmpty());
+    }
+
+    @Test
+    public void authorizationCodePersistsSiteAndClientContext() throws Exception {
+        when(response.getStatus()).thenReturn(200);
+        when(response.getContentAsString()).thenReturn("""
+                {"access_token":"access-token","refresh_token":"refresh-token",
+                 "token_type":"Bearer","expires_in":7200}
+                """);
+
+        client.exchangeAuthorizationCode(config, "authorization-code");
+
+        assertEquals("site-id", values.get("authorizedSiteId"));
+        assertEquals("client-id", values.get("authorizedClientId"));
+        assertTrue(client.hasRefreshToken(config));
+    }
+
+    private void authorizeStoredTokens() {
+        values.put("authorizedSiteId", "site-id");
+        values.put("authorizedClientId", "client-id");
     }
 
     @SuppressWarnings("unchecked")
@@ -158,6 +214,7 @@ public class SolarEdgeOAuthClientTest {
         SolarEdgeConfiguration result = new SolarEdgeConfiguration();
         result.setOAuthClientId("client-id");
         result.setOAuthClientSecret("client-secret");
+        result.setSolarId("site-id");
         return result;
     }
 }
