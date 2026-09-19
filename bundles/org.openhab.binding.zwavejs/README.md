@@ -57,6 +57,26 @@ Z-Wave nodes can have multiple channels corresponding to their capabilities.
 The channels can be linked to items in openHAB to control and monitor the device.
 These channels are dynamically added to the Thing during node initialization; therefore, there is no list of possible channels in this documentation.
 
+### Statistics Channels
+
+Every node has an advanced `statistics` channel group with the following read-only channels:
+
+| Channel               | Item type    | Description                                      |
+|-----------------------|--------------|--------------------------------------------------|
+| `last-seen`           | DateTime     | Last time a message was received from the node   |
+| `last-awake`          | DateTime     | Last time the node was awake                     |
+| `commands-tx`         | Number       | Commands sent to the node                        |
+| `commands-rx`         | Number       | Commands received from the node                  |
+| `commands-dropped-tx` | Number       | Commands to the node that were dropped           |
+| `commands-dropped-rx` | Number       | Commands from the node that were dropped         |
+| `timeout-response`    | Number       | Commands for which no response was received      |
+| `rtt`                 | Number:Time  | Average round-trip time                          |
+| `rssi`                | Number:Power | Signal strength of the last received message     |
+
+Optional statistics remain undefined until they are supplied by Z-Wave JS.
+`last-awake` is updated when the binding receives a node wake-up event.
+The current Z-Wave JS Server WebSocket schema does not expose the persisted last-awake value, so this channel is not restored when the binding starts.
+
 ### Notification-Virtual Channel
 
 The binding automatically adds a `notification-virtual` channel for endpoints that have both a Notification (Alarm) and a Door Lock command class.
