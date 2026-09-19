@@ -210,7 +210,8 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         if (receivedSignal) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No signal from device (out of range or not advertising)");
         }
     }
 

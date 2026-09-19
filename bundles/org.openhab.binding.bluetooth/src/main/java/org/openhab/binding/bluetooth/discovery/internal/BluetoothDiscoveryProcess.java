@@ -94,7 +94,11 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult> {
         // Since we couldn't find a result, lets try the connection based participants
         DiscoveryResult result = null;
         BluetoothAddress address = device.getAddress();
-        if (isAddressAvailable(address)) {
+        // A device that advertises as non-connectable (ADV_NONCONN_IND / ADV_SCAN_IND) can never be connected
+        // to, so skip the connection-based participants entirely and let it fall through to the beacon result.
+        // When connectability is unknown (null) we keep probing as before.
+        boolean connectable = !Boolean.FALSE.equals(device.getConnectable());
+        if (connectable && !connectionParticipants.isEmpty() && isAddressAvailable(address)) {
             result = findConnectionResult(connectionParticipants);
             // make sure to disconnect before letting go of the device
             if (device.getConnectionState() == ConnectionState.CONNECTED) {
