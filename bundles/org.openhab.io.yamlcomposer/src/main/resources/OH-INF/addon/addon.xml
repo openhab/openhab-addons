@@ -10,4 +10,5 @@
 	<connection>local</connection>
 
 	<service-id>org.openhab.io.yamlcomposer</service-id>
+	<config-description-ref uri="io:yamlcomposer"/>
 </addon:addon>
