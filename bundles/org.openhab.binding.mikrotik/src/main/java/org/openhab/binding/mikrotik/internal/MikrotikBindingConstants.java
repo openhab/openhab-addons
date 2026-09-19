@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mikrotik.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -34,6 +36,14 @@ public class MikrotikBindingConstants {
     public static final ThingTypeUID THING_TYPE_ROUTEROS = new ThingTypeUID(BINDING_ID, "routeros");
     public static final ThingTypeUID THING_TYPE_INTERFACE = new ThingTypeUID(BINDING_ID, "interface");
     public static final ThingTypeUID THING_TYPE_WIRELESS_CLIENT = new ThingTypeUID(BINDING_ID, "wifiRegistration");
+    public static final ThingTypeUID THING_TYPE_KID_CONTROL = new ThingTypeUID(BINDING_ID, "kidControl");
+    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ROUTEROS, THING_TYPE_INTERFACE,
+            THING_TYPE_WIRELESS_CLIENT, THING_TYPE_KID_CONTROL, THING_TYPE_DEVICE);
+
+    // CONFIG
+    public static final String CONFIG_HOSTNAME = "host";
+    public static final String CONFIG_MAC_ADDRESS = "mac";
 
     // RouterOS system stats
     public static final String CHANNEL_FREE_SPACE = "freeSpace";
@@ -52,6 +62,7 @@ public class MikrotikBindingConstants {
     public static final String CHANNEL_TYPE = "type";
     public static final String CHANNEL_MAC = "macAddress";
     public static final String CHANNEL_ENABLED = "enabled";
+    public static final String CHANNEL_PAUSED = "paused";
     public static final String CHANNEL_CONNECTED = "connected"; // used for wifi client as well
     public static final String CHANNEL_LAST_LINK_DOWN_TIME = "lastLinkDownTime";
     public static final String CHANNEL_LAST_LINK_UP_TIME = "lastLinkUpTime";

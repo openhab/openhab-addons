@@ -65,6 +65,8 @@ public class RouterosDevice {
     private static final String CMD_PRINT_WIFI_REGS = "/interface/wifi/registration-table/print";
     private static final String CMD_PRINT_WIRELESS_REGS = "/interface/wireless/registration-table/print";
     private static final String CMD_PRINT_WIFIWAVE2_REGS = "/interface/wifiwave2/registration-table/print";
+    private static final String CMD_PRINT_KID_CONTROL = "/ip/kid-control/print";
+    private static final String CMD_DEVICES_PRINT = "/ip/kid-control/device/print";
     private static final String CMD_PRINT_RESOURCE = "/system/resource/print";
     private static final String CMD_PRINT_RB_INFO = "/system/routerboard/print";
     private static final String CMD_PRINT_PACKAGES = "/system/package/print";
@@ -75,6 +77,8 @@ public class RouterosDevice {
     private final Set<String> monitoredInterfaces = new HashSet<>();
     private final Map<String, String> wlanSsid = new HashMap<>();
 
+    private List<Map<String, String>> kidControlCache = List.of();
+    private List<Map<String, String>> deviceCache = List.of();
     private @Nullable RouterosSystemResources resourcesCache;
     private @Nullable RouterosRouterboardInfo rbInfo;
     private RouterosWirelessType rbWirelessType = RouterosWirelessType.NONE;
@@ -465,6 +469,62 @@ public class RouterosDevice {
         this.rbWirelessType = RouterosWirelessType.resolveFromPkgSet(getInstalledPackages(), this.rbInfo);
     }
 
+    public List<Map<String, String>> updateKidControlCache() {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return kidControlCache;
+        }
+        try {
+            this.kidControlCache = conn.execute(CMD_PRINT_KID_CONTROL);
+        } catch (MikrotikApiException e) {
+            logger.debug("MikrotikApiException occurred when updating the Kid Control cache:{}", e.getMessage());
+        }
+        return kidControlCache;
+    }
+
+    public List<Map<String, String>> getKidControlCache() {
+        if (kidControlCache.isEmpty()) {
+            return updateKidControlCache();
+        }
+        return kidControlCache;
+    }
+
+    public Set<String> getKidControlNames() {
+        if (kidControlCache.isEmpty()) {
+            updateKidControlCache();
+        }
+        Set<String> kids = new HashSet<>();
+        for (Map<String, String> map : kidControlCache) {
+            if (map.containsKey("name")) {
+                String name = map.get("name");
+                if (name != null && !name.isEmpty()) {
+                    kids.add(name);
+                }
+            }
+        }
+        return kids;
+    }
+
+    public List<Map<String, String>> getDeviceCache() {
+        if (deviceCache.isEmpty()) {
+            return updateDeviceData();
+        }
+        return deviceCache;
+    }
+
+    public List<Map<String, String>> updateDeviceData() {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return List.of();
+        }
+        try {
+            this.deviceCache = conn.execute(CMD_DEVICES_PRINT);
+        } catch (MikrotikApiException e) {
+            logger.debug("MikrotikApiException occurred when updating the Kid Control device cache:{}", e.getMessage());
+        }
+        return deviceCache;
+    }
+
     public void setPOEOutState(RouterosEthernetInterface ifaceModel, String state) throws MikrotikApiException {
         ApiConnection conn = this.connection;
         if (conn == null) {
@@ -492,6 +552,55 @@ public class RouterosDevice {
             conn.execute(cmd);
         } catch (MikrotikApiException e) {
             logger.warn("Exception {} occured when disabling device {}", e.getMessage(), ifaceModel.getName());
+        }
+    }
+
+    public void setKidControlEnabledState(String name, String State) {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return;
+        }
+        String cmd = String.format("/ip/kid-control/set disabled=%s .id=%s", State, name);
+        try {
+            conn.execute(cmd);
+        } catch (MikrotikApiException e) {
+            logger.warn("Exception {} occured when enabling kid {}", e.getMessage(), name);
+        }
+    }
+
+    public void setDeviceEnabled(int deviceNumber, Boolean enabled) {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return;
+        }
+        String cmd;
+        if (enabled) {
+            cmd = String.format("/ip/kid-control/device/enable .id=%s", deviceNumber);
+        } else {
+            cmd = String.format("/ip/kid-control/device/disable .id=%s", deviceNumber);
+        }
+        try {
+            conn.execute(cmd);
+        } catch (MikrotikApiException e) {
+            logger.warn("Exception {} occured when enabling device index {}", e.getMessage(), deviceNumber);
+        }
+    }
+
+    public void setKidControlPausedState(String name, Boolean paused) {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return;
+        }
+        String cmd = "";
+        if (paused) {
+            cmd = String.format("/ip/kid-control/pause numbers=%s", name);
+        } else {
+            cmd = String.format("/ip/kid-control/resume numbers=%s", name);
+        }
+        try {
+            conn.execute(cmd);
+        } catch (MikrotikApiException e) {
+            logger.warn("Exception {} occured when pausing kid {}", e.getMessage(), name);
         }
     }
 }
