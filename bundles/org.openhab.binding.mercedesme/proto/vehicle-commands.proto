@@ -68,9 +68,9 @@ message CommandRequest {
     ChargeProgramConfigure charge_program_configure = 34;
     ChargeControlConfigure charge_control_configure = 40;
 
-    ChargeOptConfigure charge_opt_configure = 29;
-    ChargeOptStart charge_opt_start = 30;
-    ChargeOptStop charge_opt_stop = 31;
+    // ChargeOptConfigure charge_opt_configure = 29;
+    // ChargeOptStart charge_opt_start = 30;
+    // ChargeOptStop charge_opt_stop = 31;
 
     TemperatureConfigure temperature_configure = 32;
 
@@ -89,15 +89,18 @@ message CommandRequest {
     TheftalarmStart theftalarm_start = 38;
     TheftalarmStop theftalarm_stop = 39;
 
-    AutomaticValetParkingActivate automatic_valet_parking_activate = 42;
+    // AutomaticValetParkingActivate automatic_valet_parking_activate = 42;
 
     ChargeFlapUnlock charge_flap_unlock = 45;
-    ChargeCouplerUnlock charge_coupler_unlock = 46;
+    // ChargeCouplerUnlock charge_coupler_unlock = 46;
 
     DeactivateVehicleKeys deactivate_vehicle_keys = 48;
     ActivateVehicleKeys activate_vehicle_keys = 49;
 
     ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;
+
+    ChargeFlapOpen charge_flap_open = 59;
+    ChargeCouplerStop charge_coupler_stop = 60;
 
     SelectiveKeyDeactivation selective_key_deactivation = 61;
     SunroofBlindsMove sunroof_blinds_move = 62;
@@ -116,11 +119,30 @@ message CommandRequest {
     StagemodeStop stagemode_stop = 75;
     HvBatteryStartConditioning hv_battery_start_conditioning = 76;
     HvBatteryStopConditioning hv_battery_stop_conditioning = 77;
+    RemoteSeatBalletConfigure remote_seat_ballet_configure = 78;
 
   }
 }
 
 message ChargingConfigure {
+  enum Action {
+    NO_ACTION_SELECTED = 0;
+    START = 1;
+    PAUSE = 2;
+    RESUME = 3;
+    STOP = 4;
+  }
+
+  enum DcChargingProfile {
+    NO_DC_CHARGING_PROFILE_SELECTED = 0;
+    STANDARD = 1;
+    SILENT_ECO = 2;
+    ULTRAFAST = 3;
+    PITSTOP = 4;
+    FAST_ECO_1 = 5;
+    FAST_ECO_2 = 6;
+  }
+  
   enum ChargeProgram {
     DEFAULT_CHARGE_PROGRAM = 0;
     // Instant charge program should not be used
@@ -128,13 +150,38 @@ message ChargingConfigure {
     HOME_CHARGE_PROGRAM = 2;
     WORK_CHARGE_PROGRAM = 3;
   }
-  ChargeProgram charge_program = 3 [ json_name = "chargeprogram" ];
 
+  enum SohCalibrationActivation {
+    NO_SOH_CALIBRATION_ACTIVATION_SELECTED = 0;
+    ON = 1;
+    OFF = 2;
+  }
+ 
+  Action action = 1;
+  DcChargingProfile dc_charging_profile = 2;
+  ChargeProgram charge_program = 3 [ json_name = "chargeprogram" ];
+  repeated google.protobuf.Int32Value inlet_id = 4;
   google.protobuf.Int32Value max_soc = 5;
+  google.protobuf.Int32Value min_soc = 6;
+  google.protobuf.Int32Value target_soc = 9;
+  google.protobuf.Int64Value target_time = 10;
+  SohCalibrationActivation soh_calibration_activation = 11;
+//  ChargeSchedule chargeSchedule = 13;
 }
 
 message HvBatteryStartConditioning {}
 message HvBatteryStopConditioning {}
+
+message RemoteSeatBalletConfigure {
+  enum PresetPosition {
+    UNKNOWN = 0;
+    BAGGAGE_MODE = 7;
+    STANDARD_MODE = 39;
+    EXECUTIVE_MODE = 45;
+    PEOPLE_AND_BAGGAGE_MODE = 47;
+  }
+  PresetPosition preset_position = 1 [ json_name = "preset_position" ];
+}
 
 message DeactivateVehicleKeys {
   string pin = 1;
@@ -736,4 +783,13 @@ message ClockTimerConfigureEntry {
   int64 start_time_min = 5;
   int64 timer_id = 6;
   repeated Day days = 7;
+}
+
+
+message ChargeFlapOpen {
+  string pin = 1;
+}
+
+message ChargeCouplerStop {
+  string pin = 1;
 }

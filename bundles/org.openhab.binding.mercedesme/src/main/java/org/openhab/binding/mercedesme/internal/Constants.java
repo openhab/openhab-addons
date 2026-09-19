@@ -303,8 +303,11 @@ public class Constants {
     public static final Unit<Energy> KILOWATT_HOUR_UNIT = MetricPrefix.KILO(Units.WATT_HOUR);
     public static final Unit<Pressure> KPA_UNIT = MetricPrefix.KILO(SIUnits.PASCAL);
 
-    public static final String LOGIN_APP_ID = "01398c1c-dc45-4b42-882b-9f5ba9f175f1";
-    public static final String LOGIN_APP_ID_EU = "01398c1c-dc45-4b42-882b-9f5ba9f175f1";
+    // not referenced anywhere in the login flow (AUTH_CLIENT_ID below is the value actually sent as
+    // client_id) - kept only for documentation/parity with mbapi2020's const.py, corrected to match
+    // (checked 2026-07-31)
+    public static final String LOGIN_APP_ID = "62778dc4-1de3-44f4-af95-115f06a3a008";
+    public static final String LOGIN_APP_ID_EU = "62778dc4-1de3-44f4-af95-115f06a3a008";
     public static final String LOGIN_APP_ID_CN = "3f36efb1-f84b-4402-b5a2-68a118fec33e";
     public static final String LOGIN_BASE_URI = "https://id.mercedes-benz.com";
     public static final String LOGIN_BASE_URI_CN = "https://ciam-1.mercedes-benz.com.cn";
@@ -326,25 +329,32 @@ public class Constants {
     public static final String WIDGET_API_BASE_NA = "https://widget.amap-prod.mobilesdk.mercedes-benz.com";
     public static final String WIDGET_API_BASE_PA = "https://widget.amap-prod.mobilesdk.mercedes-benz.com";
     public static final String WIDGET_API_BASE_CN = "https://widget.cn-prod.mobilesdk.mercedes-benz.com";
-    public static final String WEBSOCKET_USER_AGENT = "MyCar/1.30.1 (com.daimler.ris.mercedesme.ece.ios; build:1819; iOS 16.5.0) Alamofire/5.4.0";
-    public static final String WEBSOCKET_USER_AGENT_CN = "MyStarCN/1.27.0 (com.daimler.ris.mercedesme.cn.ios; build:1758; iOS 16.3.1) Alamofire/5.4.0";
-    public static final String WEBSOCKET_USER_AGENT_PA = "mycar-store-ap v1.27.0, android 8.0.0, SDK 2.84.3";
+    // matches mbapi2020's const.py WEBSOCKET_USER_AGENT/_CN (checked 2026-07-31)
+    public static final String WEBSOCKET_USER_AGENT = "Mercedes-Benz/3044 CFNetwork/3860.400.22 Darwin/25.3.0";
+    public static final String WEBSOCKET_USER_AGENT_CN = "MyStarCN/1.63.0 (com.daimler.ris.mercedesme.cn.ios; build:1758; iOS 16.3.1) Alamofire/5.4.0";
 
     // version updates according to
     // https://github.com/evcc-io/evcc/pull/28938/changes/036c301c317199b03cd687724e3f5d516ad84814
-    public static final String RIS_APPLICATION_VERSION_NA = "3.65.0";
-    public static final String RIS_APPLICATION_VERSION_CN = "1.65.0";
-    public static final String RIS_APPLICATION_VERSION_PA = "1.65.0";
-    public static final String RIS_APPLICATION_VERSION = "1.65.1 (3174)";
-    public static final String RIS_SDK_VERSION = "4.4.2";
+    // and cross-checked against mbapi2020's const.py (checked 2026-07-31)
+    public static final String RIS_APPLICATION_VERSION_NA = "3.67.0";
+    public static final String RIS_APPLICATION_VERSION_CN = "1.67.0";
+    public static final String RIS_APPLICATION_VERSION_PA = "1.67.0";
+    public static final String RIS_APPLICATION_VERSION = "1.68.0 (3060)";
+    public static final String RIS_SDK_VERSION = "4.10.0";
     public static final String RIS_SDK_VERSION_CN = "2.132.2";
-    public static final String RIS_OS_VERSION = "12";
-    public static final String RIS_OS_NAME = "android";
+    public static final String RIS_OS_VERSION = "26.3";
+    public static final String RIS_OS_NAME = "ios";
     public static final String X_APPLICATIONNAME = "mycar-store-ece";
     public static final String X_APPLICATIONNAME_ECE = "mycar-store-ece";
     public static final String X_APPLICATIONNAME_CN = "mycar-store-cn";
     public static final String X_APPLICATIONNAME_US = "mycar-store-us";
     public static final String X_APPLICATIONNAME_AP = "mycar-store-ap";
+    // assembled the same way as mbapi2020's WEBSOCKET_USER_AGENT_PA/_US (f-strings built from the RIS_* /
+    // X_APPLICATIONNAME_* constants above), so they stay in sync automatically on the next version bump
+    public static final String WEBSOCKET_USER_AGENT_PA = X_APPLICATIONNAME_AP + " " + RIS_APPLICATION_VERSION + ", "
+            + RIS_OS_NAME + " " + RIS_OS_VERSION + ", SDK " + RIS_SDK_VERSION;
+    public static final String WEBSOCKET_USER_AGENT_US = X_APPLICATIONNAME_US + " v" + RIS_APPLICATION_VERSION_NA + ", "
+            + RIS_OS_NAME + " " + RIS_OS_VERSION + ", SDK " + RIS_SDK_VERSION;
 
     public static final String AUTH_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6.6 Mobile/15E148 Safari/604.1";
     public static final String AUTH_LANGUAGE = "de-DE,de;q=0.9";

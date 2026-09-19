@@ -1,0 +1,148 @@
+{
+	"vehicleStatusUpdates": {
+		"sequenceNumber": "1",
+		"vehicleStatusUpdates": {
+			"UNIT_TEST_VIN": {
+				"finOrVin": "UNIT_TEST_VIN",
+				"fullUpdate": true,
+
+				"warningbrakefluid": {
+					"value": false,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"warningbrakeliningwear": {
+					"value": false,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"warningcoolantlevellow": {
+					"value": false,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"warningenginelight": {
+					"value": false,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"chargingactive": {
+					"value": true,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+
+				"serviceintervaldays": {
+					"value": "365",
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"tirePressMeasTimestamp": {
+					"value": "1754075000",
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"drivenTimeReset": {
+					"value": "1800",
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"drivenTimeStart": {
+					"value": "5400",
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"positionHeading": {
+					"value": 87.5,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"chargingPower": {
+					"value": 11.0,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"positionLong": {
+					"value": 8.681495,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"positionLat": {
+					"value": 50.110644,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+
+				"chargingstatus": {
+					"value": "CHARGINGSTATUS_CHARGING",
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+				"ignitionstate": {
+					"value": "IGNITIONSTATE_ON",
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+
+				"rangeelectric": {
+					"value": "310",
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" },
+					"unit": "KILOMETERS",
+					"displayValue": "310"
+				},
+				"odo": {
+					"value": "18542",
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" },
+					"unit": "KILOMETERS",
+					"displayValue": "18542"
+				},
+
+				"tirepressureFrontLeft": {
+					"value": 2.5,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" },
+					"unit": "BAR",
+					"displayValue": "2.5"
+				},
+
+				"averageSpeedStart": {
+					"value": 42.3,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" },
+					"unit": "KM_PER_HOUR",
+					"displayValue": "42.3"
+				},
+
+				"soc": {
+					"value": "82",
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" },
+					"unit": "PERCENT",
+					"displayValue": "82"
+				},
+
+				"endofchargetime": {
+					"value": "360",
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" },
+					"unit": "T24H",
+					"displayValue": "06:00"
+				},
+
+				"electricconsumptionstart": {
+					"value": 18.4,
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" },
+					"unit": "KWH_PER_100KM",
+					"displayValue": "18.4"
+				},
+
+				"temperaturePoints": {
+					"value": [
+						{
+							"zone": "FRONT_CENTER",
+							"temperature": { "value": 21.0, "unit": "CELSIUS", "displayValue": "21.0" },
+							"active": true
+						}
+					],
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+
+				"chargePrograms": {
+					"value": [
+						{ "maxSoc": 80 },
+						{ "chargeprogram": "INSTANT_CHARGE_PROGRAM", "maxSoc": 100 },
+						{ "chargeprogram": "HOME_CHARGE_PROGRAM", "maxSoc": 100 },
+						{ "chargeprogram": "WORK_CHARGE_PROGRAM", "maxSoc": 100 }
+					],
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_VALID" }
+				},
+
+				"auxheatwarnings": {
+					"value": [],
+					"metadata": { "timestamp": "2026-08-01T19:20:27Z", "status": "VALUE_NOT_AVAILABLE" }
+				}
+			}
+		}
+	}
+}
