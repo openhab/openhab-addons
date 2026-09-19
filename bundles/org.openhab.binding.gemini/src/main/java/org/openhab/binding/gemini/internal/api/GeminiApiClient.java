@@ -24,6 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -79,6 +81,7 @@ public class GeminiApiClient {
     private final HttpClient httpClient;
     private final String apiKey;
     private final ObjectMapper objectMapper;
+    private final Set<String> modelsNotSupportingThinkingLevel = ConcurrentHashMap.newKeySet();
 
     public GeminiApiClient(HttpClient httpClient, String apiKey) {
         this.httpClient = httpClient;
@@ -113,7 +116,7 @@ public class GeminiApiClient {
 
         // Config
         GeminiGenerationConfig genConfig = new GeminiGenerationConfig(maxOutputTokens, temperature, topP,
-                createThinkingConfig(thinkingLevel));
+                createThinkingConfig(thinkingLevel, model));
 
         GeminiRequest request = new GeminiRequest(List.of(userContent), systemInstruction, genConfig, null);
 
@@ -254,15 +257,16 @@ public class GeminiApiClient {
         }
 
         GeminiGenerationConfig genConfig = new GeminiGenerationConfig(maxOutputTokens, temperature, topP,
-                createThinkingConfig(thinkingLevel));
+                createThinkingConfig(thinkingLevel, model));
 
         GeminiRequest request = new GeminiRequest(contents, systemInstruction, genConfig, geminiTools);
 
         return executeGenerateContentRequest(model, request, timeoutSeconds);
     }
 
-    private @Nullable GeminiThinkingConfig createThinkingConfig(@Nullable GeminiThinkingLevel thinkingLevel) {
-        if (thinkingLevel == null) {
+    private @Nullable GeminiThinkingConfig createThinkingConfig(@Nullable GeminiThinkingLevel thinkingLevel,
+            String model) {
+        if (thinkingLevel == null || modelsNotSupportingThinkingLevel.contains(model)) {
             return null;
         }
         return new GeminiThinkingConfig(null, null, thinkingLevel);
@@ -333,15 +337,17 @@ public class GeminiApiClient {
             }
 
             try {
-                ContentResponse response = request.send();
-                if (response.getStatus() == HttpStatus.OK_200) {
-                    String responseBody = response.getContentAsString();
+                final ContentResponse response = request.send();
+                final int status = response.getStatus();
+                final String body = response.getContentAsString();
+
+                if (status == HttpStatus.OK_200) {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Response from {}: {}", url, responseBody);
+                        logger.debug("Response from {}: {}", url, body);
                     }
                     try {
                         @Nullable
-                        GeminiResponse geminiResponse = readNullableValue(responseBody, GeminiResponse.class);
+                        GeminiResponse geminiResponse = readNullableValue(body, GeminiResponse.class);
                         if (geminiResponse == null) {
                             throw new GeminiApiException("Failed to parse Gemini response: response was null");
                         }
@@ -349,7 +355,7 @@ public class GeminiApiClient {
                     } catch (JsonProcessingException e) {
                         throw new GeminiApiException("Failed to parse Gemini response: " + e.getMessage(), e);
                     }
-                } else if (response.getStatus() == HttpStatus.SERVICE_UNAVAILABLE_503 && attemptCount <= 3) {
+                } else if (status == HttpStatus.SERVICE_UNAVAILABLE_503 && attemptCount <= 3) {
                     logger.debug("Gemini request failed with 503 Service Unavailable on attempt #{}/3", attemptCount);
                     try {
                         Thread.sleep(1000 * attemptCount);
@@ -359,11 +365,23 @@ public class GeminiApiClient {
                                 "Interrupted while waiting to retry Gemini API request: " + e.getMessage(), e);
                     }
                     attemptCount++;
+                } else if (status == HttpStatus.BAD_REQUEST_400 && body.toLowerCase().contains("thinking level")
+                        && body.toLowerCase().contains("not supported")) {
+                    logger.debug("Model {} doesn't support thinking level; caching and retrying without it", model);
+                    modelsNotSupportingThinkingLevel.add(model);
+                    GeminiGenerationConfig genConfig = requestPayload.generationConfig();
+                    if (genConfig != null && genConfig.thinkingConfig() != null) {
+                        GeminiGenerationConfig newGenConfig = new GeminiGenerationConfig(genConfig.maxOutputTokens(),
+                                genConfig.temperature(), genConfig.topP(), null);
+                        GeminiRequest retryRequestPayload = new GeminiRequest(requestPayload.contents(),
+                                requestPayload.systemInstruction(), newGenConfig, requestPayload.tools());
+                        return executeGenerateContentRequest(model, retryRequestPayload, timeoutSeconds);
+                    }
                 } else {
-                    logger.debug("Gemini request failed on the final attempt with HTTP {} {}: {}", response.getStatus(),
-                            response.getReason(), response.getContentAsString());
-                    throw new GeminiApiException("Gemini generateContent request resulted failed with  HTTP "
-                            + response.getStatus() + " " + response.getReason());
+                    logger.debug("Gemini request failed on the final attempt with HTTP {} {}: {}", status,
+                            response.getReason(), body);
+                    throw new GeminiApiException("Gemini generateContent request resulted failed with  HTTP " + status
+                            + " " + response.getReason());
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

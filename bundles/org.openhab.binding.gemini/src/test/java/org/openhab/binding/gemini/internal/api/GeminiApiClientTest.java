@@ -14,11 +14,13 @@ package org.openhab.binding.gemini.internal.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,6 +42,8 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingLevel;
+import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
 import org.openhab.core.voice.text.conversation.Conversation;
 import org.openhab.core.voice.text.conversation.ConversationRole;
 
@@ -228,6 +232,54 @@ public class GeminiApiClientTest {
         assertEquals(1, contents.get(4).get("parts").size());
         assertEquals("Lamp2 is OFF",
                 contents.get(4).get("parts").get(0).get("functionResponse").get("response").get("result").asText());
+    }
+
+    @Test
+    public void thinkingLevelNotSupportedRetriesWithoutThinkingConfigAndCaches() throws Exception {
+        ContentResponse errorResponse = typedMock(ContentResponse.class);
+        when(errorResponse.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
+        when(errorResponse.getContentAsString()).thenReturn(
+                """
+                        {"error":{"code":400,"message":"Thinking level is not supported for this model.","status":"INVALID_ARGUMENT"}}""");
+
+        ContentResponse successResponse = typedMock(ContentResponse.class);
+        when(successResponse.getStatus()).thenReturn(HttpStatus.OK_200);
+        when(successResponse.getContentAsString()).thenReturn(RESPONSE_JSON);
+
+        when(request.send()).thenReturn(errorResponse).thenReturn(successResponse);
+
+        GeminiResponse result = apiClient.sendPrompt(MODEL, PROMPT, null, null, null, null, GeminiThinkingLevel.LOW,
+                null);
+        assertNotNull(result);
+
+        when(request.send()).thenReturn(successResponse);
+        apiClient.sendPrompt(MODEL, PROMPT, null, null, null, null, GeminiThinkingLevel.LOW, null);
+
+        ArgumentCaptor<ContentProvider> captor = ArgumentCaptor.forClass(ContentProvider.class);
+        verify(request, times(3)).content(captor.capture());
+
+        List<ContentProvider> providers = captor.getAllValues();
+        assertEquals(3, providers.size());
+
+        // First request payload should have thinkingConfig
+        JsonNode firstRoot = parseContentProvider(providers.get(0));
+        assertTrue(firstRoot.get("generationConfig").has("thinkingConfig"));
+
+        // Second (retry) request payload should NOT have thinkingConfig
+        JsonNode secondRoot = parseContentProvider(providers.get(1));
+        assertFalse(secondRoot.get("generationConfig").has("thinkingConfig"));
+
+        // Third request payload (subsequent call for cached model) should NOT have thinkingConfig
+        JsonNode thirdRoot = parseContentProvider(providers.get(2));
+        assertFalse(thirdRoot.get("generationConfig").has("thinkingConfig"));
+    }
+
+    private JsonNode parseContentProvider(ContentProvider provider) throws Exception {
+        StringBuilder body = new StringBuilder();
+        for (ByteBuffer buffer : Objects.requireNonNull(provider)) {
+            body.append(StandardCharsets.UTF_8.decode(buffer));
+        }
+        return objectMapper.readTree(body.toString());
     }
 
     private JsonNode captureRequestBody() throws Exception {
