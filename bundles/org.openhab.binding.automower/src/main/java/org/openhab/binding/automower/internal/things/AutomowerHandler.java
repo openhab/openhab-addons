@@ -411,6 +411,13 @@ public class AutomowerHandler extends BaseThingHandler {
      */
     public void sendAutomowerCommand(AutomowerCommand command, @Nullable Long commandWorkAreaId,
             @Nullable Long commandDurationMinutes, @Nullable Long commandExternalReason) {
+        if (commandExternalReason != null && (command != AutomowerCommand.PARK || commandDurationMinutes == null
+                || commandExternalReason < 200000 || commandExternalReason > 299999 || commandDurationMinutes > 1500)) {
+            logger.warn("Invalid external reason command: command={}, duration={}, externalReason={}", command,
+                    commandDurationMinutes, commandExternalReason);
+            return;
+        }
+
         logger.debug("Sending command '{} {} {} {}'", command.getCommand(), commandWorkAreaId, commandDurationMinutes,
                 commandExternalReason);
         String id = automowerId.get();
@@ -693,6 +700,24 @@ public class AutomowerHandler extends BaseThingHandler {
                     .filter(area -> String.valueOf(area.getWorkAreaId()).equals(areaId)).findFirst().orElse(null);
             if (workArea != null) {
                 sendAutomowerWorkArea(workArea.getWorkAreaId(), null, null, null, orientation, null);
+            }
+        }
+    }
+
+    /**
+     * Sends both WorkArea pattern orientation settings in one request.
+     *
+     * @param areaId Id of WorkArea
+     * @param orientation Orientation of the mowing pattern in degrees
+     * @param orientationShift Orientation shift of the mowing pattern in degrees
+     */
+    public void sendAutomowerWorkAreaOrientation(String areaId, int orientation, int orientationShift) {
+        Mower mower = this.mowerState;
+        if (mower != null && isValidResult(mower)) {
+            WorkArea workArea = mower.getAttributes().getWorkAreas().stream()
+                    .filter(area -> String.valueOf(area.getWorkAreaId()).equals(areaId)).findFirst().orElse(null);
+            if (workArea != null) {
+                sendAutomowerWorkArea(workArea.getWorkAreaId(), null, null, null, orientation, orientationShift);
             }
         }
     }

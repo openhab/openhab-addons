@@ -265,9 +265,8 @@ public class AutomowerActions implements ThingActions {
         if (automowerHandler == null) {
             logger.warn("Automower Action service ThingHandler is null!");
         } else {
-            String areaId = String.valueOf(workAreaId);
-            automowerHandler.sendAutomowerWorkAreaOrientation(areaId, orientation);
-            automowerHandler.sendAutomowerWorkAreaOrientationShift(areaId, orientationShift);
+            automowerHandler.sendAutomowerWorkAreaOrientation(String.valueOf(workAreaId), orientation,
+                    orientationShift);
         }
     }
 
