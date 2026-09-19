@@ -746,6 +746,63 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void updateSensorsWs90CapacitorVoltagePublishesVoltQuantityType() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.capacitorVoltage = 3.284;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_BATTERY), eq(CHANNEL_SENSOR_CAPACITOR_VOLTAGE),
+                argThat(s -> s instanceof QuantityType<?> qt && "V".equals(qt.getUnit().toString())
+                        && Math.abs(qt.doubleValue() - 3.284) < 0.0005));
+    }
+
+    @Test
+    void updateSensorsWs90WithoutCapacitorVoltageSkipsChannel() throws Exception {
+        ShellyThingInterface handler = ws90HandlerWith(new ShellyStatusSensor());
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_BATTERY), eq(CHANNEL_SENSOR_CAPACITOR_VOLTAGE), any());
+    }
+
+    @Test
+    void createSensorChannelsWs90WithoutDataStillCreatesCapacitorVoltageChannel() {
+        ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUWS90, "test");
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(thingUID);
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.isWS90 = true;
+
+        Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile,
+                new ShellyStatusSensor());
+
+        assertThat("capacitorVoltage channel created in battery group",
+                channels.containsKey(
+                        CHANNEL_GROUP_BATTERY + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_CAPACITOR_VOLTAGE),
+                is(true));
+    }
+
+    @Test
+    void createSensorChannelsNonWs90WithoutVoltageDoesNotCreateCapacitorVoltageChannel() {
+        ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUHT, "test");
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(thingUID);
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUHT);
+
+        Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile,
+                new ShellyStatusSensor());
+
+        assertThat("capacitorVoltage channel not created",
+                channels.containsKey(
+                        CHANNEL_GROUP_BATTERY + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_CAPACITOR_VOLTAGE),
+                is(false));
+    }
+
+    @Test
     void updateSensorsWs90WithoutDerivedValuesSkipsDerivedChannels() throws Exception {
         ShellyThingInterface handler = ws90HandlerWith(new ShellyStatusSensor());
 

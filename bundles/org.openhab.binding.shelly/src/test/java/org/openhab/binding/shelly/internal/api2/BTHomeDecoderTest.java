@@ -42,6 +42,12 @@ public class BTHomeDecoderTest {
     }
 
     @Test
+    void decodesVoltageObjectInVolts() {
+        JsonObject result = BTHomeDecoder.decode("0c0c0d");
+        assertThat(result.get("Voltage").getAsDouble(), is(equalTo(3.34)));
+    }
+
+    @Test
     void decodesNegativeSignedObject() {
         JsonObject result = BTHomeDecoder.decode("57f6");
         assertThat(result.get("Temperature").getAsInt(), is(equalTo(-10)));

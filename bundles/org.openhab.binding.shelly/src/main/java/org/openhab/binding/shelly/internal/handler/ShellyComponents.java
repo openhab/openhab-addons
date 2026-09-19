@@ -802,6 +802,10 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
                         getOnOff(charger));
             }
+            if (sdata.capacitorVoltage != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_CAPACITOR_VOLTAGE,
+                        toQuantityType(getDouble(sdata.capacitorVoltage), DIGITS_VOLT_PRECISE, Units.VOLT));
+            }
             if (sdata.bat != null) { // no update for Sense
                 if (sdata.bat.value != null) {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
