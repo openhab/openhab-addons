@@ -1623,14 +1623,17 @@ The JavaScript Scripting add-on provides built-in debugger support for `.js` scr
 This allows attaching any debugger compatible with the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/), e.g., [Visual Studio Code](https://code.visualstudio.com/docs/nodejs/nodejs-debugging) or [Chrome DevTools](https://developers.google.com/web/tools/chrome-devtools/javascript).
 
 Debugger support has to be enabled in the JavaScript Scripting add-on settings (you need to tick _Show advanced_ for the setting to come up).
-The debugger will listen on port 9229 by default, but this can be changed in the settings.
 Please note: A restart of openHAB is required to apply the changes.
 
-::: warning
-Enabling debugger support will allow any system on your local network to attach to the debugger and execute arbitrary code in your openHAB instance.
-Only enable debugger support if you need it and you trust all systems on your local network,
-or consider using a firewall to restrict access to the debugger port to only trusted systems, or use SSH tunneling to access the debugger port from a remote system.
-:::
+The debugger will listen on `localhost:9229` by default, the port can be changed in the settings.
+As the debugger only binds to `localhost`, it is not possible to connect to it from a different machine – this is a security measure from GraalJS.
+To connect to the debugger remotely, we recommend using SSH tunneling:
+
+```shell
+ssh -L 9229:127.0.0.1:9229 <user>@<host>
+```
+
+You can now attach to the debugger via your machine's `localhost`.
 
 #### VS Code
 
@@ -1644,7 +1647,6 @@ To debug a script in VS Code, you need to create a launch configuration in `.vsc
       "type": "node",
       "request": "attach",
       "name": "Attach to openHAB JavaScript Scripting",
-      // openHAB server address
       "address": "127.0.0.1",
       "port": 9229,
       // path to scripts on the VS Code host (your machine)
