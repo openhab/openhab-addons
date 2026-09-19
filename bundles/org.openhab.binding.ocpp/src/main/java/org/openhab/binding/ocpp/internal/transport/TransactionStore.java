@@ -31,6 +31,7 @@ public class TransactionStore {
 
     private static final String SEQUENCE_KEY = "sequence";
     private static final String TX_PREFIX = "tx:";
+    private static final String METER_PREFIX = "meter:";
     private static final char SEPARATOR = '\t';
 
     private final Storage<String> storage;
@@ -60,12 +61,36 @@ public class TransactionStore {
     }
 
     public synchronized void begin(int transactionId, String chargePointId, int connectorId) {
+        begin(transactionId, chargePointId, connectorId, null);
+    }
+
+    public synchronized void begin(int transactionId, String chargePointId, int connectorId,
+            @Nullable Integer meterStart) {
         clear(chargePointId, connectorId);
         storage.put(TX_PREFIX + transactionId, chargePointId + SEPARATOR + connectorId);
+        if (meterStart != null) {
+            storage.put(METER_PREFIX + transactionId, Integer.toString(meterStart));
+        } else {
+            storage.remove(METER_PREFIX + transactionId);
+        }
     }
 
     public synchronized void end(int transactionId) {
         storage.remove(TX_PREFIX + transactionId);
+        storage.remove(METER_PREFIX + transactionId);
+    }
+
+    /** The meter register at the start of a transaction, or null when it was not reported. */
+    public synchronized @Nullable Integer meterStart(int transactionId) {
+        String stored = storage.get(METER_PREFIX + transactionId);
+        if (stored == null) {
+            return null;
+        }
+        try {
+            return Integer.valueOf(stored);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public synchronized @Nullable Location locate(int transactionId) {
@@ -88,6 +113,7 @@ public class TransactionStore {
         for (String key : new ArrayList<>(storage.getKeys())) {
             if (key.startsWith(TX_PREFIX) && matches(storage.get(key), chargePointId, connectorId)) {
                 storage.remove(key);
+                storage.remove(METER_PREFIX + key.substring(TX_PREFIX.length()));
             }
         }
     }

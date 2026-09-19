@@ -661,6 +661,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         return serverHandler != null ? serverHandler.openTransactionFor(chargePointId, connectorId) : null;
     }
 
+    public @Nullable Integer recoverMeterStart(int transactionId) {
+        OcppServerBridgeHandler serverHandler = server;
+        return serverHandler != null ? serverHandler.meterStartOf(transactionId, chargePointId) : null;
+    }
+
     public void transactionCompleted(int transactionId) {
         transactions.remove(transactionId);
         OcppServerBridgeHandler serverHandler = server;

@@ -97,6 +97,21 @@ class TransactionStoreTest {
     }
 
     @Test
+    void theMeterRegisterAtTheStartIsKeptWithTheTransaction() {
+        MemoryStorage storage = new MemoryStorage();
+        TransactionStore store = new TransactionStore(storage);
+        store.begin(9, "charx", 2, 1000);
+
+        assertEquals(Integer.valueOf(1000), new TransactionStore(storage).meterStart(9));
+
+        store.end(9);
+        assertNull(store.meterStart(9));
+
+        store.begin(10, "charx", 2);
+        assertNull(store.meterStart(10));
+    }
+
+    @Test
     void endForgetsTheTransaction() {
         MemoryStorage storage = new MemoryStorage();
         TransactionStore store = new TransactionStore(storage);

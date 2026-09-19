@@ -313,7 +313,7 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         Integer connectorId = request.getConnectorId();
         if (chargePointId != null && connectorId != null) {
             // Persist at accept time so a later stop routes even before a Thing exists.
-            rememberTransaction(transactionId, chargePointId, connectorId);
+            rememberTransaction(transactionId, chargePointId, connectorId, request.getMeterStart());
         }
         OcppChargePointHandler handler = chargePointId != null ? chargePoints.get(chargePointId) : null;
         if (handler != null) {
@@ -356,10 +356,25 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     }
 
     public void rememberTransaction(int transactionId, String chargePointId, int connectorId) {
+        rememberTransaction(transactionId, chargePointId, connectorId, null);
+    }
+
+    public void rememberTransaction(int transactionId, String chargePointId, int connectorId,
+            @Nullable Integer meterStart) {
         TransactionStore store = transactionStore;
         if (store != null) {
-            store.begin(transactionId, chargePointId, connectorId);
+            store.begin(transactionId, chargePointId, connectorId, meterStart);
         }
+    }
+
+    public @Nullable Integer meterStartOf(int transactionId, String chargePointId) {
+        TransactionStore store = transactionStore;
+        if (store == null) {
+            return null;
+        }
+        TransactionStore.Location location = store.locate(transactionId);
+        return location != null && chargePointId.equals(location.chargePointId()) ? store.meterStart(transactionId)
+                : null;
     }
 
     public void forgetTransaction(int transactionId) {

@@ -116,6 +116,13 @@ class OcppTransactionRecoveryTest {
     }
 
     @Test
+    void aConnectorRecoversTheMeterRegisterAtTheStart() {
+        when(server.meterStartOf(55, "charger")).thenReturn(1000);
+
+        assertEquals(Integer.valueOf(1000), handler.recoverMeterStart(55));
+    }
+
+    @Test
     void aConnectorRecoversItsOpenTransactionIdFromTheServer() {
         when(server.openTransactionFor("charger", 1)).thenReturn(55);
 
