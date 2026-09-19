@@ -26,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class SqueezeBoxBindingConstants {
 
     public static final String BINDING_ID = "squeezebox";
+    public static final String BINDING_LABEL = "Squeezebox";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID SQUEEZEBOXPLAYER_THING_TYPE = new ThingTypeUID(BINDING_ID, "squeezeboxplayer");
