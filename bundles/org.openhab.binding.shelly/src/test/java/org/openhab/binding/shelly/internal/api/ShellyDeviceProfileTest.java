@@ -950,8 +950,8 @@ public class ShellyDeviceProfileTest {
 
     @ParameterizedTest
     @MethodSource("provideEventDrivenDevices")
-    void eventDrivenFlagCoversButtonsAndRemotesButNotPeriodicDevices(ThingTypeUID thingTypeUID, boolean expected) {
-        assertThat(new ShellyDeviceProfile(thingTypeUID).isEventDriven, is(equalTo(expected)));
+    void isEventDrivenCoversButtonsAndRemotesButNotPeriodicDevices(ThingTypeUID thingTypeUID, boolean expected) {
+        assertThat(ShellyDeviceProfile.isEventDriven(thingTypeUID), is(equalTo(expected)));
     }
 
     private static Stream<Arguments> provideEventDrivenDevices() {
@@ -996,8 +996,7 @@ public class ShellyDeviceProfileTest {
     }
 
     @Test
-    void learnWakeupIntervalIsIgnoredForEventDrivenAndAlwaysOnDevices() {
-        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYBLURCBUTTON4).learnWakeupInterval(3 * 3600), is(false));
+    void learnWakeupIntervalIsIgnoredForAlwaysOnDevices() {
         assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM).learnWakeupInterval(3 * 3600), is(false));
     }
 }

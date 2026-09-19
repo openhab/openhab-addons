@@ -116,8 +116,6 @@ public class ShellyDeviceProfile {
     public boolean isMotion; // true if thing is a Shelly Motion
     public boolean isDistance; // true if thing is a Shelly BLU Distance
     public boolean isRemote; // true if thing is a Shelly BLU Remote
-    public boolean isEventDriven; // true for buttons/remotes: they only report on button events and have no
-                                  // periodic wakeup, so the watchdog can't police a "missed wakeup"
     public boolean isIX; // true for a Shelly IX
     public boolean isTRV; // true for a Shelly TRV
     public boolean isSmoke; // true for Shelly Smoke
@@ -250,7 +248,6 @@ public class ShellyDeviceProfile {
         isIX = GROUP_IX_THING_TYPES.contains(thingTypeUID);
         isButton = GROUP_BUTTON_THING_TYPES.contains(thingTypeUID);
         isMultiButton = GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID);
-        isEventDriven = (isButton || isMultiButton) && !isDistance;
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
         isPresence = GROUP_PRESENCE_THING_TYPES.contains(thingTypeUID);
@@ -370,8 +367,7 @@ public class ShellyDeviceProfile {
      * @return true if the watchdog period was extended
      */
     public boolean learnWakeupInterval(double silenceSeconds) {
-        if (alwaysOn || isEventDriven || isTRV || silenceSeconds <= updatePeriod
-                || silenceSeconds > MAX_WAKEUP_PERIOD_SECONDS) {
+        if (alwaysOn || isTRV || silenceSeconds <= updatePeriod || silenceSeconds > MAX_WAKEUP_PERIOD_SECONDS) {
             return false;
         }
         learnedWakeupPeriod = (int) Math.ceil(silenceSeconds);
@@ -693,6 +689,15 @@ public class ShellyDeviceProfile {
                 || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX) || GROUP_MINI_THING_TYPES.contains(thingTypeUID)
                 || GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID) || isBluSeries(thingTypeUID)
                 || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
+    }
+
+    /**
+     * Buttons and remotes only report on button events and don't wake up periodically, so the watchdog can't police a
+     * "missed wakeup" for them. The BLU Distance sensor is excluded, it broadcasts periodically.
+     */
+    public static boolean isEventDriven(ThingTypeUID thingTypeUID) {
+        return (GROUP_BUTTON_THING_TYPES.contains(thingTypeUID) || GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID))
+                && !THING_TYPE_SHELLYBLUDISTANCE.equals(thingTypeUID);
     }
 
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {
