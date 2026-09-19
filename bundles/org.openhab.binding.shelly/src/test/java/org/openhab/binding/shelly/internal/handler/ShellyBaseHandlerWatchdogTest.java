@@ -93,6 +93,7 @@ class ShellyBaseHandlerWatchdogTest {
         handler.profile = profile;
         doReturn(thing).when(handler).getThing();
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        when(thing.getThingTypeUID()).thenReturn(thingType);
         doReturn(ThingStatusDetail.NONE).when(handler).getThingStatusDetail();
     }
 
