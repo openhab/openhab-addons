@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="livetennisapi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Account Bridge -->
+	<bridge-type id="account">
+		<label>Live Tennis API Account</label>
+		<description>Provides access to the Live Tennis API with one API key. Polls the live match snapshot once per refresh
+			interval and shares it with all player and tournament things of this bridge.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="usage" typeId="usage"/>
+		</channel-groups>
+
+		<representation-property>apiKey</representation-property>
+
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+				<description>API key for the Live Tennis API. A free key is self-serve at https://livetennisapi.com/subscribe/free.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="60" unit="s">
+				<label>Refresh Interval</label>
+				<description>How often to poll the live match snapshot in seconds. The default of 1800 s keeps the bridge plus one
+					player thing within the free tier's daily quota; lower values need a paid tier.</description>
+				<default>1800</default>
+				<unitLabel>seconds</unitLabel>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Player Thing -->
+	<thing-type id="player">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Tennis Player</label>
+		<description>Tracks one player (or doubles team): their live match state, their next scheduled match and their current
+			ranking. Score channels list the tracked player first.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="live" typeId="live-match"/>
+			<channel-group id="next-match" typeId="next-match"/>
+			<channel-group id="profile" typeId="player-profile"/>
+		</channel-groups>
+
+		<representation-property>playerId</representation-property>
+
+		<config-description>
+			<parameter name="playerId" type="integer" required="true">
+				<label>Player ID</label>
+				<description>The player's id in the Live Tennis API. Look it up with GET /players?search=name.</description>
+			</parameter>
+			<parameter name="detailRefreshEnabled" type="boolean">
+				<label>Refresh Player Detail</label>
+				<description>Whether to refresh the next match and ranking for this player. Turn it off to track only the live
+					match
+					state (pushed by the bridge at no extra cost) and spend no quota of this thing's own, lowering the
+					chance of hitting
+					the daily limit.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="detailRefreshInterval" type="integer" min="300" unit="s">
+				<label>Detail Refresh Interval</label>
+				<description>How often to refresh the next match and the ranking in seconds when detail refresh is enabled. Each
+					cycle costs two API requests per player thing.</description>
+				<default>7200</default>
+				<unitLabel>seconds</unitLabel>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Tournament Thing -->
+	<thing-type id="tournament">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Tennis Tournament</label>
+		<description>Tracks one tournament of the catalogue: its metadata, how many of its matches are in progress and the
+			state of the first listed live match.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="info" typeId="tournament-info"/>
+			<channel-group id="live" typeId="tournament-live"/>
+		</channel-groups>
+
+		<representation-property>tournamentId</representation-property>
+
+		<config-description>
+			<parameter name="tournamentId" type="text" required="true">
+				<label>Tournament ID</label>
+				<description>The tournament's stable id in the Live Tennis API. Look it up with GET /tournaments?search=name.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Groups -->
+	<channel-group-type id="usage">
+		<label>API Usage</label>
+		<description>The API key's own tier and daily usage. Reading it is quota-exempt.</description>
+		<channels>
+			<channel id="tier" typeId="tier"/>
+			<channel id="calls-today" typeId="calls-today"/>
+			<channel id="remaining-today" typeId="remaining-today"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="live-match">
+		<label>Live Match</label>
+		<description>The tracked player's match currently in progress. All channels are UNDEF while the player has no live
+			match.</description>
+		<channels>
+			<channel id="status" typeId="match-status"/>
+			<channel id="discipline" typeId="discipline"/>
+			<channel id="tournament" typeId="tournament-name"/>
+			<channel id="round" typeId="round"/>
+			<channel id="opponent" typeId="opponent"/>
+			<channel id="score-line" typeId="score-line"/>
+			<channel id="sets" typeId="sets"/>
+			<channel id="points" typeId="points"/>
+			<channel id="serving" typeId="serving"/>
+			<channel id="break-point" typeId="break-point"/>
+			<channel id="tiebreak" typeId="tiebreak"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="next-match">
+		<label>Next Match</label>
+		<description>The tracked player's next scheduled match.</description>
+		<channels>
+			<channel id="opponent" typeId="opponent">
+				<label>Next Opponent</label>
+				<description>Opponent in the next scheduled match</description>
+			</channel>
+			<channel id="start-time" typeId="start-time"/>
+			<channel id="tournament" typeId="tournament-name">
+				<label>Next Tournament</label>
+				<description>Tournament of the next scheduled match</description>
+			</channel>
+			<channel id="round" typeId="round">
+				<label>Next Round</label>
+				<description>Round of the next scheduled match</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="player-profile">
+		<label>Player Profile</label>
+		<description>The tracked player's current ranking.</description>
+		<channels>
+			<channel id="ranking" typeId="ranking"/>
+			<channel id="ranking-points" typeId="ranking-points"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="tournament-info">
+		<label>Tournament Info</label>
+		<description>Curated tournament metadata; individual values can be UNDEF where the catalogue has no curated entry.</description>
+		<channels>
+			<channel id="name" typeId="tournament-name">
+				<label>Name</label>
+				<description>Name of the tournament</description>
+			</channel>
+			<channel id="surface" typeId="surface"/>
+			<channel id="category" typeId="category"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="tournament-live">
+		<label>Live Matches</label>
+		<description>The tournament's matches currently in progress. Match channels show the first listed live match.</description>
+		<channels>
+			<channel id="match-count" typeId="match-count"/>
+			<channel id="players" typeId="match-players"/>
+			<channel id="discipline" typeId="discipline"/>
+			<channel id="status" typeId="match-status"/>
+			<channel id="score-line" typeId="score-line"/>
+			<channel id="sets" typeId="sets"/>
+			<channel id="points" typeId="points"/>
+			<channel id="server" typeId="server-name"/>
+			<channel id="break-point" typeId="break-point"/>
+			<channel id="tiebreak" typeId="tiebreak"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel Types -->
+	<channel-type id="tier">
+		<item-type>String</item-type>
+		<label>Tier</label>
+		<description>Access tier of the API key (free, basic, pro or ultra)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="calls-today">
+		<item-type>Number</item-type>
+		<label>Calls Today</label>
+		<description>API calls made today with this key</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="remaining-today">
+		<item-type>Number</item-type>
+		<label>Remaining Today</label>
+		<description>API calls remaining today within the daily quota</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="match-status">
+		<item-type>String</item-type>
+		<label>Match Status</label>
+		<description>Lifecycle status of the match</description>
+		<state readOnly="true">
+			<options>
+				<option value="upcoming">Upcoming</option>
+				<option value="live">Live</option>
+				<option value="completed">Completed</option>
+				<option value="cancelled">Cancelled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="discipline">
+		<item-type>String</item-type>
+		<label>Discipline</label>
+		<description>Whether the match is singles or doubles; UNDEF when the feed states neither</description>
+		<state readOnly="true">
+			<options>
+				<option value="singles">Singles</option>
+				<option value="doubles">Doubles</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tournament-name">
+		<item-type>String</item-type>
+		<label>Tournament</label>
+		<description>Name of the tournament</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="round">
+		<item-type>String</item-type>
+		<label>Round</label>
+		<description>Round of the match as stated by the feed</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="opponent">
+		<item-type>String</item-type>
+		<label>Opponent</label>
+		<description>Name of the opponent</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="score-line">
+		<item-type>String</item-type>
+		<label>Score Line</label>
+		<description>Games per set, e.g. "6-4 3-2"</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sets">
+		<item-type>String</item-type>
+		<label>Sets</label>
+		<description>Sets won, e.g. "1-0"</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="points">
+		<item-type>String</item-type>
+		<label>Points</label>
+		<description>In-game points, e.g. "40-15" or "AD-40"</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="serving">
+		<item-type>Switch</item-type>
+		<label>Serving</label>
+		<description>ON while the tracked player is serving; UNDEF when no game is in progress</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="break-point">
+		<item-type>Switch</item-type>
+		<label>Break Point</label>
+		<description>ON while the current game stands at break point; never ON in a tiebreak; UNDEF when the score state does
+			not allow deriving it</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="tiebreak">
+		<item-type>Switch</item-type>
+		<label>Tiebreak</label>
+		<description>ON while a tiebreak is being played</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="start-time">
+		<item-type>DateTime</item-type>
+		<label>Start Time</label>
+		<description>Scheduled start of the next match; UNDEF until the order of play assigns a time</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ranking">
+		<item-type>Number</item-type>
+		<label>Ranking</label>
+		<description>The player's current singles or doubles ranking</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="ranking-points">
+		<item-type>Number</item-type>
+		<label>Ranking Points</label>
+		<description>The player's current ranking points</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="surface">
+		<item-type>String</item-type>
+		<label>Surface</label>
+		<description>Court surface of the tournament</description>
+		<state readOnly="true">
+			<options>
+				<option value="hard">Hard</option>
+				<option value="clay">Clay</option>
+				<option value="grass">Grass</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="category">
+		<item-type>String</item-type>
+		<label>Category</label>
+		<description>Tournament category where the catalogue states it unambiguously, e.g. grand_slam or atp_250</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="match-count">
+		<item-type>Number</item-type>
+		<label>Live Match Count</label>
+		<description>Number of this tournament's matches currently in progress</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="match-players">
+		<item-type>String</item-type>
+		<label>Players</label>
+		<description>Both participants of the featured live match, e.g. "Player One vs Player Two"</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="server-name">
+		<item-type>String</item-type>
+		<label>Server</label>
+		<description>Name of the player serving in the featured live match</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
