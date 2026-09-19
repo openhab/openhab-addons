@@ -133,6 +133,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     // Scheduler
     private volatile double watchdog = now();
+    private volatile double lastReport = 0;
     protected int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
@@ -398,6 +399,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // New Shelly devices might use a different endpoint for the CoAP listener
             tmpPrf.coiotEndpoint = tmpPrf.device.coiot;
         }
+        tmpPrf.learnedWakeupPeriod = profile.learnedWakeupPeriod;
         tmpPrf.updateWatchdogPeriod();
 
         tmpPrf.status = api.getStatus(); // update thing properties
@@ -891,7 +893,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void restartWatchdog() {
         synchronized (this) {
-            watchdog = now();
+            double now = now();
+            if (lastReport > 0 && profile.learnWakeupInterval(now - lastReport)) {
+                logger.debug("{}: Device reports every {} sec, watchdog extended to {} sec", thingName,
+                        profile.learnedWakeupPeriod, profile.updatePeriod);
+            }
+            lastReport = now;
+            watchdog = now;
         }
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_HEARTBEAT, getTimestamp());
         logger.trace("{}: Watchdog restarted (expires in {} sec)", thingName, profile.updatePeriod);
@@ -899,8 +907,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     private boolean isWatchdogExpired() {
         if (profile.isEventDriven) {
-            // BLU buttons/remotes only transmit on button events (per Shelly BLE docs, periodic beacons are opt-in
-            // and undocumented), so they can stay silent for days - never force them offline for a missed wakeup.
+            // Buttons/remotes only report on button events (BLU periodic beacons are opt-in and undocumented), so
+            // they can stay silent for days - never force them offline for a missed wakeup.
             return false;
         }
         double delta = now() - watchdog;
