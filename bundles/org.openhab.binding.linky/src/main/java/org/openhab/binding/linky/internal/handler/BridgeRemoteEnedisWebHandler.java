@@ -73,14 +73,23 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
     private static final String MEASURE_DAILY_CONSUMPTION_URL = PRM_INFO_BASE_URL
             + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=ENERGIE&mesuresCorrigees=false&typeDonnees=CONS&segments=%s";
 
-    private static final String MEASURE_DAILY_INDEX_URL = PRM_INFO_BASE_URL
+    private static final String MEASURE_DAILY_PRODUCTION_URL = PRM_INFO_BASE_URL
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=ENERGIE&mesuresCorrigees=false&typeDonnees=PROD&segments=%s";
+
+    private static final String MEASURE_INDEX_CONSUMPTION_URL = PRM_INFO_BASE_URL
             + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=INDEX&mesuresCorrigees=false&typeDonnees=CONS&segments=%s";
+
+    private static final String MEASURE_INDEX_PRODUCTION_URL = PRM_INFO_BASE_URL
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=INDEX&mesuresCorrigees=false&typeDonnees=PROD&segments=%s";
 
     private static final String MEASURE_MAX_POWER_URL = PRM_INFO_BASE_URL
             + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=PMAX&mesuresCorrigees=false&typeDonnees=CONS&segments=%s";
 
     private static final String LOAD_CURVE_CONSUMPTION_URL = PRM_INFO_BASE_URL
             + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=COURBE&mesuresCorrigees=false&typeDonnees=CONS&segments=%s&dateDebut=%s";
+
+    private static final String LOAD_CURVE_PRODUCTION_URL = PRM_INFO_BASE_URL
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=COURBE&mesuresCorrigees=false&typeDonnees=PROD&segments=%s&dateDebut=%s";
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -150,8 +159,28 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
     }
 
     @Override
-    public String getDailyIndexUrl() {
-        return MEASURE_DAILY_INDEX_URL;
+    public String getDailyProductionUrl() {
+        return MEASURE_DAILY_PRODUCTION_URL;
+    }
+
+    @Override
+    public String getIndexConsumptionUrl() {
+        return MEASURE_INDEX_CONSUMPTION_URL;
+    }
+
+    @Override
+    public String getIndexProductionUrl() {
+        return MEASURE_INDEX_PRODUCTION_URL;
+    }
+
+    @Override
+    public String getLoadCurveConsumptionUrl() {
+        return LOAD_CURVE_CONSUMPTION_URL;
+    }
+
+    @Override
+    public String getLoadCurveProductionUrl() {
+        return LOAD_CURVE_PRODUCTION_URL;
     }
 
     @Override
@@ -160,8 +189,28 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
     }
 
     @Override
-    public String getLoadCurveUrl() {
-        return LOAD_CURVE_CONSUMPTION_URL;
+    public String getSubsribeServiceUrl() {
+        return "";
+    }
+
+    @Override
+    public String getGeneralDataUrl() {
+        return "";
+    }
+
+    @Override
+    public String getContractSynthUrl() {
+        return "";
+    }
+
+    @Override
+    public String getContractStateUrl() {
+        return "";
+    }
+
+    @Override
+    public String getAlimentationUrl() {
+        return "";
     }
 
     @Override

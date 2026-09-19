@@ -36,4 +36,16 @@ public class Identity {
 
         return result;
     }
+
+    public static Identity convertFromGeneralData(GeneralData generalData) {
+        Identity result = new Identity();
+
+        result.firstname = "";
+        result.lastname = "";
+        result.title = "";
+        result.internId = "";
+
+        return result;
+    }
+
 }
