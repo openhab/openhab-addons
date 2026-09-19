@@ -131,11 +131,14 @@
 		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="Comfort">Comfort</option>
-				<option value="Sleep">Sleep</option>
-				<option value="Away">Away</option>
-				<option value="Off">Off</option>
-				<option value="AdvancedAway">Vacation away</option>
+				<option value="comfort">Comfort</option>
+				<option value="sleep">Sleep</option>
+				<option value="away">Away</option>
+				<option value="normal">Normal</option>
+				<option value="always_heating">Always heating</option>
+				<option value="vacation">Vacation</option>
+				<option value="weekly_program">Weekly program</option>
+				<option value="off">Off</option>
 			</options>
 		</state>
 	</channel-type>

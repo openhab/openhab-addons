@@ -12,28 +12,22 @@
  */
 package org.openhab.binding.millheat.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link MillheatHeaterConfiguration} class contains heater thing configuration parameters.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Device identifiers are cloud API UUIDs
  */
+@NonNullByDefault
 public class MillheatHeaterConfiguration {
-    /*
-     * Wi-Fi mac address
-     */
-    public String macAddress;
-    /*
-     * Wi-Fi heater id - found in logs
-     */
-    public Long heaterId;
-    /*
-     * Nominal heater panel power
-     */
-    public Integer power;
+    public @Nullable String macAddress;
+    public @Nullable String heaterId;
 
     @Override
     public String toString() {
-        return "MillheatHeaterConfiguration [macAddress=" + macAddress + ", heaterId=" + heaterId + ", power=" + power
-                + "]";
+        return "MillheatHeaterConfiguration [macAddress=" + macAddress + ", heaterId=" + heaterId + "]";
     }
 }

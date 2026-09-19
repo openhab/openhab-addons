@@ -15,77 +15,91 @@ package org.openhab.binding.millheat.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openhab.binding.millheat.internal.dto.RoomDTO;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.millheat.internal.dto.RoomInfoDTO;
 
 /**
- * The {@link Room} represents a room in a home as designed by the end user in the Millheat app.
+ * A room as laid out by the user in the Mill app. Rooms carry the three program setpoints; the
+ * heaters in a room follow whichever one the active mode selects.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Rebuild on the cloud API's room model
  */
+@NonNullByDefault
 public class Room {
     private final Home home;
-    private final long id;
+    private final String id;
     private final String name;
-    private final int currentTemp;
-    private final int comfortTemp;
-    private final int sleepTemp;
-    private final int awayTemp;
+    private final @Nullable Double currentTemp;
+    private final @Nullable Double comfortTemp;
+    private final @Nullable Double sleepTemp;
+    private final @Nullable Double awayTemp;
     private final boolean heatingActive;
+    private final boolean windowOpen;
+    private final boolean online;
     private final ModeType mode;
-    private final String roomProgramName;
+    private final @Nullable String roomProgramName;
     private final List<Heater> heaters = new ArrayList<>();
 
-    public Room(final RoomDTO dto, final Home home) {
+    public Room(final RoomInfoDTO dto, final Home home) {
         this.home = home;
-        id = dto.roomId;
-        name = dto.name;
-        currentTemp = (int) dto.currentTemp;
-        comfortTemp = dto.comfortTemp;
-        sleepTemp = dto.sleepTemp;
-        awayTemp = dto.awayTemp;
-        heatingActive = dto.heatStatus;
-        mode = ModeType.valueOf(dto.currentMode);
-        roomProgramName = dto.roomProgram;
+        id = dto.id();
+        final String roomName = dto.name();
+        name = roomName == null ? dto.id() : roomName;
+        currentTemp = dto.averageTemperature();
+        comfortTemp = dto.roomComfortTemperature();
+        sleepTemp = dto.roomSleepTemperature();
+        awayTemp = dto.roomAwayTemperature();
+        heatingActive = Boolean.TRUE.equals(dto.roomHeatStatus());
+        windowOpen = Boolean.TRUE.equals(dto.roomOpenWindowStatus());
+        online = Boolean.TRUE.equals(dto.isRoomOnline());
+        roomProgramName = dto.roomProgramName();
+
+        // While a weekly program is running, the effective mode is the one the program selected.
+        final ModeType declared = ModeType.fromApiValue(dto.mode());
+        mode = declared == ModeType.WEEKLY_PROGRAM ? ModeType.fromApiValue(dto.activeModeFromWeeklyProgram())
+                : declared;
     }
 
-    public void addHeater(final Heater h) {
-        heaters.add(h);
+    public Room(final String id, final String name, final Home home) {
+        this.home = home;
+        this.id = id;
+        this.name = name;
+        currentTemp = null;
+        comfortTemp = null;
+        sleepTemp = null;
+        awayTemp = null;
+        heatingActive = false;
+        windowOpen = false;
+        online = false;
+        mode = ModeType.UNKNOWN;
+        roomProgramName = null;
+    }
+
+    public void addHeater(final Heater heater) {
+        heaters.add(heater);
     }
 
     public List<Heater> getHeaters() {
         return heaters;
     }
 
-    public Integer getTargetTemperature() {
-        switch (mode) {
-            case VACATION:
-                return home.getHolidayTemp();
-            case SLEEP:
-                return sleepTemp;
-            case COMFORT:
-                return comfortTemp;
-            case AWAY:
-                return awayTemp;
-            case OFF:
-            case ALWAYSHOME:
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "Room [home=" + home.getId() + ", id=" + id + ", name=" + name + ", currentTemp=" + currentTemp
-                + ", comfortTemp=" + comfortTemp + ", sleepTemp=" + sleepTemp + ", awayTemp=" + awayTemp
-                + ", heatingActive=" + heatingActive + ", mode=" + mode + ", roomProgramName=" + roomProgramName
-                + ", heaters=" + heaters + "]";
+    public @Nullable Double getTargetTemperature() {
+        return switch (mode) {
+            case COMFORT, NORMAL -> comfortTemp;
+            case SLEEP -> sleepTemp;
+            case AWAY -> awayTemp;
+            case VACATION -> home.getVacationTemperature();
+            default -> null;
+        };
     }
 
     public Home getHome() {
         return home;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -93,19 +107,19 @@ public class Room {
         return name;
     }
 
-    public int getCurrentTemp() {
+    public @Nullable Double getCurrentTemp() {
         return currentTemp;
     }
 
-    public int getComfortTemp() {
+    public @Nullable Double getComfortTemp() {
         return comfortTemp;
     }
 
-    public int getSleepTemp() {
+    public @Nullable Double getSleepTemp() {
         return sleepTemp;
     }
 
-    public int getAwayTemp() {
+    public @Nullable Double getAwayTemp() {
         return awayTemp;
     }
 
@@ -113,11 +127,26 @@ public class Room {
         return heatingActive;
     }
 
+    public boolean windowOpen() {
+        return windowOpen;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
     public ModeType getMode() {
         return mode;
     }
 
-    public String getRoomProgramName() {
+    public @Nullable String getRoomProgramName() {
         return roomProgramName;
+    }
+
+    @Override
+    public String toString() {
+        return "Room [id=" + id + ", name=" + name + ", home=" + home.getId() + ", currentTemp=" + currentTemp
+                + ", comfort=" + comfortTemp + ", sleep=" + sleepTemp + ", away=" + awayTemp + ", mode=" + mode
+                + ", program=" + roomProgramName + ", heaters=" + heaters.size() + "]";
     }
 }
