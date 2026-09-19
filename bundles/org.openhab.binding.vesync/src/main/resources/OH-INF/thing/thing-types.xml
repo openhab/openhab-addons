@@ -357,7 +357,7 @@
 			<tag>Measurement</tag>
 			<tag>Speed</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f"/>
+		<state pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="deviceErrorCodeType">
