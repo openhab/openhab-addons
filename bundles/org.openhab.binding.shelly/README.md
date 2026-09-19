@@ -2531,7 +2531,7 @@ then
     if (ShellyWS90_RainStatus.state == ON) {
         RainSwitch.postUpdate(ON)
     } else {
-        createTimer(now.plusMinutes(10), [ | RainSwitch.postUpdate(OFF) ])
+        createTimer(now.plusMinutes(10), [ RainSwitch.postUpdate(OFF) ])
     }
 end
 ```
@@ -2661,18 +2661,17 @@ when
     Time cron "0 0 10 * * ?"
 then
     logInfo("BatteryMon", "Check Battery state")
+    if (gBattery.allMembers.exists[ state < lowBatteryThreshold ]) {
+        var message = "Battery levels:\n"
 
-    if (! gBattery.allMembers.filter([state < lowBatteryThreshold]).empty) {
-        message = "Battery levels:\n"
-
-        var report = gBattery.allMembers.filter([ state instanceof DecimalType ]).sortBy([ state instanceof DecimalType ]).map[
+        var report = gBattery.allMembers.filter[ state instanceof DecimalType ].sortBy[ state instanceof DecimalType ].map[
         name + ": " + state.format("%d%%\n") ]
-        message = message + report
+        message += report
 
-        message = message + "\nBattery Level:\n"
-        gBattery?.allMembers.forEach([sw|
-            message = message + sw.name + ": " + state.format("%d%%\n")
-        ])
+        message += "\nBattery Level:\n"
+        gBattery.allMembers.forEach[
+            message += name + ": " + state.format("%d%%\n")
+        ]
 
         sendMail(mailTo, "Home: LOW Battery Alert!", message)
     }
