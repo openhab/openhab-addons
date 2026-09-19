@@ -18,7 +18,8 @@ import com.google.gson.annotations.SerializedName;
  * @author Marcus Better - Initial contribution
  */
 public record DoorStatus(@SerializedName("frontLeft") int rawFrontLeft, @SerializedName("frontRight") int rawFrontRight,
-        @SerializedName("backLeft") int rawBackLeft, @SerializedName("backRight") int rawBackRight) {
+        @SerializedName("backLeft") int rawBackLeft,
+        @SerializedName("backRight") int rawBackRight) implements IDoorStatus {
     public boolean frontLeft() {
         return rawFrontLeft > 0;
     }

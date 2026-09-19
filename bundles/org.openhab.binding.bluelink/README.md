@@ -27,13 +27,13 @@ registered to your account.
 
 ### `account` Bridge
 
-| Parameter  | Required | Description                                                      |
-|------------|----------|------------------------------------------------------------------|
-| `username` | No       | Bluelink account email (not required for EU region)              |
-| `password` | Yes      | Bluelink account password (for EU: refresh token)                |
-| `pin`      | No       | Bluelink service PIN (required for lock/unlock commands)         |
-| `region`   | No       | Country code (`US`, `CA`, or `EU`), autodetected if absent       |
-| `brand`    | No       | One of `hyundai`, `kia`, `genesis` (required for CA and EU)      |
+| Parameter  | Required | Description                                                                          |
+|------------|----------|--------------------------------------------------------------------------------------|
+| `username` | No       | Bluelink account email (not required for EU region)                                  |
+| `password` | Yes      | Bluelink account password (for EU: refresh token)                                    |
+| `pin`      | No       | Bluelink service PIN (required for lock/unlock commands, not required for EU region) |
+| `region`   | No       | Country code (`US`, `CA`, or `EU`), autodetected if absent                           |
+| `brand`    | No       | One of `hyundai`, `kia`, `genesis` (required for CA and EU)                          |
 
 #### EU Region Notes
 
@@ -42,7 +42,9 @@ Put your refresh token in the `password` field.
 A refresh token is typically valid for 180 days, after which you will need to provide a new one.
 The following script may be used to obtain a refresh token: [RustyDust/bluelink_refresh_token](https://github.com/RustyDust/bluelink_refresh_token).
 
-The `username` field is not required for EU.
+Both legacy and newer CCS2/CCU-based vehicles are supported in the EU region.
+
+The `username` and `pin` fields are not required for the EU region.
 
 ### `vehicle` Thing
 

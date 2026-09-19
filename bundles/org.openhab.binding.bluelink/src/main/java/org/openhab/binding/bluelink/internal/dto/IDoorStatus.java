@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.bluelink.internal.dto;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * 12V battery status.
- *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
-public record BatteryStatus(@SerializedName("batSoc") double stateOfCharge) {
+public interface IDoorStatus {
+    boolean frontLeft();
+
+    boolean frontRight();
+
+    boolean backLeft();
+
+    boolean backRight();
 }
