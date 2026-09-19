@@ -88,7 +88,7 @@
 	<thing-type id="ipAvr2015">
 		<label>Pioneer AVR over IP 2015</label>
 		<description>Control a 2015 Pioneer AVR (SC-89, SC-LX88, SC-87, SC-LX78, SC-85, SC-LX58, SC-82, SC-2024, SC-81,
-			VSX-80) over IP
+			VSX-80, VSX-924) over IP
 		</description>
 
 		<channel-groups>
