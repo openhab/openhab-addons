@@ -47,6 +47,7 @@ The id is whatever path the charger appends to its backend URL — often its ser
 | chargerIds                   | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected                                                       | (empty) | no       | yes      |
 
 These settings are pushed to a charger as ChangeConfiguration requests after it boots, one at a time, and only until the charger has accepted them once for the configured values — a changed configuration is sent again on the charger's next boot, an unchanged one is not repeated on every reconnect.
+Entries are sent when a charger boots, and again when one reconnects without booting — which is what happens after openHAB restarts — so a changed entry reaches a charger that stayed on.
 A request a charger leaves unanswered fails after `requestTimeoutSeconds`; the OCPP library itself would wait on it forever.
 Measurands a charger rejects are dropped one at a time until it accepts them, and the accepted set is remembered per configuration key.
 The binding also runs a heartbeat-derived liveness watchdog and self-heals when a charger reconnects under a new session.

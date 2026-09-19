@@ -507,8 +507,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         UUID connectedSession = session;
         statusFallbackTask = scheduler.schedule(() -> {
             if (!bootAccepted) {
-                readCapabilitiesNow(connectedSession);
-                requestConnectorStatusesNow();
+                reconnectedWithoutBoot(connectedSession);
             }
         }, STATUS_FALLBACK_SECONDS, TimeUnit.SECONDS);
     }
@@ -693,6 +692,18 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             applyCapabilities(confirmation, ex);
             runBootConfigBurst(bootSession);
         });
+    }
+
+    /** A charger that was already up when the binding connected sends no BootNotification. */
+    void reconnectedWithoutBoot(UUID connectedSession) {
+        if (!connectedSession.equals(session)) {
+            return;
+        }
+        logger.debug("Charge point {} reconnected without booting; treating it as ready", chargePointId);
+        becomeReady(connectedSession);
+        readCapabilitiesNow(connectedSession);
+        requestConnectorStatusesNow();
+        scheduleBootConfig(connectedSession);
     }
 
     private void readCapabilitiesNow(UUID connectedSession) {
