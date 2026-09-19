@@ -54,7 +54,7 @@ import eu.chargetime.ocpp.model.core.StopTransactionRequest;
  * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings({ "null", "unchecked" })
+@SuppressWarnings("null")
 class OcppServerBridgeHandlerTest {
 
     private static final ThingUID SERVER_UID = new ThingUID(THING_TYPE_SERVER, "server");

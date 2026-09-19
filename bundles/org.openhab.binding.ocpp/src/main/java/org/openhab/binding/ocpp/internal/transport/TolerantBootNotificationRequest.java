@@ -22,6 +22,7 @@ import eu.chargetime.ocpp.model.core.BootNotificationRequest;
  * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
+@SuppressWarnings("deprecation")
 public class TolerantBootNotificationRequest extends BootNotificationRequest {
 
     @Override

@@ -20,6 +20,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -91,6 +92,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     private record PendingSend(UUID session, Request request, CompletableFuture<Confirmation> future) {
+    }
+
+    /** {@code poll} is typed non-null through a non-null element type, though an empty queue returns null. */
+    private static <T> @Nullable T poll(Queue<T> queue) {
+        return queue.poll();
     }
 
     private static final long LIVENESS_FLOOR_SECONDS = 180;
@@ -384,7 +390,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 if (epoch != dispatchEpoch) {
                     return;
                 }
-                next = outbound.poll();
+                next = poll(outbound);
                 if (next == null) {
                     dispatching = false;
                     return;
@@ -441,7 +447,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             operational = true;
         }
         PendingSend pending;
-        while (expectedSession.equals(session) && (pending = pendingSends.poll()) != null) {
+        while (expectedSession.equals(session) && (pending = poll(pendingSends)) != null) {
             enqueue(pending);
         }
         if (expectedSession.equals(session)) {
@@ -452,7 +458,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private void failPendingSends() {
         List<PendingSend> toFail = new ArrayList<>();
         PendingSend pending;
-        while ((pending = pendingSends.poll()) != null) {
+        while ((pending = poll(pendingSends)) != null) {
             toFail.add(pending);
         }
         synchronized (dispatchLock) {
@@ -464,7 +470,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 inFlight = null;
             }
             PendingSend queued;
-            while ((queued = outbound.poll()) != null) {
+            while ((queued = poll(outbound)) != null) {
                 toFail.add(queued);
             }
             dispatching = false;

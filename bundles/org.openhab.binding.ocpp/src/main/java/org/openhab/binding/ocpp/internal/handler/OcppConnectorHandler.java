@@ -17,6 +17,7 @@ import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 import java.time.ZonedDateTime;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -428,8 +429,10 @@ public class OcppConnectorHandler extends BaseThingHandler {
         double watts = powerLimitWatts;
         OcppChargePointHandler cp = chargePoint;
         ChargerCapabilities caps = cp != null ? cp.getCapabilities() : ChargerCapabilities.unknown();
-        boolean allowsPower = caps.allowsPowerUnit().orElse(false);
-        boolean allowsCurrent = caps.allowsCurrentUnit().orElse(true);
+        Optional<Boolean> powerUnit = caps.allowsPowerUnit();
+        Optional<Boolean> currentUnit = caps.allowsCurrentUnit();
+        boolean allowsPower = powerUnit.isPresent() && powerUnit.get();
+        boolean allowsCurrent = currentUnit.isEmpty() || currentUnit.get();
         Integer numberPhases = numberPhasesRequested > 0 ? numberPhasesRequested : null;
         int conversionPhases = numberPhasesRequested > 0 ? numberPhasesRequested : phases;
         if (numberPhases != null && Boolean.FALSE.equals(caps.phaseSwitchSupported().orElse(null))

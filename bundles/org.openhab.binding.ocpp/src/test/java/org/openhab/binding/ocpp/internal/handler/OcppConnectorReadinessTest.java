@@ -266,6 +266,7 @@ class OcppConnectorReadinessTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void anAcceptedOlderRequestPublishesWhenTheNewerOneIsRejected() {
         ready.set(true);
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> first = new CompletableFuture<>();
@@ -284,6 +285,7 @@ class OcppConnectorReadinessTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void aLateStaleConfirmationCannotOverwriteANewerResult() {
         ready.set(true);
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> first = new CompletableFuture<>();

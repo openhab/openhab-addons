@@ -89,6 +89,7 @@ class TolerantBootNotificationTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     void theTolerantFeatureDelegatesToTheCoreHandler() {
         ServerCoreEventHandler handler = mock(ServerCoreEventHandler.class);
         BootNotificationConfirmation confirmation = new BootNotificationConfirmation();
