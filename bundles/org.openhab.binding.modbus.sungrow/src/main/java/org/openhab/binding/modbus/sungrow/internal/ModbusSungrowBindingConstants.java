@@ -30,6 +30,11 @@ public class ModbusSungrowBindingConstants {
      */
     public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
             "sungrow-inverter");
+    /**
+     * ThingType-ID for iHomeManager.
+     */
+    public static final ThingTypeUID THING_TYPE_IHOME_MANAGER = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
+            "sungrow-ihome-manager");
 
     public static final String PROP_KEY_SERIAL_NUMBER = "SerialNumber";
     public static final String PROP_KEY_DEVICE_TYPE = "DeviceType";
@@ -39,4 +44,9 @@ public class ModbusSungrowBindingConstants {
     public static final String PROP_KEY_PROTOCOL_VERSION = "ProtocolVersion";
     public static final String PROP_KEY_ARM_CERT_VERSION_NUMBER = "ArmCertificationVersionNumber";
     public static final String PROP_KEY_DSP_CERT_VERSION_NUMBER = "DspCertificationVersionNumber";
+
+    public static final String PROP_KEY_IHM_DEVICE_TYPE_CODE = "IHMDeviceTypeCode";
+    public static final String PROP_KEY_IHM_PROTOCOL_NUMBER = "IHMProtocolNumber";
+    public static final String PROP_KEY_IHM_PROTOCOL_VERSION = "IHMProtocolVersion";
+    public static final String PROP_KEY_IHM_APPLICATION_SOFTWARE_VERSION = "IHMApplicationSoftwareVersion";
 }

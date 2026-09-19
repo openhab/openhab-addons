@@ -35,7 +35,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.sungrow", service = ThingHandlerFactory.class)
 public class ModbusSungrowHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INVERTER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INVERTER,
+            THING_TYPE_IHOME_MANAGER);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,6 +49,9 @@ public class ModbusSungrowHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
             return new SungrowInverterHandler(thing);
+        }
+        if (THING_TYPE_IHOME_MANAGER.equals(thingTypeUID)) {
+            return new SungrowIHomeManagerHandler(thing);
         }
 
         return null;
