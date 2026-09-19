@@ -327,12 +327,18 @@ public class ShellyDeviceProfile {
     }
 
     /**
-     * (Re-)derive the watchdog timeout ({@link #updatePeriod}). The wakeup period of a sleeping device can't be read
-     * on demand (the device is asleep) and Gen1 doesn't include it in status reports, so it's taken from the last known
-     * settings and otherwise assumed to be the longest period a device can be configured to. It is raised further if a
-     * device is observed to report less often than assumed, see {@link #learnWakeupInterval(double)}.
+     * (Re-)derive the watchdog timeout ({@link #updatePeriod}) whenever the device's settings or a status report
+     * provide
+     * a fresh wakeup period. It replaces a learned period (see {@link #learnWakeupInterval(double)}), which might have
+     * been inflated by an outage. The wakeup period of a sleeping device can't be read on demand and Gen1 doesn't
+     * report it in status updates, so if unknown the longest period a device can be configured to is assumed.
      */
     public void updateWatchdogPeriod() {
+        learnedWakeupPeriod = 0;
+        computeWatchdogPeriod();
+    }
+
+    private void computeWatchdogPeriod() {
         if (settings.sleepMode != null && !isTRV) {
             // Sensor, usually 12h, H&T in USB mode 10min
             applyWakeupPeriod("m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
@@ -371,7 +377,7 @@ public class ShellyDeviceProfile {
             return false;
         }
         learnedWakeupPeriod = (int) Math.ceil(silenceSeconds);
-        updateWatchdogPeriod();
+        computeWatchdogPeriod();
         return true;
     }
 

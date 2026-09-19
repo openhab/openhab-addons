@@ -631,7 +631,8 @@ public class ShellyDeviceProfileTest {
 
     @ParameterizedTest
     @MethodSource("provideTestCasesForWatchdogPeriod")
-    void updateWatchdogPeriodAppliesSmokeMargin(ThingTypeUID thingTypeUID, int period, String unit, int expected) {
+    void updateWatchdogPeriodDerivesTimeoutFromSleepMode(ThingTypeUID thingTypeUID, int period, String unit,
+            int expected) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
         ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
         sleepMode.period = period;
@@ -647,7 +648,8 @@ public class ShellyDeviceProfileTest {
         return Stream.of( //
                 Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, 12, "h", (int) Math.round(12 * 3600 * 1.1) + 60 + 1800), //
                 Arguments.of(THING_TYPE_SHELLYPLUSHT, 12, "h", (int) Math.round(12 * 3600 * 1.1) + 60), //
-                Arguments.of(THING_TYPE_SHELLYPLUSHT, 10, "m", (int) Math.round(10 * 60 * 1.1) + 60));
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, 10, "m", (int) Math.round(10 * 60 * 1.1) + 60), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, 730, "m", (int) Math.round(730 * 60 * 1.1) + 60));
     }
 
     @ParameterizedTest
@@ -712,10 +714,40 @@ public class ShellyDeviceProfileTest {
         profile.updateWatchdogPeriod();
 
         boolean extended = profile.learnWakeupInterval(6 * 3600);
-        profile.updateWatchdogPeriod();
 
         assertThat(extended, is(true));
+        assertThat(profile.learnedWakeupPeriod, is(equalTo(6 * 3600)));
         assertThat(profile.updatePeriod, is(equalTo((int) Math.round(6 * 3600 * 1.1) + 60)));
+    }
+
+    @Test
+    void updateWatchdogPeriodReplacesLearnedWakeupPeriod() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYHT);
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.period = 1;
+        sleepMode.unit = "h";
+        profile.settings.sleepMode = sleepMode;
+        profile.updateWatchdogPeriod();
+        profile.learnWakeupInterval(20 * 3600);
+
+        profile.updateWatchdogPeriod();
+
+        assertThat(profile.learnedWakeupPeriod, is(equalTo(0)));
+        assertThat(profile.updatePeriod, is(equalTo((int) Math.round(3600 * 1.1) + 60)));
+    }
+
+    @Test
+    void learnWakeupIntervalKeepsSmokeMargin() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSSMOKE);
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.period = 1;
+        sleepMode.unit = "h";
+        profile.settings.sleepMode = sleepMode;
+        profile.updateWatchdogPeriod();
+
+        profile.learnWakeupInterval(5 * 3600);
+
+        assertThat(profile.updatePeriod, is(equalTo((int) Math.round(5 * 3600 * 1.1) + 60 + 1800)));
     }
 
     @Test
@@ -730,7 +762,8 @@ public class ShellyDeviceProfileTest {
     }
 
     @Test
-    void learnWakeupIntervalIsIgnoredForAlwaysOnDevices() {
+    void learnWakeupIntervalIsIgnoredForAlwaysOnDevicesAndTrv() {
         assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM).learnWakeupInterval(3 * 3600), is(false));
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYTRV).learnWakeupInterval(3 * 3600), is(false));
     }
 }

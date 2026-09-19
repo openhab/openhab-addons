@@ -346,10 +346,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     profile.isBlu, profile.alwaysOn, profile.hasBattery, apiConfig.getEnableCoIOT());
         }
 
-        // Skip the optimistic flip while the thing is already OFFLINE: reconnecting to an always-on device
-        // that's still unreachable would otherwise flash it back to ONLINE/CONFIGURATION_PENDING on every poll
-        // cycle before the reconnect attempt below fails again, flip-flopping the status without ever actually
-        // recovering. It'll move to ONLINE once the reconnect genuinely succeeds further down.
+        // An OFFLINE thing stays OFFLINE until the reconnect below succeeds, otherwise an unreachable device would
+        // flip-flop between OFFLINE and ONLINE/CONFIGURATION_PENDING on every poll cycle
         if (!isThingOffline() && (profile.alwaysOn || !profile.isInitialized() && !isThingOnline())) {
             ThingStatusDetail detail = getThingStatusDetail();
             if (detail != ThingStatusDetail.DUTY_CYCLE) {
@@ -399,7 +397,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // New Shelly devices might use a different endpoint for the CoAP listener
             tmpPrf.coiotEndpoint = tmpPrf.device.coiot;
         }
-        tmpPrf.learnedWakeupPeriod = profile.learnedWakeupPeriod;
         tmpPrf.updateWatchdogPeriod();
 
         tmpPrf.status = api.getStatus(); // update thing properties
@@ -644,12 +641,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             skipUpdate++;
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
                 if (!refreshSettings && (scheduledUpdates == 0) && !profile.alwaysOn && profile.isInitialized()) {
-                    // Sleep device: skip the periodic active poll, it's a guaranteed miss while the device is
-                    // asleep. Its own wakeup push (WS NotifyStatus/NotifyFullStatus, or Gen1 CoIoT) already
-                    // restores ONLINE and resets the watchdog independently of this poll loop.
-                    // The poll is the only caller of handleApiException(), which is where a non-sleep device's
-                    // watchdog expiry is detected - so the missed-wakeup check has to run here too, otherwise a
-                    // device with a flat battery / out of range / removed would stay ONLINE with stale values.
+                    // Polling a sleeping device always fails, its wakeup push resets the watchdog instead. A missed
+                    // wakeup (flat battery, out of range) has to be detected here, as there is no failing poll.
                     if (isWatchdogExpired()) {
                         logger.debug("{}: Device missed its wakeup window, going offline", thingName);
                         setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR,
@@ -876,10 +869,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         api.close(); // Gen2: disconnect WS/close http sessions
         watchdog = 0;
         if (profile.alwaysOn) {
-            // Force full re-init (incl. asyncApiRequest re-arm) on next reconnect. Battery/sleeping devices have
-            // no persistent connection to reconnect, so resetting this here only made initializeThing() treat
-            // every watchdog-expiry as an uninitialized thing and flip it to CONFIGURATION_PENDING until the
-            // device's next scheduled wakeup cleared it again.
+            // Force full re-init on next reconnect. Sleeping devices have no connection to re-establish, re-init
+            // would only flip them to CONFIGURATION_PENDING until their next wakeup.
             profile.initialized = false;
         }
         channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
@@ -1759,6 +1750,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             refreshSettings |= forceRefresh;
             if (refreshSettings) {
                 profile = api.getDeviceProfile(thing.getThingTypeUID(), null);
+                profile.updateWatchdogPeriod();
                 if (!isThingOnline()) {
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
                 }
