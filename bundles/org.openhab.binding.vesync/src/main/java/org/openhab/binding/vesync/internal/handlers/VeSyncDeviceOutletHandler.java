@@ -184,9 +184,9 @@ public class VeSyncDeviceOutletHandler extends VeSyncBaseDeviceHandler {
                 OnOffType.from(MODE_ON.equals(outletStatus.outletResult.result.getDeviceStatus())));
         updateState(DEVICE_CHANNEL_CURRENT, new QuantityType<>(outletStatus.outletResult.result.current, Units.AMPERE));
         updateState(DEVICE_CHANNEL_VOLTAGE, new QuantityType<>(outletStatus.outletResult.result.voltage, Units.VOLT));
-        updateState(DEVICE_CHANNEL_ENERGY, new QuantityType<>(outletStatus.outletResult.result.energy, Units.WATT));
-        updateState(DEVICE_CHANNEL_POWER,
-                new QuantityType<>(outletStatus.outletResult.result.power, MetricPrefix.KILO(Units.WATT_HOUR)));
+        updateState(DEVICE_CHANNEL_ENERGY,
+                new QuantityType<>(outletStatus.outletResult.result.energy, MetricPrefix.KILO(Units.WATT_HOUR)));
+        updateState(DEVICE_CHANNEL_POWER, new QuantityType<>(outletStatus.outletResult.result.power, Units.WATT));
         updateState(DEVICE_CHANNEL_HIGHEST_VOLTAGE,
                 new QuantityType<>(outletStatus.outletResult.result.highestVoltage, Units.VOLT));
         updateState(DEVICE_CHANNEL_VOLTAGE_PT_STATUS, OnOffType.from(outletStatus.outletResult.result.voltagePTStatus));
