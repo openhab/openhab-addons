@@ -116,8 +116,8 @@ public class ShellyDeviceProfile {
     public boolean isMotion; // true if thing is a Shelly Motion
     public boolean isDistance; // true if thing is a Shelly BLU Distance
     public boolean isRemote; // true if thing is a Shelly BLU Remote
-    public boolean isRcButton; // true for BLU RC Button 4: a pure event-driven remote with no periodic
-                               // sleep/wakeup-and-report cycle, so the watchdog can't police a "missed wakeup"
+    public boolean isEventDriven; // true for BLU buttons/remotes: they only transmit on button events, so
+                                  // the watchdog can't police a "missed wakeup"
     public boolean isIX; // true for a Shelly IX
     public boolean isTRV; // true for a Shelly TRV
     public boolean isSmoke; // true for Shelly Smoke
@@ -245,10 +245,10 @@ public class ShellyDeviceProfile {
         isSense = THING_TYPE_SHELLYSENSE.equals(thingTypeUID);
         isDistance = THING_TYPE_SHELLYBLUDISTANCE.equals(thingTypeUID);
         isRemote = THING_TYPE_SHELLYBLUREMOTE.equals(thingTypeUID);
-        isRcButton = THING_TYPE_SHELLYBLURCBUTTON4.equals(thingTypeUID);
         isIX = GROUP_IX_THING_TYPES.contains(thingTypeUID);
         isButton = GROUP_BUTTON_THING_TYPES.contains(thingTypeUID);
         isMultiButton = GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID);
+        isEventDriven = isBlu && (isButton || isMultiButton) && !isDistance;
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
         isPresence = GROUP_PRESENCE_THING_TYPES.contains(thingTypeUID);

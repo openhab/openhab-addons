@@ -898,10 +898,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private boolean isWatchdogExpired() {
-        if (profile.isRcButton) {
-            // Pure event-driven remote: it has no periodic sleep/wakeup-and-report cycle to police, and can
-            // stay silent for days between button presses - a missed "wakeup" was never expected, so never
-            // force it offline for one.
+        if (profile.isEventDriven) {
+            // BLU buttons/remotes only transmit on button events (per Shelly BLE docs, periodic beacons are opt-in
+            // and undocumented), so they can stay silent for days - never force them offline for a missed wakeup.
             return false;
         }
         double delta = now() - watchdog;
