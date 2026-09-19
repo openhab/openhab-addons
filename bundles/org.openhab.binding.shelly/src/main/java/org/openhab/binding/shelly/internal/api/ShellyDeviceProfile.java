@@ -116,8 +116,8 @@ public class ShellyDeviceProfile {
     public boolean isMotion; // true if thing is a Shelly Motion
     public boolean isDistance; // true if thing is a Shelly BLU Distance
     public boolean isRemote; // true if thing is a Shelly BLU Remote
-    public boolean isEventDriven; // true for BLU buttons/remotes: they only transmit on button events, so
-                                  // the watchdog can't police a "missed wakeup"
+    public boolean isEventDriven; // true for buttons/remotes: they only report on button events and have no
+                                  // periodic wakeup, so the watchdog can't police a "missed wakeup"
     public boolean isIX; // true for a Shelly IX
     public boolean isTRV; // true for a Shelly TRV
     public boolean isSmoke; // true for Shelly Smoke
@@ -135,6 +135,8 @@ public class ShellyDeviceProfile {
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
 
+    public static final int MAX_WAKEUP_PERIOD_SECONDS = 24 * 3600; // longest configurable sleep period of a device
+    public int learnedWakeupPeriod = 0; // longest wakeup period observed to exceed the configured one, in seconds
     public int updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
 
     public String coiotEndpoint = "";
@@ -248,7 +250,7 @@ public class ShellyDeviceProfile {
         isIX = GROUP_IX_THING_TYPES.contains(thingTypeUID);
         isButton = GROUP_BUTTON_THING_TYPES.contains(thingTypeUID);
         isMultiButton = GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID);
-        isEventDriven = isBlu && (isButton || isMultiButton) && !isDistance;
+        isEventDriven = (isButton || isMultiButton) && !isDistance;
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
         isPresence = GROUP_PRESENCE_THING_TYPES.contains(thingTypeUID);
@@ -328,29 +330,53 @@ public class ShellyDeviceProfile {
     }
 
     /**
-     * (Re-)derive the watchdog timeout ({@link #updatePeriod}) from the current {@link #settings}.sleepMode.
-     * Callers re-invoke this whenever a fresher wakeup period becomes known, so the timeout self-corrects
-     * immediately instead of only taking effect on the next full re-initialization.
+     * (Re-)derive the watchdog timeout ({@link #updatePeriod}). The wakeup period of a sleeping device can't be read
+     * on demand (the device is asleep) and Gen1 doesn't include it in status reports, so it's taken from the last known
+     * settings and otherwise assumed to be the longest period a device can be configured to. It is raised further if a
+     * device is observed to report less often than assumed, see {@link #learnWakeupInterval(double)}.
      */
     public void updateWatchdogPeriod() {
         if (settings.sleepMode != null && !isTRV) {
             // Sensor, usually 12h, H&T in USB mode 10min
-            int wakeupPeriod = "m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
+            applyWakeupPeriod("m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
                     ? settings.sleepMode.period * 60 // minutes
-                    : settings.sleepMode.period * 3600; // hours
-            // Proportional margin absorbs wakeup jitter that grows with the sleep interval, plus a fixed
-            // margin for the report round-trip itself
-            updatePeriod = (int) Math.round(wakeupPeriod * 1.1) + 60;
-            if (isSmoke) {
-                // Smoke sensors wake up far less predictably than other sensors, grant an extra 30min
-                updatePeriod += 1800;
-            }
+                    : settings.sleepMode.period * 3600); // hours
+        } else if (!alwaysOn && !isTRV) {
+            // Sleeping device with unknown wakeup period
+            applyWakeupPeriod(MAX_WAKEUP_PERIOD_SECONDS);
         } else if (settings.coiot != null && settings.coiot.updatePeriod != null) {
             // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
             updatePeriod = 2 * Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, getInteger(settings.coiot.updatePeriod)) + 10;
         } else {
             updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
         }
+    }
+
+    private void applyWakeupPeriod(int wakeupPeriod) {
+        // Proportional margin absorbs wakeup jitter that grows with the sleep interval, plus a fixed
+        // margin for the report round-trip itself
+        updatePeriod = (int) Math.round(Math.max(wakeupPeriod, learnedWakeupPeriod) * 1.1) + 60;
+        if (isSmoke) {
+            // Smoke sensors wake up far less predictably than other sensors, grant an extra 30min
+            updatePeriod += 1800;
+        }
+    }
+
+    /**
+     * A sleeping device reported after a longer silence than the watchdog allows, so its real wakeup period is longer
+     * than assumed (e.g. changed on the device after the thing was initialized). Extend the watchdog accordingly.
+     *
+     * @param silenceSeconds time since the previous report of the device
+     * @return true if the watchdog period was extended
+     */
+    public boolean learnWakeupInterval(double silenceSeconds) {
+        if (alwaysOn || isEventDriven || isTRV || silenceSeconds <= updatePeriod
+                || silenceSeconds > MAX_WAKEUP_PERIOD_SECONDS) {
+            return false;
+        }
+        learnedWakeupPeriod = (int) Math.ceil(silenceSeconds);
+        updateWatchdogPeriod();
+        return true;
     }
 
     public String getControlGroup(int i) {

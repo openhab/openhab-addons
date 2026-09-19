@@ -31,8 +31,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.LoggerFactory;
 
 /**
- * Verifies that the watchdog never forces event-driven BLU buttons/remotes offline for staying silent, while sleeping
- * sensors and periodically broadcasting BLU devices are still flagged as expired.
+ * Verifies that the watchdog never forces event-driven buttons/remotes offline for staying silent, while sleeping
+ * sensors and periodically reporting devices are still flagged as expired.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -41,13 +41,14 @@ import org.slf4j.LoggerFactory;
 class ShellyBaseHandlerWatchdogTest {
 
     static Stream<ThingTypeUID> eventDrivenBluTypes() {
-        return Stream.of(THING_TYPE_SHELLYBLUBUTTON1, THING_TYPE_SHELLYBLUWALLSWITCH4, THING_TYPE_SHELLYBLURCBUTTON4,
-                THING_TYPE_SHELLYBLUREMOTE);
+        return Stream.of(THING_TYPE_SHELLYBUTTON1, THING_TYPE_SHELLYBLUBUTTON1, THING_TYPE_SHELLYBLUWALLSWITCH4,
+                THING_TYPE_SHELLYBLURCBUTTON4, THING_TYPE_SHELLYBLUREMOTE);
     }
 
     static Stream<ThingTypeUID> policedTypes() {
-        return Stream.of(THING_TYPE_SHELLYPLUS1PM, THING_TYPE_SHELLYBLUDISTANCE, THING_TYPE_SHELLYBLUHT,
-                THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION, THING_TYPE_SHELLYBLUWS90);
+        return Stream.of(THING_TYPE_SHELLYPLUS1PM, THING_TYPE_SHELLYHT, THING_TYPE_SHELLYPLUSHT,
+                THING_TYPE_SHELLYBLUDISTANCE, THING_TYPE_SHELLYBLUHT, THING_TYPE_SHELLYBLUDW,
+                THING_TYPE_SHELLYBLUMOTION, THING_TYPE_SHELLYBLUWS90);
     }
 
     @ParameterizedTest
