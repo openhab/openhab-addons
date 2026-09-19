@@ -86,7 +86,6 @@ public class AsuswrtRouter extends BaseBridgeHandler {
     private final HttpClient httpClient;
     private final String uid;
     private final AtomicBoolean isInternalThingUpdate = new AtomicBoolean();
-    private String nvramCommands = "";
     private Map<String, @Nullable String> nvramValues = new HashMap<>();
     private volatile Map<String, ChannelUID> nvramChannelUIDMap = new HashMap<>();
 
@@ -296,7 +295,8 @@ public class AsuswrtRouter extends BaseBridgeHandler {
         String queryCommand = CMD_GET_SYSINFO + CMD_GET_USAGE + CMD_GET_LANINFO + CMD_GET_WANINFO + CMD_GET_CLIENTLIST
                 + CMD_GET_TRAFFIC;
 
-        nvramCommands = nvramChannelUIDMap.keySet().stream().map(variable -> "nvram_get(" + variable + ")")
+        Map<String, ChannelUID> lChannelUIDMap = nvramChannelUIDMap;
+        String nvramCommands = lChannelUIDMap.keySet().stream().map(variable -> "nvram_get(" + variable + ")")
                 .collect(Collectors.joining(";"));
 
         if (!nvramCommands.isEmpty()) {
@@ -340,17 +340,20 @@ public class AsuswrtRouter extends BaseBridgeHandler {
                 || command.contains(CMD_GET_CPUUSAGE)) {
             deviceInfo.setUsageStats(jsonObject);
         }
-        if (command.contains(nvramCommands) && !nvramCommands.isEmpty()) {
-            nvramChannelUIDMap.keySet().forEach(variable -> {
-                JsonElement valueElement = jsonObject.get(variable);
-                if (valueElement != null) {
-                    String value = AsuswrtUtils.unescapeHtmlEntities(valueElement.getAsString());
-                    nvramValues.put(variable, value);
-                } else {
-                    nvramValues.put(variable, null);
-                }
-            });
-        }
+
+        Map<String, ChannelUID> lChannelUIDMap = nvramChannelUIDMap;
+        lChannelUIDMap.keySet().forEach(variable -> {
+            if (!command.contains("nvram_get(" + variable + ")")) {
+                return;
+            }
+            JsonElement valueElement = jsonObject.get(variable);
+            if (valueElement != null) {
+                String value = AsuswrtUtils.unescapeHtmlEntities(valueElement.getAsString());
+                nvramValues.put(variable, value);
+            } else {
+                nvramValues.put(variable, null);
+            }
+        });
         updateChannels(deviceInfo, clientList, nvramValues);
     }
 
