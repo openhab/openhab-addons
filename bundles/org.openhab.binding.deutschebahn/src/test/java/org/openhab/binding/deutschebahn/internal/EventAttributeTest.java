@@ -15,15 +15,19 @@ package org.openhab.binding.deutschebahn.internal;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.EventStatus;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Message;
@@ -43,6 +47,7 @@ import org.openhab.core.types.State;
 public class EventAttributeTest {
 
     private static final String SAMPLE_PATH = "Bielefeld Hbf|Herford|Löhne(Westf)|Bad Oeynhausen|Porta Westfalica|Minden(Westf)|Bückeburg|Stadthagen|Haste|Wunstorf|Hannover Hbf|Lehrte";
+    private static final TimetableTimeConverter TIME_CONVERTER = new TimetableTimeConverter(ZoneId.of("Europe/Berlin"));
 
     private <VALUE_TYPE, STATE_TYPE extends State> void doTestEventAttribute( //
             String channelName, //
@@ -56,22 +61,22 @@ public class EventAttributeTest {
                 .getByChannelName(channelName, eventType);
         assertThat(attribute, is(not(nullValue())));
         assertThat(attribute.getChannelTypeName(), is(expectedChannelName == null ? channelName : expectedChannelName));
-        assertThat(attribute.getValue(new Event()), is(nullValue()));
-        assertThat(attribute.getState(new Event()), is(nullValue()));
+        assertThat(attribute.getValue(new Event(), TIME_CONVERTER), is(nullValue()));
+        assertThat(attribute.getState(new Event(), TIME_CONVERTER), is(nullValue()));
 
         // Create an event and set the attribute value.
         final Event eventWithValueSet = new Event();
         setValue.accept(eventWithValueSet);
 
         // then try get value and state.
-        assertThat(attribute.getValue(eventWithValueSet), is(expectedValue));
-        assertThat(attribute.getState(eventWithValueSet), is(expectedState));
+        assertThat(attribute.getValue(eventWithValueSet, TIME_CONVERTER), is(expectedValue));
+        assertThat(attribute.getState(eventWithValueSet, TIME_CONVERTER), is(expectedState));
 
         // Try set Value in new Event
         final Event copyTarget = new Event();
-        attribute.setValue(copyTarget, expectedValue);
+        attribute.setValue(copyTarget, expectedValue, TIME_CONVERTER);
         if (performSetterTest) {
-            assertThat(attribute.getValue(copyTarget), is(expectedValue));
+            assertThat(attribute.getValue(copyTarget, TIME_CONVERTER), is(expectedValue));
         }
     }
 
@@ -144,28 +149,37 @@ public class EventAttributeTest {
     @Test
     public void testPlannedTime() {
         String time = "2109111825";
-        GregorianCalendar expectedValue = new GregorianCalendar(2021, 8, 11, 18, 25, 0);
+        Date expectedValue = createDate(2021, 9, 11, 18, 25);
         DateTimeType expectedState = new DateTimeType(expectedValue.toInstant());
-        doTestEventAttribute("planned-time", null, (Event e) -> e.setPt(time), expectedValue.getTime(), expectedState,
+        doTestEventAttribute("planned-time", null, (Event e) -> e.setPt(time), expectedValue, expectedState,
                 EventType.DEPARTURE, true);
+    }
+
+    @Test
+    public void testPlannedTimeUsesConfiguredTimeZoneInWinter() {
+        Event event = new Event();
+        event.setPt("2202231430");
+
+        assertThat(EventAttribute.PT.getState(event, TIME_CONVERTER),
+                is(new DateTimeType(Instant.parse("2022-02-23T13:30:00Z"))));
     }
 
     @Test
     public void testChangedTime() {
         String time = "2109111825";
-        GregorianCalendar expectedValue = new GregorianCalendar(2021, 8, 11, 18, 25, 0);
+        Date expectedValue = createDate(2021, 9, 11, 18, 25);
         DateTimeType expectedState = new DateTimeType(expectedValue.toInstant());
-        doTestEventAttribute("changed-time", null, (Event e) -> e.setCt(time), expectedValue.getTime(), expectedState,
+        doTestEventAttribute("changed-time", null, (Event e) -> e.setCt(time), expectedValue, expectedState,
                 EventType.DEPARTURE, true);
     }
 
     @Test
     public void testCancellationTime() {
         String time = "2109111825";
-        GregorianCalendar expectedValue = new GregorianCalendar(2021, 8, 11, 18, 25, 0);
+        Date expectedValue = createDate(2021, 9, 11, 18, 25);
         DateTimeType expectedState = new DateTimeType(expectedValue.toInstant());
-        doTestEventAttribute("cancellation-time", null, (Event e) -> e.setClt(time), expectedValue.getTime(),
-                expectedState, EventType.DEPARTURE, true);
+        doTestEventAttribute("cancellation-time", null, (Event e) -> e.setClt(time), expectedValue, expectedState,
+                EventType.DEPARTURE, true);
     }
 
     @Test
@@ -282,5 +296,10 @@ public class EventAttributeTest {
 
         doTestEventAttribute("messages", null, (Event e) -> e.getM().addAll(messages), messages,
                 new StringType(expectedOneMessage), EventType.DEPARTURE, true);
+    }
+
+    private static Date createDate(int year, int month, int dayOfMonth, int hour, int minute) {
+        return Date.from(LocalDateTime.of(year, month, dayOfMonth, hour, minute).atZone(TIME_CONVERTER.getTimeZone())
+                .toInstant());
     }
 }

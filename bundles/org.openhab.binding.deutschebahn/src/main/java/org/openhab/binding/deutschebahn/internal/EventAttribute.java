@@ -12,18 +12,18 @@
  */
 package org.openhab.binding.deutschebahn.internal;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.EventStatus;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Message;
@@ -41,13 +41,19 @@ import org.openhab.core.types.State;
  * @see <a href="https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables">DB API Marketplace</a>
  *
  * @author Sönke Küper - initial contribution
+ * @author Leo Siepel - Add explicit time-zone handling
  *
  * @param <VALUE_TYPE> type of value in Bean.
  * @param <STATE_TYPE> type of state.
  */
 @NonNullByDefault
-public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
-        extends AbstractDtoAttributeSelector<Event, @Nullable VALUE_TYPE, STATE_TYPE> {
+public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State> {
+
+    @FunctionalInterface
+    private interface TimetableValueSetter<VALUE_TYPE> {
+
+        void accept(Event event, VALUE_TYPE value, TimetableTimeConverter timeConverter);
+    }
 
     /**
      * Planned Path.
@@ -73,15 +79,13 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     /**
      * Planned time.
      */
-    public static final EventAttribute<Date, DateTimeType> PT = new EventAttribute<>("planned-time",
-            getDate(Event::getPt), setDate(Event::setPt), EventAttribute::createDateTimeType,
-            EventAttribute::mapDateToStringList, DateTimeType.class);
+    public static final EventAttribute<Date, DateTimeType> PT = createDateAttribute("planned-time", Event::getPt,
+            Event::setPt);
     /**
      * Changed time.
      */
-    public static final EventAttribute<Date, DateTimeType> CT = new EventAttribute<>("changed-time",
-            getDate(Event::getCt), setDate(Event::setCt), EventAttribute::createDateTimeType,
-            EventAttribute::mapDateToStringList, DateTimeType.class);
+    public static final EventAttribute<Date, DateTimeType> CT = createDateAttribute("changed-time", Event::getCt,
+            Event::setCt);
     /**
      * Planned status.
      */
@@ -102,9 +106,8 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     /**
      * Cancellation time.
      */
-    public static final EventAttribute<Date, DateTimeType> CLT = new EventAttribute<>("cancellation-time",
-            getDate(Event::getClt), setDate(Event::setClt), EventAttribute::createDateTimeType,
-            EventAttribute::mapDateToStringList, DateTimeType.class);
+    public static final EventAttribute<Date, DateTimeType> CLT = createDateAttribute("cancellation-time", Event::getClt,
+            Event::setClt);
     /**
      * Wing.
      */
@@ -209,7 +212,12 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     public static final List<EventAttribute<?, ?>> ALL_ATTRIBUTES = Arrays.asList(PPTH, CPTH, PP, CP, PT, CT, PS, CS,
             HI, CLT, WINGS, TRA, PDE, CDE, DC, L, MESSAGES);
 
-    private static final SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("yyMMddHHmm");
+    private final BiFunction<Event, TimetableTimeConverter, @Nullable VALUE_TYPE> getter;
+    private final TimetableValueSetter<VALUE_TYPE> setter;
+    private final BiFunction<VALUE_TYPE, TimetableTimeConverter, @Nullable STATE_TYPE> getState;
+    private final String channelTypeName;
+    private final Class<STATE_TYPE> stateType;
+    private final BiFunction<VALUE_TYPE, TimetableTimeConverter, List<String>> valueToList;
 
     /**
      * Creates a new {@link EventAttribute}.
@@ -224,7 +232,75 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
             final Function<VALUE_TYPE, @Nullable STATE_TYPE> getState, //
             final Function<VALUE_TYPE, List<String>> valueToList, //
             final Class<STATE_TYPE> stateType) {
-        super(channelTypeName, getter, setter, getState, valueToList, stateType);
+        this(channelTypeName, (event, timeConverter) -> getter.apply(event),
+                (event, value, timeConverter) -> setter.accept(event, value),
+                (value, timeConverter) -> getState.apply(value), (value, timeConverter) -> valueToList.apply(value),
+                stateType);
+    }
+
+    private EventAttribute(final String channelTypeName,
+            final BiFunction<Event, TimetableTimeConverter, @Nullable VALUE_TYPE> getter,
+            final TimetableValueSetter<VALUE_TYPE> setter,
+            final BiFunction<VALUE_TYPE, TimetableTimeConverter, @Nullable STATE_TYPE> getState,
+            final BiFunction<VALUE_TYPE, TimetableTimeConverter, List<String>> valueToList,
+            final Class<STATE_TYPE> stateType) {
+        this.channelTypeName = channelTypeName;
+        this.getter = getter;
+        this.setter = setter;
+        this.getState = getState;
+        this.valueToList = valueToList;
+        this.stateType = stateType;
+    }
+
+    private static EventAttribute<Date, DateTimeType> createDateAttribute(final String channelTypeName,
+            final Function<Event, @Nullable String> getter, final BiConsumer<Event, String> setter) {
+        return new EventAttribute<>(channelTypeName, getDate(getter), setDate(setter),
+                (value, timeConverter) -> createDateTimeType(value),
+                (value, timeConverter) -> mapDateToStringList(value, timeConverter), DateTimeType.class);
+    }
+
+    /**
+     * Returns the type of the state value.
+     */
+    public Class<STATE_TYPE> getStateType() {
+        return stateType;
+    }
+
+    /**
+     * Returns the name of the corresponding channel type.
+     */
+    public String getChannelTypeName() {
+        return channelTypeName;
+    }
+
+    /**
+     * Returns the state for the selected attribute, using the supplied time zone for date values.
+     */
+    public @Nullable STATE_TYPE getState(final Event event, final TimetableTimeConverter timeConverter) {
+        final @Nullable VALUE_TYPE value = getValue(event, timeConverter);
+        return value == null ? null : getState.apply(value, timeConverter);
+    }
+
+    /**
+     * Returns the selected attribute value, using the supplied time zone for date values.
+     */
+    public @Nullable VALUE_TYPE getValue(final Event event, final TimetableTimeConverter timeConverter) {
+        return getter.apply(event, timeConverter);
+    }
+
+    /**
+     * Returns the selected attribute as strings, using the supplied time zone for date values.
+     */
+    @SuppressWarnings("null")
+    public List<String> getStringValues(final Event event, final TimetableTimeConverter timeConverter) {
+        return valueToList.apply(getValue(event, timeConverter), timeConverter);
+    }
+
+    /**
+     * Sets the selected attribute, using the supplied time zone for date values.
+     */
+    public void setValue(final Event event, final VALUE_TYPE value, final TimetableTimeConverter timeConverter) {
+        setter.accept(event, value, timeConverter);
     }
 
     private static StringType fromEventStatus(final EventStatus value) {
@@ -258,36 +334,18 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
         return OnOffType.from(value != null && value == 1);
     }
 
-    private static Function<Event, @Nullable Date> getDate(final Function<Event, @Nullable String> getValue) {
-        return (final Event event) -> parseDate(getValue.apply(event));
+    private static BiFunction<Event, TimetableTimeConverter, @Nullable Date> getDate(
+            final Function<Event, @Nullable String> getValue) {
+        return (event, timeConverter) -> timeConverter.parseEventTime(getValue.apply(event));
     }
 
-    private static BiConsumer<Event, Date> setDate(final BiConsumer<Event, String> setter) {
-        return (final Event event, final Date value) -> {
-            synchronized (DATETIME_FORMAT) {
-                String formattedDate = DATETIME_FORMAT.format(value);
-                setter.accept(event, formattedDate);
-            }
-        };
+    private static TimetableValueSetter<Date> setDate(final BiConsumer<Event, String> setter) {
+        return (event, value, timeConverter) -> setter.accept(event, timeConverter.formatEventTime(value));
     }
 
     private static void setMessages(Event event, List<Message> messages) {
         event.getM().clear();
         event.getM().addAll(messages);
-    }
-
-    @Nullable
-    private static synchronized Date parseDate(@Nullable final String dateValue) {
-        if ((dateValue == null) || dateValue.isEmpty()) {
-            return null;
-        }
-        try {
-            synchronized (DATETIME_FORMAT) {
-                return DATETIME_FORMAT.parse(dateValue);
-            }
-        } catch (final ParseException e) {
-            return null;
-        }
     }
 
     @Nullable
@@ -360,13 +418,11 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
         }
     }
 
-    private static List<String> mapDateToStringList(@Nullable Date value) {
+    private static List<String> mapDateToStringList(@Nullable Date value, TimetableTimeConverter timeConverter) {
         if (value == null) {
             return List.of();
         } else {
-            synchronized (DATETIME_FORMAT) {
-                return List.of(DATETIME_FORMAT.format(value));
-            }
+            return List.of(timeConverter.formatEventTime(value));
         }
     }
 
