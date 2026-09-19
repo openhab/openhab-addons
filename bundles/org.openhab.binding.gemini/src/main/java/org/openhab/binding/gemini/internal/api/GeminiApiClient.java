@@ -46,6 +46,8 @@ import org.openhab.binding.gemini.internal.api.dto.request.GeminiFunctionRespons
 import org.openhab.binding.gemini.internal.api.dto.request.GeminiGenerationConfig;
 import org.openhab.binding.gemini.internal.api.dto.request.GeminiRequest;
 import org.openhab.binding.gemini.internal.api.dto.request.GeminiSchema;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingConfig;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingLevel;
 import org.openhab.binding.gemini.internal.api.dto.request.GeminiTool;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiModel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiModelsResponse;
@@ -95,13 +97,14 @@ public class GeminiApiClient {
      * @param temperature the temperature config parameter
      * @param topP the topP config parameter
      * @param maxOutputTokens the maxOutputTokens config parameter
+     * @param thinkingLevel the thinking level config parameter
      * @param timeoutSeconds request timeout in seconds
      * @return the deserialized GeminiResponse
      * @throws GeminiApiException if a communication error, timeout, or parsing error occurs
      */
     public GeminiResponse sendPrompt(String model, String prompt, @Nullable String systemMessage,
             @Nullable Double temperature, @Nullable Double topP, @Nullable Integer maxOutputTokens,
-            @Nullable Integer timeoutSeconds) throws GeminiApiException {
+            @Nullable GeminiThinkingLevel thinkingLevel, @Nullable Integer timeoutSeconds) throws GeminiApiException {
         GeminiContent systemInstruction = createSystemInstruction(systemMessage);
 
         // Contents
@@ -109,7 +112,8 @@ public class GeminiApiClient {
         GeminiContent userContent = new GeminiContent(ROLE_USER, List.of(userPart));
 
         // Config
-        GeminiGenerationConfig genConfig = new GeminiGenerationConfig(maxOutputTokens, temperature, topP, null);
+        GeminiGenerationConfig genConfig = new GeminiGenerationConfig(maxOutputTokens, temperature, topP,
+                createThinkingConfig(thinkingLevel));
 
         GeminiRequest request = new GeminiRequest(List.of(userContent), systemInstruction, genConfig, null);
 
@@ -126,13 +130,15 @@ public class GeminiApiClient {
      * @param temperature the temperature config parameter
      * @param topP the topP config parameter
      * @param maxOutputTokens the maxOutputTokens config parameter
+     * @param thinkingLevel the thinking level config parameter
      * @param timeoutSeconds request timeout in seconds
      * @return the deserialized GeminiResponse
      * @throws GeminiApiException if a communication error, timeout, or parsing error occurs
      */
     public GeminiResponse sendPrompt(String model, List<Conversation.Message> history, Collection<LLMTool> tools,
             @Nullable String systemMessage, @Nullable Double temperature, @Nullable Double topP,
-            @Nullable Integer maxOutputTokens, @Nullable Integer timeoutSeconds) throws GeminiApiException {
+            @Nullable Integer maxOutputTokens, @Nullable GeminiThinkingLevel thinkingLevel,
+            @Nullable Integer timeoutSeconds) throws GeminiApiException {
         GeminiContent systemInstruction = createSystemInstruction(systemMessage);
 
         List<GeminiContent> contents = new ArrayList<>();
@@ -247,11 +253,19 @@ public class GeminiApiClient {
             geminiTools = List.of(new GeminiTool(functions));
         }
 
-        GeminiGenerationConfig genConfig = new GeminiGenerationConfig(maxOutputTokens, temperature, topP, null);
+        GeminiGenerationConfig genConfig = new GeminiGenerationConfig(maxOutputTokens, temperature, topP,
+                createThinkingConfig(thinkingLevel));
 
         GeminiRequest request = new GeminiRequest(contents, systemInstruction, genConfig, geminiTools);
 
         return executeGenerateContentRequest(model, request, timeoutSeconds);
+    }
+
+    private @Nullable GeminiThinkingConfig createThinkingConfig(@Nullable GeminiThinkingLevel thinkingLevel) {
+        if (thinkingLevel == null) {
+            return null;
+        }
+        return new GeminiThinkingConfig(null, null, thinkingLevel);
     }
 
     /**

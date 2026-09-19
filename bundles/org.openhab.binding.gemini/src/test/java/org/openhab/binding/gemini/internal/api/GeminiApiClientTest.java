@@ -110,7 +110,7 @@ public class GeminiApiClientTest {
                 new Conversation.Message(4, ConversationRole.TOOL_CALL, call2.toJson()),
                 new Conversation.Message(5, ConversationRole.TOOL_RETURN, "Lamp2 is OFF"));
 
-        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null);
+        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null, null);
 
         JsonNode contents = captureRequestBody().get("contents");
         // one user turn, one model turn with both calls, one user turn with both responses - a split
@@ -169,7 +169,7 @@ public class GeminiApiClientTest {
                 new Conversation.Message(2, ConversationRole.TOOL_CALL, call.toJson()),
                 new Conversation.Message(3, ConversationRole.TOOL_RETURN, "Lamp1 is ON"));
 
-        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null);
+        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null, null);
 
         JsonNode contents = captureRequestBody().get("contents");
         assertEquals(3, contents.size());
@@ -207,7 +207,7 @@ public class GeminiApiClientTest {
                 new Conversation.Message(4, ConversationRole.TOOL_CALL, call2.toJson()),
                 new Conversation.Message(5, ConversationRole.TOOL_RETURN, "Lamp2 is OFF"));
 
-        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null);
+        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null, null);
 
         JsonNode contents = captureRequestBody().get("contents");
         assertEquals(5, contents.size());
