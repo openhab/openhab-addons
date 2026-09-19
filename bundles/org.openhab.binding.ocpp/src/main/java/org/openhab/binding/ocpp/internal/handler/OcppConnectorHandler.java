@@ -806,8 +806,6 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     public void onTransactionStopped(StopTransactionRequest request) {
-        this.transactionId = null;
-        updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
         Integer meterStop = request.getMeterStop();
         if (meterStop != null) {
             updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));
@@ -817,6 +815,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
             }
         }
         meterStart = null;
+        this.transactionId = null;
+        updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
         ZonedDateTime timestamp = request.getTimestamp();
         if (timestamp != null) {
             updateState(CHANNEL_TIMESTAMP_STOP, new DateTimeType(timestamp));

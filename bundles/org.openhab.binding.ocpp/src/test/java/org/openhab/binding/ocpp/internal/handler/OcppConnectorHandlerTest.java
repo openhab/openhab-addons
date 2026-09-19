@@ -136,6 +136,22 @@ class OcppConnectorHandlerTest {
     }
 
     @Test
+    void theSessionTotalSettlesBeforeTheTransactionIsCleared() {
+        handler.onTransactionStarted(
+                new eu.chargetime.ocpp.model.core.StartTransactionRequest(1, "tag", 100, java.time.ZonedDateTime.now()),
+                7);
+        handler.onTransactionStopped(
+                new eu.chargetime.ocpp.model.core.StopTransactionRequest(1600, java.time.ZonedDateTime.now(), 7));
+
+        org.mockito.InOrder inOrder = org.mockito.Mockito.inOrder(callback);
+        inOrder.verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_SESSION_ENERGY)),
+                eq(new org.openhab.core.library.types.QuantityType<>(1500,
+                        org.openhab.core.library.unit.Units.WATT_HOUR)));
+        inOrder.verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_TRANSACTION_ID)),
+                eq(UnDefType.UNDEF));
+    }
+
+    @Test
     void aRemoteStartTheChargerDoesNotAnswerIsRetried() {
         ThingUID chargePointUID = new ThingUID(THING_TYPE_CHARGEPOINT, "server", "charger");
         when(thing.getBridgeUID()).thenReturn(chargePointUID);
