@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -82,13 +85,17 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     private static final String SPA_API_URL_V1 = "/api/v1/spa/";
     public static final long CCS2_FORCE_REFRESH_DELAY_SECONDS = 25;
 
+    private final ScheduledExecutorService scheduler;
     private final BrandConfig brandConfig;
     private final String refreshToken;
+    private final Map<String, ScheduledFuture<?>> ccs2RefreshTasks = new ConcurrentHashMap<>();
     private @Nullable UUID deviceId;
 
-    public BluelinkApiEU(final HttpClient httpClient, final Brand brand, final Map<String, String> properties,
-            final @Nullable String baseUrl, final TimeZoneProvider timeZoneProvider, final String refreshToken) {
+    public BluelinkApiEU(final HttpClient httpClient, final ScheduledExecutorService scheduler, final Brand brand,
+            final Map<String, String> properties, final @Nullable String baseUrl,
+            final TimeZoneProvider timeZoneProvider, final String refreshToken) {
         super(httpClient, timeZoneProvider, "", refreshToken, null);
+        this.scheduler = scheduler;
         this.refreshToken = refreshToken;
         final BrandConfig baseBrandConfig = BrandConfig.forBrand(brand);
         if (baseUrl == null) {
@@ -101,6 +108,24 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         if (storedDeviceId != null && !storedDeviceId.isBlank()) {
             this.deviceId = UUID.fromString(storedDeviceId);
         }
+    }
+
+    private void cancelCcs2RefreshTask(final String vehicleId) {
+        final ScheduledFuture<?> task = ccs2RefreshTasks.remove(vehicleId);
+        if (task != null) {
+            task.cancel(true);
+        }
+    }
+
+    private void cancelAllCcs2RefreshTasks() {
+        ccs2RefreshTasks.values().forEach(task -> task.cancel(true));
+        ccs2RefreshTasks.clear();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        cancelAllCcs2RefreshTasks();
     }
 
     @Override
@@ -216,13 +241,17 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
                 addCcs2Headers(wakeRequest);
                 sendRequest(wakeRequest, "force refresh CCU/CCS2 vehicle status");
 
-                httpClient.getScheduler().schedule(() -> {
+                cancelCcs2RefreshTask(vehicleId);
+                final ScheduledFuture<?> future = scheduler.schedule(() -> {
                     try {
                         getVehicleStatus(vehicle, false, cb);
                     } catch (final BluelinkApiException e) {
                         logger.debug("Failed to fetch CCU/CCS2 status after forced refresh: {}", e.getMessage());
+                    } finally {
+                        ccs2RefreshTasks.remove(vehicleId);
                     }
                 }, CCS2_FORCE_REFRESH_DELAY_SECONDS, TimeUnit.SECONDS);
+                ccs2RefreshTasks.put(vehicleId, future);
                 return true;
             } else {
                 final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/status";

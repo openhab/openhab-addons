@@ -71,6 +71,15 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
     }
 
     /**
+     * Dispose of any resources held by the API.
+     *
+     * @implNote Subclasses should overwrite this method if they need to perform any cleanup.
+     */
+    public void dispose() {
+        // Nothing to do by default
+    }
+
+    /**
      * Authenticate with the API.
      *
      * @return true if login was successful
