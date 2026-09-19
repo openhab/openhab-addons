@@ -190,14 +190,22 @@ public class AutomowerBindingConstants {
     public static final String GROUP_WORKAREA = "work-area#";
 
     public static final String CHANNEL_WORKAREA_NAME = GROUP_WORKAREA + "name";
+    public static final String CHANNEL_WORKAREA_TYPE = GROUP_WORKAREA + "type";
     public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = GROUP_WORKAREA + "cutting-height";
+    public static final String CHANNEL_WORKAREA_USE_GLOBAL_CUTTING_HEIGHT = GROUP_WORKAREA
+            + "use-global-cutting-height";
     public static final String CHANNEL_WORKAREA_ENABLED = GROUP_WORKAREA + "enabled";
+    public static final String CHANNEL_WORKAREA_SCHEDULABLE = GROUP_WORKAREA + "schedulable";
     public static final String CHANNEL_WORKAREA_PROGRESS = GROUP_WORKAREA + "progress";
     public static final String CHANNEL_WORKAREA_LAST_TIME_COMPLETED = GROUP_WORKAREA + "last-time-completed";
+    public static final String CHANNEL_WORKAREA_LAST_TIME_ABANDONED = GROUP_WORKAREA + "last-time-abandoned";
+    public static final String CHANNEL_WORKAREA_ORIENTATION = GROUP_WORKAREA + "orientation";
+    public static final String CHANNEL_WORKAREA_ORIENTATION_SHIFT = GROUP_WORKAREA + "orientation-shift";
 
-    public static final List<String> WORKAREA_STATIC_CHANNEL_IDS = List.of(CHANNEL_WORKAREA_NAME,
-            CHANNEL_WORKAREA_CUTTING_HEIGHT, CHANNEL_WORKAREA_ENABLED, CHANNEL_WORKAREA_PROGRESS,
-            CHANNEL_WORKAREA_LAST_TIME_COMPLETED);
+    public static final List<String> WORKAREA_STATIC_CHANNEL_IDS = List.of(CHANNEL_WORKAREA_NAME, CHANNEL_WORKAREA_TYPE,
+            CHANNEL_WORKAREA_CUTTING_HEIGHT, CHANNEL_WORKAREA_USE_GLOBAL_CUTTING_HEIGHT, CHANNEL_WORKAREA_ENABLED,
+            CHANNEL_WORKAREA_SCHEDULABLE, CHANNEL_WORKAREA_PROGRESS, CHANNEL_WORKAREA_LAST_TIME_COMPLETED,
+            CHANNEL_WORKAREA_LAST_TIME_ABANDONED, CHANNEL_WORKAREA_ORIENTATION, CHANNEL_WORKAREA_ORIENTATION_SHIFT);
 
     // Error codes and messages
     public static final Map<Integer, String> ERROR = new HashMap<>() {

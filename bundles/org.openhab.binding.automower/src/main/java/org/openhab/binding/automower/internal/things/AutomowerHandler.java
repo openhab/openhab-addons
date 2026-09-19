@@ -393,12 +393,32 @@ public class AutomowerHandler extends BaseThingHandler {
      */
     public void sendAutomowerCommand(AutomowerCommand command, @Nullable Long commandWorkAreaId,
             @Nullable Long commandDurationMinutes) {
-        logger.debug("Sending command '{} {} {}'", command.getCommand(), commandWorkAreaId, commandDurationMinutes);
+        sendAutomowerCommand(command, commandWorkAreaId, commandDurationMinutes, null);
+    }
+
+    /**
+     * Sends a command to the automower with the given duration and external reason
+     *
+     * @param command The command that should be sent. Valid values are: "Start", "StartInWorkArea", "ResumeSchedule",
+     *            "Pause", "Park", "ParkUntilNextSchedule", "ParkUntilFurtherNotice"
+     * @param commandWorkAreaId The work area id to be used for the command. This is only evaluated for
+     *            "StartInWorkArea" command
+     * @param commandDurationMinutes The duration of the command in minutes. This is only evaluated for "Start",
+     *            "StartInWorkArea" and "Park" commands
+     * @param commandExternalReason The external reason to be used for the command. This is only evaluated for the
+     *            "Park" command with a duration and must be in the range 200000-299999. Maximum duration is 1500
+     *            minutes if set
+     */
+    public void sendAutomowerCommand(AutomowerCommand command, @Nullable Long commandWorkAreaId,
+            @Nullable Long commandDurationMinutes, @Nullable Long commandExternalReason) {
+        logger.debug("Sending command '{} {} {} {}'", command.getCommand(), commandWorkAreaId, commandDurationMinutes,
+                commandExternalReason);
         String id = automowerId.get();
         try {
             AutomowerBridge automowerBridge = getAutomowerBridge();
             if (automowerBridge != null) {
-                automowerBridge.sendAutomowerCommand(id, command, commandWorkAreaId, commandDurationMinutes);
+                automowerBridge.sendAutomowerCommand(id, command, commandWorkAreaId, commandDurationMinutes,
+                        commandExternalReason);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
             }
@@ -620,7 +640,7 @@ public class AutomowerHandler extends BaseThingHandler {
             WorkArea workArea = mower.getAttributes().getWorkAreas().stream()
                     .filter(area -> String.valueOf(area.getWorkAreaId()).equals(areaId)).findFirst().orElse(null);
             if (workArea != null) {
-                sendAutomowerWorkArea(workArea.getWorkAreaId(), enable, workArea.getCuttingHeight());
+                sendAutomowerWorkArea(workArea.getWorkAreaId(), enable, null, null, null, null);
             }
         }
     }
@@ -638,7 +658,59 @@ public class AutomowerHandler extends BaseThingHandler {
             WorkArea workArea = mower.getAttributes().getWorkAreas().stream()
                     .filter(area -> String.valueOf(area.getWorkAreaId()).equals(areaId)).findFirst().orElse(null);
             if (workArea != null) {
-                sendAutomowerWorkArea(workArea.getWorkAreaId(), workArea.isEnabled(), cuttingHeight);
+                sendAutomowerWorkArea(workArea.getWorkAreaId(), null, cuttingHeight, null, null, null);
+            }
+        }
+    }
+
+    /**
+     * Sends WorkArea Name Setting to the automower
+     *
+     * @param areaId Id of WorkArea
+     * @param name Name of the WorkArea
+     */
+    public void sendAutomowerWorkAreaName(String areaId, String name) {
+        Mower mower = this.mowerState;
+        if (mower != null && isValidResult(mower)) {
+            WorkArea workArea = mower.getAttributes().getWorkAreas().stream()
+                    .filter(area -> String.valueOf(area.getWorkAreaId()).equals(areaId)).findFirst().orElse(null);
+            if (workArea != null) {
+                sendAutomowerWorkArea(workArea.getWorkAreaId(), null, null, name, null, null);
+            }
+        }
+    }
+
+    /**
+     * Sends WorkArea pattern Orientation Setting to the automower. Only applicable for pattern based work areas.
+     *
+     * @param areaId Id of WorkArea
+     * @param orientation Orientation of the mowing pattern in degrees
+     */
+    public void sendAutomowerWorkAreaOrientation(String areaId, int orientation) {
+        Mower mower = this.mowerState;
+        if (mower != null && isValidResult(mower)) {
+            WorkArea workArea = mower.getAttributes().getWorkAreas().stream()
+                    .filter(area -> String.valueOf(area.getWorkAreaId()).equals(areaId)).findFirst().orElse(null);
+            if (workArea != null) {
+                sendAutomowerWorkArea(workArea.getWorkAreaId(), null, null, null, orientation, null);
+            }
+        }
+    }
+
+    /**
+     * Sends WorkArea pattern Orientation Shift Setting to the automower. Only applicable for pattern based work
+     * areas.
+     *
+     * @param areaId Id of WorkArea
+     * @param orientationShift Orientation shift of the mowing pattern in degrees
+     */
+    public void sendAutomowerWorkAreaOrientationShift(String areaId, int orientationShift) {
+        Mower mower = this.mowerState;
+        if (mower != null && isValidResult(mower)) {
+            WorkArea workArea = mower.getAttributes().getWorkAreas().stream()
+                    .filter(area -> String.valueOf(area.getWorkAreaId()).equals(areaId)).findFirst().orElse(null);
+            if (workArea != null) {
+                sendAutomowerWorkArea(workArea.getWorkAreaId(), null, null, null, null, orientationShift);
             }
         }
     }
@@ -651,16 +723,51 @@ public class AutomowerHandler extends BaseThingHandler {
      * @param cuttingHeight CuttingHeight of the WorkArea
      */
     public void sendAutomowerWorkArea(long workAreaId, boolean enable, byte cuttingHeight) {
-        logger.debug("Sending WorkArea: workAreaId {}, enable {}, cuttingHeight {}", workAreaId, enable, cuttingHeight);
+        sendAutomowerWorkArea(workAreaId, enable, cuttingHeight, null, null, null);
+    }
+
+    /**
+     * Sends WorkArea Settings to the automower. Only the non-null parameters are updated, the others are left
+     * unchanged.
+     *
+     * @param workAreaId Id of WorkArea
+     * @param enable Work area enable or disabled, or null to leave unchanged
+     * @param cuttingHeight CuttingHeight of the WorkArea, or null to leave unchanged
+     * @param name Name of the WorkArea, or null to leave unchanged
+     * @param orientation Orientation of the mowing pattern in degrees, or null to leave unchanged
+     * @param orientationShift Orientation shift of the mowing pattern in degrees, or null to leave unchanged
+     */
+    public void sendAutomowerWorkArea(long workAreaId, @Nullable Boolean enable, @Nullable Byte cuttingHeight,
+            @Nullable String name, @Nullable Integer orientation, @Nullable Integer orientationShift) {
+        logger.debug(
+                "Sending WorkArea: workAreaId {}, enable {}, cuttingHeight {}, name {}, orientation {}, "
+                        + "orientationShift {}",
+                workAreaId, enable, cuttingHeight, name, orientation, orientationShift);
         Mower mower = this.mowerState;
         if (mower != null && isValidResult(mower)) {
             MowerWorkAreaAttributes workAreaAttributes = new MowerWorkAreaAttributes();
             workAreaAttributes.setEnable(enable);
             workAreaAttributes.setCuttingHeight(cuttingHeight);
+            workAreaAttributes.setName(name);
+            workAreaAttributes.setOrientation(orientation);
+            workAreaAttributes.setOrientationShift(orientationShift);
             mower.getAttributes().getWorkAreas().stream().filter(workArea -> workArea.getWorkAreaId() == workAreaId)
                     .findFirst().ifPresent(workArea -> {
-                        workArea.setEnabled(enable);
-                        workArea.setCuttingHeight(cuttingHeight);
+                        if (enable != null) {
+                            workArea.setEnabled(enable);
+                        }
+                        if (cuttingHeight != null) {
+                            workArea.setCuttingHeight(cuttingHeight);
+                        }
+                        if (name != null) {
+                            workArea.setName(name);
+                        }
+                        if (orientation != null) {
+                            workArea.setOrientation(orientation);
+                        }
+                        if (orientationShift != null) {
+                            workArea.setOrientationShift(orientationShift);
+                        }
                     });
 
             String id = automowerId.get();

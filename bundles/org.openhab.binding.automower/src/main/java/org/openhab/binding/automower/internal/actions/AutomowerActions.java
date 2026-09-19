@@ -136,6 +136,24 @@ public class AutomowerActions implements ThingActions {
         ((AutomowerActions) actions).park(durationMin);
     }
 
+    @RuleAction(label = "@text/action-park-external-reason-label", description = "@text/action-park-external-reason-desc")
+    public void parkWithExternalReason(
+            @ActionInput(name = "duration-min", label = "@text/action-input-duration-min-label", description = "@text/action-input-duration-min-desc") long durationMin,
+            @ActionInput(name = "external-reason", label = "@text/action-input-external-reason-label", description = "@text/action-input-external-reason-desc") long externalReason) {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else if (externalReason < 200000 || externalReason > 299999) {
+            logger.warn("Invalid externalReason {}: must be in the range 200000-299999", externalReason);
+        } else {
+            automowerHandler.sendAutomowerCommand(AutomowerCommand.PARK, null, durationMin, externalReason);
+        }
+    }
+
+    public static void parkWithExternalReason(ThingActions actions, long durationMin, long externalReason) {
+        ((AutomowerActions) actions).parkWithExternalReason(durationMin, externalReason);
+    }
+
     @RuleAction(label = "@text/action-resumeschedule-label", description = "@text/action-resumeschedule-desc")
     public void resumeSchedule() {
         AutomowerHandler automowerHandler = handler;
@@ -217,6 +235,42 @@ public class AutomowerActions implements ThingActions {
 
     public static void setWorkArea(ThingActions actions, long workAreaId, boolean enable, byte cuttingHeight) {
         ((AutomowerActions) actions).setWorkArea(workAreaId, enable, cuttingHeight);
+    }
+
+    @RuleAction(label = "@text/action-set-work-area-name-label", description = "@text/action-set-work-area-name-desc")
+    public void setWorkAreaName(
+            @ActionInput(name = "work-area-id", label = "@text/action-input-work-area-id-label", description = "@text/action-input-work-area-id-desc") long workAreaId,
+            @ActionInput(name = "name", label = "@text/action-input-work-area-name-label", description = "@text/action-input-work-area-name-desc") String name) {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            automowerHandler.sendAutomowerWorkAreaName(String.valueOf(workAreaId), name);
+        }
+    }
+
+    public static void setWorkAreaName(ThingActions actions, long workAreaId, String name) {
+        ((AutomowerActions) actions).setWorkAreaName(workAreaId, name);
+    }
+
+    @RuleAction(label = "@text/action-set-work-area-orientation-label", description = "@text/action-set-work-area-orientation-desc")
+    public void setWorkAreaOrientation(
+            @ActionInput(name = "work-area-id", label = "@text/action-input-work-area-id-label", description = "@text/action-input-work-area-id-desc") long workAreaId,
+            @ActionInput(name = "orientation", label = "@text/action-input-work-area-orientation-label", description = "@text/action-input-work-area-orientation-desc") int orientation,
+            @ActionInput(name = "orientation-shift", label = "@text/action-input-work-area-orientation-shift-label", description = "@text/action-input-work-area-orientation-shift-desc") int orientationShift) {
+        AutomowerHandler automowerHandler = handler;
+        if (automowerHandler == null) {
+            logger.warn("Automower Action service ThingHandler is null!");
+        } else {
+            String areaId = String.valueOf(workAreaId);
+            automowerHandler.sendAutomowerWorkAreaOrientation(areaId, orientation);
+            automowerHandler.sendAutomowerWorkAreaOrientationShift(areaId, orientationShift);
+        }
+    }
+
+    public static void setWorkAreaOrientation(ThingActions actions, long workAreaId, int orientation,
+            int orientationShift) {
+        ((AutomowerActions) actions).setWorkAreaOrientation(workAreaId, orientation, orientationShift);
     }
 
     @RuleAction(label = "@text/action-set-stayoutzone-label", description = "@text/action-set-stayoutzone-desc")

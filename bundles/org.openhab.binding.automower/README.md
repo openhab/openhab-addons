@@ -145,11 +145,17 @@ These channels hold the different Work Area configurations.
 
 | channel                                                 | type                  | access mode | description                                         | advanced |
 |---------------------------------------------------------|-----------------------|-------------|-----------------------------------------------------|----------|
-| workarea#name                                           | String                | R           | Name of the Work Area                               | false    |
+| workarea#name                                           | String                | R/W         | Name of the Work Area                               | false    |
+| workarea#type                                           | String                | R           | The type of the Work Area, e.g. RANDOM              | true     |
 | workarea#cutting-height                                 | Number:Dimensionless  | R/W         | Cutting height of the Work Area in percent. 0-100   | false    |
+| workarea#use-global-cutting-height                      | Switch                | R           | If the Work Area uses the global cutting height instead of its own | true |
 | workarea#enabled                                        | Switch                | R/W         | If the Work Area is enabled or disabled             | false    |
+| workarea#schedulable                                    | Switch                | R           | If the Work Area can be scheduled                   | true     |
 | workarea#progress<sup id="a2">[2](#f2)</sup>            | Number                | R           | The progress on a Work Area                         | true     |
 | workarea#last-time-completed<sup id="a2">[2](#f2)</sup> | DateTime              | R           | Timestamp when the Work Area was last completed     | true     |
+| workarea#last-time-abandoned                            | DateTime              | R           | Timestamp when the Work Area was last abandoned     | true     |
+| workarea#orientation                                    | Number:Angle          | R/W         | Orientation of the mowing pattern in degrees. Pattern based Work Areas only | true |
+| workarea#orientation-shift                              | Number:Angle          | R/W         | Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only | true |
 
 #### Calendar Tasks Channels
 
@@ -214,6 +220,7 @@ The following actions are available for `automower` things:
 | startInWorkArea            | `workAreaId (long)`<br/>`duration (long)` | Start the mower in the given Work Area for the given duration (minutes), overriding the schedule. If duration is skipped the mower will continue forever |
 | pause                      | -                 | Pause the mower at the current location until manual resume                                            |
 | park                       | `duration (long)` | Park the mower for the given duration (minutes), overriding the schedule                               |
+| parkWithExternalReason     | `duration (long)`<br/>`externalReason (long)` | Park the mower for the given duration (minutes) with an external reason, overriding the schedule. `externalReason` must be in the range 200000-299999, maximum duration is 1500 minutes |
 | parkUntilNextSchedule      | -                 | Park the mower, fully charge it and start afterwards according to the schedule                         |
 | parkUntilFurtherNotice     | -                 | Park the mower until it is started again by the start action/command or the schedule gets resumed      |
 | resumeSchedule             | -                 | Resume the schedule of the mower                                                                       |
@@ -221,6 +228,8 @@ The following actions are available for `automower` things:
 | resetCuttingBladeUsageTime | -                 | Reset the cutting blade usage time                                                                     |
 | setSettings                | `byte cuttingHeight`<br/>`String headlightMode`                       | Update mower settings                              |
 | setWorkArea                | `long workAreaId`<br/>`boolean enable`<br/>`byte cuttingHeight`       | Update Work Area settings                          |
+| setWorkAreaName            | `long workAreaId`<br/>`String name`                                   | Update the name of a Work Area                     |
+| setWorkAreaOrientation     | `long workAreaId`<br/>`int orientation`<br/>`int orientationShift`    | Update the mowing pattern orientation of a Work Area. Pattern based Work Areas only |
 | setStayOutZone             | `String zoneId`<br/>`boolean enable`                                  | Enable or disable stay-out zone                    |
 | setCalendarTask            | `Long workAreaId` (optional, set to `null` if the mower doesn't support Work Areas)<br/>`short[] start`<br/>`short[] duration`<br/>`boolean[] monday`<br/>`boolean[] tuesday`<br/>`boolean[] wednesday`<br/>`boolean[] thursday`<br/>`boolean[] friday`<br/>`boolean[] saturday`<br/>`boolean[] sunday` | Update calendar task settings. Parameter are an array for all calendar tasks (per Work Area) |
 | poll                       | -                 | Poll mower status update from the cloud                                                                |

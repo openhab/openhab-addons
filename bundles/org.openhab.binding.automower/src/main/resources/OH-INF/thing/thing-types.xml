@@ -113,7 +113,7 @@
 		<properties>
 			<property name="mowerId">N/A</property>
 			<property name="workareaId">N/A</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 	</thing-type>
 
@@ -214,10 +214,16 @@
 		<label>Work Area</label>
 		<channels>
 			<channel id="name" typeId="workarea-name-type"/>
+			<channel id="type" typeId="workarea-type-type"/>
 			<channel id="cutting-height" typeId="workarea-cutting-height-type"/>
+			<channel id="use-global-cutting-height" typeId="workarea-use-global-cutting-height-type"/>
 			<channel id="enabled" typeId="workarea-enabled-type"/>
+			<channel id="schedulable" typeId="workarea-schedulable-type"/>
 			<channel id="progress" typeId="workarea-progress-type"/>
 			<channel id="last-time-completed" typeId="workarea-last-time-completed-type"/>
+			<channel id="last-time-abandoned" typeId="workarea-last-time-abandoned-type"/>
+			<channel id="orientation" typeId="workarea-orientation-type"/>
+			<channel id="orientation-shift" typeId="workarea-orientation-shift-type"/>
 		</channels>
 	</channel-group-type>
 
@@ -612,7 +618,6 @@
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Name of the Work Area</description>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="workarea-cutting-height-type">
@@ -626,6 +631,48 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>If the Work Area is enabled or disabled</description>
+	</channel-type>
+
+	<channel-type id="workarea-type-type" advanced="true">
+		<item-type>String</item-type>
+		<label>Type</label>
+		<description>The type of the Work Area, e.g. RANDOM</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workarea-use-global-cutting-height-type" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Use Global Cutting Height</label>
+		<description>If the Work Area uses the global cutting height instead of its own</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workarea-schedulable-type" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Schedulable</label>
+		<description>If the Work Area can be scheduled</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workarea-last-time-abandoned-type" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Time Abandoned</label>
+		<description>Timestamp when the Work Area was last abandoned</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workarea-orientation-type" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Pattern Orientation</label>
+		<description>Orientation of the mowing pattern in degrees. Pattern based Work Areas only</description>
+		<state pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="workarea-orientation-shift-type" advanced="true">
+		<item-type>Number:Angle</item-type>
+		<label>Pattern Orientation Shift</label>
+		<description>Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only</description>
+		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="workarea-progress-type" advanced="true">
