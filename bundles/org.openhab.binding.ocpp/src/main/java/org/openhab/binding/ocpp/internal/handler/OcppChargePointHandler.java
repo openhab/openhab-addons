@@ -436,7 +436,12 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("Charger " + chargePointId + " is offline"));
         }
-        return transport.send(localSession, request);
+        // An idle Alfen answers every poll yet skips its heartbeat because of them, so it must not read as silent.
+        return transport.send(localSession, request).whenComplete((confirmation, ex) -> {
+            if (ex == null && localSession.equals(session)) {
+                recordActivity();
+            }
+        });
     }
 
     private void becomeReady(UUID expectedSession) {
