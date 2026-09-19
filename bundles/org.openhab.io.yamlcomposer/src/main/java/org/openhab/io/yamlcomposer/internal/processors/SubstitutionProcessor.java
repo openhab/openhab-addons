@@ -13,12 +13,14 @@
 package org.openhab.io.yamlcomposer.internal.processors;
 
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.StringInterpolator;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder;
 
@@ -31,9 +33,11 @@ import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder
 @NonNullByDefault
 public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionPlaceholder> {
 
+    private final Consumer<String> envVarCallback;
     private final BufferedLogger logger;
 
-    public SubstitutionProcessor(BufferedLogger logger) {
+    public SubstitutionProcessor(Consumer<String> envVarCallback, BufferedLogger logger) {
+        this.envVarCallback = envVarCallback;
         this.logger = logger;
     }
 
@@ -50,8 +54,9 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
      * @return The processed value with substitutions applied
      */
     @Override
-    public @Nullable Object process(SubstitutionPlaceholder placeholder, RecursiveTransformer recursiveTransformer) {
-        return process(placeholder, recursiveTransformer.getVariables());
+    public @Nullable Object process(SubstitutionPlaceholder placeholder, RecursiveTransformer recursiveTransformer,
+            EvaluationContext context) {
+        return process(placeholder, context.scope().flatten());
     }
 
     /**
@@ -67,8 +72,8 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
      */
     public @Nullable Object process(SubstitutionPlaceholder placeholder, Map<String, @Nullable Object> context) {
         Pattern pattern = resolvePattern(placeholder, context);
-        return StringInterpolator.interpolate(placeholder.value(), pattern, context, logger.getLogSession(),
-                placeholder.sourceLocation());
+        return StringInterpolator.interpolate(placeholder.value(), pattern, context, envVarCallback,
+                logger.getLogSession(), placeholder.sourceLocation());
     }
 
     private Pattern resolvePattern(SubstitutionPlaceholder placeholder, Map<String, @Nullable Object> context) {

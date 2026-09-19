@@ -18,15 +18,20 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Answers.RETURNS_SELF;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.abortedMessage;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.buildFailureReason;
 import static org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.isThrottled;
 
 import java.net.CookieManager;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -37,8 +42,10 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.FailMode;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.HttpResponse;
 import org.openhab.binding.amazonechocontrol.internal.util.HttpRequestBuilder.RequestParams;
@@ -55,7 +62,11 @@ import com.google.gson.Gson;
 public class HttpRequestBuilderTest {
     private static final String THROTTLING_ERROR_TYPE = "ThrottlingException:"
             + "http://internal.amazon.com/coral/com.amazon.alexa.exceptions/";
+    private static final String UNSUPPORTED_PROVIDER_ERROR_TYPE = "UnsupportedProviderException:"
+            + "http://internal.amazon.com/coral/com.amazon.dee.web.coral.model.nowplaying/";
     private static final URI REQUEST_URI = URI.create("https://alexa.amazon.de/api/notifications");
+    private static final String BROWSER_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) "
+            + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
 
     @Test
     public void testMissingErrorTypeHeaderIsNotThrottled() {
@@ -97,6 +108,20 @@ public class HttpRequestBuilderTest {
     }
 
     @Test
+    public void testAnAbortedRequestNamesTheUriAndTheTransportFailure() {
+        URI commsUri = URI.create("https://alexa-comms-mobile-service.www.amazon.de/accounts");
+        String message = abortedMessage(commsUri, new UnknownHostException(commsUri.getHost()));
+
+        assertThat(message, is("Request to " + commsUri + " aborted: java.net.UnknownHostException: "
+                + "alexa-comms-mobile-service.www.amazon.de"));
+    }
+
+    @Test
+    public void testAnAbortedRequestWithoutAFailureStillNamesTheUri() {
+        assertThat(abortedMessage(REQUEST_URI, null), is("Request to " + REQUEST_URI + " aborted"));
+    }
+
+    @Test
     public void testThrottledResponseFailsFastInsteadOfRetrying() {
         HttpClient httpClient = mock(HttpClient.class);
         // stubbed so that a regression retries instead of failing with a NullPointerException
@@ -117,12 +142,114 @@ public class HttpRequestBuilderTest {
         assertThat(failure.getCause().getMessage(), containsString("ThrottlingException"));
     }
 
+    @Test
+    public void testAFailedResponseCarriesItsStatusAndErrorTypeOnTheException() {
+        HttpFields headers = new HttpFields();
+        headers.add("x-amzn-ErrorType", UNSUPPORTED_PROVIDER_ERROR_TYPE);
+
+        ConnectionException failure = failureOf(resultWithStatus(404, headers));
+
+        assertThat(failure.getHttpStatus(), is(404));
+        assertThat(failure.getAmazonErrorType(), is(UNSUPPORTED_PROVIDER_ERROR_TYPE));
+    }
+
+    @Test
+    public void testAFailureWithoutAnErrorTypeHeaderCarriesAnEmptyErrorType() {
+        ConnectionException failure = failureOf(resultWithStatus(500, new HttpFields()));
+
+        assertThat(failure.getHttpStatus(), is(500));
+        assertThat(failure.getAmazonErrorType(), is(""));
+    }
+
+    @Test
+    public void testARedirectIsHandedToTheCallerAndNotFollowedWhenAutoRedirectIsOff() throws Exception {
+        HttpClient httpClient = mock(HttpClient.class);
+        when(httpClient.newRequest(any(URI.class))).thenReturn(mock(Request.class, RETURNS_SELF));
+        HttpRequestBuilder requestBuilder = new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
+
+        HttpFields headers = new HttpFields();
+        headers.add("Location", "https://www.amazon.com/ap/cvf/request?arb=1");
+
+        CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
+        RequestParams params = new RequestParams(HttpMethod.POST, "email=x&password=y", false, Map.of());
+        requestBuilder.new HttpResponseListener(httpResponse, params, false, FailMode.RETRY)
+                .onComplete(resultWithStatus(302, headers));
+
+        verify(httpClient, never()).newRequest(any(URI.class));
+        assertThat(httpResponse.get().statusCode(), is(302));
+    }
+
+    @Test
+    public void testACustomUserAgentReplacesTheClientAgentInsteadOfAddingASecondOne() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("User-Agent", BROWSER_USER_AGENT).send();
+
+        verify(request).agent(BROWSER_USER_AGENT);
+        verify(request, never()).header(eq("User-Agent"), anyString());
+    }
+
+    @Test
+    public void testAMixedCaseUserAgentKeyStillReplacesTheClientAgent() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("user-agent", BROWSER_USER_AGENT).send();
+
+        verify(request).agent(BROWSER_USER_AGENT);
+        verify(request, never()).header(eq("user-agent"), anyString());
+    }
+
+    @Test
+    public void testACustomAcceptLanguageReplacesTheDefaultInsteadOfAddingASecondOne() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).withHeader("Accept-Language", "de-DE,de;q=0.9").send();
+
+        verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "de-DE,de;q=0.9");
+        verify(request, never()).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
+        verify(request, never()).header(eq("Accept-Language"), anyString());
+    }
+
+    @Test
+    public void testARequestWithoutAnOverrideKeepsTheAppUserAgent() {
+        Request request = mock(Request.class, RETURNS_SELF);
+
+        requestBuilderFor(request).get(REQUEST_URI.toString()).send();
+
+        verify(request).agent(contains("AmazonWebView"));
+        verify(request).header(HttpHeader.ACCEPT_LANGUAGE, "en-US");
+    }
+
+    private HttpRequestBuilder requestBuilderFor(Request request) {
+        HttpClient httpClient = mock(HttpClient.class);
+        when(httpClient.newRequest(any(URI.class))).thenReturn(request);
+        return new HttpRequestBuilder(httpClient, new CookieManager(), new Gson());
+    }
+
+    @SuppressWarnings("null")
+    private ConnectionException failureOf(Result result) {
+        HttpRequestBuilder requestBuilder = requestBuilderFor(mock(Request.class, RETURNS_SELF));
+        CompletableFuture<HttpResponse> httpResponse = new CompletableFuture<>();
+        RequestParams params = new RequestParams(HttpMethod.GET, null, false, Map.of());
+        requestBuilder.new HttpResponseListener(httpResponse, params, false, FailMode.EXCEPTION).onComplete(result);
+
+        ExecutionException failure = assertThrows(ExecutionException.class, httpResponse::get);
+        if (failure.getCause() instanceof ConnectionException connectionFailure) {
+            return connectionFailure;
+        }
+        throw new AssertionError("expected a ConnectionException, got " + failure.getCause());
+    }
+
     private Result throttledResult(HttpFields headers) {
+        return resultWithStatus(400, headers);
+    }
+
+    private Result resultWithStatus(int status, HttpFields headers) {
         Request request = mock(Request.class);
         when(request.getURI()).thenReturn(REQUEST_URI);
         Response response = mock(Response.class);
         when(response.getRequest()).thenReturn(request);
-        when(response.getStatus()).thenReturn(400);
+        when(response.getStatus()).thenReturn(status);
         when(response.getHeaders()).thenReturn(headers);
         when(response.getReason()).thenReturn("Bad Request");
         Result result = mock(Result.class);

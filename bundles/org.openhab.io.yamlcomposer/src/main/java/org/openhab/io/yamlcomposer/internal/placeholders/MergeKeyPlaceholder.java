@@ -20,17 +20,35 @@ import org.eclipse.jdt.annotation.Nullable;
  * as a unique object, so that multiple merge keys can be processed later.
  *
  * @param value The value associated with the merge key placeholder ('<<' - not used)
+ * @param isDeep Indicates whether this is a deep merge placeholder (true) or a shallow merge placeholder (false)
  * @param sourceLocation Description of the source location for logging purposes
  *
  * @author Jimmy Tanagra - Initial contribution
  */
 @SuppressWarnings("null")
 @NonNullByDefault
-public record MergeKeyPlaceholder(@Nullable Object value,
+public record MergeKeyPlaceholder(boolean isDeep, @Nullable Object value,
         String sourceLocation) implements InterpolablePlaceholder<MergeKeyPlaceholder> {
+
+    public MergeKeyPlaceholder {
+        if (value instanceof SubstitutionPlaceholder substitution) {
+            value = substitution.value();
+        }
+        value = stripComment(value);
+    }
 
     @Override
     public MergeKeyPlaceholder recreate(@Nullable Object newValue, String location) {
-        return new MergeKeyPlaceholder(newValue, location);
+        return new MergeKeyPlaceholder(isDeep, newValue, location);
+    }
+
+    private String stripComment(@Nullable Object value) {
+        if (!(value instanceof String raw)) {
+            return "";
+        }
+
+        int commentIdx = raw.indexOf("#");
+        String cleaned = (commentIdx != -1) ? raw.substring(0, commentIdx) : raw;
+        return cleaned.trim();
     }
 }

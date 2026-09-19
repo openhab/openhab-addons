@@ -69,7 +69,7 @@
     <ohc.version>5.3.0-SNAPSHOT</ohc.version>
     <asm.version>9.9.1</asm.version>
     <bnd.version>7.4.0</bnd.version>
-    <bouncycastle.version>1.85</bouncycastle.version>
+    <bouncycastle.version>1.86</bouncycastle.version>
     <commons.codec.version>1.17.1</commons.codec.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
@@ -77,10 +77,10 @@
     <jackson.version>2.22.2</jackson.version>
     <jna.version>5.18.1</jna.version>
     <json.version>20251224</json.version>
-    <jsoup.version>1.23.1</jsoup.version>
+    <jsoup.version>1.23.2</jsoup.version>
     <karaf.version>4.4.11</karaf.version>
     <mockito.version>5.23.0</mockito.version>
-    <netty.version>4.1.133.Final</netty.version>
+    <netty.version>4.1.137.Final</netty.version>
     <graalvm.version>25.0.1</graalvm.version>
     <okhttp3.version>4.12.0</okhttp3.version>
     <okio.version>3.17.0</okio.version>
@@ -310,7 +310,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.15.0</version>
+          <version>3.16.0</version>
           <configuration>
             <compilerId>eclipse</compilerId>
             <compilerArgs>
@@ -334,7 +334,7 @@ Import-Package: \
             <dependency>
               <groupId>org.eclipse.jdt</groupId>
               <artifactId>ecj</artifactId>
-              <version>3.46.0</version>
+              <version>3.46.100</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -342,7 +342,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.1.4</version>
+          <version>3.2.0</version>
         </plugin>
 
         <plugin>
@@ -354,7 +354,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.4</version>
+          <version>3.2.0</version>
         </plugin>
 
         <plugin>
@@ -388,7 +388,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-plugin-plugin</artifactId>
-          <version>3.15.2</version>
+          <version>3.16.0</version>
         </plugin>
 
         <plugin>
@@ -421,7 +421,7 @@ Import-Package: \
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.6</version>
+          <version>3.6.0</version>
           <configuration>
             <argLine>--add-opens java.base/java.lang=ALL-UNNAMED
               --add-opens java.base/java.util=ALL-UNNAMED
@@ -439,7 +439,7 @@ Import-Package: \
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.6.1</version>
+          <version>3.6.2</version>
         </plugin>
 
         <plugin>

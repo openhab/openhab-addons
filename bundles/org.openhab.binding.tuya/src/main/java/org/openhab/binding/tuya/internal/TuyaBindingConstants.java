@@ -13,6 +13,7 @@
 package org.openhab.binding.tuya.internal;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -23,6 +24,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * used across the whole binding.
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Add gateway and sub-device thing types
  */
 @NonNullByDefault
 public class TuyaBindingConstants {
@@ -31,6 +33,12 @@ public class TuyaBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PROJECT = new ThingTypeUID(BINDING_ID, "project");
     public static final ThingTypeUID THING_TYPE_TUYA_DEVICE = new ThingTypeUID(BINDING_ID, "tuyaDevice");
+    public static final ThingTypeUID THING_TYPE_TUYA_GATEWAY = new ThingTypeUID(BINDING_ID, "tuyaGateway");
+    public static final ThingTypeUID THING_TYPE_TUYA_SUB_DEVICE = new ThingTypeUID(BINDING_ID, "tuyaSubDevice");
+
+    // Thing types whose channels are generated from a device schema
+    public static final Set<ThingTypeUID> DEVICE_THING_TYPES = Set.of(THING_TYPE_TUYA_DEVICE, THING_TYPE_TUYA_GATEWAY,
+            THING_TYPE_TUYA_SUB_DEVICE);
 
     public static final String PROPERTY_CATEGORY = "category";
 
@@ -44,6 +52,8 @@ public class TuyaBindingConstants {
     public static final String CONFIG_MAX = "max";
     public static final String CONFIG_PROTOCOL = "protocol";
     public static final String CONFIG_RANGE = "range";
+    public static final String CONFIG_SUB_DEVICE_ID = "subDeviceId";
+    public static final String CONFIG_RELOAD_SCHEMA = "reloadSchema";
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_IR_CODE = new ChannelTypeUID(BINDING_ID, "ir-code");
@@ -67,6 +77,19 @@ public class TuyaBindingConstants {
     // the device for this long after sending a message we consider the connection dead, close
     // it, and start trying to reconnect.
     public static final int TCP_CONNECTION_MESSAGE_RESPONSE = 200; // Milliseconds
+
+    // How long a device has to answer the heartbeat sent after it refused DP_QUERY. A gateway busy relaying the
+    // traffic of its sub-devices can take considerably longer than TCP_CONNECTION_MESSAGE_RESPONSE to answer, and
+    // dropping the connection of a device that did reply, only slowly, costs more than waiting.
+    public static final int TCP_CONNECTION_PROBE_RESPONSE = 2000; // Milliseconds
+
+    // How long to wait before querying the status again after a device refused DP_QUERY. Devices that are not
+    // ready yet refuse DP_QUERY although they handle it, others never handle it. The interval doubles with every
+    // refusal up to TCP_CONNECTION_QUERY_RETRY_MAX. It must not be shorter than TCP_CONNECTION_PROBE_RESPONSE:
+    // the query is a message like any other, so sending it while the probe is still outstanding would replace the
+    // deadline the probe is waiting on with the much shorter TCP_CONNECTION_MESSAGE_RESPONSE.
+    public static final int TCP_CONNECTION_QUERY_RETRY_INITIAL = 2000; // Milliseconds
+    public static final int TCP_CONNECTION_QUERY_RETRY_MAX = 60000; // Milliseconds
 
     // How long to wait for a TCP session to connect before closing it and starting again. We do
     // not rely on TCP's own retry strategy because that varies between implementations so we

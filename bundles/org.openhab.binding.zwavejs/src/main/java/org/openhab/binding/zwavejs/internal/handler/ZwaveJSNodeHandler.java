@@ -55,7 +55,6 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.PointType;
@@ -208,9 +207,11 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             }
             ChannelUID targetChannel = null;
             if (rollerShutterCapability.isMovingUp()) {
-                targetChannel = rollerShutterCapability.upChannel;
+                targetChannel = rollerShutterConfig.isUpDownInverted ? rollerShutterCapability.downChannel
+                        : rollerShutterCapability.upChannel;
             } else if (rollerShutterCapability.isMovingDown()) {
-                targetChannel = rollerShutterCapability.downChannel;
+                targetChannel = rollerShutterConfig.isUpDownInverted ? rollerShutterCapability.upChannel
+                        : rollerShutterCapability.downChannel;
             }
             if (targetChannel == null) {
                 logger.debug("Node {}. Cannot stop movement, no direction known", config.id);
@@ -226,14 +227,15 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         // Handle UpDownType: UP or DOWN, respect inversion
         if (command instanceof UpDownType upDownCommand) {
-            boolean isUpCommand = (UpDownType.UP.equals(upDownCommand) && !rollerShutterConfig.isUpDownInverted)
+            boolean usesUpChannel = (UpDownType.UP.equals(upDownCommand) && !rollerShutterConfig.isUpDownInverted)
                     || (UpDownType.DOWN.equals(upDownCommand) && rollerShutterConfig.isUpDownInverted);
-            ChannelUID targetChannel = isUpCommand ? rollerShutterCapability.upChannel
+            ChannelUID targetChannel = usesUpChannel ? rollerShutterCapability.upChannel
                     : rollerShutterCapability.downChannel;
             ZwaveJSChannelConfiguration targetChannelConfig = getChannelConfiguration(targetChannel);
             NodeSetValueCommand zwaveCommand = new NodeSetValueCommand(config.id, targetChannelConfig);
             zwaveCommand.value = true;
-            rollerShutterCapability.setDirection(isUpCommand, !isUpCommand);
+            boolean isMovingUp = UpDownType.UP.equals(upDownCommand);
+            rollerShutterCapability.setDirection(isMovingUp, !isMovingUp);
             bridgeHandler.sendCommand(zwaveCommand);
             return;
         }
@@ -308,9 +310,6 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             throw new UnsupportedOperationException(increaseDecreaseCommand.toString() + " is currently not supported");
         } else if (command instanceof NextPreviousType nextPreviousCommand) {
             throw new UnsupportedOperationException(nextPreviousCommand.toString() + " is currently not supported");
-        } else if (command instanceof OpenClosedType openClosedCommand) {
-            zwaveCommand.value = openClosedCommand == (channelConfig.inverted ? OpenClosedType.CLOSED
-                    : OpenClosedType.OPEN);
         } else if (command instanceof PlayPauseType playPauseCommand) {
             throw new UnsupportedOperationException(playPauseCommand.toString() + " is currently not supported");
         } else if (command instanceof PointType pointCommand) {

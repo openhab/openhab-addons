@@ -362,6 +362,16 @@ public class Shelly2ApiRpcLightDispatchTest {
     }
 
     @Test
+    void setAutoTimerNonLightProfileFallsBackToSwitchSetConfig() throws ShellyApiException {
+        StubApiRpc rpc = newRpc(new ShellyDeviceProfile(new ThingTypeUID("shelly", "shellyplus1pm")));
+        rpc.setAutoTimer(0, SHELLY_TIMER_AUTOON, 30);
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_SWITCH_SETCONFIG));
+        assertThat(rpc.lastParams().id, is(0));
+        assertThat(rpc.lastParams().config.autoOn, is(true));
+    }
+
+    @Test
     void setLightParmsCctx2ProfileSendsCctSetWithCt() throws ShellyApiException {
         StubApiRpc rpc = newRpc(cctx2Profile(2));
         rpc.setLightParms(1, Map.of(SHELLY_COLOR_TEMP, "4200", SHELLY_LIGHT_TURN, SHELLY_API_ON));

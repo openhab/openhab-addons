@@ -62,7 +62,7 @@ This binding supports 4 different things types
 
 Typically one defines either `tcp` or `serial` bridge, depending on the variant of Modbus slave.
 For each Modbus read request, a `poller` is defined.
-Finally, one ore more `data` things are introduced to extract relevant numbers from the raw Modbus data.
+Finally, one or more `data` things are introduced to extract relevant numbers from the raw Modbus data.
 For write-only communication, `data` things can be introduced directly as children of `tcp` or `serial` bridges.
 
 ## Binding Configuration
@@ -120,12 +120,13 @@ Advanced parameters
 | `reconnectAfterMillis`          |          | integer | `0`                | The connection is kept open at least the time specified here. Value of zero means that connection is disconnected after every MODBUS transaction. In milliseconds.                            |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means that system/OS default is respected. In milliseconds.                                                   |
 | `enableDiscovery`               |          | boolean | false              | Enable auto-discovery feature. Effective only if a supporting extension has been installed.                                                                                                   |
+| `receiveTimeoutMillis`          |          | integer | `3000`             | Maximum time to wait for data to be received, in milliseconds. A value of zero disables the timeout.                                                                                          |
 
 **Note:** Advanced parameters must be equal for all `tcp` things sharing the same `host` and `port`.
 
 The advanced parameters have conservative defaults, meaning that they should work for most users.
 In some cases when extreme performance is required (e.g. poll period below 10 ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`.
-Similarly, with some slower devices on might need to increase the values.
+Similarly, with some slower devices one might need to increase the values.
 
 ### `serial` Thing
 
@@ -137,10 +138,10 @@ Basic parameters
 |-----------|---------|----------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
 | port      | text    | ✓        |                    | Serial port to use, for example `"/dev/ttyS0"` or `"COM1"`                                                                                                                                                 |   |
 | id        | integer |          | `1`                | Slave id. Also known as station address or unit identifier. See [Wikipedia](https://en.wikipedia.org/wiki/Modbus) and [simplymodbus](https://www.simplymodbus.ca/index.html) articles for more information |   |
-| baud      | integer | ✓        |                    | Baud of the connection. Valid values are: `75`, `110`, `300`, `1200`, `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`.                                                                         |   |
-| stopBits  | text    | ✓        |                    | Stop bits. Valid values are: `"1.0"`, `"1.5"`, `"2.0"`.                                                                                                                                                    |   |
-| parity    | text    | ✓        |                    | Parity. Valid values are: `"none"`, `"even"`, `"odd"`.                                                                                                                                                     |   |
-| dataBits  | integer | ✓        |                    | Data bits. Valid values are: `5`, `6`, `7` and `8`.                                                                                                                                                        |   |
+| baud      | integer |          | `9600`             | Baud of the connection. Valid values are: `75`, `110`, `300`, `1200`, `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`.                                                                         |   |
+| stopBits  | text    |          | `"1.0"`            | Stop bits. Valid values are: `"1.0"`, `"1.5"`, `"2.0"`.                                                                                                                                                    |   |
+| parity    | text    |          | `"none"`           | Parity. Valid values are: `"none"`, `"even"`, `"odd"`.                                                                                                                                                     |   |
+| dataBits  | integer |          | `8`                | Data bits. Valid values are: `5`, `6`, `7` and `8`.                                                                                                                                                        |   |
 | encoding  | text    |          | `"rtu"`            | Encoding. Valid values are: `"ascii"`, `"rtu"`, `"bin"`.                                                                                                                                                   |   |
 | echo      | boolean |          | `false`            | Flag for setting the RS485 echo mode. This controls whether we should try to read back whatever we send on the line, before reading the response. Valid values are: `true`, `false`.                       |   |
 
@@ -1008,7 +1009,7 @@ It is also possible to use `REFRESH` command to ask the binding to update more f
 import org.eclipse.xtext.xbase.lib.Procedures
 import org.openhab.core.types.RefreshType
 
-val Procedures$Procedure0 refreshData = [ |
+val Procedures$Procedure0 refreshData = [
     // Refresh SetTemperature. In fact, all data things in the same poller are refreshed
     SetTemperature.sendCommand(RefreshType.REFRESH)
     return null

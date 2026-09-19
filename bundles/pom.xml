@@ -809,7 +809,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
-        <version>1.2.1</version>
+        <version>1.2.2</version>
         <configuration>
           <validationSets>
             <validationSet>

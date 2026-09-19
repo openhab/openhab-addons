@@ -51,7 +51,7 @@ You find the following repository structure:
 |   +-- org.openhab.binding.avmfritz.tests
 |   +-- ...
 |
-+-- src/etc   Auxilary buildsystem files: The license header for automatic checks for example
++-- src/etc   Auxiliary buildsystem files: The license header for automatic checks for example
 +-- tools     Static code analyser instructions
 |
 +-- CODEOWNERS  This file assigns people to directories so that they are informed if a pull-request

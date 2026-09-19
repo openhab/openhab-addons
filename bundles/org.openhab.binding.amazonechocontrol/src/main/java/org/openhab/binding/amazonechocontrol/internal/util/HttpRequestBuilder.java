@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
@@ -45,6 +46,7 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.amazonechocontrol.internal.ConnectionException;
@@ -104,16 +106,21 @@ public class HttpRequestBuilder {
         return new Builder(httpMethod, uriString);
     }
 
+    private static Optional<String> customHeader(RequestParams params, HttpHeader header) {
+        return params.customHeaders().entrySet().stream().filter(entry -> header.is(entry.getKey()))
+                .map(Map.Entry::getValue).filter(value -> !value.isBlank()).findFirst();
+    }
+
     private void createRequest(URI uri, RequestParams params, HttpResponseListener responseListener) {
         Request request = httpClient.newRequest(uri).method(params.method());
-        request.header(ACCEPT_LANGUAGE, "en-US");
+        request.header(ACCEPT_LANGUAGE, customHeader(params, ACCEPT_LANGUAGE).orElse("en-US"));
         request.header("DNT", "1");
         request.header("Upgrade-Insecure-Requests", "1");
-        if (!params.customHeaders().containsKey(USER_AGENT.toString())) {
-            request.agent(DEFAULT_USER_AGENT);
-        }
-        params.customHeaders().entrySet().stream().filter(h -> !h.getValue().isBlank())
-                .forEach(h -> request.header(h.getKey(), h.getValue()));
+        request.agent(customHeader(params, USER_AGENT).orElse(DEFAULT_USER_AGENT));
+        params.customHeaders().entrySet().stream()
+                .filter(header -> !header.getValue().isBlank() && !USER_AGENT.is(header.getKey())
+                        && !ACCEPT_LANGUAGE.is(header.getKey()))
+                .forEach(header -> request.header(header.getKey(), header.getValue()));
 
         // handle re-directs in response listener manually
         request.followRedirects(false);
@@ -313,6 +320,11 @@ public class HttpRequestBuilder {
                 || (amznErrorType != null && amznErrorType.startsWith(THROTTLING_EXCEPTION));
     }
 
+    static String abortedMessage(URI requestUri, @Nullable Throwable failure) {
+        String message = "Request to " + requestUri + " aborted";
+        return failure == null ? message : message + ": " + failure;
+    }
+
     static String buildFailureReason(@Nullable String reason, @Nullable String amznErrorType) {
         String statusReason = reason == null || reason.isBlank() ? NO_REASON_GIVEN : reason;
         return amznErrorType == null || amznErrorType.isBlank() ? statusReason
@@ -382,9 +394,11 @@ public class HttpRequestBuilder {
                 logger.debug("Redirected to {}", location);
                 if (!autoRedirect) {
                     httpResponse.complete(new HttpResponse(responseStatus, headers, content));
+                    return;
                 }
                 if (redirectCounter == 0) {
                     httpResponse.completeExceptionally(new ConnectionException("Too many redirects"));
+                    return;
                 }
                 createRequest(URI.create(location), params,
                         new HttpResponseListener(this, retryCounter, redirectCounter - 1));
@@ -404,11 +418,15 @@ public class HttpRequestBuilder {
                 // a throttled request is not retried: every retry is itself a counted request
                 if (failMode == EXCEPTION || retryCounter == 0 || (throttled && failMode != NORMAL)) {
                     if (responseStatus == 0) {
-                        httpResponse.completeExceptionally(new ConnectionException("Request aborted."));
+                        Throwable failure = result.getFailure();
+                        httpResponse.completeExceptionally(
+                                new ConnectionException(abortedMessage(requestUri, failure), failure));
                         return;
                     }
-                    httpResponse.completeExceptionally(new ConnectionException(requestUri + " failed with code "
-                            + responseStatus + ": " + buildFailureReason(response.getReason(), amznErrorType)));
+                    httpResponse.completeExceptionally(new ConnectionException(
+                            requestUri + " failed with code " + responseStatus + ": "
+                                    + buildFailureReason(response.getReason(), amznErrorType),
+                            responseStatus, amznErrorType));
                 } else if (failMode == NORMAL) {
                     httpResponse.complete(new HttpResponse(responseStatus, headers, content));
                 } else {

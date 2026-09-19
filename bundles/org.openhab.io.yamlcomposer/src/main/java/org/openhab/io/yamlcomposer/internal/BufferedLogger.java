@@ -80,4 +80,8 @@ public class BufferedLogger {
     public void error(String msg) {
         delegate.error(msg);
     }
+
+    public boolean isDebugEnabled() {
+        return delegate.isDebugEnabled();
+    }
 }

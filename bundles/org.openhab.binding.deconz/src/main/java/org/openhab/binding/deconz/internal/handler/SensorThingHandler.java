@@ -63,7 +63,7 @@ public class SensorThingHandler extends SensorBaseThingHandler {
             THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
             THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR, THING_TYPE_BATTERY_SENSOR,
             THING_TYPE_CARBONMONOXIDE_SENSOR, THING_TYPE_AIRQUALITY_SENSOR, THING_TYPE_COLOR_CONTROL,
-            THING_TYPE_MOISTURE_SENSOR);
+            THING_TYPE_MOISTURE_SENSOR, THING_TYPE_PARTICULATEMATTER_SENSOR);
 
     private static final List<String> CONFIG_CHANNELS = List.of(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
             CHANNEL_ENABLED, CHANNEL_TEMPERATURE);
@@ -148,6 +148,8 @@ public class SensorThingHandler extends SensorBaseThingHandler {
                 updateDecimalTypeChannel(channelUID, newState.orientation != null ? newState.orientation[1] : null);
             case CHANNEL_ORIENTATION_Z ->
                 updateDecimalTypeChannel(channelUID, newState.orientation != null ? newState.orientation[2] : null);
+            case CHANNEL_PARTICULATEMATTER_PM25 ->
+                updateQuantityTypeChannel(channelUID, newState.pm2_5, MICROGRAM_PER_CUBICMETRE);
             case CHANNEL_POWER -> updateQuantityTypeChannel(channelUID, newState.power, WATT);
             case CHANNEL_PRESENCE -> updateSwitchChannel(channelUID, newState.presence);
             case CHANNEL_PRESSURE -> updateQuantityTypeChannel(channelUID, newState.pressure, HECTO(PASCAL));

@@ -12,10 +12,13 @@
  */
 package org.openhab.io.yamlcomposer.internal.processors;
 
+import java.util.function.Consumer;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
 import org.openhab.io.yamlcomposer.internal.StringInterpolator;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
 
@@ -27,9 +30,11 @@ import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
 @NonNullByDefault
 public abstract class AbstractConditionalProcessor {
     protected final BufferedLogger logger;
+    protected final Consumer<String> envVarCallback;
 
-    protected AbstractConditionalProcessor(BufferedLogger logger) {
+    protected AbstractConditionalProcessor(BufferedLogger logger, Consumer<String> envVarCallback) {
         this.logger = logger;
+        this.envVarCallback = envVarCallback;
     }
 
     /**
@@ -57,7 +62,7 @@ public abstract class AbstractConditionalProcessor {
      * if the condition is true, and remove it if false.
      */
     protected @Nullable Boolean processSimpleSyntax(@Nullable Object value, String sourceLocation,
-            RecursiveTransformer recursiveTransformer) {
+            RecursiveTransformer recursiveTransformer, EvaluationContext context) {
 
         if (value instanceof Boolean || value instanceof Number || value instanceof String) {
             String exprStr = value.toString();
@@ -69,7 +74,7 @@ public abstract class AbstractConditionalProcessor {
                 }
             }
 
-            Object result = StringInterpolator.evaluateExpression(exprStr, recursiveTransformer.getVariables(),
+            Object result = StringInterpolator.evaluateExpression(exprStr, context.scope().flatten(), envVarCallback,
                     logger.getLogSession(), sourceLocation);
             return ExpressionEvaluator.isTruthy(result);
         }

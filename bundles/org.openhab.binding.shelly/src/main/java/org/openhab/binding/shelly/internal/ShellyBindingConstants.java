@@ -41,6 +41,7 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_DEV_GEN = "deviceGeneration";
     public static final String PROPERTY_DEV_AUTH = "deviceAuth";
     public static final String PROPERTY_GW_DEVICE = "gatewayDevice";
+    public static final String PROPERTY_ADDON_FIRMWARE = "addonFirmware";
     public static final String PROPERTY_HWREV = "deviceHwRev";
     public static final String PROPERTY_HWBATCH = "deviceHwBatch";
     public static final String PROPERTY_UPDATE_PERIOD = "devUpdatePeriod";
@@ -91,6 +92,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_TIMER_AUTOON = "autoOn";
     public static final String CHANNEL_TIMER_AUTOOFF = "autoOff";
     public static final String CHANNEL_TIMER_ACTIVE = "timerActive";
+    public static final String CHANNEL_DALI_DEVICES = "daliDeviceCount";
+    public static final String CHANNEL_DALI_SCAN_ACTIVE = "daliScanActive";
 
     // Roller
     public static final String CHANNEL_GROUP_ROL_CONTROL = "roller";
@@ -161,17 +164,21 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_ROTATIONZ = "rotationZ"; // BLU Remote
     public static final String CHANNEL_SENSOR_CHANNEL = "channel"; // BLU Remote
     public static final String CHANNEL_SENSOR_STEPS = "steps"; // BLU Remote
+    public static final String CHANNEL_SENSOR_PRESENCE = "presence"; // Shelly Presence: zone occupancy (ON=detected)
+    public static final String CHANNEL_SENSOR_OBJECT_COUNT = "objectCount"; // Shelly Presence: objects in zone
     public static final String CHANNEL_SENSOR_DIRECTION = "direction"; // BLU Remote
     public static final String CHANNEL_SENSOR_DISTANCE = "distance"; // BLU DIstance
     public static final String CHANNEL_SENSOR_RAINST = "rainStatus"; // BLU Weather
     public static final String CHANNEL_SENSOR_WINDSP = "windSpeed"; // BLU Weather
     public static final String CHANNEL_SENSOR_WINDDIR = "windDirection"; // BLU Weather
     public static final String CHANNEL_SENSOR_GUSTSP = "gustSpeed"; // BLU Weather
-    public static final String CHANNEL_SENSOR_GUSTDIR = "gustDirection"; // BLU Weather
     public static final String CHANNEL_SENSOR_UV = "uvIndex"; // BLU Weather
     public static final String CHANNEL_SENSOR_PRESSURE = "pressure"; // BLU Weather
     public static final String CHANNEL_SENSOR_DEWPOINT = "dewPoint"; // BLU Weather
     public static final String CHANNEL_SENSOR_PRECIPITATION = "precipitation"; // BLU Weather
+    public static final String CHANNEL_SENSOR_WINDDIR_STR = "windDirectionStr"; // BLU Weather
+    public static final String CHANNEL_SENSOR_APPARENT_TEMP = "apparentTemp"; // BLU Weather
+    public static final String CHANNEL_SENSOR_SEALEVEL_PRESSURE = "seaLevelPressure"; // BLU Weather
 
     // Control channels
     public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp"; // TRV
@@ -198,6 +205,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_ESENSOR_INPUT1 = CHANNEL_ESENSOR_INPUT + "1";
 
     public static final String CHANNEL_GROUP_CONTROL = "control";
+    public static final String CHANNEL_CTRL_SENSOR_ENABLE = "sensorEnable"; // Shelly Presence: enable/disable radar
     public static final String CHANNEL_SENSE_KEY = "key";
 
     public static final String CHANNEL_GROUP_BATTERY = "battery";
@@ -267,6 +275,19 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_STATUS_EVENTCOUNT1 = CHANNEL_STATUS_EVENTCOUNT + "1";
     public static final String CHANNEL_STATUS_EVENTCOUNT2 = CHANNEL_STATUS_EVENTCOUNT + "2";
 
+    // LoRa
+    public static final String CHANNEL_GROUP_LORA = "lora";
+    public static final String CHANNEL_LORA_RXDATA = "dataRx"; // Regular String
+    public static final String CHANNEL_LORA_TXDATA = "dataTx"; // Regular String
+    public static final String CHANNEL_LORA_RXDATARAW = "dataRxRaw"; // BASE64-encoded string
+    public static final String CHANNEL_LORA_TXDATARAW = "dataTxRaw";// BASE64-encoded string
+    public static final String CHANNEL_LORA_RXBYTES = "bytesRx";
+    public static final String CHANNEL_LORA_TXBYTES = "bytesTx";
+    public static final String CHANNEL_LORA_TXERRORS = "errorsTx";
+    public static final String CHANNEL_LORA_RSSI = "rssi";
+    public static final String CHANNEL_LORA_SNR = "snr";
+    public static final String CHANNEL_LORA_AIRTIME = "airtime";
+
     // General
     public static final String CHANNEL_LAST_UPDATE = "lastUpdate";
     public static final String CHANNEL_EVENT_TRIGGER = "event";
@@ -297,6 +318,7 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_BTH_UNKNOWN_TYPE = "BTH_UNKNOWN_TYPE";
     public static final String ALARM_TYPE_FLOOD = "FLOOD";
     public static final String ALARM_TYPE_MUTED = "ALARM_MUTED";
+    public static final String ALARM_TYPE_LORA_RECEIVED = "LORA_RECEIVED";
     public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types

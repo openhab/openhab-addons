@@ -114,6 +114,9 @@ After configuration of the account thing with the login data, the echo devices r
 If the device type is not known by the binding, the device will not be discovered.
 But you can define any device listed in your Alexa app with the best matching existing device (e.g. echo).
 You will find the required serial number in settings of the device in the Alexa app.
+Sonos speakers with built-in Alexa appear twice in the account: once as family `THIRD_PARTY_AVS_SONOS_BOOTLEG` for voice and text and once as family `THIRD_PARTY_AVS_MEDIA_DISPLAY` for playback state and player control.
+Sonos speakers without built-in Alexa have only the `THIRD_PARTY_AVS_MEDIA_DISPLAY` entry.
+The available serial numbers are listed on the account page of the binding at `http://<openhab>:8080/amazonechocontrol`; create one `echo` thing per entry you need.
 
 ### Discover Smart Home Devices
 
@@ -130,13 +133,16 @@ See section _Smart Home Devices_ below for more information.
 | `discoverSmartHome`             | 0       | 0...No discover, 1...Discover direct connected, 2...Discover direct and Alexa skill devices, 3...Discover direct, Alexa and openHAB skill devices                                                                |
 | `pollingIntervalSmartHomeAlexa` | 30      | Defines the time in seconds for openHAB to pull the state of the Alexa connected devices. The minimum is 10 seconds.                                                                                             |
 | `pollingIntervalSmartSkills`    | 120     | Defines the time in seconds for openHAB to pull the state of the over a skill connected devices. The minimum is 60 seconds.                                                                                      |
-| `activityRequestDelay`          | 10      | The number of seconds between a voice command was detected and the received command is requested from the server. The minimum is 2 seconds. Lower values improve response time but may result in loss of events. |
+| `activityRequestDelay`          | 10      | The number of seconds the binding waits between the voice command event and the history request. The minimum is 2 seconds. Amazon needs a moment to write a spoken command into the history.                     |
+| `activityRequestWindow`         | 120     | The number of seconds of voice history a request covers, counted backwards from the request time. When polling, it must be at least as large as the polling interval. The recommended minimum is 60 seconds.     |
+| `activityPollingInterval`       | 0       | The number of seconds between automatic voice history requests, for accounts without push events. 0 disables polling. Each poll is one request to Amazon; below 60 seconds risks rate limiting.                  |
 
 ### Channels
 
-| Channel Type ID | Item Type | Access Mode | Thing Type | Description                                      |
-|-----------------|-----------|-------------|------------|--------------------------------------------------|
-| `sendMessage`   | String    | W           | account    | Write Only! Sends a message to the Echo devices. |
+| Channel Type ID   | Item Type | Access Mode | Thing Type | Description                                                                      |
+|-------------------|-----------|-------------|------------|----------------------------------------------------------------------------------|
+| `sendMessage`     | String    | W           | account    | Write Only! Sends a message to the Echo devices.                                 |
+| `refreshActivity` | Switch    | R/W         | account    | ON requests the voice history; the channel answers OFF when the request is done. |
 
 ### Thing Configuration
 
@@ -152,12 +158,12 @@ You will find the serial number in the Alexa app or on the webpage YOUR_OPENHAB/
 
 | Channel Type ID       | Item Type   | Access Mode | Thing Type                    | Description                                                                                                                                                                                                                             |
 |-----------------------|-------------|-------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| player                | Player      | R/W         | echo, echoshow, echospot, wha | Control the music player  (Supported commands: PLAY or ON, PAUSE or OFF, NEXT, PREVIOUS, REWIND, FASTFORWARD)                                                                                                                           |
+| player                | Player      | R/W         | echo, echoshow, echospot, wha | Control the music player  (Supported commands: PLAY or ON, PAUSE or OFF, NEXT, PREVIOUS, REWIND, FASTFORWARD). Only what Alexa plays through Amazon's own player is controlled. While nothing plays there, or while the source is outside it, Spotify for example, a command is answered with 404 and the media channels stay empty |
 | volume                | Dimmer      | R/W         | echo, echoshow, echospot      | Control the volume                                                                                                                                                                                                                      |
 | equalizerTreble       | Number      | R/W         | echo, echoshow, echospot      | Control the treble (value from -6 to 6)                                                                                                                                                                                                 |
 | equalizerMidrange     | Number      | R/W         | echo, echoshow, echospot      | Control the midrange (value from -6 to 6)                                                                                                                                                                                               |
 | equalizerBass         | Number      | R/W         | echo, echoshow, echospot      | Control the bass (value from -6 to 6)                                                                                                                                                                                                   |
-| shuffle               | Switch      | R/W         | echo, echoshow, echospot, wha | Shuffle play if applicable, e.g. playing a playlist                                                                                                                                                                                     |
+| shuffle               | Switch      | W           | echo, echoshow, echospot, wha | Write Only! Shuffle play on content with a shuffle control such as a playlist or an album. Amazon Music stations and TuneIn radio answer 400, send `shuffle on` through textCommand instead                                             |
 | imageUrl              | String      | R           | echo, echoshow, echospot, wha | Url of the album image or radio station logo                                                                                                                                                                                            |
 | title                 | String      | R           | echo, echoshow, echospot, wha | Title of the current media                                                                                                                                                                                                              |
 | subtitle1             | String      | R           | echo, echoshow, echospot, wha | Subtitle of the current media                                                                                                                                                                                                           |
@@ -455,7 +461,8 @@ Check in the UI thing configurations, which channels are created.
 | geoLocation              | Location             | R           | smartHomeDevice                       | The location (e.g. of a Tile)                                                                                               |
 
 **Note:** the channels of `smartHomeDevices` and `smartHomeDeviceGroup` will be created dynamically based on the capabilities reported by the Amazon server. This can take a little bit of time.
-The polling interval configured in the Account Thing to get the state is specified in minutes and has a minimum of 10. This means it takes up to 10 minutes to see the state of a channel. The reason for this low interval is, that the polling causes a big server load for the Smart Home Skills.
+The polling intervals configured in the Account Thing to get the state are specified in seconds, with a minimum of 10 seconds for devices connected to Alexa directly and 60 seconds for devices connected through a skill.
+A state change therefore takes up to one interval to show. The minimum for skill devices is the higher one because polling them causes a big server load for the Smart Home Skills.
 
 **Note:** The `color` channel is read-only by default because Alexa does only support setting colors by their name.
 It has a configuration parameter `matchColors` which enables writing to that channel and tries to find the closes available color when sending a command to Alexa.
@@ -568,6 +575,10 @@ then
 end
 ```
 
+When a `textToSpeechVolume` or an announcement `volume` is set, the binding raises the volume for the speech and afterwards sets it back to the volume it last knew for the device.
+Volume changes made outside Alexa, for example in the Sonos app or on the speaker itself, often do not reach the binding, so the value it returns to can be outdated.
+Send the current volume to the `volume` channel before speaking to give the binding the value to return to.
+
 ### Show an announcement on the echo show or echo spot
 
 1) Create a rule with a trigger of your choice
@@ -624,7 +635,7 @@ then
     Echo_Living_Room_PlayAlarmSound.sendCommand('ECHO:system_alerts_repetitive01')
     if (stopAlarmTimer === null)
     {
-        stopAlarmTimer = createTimer(now.plusSeconds(15)) [|
+        stopAlarmTimer = createTimer(now.plusSeconds(15)) [
             stopAlarmTimer.cancel()
             stopAlarmTimer = null
             Echo_Living_Room_PlayAlarmSound.sendCommand('')

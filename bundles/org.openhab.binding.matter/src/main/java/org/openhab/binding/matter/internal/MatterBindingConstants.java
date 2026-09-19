@@ -187,6 +187,27 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_THERMOSTAT_RUNNINGMODE = "thermostat-runningmode";
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGMODE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_THERMOSTAT_RUNNINGMODE);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEAT = "thermostat-runningstate-heat";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_HEAT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEAT);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOL = "thermostat-runningstate-cool";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_COOL = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOL);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FAN = "thermostat-runningstate-fan";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_FAN = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FAN);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2 = "thermostat-runningstate-heatstage2";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2 = "thermostat-runningstate-coolstage2";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE2 = "thermostat-runningstate-fanstage2";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_FANSTAGE2 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE2);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE3 = "thermostat-runningstate-fanstage3";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_FANSTAGE3 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE3);
     public static final String CHANNEL_ID_THERMOSTAT_HEATING_DEMAND = "thermostat-heatingdemand";
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_HEATING_DEMAND = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_THERMOSTAT_HEATING_DEMAND);

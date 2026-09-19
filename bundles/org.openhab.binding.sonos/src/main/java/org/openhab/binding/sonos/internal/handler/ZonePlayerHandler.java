@@ -186,6 +186,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private @Nullable ScheduledFuture<?> pollingJob;
+    private boolean modelLookedUp;
     private @Nullable SonosZonePlayerState savedState;
 
     private Map<String, Boolean> subscriptionState = new HashMap<>();
@@ -231,12 +232,16 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     public void initialize() {
         logger.debug("initializing handler for thing {}", getThing().getUID());
 
-        if (migrateThingType()) {
+        configuration = getConfigAs(ZonePlayerConfiguration.class);
+
+        modelLookedUp = false;
+        ThingTypeUID modelThingTypeUID = lookUpModelThingType();
+        if (modelThingTypeUID != null) {
             // we change the type, so we might need a different handler -> let's finish
+            changeThingType(modelThingTypeUID, getConfig());
             return;
         }
 
-        configuration = getConfigAs(ZonePlayerConfiguration.class);
         String udn = configuration.udn;
         if (udn != null && !udn.isEmpty()) {
             service.registerParticipant(this);
@@ -264,6 +269,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                             "@text/offline.upnp-device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
+                    }
+                    return;
+                }
+
+                ThingTypeUID modelThingTypeUID = lookUpModelThingType();
+                if (modelThingTypeUID != null) {
+                    // dispose() may have run while the descriptor was fetched
+                    if (pollingJob != null) {
+                        changeThingType(modelThingTypeUID, getConfig());
                     }
                     return;
                 }
@@ -3320,28 +3334,21 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
-    private boolean migrateThingType() {
-        if (getThing().getThingTypeUID().equals(ZONEPLAYER_THING_TYPE_UID)) {
-            String modelName = getModelNameFromDescriptor();
-            if (modelName != null && isSupportedModel(modelName)) {
-                updateSonosThingType(modelName);
-                return true;
-            }
+    private @Nullable ThingTypeUID lookUpModelThingType() {
+        if (modelLookedUp || !getThing().getThingTypeUID().equals(ZONEPLAYER_THING_TYPE_UID)) {
+            return null;
         }
-        return false;
+        String modelName = getModelNameFromDescriptor();
+        if (modelName == null) {
+            return null;
+        }
+        modelLookedUp = true;
+        return findSupportedThingType(modelName);
     }
 
-    private boolean isSupportedModel(String modelName) {
-        for (ThingTypeUID thingTypeUID : SUPPORTED_KNOWN_THING_TYPES_UIDS) {
-            if (thingTypeUID.getId().equalsIgnoreCase(modelName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void updateSonosThingType(String newThingTypeID) {
-        changeThingType(new ThingTypeUID(SonosBindingConstants.BINDING_ID, newThingTypeID), getConfig());
+    private @Nullable ThingTypeUID findSupportedThingType(String modelName) {
+        return SUPPORTED_KNOWN_THING_TYPES_UIDS.stream().filter(uid -> uid.getId().equalsIgnoreCase(modelName))
+                .findFirst().orElse(null);
     }
 
     /*

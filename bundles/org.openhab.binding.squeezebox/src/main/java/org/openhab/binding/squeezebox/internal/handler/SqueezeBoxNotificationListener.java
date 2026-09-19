@@ -44,12 +44,20 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
 
     // Used to monitor for updates to the playlist
     private final AtomicBoolean playlistUpdated = new AtomicBoolean(false);
+    private final AtomicInteger baselineTrackCount = new AtomicInteger(-1);
+    private final boolean requireChangeFromFirstEvent;
+    private volatile int newTrackCount;
 
     // Used to monitor when the player volume changes to a specific target value
     private final AtomicInteger volume = new AtomicInteger(-1);
 
     SqueezeBoxNotificationListener(String playerMAC) {
+        this(playerMAC, false);
+    }
+
+    SqueezeBoxNotificationListener(String playerMAC, boolean requireChangeFromFirstEvent) {
         this.playerMAC = playerMAC;
+        this.requireChangeFromFirstEvent = requireChangeFromFirstEvent;
     }
 
     // Stopped
@@ -78,6 +86,14 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
 
     public boolean isPlaylistUpdated() {
         return this.playlistUpdated.get();
+    }
+
+    public boolean isBaselineEstablished() {
+        return this.baselineTrackCount.get() != -1;
+    }
+
+    public int getNewTrackCount() {
+        return this.newTrackCount;
     }
 
     // Volume updated
@@ -161,7 +177,11 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
     }
 
     /*
-     * Monitor for when the playlist is updated
+     * Monitor for when the playlist is updated.
+     * In baseline mode, the first event establishes the expected track count
+     * without acknowledging; a subsequent event whose count differs from that
+     * baseline acknowledges the update. This way a stale in-flight event with
+     * an unchanged count can never be mistaken for the playlist change.
      */
     @Override
     public void numberPlaylistTracksEvent(String mac, int track) {
@@ -169,7 +189,15 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
             return;
         }
         logger.trace("Number of playlist tracks is {} for player {}", track, mac);
-        playlistUpdated.set(true);
+        if (requireChangeFromFirstEvent && !isBaselineEstablished()) {
+            baselineTrackCount.compareAndSet(-1, track);
+            logger.trace("Baseline playlist track count is {} for player {}", track, mac);
+            return;
+        }
+        if (track != baselineTrackCount.get()) {
+            newTrackCount = track;
+            playlistUpdated.set(true);
+        }
     }
 
     @Override

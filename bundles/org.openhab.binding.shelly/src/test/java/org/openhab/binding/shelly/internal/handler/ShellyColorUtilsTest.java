@@ -69,4 +69,18 @@ public class ShellyColorUtilsTest {
         assertEquals(new PercentType(100), ShellyColorUtils.toPercent(300));
         assertEquals(new PercentType(0), ShellyColorUtils.toPercent(-10));
     }
+
+    @Test
+    void copyConstructorPreservesPowerModeAndEffect() {
+        ShellyColorUtils col = new ShellyColorUtils();
+        col.power = org.openhab.core.library.types.OnOffType.ON;
+        col.setMode("color");
+        col.setEffect(3);
+
+        ShellyColorUtils copy = new ShellyColorUtils(col);
+
+        assertEquals(col.power, copy.power);
+        assertEquals(col.mode, copy.mode);
+        assertEquals(col.effect, copy.effect);
+    }
 }

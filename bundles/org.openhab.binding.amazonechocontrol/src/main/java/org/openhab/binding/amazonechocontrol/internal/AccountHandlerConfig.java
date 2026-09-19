@@ -23,7 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AccountHandlerConfig {
     public int discoverSmartHome = 0;
-    public int pollingIntervalSmartHomeAlexa = 60;
+    public int pollingIntervalSmartHomeAlexa = 30;
     public int pollingIntervalSmartSkills = 120;
     public int activityRequestDelay = 10;
+    public int activityRequestWindow = 120;
+    public int activityPollingInterval = 0;
 }

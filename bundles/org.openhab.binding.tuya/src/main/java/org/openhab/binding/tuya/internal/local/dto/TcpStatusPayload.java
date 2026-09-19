@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link TcpStatusPayload} encapsulates the payload of a TCP status message
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Add sub-device node id (cid)
  */
 @NonNullByDefault
 public class TcpStatusPayload {
@@ -27,6 +28,8 @@ public class TcpStatusPayload {
     public String devId = "";
     public String gwId = "";
     public String uid = "";
+    // Set by gateways to the node id of the sub-device the status belongs to.
+    public String cid = "";
     public long t = 0;
     public Map<Integer, Object> dps = Map.of();
     public Data data = new Data();
@@ -34,15 +37,16 @@ public class TcpStatusPayload {
     @Override
     public String toString() {
         return "TcpStatusPayload{protocol=" + protocol + ", devId='" + devId + "', gwId='" + gwId + "', uid='" + uid
-                + "', t=" + t + ", dps=" + dps + ", data=" + data + "}";
+                + "', cid='" + cid + "', t=" + t + ", dps=" + dps + ", data=" + data + "}";
     }
 
     public static class Data {
+        public String cid = "";
         public Map<Integer, Object> dps = Map.of();
 
         @Override
         public String toString() {
-            return "Data{dps=" + dps + "}";
+            return "Data{cid='" + cid + "', dps=" + dps + "}";
         }
     }
 }

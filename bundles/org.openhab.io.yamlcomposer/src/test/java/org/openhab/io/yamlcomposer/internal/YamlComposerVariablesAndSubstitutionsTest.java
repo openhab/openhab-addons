@@ -27,9 +27,13 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
@@ -39,9 +43,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.core.OpenHAB;
+import org.openhab.io.yamlcomposer.internal.YamlComposer.CacheEntry;
 
 /**
  * The {@link YamlComposerVariablesAndSubstitutionsTest} contains tests for the variables and substitutions
@@ -288,6 +295,29 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
         }
 
         @Test
+        @DisplayName("Warns and ignores deep merge operations (!deep) in variables")
+        void warnsAndIgnoresDeepMergeInVariables() throws IOException {
+            String yaml = """
+                    variables:
+                      base:
+                        nested:
+                          key: "main"
+                      !deep <<:
+                        base:
+                          nested:
+                            key2: "from_deep"
+
+                    target: key2_${base.nested.key2}
+                    """;
+
+            Map<Object, @Nullable Object> data = loadYaml(yaml);
+
+            assertThat(getNestedValue(data, "target"), equalTo("key2_"));
+            assertThat(logSession.getTrackedWarnings(),
+                    hasItem(containsString("Deep merge operations (!deep) are not supported in this context")));
+        }
+
+        @Test
         @DisplayName("Supports substitution within variables block (Recursive resolution)")
         void supportsSubstitutionWithinVariablesBlock() throws IOException {
             String yaml = """
@@ -304,6 +334,23 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
 
             assertThat("Variables must support self-referential resolution", getNestedValue(data, "test", "result"),
                     is("root-to-middle-to-leaf"));
+        }
+
+        @Test
+        @DisplayName("Preserves sequential variable references inside directive-generated maps")
+        void preservesSequentialVariableReferencesInsideDirectives() throws IOException {
+            Map<Object, @Nullable Object> result = loadYaml("""
+                    variables:
+                      baseDir: "/var/log"
+                      appDir: "${baseDir}/openhab"
+                      !if true:
+                        logFile: "${appDir}/events.log"
+
+                    target:
+                      activeLog: "${logFile}"
+                    """);
+
+            assertThat(getNestedValue(result, "target", "activeLog"), equalTo("/var/log/openhab/events.log"));
         }
     }
 
@@ -668,6 +715,20 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
             }
 
             @Test
+            @DisplayName("Enumerates list elements using the enumerate filter with a custom start index")
+            void enumeratesListWithFilterAndStartIndex() throws IOException {
+                String yaml = """
+                        variables:
+                          items: ["apple", "banana", "cherry"]
+                        result: ${items | enumerate(1)}
+                        """;
+
+                Map<Object, Object> data = loadYaml(yaml);
+                assertThat(data.get("result"),
+                        equalTo(List.of(List.of(1, "apple"), List.of(2, "banana"), List.of(3, "cherry"))));
+            }
+
+            @Test
             @DisplayName("Enumerates list elements using the enumerate function")
             void enumeratesListWithFunction() throws IOException {
                 String yaml = """
@@ -682,6 +743,20 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
             }
 
             @Test
+            @DisplayName("Enumerates list elements using the enumerate function with a custom start index")
+            void enumeratesListWithFunctionAndStartIndex() throws IOException {
+                String yaml = """
+                        variables:
+                          items: ["apple", "banana", "cherry"]
+                        result: ${enumerate(items, 10)}
+                        """;
+
+                Map<Object, Object> data = loadYaml(yaml);
+                assertThat(data.get("result"),
+                        equalTo(List.of(List.of(10, "apple"), List.of(11, "banana"), List.of(12, "cherry"))));
+            }
+
+            @Test
             @DisplayName("Enumerates map entries using the enumerate filter")
             void enumeratesMapWithFilter() throws IOException {
                 String yaml = """
@@ -691,8 +766,8 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
                         """;
 
                 Map<Object, Object> data = loadYaml(yaml);
-                List<?> resultList = (List<?>) data.get("result");
-                assertThat(resultList, not(empty()));
+                assertThat(data.get("result"), equalTo(List.of(List.of(0, Map.of("key", "a", "value", "apple")),
+                        List.of(1, Map.of("key", "b", "value", "banana")))));
             }
 
             @Test
@@ -705,8 +780,33 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
                         """;
 
                 Map<Object, Object> data = loadYaml(yaml);
-                List<?> resultList = (List<?>) data.get("result");
-                assertThat(resultList, not(empty()));
+                assertThat(data.get("result"), equalTo(List.of(List.of(0, Map.of("key", "a", "value", "apple")),
+                        List.of(1, Map.of("key", "b", "value", "banana")))));
+            }
+
+            @Test
+            @DisplayName("Writes compiled output for enumerated map without serialization errors")
+            void writesCompiledOutputForEnumeratedMap() throws IOException {
+                Path main = writeFixture("enumerate_map.yaml", """
+                        variables:
+                          mapping: { a: "apple", b: "banana" }
+                        result: ${enumerate(mapping)}
+                        """);
+                Path output = Objects.requireNonNull(sharedTempDir).resolve("output.yaml");
+
+                Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
+                ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
+                Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
+                }, trackedEnv::add, logSession, includeCache));
+
+                try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
+                    ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv);
+                }
+
+                assertThat(Files.exists(output), is(true));
+                String content = Files.readString(output);
+                assertThat(content, containsString("apple"));
+                assertThat(content, containsString("banana"));
             }
         }
 

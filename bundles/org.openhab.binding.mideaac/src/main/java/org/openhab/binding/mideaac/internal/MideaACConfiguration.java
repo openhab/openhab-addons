@@ -48,17 +48,17 @@ public class MideaACConfiguration {
     /**
      * Cloud Account email
      */
-    public String email = "nethome+us@mailinator.com";
+    public String email = "";
 
     /**
      * Cloud Account Password
      */
-    public String password = "password1";
+    public String password = "";
 
     /**
      * Cloud Provider
      */
-    public String cloud = "NetHome Plus";
+    public String cloud = "SmartHome";
 
     /**
      * Token 128 hex length
@@ -107,6 +107,11 @@ public class MideaACConfiguration {
      * true = BCD, false = binary
      */
     public boolean energyDecode = true;
+
+    /**
+     * Token and Key Method Big Endian or Little Endian
+     */
+    public String tokenKeyMethod = "BigEndian";
 
     /**
      * Check during initialization that the params are valid

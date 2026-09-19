@@ -49,6 +49,7 @@ class YamlComposerFileCacheTest extends AbstractYamlComposerTest {
 
         ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
         YamlComposer.load(main, p -> {
+        }, env -> {
         }, logSession, includeCache);
 
         Path real = included.toRealPath();
@@ -76,6 +77,7 @@ class YamlComposerFileCacheTest extends AbstractYamlComposerTest {
         Files.writeString(included, "a: refreshed");
 
         YamlComposer.load(main, p -> {
+        }, env -> {
         }, logSession, includeCache);
 
         CacheEntry entry = includeCache.get(real);

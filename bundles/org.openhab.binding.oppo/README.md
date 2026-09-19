@@ -29,8 +29,8 @@ The supported Thing types are:
 
 ## Discovery
 
-Manually initiated Auto-discovery is supported if the player is connected via Ethernet and accessible on the same IP subnet of the openHAB server.
-When adding a Thing, choose the Oppo Blu-ray Player Binding and then press the Scan button to initiate discovery.
+Auto-discovery is supported for direct IP connections to a BDP-10x or UDP-20x player if it can be located on the local network using UPnP.
+Otherwise the Thing must be manually added for serial or serial over IP connections and all other older models.
 
 ## Binding Configuration
 
@@ -103,7 +103,7 @@ The following channels are available:
 | control           | Player      | Simulate pressing the transport control buttons on the remote control (play/pause/next/previous/rew/ffwd)                             |
 | time-mode         | String      | Sets the time information display mode on the player (T= Title Elapsed, X= Title Remaining, C= Chapter Elapsed, K= Chapter Remaining) |
 | time-display      | Number:Time | Indicates the time information that matches the display on the player for the current `time mode` setting (Read-only)                 |
-| current_title     | Number      | The current title or track number playing (Read-only)                                                                                 |
+| current-title     | Number      | The current title or track number playing (Read-only)                                                                                 |
 | total-title       | Number      | The total number of titles or tracks on the disc (Read-only)                                                                          |
 | current-chapter   | Number      | The current chapter number (Read-only)                                                                                                |
 | total-chapter     | Number      | The total number of chapters in the current title (Read-only)                                                                         |

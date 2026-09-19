@@ -117,6 +117,15 @@ class ColorDeviceTest {
     }
 
     @Test
+    void testALevelAlwaysMeansOn() {
+        // the bridge turns a light off with an onOff event, so no level may read back as off
+        device.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(1));
+        device.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(2));
+        device.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(4));
+        verify(colorItem, Mockito.times(3)).send(new PercentType(1), MATTER_SOURCE);
+    }
+
+    @Test
     void testUpdateStateWithHSB() {
         HSBType hsb = new HSBType(new DecimalType(180), new PercentType(100), new PercentType(100));
         device.updateState(colorItem, hsb);
@@ -133,16 +142,19 @@ class ColorDeviceTest {
         // First call assertions
         List<AttributeState> firstStates = capturedCalls.get(0);
         assertEquals(4, firstStates.size());
+        assertEquals("levelControl", firstStates.get(0).clusterName);
+        assertEquals("onOff", firstStates.get(1).clusterName);
 
         assertListContains(firstStates, "onOff", "onOff", true);
         assertListContains(firstStates, "levelControl", "currentLevel", 254);
         assertListContains(firstStates, "colorControl", "currentHue", 127);
         assertListContains(firstStates, "colorControl", "currentSaturation", 254);
 
-        // Second call assertions
+        // Second call assertions, an off light reports the minimum level
         List<AttributeState> secondStates = capturedCalls.get(1);
-        assertEquals(3, secondStates.size());
+        assertEquals(4, secondStates.size());
         assertListContains(secondStates, "onOff", "onOff", false);
+        assertListContains(secondStates, "levelControl", "currentLevel", 1);
         assertListContains(secondStates, "colorControl", "currentHue", 127);
         assertListContains(secondStates, "colorControl", "currentSaturation", 254);
     }

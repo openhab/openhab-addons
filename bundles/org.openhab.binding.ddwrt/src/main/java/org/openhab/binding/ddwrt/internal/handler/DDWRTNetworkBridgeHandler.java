@@ -28,6 +28,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.DDWRTDiscoveryService;
 import org.openhab.binding.ddwrt.internal.DDWRTNetworkConfiguration;
 import org.openhab.binding.ddwrt.internal.api.DDWRTBaseDevice;
+import org.openhab.binding.ddwrt.internal.api.DDWRTClient;
+import org.openhab.binding.ddwrt.internal.api.DDWRTDhcpLease;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetworkCache;
 import org.openhab.binding.ddwrt.internal.api.DDWRTRadio;
@@ -241,9 +243,17 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler implements Dhcp
 
                     // Update the wireless client directly in the cache
                     cache.computeWirelessClient(clientMac, client -> {
-                        // Set hostname if empty (allows DHCP to override OUI hostnames)
-                        if (!finalHostname.isEmpty() && client.getPrimaryHostname().isEmpty()) {
-                            client.setHostname(finalHostname);
+                        if (!finalHostname.isEmpty() && !client.isHostnameAuthoritative()) {
+                            DDWRTDhcpLease lease = cache.getDhcpLease(clientMac);
+                            String effectiveHostname = finalHostname;
+                            DDWRTClient.HostnameSource source = cache.isDhcpHostnameUsedByOtherMac(finalHostname,
+                                    clientMac) ? DDWRTClient.HostnameSource.DUPLICATE_DHCP
+                                            : DDWRTClient.HostnameSource.DHCP;
+                            if (lease != null && lease.hasStaticHostname()) {
+                                effectiveHostname = lease.getHostname();
+                                source = DDWRTClient.HostnameSource.STATIC_DHCP;
+                            }
+                            client.setHostname(effectiveHostname, source);
                         }
                         if (!ip.isEmpty() && !ip.equals(client.getIpAddress())) {
                             client.setIpAddress(ip);

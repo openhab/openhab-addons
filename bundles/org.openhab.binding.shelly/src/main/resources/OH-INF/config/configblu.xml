@@ -7,8 +7,8 @@
 	<config-description uri="thing-type:shelly:blubattery">
 		<parameter name="deviceAddress" type="text" required="true">
 			<context>mac-address</context>
-			<label>MAC Address</label>
-			<description>MAC Address of the Shelly device</description>
+			<label>Bluetooth Device Address (BDA)</label>
+			<description>Bluetooth device address of the Shelly device (BDA), commonly referred to as its MAC address</description>
 		</parameter>
 		<parameter name="lowBattery" type="integer" required="false">
 			<label>Low Battery Threshold (%)</label>
@@ -29,6 +29,28 @@
 			<label>Enable BLU Gateway Support</label>
 			<description>Enables BLU Gateway support including auto-upload of the required script</description>
 			<default>true</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:shelly:bluws90">
+		<parameter name="deviceAddress" type="text" required="true">
+			<context>mac-address</context>
+			<label>Bluetooth Device Address (BDA)</label>
+			<description>Bluetooth device address of the Shelly device (BDA), commonly referred to as its MAC address</description>
+		</parameter>
+		<parameter name="lowBattery" type="integer" required="false">
+			<label>Low Battery Threshold (%)</label>
+			<description>An alarm is triggered when the device reports a battery charge lower than this threshold. Default: 20%</description>
+			<default>20</default>
+			<unitLabel>%</unitLabel>
+		</parameter>
+		<parameter name="altitude" type="integer" required="false" min="-500" max="9000">
+			<label>Station Altitude (m)</label>
+			<description>Altitude above sea level of the weather station, used to compute Sea Level Pressure. Default: 0 (falls
+				back to openHAB's system location altitude if configured there; if neither is set, reports station pressure
+				unchanged)</description>
+			<default>0</default>
+			<unitLabel>m</unitLabel>
 		</parameter>
 	</config-description>
 

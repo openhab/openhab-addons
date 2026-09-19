@@ -14,7 +14,7 @@ The other app (and/or tuya-mqtt) must be closed in order for this binding to ope
 
 ## Supported Things
 
-There are two things: `project` and `tuyaDevice`.
+There are four things: `project`, `tuyaDevice`, `tuyaGateway` and `tuyaSubDevice`.
 
 The `project` Thing represents a Tuya developer portal cloud project (see below).
 `project` things must be configured manually and are needed for discovery only.
@@ -22,13 +22,26 @@ The `project` Thing represents a Tuya developer portal cloud project (see below)
 `tuyaDevice` things represent a single device.
 They can be configured manually or by discovery.
 
+`tuyaGateway` things represent a device that relays for other devices, e.g. a Bluetooth or ZigBee gateway.
+Apart from being a bridge for its sub-devices, a `tuyaGateway` behaves exactly like a `tuyaDevice` and has its own channels.
+
+`tuyaSubDevice` things represent a device that is reached through a gateway.
+A `tuyaSubDevice` has no connection of its own: all its traffic is relayed by the `tuyaGateway` it is a child of.
+
 Note that `project` is a regular Thing and not a bridge.
 `tuyaDevice` things communicate with the device directly over the local network and do not need a bridge at runtime.
+Only `tuyaSubDevice` things need a bridge, namely the `tuyaGateway` they are connected to.
 
 ## Discovery
 
-Discovery is supported for `tuyaDevice` things.
+Discovery is supported for `tuyaDevice`, `tuyaGateway` and `tuyaSubDevice` things.
 By using discovery all necessary settings of the device are retrieved from your cloud account.
+Devices that turn out to have sub-devices in the cloud account are discovered as `tuyaGateway` instead of `tuyaDevice`, and their sub-devices are discovered underneath them.
+
+A `tuyaSubDevice` cannot exist without its bridge, so sub-devices are only reported once their gateway has been added as a Thing.
+Add the gateway first, then run discovery again to get its sub-devices (background discovery picks them up within a few minutes).
+
+If you already added a gateway as a `tuyaDevice`, you have to delete it and add it again as `tuyaGateway` before its sub-devices can be used.
 
 ## Thing Configuration
 
@@ -84,7 +97,31 @@ Some devices do not automatically refresh channels or only refresh at fairly lon
 The `pollingInterval` can be used to adjust how often channels are updated and can be set to `0` (off) or to any integer value of 10 seconds or higher. The default is 10 seconds.
 Note that this has no practical effect on battery powered devices. These only wake up when they have something to say and then go straight back to sleep.
 
+The advanced option `reloadSchema` acts as a trigger: enable it and save the Thing to retrieve the schema of the device from the cloud again.
+The stored schema of the product is replaced, all things of this product are re-initialized with the channels of the new schema and the option resets itself.
+Channels generated from the previous schema whose data point no longer exists are removed, manually added channels are kept.
+This requires a `project` Thing that is `ONLINE`; if several projects are `ONLINE`, each is tried until one knows the device.
+In textual configuration the option triggers the reload whenever the Thing is loaded from the file, so remove it after use.
+The option is available for `tuyaGateway` and `tuyaSubDevice` things as well.
+
 In case something is not working, please open an issue on [GitHub](https://github.com/openhab/openhab-addons/issues/new?title=[tuya]) and add TRACE level logs.
+
+### `tuyaGateway`
+
+A `tuyaGateway` takes exactly the same parameters as a `tuyaDevice`, and they have the same meaning.
+Use this Thing type instead of `tuyaDevice` for devices that other devices are paired to, such as Bluetooth or ZigBee gateways.
+
+### `tuyaSubDevice`
+
+The mandatory parameters are `deviceId`, `productId` and `subDeviceId`, and the Thing must be a child of the `tuyaGateway` the device is paired to.
+All of these are set during discovery.
+
+The `deviceId` and `productId` have the same meaning as for a `tuyaDevice`.
+The `subDeviceId` is the node ID that identifies the device towards its gateway (`node_id` in the cloud account).
+
+A sub-device has no `ip`, `port`, `protocol` or `localKey`: it is reached through the gateway, which supplies all of these.
+
+The `pollingInterval` works as for a `tuyaDevice`, except that the gateway is asked for the full state of the sub-device on every poll, as sub-devices do not support partial refreshes.
 
 ## Channels
 
@@ -187,6 +224,20 @@ After pressing buttons and copying codes, assign the codes to the Item which con
 
 After receiving the key code, learning mode automatically continues until you send the `study_exit` command or send a key code via the Item containing a code.
 
+## Console Commands
+
+The binding registers the console command `openhab:tuya` for inspecting and refreshing device schemas.
+
+| Command                           | Description                                                                                                                                                                                             |
+|-----------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `openhab:tuya schema <productId>` | Shows the stored schema of a product: data point IDs, codes, types, access, units and ranges.                                                                                                            |
+| `openhab:tuya reload <thingUID>`  | Retrieves the schema of a device Thing from the cloud again, replaces the stored schema of its product, discards the generated channel types and re-initializes all things that use this product. |
+
+`reload` requires a `project` Thing that is `ONLINE`.
+Schemas that are built into the binding cannot be reloaded.
+Use `reload` when the channels of a device do not match the data points reported by the cloud, for example after updating to a binding version that supports additional data point types.
+The same can be done in the UI with the advanced option `reloadSchema` of a `tuyaDevice`, `tuyaGateway` or `tuyaSubDevice` Thing.
+
 ## Full Example
 
 tuya.things:
@@ -220,12 +271,34 @@ Thing tuya:tuyaDevice:plug "Smart Plug" [
 }
 ```
 
+A gateway and its sub-devices:
+
+```java
+Bridge tuya:tuyaGateway:gateway "ZigBee Gateway" [
+    deviceId="GATEWAY_DEVICE_ID",
+    productId="GATEWAY_PRODUCT_ID",
+    localKey="GATEWAY_LOCAL_KEY",
+    ip="192.168.1.101",
+    protocol="3.3"
+] {
+    Thing tuyaSubDevice sensor "Door Sensor" [
+        deviceId="SUB_DEVICE_ID",
+        productId="SUB_DEVICE_PRODUCT_ID",
+        subDeviceId="NODE_ID"
+    ] {
+        Channels:
+            Type switch : doorcontact_state        [ dp=1 ]
+    }
+}
+```
+
 tuya.items:
 
 ```java
 Switch Plug_Power       "Power"              { channel="tuya:tuyaDevice:plug:power" }
 String Plug_WorkMode    "Work mode"          { channel="tuya:tuyaDevice:plug:work_mode" }
 Number Plug_Countdown   "Countdown [%d s]"   { channel="tuya:tuyaDevice:plug:countdown" }
+Switch Door_Contact     "Door"               { channel="tuya:tuyaSubDevice:gateway:sensor:doorcontact_state" }
 ```
 
 ## Troubleshooting
@@ -234,6 +307,8 @@ Number Plug_Countdown   "Countdown [%d s]"   { channel="tuya:tuyaDevice:plug:cou
 Remove the bridge reference (and any surrounding `Bridge { ... }` block) from the Thing definition, as described in [Supported Things](#supported-things).
 - If the `project` Thing is not coming `ONLINE`, check if you see your devices in the cloud account on `iot.tuya.com`.
 If the list is empty, most likely you selected the wrong data center.
+- If channels are missing or have an unexpected type (e.g. a `String` channel for a numeric fault data point), the stored schema may be outdated.
+Reload it from the cloud by enabling the advanced option `reloadSchema` of the Thing and saving (see [`tuyaDevice`](#tuyadevice)), or check it with `openhab:tuya schema <productId>` and refresh it with `openhab:tuya reload <thingUID>` (see [Console Commands](#console-commands)).
 - Check if there are errors in the log and if you see messages like `Configuring IP address '192.168.1.100' for Thing 'tuya:tuya:tuyaDevice:bf3122fba012345fc9pqa'`.
 If this is missing, try configuring the IP manually.
 The MAC of your device can be found in the auto-discovered Thing properties (this helps to identify the device in your router).

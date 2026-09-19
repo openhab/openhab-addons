@@ -17,17 +17,26 @@ import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
+import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.openhab.core.io.net.mac.MacResolver;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +46,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hans-Jörg Merk - Initial contribution
  * @author Kai Kreuzer - some refactoring for performance and simplification
+ * @author Lee Ballard - Added MAC address enrichment to discovery results
  *
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class)
-public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
+@Component(service = { UpnpDiscoveryParticipant.class, DiscoveryService.class })
+public class WemoDiscoveryParticipant extends AbstractDiscoveryService implements UpnpDiscoveryParticipant {
 
-    private Logger logger = LoggerFactory.getLogger(WemoDiscoveryParticipant.class);
+    private final Logger logger = LoggerFactory.getLogger(WemoDiscoveryParticipant.class);
+    private final MacResolver macResolver;
+    private final Map<ThingUID, DiscoveryResult> pendingDiscoveryResults = new ConcurrentHashMap<>();
+
+    @Activate
+    public WemoDiscoveryParticipant(@Reference MacResolver macResolver) {
+        super(Set.of(), 0, false);
+        this.macResolver = macResolver;
+    }
+
+    @Deactivate
+    protected void deactivate() {
+        pendingDiscoveryResults.clear();
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -69,10 +92,39 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
             logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
                     device.getDetails().getFriendlyName(), device.getIdentity().getUdn().getIdentifierString());
 
-            return result;
+            CompletableFuture<@Nullable String> macFuture = macResolver
+                    .resolveMac(device.getIdentity().getDescriptorURL().getHost());
+            if (macFuture.isDone()) {
+                return withMacAddress(result, macFuture.getNow(null));
+            }
+            if (pendingDiscoveryResults.putIfAbsent(uid, result) == null) {
+                macFuture.whenComplete((macAddress, exception) -> {
+                    DiscoveryResult pendingResult = pendingDiscoveryResults.remove(uid);
+                    if (pendingResult != null) {
+                        thingDiscovered(withMacAddress(pendingResult, macAddress));
+                    }
+                });
+            }
+
+            return null;
         } else {
             return null;
         }
+    }
+
+    private DiscoveryResult withMacAddress(DiscoveryResult result, @Nullable String macAddress) {
+        if (macAddress == null) {
+            return result;
+        }
+        Map<String, Object> properties = new HashMap<>(result.getProperties());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+        return DiscoveryResultBuilder.create(result.getThingUID()).withProperties(properties)
+                .withLabel(result.getLabel()).withRepresentationProperty(UDN).build();
+    }
+
+    @Override
+    protected void startScan() {
+        stopScan();
     }
 
     @Override
