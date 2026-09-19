@@ -1254,6 +1254,7 @@ public class Shelly1ApiJsonDTO {
         public @Nullable String windDirectionStr;
         public @Nullable Double apparentTemp;
         public @Nullable Double seaLevelPressure;
+        public @Nullable Double capacitorVoltage;
     }
 
     public static class ShellySettingsSmoke {
