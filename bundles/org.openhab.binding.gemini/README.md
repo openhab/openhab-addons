@@ -32,6 +32,7 @@ API keys can be created and managed under Google AI Studio: <https://aistudio.go
 | topP            | decimal | A value between 0.0 and 1.0 for nucleus sampling, where the model considers the results of the tokens with topP probability mass.        | 1.0                   | no       | yes      |
 | maxOutputTokens | integer | The maximum number of tokens to include in a candidate.                                                                                  | 2048                  | no       | yes      |
 | maxModelTurns   | integer | The maximum number of interaction turns with the model allowed in a single request to prevent infinite loops and excess resource usage.  | 10                    | no       | yes      |
+| thinkingLevel   | text    | Controls effort on thinking for models supporting it (`unspecified`, `minimal`, `low`, `medium`, `high`).                                | none                  | no       | yes      |
 
 It is generally recommended to either alter temperature or topP, but not both.
 For Gemini 3.x models, Google recommends keeping both values at their default.
@@ -50,6 +51,7 @@ Channels of type `chat` take the following configuration parameters:
 | temperature     | decimal | A value between 0.0 and 2.0, which overrides the thing-level temperature.                      | no       | yes      |
 | topP            | decimal | A value between 0.0 and 1.0, which overrides the thing-level topP.                             | no       | yes      |
 | maxOutputTokens | integer | The maximum number of tokens to include in a candidate, overriding the thing-level max tokens. | no       | yes      |
+| thinkingLevel   | text    | Controls effort on thinking, overriding the thing-level setting.                               | no       | yes      |
 
 Channel configuration defaults to the [Thing configuration](#thing-configuration), except for `systemMessage`, which defaults to _You are a helpful assistant_.
 
@@ -84,11 +86,19 @@ var geminiActions = actions.thingActions("gemini", "gemini:account:myaccount");
 
 The `account` Thing provides the following actions:
 
-| Action Signature                                                                                                                                   | Return Type | Description                                                                                                                                                                                    |
-|----------------------------------------------------------------------------------------------------------------------------------------------------|-------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `sendMessage(String prompt)`                                                                                                                       | `String`    | Sends a prompt to Gemini using the Thing's configured model and parameters, and returns the response text, or `null` if the request failed.                                                    |
-| `sendMessage(String prompt, String model)`                                                                                                         | `String`    | Sends a prompt to Gemini using the specified model, falling back to default parameters, and returns the response text, or `null` if the request failed.                                        |
-| `sendMessage(String prompt, String model, String systemMessage, Double temperature, Double topP, Integer maxOutputTokens, Integer requestTimeout)` | `String`    | Sends a prompt with detailed generation settings (where null values fall back to [Thing configuration](#thing-configuration)), and returns the response text, or `null` if the request failed. |
+| Action Signature                                                                                                                                                         | Return Type | Description                                                                                                                                                                                    |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `sendMessage(String prompt)`                                                                                                                                             | `String`    | Sends a prompt to Gemini using the Thing's configured model and parameters, and returns the response text, or `null` if the request failed.                                                    |
+| `sendMessage(String prompt, String model)`                                                                                                                               | `String`    | Sends a prompt to Gemini using the specified model, falling back to default parameters, and returns the response text, or `null` if the request failed.                                        |
+| `sendMessage(String prompt, String model, String systemMessage, Double temperature, Double topP, Integer maxOutputTokens, String thinkingLevel, Integer requestTimeout)` | `String`    | Sends a prompt with detailed generation settings (where null values fall back to [Thing configuration](#thing-configuration)), and returns the response text, or `null` if the request failed. |
+
+Supported values for `thinkingLevel` are:
+
+- `unspecified`
+- `minimal`
+- `low`
+- `medium`
+- `high`
 
 ### Examples
 
