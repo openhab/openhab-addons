@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.asuswrt.internal.helpers;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.measure.Unit;
@@ -42,6 +43,8 @@ import com.google.gson.JsonPrimitive;
 public class AsuswrtUtils {
     private static final Pattern PATTERN_MAC_PAIRS = Pattern.compile("^([a-fA-F0-9]{2}[:\\.-]?){5}[a-fA-F0-9]{2}$");
     private static final Pattern PATTERN_MAC_TRIPLES = Pattern.compile("^([a-fA-F0-9]{3}[:\\.-]?){3}[a-fA-F0-9]{3}$");
+    // asuswrt httpd escapes these characters as numeric HTML entities, often without the trailing ';'
+    private static final Pattern PATTERN_HTML_ENTITY = Pattern.compile("&#(34|38|39|60|62);?");
 
     /*
      * Calculation utility methods
@@ -76,6 +79,27 @@ public class AsuswrtUtils {
      */
     public static <T> T getValueOrDefault(@Nullable T value, T defaultValue) {
         return value == null ? defaultValue : value;
+    }
+
+    /**
+     * Decodes numeric HTML entities (e.g. {@code &#62;} or {@code &#62}) used by asuswrt firmware to escape
+     * '<code>&lt;</code>', '<code>&gt;</code>', '<code>&amp;</code>', '\'' and '"' in nvram values.
+     *
+     * @param value the possibly encoded value
+     * @return the decoded value
+     */
+    public static String unescapeHtmlEntities(@Nullable String value) {
+        if (value == null || value.isEmpty()) {
+            return value == null ? "" : value;
+        }
+        Matcher matcher = PATTERN_HTML_ENTITY.matcher(value);
+        StringBuilder result = new StringBuilder();
+        while (matcher.find()) {
+            char decoded = (char) Integer.parseInt(matcher.group(1));
+            matcher.appendReplacement(result, Matcher.quoteReplacement(String.valueOf(decoded)));
+        }
+        matcher.appendTail(result);
+        return result.toString();
     }
 
     /**
