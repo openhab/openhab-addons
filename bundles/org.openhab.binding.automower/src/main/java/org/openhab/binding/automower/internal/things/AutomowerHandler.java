@@ -450,7 +450,22 @@ public class AutomowerHandler extends BaseThingHandler {
                 calendarTaskArray.add(calendarTask);
             }
 
-            mower.getAttributes().getCalendar().setTasks(calendarTaskArray);
+            // Replace only the tasks belonging to the given work area in the local cache, keeping the tasks of
+            // the other work areas untouched. Otherwise a subsequent call for a different work area would wipe
+            // out the tasks that were just set for this one (and vice versa).
+            if (workAreaId == null || !mower.getAttributes().getCapabilities().hasWorkAreas()) {
+                mower.getAttributes().getCalendar().setTasks(calendarTaskArray);
+            } else {
+                List<CalendarTask> calendarTasks = mower.getAttributes().getCalendar().getTasks();
+                List<CalendarTask> mergedCalendarTasks = new ArrayList<>();
+                for (CalendarTask calendarTask : calendarTasks) {
+                    if (!workAreaId.equals(calendarTask.getWorkAreaId())) {
+                        mergedCalendarTasks.add(calendarTask);
+                    }
+                }
+                mergedCalendarTasks.addAll(calendarTaskArray);
+                mower.getAttributes().getCalendar().setTasks(mergedCalendarTasks);
+            }
 
             String id = automowerId.get();
             try {
@@ -479,7 +494,8 @@ public class AutomowerHandler extends BaseThingHandler {
      * @param areaId Id of WorkArea the index belongs to, or null if no WorkAreas are supported
      * @param param The channel that shall be updated
      */
-    public void sendAutomowerCalendarTask(Command command, int index, @Nullable String areaId, String param) {
+    public synchronized void sendAutomowerCalendarTask(Command command, int index, @Nullable String areaId,
+            String param) {
         logger.debug("Sending CalendarTask: index '{}', areaId '{}', param '{}', command '{}'", index, areaId, param,
                 command.toString());
 
