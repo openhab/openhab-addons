@@ -25,7 +25,9 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.time.format.TextStyle;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +39,6 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -87,11 +88,6 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
             buildLocalizedMaps(handler);
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES, vehicleID);
             if (index == 0) {
@@ -100,19 +96,28 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 endpoint = String.join("/", endpoint, API_PATH_PLAN_REPEATING);
             }
             handler.register(this);
-            commonInitialize(new JsonObject());
         });
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_PLAN);
+    }
+
+    @Override
+    public String getIdentifier() {
+        return String.join(".", vehicleID, String.valueOf(index));
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("Plan handler vehicle {} index {} initializing from state", vehicleID, index);
         if (state.has(JSON_KEY_VEHICLES)) {
             state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleID);
-            if (!isInitialized || state.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (state.isEmpty()) {
+                logger.debug("No vehicle state found for {}", vehicleID);
                 return;
             }
-            updateStatus(ThingStatus.ONLINE);
             if (index == 0) {
                 if (state.has(JSON_KEY_PLAN)) {
                     state = state.getAsJsonObject(JSON_KEY_PLAN);
@@ -131,7 +136,8 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 cachedRepeatingPlans.addAll(state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy());
                 // Check the bounds
                 if (cachedRepeatingPlans.size() < index) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                    logger.debug("Plan index {} out of bounds for repeating plans (size {})", index,
+                            cachedRepeatingPlans.size());
                     return;
                 }
                 // Get the corresponding repeating plan
@@ -139,15 +145,19 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 if (state.has(JSON_KEY_TIME) && state.has(JSON_KEY_TZ)) {
                     String time = state.get(JSON_KEY_TIME).getAsString();
                     String tz = state.get(JSON_KEY_TZ).getAsString();
-                    ZonedDateTime zdt = convertEvccTimeToLocal(time, tz);
-                    state.addProperty(JSON_KEY_TIME, zdt.toString());
+                    if (!TimeFormatValidator.isNotExactTimeFormat(time)) {
+                        ZonedDateTime zdt = convertEvccTimeToLocal(time, tz);
+                        state.addProperty(JSON_KEY_TIME, zdt.toString());
+                    }
                 }
                 if (state.has(JSON_KEY_WEEKDAYS)) {
                     parseWeekdaysResponse(state);
                 }
                 cachedRepeatingPlans.set(index - 1, state);
             }
-            updateStatesFromApiResponse(state);
+            createChannelsAndSetStatesFromApiResponse(state);
+            logger.debug("Plan handler vehicle {} index {} initialized successfully", vehicleID, index);
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -265,7 +275,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         ZonedDateTime zdt = ZonedDateTime.now(localZone).plusHours(1).withSecond(0).withNano(0);
         String time = zdt.toInstant().toString(); // Default time
         if (JSON_KEY_TIME.equals(channelKey)) {
-            if (!TimeFormatValidator.isExactTimeFormat(value)) {
+            if (!TimeFormatValidator.isNotExactTimeFormat(value)) {
                 try {
                     OffsetDateTime odt = OffsetDateTime.parse(value, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
                     time = odt.toZonedDateTime().toInstant().toString();
@@ -318,7 +328,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         /**
          * true, if input is exact yyyy-MM-dd'T'HH:mm:ss'Z'
          */
-        public static boolean isExactTimeFormat(String input) {
+        public static boolean isNotExactTimeFormat(String input) {
             try {
                 EXACT_TIME_FMT.parse(input);
                 return true;

@@ -14,6 +14,8 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -23,7 +25,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -64,20 +65,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_LOADPOINTS, String.valueOf(index + 1));
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-
-            if (this instanceof EvccHeatingHandler heating) {
-                heating.updateJSON(stateOpt.getAsJsonObject());
-            }
-
-            JsonObject state = stateOpt.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject();
-
-            modifyJSON(state);
-            commonInitialize(state);
+            handler.register(this);
         });
     }
 
@@ -114,10 +102,29 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject();
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_LOADPOINTS);
+    }
+
+    @Override
+    public Integer getIdentifier() {
+        return (Integer) index;
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        logger.debug("Loadpoint handler {} initializing from state", index);
+        JsonArray loadpoints = state.getAsJsonArray(JSON_KEY_LOADPOINTS);
+        if (loadpoints == null || index >= loadpoints.size() || !loadpoints.get(index).isJsonObject()) {
+            logger.debug("Loadpoint index {} out of bounds or invalid (size {})", index,
+                    loadpoints != null ? loadpoints.size() : 0);
+            return;
+        }
+        state = loadpoints.get(index).getAsJsonObject();
         modifyJSON(state);
-        updateStatesFromApiResponse(state);
+        createChannelsAndSetStatesFromApiResponse(state);
+        logger.debug("Loadpoint handler {} initialized successfully", index);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void modifyJSON(JsonObject state) {
@@ -145,7 +152,9 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_KEY_LOADPOINTS) ? state.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject()
+        JsonArray loadpoints = state.getAsJsonArray(JSON_KEY_LOADPOINTS);
+        return loadpoints != null && index < loadpoints.size() && loadpoints.get(index).isJsonObject()
+                ? loadpoints.get(index).getAsJsonObject()
                 : new JsonObject();
     }
 }

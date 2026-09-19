@@ -19,16 +19,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.ThingTypeUID;
 
+/**
+ * The {@link EvccBindingConstants} class contains fields mapping thing configuration parameters.
+ *
+ * @author Florian Hotze - Initial contribution
+ * @author Luca Arnecke - Update to evcc version 0.123.1
+ * @author Marcel Goerentz - Reworked the binding
+ */
 @NonNullByDefault
 public class EvccBindingConstants {
 
     public static final String BINDING_ID = "evcc";
 
-    // Channels
-    public static final String CHANNEL_PLAN_PRECONDITION = "plan-precondition";
     public static final String CHANNEL_PLAN_SOC = "plan-soc";
+    public static final String CHANNEL_PLAN_PRECONDITION = "plan-precondition";
 
-    // Thing Types
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
     public static final ThingTypeUID THING_TYPE_FORECAST = new ThingTypeUID(BINDING_ID, "forecast");
     public static final ThingTypeUID THING_TYPE_HEATING = new ThingTypeUID(BINDING_ID, "heating");
@@ -51,13 +56,17 @@ public class EvccBindingConstants {
     public static final String PROPERTY_FORECAST = "forecast";
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_INDEX = "index";
-    public static final String PROPERTY_SITE_TITLE = "siteTitle";
     public static final String PROPERTY_SUBTYPE = "subType";
-    public static final String PROPERTY_TITLE = "title";
     public static final String PROPERTY_TYPE = "type";
+    public static final String PROPERTY_TITLE = "title";
+    public static final String PROPERTY_SITE_TITLE = "siteTitle";
     public static final String PROPERTY_VEHICLE_ID = "vehicleId";
 
-    // Property Types
+    public static final String API_PATH_LOADPOINTS = "loadpoints";
+    public static final String API_PATH_VEHICLES = "vehicles";
+    public static final String API_PATH_PLAN_SOC = "plan/soc";
+    public static final String API_PATH_PLAN_REPEATING = "plan/repeating";
+
     public static final String PROPERTY_TYPE_BATTERY = "battery";
     public static final String PROPERTY_TYPE_HEATING = "heating";
     public static final String PROPERTY_TYPE_LOADPOINT = "loadpoint";
@@ -67,13 +76,6 @@ public class EvccBindingConstants {
     public static final String PROPERTY_TYPE_STATISTICS = "statistics";
     public static final String PROPERTY_TYPE_VEHICLE = "vehicle";
 
-    // API Paths
-    public static final String API_PATH_LOADPOINTS = "loadpoints";
-    public static final String API_PATH_PLAN_REPEATING = "plan/repeating";
-    public static final String API_PATH_PLAN_SOC = "plan/soc";
-    public static final String API_PATH_VEHICLES = "vehicles";
-
-    // JSON Keys
     public static final String JSON_KEY_ACTIVE = "active";
     public static final String JSON_KEY_BATTERY = "battery";
     public static final String JSON_KEY_DEVICES = "devices";
@@ -116,19 +118,17 @@ public class EvccBindingConstants {
     public static final String JSON_KEY_VEHICLES = "vehicles";
     public static final String JSON_KEY_WEEKDAYS = "weekdays";
 
-    // Item Types
     public static final String NUMBER_CURRENCY = CoreItemFactory.NUMBER + ":Currency";
     public static final String NUMBER_DIMENSIONLESS = CoreItemFactory.NUMBER + ":Dimensionless";
     public static final String NUMBER_ELECTRIC_CURRENT = CoreItemFactory.NUMBER + ":ElectricCurrent";
     public static final String NUMBER_EMISSION_INTENSITY = CoreItemFactory.NUMBER + ":EmissionIntensity";
     public static final String NUMBER_ENERGY = CoreItemFactory.NUMBER + ":Energy";
-    public static final String NUMBER_ENERGY_PRICE = CoreItemFactory.NUMBER + ":EnergyPrice";
-    public static final String NUMBER_LENGTH = CoreItemFactory.NUMBER + ":Length";
     public static final String NUMBER_POWER = CoreItemFactory.NUMBER + ":Power";
-    public static final String NUMBER_TEMPERATURE = CoreItemFactory.NUMBER + ":Temperature";
     public static final String NUMBER_TIME = CoreItemFactory.NUMBER + ":Time";
+    public static final String NUMBER_LENGTH = CoreItemFactory.NUMBER + ":Length";
+    public static final String NUMBER_ENERGY_PRICE = CoreItemFactory.NUMBER + ":EnergyPrice";
+    public static final String NUMBER_TEMPERATURE = CoreItemFactory.NUMBER + ":Temperature";
 
-    // HTTP Methods
-    public static final String DELETE = "DELETE";
     public static final String POST = "POST";
+    public static final String DELETE = "DELETE";
 }
