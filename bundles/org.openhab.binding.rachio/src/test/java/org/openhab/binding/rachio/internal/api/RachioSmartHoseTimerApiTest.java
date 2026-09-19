@@ -21,6 +21,8 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStationListResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
@@ -158,6 +160,71 @@ class RachioSmartHoseTimerApiTest {
         assertThat(program.getBaseStationId(), is("base-station-id"));
         assertThat(program.getDurationSeconds(), is(900));
         assertThat(program.getDaysOfWeek(), is("[\"MONDAY\",\"WEDNESDAY\"]"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "{}", "{\"unknownFormat\":{\"valveId\":\"unconfirmed-valve\"}}" })
+    void valveProgramsAcceptObjectPlannedRuns(String plannedRunsJson) {
+        String json = """
+                {
+                  "programs": [
+                    {
+                      "id":"program-id",
+                      "resourceId":{"valveId":"valve-id","baseStationId":"base-station-id"},
+                      "plannedRuns":%s
+                    },
+                    {"id":"another-program-id","valveId":"another-valve-id"}
+                  ]
+                }
+                """.formatted(plannedRunsJson);
+
+        RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson(json);
+
+        assertThat(response.programs.size(), is(2));
+        assertThat(response.programs.get(0).id, is("program-id"));
+        assertThat(response.programs.get(0).getValveId(), is("valve-id"));
+        assertThat(response.programs.get(0).getBaseStationId(), is("base-station-id"));
+        assertThat(response.programs.get(0).plannedRuns, is(JsonParser.parseString(plannedRunsJson)));
+        assertThat(response.programs.get(1).getValveId(), is("another-valve-id"));
+
+        RachioValveProgram program = RachioSmartHoseTimerGsonDTO.parseValveProgram(
+                "{\"program\":{\"id\":\"program-id\",\"plannedRuns\":%s}}".formatted(plannedRunsJson));
+
+        assertThat(program.id, is("program-id"));
+        assertThat(program.getValveId(), is(""));
+        assertThat(program.plannedRuns, is(JsonParser.parseString(plannedRunsJson)));
+    }
+
+    @Test
+    void valveProgramsFindValveIdInPlannedRunArray() {
+        String json = """
+                {
+                  "id":"program-id",
+                  "plannedRuns":[
+                    {},
+                    {"resourceId":{"valveId":"valve-id"}}
+                  ]
+                }
+                """;
+
+        RachioValveProgram program = RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
+        RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson("[" + json + "]");
+
+        assertThat(program.getValveId(), is("valve-id"));
+        assertThat(response.programs.get(0).getValveId(), is("valve-id"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "{\"id\":\"program-id\"}", "{\"id\":\"program-id\",\"plannedRuns\":null}",
+            "{\"id\":\"program-id\",\"plannedRuns\":[]}" })
+    void valveProgramsAcceptMissingNullAndEmptyPlannedRuns(String json) {
+        RachioValveProgram program = RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
+        RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson("[" + json + "]");
+
+        assertThat(program.id, is("program-id"));
+        assertThat(program.getValveId(), is(""));
+        assertThat(response.programs.size(), is(1));
+        assertThat(response.programs.get(0).getValveId(), is(""));
     }
 
     @Test

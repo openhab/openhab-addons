@@ -299,7 +299,8 @@ public class RachioSmartHoseTimerGsonDTO {
         public int intervalDays = 0;
         public double seasonalAdjustment = Double.NaN;
         public @Nullable JsonElement daysOfWeek;
-        public List<RachioValveDayRun> plannedRuns = new ArrayList<>();
+        // Program responses can contain an object instead of a day-run array.
+        public @Nullable JsonElement plannedRuns;
 
         public String getThingID() {
             return firstNonBlank(id, getThingName());
@@ -322,10 +323,15 @@ public class RachioSmartHoseTimerGsonDTO {
             if (!valveIds.isEmpty()) {
                 return valveIds.get(0);
             }
-            for (RachioValveDayRun run : plannedRuns) {
-                candidate = run.getValveId();
-                if (!candidate.isBlank()) {
-                    return candidate;
+            JsonElement plannedRuns = this.plannedRuns;
+            if (plannedRuns != null && plannedRuns.isJsonArray()) {
+                List<RachioValveDayRun> runs = new ArrayList<>();
+                addArrayEntries(runs, plannedRuns.getAsJsonArray(), RachioValveDayRun.class);
+                for (RachioValveDayRun run : runs) {
+                    candidate = run.getValveId();
+                    if (!candidate.isBlank()) {
+                        return candidate;
+                    }
                 }
             }
             return "";
