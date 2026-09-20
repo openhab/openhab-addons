@@ -19,7 +19,6 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,8 +52,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Tracks one player: the state of their live match (pushed by the bridge poll), their next scheduled match and their
- * current ranking (fetched on a slower cycle).
+ * Tracks one player: the state of their live match (pushed by the bridge poll), their next scheduled match (fetched
+ * every detail refresh interval) and their current ranking (fetched on a slower, fixed internal schedule).
  *
  * @author Ben Abulafia - Initial contribution
  */
@@ -63,24 +62,40 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
 
     private static final long DETAIL_INITIAL_DELAY_S = 5;
     private static final long TRANSIENT_RETRY_DELAY_S = 60;
-    // Collapse detail refreshes that fire within this window of the previous one into a single request. The periodic
-    // job (interval >= 60 s) and the 60 s transient retry are never suppressed by it, but the near-simultaneous
-    // startup/reconnect triggers (initial-delay job + bridge-ONLINE refresh) are.
-    private static final long MIN_DETAIL_REFRESH_SPACING_S = 30;
+    // Collapse detail refreshes that fire within this window of the previous one into a single request: the
+    // near-simultaneous startup/reconnect triggers (initial-delay job + bridge-ONLINE refresh) add no fresh data.
+    // The periodic refresh (interval >= 300 s) and the 60 s transient retry are never suppressed by it.
+    private static final long MIN_DETAIL_REFRESH_SPACING_NANOS = TimeUnit.SECONDS.toNanos(30);
+    // Rankings change at most weekly, so the profile is refreshed on this fixed schedule while the configured detail
+    // refresh interval drives only the next-match request.
+    private static final long PROFILE_REFRESH_INTERVAL_NANOS = TimeUnit.HOURS.toNanos(24);
+    // Lifecycle values start at 1, so 0 marks "no refresh in progress".
+    private static final int NO_REFRESH = 0;
+
+    /**
+     * When a detail refresh issued requests and for which lifecycle, so a mark of an earlier lifecycle never applies.
+     */
+    private record RefreshMark(int lifecycle, long nanos) {
+    }
 
     private final Logger logger = LoggerFactory.getLogger(LiveTennisApiPlayerHandler.class);
 
     private long playerId = -1;
+    private long detailRefreshInterval = 7200;
     private boolean detailRefreshEnabled = true;
+    // The single pending detail refresh. Every trigger (initial delay, bridge ONLINE, periodic re-arm, transient retry)
+    // replaces it and every run re-arms it, so at most one refresh is pending and a refresh that just ran pushes the
+    // periodic one out by a full interval instead of letting both run within seconds.
     private @Nullable ScheduledFuture<?> detailJob;
-    private @Nullable ScheduledFuture<?> retryJob;
     private volatile boolean disposed;
-    private final AtomicBoolean refreshInProgress = new AtomicBoolean();
-    // Bumped on every initialize() and dispose(); a detail refresh captures it and only publishes while it still
-    // matches, so an in-flight request cannot publish data or status for a disposed or reconfigured lifecycle.
+    // Bumped on every initialize() and dispose(); a detail refresh captures it and only publishes or re-arms while it
+    // still matches, so an in-flight request cannot publish data or status for a disposed or reconfigured lifecycle.
     private final AtomicInteger lifecycle = new AtomicInteger();
-    // System.nanoTime() of the last refresh that actually issued requests, for the near-sequential duplicate guard.
-    private volatile long lastDetailRefreshNanos;
+    // Lifecycle of the refresh currently issuing requests, or NO_REFRESH. Keyed by lifecycle so a refresh left in
+    // flight by a previous lifecycle can never block the first refresh of the next one.
+    private final AtomicInteger refreshingLifecycle = new AtomicInteger(NO_REFRESH);
+    private volatile @Nullable RefreshMark lastDetailRefresh;
+    private volatile @Nullable RefreshMark lastProfileRefresh;
 
     private @Nullable Match liveMatch;
     private @Nullable Match nextMatch;
@@ -105,34 +120,29 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
             return;
         }
         playerId = config.playerId;
+        detailRefreshInterval = config.detailRefreshInterval;
         detailRefreshEnabled = config.detailRefreshEnabled;
-        lifecycle.incrementAndGet();
+        int currentLifecycle = lifecycle.incrementAndGet();
         disposed = false;
-        // Pre-date the last-refresh mark by the spacing window so the first refresh of this lifecycle always proceeds.
-        lastDetailRefreshNanos = System.nanoTime() - TimeUnit.SECONDS.toNanos(MIN_DETAIL_REFRESH_SPACING_S);
         updateStatus(ThingStatus.UNKNOWN);
 
         // The ranking and next-match refresh is the only quota this thing spends on its own; when it is switched off
         // the thing still tracks live match state pushed by the bridge poll at no extra cost.
         if (detailRefreshEnabled) {
-            detailJob = scheduler.scheduleWithFixedDelay(this::refreshDetails, DETAIL_INITIAL_DELAY_S,
-                    config.detailRefreshInterval, TimeUnit.SECONDS);
+            scheduleDetailRefresh(DETAIL_INITIAL_DELAY_S, currentLifecycle);
         }
     }
 
     @Override
     public void dispose() {
-        lifecycle.incrementAndGet();
-        disposed = true;
-        ScheduledFuture<?> job = detailJob;
-        if (job != null) {
-            job.cancel(true);
-            detailJob = null;
-        }
-        ScheduledFuture<?> retry = retryJob;
-        if (retry != null) {
-            retry.cancel(true);
-            retryJob = null;
+        synchronized (this) {
+            lifecycle.incrementAndGet();
+            disposed = true;
+            ScheduledFuture<?> job = detailJob;
+            if (job != null) {
+                job.cancel(true);
+                detailJob = null;
+            }
         }
         liveMatch = null;
         nextMatch = null;
@@ -153,7 +163,7 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
         if (detailRefreshEnabled && bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            scheduler.execute(this::refreshDetails);
+            scheduleDetailRefresh(0, lifecycle.get());
         }
     }
 
@@ -169,38 +179,63 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
         setOnlineUnlessMisconfigured();
     }
 
-    private void refreshDetails() {
+    /**
+     * Schedules the next detail refresh of the given lifecycle, replacing whatever is pending. Does nothing once that
+     * lifecycle is over, so a run that ends while the handler is being disposed or reconfigured cannot re-arm itself.
+     */
+    private synchronized void scheduleDetailRefresh(long delaySeconds, int lifecycleAtStart) {
+        if (isStale(lifecycleAtStart)) {
+            return;
+        }
+        ScheduledFuture<?> pending = detailJob;
+        if (pending != null) {
+            pending.cancel(false);
+        }
+        detailJob = scheduler.schedule(() -> refreshDetails(lifecycleAtStart), delaySeconds, TimeUnit.SECONDS);
+    }
+
+    private void refreshDetails(int lifecycleAtStart) {
+        if (isStale(lifecycleAtStart)) {
+            return;
+        }
         LiveTennisApiAccountHandler bridge = accountHandler();
         Bridge bridgeThing = getBridge();
         if (bridge == null || bridgeThing == null || bridgeThing.getStatus() != ThingStatus.ONLINE) {
-            // Do not spend quota while the bridge is not known to be up; bridgeStatusChanged retriggers on recovery
+            // Do not spend quota while the bridge is not known to be up; bridgeStatusChanged re-arms on recovery
             return;
         }
-        // The periodic job, the ONLINE-triggered refresh and the transient retry can all fire close together;
-        // let only one detail refresh run at a time so a startup or reconnect burst does not waste quota.
-        if (!refreshInProgress.compareAndSet(false, true)) {
+        if (!acquireRefresh(lifecycleAtStart)) {
+            // Another refresh of this lifecycle is issuing requests right now and re-arms when it finishes
             return;
         }
-        final int lifecycleAtStart = lifecycle.get();
+        long nextDelaySeconds = detailRefreshInterval;
         try {
-            // Collapse near-sequential duplicates: if a refresh issued requests within the spacing window, this trigger
-            // (an initial-delay job racing a bridge-ONLINE refresh, or a still-pending retry) adds no fresh data.
             long now = System.nanoTime();
-            if (now - lastDetailRefreshNanos < TimeUnit.SECONDS.toNanos(MIN_DETAIL_REFRESH_SPACING_S)) {
+            RefreshMark last = lastDetailRefresh;
+            if (last != null && last.lifecycle() == lifecycleAtStart
+                    && now - last.nanos() < MIN_DETAIL_REFRESH_SPACING_NANOS) {
                 return;
             }
-            lastDetailRefreshNanos = now;
+            lastDetailRefresh = new RefreshMark(lifecycleAtStart, now);
 
-            Player refreshedPlayer = bridge.fetchPlayer(playerId);
+            if (isProfileRefreshDue(lifecycleAtStart, now)) {
+                Player refreshedPlayer = bridge.fetchPlayer(playerId);
+                if (isStale(lifecycleAtStart)) {
+                    return;
+                }
+                player = refreshedPlayer;
+                updateProfileChannels(refreshedPlayer);
+                lastProfileRefresh = new RefreshMark(lifecycleAtStart, now);
+            }
             Match refreshedNextMatch = bridge.fetchNextMatch(playerId);
             if (isStale(lifecycleAtStart)) {
                 return;
             }
-            player = refreshedPlayer;
-            updateProfileChannels(refreshedPlayer);
             nextMatch = refreshedNextMatch;
             updateNextMatchChannels(refreshedNextMatch);
         } catch (LiveTennisApiNotFoundException e) {
+            // A wrong player id will not fix itself; the next configuration change starts a new lifecycle
+            nextDelaySeconds = -1;
             if (!isStale(lifecycleAtStart)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-player-not-found");
@@ -208,14 +243,15 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
         } catch (LiveTennisApiAuthenticationException e) {
             logger.debug("Authentication failed, the bridge poll will report it", e);
         } catch (LiveTennisApiTransientException e) {
-            if (!isStale(lifecycleAtStart)) {
-                logger.debug("Detail refresh hit a transient error, scheduling a retry", e);
-                scheduleDetailRetry();
-            }
+            logger.debug("Detail refresh hit a transient error, retrying in {} s", TRANSIENT_RETRY_DELAY_S, e);
+            nextDelaySeconds = TRANSIENT_RETRY_DELAY_S;
         } catch (LiveTennisApiException e) {
             logger.debug("Detail refresh failed", e);
         } finally {
-            refreshInProgress.set(false);
+            releaseRefresh(lifecycleAtStart);
+            if (nextDelaySeconds >= 0) {
+                scheduleDetailRefresh(nextDelaySeconds, lifecycleAtStart);
+            }
         }
     }
 
@@ -224,12 +260,31 @@ public class LiveTennisApiPlayerHandler extends BaseThingHandler implements Live
         return disposed || lifecycle.get() != lifecycleAtStart;
     }
 
-    private void scheduleDetailRetry() {
-        ScheduledFuture<?> retry = retryJob;
-        if (retry != null && !retry.isDone()) {
-            return;
+    /**
+     * Marks a refresh of the given lifecycle as issuing requests. Refuses only while another refresh of the same
+     * lifecycle is in progress; a refresh that a previous lifecycle left in flight can no longer publish anything and
+     * must not block the first refresh of the new lifecycle.
+     */
+    private boolean acquireRefresh(int lifecycleAtStart) {
+        while (true) {
+            int current = refreshingLifecycle.get();
+            if (current == lifecycleAtStart) {
+                return false;
+            }
+            if (refreshingLifecycle.compareAndSet(current, lifecycleAtStart)) {
+                return true;
+            }
         }
-        retryJob = scheduler.schedule(this::refreshDetails, TRANSIENT_RETRY_DELAY_S, TimeUnit.SECONDS);
+    }
+
+    private void releaseRefresh(int lifecycleAtStart) {
+        refreshingLifecycle.compareAndSet(lifecycleAtStart, NO_REFRESH);
+    }
+
+    private boolean isProfileRefreshDue(int lifecycleAtStart, long now) {
+        RefreshMark last = lastProfileRefresh;
+        return last == null || last.lifecycle() != lifecycleAtStart
+                || now - last.nanos() >= PROFILE_REFRESH_INTERVAL_NANOS;
     }
 
     private void updateLiveChannels(@Nullable Match match) {

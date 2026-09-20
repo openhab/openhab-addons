@@ -13,7 +13,7 @@
 package org.openhab.binding.livetennisapi.internal.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +25,15 @@ import org.openhab.binding.livetennisapi.internal.api.dto.Match;
 import org.openhab.binding.livetennisapi.internal.api.dto.MatchListResponse;
 
 /**
- * Tests the live-match paging: the client must follow {@code meta.has_more} across pages rather than treating the
- * first page as a complete snapshot, and must stop rather than fan out unbounded requests.
+ * Tests the live-match paging: the client must follow {@code meta.has_more} across pages until the snapshot is
+ * complete, and must fail rather than return a partial snapshot when the page bound is reached.
  *
  * @author Ben Abulafia - Initial contribution
  */
 @NonNullByDefault
 public class LiveTennisApiClientTest {
+
+    private static final int PAGE_SIZE = LiveTennisApiClient.LIVE_MATCH_PAGE_SIZE;
 
     private final LiveTennisApiClient client = new LiveTennisApiClient(new HttpClient(), "test-key");
 
@@ -55,7 +57,6 @@ public class LiveTennisApiClientTest {
             requestedOffsets.add(offset);
             return page(3, false);
         });
-
         assertEquals(3, matches.size());
         assertEquals(List.of(0), requestedOffsets);
     }
@@ -66,25 +67,36 @@ public class LiveTennisApiClientTest {
         List<Match> matches = client.collectLiveMatches(offset -> {
             requestedOffsets.add(offset);
             // First page full and flags more; second page is the tail.
-            return offset == 0 ? page(200, true) : page(5, false);
+            return offset == 0 ? page(PAGE_SIZE, true) : page(5, false);
         });
-
-        assertEquals(205, matches.size());
-        assertEquals(List.of(0, 200), requestedOffsets);
+        assertEquals(PAGE_SIZE + 5, matches.size());
+        assertEquals(List.of(0, PAGE_SIZE), requestedOffsets);
     }
 
     @Test
-    public void stopsAtThePageCapWhenTheApiKeepsReportingMore() throws LiveTennisApiException {
+    public void pagesThroughManyPagesUntilTheSnapshotIsComplete() throws LiveTennisApiException {
+        int fullPages = 7;
         List<Integer> requestedOffsets = new ArrayList<>();
         List<Match> matches = client.collectLiveMatches(offset -> {
             requestedOffsets.add(offset);
-            return page(200, true);
+            return offset < fullPages * PAGE_SIZE ? page(PAGE_SIZE, true) : page(1, false);
         });
+        assertEquals(fullPages * PAGE_SIZE + 1, matches.size());
+        assertEquals(fullPages + 1, requestedOffsets.size());
+        for (int i = 0; i < requestedOffsets.size(); i++) {
+            assertEquals(i * PAGE_SIZE, requestedOffsets.get(i));
+        }
+    }
 
-        // The loop must terminate at the cap rather than spin forever, and never drops the matches it did read.
-        assertEquals(200 * requestedOffsets.size(), matches.size());
-        assertTrue(requestedOffsets.size() >= 2 && requestedOffsets.size() <= 5,
-                "Expected a small, capped number of page fetches but made " + requestedOffsets.size());
+    @Test
+    public void failsInsteadOfReturningAPartialSnapshotAtThePageBound() {
+        List<Integer> requestedOffsets = new ArrayList<>();
+        assertThrows(LiveTennisApiException.class, () -> client.collectLiveMatches(offset -> {
+            requestedOffsets.add(offset);
+            return page(PAGE_SIZE, true);
+        }));
+        // The loop must terminate at the bound rather than spin forever, and must not hand back what it read so far.
+        assertEquals(LiveTennisApiClient.MAX_LIVE_PAGES, requestedOffsets.size());
     }
 
     @Test
@@ -98,8 +110,26 @@ public class LiveTennisApiClientTest {
             response.data = data; // no meta: a short page is treated as the final one
             return response;
         });
-
         assertEquals(1, matches.size());
         assertEquals(List.of(0), requestedOffsets);
+    }
+
+    @Test
+    public void fallsBackToPageFillAndStopsOnTheFirstEmptyPageWhenMetaIsAbsent() throws LiveTennisApiException {
+        List<Integer> requestedOffsets = new ArrayList<>();
+        List<Match> matches = client.collectLiveMatches(offset -> {
+            requestedOffsets.add(offset);
+            MatchListResponse response = new MatchListResponse();
+            List<Match> data = new ArrayList<>();
+            if (offset == 0) {
+                for (int i = 0; i < PAGE_SIZE; i++) {
+                    data.add(new Match());
+                }
+            }
+            response.data = data; // no meta: a full page is followed up, an empty page ends the snapshot
+            return response;
+        });
+        assertEquals(PAGE_SIZE, matches.size());
+        assertEquals(List.of(0, PAGE_SIZE), requestedOffsets);
     }
 }

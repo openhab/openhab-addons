@@ -69,8 +69,8 @@
 			</parameter>
 			<parameter name="detailRefreshInterval" type="integer" min="300" unit="s">
 				<label>Detail Refresh Interval</label>
-				<description>How often to refresh the next match and the ranking in seconds when detail refresh is enabled. Each
-					cycle costs two API requests per player thing.</description>
+				<description>How often to refresh the next match in seconds when detail refresh is enabled; one API request per
+					cycle. The ranking is refreshed once a day in addition.</description>
 				<default>7200</default>
 				<unitLabel>seconds</unitLabel>
 				<advanced>true</advanced>

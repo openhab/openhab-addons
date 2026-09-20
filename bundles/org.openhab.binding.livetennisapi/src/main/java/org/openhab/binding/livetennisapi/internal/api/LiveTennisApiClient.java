@@ -51,10 +51,10 @@ public class LiveTennisApiClient {
     private static final String API_BASE = "https://api.livetennisapi.com/api/public/v1";
     private static final String API_KEY_HEADER = "X-API-Key";
     private static final int TIMEOUT_S = 20;
-    private static final int LIVE_MATCH_PAGE_SIZE = 200;
-    // Cap the live snapshot at a handful of pages: real concurrent live-match counts are far below this, so in
-    // practice a single request is made, but a pathological page count can never fan out unbounded requests.
-    private static final int MAX_LIVE_PAGES = 5;
+    static final int LIVE_MATCH_PAGE_SIZE = 200;
+    // Bound on the pages read per live snapshot so a misbehaving endpoint can never fan out unbounded requests. Real
+    // concurrent live-match counts are far below one page; reaching the bound fails the poll, it never truncates it.
+    static final int MAX_LIVE_PAGES = 50;
     private static final int UPCOMING_MATCH_LIMIT = 10;
 
     private final Logger logger = LoggerFactory.getLogger(LiveTennisApiClient.class);
@@ -78,11 +78,11 @@ public class LiveTennisApiClient {
     }
 
     /**
-     * Returns the matches currently in progress, with their latest score. The endpoint is paginated: this reads the
-     * {@code meta.has_more} flag and pages forward, so matches beyond the first page are not silently dropped. Paging
-     * stops at {@link #MAX_LIVE_PAGES}; if the API still reports more matches at that cap the returned snapshot is
-     * deliberately truncated rather than complete, and that truncation is logged as a warning by
-     * {@link #collectLiveMatches}.
+     * Returns all matches currently in progress, with their latest score. The endpoint is paginated: this reads the
+     * {@code meta.has_more} flag and pages forward until the snapshot is complete, so matches beyond the first page
+     * are never silently dropped. Should the list still be incomplete after {@link #MAX_LIVE_PAGES} pages the call
+     * fails instead of returning a partial snapshot, because callers treat every match absent from the result as not
+     * live.
      */
     public List<Match> getLiveMatches() throws LiveTennisApiException {
         return collectLiveMatches(offset -> get(
@@ -100,8 +100,8 @@ public class LiveTennisApiClient {
 
     /**
      * Pages forward through the live-match list, honouring {@code meta.has_more} rather than guessing from page size,
-     * and stops at {@link #MAX_LIVE_PAGES}. When the API still reports more matches at the cap the snapshot is
-     * truncated deliberately and that truncation is logged, never hidden.
+     * until the snapshot is complete. Fails when the API still reports more matches after {@link #MAX_LIVE_PAGES}
+     * pages: a partial list is never returned as if it were the complete snapshot.
      */
     List<Match> collectLiveMatches(LiveMatchPageFetcher fetcher) throws LiveTennisApiException {
         List<Match> all = new ArrayList<>();
@@ -119,10 +119,9 @@ public class LiveTennisApiClient {
                 return all;
             }
         }
-        logger.warn(
-                "The live match snapshot still reports more results after {} pages of {}; matches beyond {} are not tracked this cycle",
-                MAX_LIVE_PAGES, LIVE_MATCH_PAGE_SIZE, MAX_LIVE_PAGES * LIVE_MATCH_PAGE_SIZE);
-        return all;
+        logger.debug("The live match list still reports more results after {} pages of {}; the snapshot is discarded",
+                MAX_LIVE_PAGES, LIVE_MATCH_PAGE_SIZE);
+        throw new LiveTennisApiException("@text/offline.comm-error-incomplete-snapshot");
     }
 
     /** Returns the given player's next upcoming match, or null if none is scheduled. */

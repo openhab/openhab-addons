@@ -17,7 +17,6 @@ import static org.openhab.binding.livetennisapi.internal.LiveTennisApiBindingCon
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,8 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Tracks one tournament of the catalogue: its curated metadata and the state of its featured (first listed) live
- * match, pushed by the bridge poll.
+ * Tracks one tournament of the catalogue: its curated metadata (fetched once per lifecycle) and the state of its
+ * featured (first listed) live match, pushed by the bridge poll.
  *
  * @author Ben Abulafia - Initial contribution
  */
@@ -60,18 +59,23 @@ import org.slf4j.LoggerFactory;
 public class LiveTennisApiTournamentHandler extends BaseThingHandler implements LiveMatchesListener {
 
     private static final long TRANSIENT_RETRY_DELAY_S = 60;
+    // Lifecycle values start at 1, so 0 marks "no refresh in progress".
+    private static final int NO_REFRESH = 0;
 
     private final Logger logger = LoggerFactory.getLogger(LiveTennisApiTournamentHandler.class);
 
     private String tournamentId = "";
 
+    // The single pending info refresh (initial fetch, bridge ONLINE or transient retry): every trigger replaces it,
+    // so at most one is pending per lifecycle and dispose() has exactly one future to cancel.
     private @Nullable ScheduledFuture<?> infoJob;
-    private @Nullable ScheduledFuture<?> retryJob;
     private volatile boolean disposed;
-    private final AtomicBoolean refreshInProgress = new AtomicBoolean();
-    // Bumped on every initialize() and dispose(); an in-flight info refresh captures it and only publishes while it
-    // still matches, so it cannot publish data or status for a disposed or reconfigured lifecycle.
+    // Bumped on every initialize() and dispose(); an in-flight info refresh captures it and only publishes or re-arms
+    // while it still matches, so it cannot publish data or status for a disposed or reconfigured lifecycle.
     private final AtomicInteger lifecycle = new AtomicInteger();
+    // Lifecycle of the refresh currently issuing a request, or NO_REFRESH. Keyed by lifecycle so a refresh left in
+    // flight by a previous lifecycle can never block the first refresh of the next one.
+    private final AtomicInteger refreshingLifecycle = new AtomicInteger(NO_REFRESH);
     private @Nullable Tournament tournament;
     private List<Match> tournamentMatches = List.of();
 
@@ -89,26 +93,23 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
             return;
         }
         tournamentId = config.tournamentId;
-        lifecycle.incrementAndGet();
+        int currentLifecycle = lifecycle.incrementAndGet();
         disposed = false;
         updateStatus(ThingStatus.UNKNOWN);
 
-        scheduleInfoRefresh(0);
+        scheduleInfoRefresh(0, currentLifecycle);
     }
 
     @Override
     public void dispose() {
-        lifecycle.incrementAndGet();
-        disposed = true;
-        ScheduledFuture<?> job = infoJob;
-        if (job != null) {
-            job.cancel(true);
-            infoJob = null;
-        }
-        ScheduledFuture<?> retry = retryJob;
-        if (retry != null) {
-            retry.cancel(true);
-            retryJob = null;
+        synchronized (this) {
+            lifecycle.incrementAndGet();
+            disposed = true;
+            ScheduledFuture<?> job = infoJob;
+            if (job != null) {
+                job.cancel(true);
+                infoJob = null;
+            }
         }
         tournament = null;
         tournamentMatches = List.of();
@@ -127,7 +128,7 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && tournament == null) {
-            scheduleInfoRefresh(0);
+            scheduleInfoRefresh(0, lifecycle.get());
         }
     }
 
@@ -143,39 +144,36 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
         setOnlineUnlessMisconfigured();
     }
 
-    private void scheduleInfoRefresh(long delaySeconds) {
-        ScheduledFuture<?> job = infoJob;
-        if (job != null && !job.isDone()) {
-            return;
-        }
-        infoJob = scheduler.schedule(this::refreshInfo, delaySeconds, TimeUnit.SECONDS);
-    }
-
     /**
-     * Schedules the transient-error retry on its own future. It must not gate on {@code infoJob}: the retry is
-     * requested from inside {@code refreshInfo}, which runs AS {@code infoJob}, so that future is never done at this
-     * point and gating on it would drop every retry.
+     * Schedules the info refresh of the given lifecycle, replacing whatever is pending. Does nothing once that
+     * lifecycle is over, so a run that ends while the handler is being disposed or reconfigured cannot re-arm itself.
      */
-    private void scheduleInfoRetry() {
-        ScheduledFuture<?> retry = retryJob;
-        if (retry != null && !retry.isDone()) {
+    private synchronized void scheduleInfoRefresh(long delaySeconds, int lifecycleAtStart) {
+        if (isStale(lifecycleAtStart)) {
             return;
         }
-        retryJob = scheduler.schedule(this::refreshInfo, TRANSIENT_RETRY_DELAY_S, TimeUnit.SECONDS);
+        ScheduledFuture<?> pending = infoJob;
+        if (pending != null) {
+            pending.cancel(false);
+        }
+        infoJob = scheduler.schedule(() -> refreshInfo(lifecycleAtStart), delaySeconds, TimeUnit.SECONDS);
     }
 
-    private void refreshInfo() {
+    private void refreshInfo(int lifecycleAtStart) {
+        if (isStale(lifecycleAtStart)) {
+            return;
+        }
         LiveTennisApiAccountHandler bridge = accountHandler();
         Bridge bridgeThing = getBridge();
         if (bridge == null || bridgeThing == null || bridgeThing.getStatus() != ThingStatus.ONLINE) {
-            // Do not spend quota while the bridge is not known to be up; bridgeStatusChanged retriggers on recovery
+            // Do not spend quota while the bridge is not known to be up; bridgeStatusChanged re-arms on recovery
             return;
         }
-        // The initial fetch, the ONLINE-triggered fetch and the retry can coincide; let only one run at a time.
-        if (!refreshInProgress.compareAndSet(false, true)) {
+        if (!acquireRefresh(lifecycleAtStart)) {
+            // Another refresh of this lifecycle is issuing the request right now
             return;
         }
-        final int lifecycleAtStart = lifecycle.get();
+        boolean retry = false;
         try {
             Tournament refreshedTournament = bridge.fetchTournament(tournamentId);
             if (isStale(lifecycleAtStart)) {
@@ -191,20 +189,42 @@ public class LiveTennisApiTournamentHandler extends BaseThingHandler implements 
         } catch (LiveTennisApiAuthenticationException e) {
             logger.debug("Authentication failed, the bridge poll will report it", e);
         } catch (LiveTennisApiTransientException e) {
-            if (!isStale(lifecycleAtStart)) {
-                logger.debug("Tournament info refresh hit a transient error, scheduling a retry", e);
-                scheduleInfoRetry();
-            }
+            logger.debug("Tournament info refresh hit a transient error, retrying in {} s", TRANSIENT_RETRY_DELAY_S, e);
+            retry = true;
         } catch (LiveTennisApiException e) {
             logger.debug("Tournament info refresh failed", e);
         } finally {
-            refreshInProgress.set(false);
+            releaseRefresh(lifecycleAtStart);
+            if (retry) {
+                scheduleInfoRefresh(TRANSIENT_RETRY_DELAY_S, lifecycleAtStart);
+            }
         }
     }
 
     /** Whether the lifecycle has been disposed or re-initialized since the given value was captured. */
     private boolean isStale(int lifecycleAtStart) {
         return disposed || lifecycle.get() != lifecycleAtStart;
+    }
+
+    /**
+     * Marks a refresh of the given lifecycle as issuing a request. Refuses only while another refresh of the same
+     * lifecycle is in progress; a refresh that a previous lifecycle left in flight can no longer publish anything and
+     * must not block the first refresh of the new lifecycle.
+     */
+    private boolean acquireRefresh(int lifecycleAtStart) {
+        while (true) {
+            int current = refreshingLifecycle.get();
+            if (current == lifecycleAtStart) {
+                return false;
+            }
+            if (refreshingLifecycle.compareAndSet(current, lifecycleAtStart)) {
+                return true;
+            }
+        }
+    }
+
+    private void releaseRefresh(int lifecycleAtStart) {
+        refreshingLifecycle.compareAndSet(lifecycleAtStart, NO_REFRESH);
     }
 
     private void updateInfoChannels(@Nullable Tournament tournament) {

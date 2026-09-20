@@ -41,7 +41,7 @@ Configure a `player` thing with a doubles team's id to track that team exactly a
 |-------------------------|-----------|----------|---------|----------------------------------------------------------------------------------------------------|
 | `playerId`              | `integer` | yes      | —       | The player's or doubles team's id in the Live Tennis API; look it up with `GET /players?search=name` |
 | `detailRefreshEnabled`  | `boolean` | no       | `true`  | Whether to refresh the next match and ranking. Turn it off to track only live match state (pushed by the bridge at no extra cost) and spend no quota of this thing's own |
-| `detailRefreshInterval` | `integer` | no       | 7200    | How often to refresh the next match and ranking in seconds when enabled (min: 300); two API requests per cycle |
+| `detailRefreshInterval` | `integer` | no       | 7200    | How often to refresh the next match in seconds when enabled (min: 300); one API request per cycle. The ranking is refreshed once a day in addition |
 
 ### `tournament` Thing
 
@@ -112,13 +112,14 @@ Match channels show the tournament's first listed live match.
 
 The free tier allows 100 requests per day.
 The bridge makes one counted request per refresh cycle (the usage read is quota-exempt), shared by all player and tournament things, so at the default 1800 s interval the bridge uses 48 requests per day.
-Each player thing additionally makes two requests per detail refresh cycle — 24 per day at the default 7200 s interval; setting `detailRefreshEnabled=false` drops those to zero and the thing then tracks only live match state.
+Each player thing additionally makes one next-match request per detail refresh cycle — 12 per day at the default 7200 s interval — plus one ranking request per day; setting `detailRefreshEnabled=false` drops both to zero and the thing then tracks only live match state.
+A tournament thing fetches its metadata once when it starts.
 
-At the defaults a free key therefore fits the bridge plus one player thing (48 + 24 = 72 requests per day, within the 100 per day allowance).
-For several player things or faster live updates, a paid tier with a higher daily quota is required.
+At the defaults a free key therefore fits the bridge plus one player thing (48 + 12 + 1 = 61 requests per day, within the 100 per day allowance), with room for a second player thing (74 per day).
+For more player things or faster live updates, a paid tier with a higher daily quota is required.
 The API answers requests over quota with HTTP 429; the bridge then goes `OFFLINE` with a communication error until a later poll succeeds, and the child things retry their own detail requests with a short backoff.
 
-The live match list is paginated. The bridge reads the `meta.has_more` flag and pages forward (200 matches per page) up to a defensive cap of five pages, so more than 200 concurrent live matches are not silently dropped. If the API still reports more matches at that cap, the snapshot for that cycle is deliberately truncated at 1000 matches and the truncation is logged as a warning rather than presented as complete. In practice the whole live board is well under one page, so this remains a single request per cycle.
+The live match list is paginated. The bridge reads the `meta.has_more` flag and pages forward (200 matches per page) until the snapshot is complete, so more than 200 concurrent live matches are not silently dropped. Should the list still be incomplete after 50 pages, that poll fails and the bridge goes `OFFLINE` with a communication error until the next successful poll, rather than publishing a partial snapshot as if it were complete. In practice the whole live board is well under one page, so this remains a single request per cycle.
 
 ## Full Example
 
