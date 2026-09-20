@@ -6,7 +6,6 @@
 
 	<bridge-type id="account">
 		<label>Emerald Account</label>
-		<description>Emerald Account</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="email" type="text" required="true">
@@ -27,7 +26,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Emerald HWS</label>
-		<description>Thing for Emerald HWS</description>
+		<description>Thing for Emerald Hot Water Service</description>
 
 		<channels>
 			<channel id="power" typeId="power"/>
@@ -53,12 +52,20 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Turns on/off the Hot Water Service</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state/>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>Number</item-type>
 		<label>Mode</label>
 		<description>Mode the HWS is set to</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%.0f %unit%">
 			<options>
 				<option value="0">Boost</option>
@@ -71,18 +78,30 @@
 		<item-type>Number</item-type>
 		<label>Fault Status</label>
 		<description>Report any current Faults from HWS</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="defrost">
 		<item-type>Switch</item-type>
 		<label>Defrost</label>
 		<description>Is the defrost cycle running</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="work-state">
 		<item-type>Number</item-type>
 		<label>Work State</label>
 		<description>Report the current workstate of the HWS</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 			<options>
 				<option value="0">Idle</option>
@@ -95,18 +114,30 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Current Temperature</label>
 		<description>Current Temperature of Hot Water</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="set-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature</label>
 		<description>Set Temperature of Hot Water</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="tank-capacity">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Tank Capacity</label>
 		<description>Report the current hot water capacity of the HWS</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>
