@@ -211,7 +211,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             @Override
             public void onConnectionSuccess(@Nullable Mqtt5Client client,
                     @Nullable OnConnectionSuccessReturn onConnectionSuccessReturn) {
-                logger.info("Successfully connected to Emerald AWS IoT via official AWS CRT!");
+                logger.debug("Successfully connected to Emerald AWS IoT via official AWS CRT!");
                 updateStatus(ThingStatus.ONLINE);
                 subscribeToTopics();
             }
@@ -259,7 +259,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             return; // A reconnection is already scheduled and waiting
         }
 
-        logger.info("Scheduling MQTT reconnection in 30 seconds...");
+        logger.debug("Scheduling MQTT reconnection in 30 seconds...");
         reconnectFuture = scheduler.schedule(() -> {
             try {
                 @Nullable
@@ -313,7 +313,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
                     if (throwable != null) {
                         logger.debug("Failed to subscribe to explicit MQTT topic: {}", topic, throwable);
                     } else {
-                        logger.info("Successfully subscribed to explicit Emerald Heat Pump MQTT topic: {}", topic);
+                        logger.debug("Successfully subscribed to explicit Emerald Heat Pump MQTT topic: {}", topic);
                         requestStatusUpdate(childConfig.uuid);
                     }
                 });
