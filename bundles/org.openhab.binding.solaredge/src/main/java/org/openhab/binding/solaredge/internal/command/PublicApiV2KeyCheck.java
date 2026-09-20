@@ -49,7 +49,7 @@ public class PublicApiV2KeyCheck extends AbstractCommand {
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
+    protected void handleResponse(@Nullable Result result) {
         updateListenerStatus();
     }
 }

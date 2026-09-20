@@ -18,6 +18,7 @@ import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.openhab.binding.solaredge.internal.AtomicReferenceTrait;
+import org.openhab.binding.solaredge.internal.command.AbstractCommand;
 import org.openhab.binding.solaredge.internal.command.PrivateApiTokenCheck;
 import org.openhab.binding.solaredge.internal.command.PublicApiKeyCheck;
 import org.openhab.binding.solaredge.internal.command.PublicApiV2KeyCheck;
@@ -54,7 +56,7 @@ public class WebInterface implements AtomicReferenceTrait {
     /**
      * Configuration
      */
-    private SolarEdgeConfiguration config;
+    private volatile SolarEdgeConfiguration config;
 
     /**
      * handler for updating thing status
@@ -64,7 +66,7 @@ public class WebInterface implements AtomicReferenceTrait {
     /**
      * holds authentication status
      */
-    private boolean authenticated = false;
+    private volatile boolean authenticated = false;
 
     /**
      * HTTP client for asynchronous calls
@@ -81,6 +83,7 @@ public class WebInterface implements AtomicReferenceTrait {
      * request executor
      */
     private final WebRequestExecutor requestExecutor;
+    private final AtomicLong requestGeneration = new AtomicLong();
 
     /**
      * periodic request executor job
@@ -158,6 +161,9 @@ public class WebInterface implements AtomicReferenceTrait {
                 } else {
                     tokenCheckCommand = new PublicApiKeyCheck(handler, this::processAuthenticationResult);
                 }
+                if (tokenCheckCommand instanceof AbstractCommand abstractCommand) {
+                    abstractCommand.bindRequestGeneration(requestGeneration.get(), requestGeneration::get);
+                }
                 tokenCheckCommand.performAction(httpClient);
             }
         }
@@ -218,6 +224,10 @@ public class WebInterface implements AtomicReferenceTrait {
          * @param command
          */
         void enqueue(SolarEdgeCommand command) {
+            if (command instanceof AbstractCommand abstractCommand
+                    && !abstractCommand.bindRequestGeneration(requestGeneration.get(), requestGeneration::get)) {
+                return;
+            }
             try {
                 commandQueue.add(command);
             } catch (IllegalStateException ex) {
@@ -278,6 +288,8 @@ public class WebInterface implements AtomicReferenceTrait {
     }
 
     public void start() {
+        requestGeneration.incrementAndGet();
+        requestExecutor.commandQueue.clear();
         this.config = handler.getConfiguration();
         setAuthenticated(false);
         updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
@@ -298,6 +310,8 @@ public class WebInterface implements AtomicReferenceTrait {
      */
     public void dispose() {
         logger.debug("Webinterface disposed.");
+        requestGeneration.incrementAndGet();
+        requestExecutor.commandQueue.clear();
         cancelJobReference(requestExecutorJobReference);
         setAuthenticated(false);
     }

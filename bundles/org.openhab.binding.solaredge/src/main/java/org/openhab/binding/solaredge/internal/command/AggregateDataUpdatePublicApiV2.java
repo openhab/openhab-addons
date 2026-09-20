@@ -75,7 +75,7 @@ public class AggregateDataUpdatePublicApiV2 extends AbstractCommand {
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
+    protected void handleResponse(@Nullable Result result) {
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
             if (isRetryable() && retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);

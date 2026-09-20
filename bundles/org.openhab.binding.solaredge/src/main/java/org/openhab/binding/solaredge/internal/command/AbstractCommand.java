@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,6 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
@@ -81,6 +83,8 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     private final Runnable publicApiV2CredentialInvalidator;
     private final Runnable publicApiV2RequestRecorder;
     private final Consumer<Response> publicApiV2RateLimitListener;
+    private volatile @Nullable LongSupplier requestGenerationSupplier;
+    private long requestGeneration;
 
     /**
      * the constructor
@@ -132,6 +136,9 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
         super.onSuccess(response);
         communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
         logger.debug("HTTP response {}", response.getStatus());
+        if (!isCurrentRequest()) {
+            return;
+        }
         if (!config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())) {
             publicApiV2RateLimitListener.accept(response);
         }
@@ -174,6 +181,9 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
 
     @Override
     public void performAction(HttpClient asyncclient) {
+        if (!isCurrentRequest()) {
+            return;
+        }
         Request request = asyncclient.newRequest(getURL()).timeout(config.getAsyncTimeout(), TimeUnit.SECONDS);
 
         // add authentication data for every request. Handling this here makes it obsolete to implement for each and
@@ -225,6 +235,9 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * updates status of the registered listener.
      */
     protected final void updateListenerStatus() {
+        if (!isCurrentRequest()) {
+            return;
+        }
         try {
             listener.update(communicationStatus);
         } catch (Exception ex) {
@@ -232,6 +245,29 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
             logger.warn("Exception caught: {}", ex.getMessage(), ex);
         }
     }
+
+    /** Bind a command to the connector generation in which it was first queued. */
+    public final synchronized boolean bindRequestGeneration(long generation, LongSupplier currentGeneration) {
+        if (requestGenerationSupplier == null) {
+            requestGeneration = generation;
+            requestGenerationSupplier = currentGeneration;
+        }
+        return isCurrentRequest();
+    }
+
+    private boolean isCurrentRequest() {
+        LongSupplier supplier = requestGenerationSupplier;
+        return supplier == null || requestGeneration == supplier.getAsLong();
+    }
+
+    @Override
+    public final void onComplete(@Nullable Result result) {
+        if (isCurrentRequest()) {
+            handleResponse(result);
+        }
+    }
+
+    protected abstract void handleResponse(@Nullable Result result);
 
     /**
      * concrete implementation has to prepare the requests with additional parameters, etc

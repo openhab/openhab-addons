@@ -59,7 +59,7 @@ public class LiveDataUpdatePrivateApi extends AbstractCommand implements SolarEd
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
+    protected void handleResponse(@Nullable Result result) {
         logger.debug("[LiveDataUpdatePrivateApi] onComplete()");
         logger.trace("URL: {}", getURL());
 
