@@ -16,7 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.solaredge.internal.oauth.SolarEdgeOAuthException;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -57,5 +59,13 @@ public class SolarEdgeGenericHandlerTest {
         assertEquals(new StringType("true"), SolarEdgeGenericHandler.batteryCriticalState(9.9, 10));
         assertEquals(new StringType("false"), SolarEdgeGenericHandler.batteryCriticalState(10.0, 10));
         assertEquals(UnDefType.UNDEF, SolarEdgeGenericHandler.batteryCriticalState(null, 10));
+    }
+
+    @Test
+    public void distinguishesAuthorizationFromTransientOAuthFailures() {
+        assertEquals(ThingStatusDetail.CONFIGURATION_PENDING, SolarEdgeGenericHandler
+                .oauthFailureStatusDetail(new SolarEdgeOAuthException("Authorization required", true)));
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR,
+                SolarEdgeGenericHandler.oauthFailureStatusDetail(new SolarEdgeOAuthException("Temporary failure")));
     }
 }

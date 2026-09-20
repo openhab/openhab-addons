@@ -92,7 +92,7 @@
 		</parameter>
 		<parameter name="batteryCriticalLevel" type="integer" required="false" min="0" max="100" unit="%"
 			groupName="storage">
-			<label>Critical Battery Level (Private API)</label>
+			<label>Critical Battery Level</label>
 			<description>Battery charge level below which the battery is considered critical.</description>
 			<default>10</default>
 		</parameter>

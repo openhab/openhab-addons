@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -89,7 +90,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     private final PublicApiV2RequestCounter publicApiV2RequestCounter;
     private final SolarEdgeOAuthServlet oAuthServlet;
     private String authorizationUrl = "";
-    private long v2PollingCycle;
+    private final AtomicLong v2PollingCycle = new AtomicLong();
     private @Nullable TimedPower v2Production;
     private @Nullable TimedPower v2Import;
     private @Nullable TimedPower v2Export;
@@ -389,7 +390,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         if (getConfiguration().isUsePrivateApi()) {
             ldu = new LiveDataUpdatePrivateApi(this, this::updateOnlineStatus);
         } else if (PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
-            long cycleId = ++v2PollingCycle;
+            long cycleId = v2PollingCycle.incrementAndGet();
             ldu = new LiveDataUpdatePublicApiV2(this, cycleId, this::updateOnlineStatus);
             getWebInterface().enqueueCommand(ldu);
             getWebInterface().enqueueCommand(
@@ -426,7 +427,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
                 commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.MONTH, this::updateOnlineStatus));
                 commands.add(new AggregateDataUpdatePrivateApi(this, AggregatePeriod.YEAR, this::updateOnlineStatus));
             } else if (PublicApiVersion.V2.equals(getConfiguration().getPublicApiVersion())) {
-                long cycleId = ++v2PollingCycle;
+                long cycleId = v2PollingCycle.incrementAndGet();
                 commands.add(new AggregateDataUpdatePublicApiV2(this, cycleId, false, this::updateOnlineStatus));
                 commands.add(new AggregateDeviceTelemetryUpdatePublicApiV2(this, cycleId, false, false,
                         this::updateOnlineStatus));
@@ -452,7 +453,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
             return;
         }
         logger.debug("polling SolarEdge yearly aggregate data {}", getConfiguration());
-        long cycleId = ++v2PollingCycle;
+        long cycleId = v2PollingCycle.incrementAndGet();
         getWebInterface()
                 .enqueueCommand(new AggregateDataUpdatePublicApiV2(this, cycleId, true, this::updateOnlineStatus));
         getWebInterface().enqueueCommand(
@@ -543,10 +544,16 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
             if (e.isAuthorizationRequired() && authorizationUrl.isBlank() && !config.getOAuthClientId().isBlank()) {
                 setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
             }
-            String description = authorizationUrl.isBlank() ? e.getMessage() : authorizationDescription();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, description);
+            String description = e.isAuthorizationRequired() && !authorizationUrl.isBlank() ? authorizationDescription()
+                    : e.getMessage();
+            updateStatus(ThingStatus.OFFLINE, oauthFailureStatusDetail(e), description);
             return "";
         }
+    }
+
+    static ThingStatusDetail oauthFailureStatusDetail(SolarEdgeOAuthException e) {
+        return e.isAuthorizationRequired() ? ThingStatusDetail.CONFIGURATION_PENDING
+                : ThingStatusDetail.COMMUNICATION_ERROR;
     }
 
     @Override

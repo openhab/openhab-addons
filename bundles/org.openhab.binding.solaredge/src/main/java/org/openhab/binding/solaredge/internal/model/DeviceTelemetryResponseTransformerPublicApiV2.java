@@ -66,8 +66,10 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
         }
         Map<String, StorageTelemetry> storage = response.storage;
         if (storage != null) {
-            Double charge = sumLatest(storage.values().stream().map(s -> s.chargePower).toList());
-            Double discharge = sumLatest(storage.values().stream().map(s -> s.dischargePower).toList());
+            Double charge = storage.isEmpty() ? Double.valueOf(0)
+                    : sumLatest(storage.values().stream().map(s -> s.chargePower).toList());
+            Double discharge = storage.isEmpty() ? Double.valueOf(0)
+                    : sumLatest(storage.values().stream().map(s -> s.dischargePower).toList());
             String unit = unitOf(storage.values().stream().map(s -> s.chargePower).toList(), "W");
             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE), charge,
                     unit);
@@ -97,8 +99,12 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
                 meters == null ? null : sumLatest(meters.values().stream().map(m -> m.importPower).toList()),
                 meters == null ? null : sumLatest(meters.values().stream().map(m -> m.exportPower).toList()),
                 meters == null ? null : sumLatest(meters.values().stream().map(m -> m.consumptionPower).toList()),
-                storage == null ? null : sumLatest(storage.values().stream().map(s -> s.chargePower).toList()),
-                storage == null ? null : sumLatest(storage.values().stream().map(s -> s.dischargePower).toList()),
+                storage == null ? null
+                        : storage.isEmpty() ? Double.valueOf(0)
+                                : sumLatest(storage.values().stream().map(s -> s.chargePower).toList()),
+                storage == null ? null
+                        : storage.isEmpty() ? Double.valueOf(0)
+                                : sumLatest(storage.values().stream().map(s -> s.dischargePower).toList()),
                 level);
     }
 
@@ -114,9 +120,12 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
                 meters == null ? null : sumAll(meters.values().stream().map(m -> m.importEnergy).toList(), from),
                 meters == null ? null : sumAll(meters.values().stream().map(m -> m.exportEnergy).toList(), from),
                 meters == null ? null : sumAll(meters.values().stream().map(m -> m.consumptionEnergy).toList(), from),
-                storage == null ? null : sumPositive(storage.values().stream().map(s -> s.chargeEnergy).toList(), from),
                 storage == null ? null
-                        : sumPositive(storage.values().stream().map(s -> s.dischargeEnergy).toList(), from));
+                        : storage.isEmpty() ? Double.valueOf(0)
+                                : sumPositive(storage.values().stream().map(s -> s.chargeEnergy).toList(), from),
+                storage == null ? null
+                        : storage.isEmpty() ? Double.valueOf(0)
+                                : sumPositive(storage.values().stream().map(s -> s.dischargeEnergy).toList(), from));
     }
 
     public Map<Channel, State> transformAggregate(DeviceTelemetryResponsePublicApiV2 response, AggregatePeriod period) {
@@ -143,7 +152,7 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
         if (storage != null) {
             var series = storage.values().stream().map(s -> s.dischargeEnergy).toList();
             putEnergyType(result, channelProvider.getChannel(group, CHANNEL_ID_BATTERY_SELF_CONSUMPTION),
-                    sumPositive(series, from), unitOf(series, "WH"));
+                    storage.isEmpty() ? Double.valueOf(0) : sumPositive(series, from), unitOf(series, "WH"));
         }
         return result;
     }

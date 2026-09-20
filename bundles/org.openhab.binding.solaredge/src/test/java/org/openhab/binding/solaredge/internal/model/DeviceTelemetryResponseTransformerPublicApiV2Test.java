@@ -140,6 +140,24 @@ public class DeviceTelemetryResponseTransformerPublicApiV2Test {
     }
 
     @Test
+    public void emptyStorageMapMeansNoBatteryButMissingTelemetryRemainsUnknown() {
+        DeviceTelemetryResponsePublicApiV2 noBattery = parse("{\"storage\":{}}");
+        DeviceTelemetryResponsePublicApiV2 missingTelemetry = parse("{}");
+
+        var live = transformer.extractLivePowers(noBattery);
+        var aggregate = transformer.extractAggregateEnergies(noBattery);
+        assertEquals(0.0, live.charged());
+        assertEquals(0.0, live.discharged());
+        assertEquals(0.0, aggregate.charged());
+        assertEquals(0.0, aggregate.discharged());
+        assertEquals("0 W", state(transformer.transformLive(noBattery), "battery_charge"));
+        assertEquals("0 Wh",
+                state(transformer.transformAggregate(noBattery, AggregatePeriod.DAY), "batterySelfConsumption"));
+        assertNull(transformer.extractLivePowers(missingTelemetry).charged());
+        assertNull(transformer.extractAggregateEnergies(missingTelemetry).charged());
+    }
+
+    @Test
     public void extractsDirectConsumption() {
         DeviceTelemetryResponsePublicApiV2 response = parse("""
                 {"meters":{"606599711":{

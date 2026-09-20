@@ -19,6 +19,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -116,6 +117,7 @@ public class SolarEdgeOAuthClient {
         logger.debug("Requesting SolarEdge OAuth token using {} grant", grantType);
         try {
             ContentResponse response = httpClient.newRequest(PUBLIC_DATA_API_V2_TOKEN_URL).method(HttpMethod.POST)
+                    .timeout(config.getSyncTimeout(), TimeUnit.SECONDS)
                     .content(
                             new StringContentProvider("application/json", gson.toJson(payload), StandardCharsets.UTF_8))
                     .send();

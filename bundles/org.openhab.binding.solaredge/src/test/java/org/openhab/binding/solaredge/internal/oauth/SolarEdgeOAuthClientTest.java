@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -28,6 +29,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -61,6 +63,7 @@ public class SolarEdgeOAuthClientTest {
     public void setUpRequest() throws Exception {
         when(httpClient.newRequest(anyString())).thenReturn(request);
         when(request.method(HttpMethod.POST)).thenReturn(request);
+        when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
         when(request.content(any())).thenReturn(request);
         when(request.send()).thenReturn(response);
     }
@@ -193,6 +196,16 @@ public class SolarEdgeOAuthClientTest {
         assertEquals("site-id", values.get("authorizedSiteId"));
         assertEquals("client-id", values.get("authorizedClientId"));
         assertTrue(client.hasRefreshToken(config));
+    }
+
+    @Test
+    public void appliesConfiguredTimeoutToTokenExchange() throws Exception {
+        config.setSyncTimeout(7);
+        when(response.getStatus()).thenReturn(503);
+
+        assertThrows(SolarEdgeOAuthException.class, () -> client.exchangeAuthorizationCode(config, "code"));
+
+        verify(request).timeout(7, TimeUnit.SECONDS);
     }
 
     private void authorizeStoredTokens() {
