@@ -29,8 +29,8 @@ The supported Thing types are:
 
 ## Discovery
 
-Manually initiated Auto-discovery is supported if the player is connected via Ethernet and accessible on the same IP subnet of the openHAB server.
-When adding a Thing, choose the Oppo Blu-ray Player Binding and then press the Scan button to initiate discovery.
+Auto-discovery is supported for direct IP connections to a BDP-10x or UDP-20x player if it can be located on the local network using UPnP.
+Otherwise the Thing must be manually added for serial or serial over IP connections and all other older models.
 
 ## Binding Configuration
 
