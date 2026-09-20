@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tuya.internal.TuyaDynamicCommandDescriptionProvider;
 import org.openhab.binding.tuya.internal.TuyaDynamicStateDescriptionProvider;
+import org.openhab.binding.tuya.internal.TuyaSchemaService;
 import org.openhab.binding.tuya.internal.local.TuyaDevice;
 import org.openhab.binding.tuya.internal.local.UdpDiscoveryListener;
 import org.openhab.core.thing.Bridge;
@@ -47,9 +48,9 @@ public class TuyaGatewayHandler extends TuyaDeviceHandler implements BridgeHandl
     public TuyaGatewayHandler(Bridge bridge, Gson gson,
             TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
             TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider, EventLoopGroup eventLoopGroup,
-            UdpDiscoveryListener udpDiscoveryListener) {
+            UdpDiscoveryListener udpDiscoveryListener, TuyaSchemaService schemaService) {
         super(bridge, gson, dynamicCommandDescriptionProvider, dynamicStateDescriptionProvider, eventLoopGroup,
-                udpDiscoveryListener);
+                udpDiscoveryListener, schemaService);
     }
 
     /**

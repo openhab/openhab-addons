@@ -1,0 +1,14 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "state": {
+    "Vehicle": {
+      "Electronics": {
+        "Battery": {
+          "Level": 255.0,
+          "SensorReliability": 1
+        }
+      }
+    }
+  }
+}

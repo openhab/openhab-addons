@@ -17,6 +17,7 @@ import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -223,10 +224,16 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             }
 
             JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
-            Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
-            if (vehicleArray == null) {
+            Vehicle[] productArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
+            if (productArray == null) {
                 logger.debug("Response resulted in unexpected null array");
                 return new Vehicle[0];
+            }
+            // The products endpoint also returns energy products (e.g. Wall Connector, Powerwall), which have no VIN
+            Vehicle[] vehicleArray = Arrays.stream(productArray).filter(v -> v.vin != null && !v.vin.isBlank())
+                    .toArray(Vehicle[]::new);
+            if (vehicleArray.length < productArray.length) {
+                logger.debug("Ignoring {} product(s) without a VIN", productArray.length - vehicleArray.length);
             }
             for (Vehicle vehicle : vehicleArray) {
                 String responseString = invokeAndParse(vehicle.id, null, null, dataRequestTarget, 0);

@@ -19,6 +19,7 @@ import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.THING
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -69,7 +70,7 @@ public class EcoflowDeviceDiscoveryService extends AbstractThingHandlerDiscovery
     @Override
     protected synchronized void startBackgroundDiscovery() {
         stopBackgroundDiscovery();
-        backgroundScanTask.scheduleRecurring(60);
+        backgroundScanTask.scheduleRecurring(1, TimeUnit.MINUTES, true);
     }
 
     @Override
