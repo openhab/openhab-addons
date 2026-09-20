@@ -256,9 +256,8 @@ public class AwtrixActions implements ThingActions {
             @Nullable String sound, @Nullable Boolean loopSound) {
         if (actions instanceof AwtrixActions awtrixActions) {
             if (appParams != null) {
-                awtrixActions.showCustomNotification(appParams, Boolean.TRUE.equals(hold),
-                        Boolean.TRUE.equals(wakeUp), Boolean.TRUE.equals(stack), rtttl, sound,
-                        Boolean.TRUE.equals(loopSound));
+                awtrixActions.showCustomNotification(appParams, Boolean.TRUE.equals(hold), Boolean.TRUE.equals(wakeUp),
+                        Boolean.TRUE.equals(stack), rtttl, sound, Boolean.TRUE.equals(loopSound));
             }
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
