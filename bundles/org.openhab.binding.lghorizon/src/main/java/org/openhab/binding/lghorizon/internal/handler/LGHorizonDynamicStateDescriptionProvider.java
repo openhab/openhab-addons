@@ -24,9 +24,8 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * Supplies the {@code channel-number} channel with dynamic {@link org.openhab.core.types.StateOption}s (channel
- * number as the value, channel name as the label) so it renders as a selection list in the UI instead of a plain
- * numeric input, sourced from the account's actual entitled channel line-up for the box's own profile/language.
- * Populated by {@link LGHorizonBoxHandler} via {@link #setStateOptions}.
+ * number as the value, channel name as the label), sourced from the account's actual entitled channel line-up for the
+ * box's own profile/language. Populated by {@link LGHorizonBoxHandler} via {@link #setStateOptions}.
  *
  * @author Mark - Initial contribution
  */

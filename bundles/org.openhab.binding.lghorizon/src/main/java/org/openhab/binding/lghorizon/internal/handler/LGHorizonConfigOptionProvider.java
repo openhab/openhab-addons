@@ -30,8 +30,7 @@ import org.osgi.service.component.annotations.Component;
 
 /**
  * Supplies the selection list for the {@code account} thing type's {@code provider} parameter directly from
- * {@link ProviderPresets}, so the dropdown shown in the UI can never drift out of sync with the providers the binding
- * actually implements. Always includes an empty "Custom" entry so users can fall through to the advanced
+ * {@link ProviderPresets}. Always includes an empty "Custom" entry so users can fall through to the advanced
  * {@code country}/{@code apiUrl}/{@code useRefreshToken} parameters for anything not in the list.
  *
  * @author Mark - Initial contribution

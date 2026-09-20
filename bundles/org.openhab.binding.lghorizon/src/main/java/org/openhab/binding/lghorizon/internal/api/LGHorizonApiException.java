@@ -28,18 +28,34 @@ public class LGHorizonApiException extends Exception {
 
     private final boolean authenticationFailure;
 
+    /**
+     * @param message exception message
+     */
     public LGHorizonApiException(String message) {
         this(message, false, null);
     }
 
+    /**
+     * @param message exception message
+     * @param authenticationFailure true if the stored credentials/refresh token are not (or no longer) valid
+     */
     public LGHorizonApiException(String message, boolean authenticationFailure) {
         this(message, authenticationFailure, null);
     }
 
+    /**
+     * @param message exception message
+     * @param cause the cause of this exception
+     */
     public LGHorizonApiException(String message, @Nullable Throwable cause) {
         this(message, false, cause);
     }
 
+    /**
+     * @param message exception message
+     * @param authenticationFailure true if the stored credentials/refresh token are not (or no longer) valid
+     * @param cause the cause of this exception
+     */
     public LGHorizonApiException(String message, boolean authenticationFailure, @Nullable Throwable cause) {
         super(message, cause);
         this.authenticationFailure = authenticationFailure;

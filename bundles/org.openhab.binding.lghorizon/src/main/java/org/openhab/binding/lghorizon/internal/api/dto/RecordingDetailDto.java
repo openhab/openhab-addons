@@ -53,8 +53,8 @@ public class RecordingDetailDto {
     public Integer episodeNumber;
 
     /**
-     * The show/program name: {@code title} itself for a {@code "show"}-sourced (standalone) recording, otherwise the
-     * separate {@code showTitle} field.
+     * @returns he show/program name: {@code title} itself for a {@code "show"}-sourced (standalone) recording,
+     *          otherwise the separate {@code showTitle} field
      */
     public String getShowTitle() {
         return "show".equalsIgnoreCase(source) ? title : showTitle;

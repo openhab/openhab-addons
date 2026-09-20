@@ -210,6 +210,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         initializeFuture = scheduler.schedule(this::doInitialize, delaySeconds, TimeUnit.SECONDS);
     }
 
+    /**
+     * @param discoveryService
+     */
     public void setDiscoveryService(LGHorizonDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
         if (ThingStatus.ONLINE.equals(thing.getStatus())) {
@@ -220,7 +223,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     private record ResolvedProvider(String apiUrl, String countryCode, boolean useRefreshToken) {
     }
 
-    private ResolvedProvider resolveProvider(LGHorizonAccountConfiguration config) {
+    private ResolvedProvider resolveProvider(LGHorizonAccountConfiguration config) throws IllegalArgumentException {
         String provider = config.provider;
         if (provider != null && !provider.isBlank()) {
             ProviderPresets.Preset preset = ProviderPresets.get(provider); // throws if unknown
@@ -238,7 +241,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
      *
      * @return the URL, with a missing scheme filled in as https:// if needed
      */
-    private String requireHttpsUrl(String url) {
+    private String requireHttpsUrl(String url) throws IllegalArgumentException {
         if (!url.contains("://")) {
             return requireHttpsUrl("https://" + url);
         }
@@ -248,8 +251,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(textWithArg("offline.account-invalid-api-url", url));
         }
-        String scheme = uri.getScheme();
-        if (scheme == null || !scheme.equalsIgnoreCase("https") || uri.getHost() == null) {
+        if (!"https".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null) {
             throw new IllegalArgumentException(textWithArg("offline.account-api-url-not-https", url));
         }
         return url;
@@ -274,6 +276,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     /**
      * Keeps {@code provider} and the advanced {@code country}/{@code apiUrl}/{@code useRefreshToken} fields in
      * sync as the account configuration is edited.
+     *
+     * @param configurationParameters the submitted configuration parameters
      */
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
@@ -376,12 +380,18 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     /**
      * Registers a callback invoked for every MQTT message this account's connection sees, used by the
      * {@code lghorizon capture} console command.
+     *
+     * @param onMessage a callback that receives the topic and payload of each message
      */
     public void startLiveCapture(BiConsumer<String, JsonObject> onMessage) {
         liveCaptureListeners.add(onMessage);
     }
 
-    /** Stops a live capture previously started with {@link #startLiveCapture}. */
+    /**
+     * Stops a live capture previously started with {@link #startLiveCapture}.
+     *
+     * @param onMessage the same callback that was passed to {@link #startLiveCapture}
+     */
     public void stopLiveCapture(BiConsumer<String, JsonObject> onMessage) {
         liveCaptureListeners.remove(onMessage);
     }
@@ -393,6 +403,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     /**
      * Starts capturing every REST call this account's auth client makes, for the {@code lghorizon capture} console
      * command's live-capture window.
+     *
+     * @param onCall a callback that receives the URL and raw JSON response of each REST call
      */
     public void startRestCapture(BiConsumer<String, String> onCall) {
         LGHorizonAuthClient auth = authClient;
@@ -401,6 +413,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
     }
 
+    /**
+     * Stops capturing REST calls previously started with {@link #startRestCapture}.
+     */
     public void stopRestCapture() {
         LGHorizonAuthClient auth = authClient;
         if (auth != null) {
@@ -408,11 +423,18 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
     }
 
-    /** Starts capturing metadata (not bytes) about every image fetch - see {@link #fetchImage}. */
+    /**
+     * Starts capturing metadata (not bytes) about every image fetch - see {@link #fetchImage}.
+     *
+     * @param onImageFetch a callback that receives the URL of each image fetch
+     */
     public void startImageCapture(Consumer<String> onImageFetch) {
         this.imageCaptureListener = onImageFetch;
     }
 
+    /**
+     * Stops capturing image fetches previously started with {@link #startImageCapture}.
+     */
     public void stopImageCapture() {
         this.imageCaptureListener = null;
     }
@@ -519,13 +541,25 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
     }
 
-    /** Called by {@link LGHorizonDiscoveryService}. */
+    /**
+     * Get all devices assigned to a customerId. Called by {@link LGHorizonDiscoveryService}.
+     *
+     * @return a list of assigned devices, or an empty list if the customer is not yet loaded or has no devices
+     */
     public List<CustomerDto.DeviceDto> getAssignedDevices() {
         CustomerDto c = customer;
         List<CustomerDto.DeviceDto> devices = c == null ? null : c.assignedDevices;
         return devices == null ? List.of() : new ArrayList<>(devices);
     }
 
+    /**
+     * @param deviceId the deviceId to look up
+     * @return the assigned device with the given deviceId, or {@code null} if not found
+     */
+    /**
+     * @param deviceId the deviceId to look up
+     * @return the assigned device with the given deviceId, or {@code null} if not found
+     */
     public CustomerDto.@Nullable DeviceDto getAssignedDevice(String deviceId) {
         CustomerDto c = customer;
         if (c == null || c.assignedDevices == null) {
@@ -534,17 +568,28 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         return c.assignedDevices.stream().filter(d -> deviceId.equals(d.deviceId)).findFirst().orElse(null);
     }
 
+    /**
+     * @return the list of profiles for this account, or an empty list if the customer is not yet loaded or has no
+     */
     public List<CustomerDto.ProfileDto> getProfiles() {
         CustomerDto c = customer;
         List<CustomerDto.ProfileDto> profiles = c == null ? null : c.profiles;
         return profiles == null ? List.of() : new ArrayList<>(profiles);
     }
 
+    /**
+     * @param profileId the profileId to look up
+     * @return the language code for the given profile, or the default language if not found
+     */
     public String getLanguageForProfile(@Nullable String profileId) {
         String lang = profileId != null ? languageByProfileId.get(profileId) : null;
         return lang != null ? lang : DEFAULT_LANGUAGE;
     }
 
+    /**
+     * @param language the language code to look up
+     * @return the map of channelId -> ChannelDto for the given language, or an empty map if not found
+     */
     public Map<String, ChannelDto> getChannels(String language) {
         return channelsByLanguage.getOrDefault(language, Map.of());
     }
@@ -552,6 +597,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     /**
      * The given profile's favorite channel ids (channel ids, not numbers/names), for populating the
      * favorite-channel-number selection list. Empty if the profile isn't found or has no favorites set.
+     *
+     * @param profileId the profileId to look up
+     * @return the list of favorite channel ids, or an empty list if not found
      */
     public List<String> getFavoriteChannelIds(String profileId) {
         CustomerDto.ProfileDto profile = getProfiles().stream().filter(p -> profileId.equals(p.profileId)).findFirst()
@@ -560,7 +608,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         return favorites == null ? List.of() : favorites;
     }
 
-    /** The account's own customer id, or {@code null} until the account has loaded its customer info. */
+    /**
+     * @return the customer id, or {@code null} if not yet loaded
+     */
     public @Nullable String getCustomerId() {
         CustomerDto c = customer;
         return c == null ? null : c.customerId;
@@ -572,6 +622,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
      * <p>
      * Performs a real network call - callers must invoke this off the MQTT/event-bus thread.
      *
+     * @param eventId the eventId (CRID) to look up
+     * @param language the language code to use for the request
      * @return the event detail, or {@code null} if it could not be resolved
      */
     public @Nullable EventDetailDto getEventDetail(String eventId, String language) {
@@ -593,6 +645,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
      * <p>
      * Performs a real network call - callers must invoke this off the MQTT/event-bus thread.
      *
+     * @param titleId the titleId to look up
+     * @param profileId the profileId to use for the request
+     * @param language the language code to use for the request
      * @return the VOD detail, or {@code null} if it could not be resolved
      */
     public @Nullable VodDetailDto getVodDetail(String titleId, String profileId, String language) {
@@ -620,6 +675,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
      * <p>
      * Performs a real network call - callers must invoke this off the MQTT/event-bus thread.
      *
+     * @param recordingId the recordingId to look up
+     * @param profileId the profileId to use for the request
+     * @param language the language code to use for the request
      * @return the recording detail, or {@code null} if it could not be resolved
      */
     public @Nullable RecordingDetailDto getRecordingDetail(String recordingId, String profileId, String language) {
@@ -644,6 +702,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
      * {@link RawType} suitable for an {@code Image} channel. Performs a real network call - callers must
      * invoke this off the MQTT/event-bus thread.
      *
+     * @param url the image URL to fetch
      * @return the image, or {@code null} if it could not be fetched
      */
     public @Nullable RawType fetchImage(String url) {
@@ -701,6 +760,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
     }
 
+    /**
+     * @return the household id for this account, or {@code null} if not yet loaded
+     */
     public @Nullable String getHouseholdId() {
         LGHorizonAuthClient auth = authClient;
         return auth == null ? null : auth.getHouseholdId();
@@ -709,6 +771,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     /**
      * Registers a box handler so it receives status/UI-status updates for its device id, and (re)subscribes the MQTT
      * topics needed to actually receive them for this specific box.
+     *
+     * @param deviceId the box's device id
      */
     public void registerBox(String deviceId, LGHorizonBoxHandler handler) {
         registeredBoxes.put(deviceId, handler);
@@ -727,10 +791,17 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
     }
 
+    /**
+     * @param deviceId the box to unregister, e.g. when its thing is removed or disabled
+     */
     public void unregisterBox(String deviceId) {
         registeredBoxes.remove(deviceId);
     }
 
+    /**
+     * @param deviceId the box to send the command to
+     * @param w3cKey the W3C key value to send, e.g. {@code "ArrowUp"}, {@code "Enter"}, {@code "MediaPlayPause"}
+     */
     public void sendKey(String deviceId, String w3cKey) {
         JsonObject payload = new JsonObject();
         payload.addProperty("type", "CPE.KeyEvent");
@@ -744,6 +815,10 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         publishToBox(deviceId, payload);
     }
 
+    /**
+     * @param deviceId the box to send the command to
+     * @param channelId the channel id to tune to (not the channel number)
+     */
     public void tuneToChannel(String deviceId, String channelId) {
         JsonObject payload = new JsonObject();
         payload.addProperty("id", randomId(8));
@@ -766,6 +841,10 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     /**
      * Displays an on-screen message for approximately {@code durationSeconds}, by publishing it repeatedly
      * every {@link #DISPLAY_MESSAGE_REPEAT_INTERVAL_SECONDS} seconds.
+     *
+     * @param deviceId the box to display the message on
+     * @param message the message to display
+     * @param durationSeconds how long to display the message, in seconds
      */
     public void displayMessage(String deviceId, String message, int durationSeconds) {
         JsonObject payload = new JsonObject();
@@ -800,6 +879,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         publishToBox(deviceId, payload);
     }
 
+    /**
+     * @param deviceId the box to request the state for
+     */
     public void requestBoxState(String deviceId) {
         long now = System.currentTimeMillis();
         Long last = lastStateRequestMillis.put(deviceId, now);

@@ -20,7 +20,7 @@ import com.google.gson.JsonObject;
  * The {@code /config-service/conf/web/backoffice.json} document. It is a flat map of service-name to an object
  * containing (at least) a {@code URL} field, e.g. {@code personalizationService.URL}, {@code mqttBroker.URL}, etc.
  * <p>
- * Modelled as a raw {@link JsonObject} because the set of services differs slightly per provider and new ones are added
+ * Modeled as a raw {@link JsonObject} because the set of services differs slightly per provider and new ones are added
  * over time.
  *
  * @author Mark - Initial contribution

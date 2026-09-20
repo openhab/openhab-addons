@@ -82,24 +82,17 @@ public class LGHorizonAuthClient {
 
     private @Nullable Consumer<String> refreshTokenListener;
 
-    /**
-     * Set by the {@code lghorizon capture} console command for the duration of a live-capture window:
-     * notified with (anonymized url, anonymized response body) for every successful REST call this client
-     * makes, regardless of which higher-level method triggered it - typed DTO fetches and raw
-     * JsonElement/JsonObject fetches all funnel through {@link #getRaw}, so this one hook point covers all
-     * of them uniformly. {@code null} when no capture is active (the normal case).
-     */
+    // Used by console capture, callback for REST calls during capture window
     private volatile @Nullable BiConsumer<String, String> callCaptureListener;
-
-    public void setCallCaptureListener(@Nullable BiConsumer<String, String> listener) {
-        this.callCaptureListener = listener;
-    }
 
     /**
      * @param apiBaseUrl base URL of the provider's "spark" REST API, e.g.
      *            {@code https://spark-prod-be.gnp.cloud.telenet.tv}
      * @param localeCode two-letter locale used in the service discovery path (e.g. {@code be}, {@code nl}, {@code ch})
      * @param useRefreshTokenFlow whether this provider requires refresh-token auth instead of username/password
+     * @param username optional username for username/password auth flow
+     * @param password optional password for username/password auth flow
+     * @param refreshToken optional refresh token for refresh-token auth flow
      */
     public LGHorizonAuthClient(HttpClient httpClient, String apiBaseUrl, String localeCode, boolean useRefreshTokenFlow,
             @Nullable String username, @Nullable String password, @Nullable String refreshToken) {
@@ -113,14 +106,31 @@ public class LGHorizonAuthClient {
     }
 
     /**
+     * Registers/unregisters a callback that is invoked for every successful REST call this client makes. This is used
+     * by the {@code lghorizon capture} console command, registered at the start of the capture window and unregistered
+     * at the end, to log anonymized request/response pairs for debugging.
+     *
+     * @param listener callback that receives the anonymized request URL and response body, or null to unregister
+     */
+    public void setCallCaptureListener(@Nullable BiConsumer<String, String> listener) {
+        this.callCaptureListener = listener;
+    }
+
+    /**
      * Registers a callback that is invoked every time a new refresh token is issued by the backend, so the caller (the
-     * bridge handler) can persist it back into the thing configuration. Refresh tokens are single-use/rotating on some
-     * providers, so this is important for long-term reliability.
+     * bridge handler) can persist it back into the thing configuration.
+     *
+     * @param listener callback that receives the new refresh token
      */
     public void setRefreshTokenListener(Consumer<String> listener) {
         this.refreshTokenListener = listener;
     }
 
+    /**
+     * Get the householdId
+     *
+     * @return the household id obtained from the backend after a successful login, or null if not logged in yet
+     */
     public @Nullable String getHouseholdId() {
         return householdId;
     }
@@ -128,6 +138,8 @@ public class LGHorizonAuthClient {
     /**
      * Performs the initial login (or resumes from a stored refresh token) and fetches the service discovery document.
      * Must be called once before any other method.
+     *
+     * @throws LGHorizonApiException if the login fails or the service discovery document cannot be fetched
      */
     public void initialize() throws LGHorizonApiException {
         fetchAccessToken();
@@ -141,6 +153,9 @@ public class LGHorizonAuthClient {
 
     /**
      * Exchanges either username/password or a refresh token for a fresh access token + refresh token pair.
+     *
+     * @throws LGHorizonApiException if the login fails (invalid credentials, expired refresh token, network error,
+     *             etc.)
      */
     public synchronized void fetchAccessToken() throws LGHorizonApiException {
         logger.debug("Fetching LG Horizon access token (locale={})", localeCode);
@@ -210,6 +225,11 @@ public class LGHorizonAuthClient {
     /**
      * Performs an authenticated GET request against one of the "spark" REST services and parses the response as the
      * given DTO type.
+     *
+     * @param serviceBaseUrl the base URL of the provider's "spark" REST API
+     * @param path the path to GET
+     * @return the parsed response as an instance of the given type
+     * @throws LGHorizonApiException if the request fails or the response cannot be parsed as the given type
      */
     public <T> T get(String serviceBaseUrl, String path, Class<T> type) throws LGHorizonApiException {
         return parse(getRaw(serviceBaseUrl, path), type);
@@ -241,6 +261,14 @@ public class LGHorizonAuthClient {
         return response;
     }
 
+    /**
+     * Fetches a JSON response from the given service and path and parses it as a {@link JsonObject}.
+     *
+     * @param serviceBaseUrl the base URL of the provider's "spark" REST API
+     * @param path the path to GET
+     * @return the parsed JSON response as a {@link JsonObject}
+     * @throws LGHorizonApiException if the request fails or the response is not valid JSON or not a JSON object
+     */
     public JsonObject getAsJsonObject(String serviceBaseUrl, String path) throws LGHorizonApiException {
         return getAsJsonElement(serviceBaseUrl, path).getAsJsonObject();
     }
@@ -249,6 +277,11 @@ public class LGHorizonAuthClient {
      * Like {@link #getAsJsonObject(String, String)}, but for responses that may be a top-level JSON array
      * (e.g. the channel list) as well as an object - used by the {@code lghorizon fingerprint} console
      * command, which wants the raw, untyped response regardless of shape.
+     *
+     * @param serviceBaseUrl the base URL of the provider's "spark" REST API
+     * @param path the path to GET
+     * @return the raw JSON response as a {@link JsonElement}, which may be an object or an array
+     * @throws LGHorizonApiException if the request fails or the response is not valid JSON
      */
     public JsonElement getAsJsonElement(String serviceBaseUrl, String path) throws LGHorizonApiException {
         ContentResponse response = getRaw(serviceBaseUrl, path);
@@ -287,6 +320,9 @@ public class LGHorizonAuthClient {
      * Fetches and caches the service discovery document ({@code /config-service/conf/web/backoffice.json}) that maps
      * logical service names (personalizationService, linearService, mqttBroker, ...) to their concrete URLs for this
      * provider.
+     *
+     * @return the service discovery document as a {@link ServiceConfigDto}
+     * @throws LGHorizonApiException if the request fails or the response is not valid JSON
      */
     public ServiceConfigDto getServiceConfig() throws LGHorizonApiException {
         ServiceConfigDto cached = serviceConfig;
@@ -307,8 +343,11 @@ public class LGHorizonAuthClient {
 
     /**
      * Raw (untyped) JSON of the service discovery document, for the {@code lghorizon fingerprint} console
-     * command - mirrors the path built internally by {@link #getServiceConfig()}, but returns the unparsed
-     * document instead of the cached {@link ServiceConfigDto} wrapper.
+     * command, returns the unparsed document.
+     *
+     * @param serviceBaseUrl the base URL of the provider's "spark" REST API
+     * @retrun the service discovery document as a {@link JsonElement}
+     * @throws LGHorizonApiException if the request fails or the response is not valid JSON
      */
     public JsonElement getServiceConfigAsJsonElement() throws LGHorizonApiException {
         return getAsJsonElement(apiBaseUrl, "/" + localeCode + EN_CONFIG_SERVICE_CONF_WEB_BACKOFFICE_JSON);
@@ -316,6 +355,9 @@ public class LGHorizonAuthClient {
 
     /**
      * Fetches a short-lived token used as the MQTT password (username is the household id).
+     *
+     * @return the MQTT token as a string
+     * @throws LGHorizonApiException if the request fails or the response does not contain a token
      */
     public String getMqttToken() throws LGHorizonApiException {
         String url = getServiceConfig().getServiceUrl(AUTHORIZATION_SERVICE_URL_FIELD);

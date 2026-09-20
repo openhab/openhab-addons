@@ -61,6 +61,12 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
     private final String clientId;
     private final MqttBrokerConnection connection;
 
+    /**
+     * @param authClient
+     * @param listener
+     * @param scheduler
+     * @throws LGHorizonApiException if the MQTT broker URL cannot be parsed or the connection cannot be established
+     */
     public LGHorizonMqttClient(LGHorizonAuthClient authClient, LGHorizonMqttListener listener,
             ScheduledExecutorService scheduler) throws LGHorizonApiException {
         this.authClient = authClient;
@@ -81,6 +87,9 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
         this.connection = conn;
     }
 
+    /**
+     * @return the random client id used for this MQTT connection (10 alphanumeric characters)
+     */
     public String getClientId() {
         return clientId;
     }
@@ -89,6 +98,8 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
      * Fetches a fresh MQTT token and (re)connects. Blocks the calling thread until the connection is established or
      * {@link #CONNECT_TIMEOUT_SECONDS} elapses; callers should invoke this from a background thread (e.g. the handler's
      * own scheduler), never from the openHAB event bus thread.
+     *
+     * @throws LGHorizonApiException if the connection fails or times out
      */
     public void connect() throws LGHorizonApiException {
         String householdId = authClient.getHouseholdId();
@@ -112,6 +123,8 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
 
     /**
      * Subscribes to a topic filter (may contain {@code +}/{@code #} wildcards).
+     *
+     * @param topicFilter the topic filter to subscribe to
      */
     public void subscribe(String topicFilter) {
         connection.subscribe(topicFilter, this).exceptionally(e -> {
@@ -123,6 +136,8 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
 
     /**
      * Subscribes to all the topics the set-top boxes and account-level services publish on.
+     *
+     * @param householdId the household id to subscribe to
      */
     public void subscribeAccountTopics(String householdId) {
         subscribe(householdId);
@@ -136,6 +151,9 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
     /**
      * Publishes a JSON payload with QoS 1. Fire-and-forget: failures are logged but not retried (the box will simply
      * not react, same as if it were offline).
+     *
+     * @param topic the topic to publish to
+     * @param payload the JSON payload to publish
      */
     public void publish(String topic, JsonObject payload) {
         if (connection.connectionState() != MqttConnectionState.CONNECTED) {
@@ -151,10 +169,16 @@ public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectio
         });
     }
 
+    /**
+     * @return true if the MQTT connection is currently established, false otherwise
+     */
     public boolean isConnected() {
         return connection.connectionState() == MqttConnectionState.CONNECTED;
     }
 
+    /**
+     * Stops the MQTT connection and releases any resources. After calling this method, the client cannot be reused
+     */
     public void disconnect() {
         connection.stop();
     }

@@ -229,11 +229,6 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Handles a command-only, stateless key channel (Switch, {@code autoUpdatePolicy="veto"}): only a press
-     * (ON) does anything, matching how a physical remote button works - there's no meaningful "released"
-     * state to react to, and OFF is never sent by these channels' own semantics anyway.
-     */
     private void sendKeyOnPress(LGHorizonAccountHandler account, Command command, String w3cKey) {
         if (command == OnOffType.ON) {
             account.sendKey(deviceId, w3cKey);
@@ -266,6 +261,9 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Update thing properties from fetched device data.
+     */
     public void updateDeviceProperties() {
         LGHorizonAccountHandler account = getAccountHandler();
         if (account == null) {
@@ -325,9 +323,12 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
     }
 
     /**
-     * Displays an on-screen message. Called by {@link LGHorizonActions}. {@code duration} falls back to
-     * {@link org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants#DEFAULT_DISPLAY_MESSAGE_DURATION_SECONDS}
-     * when not supplied.
+     * Displays an on-screen message. Called by {@link LGHorizonActions}.
+     *
+     * @param message
+     * @param duration display duration, falls back to
+     *            {@link org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants#DEFAULT_DISPLAY_MESSAGE_DURATION_SECONDS}
+     *            when not supplied.
      */
     public void displayMessage(String message, @Nullable Integer duration) {
         LGHorizonAccountHandler account = getAccountHandler();
@@ -347,7 +348,11 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         return account.getLanguageForProfile(profileId);
     }
 
-    /** Handles a {@code .../status} message: coarse running state (online/standby/offline). */
+    /**
+     * Handles a {@code .../status} message: coarse running state (online/standby/offline).
+     *
+     * @param rawState message payload
+     */
     public void handleStatusMessage(String rawState) {
         running = BOX_STATE_ONLINE_RUNNING.equalsIgnoreCase(rawState);
         boolean reachable = running || BOX_STATE_ONLINE_STANDBY.equalsIgnoreCase(rawState);
@@ -362,7 +367,11 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         }
     }
 
-    /** Handles a {@code CPE.uiStatus} message: what is actually playing right now. */
+    /**
+     * Handles a {@code CPE.uiStatus} message: what is actually playing right now.
+     *
+     * @param payload message payload
+     */
     public void handleUiStatusMessage(JsonObject payload) {
         updateStatus(ThingStatus.ONLINE);
         if (!payload.has("status") || !payload.get("status").isJsonObject()) {
@@ -431,7 +440,7 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
                 getString(source, "recordingId").ifPresent(this::resolveRecordingMetadata);
             }
             default -> {
-                // localDVR and anything else: not implemented - reset all title/image channels
+                // localDVR and anything else: not implemented
                 lastResolvedContentId = null;
                 clearTitleMetadata();
                 clearChannelSelections();
@@ -440,10 +449,6 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Updates {@code channel-name} plus number-selection channels for the currently playing linear
-     * channel.
-     */
     private void updateChannelFromId(String channelId) {
         LGHorizonAccountHandler account = getAccountHandler();
         ChannelDto channel = account == null ? null : account.getChannels(getLanguage(account)).get(channelId);
@@ -472,18 +477,12 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Clears {@code channel-name} and all number-selection channels - used whenever the box is not
-     * showing a specific, currently-known linear channel (VOD, a recording, replay, an app, localDVR, or an
-     * unresolvable channel id).
-     */
     private void clearChannelSelections() {
         updateState(CHANNEL_CHANNEL_NAME, UnDefType.UNDEF);
         updateState(CHANNEL_CHANNEL_NUMBER, UnDefType.UNDEF);
         updateState(CHANNEL_FAVORITE_CHANNEL_NUMBER, UnDefType.UNDEF);
     }
 
-    /** Whether {@code contentId} is still what we're currently resolving for - see {@link #resolveEventMetadata}. */
     private boolean isStillCurrent(String contentId) {
         return contentId.equals(lastResolvedContentId);
     }
@@ -626,7 +625,6 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         return resolved != null ? resolved : "";
     }
 
-    /** Fetches the image bytes (a real network call) and updates the media-image channel. */
     private void updateImageFromUrl(String contentId, String url) {
         LGHorizonAccountHandler account = getAccountHandler();
         if (account == null) {
@@ -639,7 +637,6 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         updateState(CHANNEL_MEDIA_IMAGE, image != null ? image : UnDefType.UNDEF);
     }
 
-    /** Clears media-image immediately if no image URL could be resolved at all, otherwise fetches it. */
     private void updateImageFromUrlOrClear(String contentId, @Nullable String url) {
         if (!isStillCurrent(contentId)) {
             return;
@@ -651,7 +648,6 @@ public class LGHorizonBoxHandler extends BaseThingHandler {
         updateImageFromUrl(contentId, url);
     }
 
-    /** Handles the {@code status.appsState} shape used when {@code status.uiStatus} is {@code "apps"}. */
     private void handleAppsState(JsonObject status) {
         JsonObject appsState = status.has("appsState") && status.get("appsState").isJsonObject()
                 ? status.getAsJsonObject("appsState")

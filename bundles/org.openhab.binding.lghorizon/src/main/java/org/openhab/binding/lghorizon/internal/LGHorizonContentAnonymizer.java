@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Static methods to remove sensitive content from captured LG Horizon REST/MQTT payloads, for use in the
- * {@code lghorizon fingerprint} console command.
+ * {@code lghorizon fingerprint} console command and logging.
  * <p>
  * Two anonymization styles are used, matching what's actually useful to a maintainer analyzing a dump:
  * <ul>
@@ -93,17 +93,13 @@ public final class LGHorizonContentAnonymizer {
             "([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}");
     private static final Pattern IP_ADDRESS_PATTERN = fieldPattern("\\w*[Ii][Pp]\\w*",
             "(\\d{1,3}\\.){3}\\d{1,3}(/(\\d{1,3}\\.){3}\\d{1,3})?");
-    // cityId is a Liberty Global city/region identifier that keys the local channel line-up - close enough
-    // to a postcode to be too specific to leave in. Unlike every field above, it's an unquoted JSON number
-    // ("cityId":12345, no quotes around the value), so it needs its own pattern rather than fieldPattern()
-    // (which always expects a quoted value) - and it separately appears as a URL query parameter
-    // (?cityId=12345&...) in the channel-fetch URL, a third shape again. Both are handled here, sharing the
-    // same map/counter so the same real value maps to the same placeholder in either context.
+
+    // cityId and householdId patterns are not field name scoped and required special handling
+    // cityId shape used in JSON (e.g. "cityId":12345 and URL (?cityId=12345&...).
     private static final Pattern CITY_ID_JSON_PATTERN = Pattern
             .compile("(?<leading>\"cityId\"\\s*:\\s*)(?<value>\\d+)");
     private static final Pattern CITY_ID_URL_PATTERN = Pattern.compile("(?<leading>[?&]cityId=)(?<value>\\d+)");
-    // The household id shape (e.g. "DTV123456_be") also appears bare inside MQTT topic strings, not just as
-    // a JSON field value, so this one is not field-name-scoped at all - it matches the token shape anywhere.
+    // household id shape (e.g. "DTV123456_be")
     private static final Pattern HOUSEHOLD_ID_PATTERN = Pattern.compile("\\b[A-Z]{2,6}\\d{4,10}_[a-z]{2}\\b");
 
     private LGHorizonContentAnonymizer() {
@@ -121,8 +117,10 @@ public final class LGHorizonContentAnonymizer {
     /**
      * Anonymizes an MQTT topic string (may contain an embedded household id, e.g.
      * {@code DTV123456_be/DEVICE_ID/status}).
-     * Does NOT redact a device id segment - see the overload below for that, which needs the caller to
-     * supply the specific device id it's looking for.
+     *
+     * @param topic the MQTT topic string to anonymize
+     * @return the topic string with any sensitive fields replaced by anonymized placeholders, or null if the input was
+     *         null
      */
     public static @Nullable String anonymizeTopic(@Nullable String topic) {
         if (topic == null) {
@@ -137,6 +135,9 @@ public final class LGHorizonContentAnonymizer {
     /**
      * Anonymizes a JSON (or plain text) payload: REST response bodies, MQTT message bodies, or anything else
      * that might contain the sensitive fields listed on this class.
+     *
+     * @param message the payload to anonymize
+     * @return the payload with any sensitive fields replaced by anonymized placeholders, or null if the input was null
      */
     public static @Nullable String anonymizeMessage(@Nullable String message) {
         if (message == null) {
@@ -171,6 +172,9 @@ public final class LGHorizonContentAnonymizer {
     /**
      * Anonymizes a bare device id value - not embedded in JSON or a topic string, but used as-is (e.g. in a
      * generated filename or archive path).
+     *
+     * @param deviceId the device id to anonymize
+     * @return the anonymized placeholder for the device id, or "UNKNOWN_DEVICE" if the input was null or blank
      */
     public static String anonymizeDeviceId(@Nullable String deviceId) {
         if (deviceId == null || deviceId.isBlank()) {
@@ -184,9 +188,7 @@ public final class LGHorizonContentAnonymizer {
 
     /**
      * Simple, imprecise-by-design bound on map growth: once a map gets unreasonably large, just clear it
-     * and let it rebuild - not an LRU cache, but sufficient for a diagnostic anonymizer, where "the same
-     * real value always maps to the same placeholder" only needs to hold within one session/capture, not
-     * for the entire lifetime of a long-running openHAB instance.
+     * and let it rebuild.
      */
     private static void evictIfTooLarge(Map<String, String> map) {
         if (map.size() > MAX_TRACKED_VALUES_PER_MAP) {

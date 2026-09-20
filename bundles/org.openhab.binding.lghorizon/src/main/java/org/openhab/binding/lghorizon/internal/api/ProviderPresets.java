@@ -18,16 +18,10 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Known LG Horizon providers and the connection details behind each one. LG Horizon is white-labelled by several cable
- * operators; each one runs its own "spark" cloud backend under the same platform.
+ * Known LG Horizon providers and the connection details behind each one.
  * <p>
  * This is the single source of truth for known providers: both {@link #get(String)} (used to resolve a selected
- * provider to its connection details) and {@code LGHorizonConfigOptionProvider} (used to populate the "provider"
- * dropdown in the UI) read from the same table.
- * <p>
- * A provider that isn't listed here at all (an unreleased backend, a provider's preprod/test environment, ...) doesn't
- * need an entry: the account thing's advanced {@code country}/{@code apiUrl}/ {@code useRefreshToken} parameters can be
- * filled in manually instead.
+ * provider to its connection details) and {@code LGHorizonConfigOptionProvider}.
  *
  * @author Mark - Initial contribution
  */
@@ -39,10 +33,7 @@ public class ProviderPresets {
      *
      * @param apiUrl base URL of the provider's "spark" REST API
      * @param countryCode two-letter locale code used in the service-discovery
-     *            URL path (e.g. {@code be}, {@code nl}, {@code ch}) - not
-     *            necessarily identical to the country implied by the provider
-     *            name (matches {@code country_code[0:2]} in
-     *            lghorizon-python)
+     *            URL path (e.g. {@code be}, {@code nl})
      * @param useRefreshToken whether this provider requires refresh-token auth
      *            instead of plain username/password
      * @param displayName human readable provider name
@@ -71,6 +62,10 @@ public class ProviderPresets {
         // static lookup table
     }
 
+    /**
+     * @param providerId the provider ID (e.g. {@code telenet}, {@code ziggo}, etc.)
+     * @return the connection details for the given provider
+     */
     public static Preset get(String providerId) {
         Preset preset = PRESETS.get(providerId);
         if (preset == null) {
@@ -79,6 +74,9 @@ public class ProviderPresets {
         return preset;
     }
 
+    /**
+     * @return an unmodifiable map of all known provider presets, keyed by provider ID
+     */
     public static Map<String, Preset> all() {
         return PRESETS;
     }

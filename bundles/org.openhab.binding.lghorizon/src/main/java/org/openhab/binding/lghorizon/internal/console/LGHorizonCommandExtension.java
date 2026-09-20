@@ -78,22 +78,16 @@ import com.google.gson.JsonSyntaxException;
  * Console commands to inspect configured LG Horizon accounts/boxes and to capture anonymized REST/MQTT
  * content for later analysis without needing physical access to the box or provider in question.
  * <p>
- * Accounts and boxes are selected by their own identifiers ({@code customerId}, {@code deviceId}) rather
- * than the openHAB thing UID, since a fingerprint or capture is meaningful independent of whether a thing
- * has even been created for a given device yet - {@code boxes} shows both, correlating REST-known devices
- * with any actual box thing that exists for them.
+ * Accounts and boxes are selected by their own identifiers ({@code customerId}, {@code deviceId}).
  * <p>
  * Two distinct, deliberately decoupled capture commands:
  * <ul>
  * <li>{@code fingerprint} - a quick, mostly-instant REST-only dump (customer/entitlements/channels/service
- * config), plus a passive wait for each box's next (or already-cached) {@code .../status} message, since
- * that's the only way to learn a box's state at all - the backend never resends it on request, so skipping
- * this entirely would leave every fingerprint blank on that point.</li>
+ * config), plus a passive wait for each box's next (or already-cached) {@code .../status} message</li>
  * <li>{@code capture} - an active, duration-based live-traffic recording for one specific box: every MQTT
  * status/uiStatus message, every REST call the binding makes in response (event/VOD/recording detail
  * lookups, the intent image URL lookup), and metadata (never the actual bytes) for every image fetch.
- * Requires the device to have an actual box thing already configured, since live capture attaches to that
- * thing's own message handling.</li>
+ * Requires the device to have an actual box thing already configured.</li>
  * </ul>
  *
  * @author Mark - Initial contribution
@@ -107,7 +101,6 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
     private static final String FINGERPRINT_ROOT_PATH = System.getProperty("user.home") + File.separator + BINDING_ID;
 
     private static final int CAPTURE_TIMEOUT_SECONDS = 10;
-    // Safety cap so a mistyped duration doesn't lock the console shell for an unreasonable time.
     private static final int MAX_LIVE_CAPTURE_DURATION_SECONDS = 300;
 
     private static final String ACCOUNTS = "accounts";
@@ -260,12 +253,6 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
         }
     }
 
-    /**
-     * Lists every device known from the account's REST data, annotated with the box thing's UID for
-     * whichever ones actually have one configured - the ones without are still valid targets for
-     * {@code fingerprint} (which is account-scoped, not per-box) but not for {@code capture} (which needs
-     * an actual thing to attach to).
-     */
     private void boxes(Console console, List<LGHorizonAccountHandler> handlers) {
         boolean multipleAccount = handlers.size() > 1;
         for (LGHorizonAccountHandler handler : handlers) {
@@ -301,9 +288,7 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
 
     /**
      * A quick, mostly-instant REST-only snapshot (customer/entitlements/channels/service config), plus a
-     * passive wait for each box's next (or already-cached) {@code .../status} message - not an active
-     * request for a fresh one, and no {@code CPE.uiStatus} request/wait at all. For a full picture of live
-     * traffic while actively interacting with a box, use {@code capture} instead.
+     * passive wait for each box's next (or already-cached) {@code .../status} message.
      */
     private void fingerprint(Console console, List<LGHorizonAccountHandler> handlers) {
         String basePath = FINGERPRINT_ROOT_PATH + File.separator

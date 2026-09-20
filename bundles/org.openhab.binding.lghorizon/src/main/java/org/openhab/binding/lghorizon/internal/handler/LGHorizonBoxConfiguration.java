@@ -22,9 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class LGHorizonBoxConfiguration {
 
-    // The LG Horizon device id, e.g. as found via discovery.
     public String deviceId = "";
-
-    // Optional: profile id to use for favourite channels/language; defaults to the first profile.
     public String profileId = "";
 }

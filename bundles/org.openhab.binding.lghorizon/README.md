@@ -30,15 +30,15 @@ Once an `account` is configured and active, the binding will discover available 
 
 ### `account` (Bridge)
 
-| Parameter       | Required | Description                                                                 |
-|-----------------|----------|-----------------------------------------------------------------------------|
-| provider        | no       | Provider: `telenet`, `basetv`, `ziggo`, `upc-sunrise`, `virginmedia-gb`, `virginmedia-ie`, `upc-poland`. Leave empty ("Custom") to configure an unlisted provider manually with the three advanced fields below. |
-| country         | no       | Advanced. Only used when `provider` is empty: two-letter locale used in the service-discovery URL path (e.g. `be`) - not necessarily the same region as the API URL. Known automatically when `provider` is set. |
-| apiUrl          | no       | Advanced. Only used when `provider` is empty: base URL of the provider's "spark" REST API. Known automatically when `provider` is set. |
-| useRefreshToken | no       | Advanced. Only used when `provider` is empty: whether the provider needs refresh-token auth instead of username/password. Default `false`. Known automatically when `provider` is set. |
-| username        | no       | Only for password-based providers                                           |
-| password        | no       | Only for password-based providers                                           |
-| refreshToken    | no       | Only for refresh-token-based providers                                      |
+| Parameter       | Required | Advanced | Description                                                                 |
+|-----------------|----------|----------|-----------------------------------------------------------------------------|
+| provider        | no       | no       | Provider: `telenet`, `basetv`, `ziggo`, `upc-sunrise`, `virginmedia-gb`, `virginmedia-ie`, `upc-poland`. Leave empty ("Custom") to configure an unlisted provider manually with the three advanced fields below. |
+| country         | no       | yes      | Only used when `provider` is empty: two-letter locale used in the service-discovery URL path (e.g. `be`) - not necessarily the same region as the API URL. |
+| apiUrl          | no       | yes      | Only used when `provider` is empty: base URL of the provider's "spark" REST API. |
+| useRefreshToken | no       | yes      | Only used when `provider` is empty: whether the provider needs refresh-token auth instead of username/password. Default `false`. |
+| username        | no       | no       | Only for password-based providers                                           |
+| password        | no       | no       | Only for password-based providers                                           |
+| refreshToken    | no       | no       | Only for refresh-token-based providers                                      |
 
 ### Refresh token based authentication (BASE TV, Telenet, UPC/Sunrise, Virgin Media GB)
 
@@ -193,6 +193,7 @@ A number of commands are supported from the console.
 Accounts and boxes are identified by their own `customerId`/`deviceId`, not the openHAB thing UID.
 
 ```java
+lghorizon accounts
 lghorizon profiles [<customerId>]
 lghorizon boxes [<customerId>]
 lghorizon fingerprint [<customerId>]
@@ -200,7 +201,7 @@ lghorizon capture <durationSeconds>
 ```
 
 `accounts`, `profiles` and `boxes` take no arguments to list across all accounts, or a `customerId` to limit the output to one account.
-`boxes` lists every device known from the account's REST data, annotated with its box thing's UID for whichever ones actually have one configured (`(no thing)` otherwise) - useful both to find the `deviceId` for `capture` and to spot a device you haven't added a thing for yet.
+`boxes` lists every device known from the account's REST data, annotated with its box thing's UID for whichever ones actually have one configured (`(no thing)` otherwise) - useful to find the `deviceId` for manual thingg configuration.
 
 `fingerprint` and `capture` are separate commands with different purposes:
 
@@ -208,6 +209,7 @@ lghorizon capture <durationSeconds>
   Useful for a first look at an unsupported provider/device, or to check what the REST side of things looks like.
 - `capture <durationSeconds>` actively records live traffic for all active accounts over a fixed window: every MQTT status/uiStatus message, every REST call the binding makes.
   Interact with the box (change channels, rewind, launch an app, start a recording,...) for the duration of the capture to get a meaningful sequence of events.
+  The window duration defaults to, and is limited to, 300s.
 
 Both commands write their output in the user's home `lghorizon` directory.
 All personal information is masked.

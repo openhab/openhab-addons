@@ -46,7 +46,9 @@ public class ChannelDto {
         return products == null ? List.of() : products;
     }
 
-    /** The channel's own logo/preview image, preferring the full-size variant if both are present. */
+    /**
+     * @returns the channel's own logo/preview image, preferring the full-size variant if both are present
+     */
     public String getStreamImage() {
         ImageStreamDto stream = imageStream;
         if (stream == null) {
