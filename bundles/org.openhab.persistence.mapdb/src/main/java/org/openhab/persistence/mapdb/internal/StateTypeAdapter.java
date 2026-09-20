@@ -54,7 +54,12 @@ public class StateTypeAdapter extends TypeAdapter<State> {
 
             @SuppressWarnings("unchecked")
             Class<? extends State> valueType = (Class<? extends State>) Class.forName(valueTypeName);
-            return TypeParser.parseState(List.of(valueType), valueAsString);
+            State state = TypeParser.parseState(List.of(valueType), valueAsString);
+            if (state == null) {
+                logger.warn("Couldn't deserialize state '{}': persisted type not recognized {}", value, valueTypeName);
+                return null;
+            }
+            return state;
         } catch (Exception e) {
             logger.warn("Couldn't deserialize state '{}': {}", value, e.getMessage());
         }
