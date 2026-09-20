@@ -168,13 +168,6 @@
 			<channel id="lastseen" typeId="lastseen"/>
 		</channels>
 
-		<properties>
-			<property name="arp_state">-</property>
-			<property name="dhcp_state">-</property>
-			<property name="icmp_state">-</property>
-			<property name="presence_detection_type">-</property>
-		</properties>
-
 		<config-description>
 			<parameter name="url" type="text" required="true">
 				<label>URL</label>

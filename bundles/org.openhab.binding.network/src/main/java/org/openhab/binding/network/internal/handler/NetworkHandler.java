@@ -215,7 +215,10 @@ public class NetworkHandler extends BaseThingHandler
         // We should not set the last seen state to UNDEF, it prevents restoreOnStartup from working
         // For reference: https://github.com/openhab/openhab-addons/issues/17404
 
-        updateNetworkProperties();
+        if (deviceType != NetworkDeviceType.HTTP) {
+            // The reported properties are specific to ARP/ICMP ping and DHCP sniffing, none of which apply to HTTP
+            updateNetworkProperties();
+        }
     }
 
     private void updateHttpStatus(PresenceDetectionValue value) {
