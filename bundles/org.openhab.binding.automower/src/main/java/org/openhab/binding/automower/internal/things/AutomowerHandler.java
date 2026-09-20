@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -109,6 +110,7 @@ public class AutomowerHandler extends BaseThingHandler {
 
     private @Nullable Mower mowerState;
     private @Nullable MowerMessages mowerMessages;
+    private @Nullable ScheduledFuture<?> stateRefreshFuture;
 
     public AutomowerHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -291,6 +293,11 @@ public class AutomowerHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> stateRefreshFuture = this.stateRefreshFuture;
+        this.stateRefreshFuture = null;
+        if (stateRefreshFuture != null) {
+            stateRefreshFuture.cancel(false);
+        }
         AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
         if (automowerBridgeHandler != null) {
             automowerBridgeHandler.unregisterAutomowerHandler(this.getThing().getUID().getId());
@@ -525,7 +532,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     }
                 }
             } else {
-                calendarTasksFiltered = calendarTasksAll;
+                calendarTasksFiltered = new ArrayList<>(calendarTasksAll);
             }
 
             CalendarTask calendarTask = calendarTasksFiltered.get(index);
@@ -984,7 +991,16 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private void scheduleStateRefreshAfterCommunicationFailure() {
-        scheduler.schedule(this::poll, 5, TimeUnit.SECONDS);
+        ScheduledFuture<?> stateRefreshFuture = this.stateRefreshFuture;
+        if (stateRefreshFuture != null && !stateRefreshFuture.isDone() && !stateRefreshFuture.isCancelled()) {
+            return;
+        }
+        this.stateRefreshFuture = scheduler.schedule(this::runScheduledStateRefresh, 5, TimeUnit.SECONDS);
+    }
+
+    private synchronized void runScheduledStateRefresh() {
+        stateRefreshFuture = null;
+        poll();
     }
 
     private String restrictedState(@Nullable RestrictedReason reason) {
