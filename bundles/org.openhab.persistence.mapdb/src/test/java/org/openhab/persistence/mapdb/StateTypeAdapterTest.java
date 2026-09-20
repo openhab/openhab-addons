@@ -14,6 +14,7 @@ package org.openhab.persistence.mapdb;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.core.library.types.DateTimeType;
@@ -83,5 +85,29 @@ public class StateTypeAdapterTest {
 
     public static Stream<State> readWriteRoundtripShouldRecreateTheWrittenState() {
         return VALUES.stream();
+    }
+
+    @Test
+    void readReturnsNullForJsonNull() {
+        assertNull(mapper.fromJson("null", State.class));
+    }
+
+    @Test
+    void readReturnsNullWhenTypeSeparatorMissing() {
+        // Simulates a corrupted or otherwise malformed record with no "@@@" separator.
+        assertNull(mapper.fromJson("\"not-a-valid-encoded-state\"", State.class));
+    }
+
+    @Test
+    void readReturnsNullForUnresolvableStateClass() {
+        // Simulates disk corruption in the class-name bytes, or a class renamed/removed
+        // since the record was written by an older openHAB version.
+        assertNull(mapper.fromJson("\"org.openhab.core.library.types.NoSuchType@@@23.5\"", State.class));
+    }
+
+    @Test
+    void readReturnsNullWhenValueCannotBeParsedIntoResolvedType() {
+        // Class resolves fine, but the value string is not parsable into it.
+        assertNull(mapper.fromJson("\"org.openhab.core.library.types.DecimalType@@@not-a-number\"", State.class));
     }
 }
