@@ -271,7 +271,8 @@ public class Shelly1CoIoTVersion1 extends Shelly1CoIoTProtocol implements Shelly
 
         // RGBW2 reports Power_0, Power_1, Power_2, Power_3; same for VSwitch and Brightness, all of them linkted to L:0
         // we break it up to Power with L:0, Power with L:1...
-        if (desc.contains("_") && (desc.contains("power") || desc.contains("vswitch") || desc.contains(SHELLY_COLOR_BRIGHTNESS))) {
+        if (desc.contains("_")
+                && (desc.contains("power") || desc.contains("vswitch") || desc.contains(SHELLY_COLOR_BRIGHTNESS))) {
             String newDesc = substringBefore(sen.desc, "_");
             String newLink = substringAfter(sen.desc, "_");
             sen.desc = newDesc;
