@@ -5,6 +5,6 @@
 
 	<type>binding</type>
 	<name>Emerald Binding</name>
-	<description>This is the binding for Emerald devices.</description>
+	<description>This binding supports the Australian brand Emerald's range of Heat Pump Hot Water Services (HWS), providing information and control.</description>
 
 </addon:addon>
