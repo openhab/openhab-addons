@@ -62,11 +62,11 @@ public class AutomowerBridge {
     private final AutomowerConnectApi automowerApi;
 
     public AutomowerBridge(OAuthClientService authService, String appKey, HttpClient httpClient,
-            ScheduledExecutorService scheduler) {
+            ScheduledExecutorService scheduler, @Nullable Integer requestTimeoutS) {
         this.authService = authService;
         this.appKey = appKey;
 
-        this.automowerApi = new AutomowerConnectApi(httpClient);
+        this.automowerApi = new AutomowerConnectApi(httpClient, requestTimeoutS);
     }
 
     public synchronized AccessTokenResponse authenticate() throws AutomowerCommunicationException {

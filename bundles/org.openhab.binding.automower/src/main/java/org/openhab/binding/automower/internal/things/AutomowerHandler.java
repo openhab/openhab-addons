@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -477,35 +478,20 @@ public class AutomowerHandler extends BaseThingHandler {
                 calendarTaskArray.add(calendarTask);
             }
 
-            // Replace only the tasks belonging to the given work area in the local cache, keeping the tasks of
-            // the other work areas untouched. Otherwise a subsequent call for a different work area would wipe
-            // out the tasks that were just set for this one (and vice versa).
-            if (workAreaId == null || !mower.getAttributes().getCapabilities().hasWorkAreas()) {
-                mower.getAttributes().getCalendar().setTasks(calendarTaskArray);
-            } else {
-                List<CalendarTask> calendarTasks = mower.getAttributes().getCalendar().getTasks();
-                List<CalendarTask> mergedCalendarTasks = new ArrayList<>();
-                for (CalendarTask calendarTask : calendarTasks) {
-                    if (!workAreaId.equals(calendarTask.getWorkAreaId())) {
-                        mergedCalendarTasks.add(calendarTask);
-                    }
-                }
-                mergedCalendarTasks.addAll(calendarTaskArray);
-                mower.getAttributes().getCalendar().setTasks(mergedCalendarTasks);
-            }
-
             String id = automowerId.get();
             try {
                 AutomowerBridge automowerBridge = getAutomowerBridge();
                 if (automowerBridge != null) {
                     automowerBridge.sendAutomowerCalendarTask(id,
                             mower.getAttributes().getCapabilities().hasWorkAreas(), workAreaId, calendarTaskArray);
+                    replaceCachedCalendarTasks(mower, workAreaId, calendarTaskArray);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send CalendarTask to automower: {}, Error: {}", id, e.getMessage());
+                scheduleStateRefreshAfterCommunicationFailure();
             }
 
             // Update of the mower state after sending the update is not required as resulting state updates will be
@@ -543,60 +529,101 @@ public class AutomowerHandler extends BaseThingHandler {
             }
 
             CalendarTask calendarTask = calendarTasksFiltered.get(index);
+            CalendarTask updatedCalendarTask = copyCalendarTask(calendarTask);
 
             if (command instanceof DecimalType cmd) {
                 if (CHANNEL_CALENDARTASK_START.equals(param)) {
-                    calendarTask.setStart(cmd.shortValue());
+                    updatedCalendarTask.setStart(cmd.shortValue());
                 } else if (CHANNEL_CALENDARTASK_DURATION.equals(param)) {
-                    calendarTask.setDuration(cmd.shortValue());
+                    updatedCalendarTask.setDuration(cmd.shortValue());
                 }
             } else if (command instanceof QuantityType cmd) {
                 cmd = cmd.toUnit("min");
                 if (cmd != null) {
                     if (CHANNEL_CALENDARTASK_START.equals(param)) {
-                        calendarTask.setStart(cmd.shortValue());
+                        updatedCalendarTask.setStart(cmd.shortValue());
                     } else if (CHANNEL_CALENDARTASK_DURATION.equals(param)) {
-                        calendarTask.setDuration(cmd.shortValue());
+                        updatedCalendarTask.setDuration(cmd.shortValue());
                     }
                 }
             } else if (command instanceof OnOffType cmd) {
                 boolean day = ((cmd == OnOffType.ON) ? true : false);
 
                 if (CHANNEL_CALENDARTASK_MONDAY.equals(param)) {
-                    calendarTask.setMonday(day);
+                    updatedCalendarTask.setMonday(day);
                 } else if (CHANNEL_CALENDARTASK_TUEDAY.equals(param)) {
-                    calendarTask.setTuesday(day);
+                    updatedCalendarTask.setTuesday(day);
                 } else if (CHANNEL_CALENDARTASK_WEDNESDAY.equals(param)) {
-                    calendarTask.setWednesday(day);
+                    updatedCalendarTask.setWednesday(day);
                 } else if (CHANNEL_CALENDARTASK_THURSRAY.equals(param)) {
-                    calendarTask.setThursday(day);
+                    updatedCalendarTask.setThursday(day);
                 } else if (CHANNEL_CALENDARTASK_FRIDAY.equals(param)) {
-                    calendarTask.setFriday(day);
+                    updatedCalendarTask.setFriday(day);
                 } else if (CHANNEL_CALENDARTASK_SATURDAY.equals(param)) {
-                    calendarTask.setSaturday(day);
+                    updatedCalendarTask.setSaturday(day);
                 } else if (CHANNEL_CALENDARTASK_SUNDAY.equals(param)) {
-                    calendarTask.setSunday(day);
+                    updatedCalendarTask.setSunday(day);
                 }
             }
+
+            calendarTasksFiltered.set(index, updatedCalendarTask);
 
             String id = automowerId.get();
             try {
                 AutomowerBridge automowerBridge = getAutomowerBridge();
                 if (automowerBridge != null) {
                     automowerBridge.sendAutomowerCalendarTask(id,
-                            mower.getAttributes().getCapabilities().hasWorkAreas(), calendarTask.getWorkAreaId(),
+                            mower.getAttributes().getCapabilities().hasWorkAreas(), updatedCalendarTask.getWorkAreaId(),
                             calendarTasksFiltered);
+                    copyCalendarTaskValues(calendarTask, updatedCalendarTask);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send CalendarTask to automower: {}, Error: {}", id, e.getMessage());
+                scheduleStateRefreshAfterCommunicationFailure();
             }
         }
 
         // Update of the mower state after sending the update is not required as resulting state updates will be
         // received via WebSocket events
+    }
+
+    private void replaceCachedCalendarTasks(Mower mower, @Nullable Long workAreaId,
+            List<CalendarTask> calendarTaskArray) {
+        if (workAreaId == null || !mower.getAttributes().getCapabilities().hasWorkAreas()) {
+            mower.getAttributes().getCalendar().setTasks(calendarTaskArray);
+        } else {
+            List<CalendarTask> calendarTasks = mower.getAttributes().getCalendar().getTasks();
+            List<CalendarTask> mergedCalendarTasks = new ArrayList<>();
+            for (CalendarTask calendarTask : calendarTasks) {
+                if (!workAreaId.equals(calendarTask.getWorkAreaId())) {
+                    mergedCalendarTasks.add(calendarTask);
+                }
+            }
+            mergedCalendarTasks.addAll(calendarTaskArray);
+            mower.getAttributes().getCalendar().setTasks(mergedCalendarTasks);
+        }
+    }
+
+    private CalendarTask copyCalendarTask(CalendarTask source) {
+        CalendarTask copy = new CalendarTask();
+        copyCalendarTaskValues(copy, source);
+        return copy;
+    }
+
+    private void copyCalendarTaskValues(CalendarTask target, CalendarTask source) {
+        target.setStart(source.getStart());
+        target.setDuration(source.getDuration());
+        target.setMonday(source.getMonday());
+        target.setTuesday(source.getTuesday());
+        target.setWednesday(source.getWednesday());
+        target.setThursday(source.getThursday());
+        target.setFriday(source.getFriday());
+        target.setSaturday(source.getSaturday());
+        target.setSunday(source.getSunday());
+        target.setWorkAreaId(source.getWorkAreaId());
     }
 
     /**
@@ -611,26 +638,30 @@ public class AutomowerHandler extends BaseThingHandler {
         if (mower != null && isValidResult(mower)) {
             MowerStayOutZoneAttributes attributes = new MowerStayOutZoneAttributes();
             attributes.setEnable(enable);
-            mower.getAttributes().getStayOutZones().getZones().stream().filter(zone -> zone.getId().equals(zoneId))
-                    .findFirst().ifPresent(zone -> {
-                        zone.setEnabled(enable);
-                    });
+            boolean requestSucceeded = false;
 
             String id = automowerId.get();
             try {
                 AutomowerBridge automowerBridge = getAutomowerBridge();
                 if (automowerBridge != null) {
                     automowerBridge.sendAutomowerStayOutZone(id, zoneId, attributes);
+                    requestSucceeded = true;
+                    mower.getAttributes().getStayOutZones().getZones().stream()
+                            .filter(zone -> zone.getId().equals(zoneId)).findFirst()
+                            .ifPresent(zone -> zone.setEnabled(enable));
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send StayOutZone to automower: {}, Error: {}", id, e.getMessage());
+                scheduleStateRefreshAfterCommunicationFailure();
             }
 
             // Update the mower state as this part is not updated via WebSocket events
-            updateAutomowerState();
+            if (requestSucceeded) {
+                updateAutomowerState();
+            }
         }
     }
 
@@ -776,40 +807,45 @@ public class AutomowerHandler extends BaseThingHandler {
             workAreaAttributes.setName(name);
             workAreaAttributes.setOrientation(orientation);
             workAreaAttributes.setOrientationShift(orientationShift);
-            mower.getAttributes().getWorkAreas().stream().filter(workArea -> workArea.getWorkAreaId() == workAreaId)
-                    .findFirst().ifPresent(workArea -> {
-                        if (enable != null) {
-                            workArea.setEnabled(enable);
-                        }
-                        if (cuttingHeight != null) {
-                            workArea.setCuttingHeight(cuttingHeight);
-                        }
-                        if (name != null) {
-                            workArea.setName(name);
-                        }
-                        if (orientation != null) {
-                            workArea.setOrientation(orientation);
-                        }
-                        if (orientationShift != null) {
-                            workArea.setOrientationShift(orientationShift);
-                        }
-                    });
-
+            boolean requestSucceeded = false;
             String id = automowerId.get();
             try {
                 AutomowerBridge automowerBridge = getAutomowerBridge();
                 if (automowerBridge != null) {
                     automowerBridge.sendAutomowerWorkArea(id, workAreaId, workAreaAttributes);
+                    requestSucceeded = true;
+                    mower.getAttributes().getWorkAreas().stream()
+                            .filter(workArea -> workArea.getWorkAreaId() == workAreaId).findFirst()
+                            .ifPresent(workArea -> {
+                                if (enable != null) {
+                                    workArea.setEnabled(enable);
+                                }
+                                if (cuttingHeight != null) {
+                                    workArea.setCuttingHeight(cuttingHeight);
+                                }
+                                if (name != null) {
+                                    workArea.setName(name);
+                                }
+                                if (orientation != null) {
+                                    workArea.setOrientation(orientation);
+                                }
+                                if (orientationShift != null) {
+                                    workArea.setOrientationShift(orientationShift);
+                                }
+                            });
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send WorkArea to automower: {}, Error: {}", id, e.getMessage());
+                scheduleStateRefreshAfterCommunicationFailure();
             }
 
             // Update the mower state as this part is not updated via WebSocket events
-            updateAutomowerState();
+            if (requestSucceeded) {
+                updateAutomowerState();
+            }
         }
     }
 
@@ -857,13 +893,11 @@ public class AutomowerHandler extends BaseThingHandler {
             Settings settings = mower.getAttributes().getSettings();
             if (cuttingHeight != null) {
                 settingsRequest.setCuttingHeight(cuttingHeight);
-                settings.setCuttingHeight(cuttingHeight);
             }
             if (headlightMode != null) {
                 Headlight headlight = new Headlight();
                 headlight.setHeadlightMode(headlightMode);
                 settingsRequest.setHeadlight(headlight);
-                settings.getHeadlight().setHeadlightMode(headlightMode);
             }
 
             String id = automowerId.get();
@@ -871,12 +905,19 @@ public class AutomowerHandler extends BaseThingHandler {
                 AutomowerBridge automowerBridge = getAutomowerBridge();
                 if (automowerBridge != null) {
                     automowerBridge.sendAutomowerSettings(id, settingsRequest);
+                    if (cuttingHeight != null) {
+                        settings.setCuttingHeight(cuttingHeight);
+                    }
+                    if (headlightMode != null) {
+                        settings.getHeadlight().setHeadlightMode(headlightMode);
+                    }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/conf-error-no-bridge");
                 }
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send SettingCuttingHeight to automower: {}, Error: {}", id, e.getMessage());
+                scheduleStateRefreshAfterCommunicationFailure();
             }
 
             // Update of the mower state after sending the update is not required as resulting state updates will be
@@ -917,13 +958,14 @@ public class AutomowerHandler extends BaseThingHandler {
         logger.debug("Sending ResetCuttingBladeUsageTime");
         Mower mower = this.mowerState;
         if (mower != null && isValidResult(mower)) {
-            mower.getAttributes().getStatistics().setCuttingBladeUsageTime(0);
-
+            boolean requestSucceeded = false;
             String id = automowerId.get();
             try {
                 AutomowerBridge automowerBridge = getAutomowerBridge();
                 if (automowerBridge != null) {
                     automowerBridge.sendAutomowerResetCuttingBladeUsageTime(id);
+                    requestSucceeded = true;
+                    mower.getAttributes().getStatistics().setCuttingBladeUsageTime(0);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/conf-error-no-bridge");
@@ -931,11 +973,18 @@ public class AutomowerHandler extends BaseThingHandler {
             } catch (AutomowerCommunicationException e) {
                 logger.warn("Unable to send ResetCuttingBladeUsageTime to automower: {}, Error: {}", id,
                         e.getMessage());
+                scheduleStateRefreshAfterCommunicationFailure();
             }
 
             // Update the mower state as this part is not updated via WebSocket events
-            updateAutomowerState();
+            if (requestSucceeded) {
+                updateAutomowerState();
+            }
         }
+    }
+
+    private void scheduleStateRefreshAfterCommunicationFailure() {
+        scheduler.schedule(this::poll, 5, TimeUnit.SECONDS);
     }
 
     private String restrictedState(@Nullable RestrictedReason reason) {

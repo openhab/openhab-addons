@@ -27,6 +27,7 @@ If supported by your mower, work-areas and stay-out zones, configured via your A
 - appKey (mandatory): The Application Key is required to communicate with the Automower® Connect API. It can be obtained by registering an Application on [the Husqvarna Website](https://developer.husqvarnagroup.cloud/). This application also needs to be connected to the ["Authentication API" and the "Automower® Connect API"](https://developer.husqvarnagroup.cloud/docs/getting-started)
 - appSecret (mandatory): The Application Secret is required to communicate with the Automower® Connect API. It can be obtained by registering an Application on [the Husqvarna Website](https://developer.husqvarnagroup.cloud/).
 - pollingInterval (optional): How often the current Automower® states should be polled in seconds via REST API. Default is 5min (300s)
+- requestTimeout (optional): Maximum time to wait for an Automower® Connect REST API response in seconds. Default is 30s
 
 Keep in mind that the REST API should not be queried too frequently.
 According to Husqvarna's guidelines, each application key is limited to 10.000 requests per month and 1 request per second.
