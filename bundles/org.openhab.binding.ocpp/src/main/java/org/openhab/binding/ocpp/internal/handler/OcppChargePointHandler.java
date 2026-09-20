@@ -954,6 +954,9 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     private void recordActivity() {
+        if (session == null) {
+            return;
+        }
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }

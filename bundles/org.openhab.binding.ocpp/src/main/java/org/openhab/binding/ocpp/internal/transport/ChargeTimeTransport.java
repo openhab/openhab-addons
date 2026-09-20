@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -221,7 +222,7 @@ public class ChargeTimeTransport implements OcppTransport {
         if (username == null || !username.equals(chargePointId)) {
             throw new AuthenticationException(401, "basic auth username must be the charge point id");
         }
-        if (password == null || !authPassword.equals(new String(password, StandardCharsets.UTF_8))) {
+        if (password == null || !MessageDigest.isEqual(authPassword.getBytes(StandardCharsets.UTF_8), password)) {
             throw new AuthenticationException(401, "invalid password");
         }
     }
