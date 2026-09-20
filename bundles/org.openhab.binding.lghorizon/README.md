@@ -91,7 +91,7 @@ This allows supporting a provider that isn't in the providers list yet - a new w
 | media-image                | Image  | R   | Poster/background image for the current channel, program, VOD title, or recording |
 | player                     | Player | RW  | PLAY / PAUSE / REWIND / FASTFORWARD                                               |
 | stop                       | Switch | W   | Stop playback and return to live TV                                               |
-| record                     | Switch | RW  | Record the current live TV program                                                |
+| record                     | Switch | W   | Record the current live TV program                                                |
 | channel-up                 | Switch | W   | Move to the next channel                                                          |
 | channel-down               | Switch | W   | Move to the previous channel                                                      |
 | arrow-up                   | Switch | W   | Navigate up in the on-screen menu                                                 |

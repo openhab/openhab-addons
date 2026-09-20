@@ -113,6 +113,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
 
     // How long the box's own per-publish display time lasts, in seconds
     private static final int DISPLAY_MESSAGE_REPEAT_INTERVAL_SECONDS = 3;
+    private static final int DISPLAY_MESSAGE_DURATION_MAX_SECONDS = 120;
+
     // Keep track of display messages sent to filter out the returned failure status messages that are not relevant.
     private final java.util.Set<String> pendingDisplayMessageIds = ConcurrentHashMap.newKeySet();
     private static final int MAX_TRACKED_DISPLAY_MESSAGE_IDS = 50;
@@ -136,6 +138,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     private @Nullable ScheduledFuture<?> initializeFuture;
     private @Nullable ScheduledFuture<?> tokenRefreshFuture;
 
+    private volatile boolean disposed = false;
+
     public LGHorizonAccountHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
@@ -148,13 +152,18 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     }
 
     private void doInitialize() {
+        if (disposed) {
+            return;
+        }
         LGHorizonAccountConfiguration config = getConfigAs(LGHorizonAccountConfiguration.class);
 
         ResolvedProvider provider;
         try {
             provider = resolveProvider(config);
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            if (!disposed) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            }
             return;
         }
         persistResolvedProviderFields(config, provider);
@@ -164,6 +173,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         auth.setRefreshTokenListener(this::persistRefreshToken);
         this.authClient = auth;
 
+        LGHorizonMqttClient mqtt = null;
         try {
             auth.initialize();
             String householdId = auth.getHouseholdId();
@@ -176,10 +186,23 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
 
             refreshCustomerAndChannels(auth);
 
-            LGHorizonMqttClient mqtt = new LGHorizonMqttClient(auth, this, scheduler);
-            this.mqttClient = mqtt;
+            mqtt = new LGHorizonMqttClient(auth, this, scheduler);
             mqtt.subscribeAccountTopics(householdId);
             mqtt.connect();
+
+            boolean committed;
+            synchronized (this) {
+                committed = !disposed;
+                if (committed) {
+                    this.mqttClient = mqtt;
+                    this.tokenRefreshFuture = scheduler.scheduleWithFixedDelay(this::checkTokenRefresh, 1, 1,
+                            TimeUnit.HOURS);
+                }
+            }
+            if (!committed) {
+                mqtt.disconnect();
+                return;
+            }
 
             updateStatus(ThingStatus.ONLINE);
             initializeRetryAttempt.set(0);
@@ -191,6 +214,12 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
 
             tokenRefreshFuture = scheduler.scheduleWithFixedDelay(this::checkTokenRefresh, 1, 1, TimeUnit.HOURS);
         } catch (LGHorizonApiException | IllegalArgumentException e) {
+            if (mqtt != null) {
+                mqtt.disconnect();
+            }
+            if (disposed || Thread.currentThread().isInterrupted()) {
+                return;
+            }
             if (e instanceof LGHorizonApiException apiException && apiException.isAuthenticationFailure()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         textWithArg("offline.account-configuration-error", String.valueOf(e.getMessage())));
@@ -203,6 +232,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
     }
 
     private void scheduleInitializeRetry() {
+        if (disposed) {
+            return;
+        }
         int attempt = initializeRetryAttempt.getAndIncrement();
         int delaySeconds = (int) Math.min(INITIALIZE_RETRY_FIRST_DELAY_SECONDS * Math.pow(2, attempt),
                 INITIALIZE_RETRY_MAX_DELAY_SECONDS);
@@ -526,6 +558,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         try {
             auth.fetchAccessToken();
         } catch (LGHorizonApiException e) {
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
             if (e.isAuthenticationFailure()) {
                 logger.warn("Background LG Horizon token refresh failed authentication, going offline: {}",
                         e.getMessage());
@@ -729,7 +764,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
                 while ((read = input.read(chunk)) != -1) {
                     total += read;
                     if (total > MAX_IMAGE_BYTES) {
-                        logger.debug("Image from {} exceeded {} bytes, aborting", url, MAX_IMAGE_BYTES);
+                        logger.debug("Image from {} exceeded {} bytes, aborting", anonymizedUrl, MAX_IMAGE_BYTES);
                         notifyImageCapture("GET " + anonymizedUrl + " -> exceeded " + MAX_IMAGE_BYTES
                                 + " bytes, aborted (fetch failed)");
                         return null;
@@ -743,12 +778,12 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
                     + contentType + ", bytes=" + bytes.length + " (content omitted)");
             return new RawType(bytes, contentType != null ? contentType : IMAGE_JPEG);
         } catch (TimeoutException | ExecutionException | IOException e) {
-            logger.debug("Could not fetch image from {}: {}", url, e.getMessage());
+            logger.debug("Could not fetch image from {}: {}", anonymizedUrl, e.getMessage());
             notifyImageCapture("GET " + anonymizedUrl + " -> exception: " + e.getMessage());
             return null;
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
-            logger.debug("Interrupted while fetching image from {}", url);
+            logger.debug("Interrupted while fetching image from {}", anonymizedUrl);
             return null;
         }
     }
@@ -862,7 +897,8 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         status.addProperty("speed", 1);
         payload.add("status", status);
 
-        int repeats = Math.max(1, Math.round(durationSeconds / (float) DISPLAY_MESSAGE_REPEAT_INTERVAL_SECONDS));
+        int duration = Math.min(DISPLAY_MESSAGE_DURATION_MAX_SECONDS, durationSeconds);
+        int repeats = Math.max(1, Math.round(duration / (float) DISPLAY_MESSAGE_REPEAT_INTERVAL_SECONDS));
         for (int i = 0; i < repeats; i++) {
             long delaySeconds = i * DISPLAY_MESSAGE_REPEAT_INTERVAL_SECONDS;
             scheduler.schedule(() -> publishDisplayMessage(deviceId, payload), delaySeconds, TimeUnit.SECONDS);
@@ -1000,6 +1036,13 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
 
     @Override
     public void dispose() {
+        LGHorizonMqttClient mqtt;
+        synchronized (this) {
+            disposed = true;
+            mqtt = mqttClient;
+            mqttClient = null;
+        }
+
         ScheduledFuture<?> init = initializeFuture;
         if (init != null) {
             init.cancel(true);
@@ -1008,10 +1051,10 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         if (refresh != null) {
             refresh.cancel(true);
         }
-        LGHorizonMqttClient mqtt = mqttClient;
         if (mqtt != null) {
             mqtt.disconnect();
         }
+
         registeredBoxes.clear();
         lastKnownStatusByDeviceId.clear();
         pendingStatusCaptures.values().forEach(f -> f.cancel(true));

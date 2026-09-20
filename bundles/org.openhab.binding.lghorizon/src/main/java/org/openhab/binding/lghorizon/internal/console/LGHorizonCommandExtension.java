@@ -187,7 +187,7 @@ public class LGHorizonCommandExtension extends AbstractConsoleCommandExtension i
             console.println("Usage: " + CAPTURE + " <durationSeconds>");
             return;
         }
-        Integer duration = tryParseInt(args[3]);
+        Integer duration = tryParseInt(args[1]);
         if (duration == null || duration < 1 || duration > MAX_LIVE_CAPTURE_DURATION_SECONDS) {
             console.println("Capture duration must be a whole number of seconds between 1 and "
                     + MAX_LIVE_CAPTURE_DURATION_SECONDS);

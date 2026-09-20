@@ -50,6 +50,7 @@ public class LGHorizonReconnectStrategy extends AbstractReconnectStrategy {
 
     private @Nullable ScheduledExecutorService scheduler = null;
     private @Nullable ScheduledFuture<?> scheduledTask;
+    private boolean attemptInProgress = false;
 
     public LGHorizonReconnectStrategy(LGHorizonAuthClient authClient) {
         this.authClient = authClient;
@@ -57,14 +58,17 @@ public class LGHorizonReconnectStrategy extends AbstractReconnectStrategy {
 
     @Override
     public synchronized boolean isReconnecting() {
+        if (attemptInProgress) {
+            return true;
+        }
         ScheduledFuture<?> task = scheduledTask;
         return task != null && !task.isDone();
     }
 
     @Override
     public synchronized void lostConnection() {
-        ScheduledExecutorService scheduler = this.scheduler;
-        if (scheduler == null) {
+        ScheduledExecutorService currentScheduler = this.scheduler;
+        if (currentScheduler == null) {
             return;
         }
         if (getBrokerConnection() == null) {
@@ -78,27 +82,46 @@ public class LGHorizonReconnectStrategy extends AbstractReconnectStrategy {
         int delay = (int) Math.min(FIRST_RECONNECT_DELAY_SECONDS * Math.pow(2, attempt.getAndIncrement()),
                 MAX_RECONNECT_DELAY_SECONDS);
         logger.debug("LG Horizon MQTT connection lost, retrying in {}s", delay);
-        scheduledTask = scheduler.schedule(this::attemptReconnect, delay, TimeUnit.SECONDS);
+        scheduledTask = currentScheduler.schedule(this::attemptReconnect, delay, TimeUnit.SECONDS);
     }
 
-    private synchronized void attemptReconnect() {
-        MqttBrokerConnection connection = getBrokerConnection();
-        if (connection == null || scheduler == null) {
-            return;
+    private void attemptReconnect() {
+        MqttBrokerConnection connection;
+        synchronized (this) {
+            connection = getBrokerConnection();
+            if (connection == null || scheduler == null) {
+                return;
+            }
+            scheduledTask = null;
+            attemptInProgress = true;
         }
+        boolean started = false;
         try {
             String householdId = authClient.getHouseholdId();
             String freshToken = authClient.getMqttToken();
             if (householdId != null) {
                 connection.setCredentials(householdId, freshToken);
             }
+            connection.start().whenComplete((result, error) -> {
+                synchronized (this) {
+                    attemptInProgress = false;
+                }
+                if (error != null) {
+                    logger.debug("LG Horizon MQTT reconnect attempt failed: {}", error.getMessage());
+                }
+            });
+            started = true;
         } catch (LGHorizonApiException e) {
-            logger.debug("Could not refresh LG Horizon MQTT token before reconnecting: {}", e.getMessage());
+            if (!Thread.currentThread().isInterrupted()) {
+                logger.debug("Could not refresh LG Horizon MQTT token before reconnecting: {}", e.getMessage());
+            }
+        } finally {
+            if (!started) {
+                synchronized (this) {
+                    attemptInProgress = false;
+                }
+            }
         }
-        connection.start().exceptionally(e -> {
-            logger.debug("LG Horizon MQTT reconnect attempt failed: {}", e.getMessage());
-            return false;
-        });
     }
 
     @Override
@@ -112,7 +135,7 @@ public class LGHorizonReconnectStrategy extends AbstractReconnectStrategy {
     }
 
     @Override
-    public void start() {
+    public synchronized void start() {
         if (scheduler == null) {
             scheduler = Executors.newScheduledThreadPool(1);
         }
@@ -120,16 +143,19 @@ public class LGHorizonReconnectStrategy extends AbstractReconnectStrategy {
 
     @Override
     public synchronized void stop() {
-        ScheduledExecutorService scheduler = this.scheduler;
-        if (scheduler != null) {
-            scheduler.shutdownNow();
-            this.scheduler = null;
-        }
+        attempt.set(0);
+        attemptInProgress = false;
 
         ScheduledFuture<?> task = scheduledTask;
         if (task != null) {
             task.cancel(true);
             scheduledTask = null;
+        }
+
+        ScheduledExecutorService currentScheduler = this.scheduler;
+        if (currentScheduler != null) {
+            currentScheduler.shutdownNow();
+            this.scheduler = null;
         }
     }
 }
