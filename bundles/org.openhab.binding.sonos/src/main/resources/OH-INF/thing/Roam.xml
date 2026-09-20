@@ -25,6 +25,7 @@
 			<channel id="repeat" typeId="repeat"/>
 			<channel id="favorite" typeId="favorite"/>
 			<channel id="led" typeId="led"/>
+			<channel id="buttonlock" typeId="buttonlock"/>
 			<channel id="localcoordinator" typeId="localcoordinator"/>
 			<channel id="mute" typeId="system.mute"/>
 			<channel id="notificationsound" typeId="notificationsound"/>
@@ -61,6 +62,7 @@
 		<properties>
 			<property name="vendor">SONOS</property>
 			<property name="modelId">Roam</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>udn</representation-property>

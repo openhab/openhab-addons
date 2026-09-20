@@ -57,6 +57,7 @@ The devices support the following channels:
 | bass                 | Number    | RW          | Set or get the bass level adjustment (value in range -10 / 10)                                                               | all                                                                                     |
 | batterycharging      | Switch    | R           | Indicator set to ON when the battery is charging                                                                             | Move, Move2, Roam, RoamSL                                                               |
 | batterylevel         | Number    | R           | Current battery level                                                                                                        | Move, Move2, Roam, RoamSL                                                               |
+| buttonlock           | Switch    | RW          | Lock (ON) or unlock (OFF) the buttons on the Zone Player                                                                     | all                                                                                     |
 | clearqueue           | Switch    | W           | Suppress all songs from the current queue                                                                                    | all                                                                                     |
 | codec                | String    | R           | Name of codec currently being decoded                                                                                        | Arc, ArcSL, PLAYBAR, PLAYBASE, Beam, Amp                                                |
 | control              | Player    | RW          | Control the Zone Player, e.g. PLAY/PAUSE/NEXT/PREVIOUS                                                                       | all                                                                                     |
@@ -118,6 +119,9 @@ The devices support the following channels:
 The `playline` channel accepts as command either the Thing UID or the UPnP UDN.
 Note that you can prefix your command value with "Analog," or "Digital," to distinguish the line-in of your Sonos device.
 This is useful for the Sonos Amp in particular.
+
+The `buttonlock` channel is the inverse of the Touch Controls setting in the Sonos app.
+In a home theater set, a command on the main speaker applies to the whole set, a command on a surround speaker only to that speaker.
 
 ## Audio Support
 
