@@ -56,6 +56,7 @@ Can be set to true to use the private API.
 The private API has no limit regarding query frequency but is less stable.
 The private API will only gather live data if a meter is available.
 Monitoring API V1 has a limit of 300 queries per day but should be more reliable and stable.
+Monitoring API V2 has separate usage limits; see [Monitoring API V2 Usage Limits](#monitoring-api-v2-usage-limits).
 Set this to true when using a token retrieved from the browser in `tokenOrApiKey`.
 See also `meterInstalled`. (Default: false)
 

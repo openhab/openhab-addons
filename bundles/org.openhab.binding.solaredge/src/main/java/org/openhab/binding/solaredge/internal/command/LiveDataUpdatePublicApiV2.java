@@ -80,8 +80,8 @@ public class LiveDataUpdatePublicApiV2 extends AbstractCommand {
             if (json != null) {
                 MeasurementsResponsePublicApiV2 response = fromJson(json, MeasurementsResponsePublicApiV2.class);
                 if (response != null) {
-                    handler.updateChannelStatus(transformer.transformPower(response));
-                    handler.updatePublicApiV2Production(cycleId, transformer.latestValue(response));
+                    handler.updatePublicApiV2Production(cycleId, transformer.transformPower(response),
+                            transformer.latestValue(response));
                 }
             }
         }

@@ -15,11 +15,8 @@ package org.openhab.binding.solaredge.internal.handler;
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -49,9 +46,6 @@ import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
 import org.openhab.binding.solaredge.internal.oauth.SolarEdgeOAuthClient;
 import org.openhab.binding.solaredge.internal.oauth.SolarEdgeOAuthException;
 import org.openhab.binding.solaredge.internal.oauth.SolarEdgeOAuthServlet;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -89,27 +83,10 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     private final SolarEdgeOAuthClient oAuthClient;
     private final PublicApiV2RequestCounter publicApiV2RequestCounter;
     private final SolarEdgeOAuthServlet oAuthServlet;
-    private String authorizationUrl = "";
+    private final Object authorizationLock = new Object();
+    private volatile String authorizationUrl = "";
     private final AtomicLong v2PollingCycle = new AtomicLong();
-    private @Nullable TimedPower v2Production;
-    private @Nullable TimedPower v2Import;
-    private @Nullable TimedPower v2Export;
-    private @Nullable TimedPower v2Charge;
-    private @Nullable TimedPower v2Discharge;
-    private @Nullable TimedPower v2Consumption;
-    private final Map<AggregatePeriod, AggregateBalance> v2AggregateBalances = new EnumMap<>(AggregatePeriod.class);
-
-    private record TimedPower(double value, long cycleId) {
-    }
-
-    private static class AggregateBalance {
-        private @Nullable TimedPower production;
-        private @Nullable TimedPower imported;
-        private @Nullable TimedPower exported;
-        private @Nullable TimedPower charged;
-        private @Nullable TimedPower discharged;
-        private @Nullable TimedPower consumption;
-    }
+    private final PublicApiV2Data v2Data;
 
     /**
      * Schedule for polling live data
@@ -128,6 +105,8 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
             PublicApiV2RequestCounter publicApiV2RequestCounter, SolarEdgeOAuthServlet oAuthServlet) {
         super(thing);
         this.webInterface = new WebInterface(scheduler, this, httpClient);
+        this.v2Data = new PublicApiV2Data(this, this::updateChannelStatus,
+                () -> getConfiguration().getBatteryCriticalLevel());
         this.oAuthClient = oAuthClient;
         this.publicApiV2RequestCounter = publicApiV2RequestCounter;
         this.oAuthServlet = oAuthServlet;
@@ -143,199 +122,38 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     }
 
     @Override
-    public synchronized void updatePublicApiV2Production(long cycleId, @Nullable Double production) {
-        v2Production = timed(production, cycleId);
-        updateStatus(CHANNEL_ID_PV_STATUS, production);
-        updatePublicApiV2LiveValues(cycleId);
+    public void updatePublicApiV2Production(long cycleId, Map<Channel, State> values, @Nullable Double production) {
+        v2Data.updateProduction(cycleId, values, production);
     }
 
     @Override
-    public synchronized void updatePublicApiV2Grid(long cycleId, @Nullable Double imported, @Nullable Double exported,
-            @Nullable Double consumption) {
-        v2Import = timed(imported, cycleId);
-        v2Export = timed(exported, cycleId);
-        v2Consumption = timed(consumption, cycleId);
-        updateStatus(CHANNEL_ID_GRID_STATUS, imported, exported);
-        updatePublicApiV2LiveValues(cycleId);
+    public void updatePublicApiV2Grid(long cycleId, Map<Channel, State> values, @Nullable Double imported,
+            @Nullable Double exported, @Nullable Double consumption) {
+        v2Data.updateGrid(cycleId, values, imported, exported, consumption);
     }
 
     @Override
-    public synchronized void updatePublicApiV2Storage(long cycleId, @Nullable Double charged,
+    public void updatePublicApiV2Storage(long cycleId, Map<Channel, State> values, @Nullable Double charged,
             @Nullable Double discharged, @Nullable Double level) {
-        v2Charge = timed(charged, cycleId);
-        v2Discharge = timed(discharged, cycleId);
-        Map<Channel, State> values = new HashMap<>();
-        putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CRITICAL,
-                batteryCriticalState(level, getConfiguration().getBatteryCriticalLevel()));
-        updateChannelStatus(values);
-        updateStatus(CHANNEL_ID_BATTERY_STATUS, charged, discharged);
-        updatePublicApiV2LiveValues(cycleId);
+        v2Data.updateStorage(cycleId, values, charged, discharged, level);
     }
 
     @Override
-    public synchronized void updatePublicApiV2AggregateProduction(long cycleId, AggregatePeriod period,
+    public void updatePublicApiV2AggregateProduction(long cycleId, AggregatePeriod period, Map<Channel, State> values,
             @Nullable Double production) {
-        AggregateBalance balance = aggregateBalance(period);
-        balance.production = timed(production, cycleId);
-        updatePublicApiV2AggregateConsumption(cycleId, period, balance);
+        v2Data.updateAggregateProduction(cycleId, period, values, production);
     }
 
     @Override
-    public synchronized void updatePublicApiV2AggregateGrid(long cycleId, AggregatePeriod period,
+    public void updatePublicApiV2AggregateGrid(long cycleId, AggregatePeriod period, Map<Channel, State> values,
             @Nullable Double imported, @Nullable Double exported, @Nullable Double consumption) {
-        AggregateBalance balance = aggregateBalance(period);
-        balance.imported = timed(imported, cycleId);
-        balance.exported = timed(exported, cycleId);
-        balance.consumption = timed(consumption, cycleId);
-        updatePublicApiV2AggregateConsumption(cycleId, period, balance);
+        v2Data.updateAggregateGrid(cycleId, period, values, imported, exported, consumption);
     }
 
     @Override
-    public synchronized void updatePublicApiV2AggregateStorage(long cycleId, AggregatePeriod period,
+    public void updatePublicApiV2AggregateStorage(long cycleId, AggregatePeriod period, Map<Channel, State> values,
             @Nullable Double charged, @Nullable Double discharged) {
-        AggregateBalance balance = aggregateBalance(period);
-        balance.charged = timed(charged, cycleId);
-        balance.discharged = timed(discharged, cycleId);
-        updatePublicApiV2AggregateConsumption(cycleId, period, balance);
-    }
-
-    private AggregateBalance aggregateBalance(AggregatePeriod period) {
-        AggregateBalance balance = v2AggregateBalances.get(period);
-        if (balance == null) {
-            balance = new AggregateBalance();
-            v2AggregateBalances.put(period, balance);
-        }
-        return balance;
-    }
-
-    private void updatePublicApiV2AggregateConsumption(long cycleId, AggregatePeriod period, AggregateBalance balance) {
-        TimedPower production = balance.production;
-        TimedPower directConsumption = balance.consumption;
-        Map<Channel, State> values = new HashMap<>();
-        @Nullable
-        Double consumption = null;
-        if (directConsumption != null && directConsumption.cycleId == cycleId) {
-            consumption = directConsumption.value;
-        } else if (production != null && production.cycleId == cycleId
-                && sameCycle(production, balance.imported, balance.exported, balance.charged, balance.discharged)) {
-            consumption = calculateConsumption(valueOf(production), valueOf(balance.imported),
-                    valueOf(balance.exported), valueOf(balance.charged), valueOf(balance.discharged));
-        }
-        if (consumption != null) {
-            putState(values, aggregateGroup(period), CHANNEL_ID_CONSUMPTION,
-                    new QuantityType<>(consumption, Units.WATT_HOUR));
-        }
-        if (production != null && production.cycleId == cycleId
-                && sameCycle(production, balance.exported, balance.charged)) {
-            double selfConsumption = calculateSelfConsumption(valueOf(production), valueOf(balance.exported),
-                    valueOf(balance.charged));
-            putState(values, aggregateGroup(period), CHANNEL_ID_SELF_CONSUMPTION_FOR_CONSUMPTION,
-                    new QuantityType<>(selfConsumption, Units.WATT_HOUR));
-            if (consumption != null) {
-                putState(values, aggregateGroup(period), CHANNEL_ID_SELF_CONSUMPTION_COVERAGE,
-                        new QuantityType<>(calculateCoverage(selfConsumption, consumption), Units.PERCENT));
-            }
-        }
-        if (!values.isEmpty()) {
-            updateChannelStatus(values);
-        }
-    }
-
-    private @Nullable TimedPower timed(@Nullable Double value, long cycleId) {
-        return value == null ? null : new TimedPower(value, cycleId);
-    }
-
-    private void updatePublicApiV2LiveValues(long cycleId) {
-        TimedPower directConsumption = v2Consumption;
-        if (directConsumption != null && directConsumption.cycleId == cycleId) {
-            updateLiveConsumption(directConsumption.value);
-            return;
-        }
-        TimedPower production = v2Production;
-        TimedPower imported = v2Import;
-        TimedPower exported = v2Export;
-        TimedPower charge = v2Charge;
-        TimedPower discharge = v2Discharge;
-        if (production != null && production.cycleId == cycleId
-                && sameCycle(production, imported, exported, charge, discharge)) {
-            updateLiveConsumption(calculateConsumption(valueOf(production), valueOf(imported), valueOf(exported),
-                    valueOf(charge), valueOf(discharge)));
-        }
-    }
-
-    private void updateLiveConsumption(double consumption) {
-        Map<Channel, State> values = new HashMap<>();
-        putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_CONSUMPTION, new QuantityType<>(consumption, Units.WATT));
-        putState(values, CHANNEL_GROUP_LIVE, CHANNEL_ID_LOAD_STATUS, new StringType(activeStatus(consumption)));
-        updateChannelStatus(values);
-    }
-
-    private void putState(Map<Channel, State> values, String group, String channelId, State state) {
-        Channel channel = getChannel(group, channelId);
-        if (channel != null) {
-            values.put(channel, state);
-        }
-    }
-
-    private boolean sameCycle(TimedPower reference, @Nullable TimedPower... values) {
-        for (TimedPower value : values) {
-            if (value == null || value.cycleId != reference.cycleId) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private double valueOf(@Nullable TimedPower power) {
-        return Objects.requireNonNull(power).value;
-    }
-
-    private void updateStatus(String channelId, @Nullable Double... powers) {
-        boolean active = false;
-        for (Double power : powers) {
-            if (power == null) {
-                return;
-            }
-            active |= power > 0;
-        }
-        Map<Channel, State> values = new HashMap<>();
-        putState(values, CHANNEL_GROUP_LIVE, channelId, new StringType(active ? "Active" : "Idle"));
-        updateChannelStatus(values);
-    }
-
-    static double calculateConsumption(double production, double imported, double exported, double charged,
-            double discharged) {
-        return Math.max(0, production + imported + discharged - exported - charged);
-    }
-
-    static double calculateSelfConsumption(double production, double exported, double charged) {
-        return Math.max(0, production - exported - charged);
-    }
-
-    static double calculateCoverage(double selfConsumption, double consumption) {
-        return consumption > 0 ? selfConsumption / consumption * 100 : 0;
-    }
-
-    static String activeStatus(double... powers) {
-        for (double power : powers) {
-            if (power > 0) {
-                return "Active";
-            }
-        }
-        return "Idle";
-    }
-
-    static State batteryCriticalState(@Nullable Double level, int threshold) {
-        return level == null ? UnDefType.UNDEF : new StringType(Boolean.toString(level < threshold));
-    }
-
-    private String aggregateGroup(AggregatePeriod period) {
-        return switch (period) {
-            case DAY -> CHANNEL_GROUP_AGGREGATE_DAY;
-            case WEEK -> CHANNEL_GROUP_AGGREGATE_WEEK;
-            case MONTH -> CHANNEL_GROUP_AGGREGATE_MONTH;
-            case YEAR -> CHANNEL_GROUP_AGGREGATE_YEAR;
-        };
+        v2Data.updateAggregateStorage(cycleId, period, values, charged, discharged);
     }
 
     @Override

@@ -92,8 +92,8 @@ public class AggregateDataUpdatePublicApiV2 extends AbstractCommand {
                                     AggregatePeriod.MONTH };
                     for (AggregatePeriod period : periods) {
                         OffsetDateTime from = aggregateStart(now, period);
-                        handler.updateChannelStatus(transformer.transformEnergy(response, period, from));
                         handler.updatePublicApiV2AggregateProduction(cycleId, period,
+                                transformer.transformEnergy(response, period, from),
                                 transformer.totalValue(response, from));
                     }
                 }

@@ -84,14 +84,13 @@ public class LiveDeviceTelemetryUpdatePublicApiV2 extends AbstractCommand {
             if (json != null) {
                 DeviceTelemetryResponsePublicApiV2 response = fromJson(json, DeviceTelemetryResponsePublicApiV2.class);
                 if (response != null) {
-                    handler.updateChannelStatus(transformer.transformLive(response));
                     LivePowers powers = transformer.extractLivePowers(response);
                     if (storage) {
-                        handler.updatePublicApiV2Storage(cycleId, powers.charged(), powers.discharged(),
-                                powers.level());
+                        handler.updatePublicApiV2Storage(cycleId, transformer.transformLive(response), powers.charged(),
+                                powers.discharged(), powers.level());
                     } else {
-                        handler.updatePublicApiV2Grid(cycleId, powers.imported(), powers.exported(),
-                                powers.consumption());
+                        handler.updatePublicApiV2Grid(cycleId, transformer.transformLive(response), powers.imported(),
+                                powers.exported(), powers.consumption());
                     }
                 }
             }

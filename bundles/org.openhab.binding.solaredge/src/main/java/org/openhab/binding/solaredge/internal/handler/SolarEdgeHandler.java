@@ -29,6 +29,7 @@ import org.openhab.core.types.State;
  * public interface of the {@link SolarEdgeHandler}
  *
  * @author Alexander Friese - initial contribution
+ * @author Ronny Grun - Monitoring API V2 channel and rate-limit integration
  */
 @NonNullByDefault
 public interface SolarEdgeHandler extends ThingHandler, ChannelProvider {
@@ -80,24 +81,25 @@ public interface SolarEdgeHandler extends ThingHandler, ChannelProvider {
     void updatePublicApiV2RateLimit(@Nullable String limit, @Nullable String remaining, @Nullable String retryAfter);
 
     /** Supplies the latest V2 production power for deriving site consumption. */
-    void updatePublicApiV2Production(long cycleId, @Nullable Double production);
+    void updatePublicApiV2Production(long cycleId, Map<Channel, State> values, @Nullable Double production);
 
     /** Supplies the latest V2 grid powers for deriving site consumption. */
-    void updatePublicApiV2Grid(long cycleId, @Nullable Double imported, @Nullable Double exported,
-            @Nullable Double consumption);
-
-    /** Supplies the latest V2 storage powers for deriving site consumption. */
-    void updatePublicApiV2Storage(long cycleId, @Nullable Double charged, @Nullable Double discharged,
-            @Nullable Double level);
-
-    /** Supplies V2 production energy for deriving aggregate consumption. */
-    void updatePublicApiV2AggregateProduction(long cycleId, AggregatePeriod period, @Nullable Double production);
-
-    /** Supplies V2 grid energies for deriving aggregate consumption. */
-    void updatePublicApiV2AggregateGrid(long cycleId, AggregatePeriod period, @Nullable Double imported,
+    void updatePublicApiV2Grid(long cycleId, Map<Channel, State> values, @Nullable Double imported,
             @Nullable Double exported, @Nullable Double consumption);
 
+    /** Supplies the latest V2 storage powers for deriving site consumption. */
+    void updatePublicApiV2Storage(long cycleId, Map<Channel, State> values, @Nullable Double charged,
+            @Nullable Double discharged, @Nullable Double level);
+
+    /** Supplies V2 production energy for deriving aggregate consumption. */
+    void updatePublicApiV2AggregateProduction(long cycleId, AggregatePeriod period, Map<Channel, State> values,
+            @Nullable Double production);
+
+    /** Supplies V2 grid energies for deriving aggregate consumption. */
+    void updatePublicApiV2AggregateGrid(long cycleId, AggregatePeriod period, Map<Channel, State> values,
+            @Nullable Double imported, @Nullable Double exported, @Nullable Double consumption);
+
     /** Supplies V2 storage energies for deriving aggregate consumption. */
-    void updatePublicApiV2AggregateStorage(long cycleId, AggregatePeriod period, @Nullable Double charged,
-            @Nullable Double discharged);
+    void updatePublicApiV2AggregateStorage(long cycleId, AggregatePeriod period, Map<Channel, State> values,
+            @Nullable Double charged, @Nullable Double discharged);
 }

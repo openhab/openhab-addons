@@ -99,6 +99,9 @@ public class SolarEdgeBindingConstants {
     public static final String PUBLIC_DATA_API_V2_METER_TELEMETRY_SUFFIX = "/meters/telemetry";
     public static final String PUBLIC_DATA_API_V2_STORAGE_TELEMETRY_SUFFIX = "/storage/telemetry";
     public static final String PUBLIC_DATA_API_V2_KEY_HEADER = "X-API-Key";
+    public static final String PUBLIC_DATA_API_V2_RATE_LIMIT_MINUTE_HEADER = "x-ratelimit-limit-minute";
+    public static final String PUBLIC_DATA_API_V2_RATE_LIMIT_REMAINING_MINUTE_HEADER = "x-ratelimit-remaining-minute";
+    public static final String PUBLIC_DATA_API_V2_RETRY_AFTER_HEADER = "Retry-After";
     public static final String PUBLIC_DATA_API_V2_AUTHORIZE_URL = "https://connect.solaredge.com/authorize";
     public static final String PUBLIC_DATA_API_V2_TOKEN_URL = "https://monitoringapi.solaredge.com/v2/oauth2/token";
     public static final String PROPERTY_OAUTH_AUTHORIZATION_URL = "oauthAuthorizationUrl";
@@ -128,6 +131,8 @@ public class SolarEdgeBindingConstants {
     public static final String STATUS_UNKNOWN_ERROR = "@text/status.unknown.error";
     public static final String STATUS_INVALID_TOKEN_LENGTH = "@text/status.invalid.token.length";
     public static final String STATUS_INVALID_API_KEY_LENGTH = "@text/status.invalid.api.key.length";
+    public static final String STATUS_MISSING_OAUTH_CLIENT_CREDENTIALS = "@text/status.missing.oauth.client.credentials";
+    public static final String STATUS_MISSING_API_KEY = "@text/status.missing.api.key";
     public static final String STATUS_REQUEST_LIMIT_EXCEEDED = "@text/status.request.limit.exceeded [\""
             + WEB_REQUEST_PUBLIC_API_DAY_LIMIT + "\"]";
     public static final String STATUS_NO_METER_CONFIGURED = "@text/status.no.meter.configured";

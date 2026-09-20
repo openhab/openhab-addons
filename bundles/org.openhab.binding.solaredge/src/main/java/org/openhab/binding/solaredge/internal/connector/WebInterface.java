@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.openhab.binding.solaredge.internal.AtomicReferenceTrait;
-import org.openhab.binding.solaredge.internal.command.AbstractCommand;
 import org.openhab.binding.solaredge.internal.command.PrivateApiTokenCheck;
 import org.openhab.binding.solaredge.internal.command.PublicApiKeyCheck;
 import org.openhab.binding.solaredge.internal.command.PublicApiV2KeyCheck;
@@ -161,9 +160,7 @@ public class WebInterface implements AtomicReferenceTrait {
                 } else {
                     tokenCheckCommand = new PublicApiKeyCheck(handler, this::processAuthenticationResult);
                 }
-                if (tokenCheckCommand instanceof AbstractCommand abstractCommand) {
-                    abstractCommand.bindRequestGeneration(requestGeneration.get(), requestGeneration::get);
-                }
+                tokenCheckCommand.bindRequestGeneration(requestGeneration.get(), requestGeneration::get);
                 tokenCheckCommand.performAction(httpClient);
             }
         }
@@ -182,7 +179,7 @@ public class WebInterface implements AtomicReferenceTrait {
             } else if (!config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())
                     && PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication())
                     && (config.getOAuthClientId().isBlank() || config.getOAuthClientSecret().isBlank())) {
-                preCheckStatusMessage = "OAuth client ID and client secret are required";
+                preCheckStatusMessage = STATUS_MISSING_OAUTH_CLIENT_CREDENTIALS;
             } else if (!config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())
                     && PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication())
                     && !handler.hasPublicApiV2Credential()) {
@@ -191,7 +188,7 @@ public class WebInterface implements AtomicReferenceTrait {
                     && (!PublicApiVersion.V2.equals(config.getPublicApiVersion())
                             || PublicApiAuthentication.API_KEY.equals(config.getPublicApiAuthentication()))
                     && localTokenOrApiKey.isBlank()) {
-                preCheckStatusMessage = "An API key is required for the selected public API authentication";
+                preCheckStatusMessage = STATUS_MISSING_API_KEY;
             } else if (!config.isUsePrivateApi() && PublicApiVersion.V1.equals(config.getPublicApiVersion())
                     && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
                 preCheckStatusMessage = STATUS_INVALID_API_KEY_LENGTH;

@@ -247,6 +247,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     }
 
     /** Bind a command to the connector generation in which it was first queued. */
+    @Override
     public final synchronized boolean bindRequestGeneration(long generation, LongSupplier currentGeneration) {
         if (requestGenerationSupplier == null) {
             requestGeneration = generation;

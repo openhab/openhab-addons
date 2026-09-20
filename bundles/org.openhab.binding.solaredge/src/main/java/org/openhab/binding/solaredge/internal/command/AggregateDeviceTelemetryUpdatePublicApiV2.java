@@ -94,13 +94,14 @@ public class AggregateDeviceTelemetryUpdatePublicApiV2 extends AbstractCommand {
                                     AggregatePeriod.MONTH };
                     for (AggregatePeriod period : periods) {
                         OffsetDateTime from = aggregateStart(now, period);
-                        handler.updateChannelStatus(transformer.transformAggregate(response, period, from));
                         AggregateEnergies energies = transformer.extractAggregateEnergies(response, from);
                         if (storage) {
-                            handler.updatePublicApiV2AggregateStorage(cycleId, period, energies.charged(),
+                            handler.updatePublicApiV2AggregateStorage(cycleId, period,
+                                    transformer.transformAggregate(response, period, from), energies.charged(),
                                     energies.discharged());
                         } else {
-                            handler.updatePublicApiV2AggregateGrid(cycleId, period, energies.imported(),
+                            handler.updatePublicApiV2AggregateGrid(cycleId, period,
+                                    transformer.transformAggregate(response, period, from), energies.imported(),
                                     energies.exported(), energies.consumption());
                         }
                     }
