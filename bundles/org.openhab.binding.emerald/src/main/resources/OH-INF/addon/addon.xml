@@ -5,7 +5,8 @@
 
 	<type>binding</type>
 	<name>Emerald Binding</name>
-	<description>This binding supports the Australian brand Emerald's range of Heat Pump Hot Water Services (HWS), providing information and control.</description>
+	<description>This binding supports the Australian brand Emerald's range of Heat Pump Hot Water Services (HWS),
+		providing information and control.</description>
 	<connection>cloud</connection>
 	<countries>au</countries>
 
