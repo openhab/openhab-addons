@@ -101,7 +101,11 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
         String itemType = getItemType(item);
 
         StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create()
-                .withPattern(computePatternForItem(item, itemType)).withReadOnly(true);
+                .withReadOnly(true);
+        String pattern = computePatternForItem(item, itemType);
+        if (pattern != null) {
+            stateDescriptionFragmentBuilder.withPattern(pattern);
+        }
 
         StateChannelTypeBuilder stateChannelTypeBuilder = ChannelTypeBuilder
                 .state(channelTypeUID, item.getName(), itemType)
@@ -112,12 +116,12 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
         return stateChannelTypeBuilder.build();
     }
 
-    private String computePatternForItem(ParameterItem item, String itemType) {
+    private @Nullable String computePatternForItem(ParameterItem item, String itemType) {
         if (CoreItemFactory.STRING.equals(itemType)) {
             return "%s";
         }
         if (CoreItemFactory.DATETIME.equals(itemType)) {
-            return "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS";
+            return null;
         }
 
         long decimalPoints = 0;
