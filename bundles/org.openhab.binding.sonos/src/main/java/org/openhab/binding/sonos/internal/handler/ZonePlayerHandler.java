@@ -561,6 +561,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 case "CurrentButtonLockState":
                     updateChannel(BUTTONLOCK);
                     break;
+                case "DisplaySoftwareVersion":
+                    updateChannel(FIRMWARE);
+                    break;
                 case "ZoneName":
                     updateState(ZONENAME, new StringType(value));
                     break;
@@ -838,6 +841,12 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 value = getButtonLock();
                 if (value != null) {
                     newState = OnOffType.from(value);
+                }
+                break;
+            case FIRMWARE:
+                value = stateMap.get("DisplaySoftwareVersion");
+                if (value != null && !value.isEmpty()) {
+                    newState = new StringType(value);
                 }
                 break;
             case ZONENAME:

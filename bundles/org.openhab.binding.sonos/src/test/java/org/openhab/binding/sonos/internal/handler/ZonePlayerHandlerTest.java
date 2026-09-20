@@ -13,10 +13,12 @@
 package org.openhab.binding.sonos.internal.handler;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.sonos.internal.SonosBindingConstants.FIRMWARE;
 import static org.openhab.binding.sonos.internal.SonosBindingConstants.ZONEPLAYER_THING_TYPE_UID;
 
 import java.net.URL;
@@ -34,14 +36,20 @@ import org.openhab.binding.sonos.internal.SonosStateDescriptionOptionProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 
 /**
- * Tests the switch of a generic zoneplayer thing to the thing type of its model.
+ * Tests the switch of a generic zoneplayer thing to the thing type of its model, and the firmware channel.
  *
  * @author Martin Littkovsky - Initial contribution
  */
@@ -94,6 +102,29 @@ public class ZonePlayerHandlerTest {
 
         verify(callback, timeout(5000)).migrateThingType(thing, new ThingTypeUID("sonos", "PLAY5"),
                 thing.getConfiguration());
+    }
+
+    @Test
+    public void firmwareVersionThatArrivedBeforeTheLinkStillReachesTheChannel() {
+        final String reportedVersion = "18.8";
+        ThingUID thingUID = new ThingUID(ZONEPLAYER_THING_TYPE_UID, "test");
+        ChannelUID firmwareChannel = new ChannelUID(thingUID, FIRMWARE);
+        Thing thing = ThingBuilder.create(ZONEPLAYER_THING_TYPE_UID, thingUID)
+                .withChannel(ChannelBuilder.create(firmwareChannel).withAcceptedItemType("String").build()).build();
+        thing.setStatusInfo(ThingStatusInfoBuilder.create(ThingStatus.ONLINE).build());
+        ZonePlayerHandler handler = new ZonePlayerHandler(thingRegistry, thing, upnpIOService, null,
+                stateDescriptionProvider);
+        handler.setCallback(callback);
+        this.handler = handler;
+
+        handler.onValueReceived("DisplaySoftwareVersion", reportedVersion, "DeviceProperties");
+
+        verify(callback, never()).stateUpdated(eq(firmwareChannel), any());
+
+        when(callback.isChannelLinked(firmwareChannel)).thenReturn(true);
+        handler.channelLinked(firmwareChannel);
+
+        verify(callback).stateUpdated(firmwareChannel, new StringType(reportedVersion));
     }
 
     private Thing initializeZonePlayerReporting(String descriptor) {

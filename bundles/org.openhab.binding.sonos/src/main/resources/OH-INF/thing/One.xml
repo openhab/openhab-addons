@@ -28,6 +28,7 @@
 			<channel id="favorite" typeId="favorite"/>
 			<channel id="led" typeId="led"/>
 			<channel id="buttonlock" typeId="buttonlock"/>
+			<channel id="firmware" typeId="firmware"/>
 			<channel id="localcoordinator" typeId="localcoordinator"/>
 			<channel id="loudness" typeId="loudness"/>
 			<channel id="mute" typeId="system.mute"/>
@@ -65,7 +66,7 @@
 		<properties>
 			<property name="vendor">SONOS</property>
 			<property name="modelId">One</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>udn</representation-property>

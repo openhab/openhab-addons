@@ -9,12 +9,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:Arc">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -25,12 +35,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:ArcUltra">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -41,12 +61,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:CONNECT">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -57,12 +87,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:Era100">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -73,12 +113,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:Five">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -89,12 +139,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:Move2">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -105,12 +165,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:OneSL">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -121,12 +191,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:PLAY3">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -137,12 +217,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:PLAYBAR">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -153,12 +243,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:Port">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -169,12 +269,22 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:RoamSL">
 		<instruction-set targetVersion="1">
 			<add-channel id="buttonlock">
 				<type>sonos:buttonlock</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -185,6 +295,11 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="sonos:zoneplayer">
@@ -193,6 +308,10 @@
 				<type>sonos:buttonlock</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="firmware">
+				<type>sonos:firmware</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
-
 </update:update-descriptions>

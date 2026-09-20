@@ -141,6 +141,13 @@
 		<description>Play the given favorite entry. The favorite entry has to be predefined in the Sonos Controller app</description>
 	</channel-type>
 
+	<channel-type id="firmware" advanced="true">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Software version of the Sonos device, as shown in the Sonos app</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="heightlevel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Height Level</label>
