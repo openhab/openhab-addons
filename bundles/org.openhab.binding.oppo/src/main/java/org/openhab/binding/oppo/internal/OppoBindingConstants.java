@@ -51,8 +51,8 @@ public class OppoBindingConstants {
     public static final Set<String> UDP20X_HDMI_MODES = Set.of("AUTO", "SRC", "UHD_AUTO", "UHD24", "UHD50", "UHD60",
             "1080P_AUTO", "1080P24", "1080P50", "1080P60", "1080I50", "1080I60", "720P50", "720P60", "576P", "576I",
             "480P", "480I");
-    public static final Set<String> DV983H_HDMI_MODES = Set.of("480P", "720P60", "1080I60", "1080P60", "576P", "720P50",
-            "1080I50", "1080P50", "480PAUTO", "720PAUTO", "1080IAUTO", "1080PAUTO");
+    public static final Set<String> DV983H_HDMI_MODES = Set.of("1080PAUTO", "1080P50", "1080P60", "1080IAUTO",
+            "1080I50", "1080I60", "720PAUTO", "720P50", "720P60", "576P", "480PAUTO", "480P");
 
     public static final Integer BDP83_PORT = 19999;
     public static final Integer BDP10X_PORT = 48360;
