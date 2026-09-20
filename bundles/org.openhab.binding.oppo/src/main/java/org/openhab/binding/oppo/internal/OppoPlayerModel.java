@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public enum OppoPlayerModel {
     /**
-     * OPPO BDP-83 Blu-ray player
+     * OPPO BDP-83 Blu-ray Player
      */
     BDP83(83, THING_TYPE_BDP83, BDP83_PORT, OppoCommand.QUERY_COMMANDS_83, BDPXX_HDMI_MODES, true),
     /**
@@ -53,7 +53,11 @@ public enum OppoPlayerModel {
     /**
      * OPPO UDP-205 Ultra HD Blu-ray Player
      */
-    UDP205(205, THING_TYPE_UDP205, UDP20X_PORT, OppoCommand.QUERY_COMMANDS_20X, UDP20X_HDMI_MODES, false);
+    UDP205(205, THING_TYPE_UDP205, UDP20X_PORT, OppoCommand.QUERY_COMMANDS_20X, UDP20X_HDMI_MODES, false),
+    /**
+     * OPPO DV-983H DVD Player
+     */
+    DV983H(983, THING_TYPE_DV983H, -1, OppoCommand.QUERY_COMMANDS_983H, DV983H_HDMI_MODES, false);
 
     private final int modelNumber;
     private final ThingTypeUID thingTypeUID;

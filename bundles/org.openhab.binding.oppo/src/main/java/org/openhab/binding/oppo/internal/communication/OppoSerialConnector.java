@@ -48,12 +48,16 @@ public class OppoSerialConnector extends OppoConnector {
      *
      * @param serialPortManager the serial port manager
      * @param serialPortName the serial port name to be used
+     * @param isDvdModel indicates if the protocol for the DV-983H should be used
      * @param uid the thing uid string
      */
-    public OppoSerialConnector(SerialPortManager serialPortManager, String serialPortName, String uid) {
+    public OppoSerialConnector(SerialPortManager serialPortManager, String serialPortName, boolean isDvdModel,
+            String uid) {
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
         this.uid = uid;
+
+        super.isDvdModel = isDvdModel;
     }
 
     @Override

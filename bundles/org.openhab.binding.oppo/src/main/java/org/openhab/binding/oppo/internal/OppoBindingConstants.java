@@ -40,6 +40,7 @@ public class OppoBindingConstants {
     public static final ThingTypeUID THING_TYPE_BDP105 = new ThingTypeUID(BINDING_ID, "bdp-105");
     public static final ThingTypeUID THING_TYPE_UDP203 = new ThingTypeUID(BINDING_ID, "udp-203");
     public static final ThingTypeUID THING_TYPE_UDP205 = new ThingTypeUID(BINDING_ID, "udp-205");
+    public static final ThingTypeUID THING_TYPE_DV983H = new ThingTypeUID(BINDING_ID, "dv-983h");
 
     public static final Unit<Time> API_SECONDS_UNIT = Units.SECOND;
     public static final Unit<Dimensionless> API_PERCENT_UNIT = Units.PERCENT;
@@ -50,6 +51,8 @@ public class OppoBindingConstants {
     public static final Set<String> UDP20X_HDMI_MODES = Set.of("AUTO", "SRC", "UHD_AUTO", "UHD24", "UHD50", "UHD60",
             "1080P_AUTO", "1080P24", "1080P50", "1080P60", "1080I50", "1080I60", "720P50", "720P60", "576P", "576I",
             "480P", "480I");
+    public static final Set<String> DV983H_HDMI_MODES = Set.of("480P", "720P60", "1080I60", "1080P60", "576P", "720P50",
+            "1080I50", "1080P50", "480PAUTO", "720PAUTO", "1080IAUTO", "1080PAUTO");
 
     public static final Integer BDP83_PORT = 19999;
     public static final Integer BDP10X_PORT = 48360;
@@ -97,8 +100,6 @@ public class OppoBindingConstants {
     public static final String OFF = "OFF";
     public static final String ONE = "1";
     public static final String ZERO = "0";
-    public static final String VERBOSE_2 = "2";
-    public static final String VERBOSE_3 = "3";
     public static final String MUTE = "MUTE";
     public static final String MUT = "MUT";
     public static final String UMT = "UMT";
