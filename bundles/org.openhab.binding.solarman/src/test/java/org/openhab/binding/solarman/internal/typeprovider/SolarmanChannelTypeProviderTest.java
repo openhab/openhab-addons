@@ -46,7 +46,7 @@ public class SolarmanChannelTypeProviderTest {
 
     @ParameterizedTest
     @MethodSource("itemPatterns")
-        void testStatePatternMatchesItemType(ParameterItem item, String expectedItemType,
+    void testStatePatternMatchesItemType(ParameterItem item, String expectedItemType,
             @Nullable String expectedPattern) {
         ChannelType channelType = provider.buildChannelType(CHANNEL_TYPE_UID, item);
 
