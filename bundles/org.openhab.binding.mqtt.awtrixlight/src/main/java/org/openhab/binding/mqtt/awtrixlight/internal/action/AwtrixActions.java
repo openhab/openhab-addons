@@ -215,21 +215,43 @@ public class AwtrixActions implements ThingActions {
     }
 
     @RuleAction(label = "Show Custom Notification", description = "Shows a notification with specified options")
-    public void showCustomNotification(Map<String, Object> appParams, boolean hold, boolean wakeUp, boolean stack,
+    public void showCustomNotification(Map<String, ?> appParams, boolean hold, boolean wakeUp, boolean stack,
             @Nullable String rtttl, @Nullable String sound, boolean loopSound) {
         AwtrixLightBridgeHandler localHandler = this.handler;
         if (localHandler != null) {
-            localHandler.showNotification(hold, wakeUp, stack, rtttl, sound, loopSound, appParams);
+            // appParams arrives as e.g. Map<String, Serializable> from DSL rules' newHashMap(), which
+            // Java generics invariance does not accept where a Map<String, Object> is declared even
+            // though every value trivially is an Object - copy through the wildcard to satisfy the
+            // handler's signature without weakening it too.
+            localHandler.showNotification(hold, wakeUp, stack, rtttl, sound, loopSound, new HashMap<>(appParams));
         }
     }
 
-    public static void showCustomNotification(@Nullable ThingActions actions, @Nullable Map<String, Object> appParams,
-            boolean hold, boolean wakeUp, boolean stack, @Nullable String rtttl, @Nullable String sound,
-            boolean loopSound) {
+    public static void showCustomNotification(@Nullable ThingActions actions, @Nullable Map<String, ?> appParams,
+            @Nullable Boolean hold, @Nullable Boolean wakeUp, @Nullable Boolean stack, @Nullable String rtttl,
+            @Nullable String sound, @Nullable Boolean loopSound) {
         if (actions instanceof AwtrixActions awtrixActions) {
             if (appParams != null) {
-                awtrixActions.showCustomNotification(appParams, hold, wakeUp, stack, rtttl, sound, loopSound);
+                awtrixActions.showCustomNotification(appParams, Boolean.TRUE.equals(hold),
+                        Boolean.TRUE.equals(wakeUp), Boolean.TRUE.equals(stack), rtttl, sound,
+                        Boolean.TRUE.equals(loopSound));
             }
+        } else {
+            throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
+        }
+    }
+
+    @RuleAction(label = "Dismiss Notification", description = "Dismisses the currently shown notification")
+    public void dismissNotification() {
+        AwtrixLightBridgeHandler localHandler = this.handler;
+        if (localHandler != null) {
+            localHandler.dismissNotification();
+        }
+    }
+
+    public static void dismissNotification(@Nullable ThingActions actions) {
+        if (actions instanceof AwtrixActions awtrixActions) {
+            awtrixActions.dismissNotification();
         } else {
             throw new IllegalArgumentException("Instance is not an AwtrixActions class.");
         }

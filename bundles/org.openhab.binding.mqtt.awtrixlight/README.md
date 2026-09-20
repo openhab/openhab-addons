@@ -307,6 +307,13 @@ The following actions are supported:
     <td>loopSound</td>
     <td>Whether the sound should be played in a loop until the notification is dismissed.</td>
   </tr>
+  <tr valign='top'>
+    <td>dismissNotification</td>
+    <td>Dismisses the currently shown notification.</td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
 
 ## Full Example
