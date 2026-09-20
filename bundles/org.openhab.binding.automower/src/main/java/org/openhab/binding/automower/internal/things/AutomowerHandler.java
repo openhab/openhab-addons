@@ -111,6 +111,7 @@ public class AutomowerHandler extends BaseThingHandler {
     private @Nullable Mower mowerState;
     private @Nullable MowerMessages mowerMessages;
     private @Nullable ScheduledFuture<?> stateRefreshFuture;
+    private boolean disposed;
 
     public AutomowerHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -212,6 +213,9 @@ public class AutomowerHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        synchronized (this) {
+            disposed = false;
+        }
         Bridge bridge = getBridge();
         if (bridge != null) {
             AutomowerConfiguration currentConfig = getConfigAs(AutomowerConfiguration.class);
@@ -292,7 +296,8 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
+        disposed = true;
         ScheduledFuture<?> stateRefreshFuture = this.stateRefreshFuture;
         this.stateRefreshFuture = null;
         if (stateRefreshFuture != null) {
@@ -990,7 +995,10 @@ public class AutomowerHandler extends BaseThingHandler {
         }
     }
 
-    private void scheduleStateRefreshAfterCommunicationFailure() {
+    private synchronized void scheduleStateRefreshAfterCommunicationFailure() {
+        if (disposed) {
+            return;
+        }
         ScheduledFuture<?> stateRefreshFuture = this.stateRefreshFuture;
         if (stateRefreshFuture != null && !stateRefreshFuture.isDone() && !stateRefreshFuture.isCancelled()) {
             return;
@@ -1000,6 +1008,9 @@ public class AutomowerHandler extends BaseThingHandler {
 
     private synchronized void runScheduledStateRefresh() {
         stateRefreshFuture = null;
+        if (disposed) {
+            return;
+        }
         poll();
     }
 
