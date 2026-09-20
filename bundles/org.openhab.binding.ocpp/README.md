@@ -46,11 +46,12 @@ The id is whatever path the charger appends to its backend URL — often its ser
 | whitelistTagIds              | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected                                                                     | (empty) | no       | yes      |
 | chargerIds                   | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected                                                       | (empty) | no       | yes      |
 
-These settings are pushed to a charger as ChangeConfiguration requests after it boots, one at a time, and only until the charger has accepted them once for the configured values — a changed configuration is sent again on the charger's next boot, an unchanged one is not repeated on every reconnect.
-Entries are sent when a charger boots, and again when one reconnects without booting — which is what happens after openHAB restarts — so a changed entry reaches a charger that stayed on.
+These settings are pushed to a charger as ChangeConfiguration requests after it boots — or after it reconnects without booting, which is what happens when openHAB restarts — one at a time, and only until the charger has accepted them once for the configured values.
+A changed configuration is sent again on the charger's next boot or reconnect; an unchanged one is not repeated.
+After three failed attempts the burst is not retried until the configuration changes or openHAB restarts.
 A request a charger leaves unanswered fails after `requestTimeoutSeconds`; the OCPP library itself would wait on it forever.
 Measurands a charger rejects are dropped one at a time until it accepts them, and the accepted set is remembered per configuration key.
-The binding also runs a heartbeat-derived liveness watchdog and self-heals when a charger reconnects under a new session.
+The binding also runs a liveness watchdog sized from the heartbeat interval — any answer from the charger counts as life — and self-heals when a charger reconnects under a new session.
 For the charger's own offline authorization cache, see the `chargepoint` `local-auth-list` and `learn-card` channels below.
 
 ### `chargepoint`
@@ -59,7 +60,7 @@ For the charger's own offline authorization cache, see the `chargepoint` `local-
 | ------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
 | chargePointId       | text    | The charger's OCPP identity (its WebSocket URL suffix)                                                                                  | N/A     | yes      | no       |
 | configSettleSeconds | integer | Delay after BootNotification before the configuration above is sent. Some chargers are not ready to answer immediately                  | 0       | no       | yes      |
-| meterless           | boolean | The charger has no internal meter: skip measurand configuration and disable clock-aligned sampling                                      | false   | no       | yes      |
+| meterless           | boolean | The charger has no internal meter: send only `ClockAlignedDataInterval=0` and ignore `meterValueSampleInterval`, `meterValuesData` and `clockAlignedDataInterval` for it                                      | false   | no       | yes      |
 | heartbeat           | integer | Per-charger heartbeat interval (s), overriding the server default. Also sizes this charger's liveness window. 0 uses the server default | 0       | no       | yes      |
 
 ### `connector`
@@ -74,7 +75,7 @@ For the charger's own offline authorization cache, see the `chargepoint` `local-
 | refreshInterval       | integer | Poll this connector for MeterValues every N seconds via TriggerMessage. 0 disables polling                                                                         | 0       | no       | yes      |
 | nominalVoltage        | decimal | Line voltage for converting an amps charge-limit to watts on a charger that only accepts a power limit (W = A×V×phases)                                            | 230     | no       | yes      |
 | phases                | integer | Phases assumed in that amps→watts conversion — 1 single-phase, 3 three-phase                                                                                       | 1       | no       | yes      |
-| stuckStateRecovery    | boolean | Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long. Off by default; enable only for a charger known to wedge there | false   | no       | yes      |
+| stuckStateRecovery    | boolean | Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) for more than 120 s. Off by default; enable only for a charger known to wedge there | false   | no       | yes      |
 | remoteStartRetries    | integer | Retry a RemoteStart the charger does not answer, this many times. 0 disables. For a charger that drops the first start request but accepts a retry                 | 0       | no       | yes      |
 
 Most connectors need no configuration beyond `connectorId`.
@@ -84,7 +85,8 @@ The rest cover specific charger behaviors.
 `refreshInterval` actively polls a connector for `MeterValues` for chargers that do not push them on their own; a poll is skipped while the previous one is still outstanding, so a charger that stops answering cannot build a backlog.
 `hardwareMaxCurrentKey` binds the `hardware-max-current` channel to a vendor `ChangeConfiguration` key, since the hardware ceiling is not a standard OCPP setting.
 `stuckStateRecovery` is left off because auto-unlocking a connector is a physical side effect, and `Preparing` and `Finishing` are normal states a charger can dwell in.
-`remoteStartRetries` is for a charger that intermittently ignores the first `RemoteStartTransaction`: the binding re-sends it up to that many times, a few seconds apart, and stops as soon as a transaction starts, so it never double-starts. Off (0) by default, so a charger that answers first time is unaffected.
+`remoteStartRetries` is for a charger that intermittently ignores the first `RemoteStartTransaction`: the binding re-sends it up to that many times, a few seconds apart, and stops as soon as a transaction starts, so it never double-starts.
+Off (0) by default, so a charger that answers first time is unaffected.
 
 ## Channels
 
@@ -101,8 +103,11 @@ The rest cover specific charger behaviors.
 Vendor, model, firmware version and serial number are published as thing properties from the charger's BootNotification.
 
 The local authorization list lets a cached RFID card start a charge while openHAB or the network is offline, on a charger that supports `LocalAuthListManagement`.
-The list lives on the `local-auth-list` channel as a comma-separated set of idTags: set it (from a rule or the UI) and the binding pushes it to the charger with `SendLocalList`, versioned by content so it is not rewritten on every boot. It is persisted on the charge point thing, so it survives an openHAB restart.
-To add a card without knowing its id, use `learn-card`: switch it ON and present the card at the reader — the binding takes the idTag from the charger's Authorize and adds it to the list, then disarms. Learning also disarms on its own after 60 s if no card is presented. A charger that does not advertise the profile is left untouched.
+The list lives on the `local-auth-list` channel as a comma-separated set of idTags: set it (from a rule or the UI) and the binding pushes it to the charger with `SendLocalList`, versioned by content so it is not rewritten on every boot.
+It is persisted on the charge point thing, so it survives an openHAB restart.
+To add a card without knowing its id, use `learn-card`: switch it ON and present the card at the reader — the binding takes the idTag from the charger's Authorize and adds it to the list, then disarms.
+Learning also disarms on its own after 60 s if no card is presented.
+A charger that does not advertise the profile is left untouched.
 
 ### `connector`
 
@@ -126,29 +131,33 @@ To add a card without knowing its id, use `learn-card`: switch it ON and present
 | unlock                  | Switch                   | W          | Momentary — unlock the connector                                                                |
 | hardware-max-current    | Number:ElectricCurrent   | RW         | Hardware current ceiling via a vendor config key                                                |
 
-Beyond the channels above, the connector also exposes the full OCPP 1.6 SampledValue set — aggregate and per-phase current/voltage, active and reactive power, power factor, frequency, active/reactive energy (register and interval, import and export), plus vehicle telemetry (`soc`, `rpm`, `temperature`) — and per-transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`) and the metering timestamps (`timestamp`, `timestamp-start`, `timestamp-stop`).
+Beyond the channels above, the rest of the OCPP 1.6 SampledValue set is added to the connector the first time the charger reports it: `current-import`, `current-export`, `voltage`, `frequency`, `power-active-export`, `power-reactive-import`, `power-reactive-export`, `power-factor`, `energy-active-export`, `energy-active-import-interval`, `energy-active-export-interval`, `energy-reactive-import`, `energy-reactive-export`, `energy-reactive-import-interval`, `energy-reactive-export-interval`, `soc`, `rpm` and `temperature`.
+Every connector also carries the transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`) and the metering timestamps (`timestamp`, `timestamp-start`, `timestamp-stop`).
 A transaction that was open when openHAB restarted keeps its `transaction-id` and its `meter-start`, so `session-energy` is still sized when it stops.
+At a stop, `meter-stop` and `session-energy` are published before `transaction-id` is cleared, so a rule triggered by `transaction-id` changing to UNDEF reads the settled total.
 
 For chargers that reject a TxProfile outside a transaction (e.g. Phoenix CHARX), set `forceTxDefaultProfile` on the connector so the charge limit is sent as a TxDefaultProfile.
 
-## Controlling a charge
+## Controlling a Charge
 
 The connector's writable channels map to OCPP commands, and each updates only once the charger confirms the command — a rejected request leaves the channel showing the real state rather than the requested one.
 
 `charging` starts and stops a transaction: sending it `ON` issues a `RemoteStartTransaction`, `OFF` a `RemoteStopTransaction`.
-The transaction is started with the idTag from the connector's `remoteStartTag` (default `openhab`), which has to be authorized: by this binding through the `server` thing's `tags` list (empty accepts any tag), and by the charger itself if it enforces its own whitelist.
+The transaction is started with the idTag from the connector's `remoteStartTag` (default `openhab`), which has to be authorized: by this binding through the `server` thing's `whitelistTagIds` list (empty accepts any tag), and by the charger itself if it enforces its own whitelist.
 So if `ON` does nothing, set `remoteStartTag` to a tag your charger accepts, or allow that tag on the charger.
 Most chargers also only start once a vehicle is plugged in, so a `RemoteStart` on an idle connector is often ignored.
 Because `charging` follows the charger's reported status, it also reads `ON` on its own whenever a transaction is running, however it was started.
 
-Stopping has one limitation to be aware of: a `RemoteStop` needs the transaction id the charger assigned when the session began, and openHAB only holds that id for a session it saw start.
-A session started outside openHAB — by the vehicle or the charger's own app, or before the `connector` thing existed, or while openHAB was down — therefore cannot be ended from `charging`: there is no id to stop with, so `OFF` is logged and does nothing.
-To keep stop working, start the charge from openHAB (`charging` `ON`), which makes the transaction tracked; for a session you did not start, suspend the power with `pause` (a 0 A profile needs no transaction) or end it with the `chargepoint`-level `reset` (a reset needs no transaction either, but reboots the whole charger).
+Stopping needs the transaction id the charger assigned when the session began, which openHAB records from every `StartTransaction` it receives — a session started by the vehicle, a card or the charger's own app can be stopped from `charging` like one started here.
+The one session it cannot stop is one that began while openHAB was down or before the `connector` thing existed, since that `StartTransaction` was never received: `OFF` is then logged and does nothing.
+For such a session, suspend the power with `pause` (a 0 A profile needs no transaction) or end it with the `chargepoint`-level `reset` (which reboots the whole charger).
 
 `charge-limit` caps the charging current: the value is sent as a `SetChargingProfile` and the channel reflects the applied limit once accepted.
 Some chargers only accept a charge limit expressed in watts (their OCPP `ChargingScheduleAllowedChargingRateUnit` is `Power`, not `Current`); the binding learns this from the charger and converts `charge-limit` amps to watts with `nominalVoltage` and `phases`, so the same amps channel still works.
-Alternatively set `power-limit` (watts) directly — it is sent as-is, with no conversion, on any charger that accepts a power limit, and takes over from `charge-limit` while it is set. Commanding `charge-limit` again clears the power-limit and returns to amps, so the most recent command always wins.
-`number-phases` requests charging on a given number of phases (1, 2 or 3) by setting `numberPhases` in the charging profile — for switching a car to single-phase when solar surplus is low, for instance; 0 clears the request so the charger keeps its own default (OCPP assumes 3). It only takes effect on a charger that supports phase switching (its `ConnectorSwitch3to1PhaseSupported` is true), and when set it also drives the amps→watts conversion above.
+Alternatively set `power-limit` (watts) directly — it is sent as-is, with no conversion, on any charger that accepts a power limit, and takes over from `charge-limit` while it is set.
+Commanding `charge-limit` again clears the power-limit and returns to amps, so the most recent command always wins.
+`number-phases` requests charging on a given number of phases (1, 2 or 3) by setting `numberPhases` in the charging profile — for switching a car to single-phase when solar surplus is low, for instance; 0 clears the request so the charger keeps its own default (OCPP assumes 3).
+It only takes effect on a charger that supports phase switching (its `ConnectorSwitch3to1PhaseSupported` is true), and when set it also drives the amps→watts conversion above.
 `pause` suspends charging with a 0 A profile without ending the transaction; switching it off resumes — at your `charge-limit` if one is set, otherwise by removing the cap so the charger returns to its own maximum — distinct from `charging`, which ends the session.
 A pause is a 0 A limit, so a resume must lift the cap rather than send another 0 A, which a charger reads as "stay suspended".
 `availability` takes the connector Operative or Inoperative, `unlock` releases the cable lock, and the `chargepoint`-level `reset` performs a soft reset of the whole charger.
@@ -214,7 +223,7 @@ then
     Wallbox_Limit.sendCommand(amps)
 end
 
-// Stop a session openHAB did not start (no transaction id, so `charging` OFF cannot end it).
+// Stop a session that began while openHAB was down (no transaction id, so `charging` OFF cannot end it).
 // Cut the power with pause, or end the session with a reset (which reboots the charger).
 rule "Force stop"
 when
@@ -227,30 +236,35 @@ end
 
 ## Troubleshooting
 
-### A charge point stays UNKNOWN, or nothing appears in the inbox
+### A Charge Point Stays UNKNOWN, or Nothing Appears in the Inbox
 
 The charge point id is the path of the WebSocket URL the charger dials, so the charger must connect to `ws://<host>:<port>/<chargePointId>`.
 A charger pointed at the bare root (`ws://<host>:<port>/`, nothing after the slash) sends no id and is ignored, logging `connected without a charge point id in its URL path`.
 Put the id in the charger's backend URL — many chargers keep the URL and the id in separate fields, but it still has to end up as the URL path after the leading slash — and make the `chargepoint` thing's `chargePointId` match it exactly.
 If you are unsure what the charger actually sends, enable `log:set DEBUG org.openhab.binding.ocpp` and read it off the `Charger connected: id=...` line.
 
-### A connector sits at SuspendedEVSE and will not charge
+### A Connector Sits at SuspendedEVSE and Will Not Charge
 
 `SuspendedEVSE` means the charge point itself is withholding energy — a charging-profile limit or an authorization result — unlike `SuspendedEV`, which is the vehicle not drawing (battery full, or charging scheduled in the car).
 Check the connector is not left paused and that `charge-limit` is not 0: sending `pause` OFF resumes charging — at your `charge-limit` if one is set, otherwise by clearing the cap so the charger returns to its own maximum.
-Some chargers also suspend when a `charge-limit` is set _before_ a transaction starts — with no transaction it goes out as a `TxDefaultProfile`, which such a charger accepts but then drops to `SuspendedEVSE` a few seconds in. On those, start the charge first and set the limit once it is `Charging`: send `charging` ON (or plug in), wait for `Charging`, then set `charge-limit`. Adjusting it mid-charge afterwards works normally.
+Some chargers also suspend when a `charge-limit` is set _before_ a transaction starts — with no transaction it goes out as a `TxDefaultProfile`, which such a charger accepts but then drops to `SuspendedEVSE` a few seconds in.
+On those, start the charge first and set the limit once it is `Charging`: send `charging` ON (or plug in), wait for `Charging`, then set `charge-limit`.
+Adjusting it mid-charge afterwards works normally.
 
-### A charger never connects and the log shows nothing after start-up
+### A Charger Never Connects and the Log Shows Nothing After Start-Up
 
 If the server starts (`OCPP JSON server listening`) but no `Charger connected` line ever follows, the charger is not completing the WebSocket handshake, so nothing reaches the binding.
 First rule out the network: from a device on the charger's own network segment (not just any machine), check the openHAB host and port are reachable — `nc -zv <openhab-host> 8887` — and use the host's IP rather than a `.lan` name to rule out DNS.
-A charger that always sends an HTTP Basic-auth header — some send their id with a very short or empty password on every connection, a V2C Trydan being one — is accepted when no `authPassword` is configured, so that is no longer a cause of a silent no-connect (older builds did reject such a charger during the handshake, before the binding saw it).
+A charger that always sends an HTTP Basic-auth header — some send their id with a very short or empty password on every connection, a V2C Trydan being one — is accepted when no `authPassword` is configured, so that is not a cause of a silent no-connect.
 
-### Power readings lag behind the charger
+### Power Readings Lag Behind the Charger
 
-The `power-active-import` and per-phase metering channels only update when the charger sends a `MeterValues` sample, so between samples they look stale (the energy register keeps climbing because it is a running total). To sample more often, lower the `server`'s `meterValueSampleInterval` — the binding pushes it to the charger (10–15 s is plenty). For a charger that will not honour that, set the `connector`'s `refreshInterval` to poll it for a fresh `MeterValues` on a fixed cadence via TriggerMessage. Do not push either below a few seconds on an older charger.
+The `power-active-import` and per-phase metering channels only update when the charger sends a `MeterValues` sample, so between samples they look stale (the energy register keeps climbing because it is a running total).
+To sample more often, lower the `server`'s `meterValueSampleInterval` — the binding pushes it to the charger (10–15 s is plenty).
+For a charger that will not honour that, set the `connector`'s `refreshInterval` to poll it for a fresh `MeterValues` on a fixed cadence via TriggerMessage.
+Do not push either below a few seconds on an older charger.
 
-## Charger-specific notes
+## Charger-Specific Notes
 
 Every charger dials `ws://<openhab-host>:<port>/<chargePointId>`; the only real differences are how each vendor's UI presents the URL and the id, and a few per-charger quirks.
 

@@ -28,9 +28,8 @@
   </properties>
 
   <dependencies>
-    <!-- SPIKE: ChargeTime library 2.0 generation (still OCPP 1.6-J: ocpp16 = models+profiles,
-         ocpp-json = transport, ocpp-common = base). slf4j/gson/jaxb come from the platform, so
-         they are excluded here; Java-WebSocket is bumped to 1.6.0 to match ocpp-json 2.0. -->
+    <!-- ChargeTime OCA-OCPP 2.0: ocpp16 (models and profiles), ocpp-json (transport), ocpp-common (base).
+         slf4j, gson and jaxb come from the platform and are excluded; Java-WebSocket 1.6.0 matches ocpp-json 2.0. -->
     <dependency>
       <groupId>eu.chargetime.ocpp</groupId>
       <artifactId>ocpp16</artifactId>

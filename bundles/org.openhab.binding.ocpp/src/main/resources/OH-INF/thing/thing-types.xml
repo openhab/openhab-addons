@@ -131,9 +131,6 @@
 			<channel id="learn-card" typeId="learn-card"/>
 		</channels>
 
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>chargePointId</representation-property>
 
@@ -234,9 +231,6 @@
 			</channel>
 		</channels>
 
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<representation-property>uniqueId</representation-property>
 
@@ -295,7 +289,8 @@
 			</parameter>
 			<parameter name="stuckStateRecovery" type="boolean">
 				<label>Stuck State Recovery</label>
-				<description>Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) too long.
+				<description>Send an UnlockConnector if the connector stays in a transient state (Preparing/Finishing) for more than
+					120 s.
 					Off
 					by default: those are normal states and unlocking is a physical side effect, so enable it only for a
 					charger known
@@ -408,6 +403,7 @@
 			<options>
 				<option value="0">Charger default</option>
 				<option value="1">1 phase</option>
+				<option value="2">2 phases</option>
 				<option value="3">3 phases</option>
 			</options>
 		</state>
@@ -439,6 +435,9 @@
 		<item-type>Switch</item-type>
 		<label>Unlock Connector</label>
 		<description>Momentary — unlock the connector (UnlockConnector).</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -446,6 +445,9 @@
 		<item-type>Switch</item-type>
 		<label>Reset</label>
 		<description>Momentary — soft reset the charge point (Reset).</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
@@ -454,6 +456,9 @@
 		<label>Learn Card</label>
 		<description>Switch ON to arm learning; the next RFID card presented to the charger is added to the local
 			authorization list. Auto-disarms once the card is read or 60 s pass.</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="local-auth-list">
@@ -465,6 +470,9 @@
 			offline; use
 			Learn Card to add a card without typing its id. Applied only to a charger that supports
 			LocalAuthListManagement.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hardware-max-current">
@@ -655,6 +663,9 @@
 	<channel-type id="rpm">
 		<item-type>Number</item-type>
 		<label>RPM</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
@@ -673,12 +684,18 @@
 		<item-type>String</item-type>
 		<label>Id Tag</label>
 		<description>The idTag of the active transaction.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="transaction-id">
 		<item-type>Number</item-type>
 		<label>Transaction Id</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
