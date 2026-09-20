@@ -253,7 +253,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 connector.sendCommand(OppoCommand.SET_VOLUME_LEVEL, commandStr);
                             } else {
                                 try {
-                                    // DV-981H volume is 00-20, divide 0-100% by 5 to get the proper range
+                                    // DV-983H volume is 00-20, divide 0-100% by 5 to get the proper range
                                     final int volume = Integer.parseInt(commandStr) / 5;
                                     connector.sendCommand(OppoCommand.SET_VOLUME_LEVEL, String.format("%02d", volume));
                                 } catch (NumberFormatException e) {
