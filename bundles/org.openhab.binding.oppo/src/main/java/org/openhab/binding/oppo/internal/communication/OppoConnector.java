@@ -50,7 +50,7 @@ public abstract class OppoConnector {
     private static final Pattern DV983H_POWER_PATTERN = Pattern.compile(".*POWER (ON|OFF).*");
     private static final Pattern DV983H_DISC_TYPE_PATTERN = Pattern
             .compile(".*(OPENING|NO DISC|LOADING|DVD-VIDEO|DVD-AUDIO|SACD|CD-DA).*");
-    private static final Pattern DV983H_VOLUME_PATTERN = Pattern.compile(".*Volume is ([0-2][0-9]}).*");
+    private static final Pattern DV983H_VOLUME_PATTERN = Pattern.compile(".*Volume is ([0-2][0-9]).*");
     private static final String DV983H_MUTE_STRING = "Now is mute";
     private static final String DV983H_FIRMWARE_STRING = "DV983H";
 
