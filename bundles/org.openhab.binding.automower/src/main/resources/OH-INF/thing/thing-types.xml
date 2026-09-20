@@ -69,7 +69,7 @@
 			<property name="mowerHasPosition">N/A</property>
 			<property name="mowerHasStayOutZones">N/A</property>
 			<property name="mowerHasWorkAreas">N/A</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<config-description>
@@ -97,7 +97,7 @@
 		<properties>
 			<property name="mowerId">N/A</property>
 			<property name="stayoutzoneId">N/A</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 	</thing-type>
 
