@@ -272,7 +272,8 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
             return Optional.empty();
         } else if (state == null) {
             // fromJson can return null state field if invalid (see StateTypeAdapter), contradicting @NonNull annotation
-            // for field. This is already logged in StateTypeAdapter, so just return empty here.
+            // for field.
+            logger.warn("Unable to deserialize item '{}' with null state from '{}'", item.getName(), json);
             return Optional.empty();
         } else if (logger.isDebugEnabled()) {
             logger.debug("Deserialized '{}' with state '{}' from '{}'", item.getName(), item.getState(), json);

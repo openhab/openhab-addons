@@ -93,6 +93,11 @@ public class StateTypeAdapterTest {
     }
 
     @Test
+    void readReturnsNullForJsonObject() {
+        assertNull(mapper.fromJson("{\"field\": 1}", State.class));
+    }
+
+    @Test
     void readReturnsNullWhenTypeSeparatorMissing() {
         // Simulates a corrupted or otherwise malformed record with no "@@@" separator.
         assertNull(mapper.fromJson("\"not-a-valid-encoded-state\"", State.class));

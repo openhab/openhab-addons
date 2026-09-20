@@ -39,32 +39,40 @@ public class StateTypeAdapter extends TypeAdapter<State> {
     public State read(JsonReader reader) throws IOException {
         if (reader.peek() == JsonToken.NULL) {
             reader.nextNull();
-            logger.warn("Couldn't deserialize null state");
+            logger.debug("Couldn't deserialize state: 'null'");
             return null;
         }
-        String value = reader.nextString();
+        String value;
+        try {
+            value = reader.nextString();
+        } catch (IllegalStateException e) {
+            logger.debug("Couldn't deserialize state: not a string");
+            return null;
+        }
 
+        String valueTypeName = null;
         try {
             int index = value.indexOf(TYPE_SEPARATOR);
             if (index == -1) {
-                logger.warn("Couldn't deserialize state '{}': type separator '{}' not found", value, TYPE_SEPARATOR);
+                logger.debug("Couldn't deserialize state '{}': type separator '{}' not found", value, TYPE_SEPARATOR);
                 return null;
             }
-            String valueTypeName = value.substring(0, index);
+            valueTypeName = value.substring(0, index);
             String valueAsString = value.substring(index + TYPE_SEPARATOR.length());
 
             @SuppressWarnings("unchecked")
             Class<? extends State> valueType = (Class<? extends State>) Class.forName(valueTypeName);
             State state = TypeParser.parseState(List.of(valueType), valueAsString);
             if (state == null) {
-                logger.warn("Couldn't deserialize state '{}': persisted type not recognized {}", value, valueTypeName);
+                logger.debug("Couldn't deserialize state '{}': persisted type not '{}' not a State", value,
+                        valueTypeName);
                 return null;
             }
             return state;
-        } catch (Exception e) {
-            logger.warn("Couldn't deserialize state '{}': {}", value, e.getMessage());
+        } catch (ClassNotFoundException e) {
+            logger.debug("Couldn't deserialize state '{}': persisted type '{}' not a class", value, valueTypeName);
+            return null;
         }
-        return null;
     }
 
     @Override
