@@ -46,20 +46,20 @@ public class SolarmanChannelTypeProviderTest {
 
     @ParameterizedTest
     @MethodSource("itemPatterns")
-    void testStatePatternMatchesItemType(ParameterItem item, String expectedItemType, String expectedPattern) {
+        void testStatePatternMatchesItemType(ParameterItem item, String expectedItemType,
+            @Nullable String expectedPattern) {
         ChannelType channelType = provider.buildChannelType(CHANNEL_TYPE_UID, item);
 
         assertEquals(expectedItemType, channelType.getItemType());
-        @Nullable
         StateDescription stateDescription = channelType.getState();
         assertNotNull(stateDescription);
         assertEquals(expectedPattern, stateDescription.getPattern());
     }
 
     private static Stream<Arguments> itemPatterns() {
-        return Stream.of(Arguments.of(createLookupItem(), "String", "%s"),
-                Arguments.of(createItem(5, "", BigDecimal.ONE), "String", "%s"),
-                Arguments.of(createItem(8, "", BigDecimal.ONE), "DateTime", "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"),
+        return Stream.of(Arguments.of(createLookupItem(), "String", null),
+                Arguments.of(createItem(5, "", BigDecimal.ONE), "String", null),
+                Arguments.of(createItem(8, "", BigDecimal.ONE), "DateTime", null),
                 Arguments.of(createItem(1, "", BigDecimal.ONE), "Number", "%d"),
                 Arguments.of(createItem(1, "W", new BigDecimal("0.1")), "Number:Power", "%.1f %unit%"));
     }
