@@ -117,10 +117,7 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
     }
 
     private @Nullable String computePatternForItem(ParameterItem item, String itemType) {
-        if (CoreItemFactory.STRING.equals(itemType)) {
-            return "%s";
-        }
-        if (CoreItemFactory.DATETIME.equals(itemType)) {
+        if (CoreItemFactory.STRING.equals(itemType) || CoreItemFactory.DATETIME.equals(itemType)) {
             return null;
         }
 
