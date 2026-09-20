@@ -41,8 +41,6 @@ The id is whatever path the charger appends to its backend URL — often its ser
 | pingInterval                 | integer | WebSocket ping interval (s). A charger that does not answer a ping is disconnected, and many never do — leave at 0 unless yours is known to reply | 0       | no       | yes      |
 | requestTimeoutSeconds        | integer | Seconds before an unanswered request to a charger fails                                                                                           | 30      | no       | yes      |
 | authPassword                 | text    | HTTP Basic password chargers must present (username = charge point id), 16–20 visible ASCII characters. Empty disables authentication             | (empty) | no       | yes      |
-| tlsKeystorePath              | text    | Path to a PKCS12 keystore with the server's TLS certificate and key. When set, the endpoint runs `wss://` (TLS) instead of `ws://`                | (empty) | no       | yes      |
-| tlsKeystorePassword          | text    | Password for the TLS keystore (store and key)                                                                                                     | (empty) | no       | yes      |
 | whitelistTagIds              | text[]  | idTag whitelist. Empty accepts every tag; otherwise unknown tags are rejected                                                                     | (empty) | no       | yes      |
 | chargerIds                   | text[]  | Charge point id allow-list. Empty accepts any charger; otherwise unlisted ones are rejected                                                       | (empty) | no       | yes      |
 
@@ -282,4 +280,3 @@ Without `authPassword` the endpoint runs OCPP security profile 0: a plain-text W
 Anyone who can reach the port can connect under any charge point id, so restrict exposure by binding a specific interface (`host`) or with firewall rules.
 Setting `authPassword` enables HTTP Basic authentication (security profile 1): a charger must present the password with its charge point id as the username, and other connections are rejected before a session opens.
 The `authPassword` must be 16–20 visible ASCII characters (the OCPP profile-1 rule). A charger that sends a Basic-auth header when no `authPassword` is set is accepted whatever its password length, so chargers that always send one still connect.
-Setting `tlsKeystorePath` (a PKCS12 keystore holding the server's certificate and key) serves the endpoint over `wss://` — OCPP security profile 2 together with `authPassword`, or an encrypted profile 0 without. Client-certificate authentication (profile 3) is not supported.

@@ -13,15 +13,10 @@
 package org.openhab.binding.ocpp.internal.transport;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +25,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,7 +47,6 @@ import eu.chargetime.ocpp.ServerEvents;
 import eu.chargetime.ocpp.SessionFactory;
 import eu.chargetime.ocpp.UnsupportedFeatureException;
 import eu.chargetime.ocpp.WebSocketListener;
-import eu.chargetime.ocpp.WssListenerSupport;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
 import eu.chargetime.ocpp.feature.profile.ServerLocalAuthListProfile;
 import eu.chargetime.ocpp.feature.profile.ServerRemoteTriggerProfile;
@@ -63,7 +54,6 @@ import eu.chargetime.ocpp.feature.profile.ServerSmartChargingProfile;
 import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.model.SessionInformation;
-import eu.chargetime.ocpp.wss.BaseWssFactoryBuilder;
 
 /**
  * {@link OcppTransport} backed by the ChargeTime OCA-OCPP 1.6-J server.
@@ -88,7 +78,7 @@ public class ChargeTimeTransport implements OcppTransport {
     private final AtomicBoolean closed = new AtomicBoolean();
 
     public ChargeTimeTransport(OcppServerListener ocppListener, int pingIntervalSeconds, int requestTimeoutSeconds,
-            String authPassword, String tlsKeystorePath, String tlsKeystorePassword) {
+            String authPassword) {
         this.ocppListener = ocppListener;
         this.authPassword = authPassword;
         FeatureRepository featureRepository = new FeatureRepository();
@@ -114,29 +104,8 @@ public class ChargeTimeTransport implements OcppTransport {
         this.listener = new WebSocketListener(
                 new TrackingSessionFactory(new SessionFactory(featureRepository), requestSessions), configuration,
                 draft);
-        if (!tlsKeystorePath.isBlank()) {
-            WssListenerSupport.enableWss(listener,
-                    BaseWssFactoryBuilder.builder().sslContext(sslContext(tlsKeystorePath, tlsKeystorePassword)));
-        }
         this.server = new Server(listener, new TimingOutPromiseRepository(ThreadPoolManager.getScheduledPool("ocpp"),
                 requestTimeoutSeconds, requestSessions));
-    }
-
-    private static SSLContext sslContext(String keystorePath, String keystorePassword) {
-        try {
-            KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            char[] password = keystorePassword.toCharArray();
-            try (InputStream in = Files.newInputStream(Path.of(keystorePath))) {
-                keyStore.load(in, password);
-            }
-            KeyManagerFactory keyManagers = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagers.init(keyStore, password);
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(keyManagers.getKeyManagers(), null, null);
-            return context;
-        } catch (GeneralSecurityException | IOException e) {
-            throw new IllegalStateException("cannot load TLS keystore '" + keystorePath + "': " + e.getMessage(), e);
-        }
     }
 
     @Override

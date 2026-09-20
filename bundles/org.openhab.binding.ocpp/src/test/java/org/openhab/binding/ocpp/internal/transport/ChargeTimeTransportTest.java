@@ -23,21 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -130,7 +122,7 @@ class ChargeTimeTransportTest {
     }
 
     private ChargeTimeTransport newTransport() {
-        return new ChargeTimeTransport(noopListener(), 0, 30, "", "", "");
+        return new ChargeTimeTransport(noopListener(), 0, 30, "");
     }
 
     private static int findFreePort() throws java.io.IOException {
@@ -173,7 +165,7 @@ class ChargeTimeTransportTest {
         // The library rejects a Basic-auth password outside 16-20 chars; with no authPassword set, accept it
         // anyway.
         CountDownLatch opened = new CountDownLatch(1);
-        ChargeTimeTransport transport = new ChargeTimeTransport(listener(opened::countDown), 0, 30, "", "", "");
+        ChargeTimeTransport transport = new ChargeTimeTransport(listener(opened::countDown), 0, 30, "");
         int port = findFreePort();
         transport.start("127.0.0.1", port);
         WebSocketClient client = new WebSocketClient(new URI("ws://127.0.0.1:" + port + "/testcharger"),
@@ -204,61 +196,6 @@ class ChargeTimeTransportTest {
             client.close();
             transport.stop();
         }
-    }
-
-    @Test
-    void aChargerConnectingOverTlsIsAccepted() throws Exception {
-        Path keystore = Path.of(Objects.requireNonNull(getClass().getResource("/tls-test-keystore.p12")).toURI());
-        CountDownLatch opened = new CountDownLatch(1);
-        ChargeTimeTransport transport = new ChargeTimeTransport(listener(opened::countDown), 0, 30, "",
-                keystore.toString(), "testpass");
-        int port = findFreePort();
-        transport.start("127.0.0.1", port);
-        WebSocketClient client = new WebSocketClient(new URI("wss://127.0.0.1:" + port + "/tlscharger"),
-                new Draft_6455(List.of(), List.<IProtocol> of(new Protocol("ocpp1.6")))) {
-            @Override
-            public void onOpen(@Nullable ServerHandshake handshake) {
-            }
-
-            @Override
-            public void onMessage(@Nullable String message) {
-            }
-
-            @Override
-            public void onClose(int code, @Nullable String reason, boolean remote) {
-            }
-
-            @Override
-            public void onError(@Nullable Exception ex) {
-            }
-        };
-        client.setSocketFactory(trustAllContext().getSocketFactory());
-        try {
-            client.connectBlocking(5, TimeUnit.SECONDS);
-            assertTrue(opened.await(5, TimeUnit.SECONDS), "a charger connecting over wss must be accepted");
-        } finally {
-            client.close();
-            transport.stop();
-        }
-    }
-
-    private static SSLContext trustAllContext() throws Exception {
-        SSLContext context = SSLContext.getInstance("TLS");
-        context.init(null, new TrustManager[] { new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(X509Certificate @Nullable [] chain, @Nullable String authType) {
-            }
-
-            @Override
-            public void checkServerTrusted(X509Certificate @Nullable [] chain, @Nullable String authType) {
-            }
-
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                return new X509Certificate[0];
-            }
-        } }, new SecureRandom());
-        return context;
     }
 
     private void assertFailsAsNotConnected(ChargeTimeTransport transport, Request request) {
