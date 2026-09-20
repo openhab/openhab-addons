@@ -175,7 +175,8 @@ This observed behavior is not guaranteed and may change; configure polling inter
 The Thing property `apiCallsLast30Days` shows the locally recorded number of Monitoring API V2 requests attempted by this Thing during the last 720 hours.
 The counter is retained across openHAB restarts and includes authentication checks and retries, but not OAuth token requests or calls made by other Things or applications sharing the same SolarEdge developer account.
 If provided by SolarEdge, the Thing properties `apiRateLimitMinute` and `apiRateLimitRemainingMinute` show the minute limit and its remaining calls from the latest response.
-On HTTP 429, `apiRateLimitRetryAfter` shows the gateway's retry delay when available; the binding does not immediately retry rate-limited requests.
+On HTTP 429, `apiRateLimitRetryAfter` shows the gateway's retry delay when available.
+The binding pauses further Monitoring API V2 requests for that delay, capped at 24 hours (one minute if no usable delay is provided), discards queued requests, and resumes with the next polling cycle.
 
 ## Channels
 

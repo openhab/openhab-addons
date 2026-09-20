@@ -414,7 +414,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
 
     @Override
     public void updatePublicApiV2RateLimit(@Nullable String limit, @Nullable String remaining,
-            @Nullable String retryAfter) {
+            @Nullable String retryAfter, boolean rateLimited) {
         logger.debug("SolarEdge API rate limit: minute={}, remaining={}, retryAfter={}", displayHeader(limit),
                 displayHeader(remaining), displayHeader(retryAfter));
         if (limit != null && !limit.isBlank()) {
@@ -425,6 +425,9 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         }
         getThing().setProperty(PROPERTY_API_RATE_LIMIT_RETRY_AFTER,
                 retryAfter == null || retryAfter.isBlank() ? null : retryAfter);
+        if (rateLimited) {
+            webInterface.pausePublicApiV2Requests(retryAfter);
+        }
     }
 
     private String displayHeader(@Nullable String value) {

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solaredge.internal.connector;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -23,15 +24,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
@@ -45,6 +50,58 @@ import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
  */
 @NonNullByDefault
 public class WebInterfaceTest {
+
+    @Test
+    public void parsesRetryAfterSecondsAndHttpDate() {
+        long now = Instant.parse("2026-09-20T18:00:00Z").toEpochMilli();
+
+        assertEquals(TimeUnit.SECONDS.toMillis(120), WebInterface.retryAfterDelayMillis("120", now));
+        assertEquals(TimeUnit.SECONDS.toMillis(120),
+                WebInterface.retryAfterDelayMillis("Sun, 20 Sep 2026 18:02:00 GMT", now));
+        assertEquals(TimeUnit.MINUTES.toMillis(1), WebInterface.retryAfterDelayMillis("invalid", now));
+        assertEquals(TimeUnit.DAYS.toMillis(1), WebInterface.retryAfterDelayMillis("999999999", now));
+    }
+
+    @Test
+    public void pausesV2AuthenticationAndDropsQueuedRequestsUntilRetryAfter() {
+        AtomicLong now = new AtomicLong(Instant.parse("2026-09-20T18:00:00Z").toEpochMilli());
+        Clock clock = mock(Clock.class);
+        when(clock.millis()).thenAnswer(invocation -> now.get());
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        SolarEdgeHandler handler = mock(SolarEdgeHandler.class);
+        HttpClient httpClient = mock(HttpClient.class);
+        Request request = mock(Request.class);
+        SolarEdgeConfiguration config = new SolarEdgeConfiguration();
+        config.setPublicApiVersion(org.openhab.binding.solaredge.internal.config.PublicApiVersion.V2);
+        config.setTokenOrApiKey("api-key");
+        when(handler.getConfiguration()).thenReturn(config);
+        when(handler.getPublicApiV2Credential()).thenReturn("api-key");
+        when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), eq(TimeUnit.MILLISECONDS)))
+                .thenReturn(mock(ScheduledFuture.class));
+        when(httpClient.newRequest(anyString())).thenReturn(request);
+        when(request.timeout(anyLong(), eq(TimeUnit.SECONDS))).thenReturn(request);
+        when(request.header(anyString(), anyString())).thenReturn(request);
+        when(request.followRedirects(false)).thenReturn(request);
+        when(request.method(HttpMethod.GET)).thenReturn(request);
+
+        WebInterface connector = new WebInterface(scheduler, handler, httpClient, clock);
+        connector.start();
+        ArgumentCaptor<Runnable> jobs = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduler).scheduleWithFixedDelay(jobs.capture(), anyLong(), anyLong(), eq(TimeUnit.MILLISECONDS));
+        Runnable job = jobs.getValue();
+        SolarEdgeCommand queued = mock(SolarEdgeCommand.class);
+        when(queued.bindRequestGeneration(anyLong(), any())).thenReturn(true);
+        connector.enqueueCommand(queued);
+        connector.pausePublicApiV2Requests("120");
+
+        job.run();
+        verify(httpClient, never()).newRequest(anyString());
+        now.addAndGet(TimeUnit.SECONDS.toMillis(120));
+        job.run();
+
+        verify(httpClient).newRequest(anyString());
+        verify(queued, never()).performAction(httpClient);
+    }
 
     @Test
     public void dropsQueuedCommandsOnRestartAndAcceptsNewCommands() {
@@ -73,6 +130,7 @@ public class WebInterfaceTest {
 
         WebInterface connector = new WebInterface(scheduler, handler, httpClient);
         SolarEdgeCommand stale = mock(SolarEdgeCommand.class);
+        when(stale.bindRequestGeneration(anyLong(), any())).thenReturn(true);
         connector.enqueueCommand(stale);
         connector.start();
 
@@ -83,6 +141,7 @@ public class WebInterfaceTest {
         verify(stale, never()).performAction(httpClient);
 
         SolarEdgeCommand staleOnRestart = mock(SolarEdgeCommand.class);
+        when(staleOnRestart.bindRequestGeneration(anyLong(), any())).thenReturn(true);
         connector.enqueueCommand(staleOnRestart);
         connector.start();
         verify(scheduler, times(2)).scheduleWithFixedDelay(jobs.capture(), anyLong(), anyLong(),
@@ -92,11 +151,13 @@ public class WebInterfaceTest {
         verify(staleOnRestart, never()).performAction(httpClient);
 
         SolarEdgeCommand current = mock(SolarEdgeCommand.class);
+        when(current.bindRequestGeneration(anyLong(), any())).thenReturn(true);
         connector.enqueueCommand(current);
         job.run();
         verify(current).performAction(httpClient);
 
         SolarEdgeCommand staleOnDispose = mock(SolarEdgeCommand.class);
+        when(staleOnDispose.bindRequestGeneration(anyLong(), any())).thenReturn(true);
         connector.enqueueCommand(staleOnDispose);
         connector.dispose();
         connector.start();

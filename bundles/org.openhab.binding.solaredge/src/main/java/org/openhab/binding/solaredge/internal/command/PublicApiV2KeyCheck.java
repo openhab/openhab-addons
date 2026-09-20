@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 
@@ -33,9 +34,11 @@ public class PublicApiV2KeyCheck extends AbstractCommand {
     public PublicApiV2KeyCheck(SolarEdgeHandler handler, StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener, handler::getPublicApiV2Credential,
                 handler::invalidatePublicApiV2Credential, handler::recordPublicApiV2Request,
-                response -> handler.updatePublicApiV2RateLimit(response.getHeaders().get("x-ratelimit-limit-minute"),
-                        response.getHeaders().get("x-ratelimit-remaining-minute"),
-                        response.getHeaders().get("Retry-After")));
+                response -> handler.updatePublicApiV2RateLimit(
+                        response.getHeaders().get(PUBLIC_DATA_API_V2_RATE_LIMIT_MINUTE_HEADER),
+                        response.getHeaders().get(PUBLIC_DATA_API_V2_RATE_LIMIT_REMAINING_MINUTE_HEADER),
+                        response.getHeaders().get(PUBLIC_DATA_API_V2_RETRY_AFTER_HEADER),
+                        response.getStatus() == HttpStatus.TOO_MANY_REQUESTS_429));
     }
 
     @Override

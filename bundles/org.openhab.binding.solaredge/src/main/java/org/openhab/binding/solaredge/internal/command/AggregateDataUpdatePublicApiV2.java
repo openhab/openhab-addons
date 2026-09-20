@@ -49,9 +49,11 @@ public class AggregateDataUpdatePublicApiV2 extends AbstractCommand {
             StatusUpdateListener listener) {
         super(handler.getConfiguration(), listener, handler::getPublicApiV2Credential,
                 handler::invalidatePublicApiV2Credential, handler::recordPublicApiV2Request,
-                response -> handler.updatePublicApiV2RateLimit(response.getHeaders().get("x-ratelimit-limit-minute"),
-                        response.getHeaders().get("x-ratelimit-remaining-minute"),
-                        response.getHeaders().get("Retry-After")));
+                response -> handler.updatePublicApiV2RateLimit(
+                        response.getHeaders().get(PUBLIC_DATA_API_V2_RATE_LIMIT_MINUTE_HEADER),
+                        response.getHeaders().get(PUBLIC_DATA_API_V2_RATE_LIMIT_REMAINING_MINUTE_HEADER),
+                        response.getHeaders().get(PUBLIC_DATA_API_V2_RETRY_AFTER_HEADER),
+                        response.getStatus() == HttpStatus.TOO_MANY_REQUESTS_429));
         this.handler = handler;
         this.cycleId = cycleId;
         this.yearly = yearly;

@@ -78,7 +78,8 @@ public interface SolarEdgeHandler extends ThingHandler, ChannelProvider {
     void recordPublicApiV2Request();
 
     /** Updates rate-limit Thing properties from a Monitoring API V2 response. */
-    void updatePublicApiV2RateLimit(@Nullable String limit, @Nullable String remaining, @Nullable String retryAfter);
+    void updatePublicApiV2RateLimit(@Nullable String limit, @Nullable String remaining, @Nullable String retryAfter,
+            boolean rateLimited);
 
     /** Supplies the latest V2 production power for deriving site consumption. */
     void updatePublicApiV2Production(long cycleId, Map<Channel, State> values, @Nullable Double production);

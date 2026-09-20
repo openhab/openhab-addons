@@ -14,6 +14,10 @@ package org.openhab.binding.solaredge.internal.connector;
 
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
+import java.time.Clock;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -43,12 +47,15 @@ import org.slf4j.LoggerFactory;
  * The connector is responsible for communication with the solaredge webportal
  *
  * @author Alexander Friese - initial contribution
+ * @author Ronny Grun - Monitoring API V2 authentication and rate-limit handling
  */
 @NonNullByDefault
 public class WebInterface implements AtomicReferenceTrait {
 
     private static final int API_KEY_THRESHOLD = 40;
     private static final int TOKEN_THRESHOLD = 80;
+    private static final long DEFAULT_RATE_LIMIT_PAUSE_MILLIS = TimeUnit.MINUTES.toMillis(1);
+    private static final long MAX_RATE_LIMIT_PAUSE_MILLIS = TimeUnit.DAYS.toMillis(1);
 
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
@@ -77,12 +84,14 @@ public class WebInterface implements AtomicReferenceTrait {
      * existing scheduler instance.
      */
     private final ScheduledExecutorService scheduler;
+    private final Clock clock;
 
     /**
      * request executor
      */
     private final WebRequestExecutor requestExecutor;
     private final AtomicLong requestGeneration = new AtomicLong();
+    private final AtomicLong rateLimitPauseUntilMillis = new AtomicLong();
 
     /**
      * periodic request executor job
@@ -221,8 +230,8 @@ public class WebInterface implements AtomicReferenceTrait {
          * @param command
          */
         void enqueue(SolarEdgeCommand command) {
-            if (command instanceof AbstractCommand abstractCommand
-                    && !abstractCommand.bindRequestGeneration(requestGeneration.get(), requestGeneration::get)) {
+            if (isRateLimitPaused()
+                    || !command.bindRequestGeneration(requestGeneration.get(), requestGeneration::get)) {
                 return;
             }
             try {
@@ -242,11 +251,14 @@ public class WebInterface implements AtomicReferenceTrait {
          */
         @Override
         public void run() {
+            if (isRateLimitPaused()) {
+                return;
+            }
             if (!isAuthenticated()) {
                 authenticate();
             }
 
-            if (isAuthenticated() && !commandQueue.isEmpty()) {
+            if (!isRateLimitPaused() && isAuthenticated() && !commandQueue.isEmpty()) {
                 try {
                     executeCommand();
                 } catch (Exception ex) {
@@ -276,16 +288,60 @@ public class WebInterface implements AtomicReferenceTrait {
      * @param httpClient
      */
     public WebInterface(ScheduledExecutorService scheduler, SolarEdgeHandler handler, HttpClient httpClient) {
+        this(scheduler, handler, httpClient, Clock.systemUTC());
+    }
+
+    WebInterface(ScheduledExecutorService scheduler, SolarEdgeHandler handler, HttpClient httpClient, Clock clock) {
         this.config = handler.getConfiguration();
         this.handler = handler;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
+        this.clock = clock;
         this.requestExecutor = new WebRequestExecutor();
         this.requestExecutorJobReference = new AtomicReference<>(null);
     }
 
+    /** Pause V2 requests after HTTP 429; queued data will be refreshed by the next polling cycle. */
+    public void pausePublicApiV2Requests(@Nullable String retryAfter) {
+        long now = clock.millis();
+        long delay = retryAfterDelayMillis(retryAfter, now);
+        long pauseUntil = now + delay;
+        rateLimitPauseUntilMillis.accumulateAndGet(pauseUntil, Math::max);
+        requestExecutor.commandQueue.clear();
+        logger.debug("Pausing Monitoring API V2 requests for {} seconds after HTTP 429", delay / 1000);
+    }
+
+    private boolean isRateLimitPaused() {
+        return !config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())
+                && clock.millis() < rateLimitPauseUntilMillis.get();
+    }
+
+    static long retryAfterDelayMillis(@Nullable String retryAfter, long nowMillis) {
+        if (retryAfter == null || retryAfter.isBlank()) {
+            return DEFAULT_RATE_LIMIT_PAUSE_MILLIS;
+        }
+        try {
+            long seconds = Long.parseLong(retryAfter.trim());
+            if (seconds < 0) {
+                return DEFAULT_RATE_LIMIT_PAUSE_MILLIS;
+            }
+            return Math.max(TimeUnit.SECONDS.toMillis(1),
+                    Math.min(MAX_RATE_LIMIT_PAUSE_MILLIS, TimeUnit.SECONDS.toMillis(seconds)));
+        } catch (NumberFormatException e) {
+            try {
+                long deadline = ZonedDateTime.parse(retryAfter, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant()
+                        .toEpochMilli();
+                return Math.max(TimeUnit.SECONDS.toMillis(1),
+                        Math.min(MAX_RATE_LIMIT_PAUSE_MILLIS, deadline - nowMillis));
+            } catch (DateTimeParseException dateException) {
+                return DEFAULT_RATE_LIMIT_PAUSE_MILLIS;
+            }
+        }
+    }
+
     public void start() {
         requestGeneration.incrementAndGet();
+        rateLimitPauseUntilMillis.set(0);
         requestExecutor.commandQueue.clear();
         this.config = handler.getConfiguration();
         setAuthenticated(false);
@@ -308,6 +364,7 @@ public class WebInterface implements AtomicReferenceTrait {
     public void dispose() {
         logger.debug("Webinterface disposed.");
         requestGeneration.incrementAndGet();
+        rateLimitPauseUntilMillis.set(0);
         requestExecutor.commandQueue.clear();
         cancelJobReference(requestExecutorJobReference);
         setAuthenticated(false);
