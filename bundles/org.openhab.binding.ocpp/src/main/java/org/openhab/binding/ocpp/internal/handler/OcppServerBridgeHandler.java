@@ -111,7 +111,13 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         transactionStore = new TransactionStore(storageService.getStorage(getThing().getUID().getAsString()));
         updateStatus(ThingStatus.UNKNOWN);
 
-        OcppTransport newTransport = createTransport(localConfig);
+        OcppTransport newTransport;
+        try {
+            newTransport = createTransport(localConfig);
+        } catch (RuntimeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
         long generation;
         synchronized (lifecycleLock) {
             if (disposed) {
@@ -353,10 +359,6 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
     public int nextTransactionId() {
         TransactionStore store = transactionStore;
         return store != null ? store.nextTransactionId() : fallbackSequence.incrementAndGet();
-    }
-
-    public void rememberTransaction(int transactionId, String chargePointId, int connectorId) {
-        rememberTransaction(transactionId, chargePointId, connectorId, null);
     }
 
     public void rememberTransaction(int transactionId, String chargePointId, int connectorId,

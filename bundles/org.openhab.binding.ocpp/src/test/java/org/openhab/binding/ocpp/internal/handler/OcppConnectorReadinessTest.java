@@ -153,7 +153,7 @@ class OcppConnectorReadinessTest {
 
     @Test
     void aPowerOnlyChargerGetsTheAmpsLimitConvertedToWatts() {
-        // Power-only charger: 16 A converts with the defaults (230 V, 1 phase) to 3680 W.
+        // Defaults: 230 V, 1 phase.
         ready.set(true);
         when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Power"));
         List<Request> sent = captureAcceptedSends();
@@ -196,7 +196,8 @@ class OcppConnectorReadinessTest {
 
     @Test
     void hardwareMaxCurrentPublishesTheWholeAmpereActuallySent() {
-        // The hardware-max key takes whole amperes: 16.4 A rounds to 16 A and the channel reports the rounded value.
+        // The hardware-max key takes whole amperes: 16.4 A rounds to 16 A and the channel reports the rounded
+        // value.
         ready.set(true);
         List<Request> sent = new java.util.ArrayList<>();
         when(parent.send(argThat(r -> r instanceof eu.chargetime.ocpp.model.core.ChangeConfigurationRequest)))
@@ -221,7 +222,6 @@ class OcppConnectorReadinessTest {
 
     @Test
     void aRequestedPhaseCountIsPutOnTheProfile() {
-        // A phase command with no limit yet sends nothing; the following limit send carries the phase.
         ready.set(true);
         when(parent.getCapabilities()).thenReturn(capsWithRateUnit("Current"));
         List<Request> sent = captureAcceptedSends();
@@ -295,7 +295,6 @@ class OcppConnectorReadinessTest {
         handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(10, Units.AMPERE));
         handler.handleCommand(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT), new QuantityType<>(20, Units.AMPERE));
 
-        // Out-of-order completion: the newer request is accepted before the older one.
         second.complete(new SetChargingProfileConfirmation(ChargingProfileStatus.Accepted));
         verify(callback).stateUpdated(org.mockito.ArgumentMatchers.eq(new ChannelUID(CONN_UID, CHANNEL_CHARGE_LIMIT)),
                 argThat(state -> state instanceof QuantityType<?> quantity && quantity.doubleValue() == 20.0));
@@ -328,7 +327,6 @@ class OcppConnectorReadinessTest {
 
     @Test
     void pausingSendsZeroAmpsAndUnpausingRestoresTheLimit() {
-        // PAUSE keeps the transaction and sends 0 A; the last limit is kept in stored fields and restored on unpause.
         ready.set(true);
         List<Request> sent = new java.util.ArrayList<>();
         when(parent.send(any())).thenAnswer(inv -> {
@@ -359,20 +357,15 @@ class OcppConnectorReadinessTest {
     }
 
     @Test
-    void meterValuesPollingCoalescesWhileAPreviousPollIsOutstanding() throws InterruptedException {
+    void meterValuesPollingCoalescesWhileAPreviousPollIsOutstanding() {
         ready.set(true);
-        java.util.concurrent.atomic.AtomicInteger polls = new java.util.concurrent.atomic.AtomicInteger();
-        when(parent.send(argThat(OcppConnectorReadinessTest::isMeterValuesTrigger))).thenAnswer(inv -> {
-            polls.incrementAndGet();
-            return new CompletableFuture<>(); // never completes — the charger is not answering
-        });
+        when(parent.send(argThat(OcppConnectorReadinessTest::isMeterValuesTrigger)))
+                .thenAnswer(inv -> new CompletableFuture<>());
         OcppConnectorHandler polling = newConnector(Map.of("connectorId", 1, "refreshInterval", 1));
 
-        Thread.sleep(3200); // three 1-second poll ticks elapse
-
         try {
-            org.junit.jupiter.api.Assertions.assertEquals(1, polls.get(),
-                    "only the first poll should go out while it is still outstanding");
+            verify(parent, org.mockito.Mockito.after(3200).times(1))
+                    .send(argThat(OcppConnectorReadinessTest::isMeterValuesTrigger));
         } finally {
             polling.dispose();
         }

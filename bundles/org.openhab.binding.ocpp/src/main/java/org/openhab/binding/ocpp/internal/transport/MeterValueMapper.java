@@ -45,7 +45,7 @@ import eu.chargetime.ocpp.model.core.SampledValue;
 public final class MeterValueMapper {
 
     private static final String DEFAULT_MEASURAND = "Energy.Active.Import.Register";
-    private static final Logger LOGGER = LoggerFactory.getLogger(MeterValueMapper.class);
+    private final Logger logger = LoggerFactory.getLogger(MeterValueMapper.class);
 
     private static final Set<String> PER_PHASE_CHANNELS = Set.of(CHANNEL_CURRENT_L1, CHANNEL_CURRENT_L2,
             CHANNEL_CURRENT_L3, CHANNEL_VOLTAGE_L1, CHANNEL_VOLTAGE_L2, CHANNEL_VOLTAGE_L3);
@@ -57,11 +57,8 @@ public final class MeterValueMapper {
             "Energy.Active.Import.Interval", "Energy.Active.Export.Interval", "Energy.Reactive.Import.Interval",
             "Energy.Reactive.Export.Interval");
 
-    private MeterValueMapper() {
-    }
-
     /** Flatten a MeterValues request into channelId -&gt; state. */
-    public static Map<String, State> toStates(MeterValuesRequest request) {
+    public Map<String, State> toStates(MeterValuesRequest request) {
         Map<String, State> states = new LinkedHashMap<>();
         MeterValue[] meterValues = request.getMeterValue();
         if (meterValues == null) {
@@ -80,7 +77,7 @@ public final class MeterValueMapper {
                     String phase = sample.getPhase();
                     String channelId = channelFor(measurand, phase);
                     if (channelId == null) {
-                        LOGGER.debug("No channel represents measurand {} with phase {}; sample ignored", measurand,
+                        logger.debug("No channel represents measurand {} with phase {}; sample ignored", measurand,
                                 phase);
                         continue;
                     }
@@ -91,13 +88,13 @@ public final class MeterValueMapper {
                     if (phase == null || PER_PHASE_CHANNELS.contains(channelId)) {
                         direct.put(channelId, state);
                     } else if (basePhase(phase) != null && SUMMABLE_MEASURANDS.contains(measurand)) {
-                        summed.merge(channelId, state, MeterValueMapper::sum);
+                        summed.merge(channelId, state, this::sum);
                     } else {
-                        LOGGER.debug("Ignoring phase {} sample of {} — no meaningful aggregate for channel {}", phase,
+                        logger.debug("Ignoring phase {} sample of {} — no meaningful aggregate for channel {}", phase,
                                 measurand, channelId);
                     }
                 } catch (RuntimeException e) {
-                    LOGGER.warn("Skipping MeterValues sample (measurand={} value={} unit={}): {}",
+                    logger.debug("Skipping MeterValues sample (measurand={} value={} unit={}): {}",
                             sample.getMeasurand(), sample.getValue(), sample.getUnit(), e.getMessage());
                 }
             }
@@ -111,7 +108,7 @@ public final class MeterValueMapper {
         return states;
     }
 
-    private static State sum(State a, State b) {
+    private State sum(State a, State b) {
         if (a instanceof QuantityType<?> first && b instanceof QuantityType<?> second) {
             State total = sumQuantities(first, second);
             if (total != null) {
@@ -120,7 +117,7 @@ public final class MeterValueMapper {
         } else if (a instanceof DecimalType first && b instanceof DecimalType second) {
             return new DecimalType(first.doubleValue() + second.doubleValue());
         }
-        LOGGER.debug("Cannot aggregate {} and {}; keeping the first sample", a, b);
+        logger.debug("Cannot aggregate {} and {}; keeping the first sample", a, b);
         return a;
     }
 
@@ -221,14 +218,16 @@ public final class MeterValueMapper {
         }
     }
 
-    static @Nullable State toState(@Nullable String value, @Nullable String unit, String measurand) {
+    @Nullable
+    State toState(@Nullable String value, @Nullable String unit, String measurand) {
         if ((unit == null || unit.isBlank()) && measurand.startsWith("Energy.")) {
             return toState(value, "Wh");
         }
         return toState(value, unit);
     }
 
-    static @Nullable State toState(@Nullable String value, @Nullable String unit) {
+    @Nullable
+    State toState(@Nullable String value, @Nullable String unit) {
         if (value == null || value.isBlank()) {
             return null;
         }
@@ -282,7 +281,7 @@ public final class MeterValueMapper {
             case "Fahrenheit":
                 return new QuantityType<>(parsed, ImperialUnits.FAHRENHEIT);
             default:
-                LOGGER.debug("Unrecognised MeterValues unit '{}'; keeping a dimensionless value", unit);
+                logger.debug("Unrecognised MeterValues unit '{}'; keeping a dimensionless value", unit);
                 return new DecimalType(parsed);
         }
     }

@@ -13,6 +13,7 @@
 package org.openhab.binding.ocpp.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -133,7 +134,8 @@ class OcppServerBridgeHandlerTest {
 
     @Test
     void aPasswordTheLibraryWouldRejectFailsInitializationInstead() {
-        // The library only accepts 16-20 byte Basic-auth passwords; out-of-range must fail config, not lock them out.
+        // The library only accepts 16-20 byte Basic-auth passwords; out-of-range must fail config, not lock
+        // them out.
         when(thing.getConfiguration()).thenReturn(new Configuration(java.util.Map.of("authPassword", "tooshort")));
 
         handler.initialize();
@@ -152,10 +154,26 @@ class OcppServerBridgeHandlerTest {
 
         UUID session = UUID.randomUUID();
         handler.onSessionOpened(session, "charx", null);
-        handler.onStartTransaction(session, new StartTransactionRequest(2, "tag", 0, ZonedDateTime.now()), 77);
+        handler.onStartTransaction(session,
+                new StartTransactionRequest(2, "tag", 0, ZonedDateTime.now(java.time.ZoneOffset.UTC)), 77);
 
         assertEquals(Integer.valueOf(77), handler.openTransactionFor("charx", 2),
                 "the transaction must be recoverable even though no handler existed at accept time");
+    }
+
+    @Test
+    void theMeterStartIsKeptForTheChargerThatOwnsTheTransaction() {
+        handler.initialize();
+        verify(callback, timeout(2000)).statusUpdated(any(),
+                argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+
+        UUID session = UUID.randomUUID();
+        handler.onSessionOpened(session, "charx", null);
+        handler.onStartTransaction(session,
+                new StartTransactionRequest(2, "tag", 1000, ZonedDateTime.now(java.time.ZoneOffset.UTC)), 77);
+
+        assertEquals(Integer.valueOf(1000), handler.meterStartOf(77, "charx"));
+        assertNull(handler.meterStartOf(77, "other"));
     }
 
     @Test
@@ -166,10 +184,12 @@ class OcppServerBridgeHandlerTest {
 
         UUID session = UUID.randomUUID();
         handler.onSessionOpened(session, "charx", null);
-        handler.onStartTransaction(session, new StartTransactionRequest(2, "tag", 0, ZonedDateTime.now()), 77);
+        handler.onStartTransaction(session,
+                new StartTransactionRequest(2, "tag", 0, ZonedDateTime.now(java.time.ZoneOffset.UTC)), 77);
         assertEquals(Integer.valueOf(77), handler.openTransactionFor("charx", 2));
 
-        handler.onStopTransaction(session, new StopTransactionRequest(0, ZonedDateTime.now(), 77));
+        handler.onStopTransaction(session,
+                new StopTransactionRequest(0, ZonedDateTime.now(java.time.ZoneOffset.UTC), 77));
 
         org.junit.jupiter.api.Assertions.assertNull(handler.openTransactionFor("charx", 2),
                 "a stop before the handler exists must clear the persisted transaction");
@@ -199,7 +219,8 @@ class OcppServerBridgeHandlerTest {
 
         UUID session = UUID.randomUUID();
         handler.onSessionOpened(session, "", null);
-        handler.onStartTransaction(session, new StartTransactionRequest(1, "tag", 0, ZonedDateTime.now()), 55);
+        handler.onStartTransaction(session,
+                new StartTransactionRequest(1, "tag", 0, ZonedDateTime.now(java.time.ZoneOffset.UTC)), 55);
 
         org.junit.jupiter.api.Assertions.assertNull(handler.openTransactionFor("", 1),
                 "a session with no charge point id must be ignored, mapping nothing");

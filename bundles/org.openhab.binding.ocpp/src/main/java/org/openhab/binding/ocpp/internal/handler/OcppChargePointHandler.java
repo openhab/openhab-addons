@@ -23,6 +23,7 @@ import java.util.OptionalInt;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -54,6 +55,7 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.chargetime.ocpp.CallErrorException;
 import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.model.core.AuthorizationStatus;
@@ -233,13 +235,18 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return;
         }
         this.server = serverHandler;
-        updateStatus(ThingStatus.UNKNOWN);
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
         serverHandler.registerChargePoint(chargePointId, this);
     }
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        // Not super: bridge re-init leaves its charge-point map empty; must re-register.
+        // Not super: a bridge re-init starts with an empty charge-point map.
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             OcppServerBridgeHandler serverHandler = serverHandler();
             if (serverHandler != null && !chargePointId.isBlank()) {
@@ -250,12 +257,16 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 serverHandler.registerChargePoint(chargePointId, this);
             }
         } else {
+            if (learningCard) {
+                updateState(CHANNEL_LEARN_CARD, OnOffType.OFF);
+            }
             cancelScheduledWork();
             synchronized (stateLock) {
                 session = null;
                 operational = false;
             }
             failPendingSends();
+            updateState(CHANNEL_CONNECTED, OnOffType.OFF);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
@@ -322,9 +333,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                         new IllegalStateException("Charger " + chargePointId + " not ready and its queue is full"));
             }
             pendingSends.add(pending);
-            // Bound the wait: a charger that connects but never becomes operational must not hang a queued command
-            // until the liveness watchdog. If it is still queued when this fires, fail it; otherwise it already
-            // drained.
+            // A charger that connects but never becomes operational must not hold a queued command until the watchdog.
             scheduler.schedule(() -> {
                 if (pendingSends.remove(pending)) {
                     future.completeExceptionally(new TimeoutException("Charger " + chargePointId
@@ -436,17 +445,22 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("Charger " + chargePointId + " is offline"));
         }
-        // An idle Alfen answers every poll yet skips its heartbeat because of them, so it must not read as silent.
+        // OCPP 1.6 §4.6: a charger may skip its heartbeat while it answers polls, so a reply is liveness too.
         return transport.send(localSession, request).whenComplete((confirmation, ex) -> {
-            if (ex == null && localSession.equals(session)) {
+            if (localSession.equals(session) && (ex == null || isCallError(ex))) {
                 recordActivity();
             }
         });
     }
 
+    private static boolean isCallError(Throwable ex) {
+        Throwable cause = ex instanceof CompletionException && ex.getCause() != null ? ex.getCause() : ex;
+        return cause instanceof CallErrorException;
+    }
+
     private void becomeReady(UUID expectedSession) {
         synchronized (stateLock) {
-            if (!expectedSession.equals(session)) {
+            if (!expectedSession.equals(session) || operational) {
                 return;
             }
             operational = true;
@@ -467,7 +481,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             toFail.add(pending);
         }
         synchronized (dispatchLock) {
-            // Library never completes an in-flight request on session close; abandon it.
+            // Library never completes an in-flight request on session close.
             dispatchEpoch++;
             PendingSend current = inFlight;
             if (current != null) {
@@ -502,7 +516,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_CONNECTED, OnOffType.ON);
         recordActivity();
-        // OCPP 1.6 forbids any request before the BootNotification is accepted.
+        // No requests until the boot is accepted (OCPP 1.6), so a BootNotification gets a grace period first.
         cancel(statusFallbackTask);
         UUID connectedSession = session;
         statusFallbackTask = scheduler.schedule(() -> {
@@ -598,7 +612,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         touch();
         int connectorId = request.getConnectorId() == null ? 0 : request.getConnectorId();
         if (connectorId <= 0) {
-            return; // connector 0 addresses the charge point itself; nothing to route to
+            return;
         }
         OcppConnectorHandler connector = connectors.get(connectorId);
         if (connector != null) {
@@ -641,7 +655,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         OcppServerBridgeHandler serverHandler = server;
         boolean ownsTransaction = connector != null;
         if (connector == null && serverHandler != null) {
-            // Not in memory after a restart mid-transaction; recover from persistence.
+            // Not in memory after a restart mid-transaction.
             Integer connectorId = serverHandler.transactionConnector(transactionId, chargePointId);
             if (connectorId != null) {
                 ownsTransaction = true;
@@ -706,25 +720,14 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         }
         logger.debug("Charge point {} reconnected without booting; treating it as ready", chargePointId);
         becomeReady(connectedSession);
-        readCapabilitiesNow(connectedSession);
+        readCapabilities(connectedSession);
         requestConnectorStatusesNow();
-        scheduleBootConfig(connectedSession);
-    }
-
-    private void readCapabilitiesNow(UUID connectedSession) {
-        sendNow(new GetConfigurationRequest()).whenComplete((confirmation, ex) -> {
-            if (!connectedSession.equals(session)) {
-                return;
-            }
-            applyCapabilities(confirmation, ex);
-        });
     }
 
     private void applyCapabilities(@Nullable Confirmation confirmation, @Nullable Throwable ex) {
         if (ex != null) {
-            logger.debug("GetConfiguration for {} failed ({}); continuing with defaults", chargePointId,
+            logger.debug("GetConfiguration for {} failed ({}); keeping the last known capabilities", chargePointId,
                     ex.getMessage());
-            capabilities = ChargerCapabilities.unknown();
             return;
         }
         capabilities = confirmation instanceof GetConfigurationConfirmation gc ? ChargerCapabilities.from(gc)
@@ -737,7 +740,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             logger.debug("Charge point {} reported no configuration", chargePointId);
             return;
         }
-        logger.info("Charge point {} capabilities: {}", chargePointId, caps.summary());
+        logger.debug("Charge point {} capabilities: {}", chargePointId, caps.summary());
         if (logger.isDebugEnabled()) {
             caps.raw().forEach((key, value) -> logger.debug("  {} {} = {}", chargePointId, key, value));
         }
@@ -868,7 +871,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                     logger.debug("Boot config for {} complete ({} steps)", chargePointId, steps.size());
                 }
             } else if (bootConfigAttempts.get() < MAX_BOOT_CONFIG_ATTEMPTS) {
-                logger.warn("Boot config for {} did not fully land; will retry on its next boot", chargePointId);
+                logger.debug("Boot config for {} did not fully land; will retry on its next boot", chargePointId);
             } else {
                 logger.warn(
                         "Boot config for {} did not fully land after {} attempts; giving up until it is "
@@ -959,8 +962,10 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     private void rearmLiveness() {
-        cancel(livenessTask);
-        livenessTask = scheduler.schedule(this::onLivenessTimeout, livenessThresholdSeconds(), TimeUnit.SECONDS);
+        synchronized (stateLock) {
+            cancel(livenessTask);
+            livenessTask = scheduler.schedule(this::onLivenessTimeout, livenessThresholdSeconds(), TimeUnit.SECONDS);
+        }
     }
 
     private long livenessThresholdSeconds() {
@@ -970,9 +975,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     static long livenessThreshold(int heartbeatOverride, OptionalInt reportedHeartbeat, int serverDefault) {
-        // Size from the longer of the interval negotiated in BootNotification (override, else server default) and the
-        // one the charger reports it uses, so a charger keeping (or reporting a stale) interval is never reaped while
-        // still beating. Only when neither is known fall back to 300.
         int negotiated = heartbeatOverride > 0 ? heartbeatOverride : serverDefault;
         int effective = Math.max(negotiated, reportedHeartbeat.orElse(0));
         if (effective <= 0) {

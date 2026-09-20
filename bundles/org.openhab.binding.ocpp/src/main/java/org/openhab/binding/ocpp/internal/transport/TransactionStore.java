@@ -80,7 +80,6 @@ public class TransactionStore {
         storage.remove(METER_PREFIX + transactionId);
     }
 
-    /** The meter register at the start of a transaction, or null when it was not reported. */
     public synchronized @Nullable Integer meterStart(int transactionId) {
         String stored = storage.get(METER_PREFIX + transactionId);
         if (stored == null) {

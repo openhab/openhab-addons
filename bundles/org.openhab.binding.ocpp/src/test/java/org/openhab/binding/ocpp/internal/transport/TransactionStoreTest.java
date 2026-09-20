@@ -112,6 +112,18 @@ class TransactionStoreTest {
     }
 
     @Test
+    void aNewTransactionOnTheSameConnectorDropsTheOldMeterStart() {
+        MemoryStorage storage = new MemoryStorage();
+        TransactionStore store = new TransactionStore(storage);
+        store.begin(9, "charx", 2, 1000);
+        store.begin(10, "charx", 2);
+        assertNull(store.meterStart(9));
+
+        storage.put("meter:11", "x");
+        assertNull(store.meterStart(11));
+    }
+
+    @Test
     void endForgetsTheTransaction() {
         MemoryStorage storage = new MemoryStorage();
         TransactionStore store = new TransactionStore(storage);
@@ -124,7 +136,8 @@ class TransactionStoreTest {
 
     @Test
     void concurrentAllocationsCannotPersistOutOfOrder() throws InterruptedException {
-        // Race: without atomic allocate+persist, a delayed lower-id write lands last and a restart resumes below it.
+        // Race: without atomic allocate+persist, a delayed lower-id write lands last and a restart resumes
+        // below it.
         java.util.concurrent.CountDownLatch firstWriteEntered = new java.util.concurrent.CountDownLatch(1);
         java.util.concurrent.CountDownLatch releaseFirstWrite = new java.util.concurrent.CountDownLatch(1);
         MemoryStorage storage = new MemoryStorage() {

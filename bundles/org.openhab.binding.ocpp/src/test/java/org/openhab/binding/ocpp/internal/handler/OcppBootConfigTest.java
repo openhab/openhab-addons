@@ -155,7 +155,6 @@ class OcppBootConfigTest {
 
     @Test
     void theStatusProbePathIsSerializedToo() {
-        // sendNow bypasses the readiness gate but must still queue behind an in-flight CALL.
         CompletableFuture<eu.chargetime.ocpp.model.Confirmation> firstProbe = new CompletableFuture<>();
         when(transport.send(any(), any())).thenReturn(firstProbe);
 
@@ -172,7 +171,8 @@ class OcppBootConfigTest {
 
     @Test
     void aReconnectDoesNotWedgeTheDispatcherBehindAnInFlightRequestFromTheOldSession() throws InterruptedException {
-        // The library never completes the old promise on session close, so the dispatcher must abandon it on reconnect.
+        // The library never completes the old promise on session close, so the dispatcher must abandon it on
+        // reconnect.
         handler.onHeartbeat();
         awaitReady();
 
@@ -198,7 +198,8 @@ class OcppBootConfigTest {
 
     @Test
     void aLateCompletionOfAnAbandonedRequestDoesNotDisturbTheNewSessionChain() throws InterruptedException {
-        // A drain-chain epoch stops a late (timeout-reaper) completion of an abandoned request forking a second CALL.
+        // A drain-chain epoch stops a late (timeout-reaper) completion of an abandoned request forking a
+        // second CALL.
         handler.onHeartbeat();
         awaitReady();
 
@@ -237,7 +238,7 @@ class OcppBootConfigTest {
     }
 
     @Test
-    void aChargerThatReconnectsWithoutBootingIsReadyAndGetsItsConfiguration() throws InterruptedException {
+    void aChargerThatReconnectsWithoutBootingIsReadyAndGetsItsConfiguration() {
         UUID session = UUID.randomUUID();
         handler.onConnected(session);
         assertFalse(handler.isReady());
@@ -245,11 +246,22 @@ class OcppBootConfigTest {
         handler.reconnectedWithoutBoot(session);
 
         assertTrue(handler.isReady());
-        long deadline = System.currentTimeMillis() + 3000;
-        while (sentValuesFor("AuthorizeRemoteTxRequests").isEmpty() && System.currentTimeMillis() < deadline) {
-            Thread.sleep(20);
-        }
-        assertEquals(List.of("false"), sentValuesFor("AuthorizeRemoteTxRequests"));
+        verify(transport, timeout(3000)).send(any(),
+                eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
+    }
+
+    @Test
+    void aReplyOnAReplacedSessionDoesNotCountAsActivity() {
+        CompletableFuture<eu.chargetime.ocpp.model.Confirmation> pending = new CompletableFuture<>();
+        when(transport.send(any(), any())).thenReturn(pending);
+        handler.sendNow(new GetConfigurationRequest());
+        handler.onConnected(UUID.randomUUID());
+        org.mockito.Mockito.clearInvocations(callback);
+
+        pending.complete(org.mockito.Mockito.mock(eu.chargetime.ocpp.model.Confirmation.class));
+
+        verify(callback, org.mockito.Mockito.after(300).never())
+                .stateUpdated(eq(new ChannelUID(CP_UID, CHANNEL_LAST_SEEN)), any());
     }
 
     @Test
@@ -275,7 +287,8 @@ class OcppBootConfigTest {
 
     @Test
     void aRejectedConfigurationIsRetriedOnTheNextBoot() {
-        // A Rejected ChangeConfiguration completes normally but has not applied, so the burst must not latch on it.
+        // A Rejected ChangeConfiguration completes normally but has not applied, so the burst must not latch
+        // on it.
         when(transport.send(any(), any())).thenAnswer(invocation -> {
             record(invocation.getArgument(1));
             return CompletableFuture.completedFuture(new ChangeConfigurationConfirmation(ConfigurationStatus.Rejected));
@@ -309,7 +322,8 @@ class OcppBootConfigTest {
 
     @Test
     void aSettleDelayedBootConfigDoesNotRunAgainstAReplacementSession() {
-        // A bare reconnect sends no fresh BootNotification; the delayed burst keys off the session it was scheduled on.
+        // A bare reconnect sends no fresh BootNotification; the delayed burst keys off the session it was
+        // scheduled on.
         OcppServerBridgeHandler serverHandler = mock(OcppServerBridgeHandler.class);
         when(serverHandler.getServerConfig()).thenReturn(serverConfig);
         when(serverHandler.getTransport()).thenReturn(transport);
@@ -387,7 +401,6 @@ class OcppBootConfigTest {
         verify(transport, org.mockito.Mockito.after(1500).times(1)).send(any(),
                 eq(new ChangeConfigurationRequest("AuthorizeRemoteTxRequests", "false")));
 
-        // The applied latch is keyed on the effective settings, so a changed value resends the burst.
         serverConfig.extraConfig = List.of("VendorKey=42");
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
         verify(transport, timeout(3000)).send(any(), eq(new ChangeConfigurationRequest("VendorKey", "42")));
@@ -397,7 +410,8 @@ class OcppBootConfigTest {
 
     @Test
     void nothingIsSentWhileTheBootNotificationIsBeingHandled() {
-        // The library sends the boot confirmation only after the handler returns; a send from inside arrives first.
+        // The library sends the boot confirmation only after the handler returns; a send from inside arrives
+        // first.
         OcppConnectorHandler connector = mock(OcppConnectorHandler.class);
         handler.registerConnector(1, connector);
 
@@ -412,7 +426,8 @@ class OcppBootConfigTest {
 
     @Test
     void aListReducedForSampledDataDoesNotNarrowAlignedData() {
-        // Sampled and aligned data may take different measurands; negotiating one key must not shrink the other's list.
+        // Sampled and aligned data may take different measurands; negotiating one key must not shrink the
+        // other's list.
         serverConfig.meterValuesData = "Energy.Active.Import.Register,Power.Active.Import,Temperature";
         serverConfig.disableRemoteTxAuthorization = false;
         when(transport.send(any(), any())).thenAnswer(invocation -> {

@@ -44,6 +44,11 @@ class MeasurandsTest {
     @Test
     void emptyForNullOrBlank() {
         assertEquals("", Measurands.dropLast(null));
+    }
+
+    @Test
+    void aTrailingSeparatorStillDropsAnEntry() {
+        assertEquals("A", Measurands.dropLast("A,B,"));
         assertEquals("", Measurands.dropLast(""));
         assertEquals("", Measurands.dropLast("   "));
     }

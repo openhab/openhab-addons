@@ -139,6 +139,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
             Map.entry(CHANNEL_TEMPERATURE, new DynamicChannel("temperature", "Number:Temperature", "Temperature")));
 
     private final Logger logger = LoggerFactory.getLogger(OcppConnectorHandler.class);
+    private final MeterValueMapper meterValues = new MeterValueMapper();
 
     private volatile int connectorId = 1;
     private volatile boolean forceTxDefaultProfile;
@@ -203,7 +204,12 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
         this.chargePoint = parent;
         updateProperty(PROPERTY_UNIQUE_ID, uniqueConnectorId(parent.getChargePointId(), connectorId));
-        updateStatus(ThingStatus.UNKNOWN);
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
         parent.registerConnector(connectorId, this);
         recoverTransaction(parent);
         startPolling();
@@ -237,7 +243,6 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        // Not super: re-register with the charge point; stop polling when offline.
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             OcppChargePointHandler parent = chargePointHandler();
             if (parent != null) {
@@ -270,6 +275,11 @@ public class OcppConnectorHandler extends BaseThingHandler {
         cancel(remoteStartRetryTask);
         pollTask = null;
         remoteStartRetryTask = null;
+        CompletableFuture<?> poll = pendingPoll;
+        if (poll != null) {
+            poll.cancel(false);
+        }
+        pendingPoll = null;
         synchronized (lock) {
             cancel(stuckTask);
             cancel(pendingFlush);
@@ -302,8 +312,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 Double limit = toAmps(command);
                 if (limit != null) {
                     currentLimitAmps = limit;
-                    // A charge-limit clears any explicit power-limit, so the last command wins rather than a
-                    // once-set power-limit shadowing every later amps command.
+                    // Last command wins: a once-set power-limit must not shadow every later amps command.
                     powerLimitWatts = 0;
                     if (!paused) {
                         applyLimit();
@@ -436,7 +445,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         ChargerCapabilities caps = cp != null ? cp.getCapabilities() : ChargerCapabilities.unknown();
         Optional<Boolean> powerUnit = caps.allowsPowerUnit();
         Optional<Boolean> currentUnit = caps.allowsCurrentUnit();
-        boolean allowsPower = powerUnit.isPresent() && powerUnit.get();
+        boolean allowsPower = powerUnit.isEmpty() || powerUnit.get();
         boolean allowsCurrent = currentUnit.isEmpty() || currentUnit.get();
         Integer numberPhases = numberPhasesRequested > 0 ? numberPhasesRequested : null;
         int conversionPhases = numberPhasesRequested > 0 ? numberPhasesRequested : phases;
@@ -476,7 +485,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void sendProfile(ProfileClaim claim) {
-        // 0 A is a pause; to resume with no cap, clear the profile.
+        // A 0 A profile suspends the EVSE, so 'no cap' must clear the profile.
         if (!claim.paused() && claim.wireValue() <= 0.0) {
             clearProfile(claim);
         } else {
@@ -555,7 +564,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
             if (ex == null || remaining <= 0 || transactionId != null || !isReadyToSend()) {
                 return;
             }
-            logger.info("RemoteStart on connector {} did not answer; retrying ({} attempt(s) left)", connectorId,
+            logger.debug("RemoteStart on connector {} did not answer; retrying ({} attempt(s) left)", connectorId,
                     remaining);
             remoteStartRetryTask = scheduler.schedule(() -> {
                 if (transactionId == null && isReadyToSend()) {
@@ -674,7 +683,11 @@ public class OcppConnectorHandler extends BaseThingHandler {
             if (ex != null) {
                 Throwable unwrapped = ex.getCause();
                 Throwable cause = ex instanceof CompletionException && unwrapped != null ? unwrapped : ex;
-                logger.warn("{} on connector {} failed: {}", name, connectorId, cause.toString());
+                if (cause instanceof IllegalStateException || "TriggerMessage[MeterValues]".equals(name)) {
+                    logger.debug("{} on connector {} failed: {}", name, connectorId, cause.toString());
+                } else {
+                    logger.warn("{} on connector {} failed: {}", name, connectorId, cause.toString());
+                }
             } else {
                 logger.debug("{} on connector {} -> {}", name, connectorId, confirmation);
             }
@@ -720,7 +733,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (status != null) {
             updateState(CHANNEL_STATUS, new StringType(status.name()));
             updateState(CHANNEL_CABLE_CONNECTED, OnOffType.from(CABLE_PRESENT.contains(status)));
-            // Faulted is a fault, not an availability/charging state; leave those channels.
+            // Faulted is a fault, not an availability/charging state.
             if (status == ChargePointStatus.Unavailable) {
                 updateState(CHANNEL_AVAILABILITY, OnOffType.OFF);
             } else if (status != ChargePointStatus.Faulted) {
@@ -730,10 +743,11 @@ public class OcppConnectorHandler extends BaseThingHandler {
                 updateState(CHANNEL_CHARGING, OnOffType.from(CHARGING_ACTIVE.contains(status)));
             }
             if (status == ChargePointStatus.Available) {
-                // Available means no active transaction; clear any stale one.
+                // Available means no active transaction.
                 Integer stale = transactionId;
                 if (stale != null) {
                     transactionId = null;
+                    meterStart = null;
                     updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
                     OcppChargePointHandler cp = chargePoint;
                     if (cp != null) {
@@ -747,7 +761,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     public void onMeterValues(MeterValuesRequest request) {
-        Map<String, State> states = MeterValueMapper.toStates(request);
+        Map<String, State> states = meterValues.toStates(request);
         ensureDynamicChannels(states.keySet());
         states.forEach(this::updateState);
         MeterValue[] meterValues = request.getMeterValue();
@@ -812,20 +826,22 @@ public class OcppConnectorHandler extends BaseThingHandler {
 
     public void onTransactionStopped(StopTransactionRequest request) {
         Integer meterStop = request.getMeterStop();
+        Integer start = meterStart;
         if (meterStop != null) {
             updateState(CHANNEL_METER_STOP, new QuantityType<>(meterStop, Units.WATT_HOUR));
-            Integer start = meterStart;
-            if (start != null) {
-                updateState(CHANNEL_SESSION_ENERGY, new QuantityType<>(meterStop - start, Units.WATT_HOUR));
-            }
+        }
+        if (meterStop != null && start != null) {
+            updateState(CHANNEL_SESSION_ENERGY, new QuantityType<>(meterStop - start, Units.WATT_HOUR));
+        } else {
+            updateState(CHANNEL_SESSION_ENERGY, UnDefType.UNDEF);
         }
         meterStart = null;
-        this.transactionId = null;
-        updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
         ZonedDateTime timestamp = request.getTimestamp();
         if (timestamp != null) {
             updateState(CHANNEL_TIMESTAMP_STOP, new DateTimeType(timestamp));
         }
+        this.transactionId = null;
+        updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
     }
 
     private void armStuckWatchdog(ChargePointStatus status) {

@@ -113,9 +113,8 @@ class OcppConnectorHandlerTest {
 
     @Test
     void availableClearsChargingEvenIfATransactionWasNeverStopped() {
-        handler.onTransactionStarted(
-                new eu.chargetime.ocpp.model.core.StartTransactionRequest(1, "tag", 0, java.time.ZonedDateTime.now()),
-                7);
+        handler.onTransactionStarted(new eu.chargetime.ocpp.model.core.StartTransactionRequest(1, "tag", 0,
+                java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)), 7);
 
         handler.onStatusNotification(status(ChargePointStatus.Available));
 
@@ -135,9 +134,11 @@ class OcppConnectorHandlerTest {
         when(bridge.getHandler()).thenReturn(chargePoint);
         when(callback.getBridge(chargePointUID)).thenReturn(bridge);
         handler.initialize();
+        assertChannel(CHANNEL_METER_START,
+                new org.openhab.core.library.types.QuantityType<>(1000, org.openhab.core.library.unit.Units.WATT_HOUR));
 
-        handler.onTransactionStopped(
-                new eu.chargetime.ocpp.model.core.StopTransactionRequest(1600, java.time.ZonedDateTime.now(), 7));
+        handler.onTransactionStopped(new eu.chargetime.ocpp.model.core.StopTransactionRequest(1600,
+                java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC), 7));
 
         assertChannel(CHANNEL_SESSION_ENERGY,
                 new org.openhab.core.library.types.QuantityType<>(600, org.openhab.core.library.unit.Units.WATT_HOUR));
@@ -145,11 +146,10 @@ class OcppConnectorHandlerTest {
 
     @Test
     void sessionEnergyIsPublishedAtStopAsMeterStopMinusMeterStart() {
-        handler.onTransactionStarted(
-                new eu.chargetime.ocpp.model.core.StartTransactionRequest(1, "tag", 100, java.time.ZonedDateTime.now()),
-                7);
-        handler.onTransactionStopped(
-                new eu.chargetime.ocpp.model.core.StopTransactionRequest(1600, java.time.ZonedDateTime.now(), 7));
+        handler.onTransactionStarted(new eu.chargetime.ocpp.model.core.StartTransactionRequest(1, "tag", 100,
+                java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)), 7);
+        handler.onTransactionStopped(new eu.chargetime.ocpp.model.core.StopTransactionRequest(1600,
+                java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC), 7));
 
         assertChannel(CHANNEL_SESSION_ENERGY,
                 new org.openhab.core.library.types.QuantityType<>(1500, org.openhab.core.library.unit.Units.WATT_HOUR));
@@ -157,18 +157,26 @@ class OcppConnectorHandlerTest {
 
     @Test
     void theSessionTotalSettlesBeforeTheTransactionIsCleared() {
-        handler.onTransactionStarted(
-                new eu.chargetime.ocpp.model.core.StartTransactionRequest(1, "tag", 100, java.time.ZonedDateTime.now()),
-                7);
-        handler.onTransactionStopped(
-                new eu.chargetime.ocpp.model.core.StopTransactionRequest(1600, java.time.ZonedDateTime.now(), 7));
+        handler.onTransactionStarted(new eu.chargetime.ocpp.model.core.StartTransactionRequest(1, "tag", 100,
+                java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC)), 7);
+        handler.onTransactionStopped(new eu.chargetime.ocpp.model.core.StopTransactionRequest(1600,
+                java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC), 7));
 
         org.mockito.InOrder inOrder = org.mockito.Mockito.inOrder(callback);
         inOrder.verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_SESSION_ENERGY)),
                 eq(new org.openhab.core.library.types.QuantityType<>(1500,
                         org.openhab.core.library.unit.Units.WATT_HOUR)));
+        inOrder.verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_TIMESTAMP_STOP)), any());
         inOrder.verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_TRANSACTION_ID)),
                 eq(UnDefType.UNDEF));
+    }
+
+    @Test
+    void aStopWithoutAKnownMeterStartPublishesNoSessionTotal() {
+        handler.onTransactionStopped(new eu.chargetime.ocpp.model.core.StopTransactionRequest(1600,
+                java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC), 7));
+
+        assertChannel(CHANNEL_SESSION_ENERGY, UnDefType.UNDEF);
     }
 
     @Test
@@ -192,7 +200,6 @@ class OcppConnectorHandlerTest {
         handler.initialize();
         command(CHANNEL_CHARGING, OnOffType.ON);
 
-        // The initial attempt plus one retry after the delay, since nothing started in between.
         verify(chargePoint, timeout(10000).times(2))
                 .send(argThat(r -> r instanceof eu.chargetime.ocpp.model.core.RemoteStartTransactionRequest));
     }
@@ -229,9 +236,9 @@ class OcppConnectorHandlerTest {
         sample.setUnit(unit);
         eu.chargetime.ocpp.model.core.MeterValuesRequest request = new eu.chargetime.ocpp.model.core.MeterValuesRequest(
                 1);
-        request.setMeterValue(
-                new eu.chargetime.ocpp.model.core.MeterValue[] { new eu.chargetime.ocpp.model.core.MeterValue(
-                        java.time.ZonedDateTime.now(), new eu.chargetime.ocpp.model.core.SampledValue[] { sample }) });
+        request.setMeterValue(new eu.chargetime.ocpp.model.core.MeterValue[] {
+                new eu.chargetime.ocpp.model.core.MeterValue(java.time.ZonedDateTime.now(java.time.ZoneOffset.UTC),
+                        new eu.chargetime.ocpp.model.core.SampledValue[] { sample }) });
         return request;
     }
 
@@ -279,17 +286,15 @@ class OcppConnectorHandlerTest {
 
     @Test
     void aFaultLeavesAvailabilityAlone() {
-        // Faulted reports a fault, not the operator taking the connector out of service, so availability must stand.
+        // Faulted reports a fault, not the operator taking the connector out of service, so availability must
+        // stand.
         handler.onStatusNotification(status(ChargePointStatus.Faulted));
 
         verify(callback, org.mockito.Mockito.never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_AVAILABILITY)),
                 org.mockito.ArgumentMatchers.any());
     }
 
-    /**
-     * Uses the ONLINE bridge-status path rather than initialize(), so set-up transmits nothing and every
-     * captured request comes from the command under test.
-     */
+    /** Attaches via the ONLINE bridge path so set-up sends nothing. */
     private OcppChargePointHandler attachReadyChargePoint() {
         return attachReadyChargePoint(ClearChargingProfileStatus.Accepted);
     }
@@ -363,7 +368,8 @@ class OcppConnectorHandlerTest {
 
     @Test
     void aResumeIsPublishedEvenWhenTheChargerReportsNoProfileToClear() {
-        // A charger with no matching profile answers ClearChargingProfile Unknown (not Accepted); still uncapped.
+        // A charger with no matching profile answers ClearChargingProfile Unknown (not Accepted); still
+        // uncapped.
         OcppChargePointHandler chargePoint = attachReadyChargePoint(ClearChargingProfileStatus.Unknown);
 
         command(CHANNEL_CHARGE_LIMIT, new DecimalType(0));

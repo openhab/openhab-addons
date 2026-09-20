@@ -85,6 +85,7 @@ public class InboundCoreHandler implements ServerCoreEventHandler {
             delivery.run();
         } catch (RuntimeException e) {
             logger.warn("Failed to process {} from session {}: {}", what, session, e.getMessage());
+            logger.debug("{} processing failure", what, e);
         }
     }
 

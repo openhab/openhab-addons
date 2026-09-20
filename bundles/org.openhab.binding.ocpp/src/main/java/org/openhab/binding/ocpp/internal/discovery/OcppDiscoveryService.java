@@ -77,9 +77,7 @@ public class OcppDiscoveryService extends AbstractThingHandlerDiscoveryService<O
                 .withRepresentationProperty(PROPERTY_UNIQUE_ID).withLabel("OCPP Connector " + connectorId).build());
     }
 
-    /**
-     * Reduces a charge point id to a valid ThingUID segment; non-segment ids are Base64-encoded so they stay distinct.
-     */
+    /** Non-segment ids are Base64-encoded so distinct ids never collide on one ThingUID. */
     static String sanitize(String id) {
         if (VALID_SEGMENT.matcher(id).matches()) {
             return id;

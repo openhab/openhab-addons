@@ -77,59 +77,61 @@ class MeterValueMapperTest {
 
     @Test
     void parsesKnownUnitsAsQuantities() {
-        QuantityType<?> current = assertInstanceOf(QuantityType.class, MeterValueMapper.toState("16.0", "A"));
+        QuantityType<?> current = assertInstanceOf(QuantityType.class, new MeterValueMapper().toState("16.0", "A"));
         assertEquals(Units.AMPERE, current.getUnit());
         assertEquals(16.0, current.doubleValue());
 
-        assertEquals(Units.VOLT, assertInstanceOf(QuantityType.class, MeterValueMapper.toState("230", "V")).getUnit());
-        assertEquals(Units.WATT, assertInstanceOf(QuantityType.class, MeterValueMapper.toState("3600", "W")).getUnit());
+        assertEquals(Units.VOLT,
+                assertInstanceOf(QuantityType.class, new MeterValueMapper().toState("230", "V")).getUnit());
+        assertEquals(Units.WATT,
+                assertInstanceOf(QuantityType.class, new MeterValueMapper().toState("3600", "W")).getUnit());
         assertEquals(Units.KILOWATT_HOUR,
-                assertInstanceOf(QuantityType.class, MeterValueMapper.toState("12.5", "kWh")).getUnit());
+                assertInstanceOf(QuantityType.class, new MeterValueMapper().toState("12.5", "kWh")).getUnit());
     }
 
     @Test
     void reactiveAndApparentUnitsKeepTheirDimension() {
         assertEquals(Units.VAR_HOUR,
-                assertInstanceOf(QuantityType.class, MeterValueMapper.toState("42", "varh")).getUnit());
+                assertInstanceOf(QuantityType.class, new MeterValueMapper().toState("42", "varh")).getUnit());
         assertEquals(Units.KILOVAR,
-                assertInstanceOf(QuantityType.class, MeterValueMapper.toState("3", "kvar")).getUnit());
+                assertInstanceOf(QuantityType.class, new MeterValueMapper().toState("3", "kvar")).getUnit());
         assertEquals(Units.KILOVOLT_AMPERE,
-                assertInstanceOf(QuantityType.class, MeterValueMapper.toState("7", "kVA")).getUnit());
+                assertInstanceOf(QuantityType.class, new MeterValueMapper().toState("7", "kVA")).getUnit());
     }
 
     @Test
     void omittedUnitDefaultsToWattHoursForEnergyMeasurands() {
         assertEquals(Units.WATT_HOUR, assertInstanceOf(QuantityType.class,
-                MeterValueMapper.toState("42", null, "Energy.Active.Import.Register")).getUnit());
-        assertInstanceOf(DecimalType.class, MeterValueMapper.toState("0.98", null, "Power.Factor"));
+                new MeterValueMapper().toState("42", null, "Energy.Active.Import.Register")).getUnit());
+        assertInstanceOf(DecimalType.class, new MeterValueMapper().toState("0.98", null, "Power.Factor"));
     }
 
     @Test
     void aTrulyUnknownUnitDegradesToDecimalRatherThanThrowing() {
-        assertInstanceOf(DecimalType.class, MeterValueMapper.toState("42", "furlong"));
+        assertInstanceOf(DecimalType.class, new MeterValueMapper().toState("42", "furlong"));
     }
 
     @Test
     void toleratesTheSpecMisspelledCelsius() {
         // 'Celcius' is the OCPP spec's own mis-spelling — mapped to Celsius, not rejected.
-        assertInstanceOf(QuantityType.class, MeterValueMapper.toState("21.5", "Celcius"));
+        assertInstanceOf(QuantityType.class, new MeterValueMapper().toState("21.5", "Celcius"));
     }
 
     @Test
     void unparseableOrEmptyValueIsDropped() {
-        assertNull(MeterValueMapper.toState("not-a-number", "A"));
-        assertNull(MeterValueMapper.toState("", "A"));
-        assertNull(MeterValueMapper.toState(null, "A"));
+        assertNull(new MeterValueMapper().toState("not-a-number", "A"));
+        assertNull(new MeterValueMapper().toState("", "A"));
+        assertNull(new MeterValueMapper().toState(null, "A"));
     }
 
     @Test
     void nonFiniteValuesAreDroppedNotFatal() {
         // NaN / Infinity parse as valid doubles but crash QuantityType/BigDecimal — must be dropped.
-        assertNull(MeterValueMapper.toState("NaN", "Wh"));
-        assertNull(MeterValueMapper.toState("NaN", "A"));
-        assertNull(MeterValueMapper.toState("NaN", null));
-        assertNull(MeterValueMapper.toState("Infinity", "V"));
-        assertNull(MeterValueMapper.toState("-Infinity", "W"));
+        assertNull(new MeterValueMapper().toState("NaN", "Wh"));
+        assertNull(new MeterValueMapper().toState("NaN", "A"));
+        assertNull(new MeterValueMapper().toState("NaN", null));
+        assertNull(new MeterValueMapper().toState("Infinity", "V"));
+        assertNull(new MeterValueMapper().toState("-Infinity", "W"));
     }
 
     private static SampledValue sample(String measurand, @org.eclipse.jdt.annotation.Nullable String phase, String unit,
@@ -145,13 +147,14 @@ class MeterValueMapperTest {
 
     private static MeterValuesRequest requestOf(SampledValue... samples) {
         MeterValuesRequest request = new MeterValuesRequest(1);
-        request.setMeterValue(new MeterValue[] { new MeterValue(ZonedDateTime.now(), samples) });
+        request.setMeterValue(
+                new MeterValue[] { new MeterValue(ZonedDateTime.now(java.time.ZoneOffset.UTC), samples) });
         return request;
     }
 
     @Test
     void phasedPowerSamplesSumIntoTheAggregateChannel() {
-        Map<String, State> states = MeterValueMapper.toStates(requestOf(
+        Map<String, State> states = new MeterValueMapper().toStates(requestOf(
                 sample("Power.Active.Import", "L1", "W", "1000"), sample("Power.Active.Import", "L2", "W", "1100"),
                 sample("Power.Active.Import", "L3", "W", "1200")));
 
@@ -161,7 +164,7 @@ class MeterValueMapperTest {
 
     @Test
     void aChargerReportedTotalWinsOverThePhaseSum() {
-        Map<String, State> states = MeterValueMapper.toStates(requestOf(
+        Map<String, State> states = new MeterValueMapper().toStates(requestOf(
                 sample("Power.Active.Import", "L1", "W", "1000"), sample("Power.Active.Import", "L2", "W", "1100"),
                 sample("Power.Active.Import", "L3", "W", "1200"), sample("Power.Active.Import", null, "W", "3300")));
 
@@ -170,8 +173,9 @@ class MeterValueMapperTest {
 
     @Test
     void phasedCurrentSamplesAreNotSummedIntoATotal() {
-        Map<String, State> states = MeterValueMapper.toStates(requestOf(sample("Current.Offered", "L1", "A", "16"),
-                sample("Current.Offered", "L2", "A", "16"), sample("Current.Offered", "L3", "A", "16")));
+        Map<String, State> states = new MeterValueMapper()
+                .toStates(requestOf(sample("Current.Offered", "L1", "A", "16"),
+                        sample("Current.Offered", "L2", "A", "16"), sample("Current.Offered", "L3", "A", "16")));
 
         org.junit.jupiter.api.Assertions.assertFalse(states.containsKey("current-offered"),
                 "phased currents must not be summed into the aggregate channel");
@@ -179,7 +183,7 @@ class MeterValueMapperTest {
 
     @Test
     void lineToLineVoltageDoesNotMasqueradeAsAPhaseVoltage() {
-        Map<String, State> states = MeterValueMapper
+        Map<String, State> states = new MeterValueMapper()
                 .toStates(requestOf(sample("Voltage", "L1-N", "V", "230"), sample("Voltage", "L1-L2", "V", "400")));
 
         assertEquals(230.0, assertInstanceOf(QuantityType.class, states.get("voltage-l1")).doubleValue());
@@ -188,7 +192,8 @@ class MeterValueMapperTest {
 
     @Test
     void aPhasedPowerFactorIsNotPassedOffAsAnAggregate() {
-        Map<String, State> states = MeterValueMapper.toStates(requestOf(sample("Power.Factor", "L1", "Percent", "98")));
+        Map<String, State> states = new MeterValueMapper()
+                .toStates(requestOf(sample("Power.Factor", "L1", "Percent", "98")));
 
         org.junit.jupiter.api.Assertions.assertFalse(states.containsKey("power-factor"),
                 "a phased power factor must not populate the aggregate channel");
@@ -207,10 +212,10 @@ class MeterValueMapperTest {
         voltage.setUnit("V");
 
         MeterValuesRequest request = new MeterValuesRequest(1);
-        request.setMeterValue(
-                new MeterValue[] { new MeterValue(ZonedDateTime.now(), new SampledValue[] { l1, voltage }) });
+        request.setMeterValue(new MeterValue[] {
+                new MeterValue(ZonedDateTime.now(java.time.ZoneOffset.UTC), new SampledValue[] { l1, voltage }) });
 
-        Map<String, State> states = MeterValueMapper.toStates(request);
+        Map<String, State> states = new MeterValueMapper().toStates(request);
 
         assertEquals(2, states.size());
         assertEquals(Units.AMPERE, assertInstanceOf(QuantityType.class, states.get("current-import-l1")).getUnit());

@@ -73,11 +73,11 @@ class OcppTransactionRecoveryTest {
     }
 
     private static StartTransactionRequest start(int connectorId) {
-        return new StartTransactionRequest(connectorId, "tag", 0, ZonedDateTime.now());
+        return new StartTransactionRequest(connectorId, "tag", 0, ZonedDateTime.now(java.time.ZoneOffset.UTC));
     }
 
     private static StopTransactionRequest stop(int transactionId) {
-        return new StopTransactionRequest(0, ZonedDateTime.now(), transactionId);
+        return new StopTransactionRequest(0, ZonedDateTime.now(java.time.ZoneOffset.UTC), transactionId);
     }
 
     @Test
@@ -88,16 +88,14 @@ class OcppTransactionRecoveryTest {
         handler.onStartTransaction(start(1), 100);
 
         verify(connector).onTransactionStarted(any(), org.mockito.ArgumentMatchers.eq(100));
-        // Persistence is the server bridge's job; the charge-point handler only routes in memory.
         verify(server, org.mockito.Mockito.never()).rememberTransaction(org.mockito.ArgumentMatchers.anyInt(), any(),
-                org.mockito.ArgumentMatchers.anyInt());
+                org.mockito.ArgumentMatchers.anyInt(), any());
     }
 
     @Test
     void aStopAfterARestartRecoversTheConnectorFromThePersistedMapping() {
         OcppConnectorHandler connector = mock(OcppConnectorHandler.class);
         handler.registerConnector(1, connector);
-        // No onStartTransaction here, so the in-memory map is empty, as after a restart.
         when(server.transactionConnector(100, "charger")).thenReturn(1);
 
         handler.onStopTransaction(stop(100));
@@ -116,7 +114,7 @@ class OcppTransactionRecoveryTest {
     }
 
     @Test
-    void aConnectorRecoversTheMeterRegisterAtTheStart() {
+    void theChargePointAsksTheServerForTheMeterStartOfItsOwnTransaction() {
         when(server.meterStartOf(55, "charger")).thenReturn(1000);
 
         assertEquals(Integer.valueOf(1000), handler.recoverMeterStart(55));

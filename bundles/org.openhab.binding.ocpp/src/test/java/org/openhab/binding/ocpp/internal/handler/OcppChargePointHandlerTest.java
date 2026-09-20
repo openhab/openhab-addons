@@ -72,11 +72,11 @@ class OcppChargePointHandlerTest {
     }
 
     private static StartTransactionRequest start(int connectorId) {
-        return new StartTransactionRequest(connectorId, "tag", 0, ZonedDateTime.now());
+        return new StartTransactionRequest(connectorId, "tag", 0, ZonedDateTime.now(java.time.ZoneOffset.UTC));
     }
 
     private static StopTransactionRequest stop(int transactionId) {
-        return new StopTransactionRequest(0, ZonedDateTime.now(), transactionId);
+        return new StopTransactionRequest(0, ZonedDateTime.now(java.time.ZoneOffset.UTC), transactionId);
     }
 
     @Test
@@ -113,7 +113,8 @@ class OcppChargePointHandlerTest {
 
     @Test
     void aTransactionThatWasNeverStoppedIsDiscardedWhenTheNextOneStarts() {
-        // A connector runs one transaction at a time; a new start discards a prior one whose StopTransaction was lost.
+        // A connector runs one transaction at a time; a new start discards a prior one whose StopTransaction
+        // was lost.
         handler.onStartTransaction(start(1), 100);
         handler.onStartTransaction(start(1), 101);
 
@@ -155,7 +156,6 @@ class OcppChargePointHandlerTest {
         assertFalse(handler.isReady(), "a just-connected charger has not booted yet");
 
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
-        // Readiness must NOT flip inside the boot handler; it flips asynchronously once the confirmation is sent.
         assertFalse(handler.isReady(), "not ready while the boot notification is still being handled");
         awaitReady();
     }
@@ -163,7 +163,8 @@ class OcppChargePointHandlerTest {
     @Test
     void becomingReadyReleasesConnectorsThatDeferredASend() {
         handler.onConnected(UUID.randomUUID());
-        // A heartbeat also proves the charger booted (socket reopened, no fresh BootNotification); release is async.
+        // A heartbeat also proves the charger booted (socket reopened, no fresh BootNotification); release is
+        // async.
         handler.onHeartbeat();
 
         verify(connector1, org.mockito.Mockito.timeout(2000)).onChargePointReady();

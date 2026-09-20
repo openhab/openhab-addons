@@ -154,9 +154,9 @@ class ChargeTimeTransportTest {
         assertNull(ChargeTimeTransport.normalizeIdentifier(null));
     }
 
-    // A request whose feature profile isn't registered can't be sent; an unknown session must fail as "not connected".
     @Test
     void nonCoreFeatureProfilesAreRegisteredSoTheirRequestsCanBeSent() throws java.io.IOException {
+        // An unregistered feature profile cannot be sent; an unknown session fails as not connected.
         ChargeTimeTransport transport = newTransport();
         transport.start("127.0.0.1", findFreePort());
         try {
@@ -170,7 +170,8 @@ class ChargeTimeTransportTest {
 
     @Test
     void aChargerSendingAShortBasicAuthPasswordIsAccepted() throws Exception {
-        // The library rejects a Basic-auth password outside 16-20 chars; with no authPassword set, accept it anyway.
+        // The library rejects a Basic-auth password outside 16-20 chars; with no authPassword set, accept it
+        // anyway.
         CountDownLatch opened = new CountDownLatch(1);
         ChargeTimeTransport transport = new ChargeTimeTransport(listener(opened::countDown), 0, 30, "", "", "");
         int port = findFreePort();
@@ -270,7 +271,8 @@ class ChargeTimeTransportTest {
 
     @Test
     void startVerifiesTheServerAcceptsARealConnection() throws java.io.IOException {
-        // The embedded server binds asynchronously, so start() probes and returns only once a socket is listening.
+        // The embedded server binds asynchronously, so start() probes and returns only once a socket is
+        // listening.
         int port = findFreePort();
         ChargeTimeTransport transport = newTransport();
         transport.start("127.0.0.1", port);
@@ -288,7 +290,8 @@ class ChargeTimeTransportTest {
 
     @Test
     void startFailsWhenThePortIsAlreadyOccupied() throws java.io.IOException {
-        // The embedded server signals a failed bind only via an internal callback, so the transport must surface it.
+        // The embedded server signals a failed bind only via an internal callback, so the transport must
+        // surface it.
         try (java.net.ServerSocket occupier = new java.net.ServerSocket(0)) {
             ChargeTimeTransport transport = newTransport();
             assertThrows(IllegalStateException.class, () -> transport.start("127.0.0.1", occupier.getLocalPort()));

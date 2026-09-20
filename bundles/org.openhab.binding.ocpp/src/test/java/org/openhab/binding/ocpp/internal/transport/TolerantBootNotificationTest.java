@@ -50,7 +50,8 @@ class TolerantBootNotificationTest {
     private static final String BOOT_JSON = "{\"chargePointVendor\":\"" + VENDOR + "\",\"chargePointModel\":\""
             + LONG_MODEL + "\"}";
 
-    // Gson sets fields directly, bypassing the length-checking setter — as the library does deserializing off the wire.
+    // Gson sets fields directly, bypassing the length-checking setter — as the library does deserializing off
+    // the wire.
     private static final Gson GSON = new Gson();
 
     @Test
@@ -77,7 +78,8 @@ class TolerantBootNotificationTest {
 
     @Test
     void theTolerantFeatureOverridesTheCoreBootNotificationFeature() {
-        // In FeatureRepository a later addFeature wins, so the tolerant feature resolves over the core profile's.
+        // In FeatureRepository a later addFeature wins, so the tolerant feature resolves over the core
+        // profile's.
         ServerCoreEventHandler handler = mock(ServerCoreEventHandler.class);
         FeatureRepository repository = new FeatureRepository();
         repository.addFeatureProfile(new ServerCoreProfile(handler));

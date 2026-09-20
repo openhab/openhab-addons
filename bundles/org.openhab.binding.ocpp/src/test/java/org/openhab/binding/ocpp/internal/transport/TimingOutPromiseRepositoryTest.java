@@ -79,7 +79,6 @@ class TimingOutPromiseRepositoryTest {
 
     @Test
     void aTimedOutRequestIsRemovedFromItsSessionQueue() {
-        // The library keeps a queued request until answered; on timeout the repository must remove it from its session.
         Map<String, ISession> requestSessions = new ConcurrentHashMap<>();
         ISession session = mock(ISession.class);
         requestSessions.put("call-3", session);

@@ -45,14 +45,14 @@ public final class ChargingProfileBuilder {
         return limit(connectorId, ChargingRateUnitType.A, amps, null, forceTxDefault, transactionId);
     }
 
-    /** Build a SetChargingProfile capping the connector at {@code value} in {@code unit}. */
     public static SetChargingProfileRequest limit(int connectorId, ChargingRateUnitType unit, double value,
             @Nullable Integer numberPhases, boolean forceTxDefault, @Nullable Integer transactionId) {
         boolean useTxProfile = transactionId != null && !forceTxDefault;
         ChargingProfilePurposeType purpose = useTxProfile ? ChargingProfilePurposeType.TxProfile
                 : ChargingProfilePurposeType.TxDefaultProfile;
 
-        ChargingSchedulePeriod period = new ChargingSchedulePeriod(0, value);
+        // OCPP 1.6 allows one decimal in a schedule period limit.
+        ChargingSchedulePeriod period = new ChargingSchedulePeriod(0, Math.round(value * 10) / 10.0);
         if (numberPhases != null) {
             period.setNumberPhases(numberPhases);
         }

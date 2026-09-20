@@ -43,7 +43,7 @@ class ChargingProfileBuilderTest {
         ChargingProfile profile = request.getCsChargingProfiles();
         assertEquals(ChargingProfileBuilder.profileId(1, false), profile.getChargingProfileId().intValue());
         assertEquals(ChargingProfilePurposeType.TxDefaultProfile, profile.getChargingProfilePurpose());
-        // Relative not Absolute: a fixed cap needs no startSchedule (Absolute without one is invalid per OCPP 1.6).
+        // Absolute without startSchedule is invalid in OCPP 1.6; a fixed cap is Relative.
         assertEquals(ChargingProfileKindType.Relative, profile.getChargingProfileKind());
         assertNull(profile.getTransactionId());
         assertEquals(0, profile.getStackLevel().intValue());
@@ -66,7 +66,8 @@ class ChargingProfileBuilderTest {
 
     @Test
     void distinctConnectorsAndPurposesGetDistinctProfileIds() {
-        // A profile id is charge-point-wide and reinstalls replace by id, so connectors/purposes must not share ids.
+        // A profile id is charge-point-wide and reinstalls replace by id, so connectors/purposes must not
+        // share ids.
         int c1Default = ChargingProfileBuilder.currentLimit(1, 16.0, false, null).getCsChargingProfiles()
                 .getChargingProfileId();
         int c2Default = ChargingProfileBuilder.currentLimit(2, 16.0, false, null).getCsChargingProfiles()
@@ -95,11 +96,20 @@ class ChargingProfileBuilderTest {
 
     @Test
     void clearLimitRemovesOurCapByConnectorAndStackLevel() {
-        // Clearing by connector+stack level (not id/purpose) removes whichever purpose set the cap; 0 A would suspend.
+        // Clearing by connector+stack level (not id/purpose) removes whichever purpose set the cap; 0 A would
+        // suspend.
         ClearChargingProfileRequest request = ChargingProfileBuilder.clearLimit(2);
         assertEquals(2, request.getConnectorId().intValue());
         assertEquals(0, request.getStackLevel().intValue());
         assertNull(request.getId());
         assertNull(request.getChargingProfilePurpose());
+    }
+
+    @Test
+    void aLimitIsSentWithOneDecimal() {
+        eu.chargetime.ocpp.model.smartcharging.SetChargingProfileRequest request = ChargingProfileBuilder.limit(1,
+                eu.chargetime.ocpp.model.core.ChargingRateUnitType.A, 6.333, null, false, null);
+        assertEquals(6.3, request.getCsChargingProfiles().getChargingSchedule().getChargingSchedulePeriod()[0]
+                .getLimit().doubleValue());
     }
 }

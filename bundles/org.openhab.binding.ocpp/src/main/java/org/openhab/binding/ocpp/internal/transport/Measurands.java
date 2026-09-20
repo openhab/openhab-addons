@@ -13,6 +13,7 @@
 package org.openhab.binding.ocpp.internal.transport;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,19 +32,17 @@ public final class Measurands {
     private Measurands() {
     }
 
-    /** Return {@code list} with its final comma-separated entry removed, or empty. */
     public static String dropLast(@Nullable String list) {
         if (list == null) {
             return "";
         }
-        int finalSeparator = list.lastIndexOf(SEPARATOR);
-        if (finalSeparator < 0) {
-            return "";
-        }
-        String retained = list.substring(0, finalSeparator);
-        return Arrays.stream(retained.split(SEPARATOR)) //
+        List<String> entries = Arrays.stream(list.split(SEPARATOR)) //
                 .map(String::trim) //
                 .filter(entry -> !entry.isEmpty()) //
-                .collect(Collectors.joining(SEPARATOR));
+                .collect(Collectors.toList());
+        if (entries.isEmpty()) {
+            return "";
+        }
+        return String.join(SEPARATOR, entries.subList(0, entries.size() - 1));
     }
 }

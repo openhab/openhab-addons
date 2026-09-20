@@ -100,7 +100,6 @@ public class ChargeTimeTransport implements OcppTransport {
 
         JSONConfiguration configuration = JSONConfiguration.get();
         configuration = configuration.setParameter(JSONConfiguration.REUSE_ADDR_PARAMETER, true);
-        // Off: many chargers never pong, so WebSocket pings would drop healthy sessions.
         configuration = configuration.setParameter(JSONConfiguration.PING_INTERVAL_PARAMETER,
                 pingIntervalSeconds > 0 ? pingIntervalSeconds : 0);
         // Relax the library's handshake password-length check; real auth stays in authenticateSession.

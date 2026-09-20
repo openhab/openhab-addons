@@ -39,7 +39,8 @@ class OcppDiscoveryServiceTest {
 
     @Test
     void twoIdsThatDifferOnlyByAnUnsupportedCharacterDoNotCollide() {
-        // "a/b" and "a_b" both collapse to "a_b" under plain replacement; the reversible encoding keeps them distinct.
+        // "a/b" and "a_b" both collapse to "a_b" under plain replacement; the reversible encoding keeps them
+        // distinct.
         assertNotEquals(OcppDiscoveryService.sanitize("a/b"), OcppDiscoveryService.sanitize("a_b"));
     }
 
