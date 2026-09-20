@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DynamicStateDescriptionProvider.class)
+@Component(service = { DynamicStateDescriptionProvider.class, VeSyncStateDescriptionProvider.class })
 public class VeSyncStateDescriptionProvider implements DynamicStateDescriptionProvider {
     private final ThingRegistry thingRegistry;
 
