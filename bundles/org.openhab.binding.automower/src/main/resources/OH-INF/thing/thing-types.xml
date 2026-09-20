@@ -624,7 +624,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cutting Height</label>
 		<description>Cutting height of the Work Area, range: 0-100</description>
-		<state pattern="%d %%"/>
+		<state pattern="%.0f %%"/>
 	</channel-type>
 
 	<channel-type id="workarea-enabled-type">
@@ -665,14 +665,14 @@
 		<item-type>Number:Angle</item-type>
 		<label>Pattern Orientation</label>
 		<description>Orientation of the mowing pattern in degrees. Pattern based Work Areas only</description>
-		<state pattern="%d %unit%"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="workarea-orientation-shift-type" advanced="true">
 		<item-type>Number:Angle</item-type>
 		<label>Pattern Orientation Shift</label>
 		<description>Orientation shift of the mowing pattern in degrees. Pattern based Work Areas only</description>
-		<state pattern="%d %unit%"/>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="workarea-progress-type" advanced="true">
