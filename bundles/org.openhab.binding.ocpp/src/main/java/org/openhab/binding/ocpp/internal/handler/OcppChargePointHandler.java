@@ -17,6 +17,7 @@ import static org.openhab.binding.ocpp.internal.OcppBindingConstants.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -714,8 +715,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             if (!bootSession.equals(session)) {
                 return;
             }
-            applyCapabilities(confirmation, ex);
-            runBootConfigBurst(bootSession);
+            runBootConfigBurst(bootSession, !applyCapabilities(confirmation, ex));
         });
     }
 
@@ -730,15 +730,17 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         requestConnectorStatusesNow();
     }
 
-    private void applyCapabilities(@Nullable Confirmation confirmation, @Nullable Throwable ex) {
-        if (ex != null) {
-            logger.debug("GetConfiguration for {} failed ({}); keeping the last known capabilities", chargePointId,
-                    ex.getMessage());
-            return;
+    /** @return whether the charger reported its configuration; what it reported before a reboot is not reused */
+    private boolean applyCapabilities(@Nullable Confirmation confirmation, @Nullable Throwable ex) {
+        if (!(confirmation instanceof GetConfigurationConfirmation reported)) {
+            logger.debug("Charge point {} did not report its configuration ({}); continuing with defaults",
+                    chargePointId, ex == null ? confirmation : ex.getMessage());
+            capabilities = ChargerCapabilities.unknown();
+            return false;
         }
-        capabilities = confirmation instanceof GetConfigurationConfirmation gc ? ChargerCapabilities.from(gc)
-                : ChargerCapabilities.unknown();
+        capabilities = ChargerCapabilities.from(reported);
         publishCapabilities(capabilities);
+        return true;
     }
 
     private void publishCapabilities(ChargerCapabilities caps) {
@@ -757,7 +759,11 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         caps.heartbeatIntervalSeconds().ifPresent(seconds -> updateProperty("ocppHeartbeatInterval", seconds + " s"));
     }
 
-    private void runBootConfigBurst(UUID bootSession) {
+    /**
+     * @param readFailed the charger's configuration could not be read, so a fingerprint match cannot be taken as
+     *            proof that it still holds its settings
+     */
+    private void runBootConfigBurst(UUID bootSession, boolean readFailed) {
         if (!bootSession.equals(session)) {
             logger.debug("Boot config for {} skipped — its session was replaced", chargePointId);
             return;
@@ -774,9 +780,14 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             acceptedMeasurands.clear();
         }
         if (fingerprint.equals(appliedConfigFingerprint)) {
-            logger.debug("Boot config for {} already applied; skipping", chargePointId);
-            requestConnectorStatuses();
-            return;
+            if (!readFailed && stillSetOnCharger(config)) {
+                logger.debug("Boot config for {} already applied; skipping", chargePointId);
+                requestConnectorStatuses();
+                return;
+            }
+            logger.debug("Boot config for {} cannot be confirmed as still set; sending it again", chargePointId);
+            appliedConfigFingerprint = null;
+            bootConfigAttempts.set(0);
         }
         if (bootConfigAttempts.incrementAndGet() > MAX_BOOT_CONFIG_ATTEMPTS) {
             logger.debug("Boot config for {} not attempted again after {} failed tries", chargePointId,
@@ -819,6 +830,43 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             steps.add(() -> provisionLocalAuthList(tags));
         }
         runBootConfigStep(steps, 0, fingerprint, bootSession, new AtomicBoolean(true));
+    }
+
+    /**
+     * Whether the charger still reports the settings it accepted. A charger that resets them when it
+     * reboots reports something else, and a setting it does not report at all cannot be confirmed.
+     */
+    private boolean stillSetOnCharger(OcppServerConfiguration config) {
+        Map<String, String> reported = capabilities.raw();
+        if (reported.isEmpty()) {
+            return true;
+        }
+        Map<String, String> wanted = new LinkedHashMap<>();
+        if (meterless) {
+            wanted.put("ClockAlignedDataInterval", "0");
+        } else {
+            if (config.meterValueSampleInterval >= 0) {
+                wanted.put("MeterValueSampleInterval", Integer.toString(config.meterValueSampleInterval));
+            }
+            if (config.clockAlignedDataInterval >= 0) {
+                wanted.put("ClockAlignedDataInterval", Integer.toString(config.clockAlignedDataInterval));
+            }
+        }
+        if (config.disableRemoteTxAuthorization) {
+            wanted.put("AuthorizeRemoteTxRequests", "false");
+        }
+        for (String pair : config.extraConfig) {
+            int equals = pair.indexOf('=');
+            if (equals > 0) {
+                wanted.put(pair.substring(0, equals).trim(), pair.substring(equals + 1).trim());
+            }
+        }
+        for (Map.Entry<String, String> entry : wanted.entrySet()) {
+            if (!entry.getValue().equalsIgnoreCase(reported.get(entry.getKey()))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private String configFingerprint(OcppServerConfiguration config) {
@@ -870,6 +918,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
         if (index >= steps.size()) {
             if (allSucceeded.get()) {
                 appliedConfigFingerprint = fingerprint;
+                bootConfigAttempts.set(0);
                 if (!steps.isEmpty()) {
                     logger.debug("Boot config for {} complete ({} steps)", chargePointId, steps.size());
                 }
