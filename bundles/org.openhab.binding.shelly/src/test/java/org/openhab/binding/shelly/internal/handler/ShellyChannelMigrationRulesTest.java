@@ -166,7 +166,7 @@ public class ShellyChannelMigrationRulesTest {
 
     @Test
     void alreadyOnCurrentSchemaSkipsMigrationEntirely() {
-        ShellyThingInterface handler = handlerAtSchema(7, false,
+        ShellyThingInterface handler = handlerAtSchema(8, false,
                 channel(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER));
 
         ShellyChannelMigration.migrateChannels(handler);
