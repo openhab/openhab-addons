@@ -64,8 +64,7 @@ public class StateTypeAdapter extends TypeAdapter<State> {
             Class<? extends State> valueType = (Class<? extends State>) Class.forName(valueTypeName);
             State state = TypeParser.parseState(List.of(valueType), valueAsString);
             if (state == null) {
-                logger.debug("Couldn't deserialize state '{}': persisted type not '{}' not a State", value,
-                        valueTypeName);
+                logger.debug("Couldn't deserialize state '{}': persisted type '{}' not a State", value, valueTypeName);
                 return null;
             }
             return state;
