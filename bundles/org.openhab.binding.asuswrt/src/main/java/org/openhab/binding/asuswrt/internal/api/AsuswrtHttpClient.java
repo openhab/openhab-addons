@@ -114,6 +114,22 @@ public class AsuswrtHttpClient {
      * @param command command to execute, this will handle ResponseType
      */
     protected void sendAsyncRequest(String url, String payload, String command) {
+        sendAsyncRequest(url, payload, command, null);
+    }
+
+    /**
+     * Sends an asynchronous HTTP request so it does not wait for an answer.
+     *
+     * The result will be handled in {@link #handleHttpSuccessResponse(String, String)} or
+     * {@link #handleHttpResultError(Throwable)}. Afterwards, {@code onComplete} is run (whether the
+     * request succeeded or failed), so callers can be notified once the round-trip has finished.
+     *
+     * @param url the URL to which the request is sent to
+     * @param payload the payload data
+     * @param command command to execute, this will handle ResponseType
+     * @param onComplete callback run after the request has finished, or {@code null} if not needed
+     */
+    protected void sendAsyncRequest(String url, String payload, String command, @Nullable Runnable onComplete) {
         logger.trace("({}) sendAsyncRequest to '{}' with cookie '{}'", uid, url, cookieStore.getCookie());
         try {
             Request httpRequest = router.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
@@ -128,26 +144,35 @@ public class AsuswrtHttpClient {
                 @NonNullByDefault({})
                 @Override
                 public void onComplete(Result result) {
-                    final HttpResponse response = (HttpResponse) result.getResponse();
-                    if (result.getFailure() != null) {
-                        // Handle result errors
-                        handleHttpResultError(result.getFailure());
-                    } else if (response.getStatus() != 200) {
-                        logger.debug("({}) sendAsyncRequest response error '{}'", uid, response.getStatus());
-                        router.errorHandler.raiseError(ERR_RESPONSE, getContentAsString());
-                    } else {
-                        // Request successful
-                        String rBody = getContentAsString();
-                        logger.trace("({}) requestCompleted '{}'", uid, rBody);
-                        // Handle result
-                        if (rBody != null) {
-                            handleHttpSuccessResponse(rBody, command);
+                    try {
+                        final HttpResponse response = (HttpResponse) result.getResponse();
+                        if (result.getFailure() != null) {
+                            // Handle result errors
+                            handleHttpResultError(result.getFailure());
+                        } else if (response.getStatus() != 200) {
+                            logger.debug("({}) sendAsyncRequest response error '{}'", uid, response.getStatus());
+                            router.errorHandler.raiseError(ERR_RESPONSE, getContentAsString());
+                        } else {
+                            // Request successful
+                            String rBody = getContentAsString();
+                            logger.trace("({}) requestCompleted '{}'", uid, rBody);
+                            // Handle result
+                            if (rBody != null) {
+                                handleHttpSuccessResponse(rBody, command);
+                            }
+                        }
+                    } finally {
+                        if (onComplete != null) {
+                            onComplete.run();
                         }
                     }
                 }
             });
         } catch (Exception e) {
             router.errorHandler.raiseError(e);
+            if (onComplete != null) {
+                onComplete.run();
+            }
         }
     }
 
