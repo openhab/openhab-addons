@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -41,12 +40,12 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.emerald", service = ThingHandlerFactory.class)
 public class EmeraldHandlerFactory extends BaseThingHandlerFactory {
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
     public EmeraldHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
         super.activate(componentContext);
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
     }
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_HWS);
@@ -61,7 +60,7 @@ public class EmeraldHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new EmeraldAccountHandler((Bridge) thing, httpClient);
+            return new EmeraldAccountHandler((Bridge) thing, httpClientFactory.getCommonHttpClient());
         } else {
             return new EmeraldHWSHandler(thing);
         }

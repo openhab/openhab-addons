@@ -22,6 +22,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.emerald.internal.api.EmeraldList;
@@ -41,6 +42,13 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EmeraldWebTargets {
     private static final int TIMEOUT_MS = 30000;
+
+    // Header & Content Constants
+    private static final String MIME_TYPE_JSON = "application/json";
+    private static final String MIME_TYPE_AMZ_JSON = "application/x-amz-json-1.1";
+    private static final String ACCEPT_ALL = "*/*";
+    private static final String BROWSER_USER_AGENT = "EmeraldPlanet/2.5.3 (com.emerald-ems.customer; build:5; iOS 17.2.1) Alamofire/5.4.1";
+    private static final String BROWSER_LANGUAGE_HEADER = "en-GB;q=1.0, en-AU;q=0.9";
 
     // AWS Cognito Constants (Obtain exact IDs from the emerald_hws_py script)
     private static final String AWS_REGION = "ap-southeast-2";
@@ -84,7 +92,8 @@ public class EmeraldWebTargets {
     /**
      * Step 1: Exchange for Unauthenticated AWS Identity ID
      */
-    public String getAwsIdentityId() throws Exception {
+    public String getAwsIdentityId()
+            throws InterruptedException, TimeoutException, ExecutionException, EmeraldCommunicationException {
         String uri = "https://cognito-identity." + AWS_REGION + ".amazonaws.com/";
 
         JsonObject payload = new JsonObject();
@@ -103,7 +112,8 @@ public class EmeraldWebTargets {
     /**
      * Step 2: Exchange Identity ID for temporary STS Credentials
      */
-    public JsonObject getAwsCredentials(String identityId) throws Exception {
+    public JsonObject getAwsCredentials(String identityId)
+            throws InterruptedException, TimeoutException, ExecutionException, EmeraldCommunicationException {
         String uri = "https://cognito-identity." + AWS_REGION + ".amazonaws.com/";
 
         JsonObject payload = new JsonObject();
@@ -122,7 +132,7 @@ public class EmeraldWebTargets {
 
     private String invokeAws(String uri, String amzTarget, String payload)
             throws InterruptedException, TimeoutException, ExecutionException, EmeraldCommunicationException {
-        Request request = httpClient.newRequest(uri).method(HttpMethod.POST).header("x-amz-target", amzTarget)
+        Request request = httpClient.newRequest(uri).method(HttpMethod.POST).header(MIME_TYPE_AMZ_JSON, amzTarget)
                 .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
                 .content(new StringContentProvider(payload), "application/x-amz-json-1.1");
 
@@ -154,13 +164,12 @@ public class EmeraldWebTargets {
         String jsonResponse = "";
         synchronized (this) {
             try {
-                Request request = httpClient.newRequest(uri).method(method).header("accept", "*/*")
-                        .header("content-type", "application/json")
-                        .header("user-agent",
-                                "EmeraldPlanet/2.5.3 (com.emerald-ems.customer; build:5; iOS 17.2.1) Alamofire/5.4.1")
-                        .header("accept-language", "en-GB;q=1.0, en-AU;q=0.9").header(headerKey, headerValue)
+                Request request = httpClient.newRequest(uri).method(method).header(HttpHeader.ACCEPT, ACCEPT_ALL)
+                        .header(HttpHeader.CONTENT_TYPE, MIME_TYPE_JSON)
+                        .header(HttpHeader.USER_AGENT, BROWSER_USER_AGENT)
+                        .header(HttpHeader.ACCEPT_LANGUAGE, BROWSER_LANGUAGE_HEADER).header(headerKey, headerValue)
                         .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                        .content(new StringContentProvider(params), "application/json");
+                        .content(new StringContentProvider(params), MIME_TYPE_JSON);
                 if (logger.isTraceEnabled() && !jsonResponse.isEmpty() && !getTokenUri.equals(uri)) {
                     logger.trace("{} request for {}", method, uri);
                 }

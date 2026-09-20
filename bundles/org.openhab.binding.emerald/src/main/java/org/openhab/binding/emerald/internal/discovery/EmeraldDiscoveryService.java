@@ -72,9 +72,9 @@ public class EmeraldDiscoveryService extends AbstractThingHandlerDiscoveryServic
             }
             for (EmeraldList.Heatpump hp : property.heatpump) {
                 ThingUID uid = new ThingUID(THING_TYPE_HWS, bridgeUid, hp.id);
-                thingDiscovered(
-                        DiscoveryResultBuilder.create(uid).withBridge(bridgeUid).withProperties(Map.of("uuid", hp.id))
-                                .withRepresentationProperty("uuid").withLabel("Emerald HWS").build());
+                thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid)
+                        .withProperties(Map.of(CONFIG_UUID, hp.id)).withRepresentationProperty(CONFIG_UUID)
+                        .withLabel("Emerald HWS").build());
             }
         }
     }

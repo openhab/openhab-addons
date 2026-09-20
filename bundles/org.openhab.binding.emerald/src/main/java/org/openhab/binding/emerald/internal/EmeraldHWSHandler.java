@@ -14,6 +14,8 @@ package org.openhab.binding.emerald.internal;
 
 import static org.openhab.binding.emerald.internal.EmeraldBindingConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,6 +25,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -37,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link EmeraldHWSHandler} is responsible for handling commands, which are
@@ -147,14 +151,14 @@ public class EmeraldHWSHandler extends BaseThingHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No Emerald Bridge thing selected");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }
         if (bridge.getHandler() instanceof EmeraldAccountHandler emeraldAccountHandler) {
             bridgeHandler = emeraldAccountHandler;
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "Emerald bridge handler is not initialized");
+                    "@text/offline.conf-error.bridge-not-init");
             return;
         }
 
@@ -162,52 +166,52 @@ public class EmeraldHWSHandler extends BaseThingHandler {
 
         EmeraldList api = getApi();
         if (api != null) {
+
             EmeraldList.HeatpumpContext ctx = api.findHeatpump(localConfig.uuid);
 
-            if (ctx != null) {
-                EmeraldList.Heatpump hp = ctx.heatpump();
-                Map<String, String> properties = editProperties();
-                if (!hp.softVersion.isEmpty()) {
-                    properties.put(Thing.PROPERTY_FIRMWARE_VERSION, hp.softVersion);
-                }
-                if (!hp.hwVersion.isEmpty()) {
-                    properties.put(Thing.PROPERTY_HARDWARE_VERSION, hp.hwVersion);
-                }
-                if (!hp.macAddress.isEmpty()) {
-                    properties.put(Thing.PROPERTY_MAC_ADDRESS, hp.macAddress);
-                }
-                if (!hp.brand.isEmpty()) {
-                    properties.put(Thing.PROPERTY_VENDOR, hp.brand);
-                }
-                if (!hp.model.isEmpty()) {
-                    properties.put(Thing.PROPERTY_MODEL_ID, hp.model);
-                }
-                if (!hp.serialNumber.isEmpty()) {
-                    properties.put(Thing.PROPERTY_SERIAL_NUMBER, hp.serialNumber);
-                }
-                if (!hp.wifiName.isEmpty()) {
-                    properties.put(PROPERTY_WIFI_NAME, hp.wifiName);
-                }
-                updateProperties(properties);
+            scheduler.execute(() -> {
+                if (ctx != null) {
+                    EmeraldList.Heatpump hp = ctx.heatpump();
+                    Map<String, String> properties = editProperties();
+                    if (!hp.softVersion.isEmpty()) {
+                        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, hp.softVersion);
+                    }
+                    if (!hp.hwVersion.isEmpty()) {
+                        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hp.hwVersion);
+                    }
+                    if (!hp.macAddress.isEmpty()) {
+                        properties.put(Thing.PROPERTY_MAC_ADDRESS, hp.macAddress);
+                    }
+                    if (!hp.brand.isEmpty()) {
+                        properties.put(Thing.PROPERTY_VENDOR, hp.brand);
+                    }
+                    if (!hp.model.isEmpty()) {
+                        properties.put(Thing.PROPERTY_MODEL_ID, hp.model);
+                    }
+                    if (!hp.serialNumber.isEmpty()) {
+                        properties.put(Thing.PROPERTY_SERIAL_NUMBER, hp.serialNumber);
+                    }
+                    if (!hp.wifiName.isEmpty()) {
+                        properties.put(PROPERTY_SSID_NAME, hp.wifiName);
+                    }
+                    updateProperties(properties);
 
-                updateStatus(ThingStatus.ONLINE);
-                return;
-            }
+                    updateStatus(ThingStatus.ONLINE);
+                    return;
+                }
+            });
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "UUID is not found in Emerald API - check value");
+                "@text/offline.conf-error.uuid-not-found");
     }
 
     public void updateChannels() {
-        EmeraldHWSConfiguration localConfig = getConfigAs(EmeraldHWSConfiguration.class);
-        config = localConfig;
-
         logger.debug("Updating channels");
         EmeraldList api = getApi();
 
         if (api != null) {
-            EmeraldList.HeatpumpContext ctx = api.findHeatpump(localConfig.uuid);
+            EmeraldList.HeatpumpContext ctx = api.findHeatpump(config.uuid);
 
             if (ctx != null) {
                 EmeraldList.Heatpump hp = ctx.heatpump();
@@ -235,8 +239,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             // Snap to the nearest 20% step just like the Emerald app
             int rounded = (int) (Math.round(clamped / 20.0) * 20);
 
-            updateState(EmeraldBindingConstants.CHANNEL_TANK_CAPACITY,
-                    new QuantityType<>(rounded, org.openhab.core.library.unit.Units.PERCENT));
+            updateState(EmeraldBindingConstants.CHANNEL_TANK_CAPACITY, new QuantityType<>(rounded, Units.PERCENT));
         }
     }
 
@@ -248,7 +251,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
 
         try {
             JsonElement element = JsonParser.parseString(jsonPayload);
-            java.util.List<JsonObject> objectsToProcess = new java.util.ArrayList<>();
+            List<JsonObject> objectsToProcess = new ArrayList<>();
 
             if (element.isJsonArray()) {
                 for (JsonElement arrElement : element.getAsJsonArray()) {
@@ -290,7 +293,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                                 powerState = OnOffType.ON;
                             }
                         }
-                    } catch (Exception e) {
+                    } catch (JsonSyntaxException e) {
                         logger.warn("Could not parse switch state from MQTT: {}", switchElement);
                     }
 
@@ -331,7 +334,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                 logger.debug("Parsed MQTT message did not contain channel state data (Metadata only).");
             }
 
-        } catch (Exception e) {
+        } catch (JsonSyntaxException e) {
             logger.warn("Error parsing incoming MQTT message for Thing {}: {}", thing.getUID().getId(), e.getMessage());
         }
     }

@@ -28,6 +28,9 @@ public class EmeraldBindingConstants {
 
     private static final String BINDING_ID = "emerald";
 
+    // List of Config ids
+    public static final String CONFIG_UUID = "uuid";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_HWS = new ThingTypeUID(BINDING_ID, "hws");
@@ -42,7 +45,7 @@ public class EmeraldBindingConstants {
     public static final String CHANNEL_WORK_STATE = "work-state";
     public static final String CHANNEL_TANK_CAPACITY = "tank-capacity";
 
-    public static final String PROPERTY_WIFI_NAME = "wifi-name";
+    public static final String PROPERTY_SSID_NAME = "ssid-name";
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_HWS);

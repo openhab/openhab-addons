@@ -15,10 +15,12 @@ package org.openhab.binding.emerald.internal;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -77,7 +79,6 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
     public EmeraldAccountHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
-        config = getConfigAs(EmeraldAccountConfiguration.class);
         webTargets = new EmeraldWebTargets(httpClient);
     }
 
@@ -105,12 +106,14 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         if (configure()) {
             updateStatus(ThingStatus.UNKNOWN);
 
-            pollData();
-
             scheduler.execute(() -> {
+                pollData();
                 try {
                     setupMqttConnection();
-                } catch (Exception e) {
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to setup MQTT Stream", e);
+                } catch (TimeoutException | ExecutionException | EmeraldCommunicationException e) {
                     logger.debug("Failed to setup MQTT Stream", e);
                 }
             });
@@ -126,21 +129,25 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         EmeraldAccountConfiguration localConfig = config;
 
         if (localConfig == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing configuration");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.missing-conf");
             return false;
         }
         if (localConfig.email.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing email configuration");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.missing-email");
             return false;
         }
         if (localConfig.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing password configuration");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.missing-password");
             return false;
         }
         return true;
     }
 
-    private void setupMqttConnection() throws Exception {
+    private void setupMqttConnection()
+            throws InterruptedException, TimeoutException, ExecutionException, EmeraldCommunicationException {
         String identityId = webTargets.getAwsIdentityId();
         JsonObject credentials = webTargets.getAwsCredentials(identityId);
 
@@ -215,8 +222,9 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
                 String error = (onConnectionFailureReturn != null)
                         ? String.valueOf(onConnectionFailureReturn.getErrorCode())
                         : "Unknown";
-                logger.error("AWS CRT MQTT Connection failed. Error Code: {}", error);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Connection failed");
+                logger.debug("AWS CRT MQTT Connection failed. Error Code: {}", error);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error.mqtt-conn-failed");
 
                 scheduleReconnect(); // Trigger the reconnect loop
             }
@@ -227,7 +235,8 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
                 String error = (onDisconnectionReturn != null) ? String.valueOf(onDisconnectionReturn.getErrorCode())
                         : "Unknown";
                 logger.warn("AWS CRT MQTT Disconnected. Error Code: {}", error);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "MQTT Disconnected");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error.mqtt-disconnected");
 
                 scheduleReconnect(); // Trigger the reconnect loop
             }
@@ -256,27 +265,26 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
                 @Nullable
                 Mqtt5Client localClient = mqttClient;
                 if (localClient != null) {
-                    try {
-                        localClient.stop(null);
-                        localClient.close();
-                    } catch (Exception e) {
-                        logger.trace("Error cleaning up old MQTT client", e);
-                    }
+                    localClient.stop(null);
+                    localClient.close();
                     mqttClient = null;
                 }
 
                 // Fetch fresh Cognito credentials and rebuild the client
                 setupMqttConnection();
 
-            } catch (Exception e) {
-                logger.error("Failed to reconnect to MQTT, will retry in 30 seconds", e);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                logger.debug("Failed to reconnect to MQTT, will retry in 30 seconds", ex);
+                scheduleReconnect(); // If the token fetch fails, queue up another attempt
+            } catch (TimeoutException | ExecutionException | EmeraldCommunicationException ex) {
+                logger.debug("Failed to reconnect to MQTT, will retry in 30 seconds", ex);
                 scheduleReconnect(); // If the token fetch fails, queue up another attempt
             }
         }, 30, TimeUnit.SECONDS);
     }
 
     private void subscribeToTopics() {
-        @Nullable
         Mqtt5Client localMqttClient = mqttClient;
 
         if (localMqttClient == null) {
@@ -286,7 +294,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         int childCount = getThing().getThings().size();
 
         if (childCount == 0) {
-            logger.info(
+            logger.debug(
                     "openHAB hasn't attached the child Heat Pumps to the Bridge yet. Delaying subscription by 5 seconds...");
             scheduler.schedule(this::subscribeToTopics, 5, TimeUnit.SECONDS);
             return;
@@ -321,11 +329,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         }
 
         EmeraldList.HeatpumpContext ctx = null;
-        try {
-            ctx = getApi().findHeatpump(deviceId);
-        } catch (Exception e) {
-            logger.warn("Could not fetch API details for control message", e);
-        }
+        ctx = getApi().findHeatpump(deviceId);
 
         if (ctx == null) {
             logger.warn("Heat pump metadata not found. Cannot send control message for {}", deviceId);
@@ -371,11 +375,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
         }
 
         EmeraldList.HeatpumpContext ctx = null;
-        try {
-            ctx = getApi().findHeatpump(deviceId);
-        } catch (Exception e) {
-            logger.warn("Could not fetch API details for status update", e);
-        }
+        ctx = getApi().findHeatpump(deviceId);
 
         if (ctx == null) {
             logger.warn("Heat pump metadata not found. Cannot send comp_query for {}", deviceId);
@@ -407,7 +407,7 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
         localMqttClient.publish(pubBuilder.build()).whenComplete((pubAck, throwable) -> {
             if (throwable != null) {
-                logger.error("Failed to request status update (comp_query) for HWS {}", deviceId, throwable);
+                logger.debug("Failed to request status update (comp_query) for HWS {}", deviceId, throwable);
             } else {
                 logger.debug("Successfully sent comp_query to HWS {}", deviceId);
             }
@@ -431,14 +431,6 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
             EmeraldList localList = webTargets.getList(localConfig.email, localConfig.password);
             emeraldList = localList;
 
-            if (localList != null && localList.info != null && localList.info.property != null) {
-                for (int i = 0; i < localList.info.property.length; i++) {
-                    for (int j = 0; j < localList.info.property[i].heatpump.length; j++) {
-                        logger.info("Found Heat Pump id = {}", localList.info.property[i].heatpump[j].id);
-                    }
-                }
-            }
-
             getThing().getThings().forEach(thing -> {
                 EmeraldHWSHandler handler = (EmeraldHWSHandler) thing.getHandler();
                 if (handler != null) {
@@ -458,13 +450,11 @@ public class EmeraldAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        @Nullable
         ScheduledFuture<?> localFuture = reconnectFuture;
         if (localFuture != null) {
             localFuture.cancel(true);
         }
 
-        @Nullable
         Mqtt5Client localMqttClient = mqttClient;
         if (localMqttClient != null) {
             localMqttClient.stop(null);
