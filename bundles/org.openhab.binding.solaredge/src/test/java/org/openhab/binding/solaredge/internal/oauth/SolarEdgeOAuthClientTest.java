@@ -199,6 +199,28 @@ public class SolarEdgeOAuthClientTest {
     }
 
     @Test
+    public void changedAuthorizationDuringExchangeDoesNotStoreTokens() throws Exception {
+        boolean[] authorizationValid = { true };
+        when(response.getStatus()).thenReturn(200);
+        when(response.getContentAsString()).thenAnswer(invocation -> {
+            authorizationValid[0] = false;
+            return """
+                    {"access_token":"access-token","refresh_token":"refresh-token",
+                     "token_type":"Bearer","expires_in":7200}
+                    """;
+        });
+
+        assertThrows(SolarEdgeOAuthException.class,
+                () -> client.exchangeAuthorizationCode(config, "authorization-code", persistence -> {
+                    if (!authorizationValid[0]) {
+                        throw new SolarEdgeOAuthException("Authorization changed");
+                    }
+                    persistence.run();
+                }));
+        assertTrue(values.isEmpty());
+    }
+
+    @Test
     public void appliesConfiguredTimeoutToTokenExchange() throws Exception {
         config.setSyncTimeout(7);
         when(response.getStatus()).thenReturn(503);

@@ -159,6 +159,9 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     @Override
     public void initialize() {
         logger.debug("About to initialize SolarEdge");
+        synchronized (authorizationLock) {
+            setAuthorizationUrl("");
+        }
         SolarEdgeConfiguration config = getConfiguration();
         logger.debug("SolarEdge initialized with configuration: {}", config);
         updatePublicApiV2RequestCountProperty(publicApiV2RequestCounter.getRequestCount());
@@ -166,10 +169,15 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
         if (isOAuthConfigured() && !oAuthClient.hasRefreshToken(config) && !config.getOAuthClientId().isBlank()
                 && !config.getOAuthClientSecret().isBlank()) {
-            setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
+            synchronized (authorizationLock) {
+                setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, authorizationDescription());
         } else {
-            setAuthorizationUrl("");
+            oAuthServlet.unregister(this);
+            synchronized (authorizationLock) {
+                setAuthorizationUrl("");
+            }
         }
         webInterface.start();
         startPolling();
@@ -192,6 +200,8 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
                     scheduler.scheduleWithFixedDelay(this::yearlyAggregateDataPollingRun,
                             YEARLY_AGGREGATE_POLLING_INITIAL_DELAY, YEARLY_AGGREGATE_POLLING_INTERVAL,
                             TimeUnit.MINUTES));
+        } else {
+            cancelJobReference(yearlyAggregateDataPollingJobReference);
         }
     }
 
@@ -300,6 +310,9 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     @Override
     public void dispose() {
         logger.debug("Handler disposed.");
+        synchronized (authorizationLock) {
+            setAuthorizationUrl("");
+        }
 
         cancelJobReference(liveDataPollingJobReference);
         cancelJobReference(aggregateDataPollingJobReference);
@@ -360,7 +373,11 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         } catch (SolarEdgeOAuthException e) {
             logger.debug("Unable to obtain SolarEdge OAuth access token: {}", e.getMessage());
             if (e.isAuthorizationRequired() && authorizationUrl.isBlank() && !config.getOAuthClientId().isBlank()) {
-                setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
+                synchronized (authorizationLock) {
+                    if (authorizationUrl.isBlank() && isOAuthConfigured()) {
+                        setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
+                    }
+                }
             }
             String description = e.isAuthorizationRequired() && !authorizationUrl.isBlank() ? authorizationDescription()
                     : e.getMessage();
@@ -415,14 +432,36 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     }
 
     public void onOAuthAuthorized(String code, String siteId) throws SolarEdgeOAuthException {
+        String activeAuthorizationUrl;
+        synchronized (authorizationLock) {
+            activeAuthorizationUrl = authorizationUrl;
+            if (!isOAuthConfigured() || activeAuthorizationUrl.isBlank()) {
+                throw new SolarEdgeOAuthException("SolarEdge OAuth authorization is no longer configured");
+            }
+        }
         SolarEdgeConfiguration config = getConfiguration();
         if (!config.getSolarId().equals(siteId)) {
             throw new SolarEdgeOAuthException(
                     "Authorized site " + siteId + " does not match configured site " + config.getSolarId());
         }
-        oAuthClient.exchangeAuthorizationCode(config, code);
-        setAuthorizationUrl("");
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+        oAuthClient.exchangeAuthorizationCode(config, code, persistence -> {
+            synchronized (authorizationLock) {
+                if (!activeAuthorizationUrl.equals(authorizationUrl) || !isOAuthConfigured()
+                        || !config.getSolarId().equals(getConfiguration().getSolarId())
+                        || !config.getOAuthClientId().equals(getConfiguration().getOAuthClientId())
+                        || !config.getOAuthClientSecret().equals(getConfiguration().getOAuthClientSecret())) {
+                    throw new SolarEdgeOAuthException("SolarEdge OAuth authorization is no longer configured");
+                }
+                persistence.run();
+            }
+        });
+        synchronized (authorizationLock) {
+            if (!activeAuthorizationUrl.equals(authorizationUrl)) {
+                throw new SolarEdgeOAuthException("SolarEdge OAuth authorization is no longer configured");
+            }
+            setAuthorizationUrl("");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+        }
     }
 
     private void setAuthorizationUrl(String url) {

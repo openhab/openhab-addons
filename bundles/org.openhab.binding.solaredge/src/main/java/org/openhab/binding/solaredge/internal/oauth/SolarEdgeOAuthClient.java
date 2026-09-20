@@ -44,6 +44,11 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class SolarEdgeOAuthClient {
+    @FunctionalInterface
+    public interface TokenPersistenceGuard {
+        void persistIfValid(Runnable persistence) throws SolarEdgeOAuthException;
+    }
+
     private static final String ACCESS_TOKEN = "accessToken";
     private static final String REFRESH_TOKEN = "refreshToken";
     private static final String EXPIRES_AT = "expiresAt";
@@ -90,8 +95,13 @@ public class SolarEdgeOAuthClient {
 
     public synchronized String exchangeAuthorizationCode(SolarEdgeConfiguration config, String code)
             throws SolarEdgeOAuthException {
+        return exchangeAuthorizationCode(config, code, Runnable::run);
+    }
+
+    public synchronized String exchangeAuthorizationCode(SolarEdgeConfiguration config, String code,
+            TokenPersistenceGuard persistenceGuard) throws SolarEdgeOAuthException {
         return requestToken(config, Map.of("grant_type", "authorization_code", "code", code, "client_id",
-                config.getOAuthClientId(), "client_secret", config.getOAuthClientSecret()));
+                config.getOAuthClientId(), "client_secret", config.getOAuthClientSecret()), persistenceGuard);
     }
 
     public synchronized void invalidateAccessToken() {
@@ -113,6 +123,11 @@ public class SolarEdgeOAuthClient {
 
     private String requestToken(SolarEdgeConfiguration config, Map<String, String> payload)
             throws SolarEdgeOAuthException {
+        return requestToken(config, payload, Runnable::run);
+    }
+
+    private String requestToken(SolarEdgeConfiguration config, Map<String, String> payload,
+            TokenPersistenceGuard persistenceGuard) throws SolarEdgeOAuthException {
         String grantType = payload.getOrDefault("grant_type", "unknown");
         logger.debug("Requesting SolarEdge OAuth token using {} grant", grantType);
         try {
@@ -135,12 +150,14 @@ public class SolarEdgeOAuthClient {
             if (token == null || token.accessToken.isBlank() || token.refreshToken.isBlank()) {
                 throw new SolarEdgeOAuthException("SolarEdge returned an incomplete token response");
             }
-            storage.put(ACCESS_TOKEN, token.accessToken);
-            storage.put(REFRESH_TOKEN, token.refreshToken);
-            storage.put(AUTHORIZED_SITE_ID, config.getSolarId());
-            storage.put(AUTHORIZED_CLIENT_ID, config.getOAuthClientId());
             Instant expiresAt = clock.instant().plusSeconds(token.expiresIn);
-            storage.put(EXPIRES_AT, Long.toString(expiresAt.toEpochMilli()));
+            persistenceGuard.persistIfValid(() -> {
+                storage.put(ACCESS_TOKEN, token.accessToken);
+                storage.put(REFRESH_TOKEN, token.refreshToken);
+                storage.put(AUTHORIZED_SITE_ID, config.getSolarId());
+                storage.put(AUTHORIZED_CLIENT_ID, config.getOAuthClientId());
+                storage.put(EXPIRES_AT, Long.toString(expiresAt.toEpochMilli()));
+            });
             logger.debug("SolarEdge OAuth token acquired using {} grant; expires at {} and refresh token rotated",
                     grantType, expiresAt);
             return token.accessToken;
