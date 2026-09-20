@@ -17,7 +17,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import eu.chargetime.ocpp.model.core.BootNotificationRequest;
 
 /**
- * A {@link BootNotificationRequest} that accepts an over-length CiString20 model/vendor field.
+ * A {@link BootNotificationRequest} that is accepted whatever its vendor and model say.
+ *
+ * The library refuses a BootNotification whose vendor or model is absent or longer than the CiString20 the
+ * OCPP 1.6 schema allows, and answers a CALLERROR instead of a BootNotificationConfirmation, which leaves the
+ * charger unable to come online. Both happen in the field. The binding identifies a charger by the charge
+ * point id in its URL, not by these fields, and only reports them as Thing properties, so neither is worth
+ * refusing a charger over.
  *
  * @author Stamate Viorel - Initial contribution
  */

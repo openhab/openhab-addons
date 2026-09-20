@@ -83,6 +83,7 @@ class OcppBootConfigTest {
         OcppServerBridgeHandler serverHandler = mock(OcppServerBridgeHandler.class);
         when(serverHandler.getServerConfig()).thenReturn(serverConfig);
         when(serverHandler.getTransport()).thenReturn(transport);
+        when(serverHandler.localAuthListVersion(any(), any())).thenReturn(1);
 
         Bridge serverThing = mock(Bridge.class);
         when(serverThing.getHandler()).thenReturn(serverHandler);
@@ -327,6 +328,7 @@ class OcppBootConfigTest {
         OcppServerBridgeHandler serverHandler = mock(OcppServerBridgeHandler.class);
         when(serverHandler.getServerConfig()).thenReturn(serverConfig);
         when(serverHandler.getTransport()).thenReturn(transport);
+        when(serverHandler.localAuthListVersion(any(), any())).thenReturn(1);
         Bridge serverThing = mock(Bridge.class);
         when(serverThing.getHandler()).thenReturn(serverHandler);
         Bridge cpThing = mock(Bridge.class);
@@ -464,7 +466,9 @@ class OcppBootConfigTest {
 
         handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
 
-        verify(transport, timeout(3000).atLeast(2)).send(any(), any());
+        verify(transport, timeout(3000)).send(any(),
+                argThat(r -> r instanceof ChangeConfigurationRequest c && "MeterValuesSampledData".equals(c.getKey())
+                        && "Energy.Active.Import.Register,Power.Active.Import".equals(c.getValue())));
         List<String> tried = sentValuesFor("MeterValuesSampledData");
         assertEquals("Energy.Active.Import.Register,Power.Active.Import,Temperature", tried.get(0));
         assertEquals("Energy.Active.Import.Register,Power.Active.Import", tried.get(tried.size() - 1),

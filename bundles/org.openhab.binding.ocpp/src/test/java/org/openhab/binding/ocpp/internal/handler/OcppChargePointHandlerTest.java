@@ -161,6 +161,31 @@ class OcppChargePointHandlerTest {
     }
 
     @Test
+    void theBootConfirmationLeavingTheTransportMakesItReadyWithoutWaitingForTheBackstop() {
+        UUID session = UUID.randomUUID();
+        handler.onConnected(session);
+        handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+
+        handler.onBootConfirmationSent(session);
+
+        assertTrue(handler.isReady(), "readiness must not wait on the scheduled backstop");
+        verify(connector1).onChargePointReady();
+        verify(connector2).onChargePointReady();
+    }
+
+    @Test
+    void aStaleSessionsBootConfirmationDoesNotMakeAReconnectedChargerReady() {
+        UUID stale = UUID.randomUUID();
+        handler.onConnected(stale);
+        handler.onDisconnected(stale);
+        handler.onConnected(UUID.randomUUID());
+
+        handler.onBootConfirmationSent(stale);
+
+        assertFalse(handler.isReady(), "a confirmation from the previous session says nothing about this one");
+    }
+
+    @Test
     void becomingReadyReleasesConnectorsThatDeferredASend() {
         handler.onConnected(UUID.randomUUID());
         // A heartbeat also proves the charger booted (socket reopened, no fresh BootNotification); release is

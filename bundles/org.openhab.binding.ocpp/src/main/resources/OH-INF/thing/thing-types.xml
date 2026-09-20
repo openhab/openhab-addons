@@ -169,7 +169,6 @@
 			<channel id="pause" typeId="pause"/>
 			<channel id="availability" typeId="availability"/>
 			<channel id="unlock" typeId="unlock"/>
-			<channel id="hardware-max-current" typeId="hardware-max-current"/>
 			<channel id="current-import-l1" typeId="current-phase">
 				<label>Current L1</label>
 			</channel>

@@ -70,10 +70,15 @@ class TolerantBootNotificationTest {
     }
 
     @Test
-    void theTolerantRequestAlsoAcceptsAMissingModel() {
-        TolerantBootNotificationRequest tolerant = GSON.fromJson("{\"chargePointVendor\":\"" + VENDOR + "\"}",
+    void theTolerantRequestAlsoAcceptsAMissingVendorOrModel() {
+        // A charger the library refused for an absent field is as stuck as one refused for an over-long one.
+        TolerantBootNotificationRequest noModel = GSON.fromJson("{\"chargePointVendor\":\"" + VENDOR + "\"}",
                 TolerantBootNotificationRequest.class);
-        assertTrue(tolerant.validate());
+        assertTrue(noModel.validate());
+
+        TolerantBootNotificationRequest noVendor = GSON.fromJson("{\"chargePointModel\":\"" + LONG_MODEL + "\"}",
+                TolerantBootNotificationRequest.class);
+        assertTrue(noVendor.validate());
     }
 
     @Test

@@ -40,11 +40,6 @@ public final class ChargingProfileBuilder {
     private ChargingProfileBuilder() {
     }
 
-    public static SetChargingProfileRequest currentLimit(int connectorId, double amps, boolean forceTxDefault,
-            @Nullable Integer transactionId) {
-        return limit(connectorId, ChargingRateUnitType.A, amps, null, forceTxDefault, transactionId);
-    }
-
     public static SetChargingProfileRequest limit(int connectorId, ChargingRateUnitType unit, double value,
             @Nullable Integer numberPhases, boolean forceTxDefault, @Nullable Integer transactionId) {
         boolean useTxProfile = transactionId != null && !forceTxDefault;

@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.storage.Storage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Persists transaction state so it survives an openHAB restart.
@@ -34,21 +36,24 @@ public class TransactionStore {
     private static final String METER_PREFIX = "meter:";
     private static final char SEPARATOR = '\t';
 
+    private final Logger logger = LoggerFactory.getLogger(TransactionStore.class);
+
     private final Storage<String> storage;
     // Guarded by this: increment and persistent write must be one atomic step.
     private int sequence;
 
     public TransactionStore(Storage<String> storage) {
         this.storage = storage;
-        this.sequence = readSequence(storage);
+        this.sequence = readSequence();
     }
 
-    private static int readSequence(Storage<String> storage) {
+    private int readSequence() {
         String stored = storage.get(SEQUENCE_KEY);
         if (stored != null) {
             try {
                 return Integer.parseInt(stored);
             } catch (NumberFormatException e) {
+                logger.warn("Persisted transaction sequence '{}' is not a number; numbering restarts at 1", stored);
             }
         }
         return 0;
@@ -88,6 +93,9 @@ public class TransactionStore {
         try {
             return Integer.valueOf(stored);
         } catch (NumberFormatException e) {
+            logger.warn(
+                    "Persisted meter start '{}' for transaction {} is not a number; the session reports no " + "energy",
+                    stored, transactionId);
             return null;
         }
     }
@@ -102,6 +110,7 @@ public class TransactionStore {
                 try {
                     return Integer.parseInt(key.substring(TX_PREFIX.length()));
                 } catch (NumberFormatException e) {
+                    logger.warn("Persisted transaction key '{}' has no numeric id; it is treated as absent", key);
                 }
             }
         }
@@ -117,13 +126,13 @@ public class TransactionStore {
         }
     }
 
-    private static boolean matches(@Nullable String value, String chargePointId, int connectorId) {
+    private boolean matches(@Nullable String value, String chargePointId, int connectorId) {
         Location location = parse(value);
         return location != null && location.chargePointId().equals(chargePointId)
                 && location.connectorId() == connectorId;
     }
 
-    private static @Nullable Location parse(@Nullable String value) {
+    private @Nullable Location parse(@Nullable String value) {
         if (value == null) {
             return null;
         }
@@ -135,6 +144,7 @@ public class TransactionStore {
         try {
             return new Location(value.substring(0, split), Integer.parseInt(value.substring(split + 1)));
         } catch (NumberFormatException e) {
+            logger.warn("Persisted transaction entry '{}' has no numeric connector; it is treated as absent", value);
             return null;
         }
     }

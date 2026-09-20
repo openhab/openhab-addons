@@ -37,7 +37,8 @@ class ChargingProfileBuilderTest {
 
     @Test
     void noTransactionGivesATxDefaultProfile() {
-        SetChargingProfileRequest request = ChargingProfileBuilder.currentLimit(1, 16.0, false, null);
+        SetChargingProfileRequest request = ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 16.0, null, false,
+                null);
         assertEquals(1, request.getConnectorId().intValue());
 
         ChargingProfile profile = request.getCsChargingProfiles();
@@ -57,7 +58,8 @@ class ChargingProfileBuilderTest {
 
     @Test
     void activeTransactionGivesATxProfileCarryingTheTransactionId() {
-        SetChargingProfileRequest request = ChargingProfileBuilder.currentLimit(2, 10.0, false, 42);
+        SetChargingProfileRequest request = ChargingProfileBuilder.limit(2, ChargingRateUnitType.A, 10.0, null, false,
+                42);
         ChargingProfile profile = request.getCsChargingProfiles();
         assertEquals(ChargingProfileBuilder.profileId(2, true), profile.getChargingProfileId().intValue());
         assertEquals(ChargingProfilePurposeType.TxProfile, profile.getChargingProfilePurpose());
@@ -68,11 +70,11 @@ class ChargingProfileBuilderTest {
     void distinctConnectorsAndPurposesGetDistinctProfileIds() {
         // A profile id is charge-point-wide and reinstalls replace by id, so connectors/purposes must not
         // share ids.
-        int c1Default = ChargingProfileBuilder.currentLimit(1, 16.0, false, null).getCsChargingProfiles()
-                .getChargingProfileId();
-        int c2Default = ChargingProfileBuilder.currentLimit(2, 16.0, false, null).getCsChargingProfiles()
-                .getChargingProfileId();
-        int c1Tx = ChargingProfileBuilder.currentLimit(1, 16.0, false, 5).getCsChargingProfiles()
+        int c1Default = ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 16.0, null, false, null)
+                .getCsChargingProfiles().getChargingProfileId();
+        int c2Default = ChargingProfileBuilder.limit(2, ChargingRateUnitType.A, 16.0, null, false, null)
+                .getCsChargingProfiles().getChargingProfileId();
+        int c1Tx = ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 16.0, null, false, 5).getCsChargingProfiles()
                 .getChargingProfileId();
         assertNotEquals(c1Default, c2Default);
         assertNotEquals(c1Default, c1Tx);
@@ -80,7 +82,8 @@ class ChargingProfileBuilderTest {
 
     @Test
     void forceTxDefaultKeepsTheDefaultProfileEvenDuringATransaction() {
-        SetChargingProfileRequest request = ChargingProfileBuilder.currentLimit(1, 6.0, true, 42);
+        SetChargingProfileRequest request = ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 6.0, null, true,
+                42);
         ChargingProfile profile = request.getCsChargingProfiles();
         assertEquals(ChargingProfilePurposeType.TxDefaultProfile, profile.getChargingProfilePurpose());
         assertNull(profile.getTransactionId());
@@ -88,7 +91,8 @@ class ChargingProfileBuilderTest {
 
     @Test
     void zeroAmpsPausesViaLimitZero() {
-        SetChargingProfileRequest request = ChargingProfileBuilder.currentLimit(1, 0.0, true, null);
+        SetChargingProfileRequest request = ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 0.0, null, true,
+                null);
         ChargingSchedulePeriod period = request.getCsChargingProfiles().getChargingSchedule()
                 .getChargingSchedulePeriod()[0];
         assertEquals(0.0, period.getLimit().doubleValue());

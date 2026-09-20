@@ -105,7 +105,7 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     private static final long STATUS_FALLBACK_SECONDS = 25;
     private static final long LEARN_WINDOW_SECONDS = 60;
     private static final int MAX_BOOT_CONFIG_ATTEMPTS = 3;
-    private static final long BOOT_READY_GRACE_MILLIS = 1000;
+    private static final long BOOT_READY_BACKSTOP_MILLIS = 1000;
     private static final int PENDING_SEND_LIMIT = 32;
     private static final long PENDING_SEND_TIMEOUT_SECONDS = 30;
     private static final int OUTBOUND_LIMIT = 64;
@@ -587,8 +587,14 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
             return;
         }
         cancel(readyTask);
-        readyTask = scheduler.schedule(() -> becomeReady(bootSession), BOOT_READY_GRACE_MILLIS, TimeUnit.MILLISECONDS);
+        readyTask = scheduler.schedule(() -> becomeReady(bootSession), BOOT_READY_BACKSTOP_MILLIS,
+                TimeUnit.MILLISECONDS);
         scheduleBootConfig(bootSession);
+    }
+
+    /** The charger can be addressed once its BootNotification answer has left the transport. */
+    public void onBootConfirmationSent(UUID bootSession) {
+        becomeReady(bootSession);
     }
 
     public void onStatusNotification(StatusNotificationRequest request) {
@@ -822,7 +828,8 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
     }
 
     private CompletableFuture<Confirmation> provisionLocalAuthList(List<String> tags) {
-        int version = localAuthListVersion(tags);
+        OcppServerBridgeHandler bridge = serverHandler();
+        int version = bridge == null ? 1 : bridge.localAuthListVersion(chargePointId, tags);
         return send(new GetLocalListVersionRequest()).thenCompose(current -> {
             if (current instanceof GetLocalListVersionConfirmation reported
                     && Integer.valueOf(version).equals(reported.getListVersion())) {
@@ -836,10 +843,6 @@ public class OcppChargePointHandler extends BaseBridgeHandler {
                 return result;
             });
         }).toCompletableFuture();
-    }
-
-    private static int localAuthListVersion(List<String> tags) {
-        return tags.stream().sorted().toList().hashCode() & Integer.MAX_VALUE;
     }
 
     private static AuthorizationData[] authorizationData(List<String> tags) {

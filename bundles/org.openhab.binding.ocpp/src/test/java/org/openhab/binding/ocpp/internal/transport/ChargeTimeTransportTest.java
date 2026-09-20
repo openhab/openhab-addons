@@ -44,6 +44,7 @@ import eu.chargetime.ocpp.NotConnectedException;
 import eu.chargetime.ocpp.model.Confirmation;
 import eu.chargetime.ocpp.model.Request;
 import eu.chargetime.ocpp.model.core.BootNotificationRequest;
+import eu.chargetime.ocpp.model.core.ChargingRateUnitType;
 import eu.chargetime.ocpp.model.core.MeterValuesRequest;
 import eu.chargetime.ocpp.model.core.StartTransactionRequest;
 import eu.chargetime.ocpp.model.core.StatusNotificationRequest;
@@ -78,6 +79,10 @@ class ChargeTimeTransportTest {
 
             @Override
             public void onBootNotification(UUID session, BootNotificationRequest request) {
+            }
+
+            @Override
+            public void onBootConfirmationSent(UUID session) {
             }
 
             @Override
@@ -152,7 +157,8 @@ class ChargeTimeTransportTest {
         ChargeTimeTransport transport = newTransport();
         transport.start("127.0.0.1", findFreePort());
         try {
-            assertFailsAsNotConnected(transport, ChargingProfileBuilder.currentLimit(1, 16.0, true, null));
+            assertFailsAsNotConnected(transport,
+                    ChargingProfileBuilder.limit(1, ChargingRateUnitType.A, 16.0, null, true, null));
             assertFailsAsNotConnected(transport,
                     new TriggerMessageRequest(TriggerMessageRequestType.StatusNotification));
         } finally {

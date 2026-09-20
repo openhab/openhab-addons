@@ -81,7 +81,7 @@ The rest cover specific charger behaviors.
 `forceTxDefaultProfile` is for chargers that reject a `TxProfile` when no transaction is active — a Phoenix CHARX does: the charge limit is then sent as a `TxDefaultProfile`, which such chargers accept and apply through their own load management.
 `profileMinIntervalMs` coalesces rapid limit changes into at most one `SetChargingProfile` per interval, which keeps a solar-tracking rule that adjusts the limit every few seconds from flooding the charger.
 `refreshInterval` actively polls a connector for `MeterValues` for chargers that do not push them on their own; a poll is skipped while the previous one is still outstanding, so a charger that stops answering cannot build a backlog.
-`hardwareMaxCurrentKey` binds the `hardware-max-current` channel to a vendor `ChangeConfiguration` key, since the hardware ceiling is not a standard OCPP setting.
+`hardwareMaxCurrentKey` binds the `hardware-max-current` channel to a vendor `ChangeConfiguration` key, since the hardware ceiling is not a standard OCPP setting; the channel appears only once that key is set.
 `stuckStateRecovery` is left off because auto-unlocking a connector is a physical side effect, and `Preparing` and `Finishing` are normal states a charger can dwell in.
 `remoteStartRetries` is for a charger that intermittently ignores the first `RemoteStartTransaction`: the binding re-sends it up to that many times, a few seconds apart, and stops as soon as a transaction starts, so it never double-starts.
 Off (0) by default, so a charger that answers first time is unaffected.
@@ -127,7 +127,7 @@ A charger that does not advertise the profile is left untouched.
 | pause                   | Switch                   | RW         | Pause charging (profile limit 0) without ending the transaction                                 |
 | availability            | Switch                   | RW         | OCPP availability (Operative/Inoperative)                                                       |
 | unlock                  | Switch                   | W          | Momentary — unlock the connector                                                                |
-| hardware-max-current    | Number:ElectricCurrent   | RW         | Hardware current ceiling via a vendor config key                                                |
+| hardware-max-current    | Number:ElectricCurrent   | RW         | Hardware current ceiling via a vendor config key; only created when `hardwareMaxCurrentKey` is set |
 
 Beyond the channels above, the rest of the OCPP 1.6 SampledValue set is added to the connector the first time the charger reports it: `current-import`, `current-export`, `voltage`, `frequency`, `power-active-export`, `power-reactive-import`, `power-reactive-export`, `power-factor`, `energy-active-export`, `energy-active-import-interval`, `energy-active-export-interval`, `energy-reactive-import`, `energy-reactive-export`, `energy-reactive-import-interval`, `energy-reactive-export-interval`, `soc`, `rpm` and `temperature`.
 Every connector also carries the transaction metadata (`id-tag`, `transaction-id`, `meter-start`, `meter-stop`) and the metering timestamps (`timestamp`, `timestamp-start`, `timestamp-stop`).

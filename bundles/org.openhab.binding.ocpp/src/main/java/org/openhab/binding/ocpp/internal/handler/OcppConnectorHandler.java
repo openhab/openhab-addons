@@ -38,7 +38,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -99,7 +98,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private static final long STUCK_STATE_SECONDS = 120;
     private static final long REMOTE_START_RETRY_DELAY_SECONDS = 5;
 
-    private record DynamicChannel(String channelTypeId, String itemType, String label) {
+    private record DynamicChannel(String channelTypeId, String itemType, @Nullable String label) {
     }
 
     private static final String ITEM_CURRENT = "Number:ElectricCurrent";
@@ -109,6 +108,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private static final String TYPE_POWER_REACTIVE = "power-reactive";
 
     private static final Map<String, DynamicChannel> DYNAMIC_CHANNELS = Map.ofEntries(
+            Map.entry(CHANNEL_HARDWARE_MAX_CURRENT, new DynamicChannel("hardware-max-current", ITEM_CURRENT, null)),
             Map.entry(CHANNEL_CURRENT_IMPORT, new DynamicChannel("current-measure", ITEM_CURRENT, "Current Imported")),
             Map.entry(CHANNEL_CURRENT_EXPORT, new DynamicChannel("current-measure", ITEM_CURRENT, "Current Exported")),
             Map.entry(CHANNEL_VOLTAGE, new DynamicChannel("voltage-measure", "Number:ElectricPotential", "Voltage")),
@@ -203,6 +203,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
             return;
         }
         this.chargePoint = parent;
+        if (!hardwareMaxCurrentKey.isBlank()) {
+            ensureDynamicChannels(Set.of(CHANNEL_HARDWARE_MAX_CURRENT));
+        }
         updateProperty(PROPERTY_UNIQUE_ID, uniqueConnectorId(parent.getChargePointId(), connectorId));
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() != ThingStatus.ONLINE) {
@@ -794,9 +797,13 @@ public class OcppConnectorHandler extends BaseThingHandler {
             if (builder == null) {
                 builder = editThing();
             }
-            Channel channel = ChannelBuilder.create(channelUID, spec.itemType())
-                    .withType(new ChannelTypeUID(BINDING_ID, spec.channelTypeId())).withLabel(spec.label()).build();
-            builder.withChannel(channel);
+            ChannelBuilder channelBuilder = ChannelBuilder.create(channelUID, spec.itemType())
+                    .withType(new ChannelTypeUID(BINDING_ID, spec.channelTypeId()));
+            String label = spec.label();
+            if (label != null) {
+                channelBuilder = channelBuilder.withLabel(label);
+            }
+            builder.withChannel(channelBuilder.build());
             logger.debug("Connector {} adding dynamic telemetry channel {}", connectorId, channelId);
         }
         if (builder != null) {

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -63,6 +64,7 @@ class OcppServerBridgeHandlerTest {
     private @NonNullByDefault({}) OcppTransport transport;
     private @NonNullByDefault({}) ThingHandlerCallback callback;
     private @NonNullByDefault({}) TestableBridgeHandler handler;
+    private @NonNullByDefault({}) StorageService storageService;
 
     private static final class MemoryStorage implements Storage<String> {
         private final Map<String, String> map = new HashMap<>();
@@ -119,7 +121,7 @@ class OcppServerBridgeHandlerTest {
     void setUp() {
         transport = mock(OcppTransport.class);
 
-        StorageService storageService = mock(StorageService.class);
+        storageService = mock(StorageService.class);
         when(storageService.<String> getStorage(anyString())).thenReturn(new MemoryStorage());
 
         thing = mock(Bridge.class);
@@ -130,6 +132,22 @@ class OcppServerBridgeHandlerTest {
 
         handler = new TestableBridgeHandler(thing, storageService, transport);
         handler.setCallback(callback);
+    }
+
+    @Test
+    void theLocalAuthListVersionOnlyMovesWhenTheListContentDoes() {
+        handler.initialize();
+
+        assertEquals(1, handler.localAuthListVersion("charx", List.of("A", "B")));
+        assertEquals(1, handler.localAuthListVersion("charx", List.of("B", "A")));
+        assertEquals(2, handler.localAuthListVersion("charx", List.of("A", "C")));
+        assertEquals(1, handler.localAuthListVersion("wallbox", List.of("A", "C")));
+
+        TestableBridgeHandler afterRestart = new TestableBridgeHandler(thing, storageService, transport);
+        afterRestart.setCallback(callback);
+        afterRestart.initialize();
+        assertEquals(2, afterRestart.localAuthListVersion("charx", List.of("A", "C")));
+        assertEquals(3, afterRestart.localAuthListVersion("charx", List.of("A", "B")));
     }
 
     @Test
