@@ -106,6 +106,8 @@ import com.google.gson.JsonSyntaxException;
 public class AccountHandler extends BaseBridgeHandler implements PushConnection.Listener {
     static final int CHECK_DATA_INTERVAL = 3600; // in seconds (always refresh every hour)
     private static final int CHECK_LOGIN_INTERVAL = 60; // in seconds (always check every minute)
+    private static final int MIN_POLLING_INTERVAL_ALEXA = 10; // in seconds, as the configuration describes it
+    private static final int MIN_POLLING_INTERVAL_SKILLS = 60; // in seconds, as the configuration describes it
 
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final Storage<String> sessionStorage;
@@ -184,8 +186,10 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
 
         checkDataJob = scheduler.scheduleWithFixedDelay(this::checkLoginAndData, 0, 1, TimeUnit.SECONDS);
 
-        int pollingIntervalAlexa = Math.min(handlerConfig.pollingIntervalSmartHomeAlexa, 10);
-        int pollingIntervalSkills = Math.min(handlerConfig.pollingIntervalSmartSkills, 60);
+        int pollingIntervalAlexa = pollingInterval(handlerConfig.pollingIntervalSmartHomeAlexa,
+                MIN_POLLING_INTERVAL_ALEXA);
+        int pollingIntervalSkills = pollingInterval(handlerConfig.pollingIntervalSmartSkills,
+                MIN_POLLING_INTERVAL_SKILLS);
 
         smartHomeDeviceStateGroupUpdateCalculator = new SmartHomeDeviceStateGroupUpdateCalculator(pollingIntervalAlexa,
                 pollingIntervalSkills);
@@ -859,6 +863,10 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     }
 
     /** Doubles the effective poll interval per consecutive failure, capped at the hourly data refresh. */
+    static int pollingInterval(int configuredSeconds, int minimumSeconds) {
+        return Math.max(configuredSeconds, minimumSeconds);
+    }
+
     static int failedPollTicksToSkip(int failureStreak, int pollingIntervalSeconds) {
         long doublingTicks = (1L << Math.min(failureStreak, 30)) - 1;
         long hourlyCapTicks = Math.max(0, CHECK_DATA_INTERVAL / Math.max(1, pollingIntervalSeconds) - 1);

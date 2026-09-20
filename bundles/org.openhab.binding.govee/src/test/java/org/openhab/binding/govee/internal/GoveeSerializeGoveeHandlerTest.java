@@ -50,6 +50,7 @@ public class GoveeSerializeGoveeHandlerTest {
     private static final Gson GSON = new Gson();
     private final String invalidValueJsonString = "{\"msg\": {\"cmd\": \"devStatus\", \"data\": {\"onOff\": 0, \"brightness\": 100, \"color\": {\"r\": 1, \"g\": 10, \"b\": 0}, \"colorTemInKelvin\": 9070}}}";
 
+    private static final String DEVICE_ID = "7D:31:C3:35:33:33:44:15";
     private static final Configuration CONFIG = createConfig(true);
     private static final Configuration BAD_CONFIG = createConfig(false);
 
@@ -57,8 +58,27 @@ public class GoveeSerializeGoveeHandlerTest {
         final Configuration config = new Configuration();
         if (returnValid) {
             config.put("hostname", "1.2.3.4");
+            config.put(GoveeBindingConstants.DEVICE_ID, DEVICE_ID);
         }
         return config;
+    }
+
+    @Test
+    public void testLegacyDeviceIdConfigurationFallback() {
+        final Configuration legacyConfig = new Configuration();
+        legacyConfig.put("hostname", "1.2.3.4");
+        legacyConfig.put(GoveeBindingConstants.LEGACY_DEVICE_ID, DEVICE_ID);
+        final Thing thing = mockThing(true);
+        when(thing.getConfiguration()).thenReturn(legacyConfig);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final GoveeHandlerMock handler = createAndInitHandler(callback, thing);
+
+        try {
+            verify(thing).setProperty(GoveeBindingConstants.DEVICE_ID, DEVICE_ID);
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+        } finally {
+            handler.dispose();
+        }
     }
 
     private static Thing mockThing(boolean withConfiguration) {

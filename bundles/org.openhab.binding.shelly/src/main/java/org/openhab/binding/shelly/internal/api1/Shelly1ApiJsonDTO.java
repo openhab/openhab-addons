@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.api1;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellyMotionSettings;
@@ -138,6 +139,9 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_BTNT_EDGE = "edge";
     public static final String SHELLY_BTNT_DETACHED = "detached";
     public static final String SHELLY_BTNT_ACTIVATE = "activate"; // Gen2+ input: one-shot trigger, no local state
+    public static final String SHELLY_BTNT_CYCLE = "cycle"; // Gen2+ Switch in_mode: button cycles the output
+    public static final String SHELLY_BTNT_DIM = "dim"; // Gen2+ Light in_mode: single button toggles+dims
+    public static final String SHELLY_BTNT_DUAL_DIM = "dual_dim"; // Gen2+ Light in_mode: two buttons toggle+dim
 
     public static final String SHELLY_STATE_LAST = "last";
     public static final String SHELLY_STATE_STOP = "stop";
@@ -157,7 +161,6 @@ public class Shelly1ApiJsonDTO {
     // API Error Codes
     public static final String SHELLY_APIERR_UNAUTHORIZED = "Unauthorized";
     public static final String SHELLY_APIERR_TIMEOUT = "Timeout";
-    public static final String SHELLY_APIERR_NOT_CALIBRATED = "Not calibrated!";
 
     // API device types / properties
     public static final String SHELLY_CLASS_RELAY = "relay"; // Relay: relay mode
@@ -667,7 +670,7 @@ public class Shelly1ApiJsonDTO {
 
         public @Nullable ArrayList<ShellySettingsRelay> relays;
         public @Nullable ArrayList<ShellySettingsInput> inputs; // ix3
-        public @Nullable ArrayList<ShellySettingsDimmer> dimmers;
+        public @Nullable ArrayList<@NonNull ShellySettingsDimmer> dimmers;
         public @Nullable ArrayList<ShellySettingsRoller> rollers;
         public @Nullable ArrayList<ShellySettingsRgbwLight> lights;
         public @Nullable ArrayList<ShellySettingsEMeter> emeters;
@@ -799,7 +802,9 @@ public class Shelly1ApiJsonDTO {
         public Double voltage; // Shelly 2.5
         public Integer input; // RGBW2 has no JSON array
         public ArrayList<ShellyInputState> inputs;
-        public ArrayList<ShellyShortLightStatus> dimmers;
+        public @Nullable ArrayList<@NonNull ShellyShortLightStatus> dimmers;
+        public @Nullable Integer daliCgCount; // Gen2 DALI Dimmer: control gear count on the DALI bus
+        public @Nullable Boolean daliScanActive; // Gen2 DALI Dimmer: a bus scan is currently in progress
         public ArrayList<ShellyRollerStatus> rollers;
         public ArrayList<ShellySettingsLight> lights;
         public ArrayList<ShellySettingsMeter> meters;

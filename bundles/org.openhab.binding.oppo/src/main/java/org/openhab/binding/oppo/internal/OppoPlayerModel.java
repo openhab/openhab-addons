@@ -76,10 +76,6 @@ public enum OppoPlayerModel {
         return modelNumber;
     }
 
-    public String getModelNumberAsString() {
-        return Integer.toString(modelNumber);
-    }
-
     public ThingTypeUID getThingTypeUID() {
         return thingTypeUID;
     }

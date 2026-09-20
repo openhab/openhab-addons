@@ -19,8 +19,8 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_DP;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_DP2;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_MAX;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_MIN;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PRODUCT_ID;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_RANGE;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_RELOAD_SCHEMA;
 import static org.openhab.core.library.CoreItemFactory.COLOR;
 import static org.openhab.core.library.CoreItemFactory.DIMMER;
 import static org.openhab.core.library.CoreItemFactory.NUMBER;
@@ -36,6 +36,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -47,6 +50,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tuya.internal.TuyaDynamicCommandDescriptionProvider;
 import org.openhab.binding.tuya.internal.TuyaDynamicStateDescriptionProvider;
 import org.openhab.binding.tuya.internal.TuyaSchemaDB;
+import org.openhab.binding.tuya.internal.TuyaSchemaService;
 import org.openhab.binding.tuya.internal.config.ChannelConfiguration;
 import org.openhab.binding.tuya.internal.config.DeviceConfiguration;
 import org.openhab.binding.tuya.internal.local.dto.IrCode;
@@ -90,6 +94,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Jan N. Klug - Initial contribution
  * @author Maciej Jarzebowski - Extracted from TuyaDeviceHandler for gateway support
+ * @author Carlo Dischler - Add schema reload and channel reconciliation
  */
 @NonNullByDefault
 public abstract class BaseTuyaDeviceHandler extends BaseThingHandler {
@@ -98,7 +103,8 @@ public abstract class BaseTuyaDeviceHandler extends BaseThingHandler {
     private final Gson gson;
     private final TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider;
     private final TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
-    private final Map<String, SchemaDp> schemaDps;
+    private final TuyaSchemaService schemaService;
+    private Map<String, SchemaDp> schemaDps = Map.of();
 
     protected DeviceConfiguration configuration = new DeviceConfiguration();
 
@@ -107,6 +113,7 @@ public abstract class BaseTuyaDeviceHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> irLearnJob;
+    private @Nullable CompletableFuture<?> reloadSchemaJob;
 
     private final Map<Integer, String> dpToChannelId = new HashMap<>();
     private final Map<Integer, List<String>> dp2ToChannelId = new HashMap<>();
@@ -119,13 +126,12 @@ public abstract class BaseTuyaDeviceHandler extends BaseThingHandler {
 
     protected BaseTuyaDeviceHandler(Thing thing, Gson gson,
             TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
-            TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
+            TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider, TuyaSchemaService schemaService) {
         super(thing);
-        this.schemaDps = Objects.requireNonNullElse(TuyaSchemaDB.getOrConvert(
-                (String) thing.getConfiguration().get(CONFIG_PRODUCT_ID), thing.getUID().getId()), Map.of());
         this.gson = gson;
         this.dynamicCommandDescriptionProvider = dynamicCommandDescriptionProvider;
         this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
+        this.schemaService = schemaService;
     }
 
     /**
@@ -568,6 +574,12 @@ public abstract class BaseTuyaDeviceHandler extends BaseThingHandler {
         stopPolling();
         irStopLearning();
 
+        CompletableFuture<?> reloadSchemaJob = this.reloadSchemaJob;
+        if (reloadSchemaJob != null) {
+            this.reloadSchemaJob = null;
+            reloadSchemaJob.cancel(false);
+        }
+
         dpToChannelId.clear();
         dp2ToChannelId.clear();
         channelIdToChannelTypeUID.clear();
@@ -577,6 +589,16 @@ public abstract class BaseTuyaDeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         configuration = getConfigAs(DeviceConfiguration.class);
+
+        boolean reloadSchema = configuration.reloadSchema;
+        if (reloadSchema) {
+            Configuration newConfig = editConfiguration();
+            newConfig.put(CONFIG_RELOAD_SCHEMA, Boolean.FALSE);
+            updateConfiguration(newConfig);
+        }
+
+        schemaDps = Objects.requireNonNullElse(
+                TuyaSchemaDB.getOrConvert(configuration.productId, thing.getUID().getId()), Map.of());
 
         boolean hasStatusDps = false;
         for (var e : schemaDps.values()) {
@@ -596,6 +618,12 @@ public abstract class BaseTuyaDeviceHandler extends BaseThingHandler {
         thing.getChannels().forEach(this::configureChannel);
 
         initializeTransport();
+
+        if (reloadSchema) {
+            // Started last: the reload replaces this handler through the thing manager, which must not happen while
+            // it is still being initialized.
+            reloadSchemaJob = reloadSchema(configuration.productId, configuration.deviceId);
+        }
     }
 
     /**
@@ -603,6 +631,19 @@ public abstract class BaseTuyaDeviceHandler extends BaseThingHandler {
      * {@link #initialize()}, after the channels have been set up.
      */
     protected abstract void initializeTransport();
+
+    private CompletableFuture<?> reloadSchema(String productId, String deviceId) {
+        CompletableFuture<List<SchemaDp>> reload = schemaService.reloadSchema(productId, deviceId);
+        // This includes this thing, its new handler reads the reloaded schema.
+        reload.thenAcceptAsync(schemaDps -> schemaService.reinitializeThings(productId), scheduler).exceptionally(e -> {
+            Throwable cause = e instanceof CompletionException ? Objects.requireNonNullElse(e.getCause(), e) : e;
+            if (!(cause instanceof CancellationException)) {
+                logger.warn("{}: reloading the schema failed: {}", thing.getUID().getId(), cause.getMessage());
+            }
+            return null;
+        });
+        return reload;
+    }
 
     private void addChannels() {
         ThingBuilder thingBuilder = editThing();
@@ -618,7 +659,7 @@ public abstract class BaseTuyaDeviceHandler extends BaseThingHandler {
             String channelId = e.getKey();
             SchemaDp schemaDp = e.getValue();
 
-            ChannelTypeUID channeltypeUID = new ChannelTypeUID(BINDING_ID, configuration.productId + "_" + channelId);
+            ChannelTypeUID channeltypeUID = generatedChannelTypeUID(channelId);
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
 
             Map<@Nullable String, @Nullable Object> configuration = new HashMap<>();
@@ -684,12 +725,24 @@ public abstract class BaseTuyaDeviceHandler extends BaseThingHandler {
         // Add the channels from the schema.
         channels.values().forEach(thingBuilder::withChannel);
 
-        // Add pre-existing channels that weren't in the schema (user-added channels).
+        // Keep pre-existing channels that were added manually or by older binding versions, drop channels
+        // generated above for a data point that is no longer in the schema.
         existingChannels.stream() //
                 .filter(channel -> !channels.containsKey(channel.getUID().getId())) //
+                .filter(channel -> !isObsoleteGeneratedChannel(channel)) //
                 .forEach(thingBuilder::withChannel);
 
         updateThing(thingBuilder.build());
+    }
+
+    private boolean isObsoleteGeneratedChannel(Channel channel) {
+        String channelId = channel.getUID().getId();
+        return !schemaDps.isEmpty() && !schemaDps.containsKey(channelId)
+                && generatedChannelTypeUID(channelId).equals(channel.getChannelTypeUID());
+    }
+
+    private ChannelTypeUID generatedChannelTypeUID(String channelId) {
+        return new ChannelTypeUID(BINDING_ID, configuration.productId + "_" + channelId);
     }
 
     private void configureChannel(Channel channel) {

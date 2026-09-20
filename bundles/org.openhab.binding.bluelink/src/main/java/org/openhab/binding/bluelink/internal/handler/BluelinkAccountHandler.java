@@ -148,7 +148,8 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         this.api = switch (region) {
             case US -> new BluelinkApiUS(httpClient, baseUrl, timeZoneProvider, user, password, config.pin);
             case CA -> new BluelinkApiCA(httpClient, brand, baseUrl, timeZoneProvider, user, password, config.pin);
-            case EU -> new BluelinkApiEU(httpClient, brand, editProperties(), baseUrl, timeZoneProvider, password);
+            case EU ->
+                new BluelinkApiEU(httpClient, scheduler, brand, editProperties(), baseUrl, timeZoneProvider, password);
         };
         logger.debug("Created API for region {} brand {}", region, brand);
         updateStatus(ThingStatus.UNKNOWN);
@@ -188,7 +189,11 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
             task.cancel(true);
             loginTask = null;
         }
-        api = null;
+        final var api = this.api;
+        if (api != null) {
+            api.dispose();
+        }
+        this.api = null;
     }
 
     @Override

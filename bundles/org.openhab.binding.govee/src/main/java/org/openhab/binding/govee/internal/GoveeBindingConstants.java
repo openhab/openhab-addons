@@ -24,8 +24,10 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class GoveeBindingConstants {
 
-    // Thing properties
-    public static final String MAC_ADDRESS = "macAddress";
+    // Thing configuration and properties
+    public static final String DEVICE_ID = "deviceId";
+    public static final String LEGACY_DEVICE_ID = "macAddress";
+    public static final String PROPERTY_NETWORK_MAC_ADDRESS = "mac";
     public static final String IP_ADDRESS = "hostname";
     public static final String DEVICE_TYPE = "deviceType";
     public static final String PRODUCT_NAME = "productName";

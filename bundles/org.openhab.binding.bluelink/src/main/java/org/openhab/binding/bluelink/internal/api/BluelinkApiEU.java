@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.bluelink.internal.api;
 
+import static org.openhab.core.library.unit.MetricPrefix.KILO;
+import static org.openhab.core.library.unit.SIUnits.METRE;
+
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -23,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +43,9 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
 import org.openhab.binding.bluelink.internal.dto.DrivingRange;
+import org.openhab.binding.bluelink.internal.dto.IVehicleLocation;
 import org.openhab.binding.bluelink.internal.dto.TokenResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.AirTemperature;
 import org.openhab.binding.bluelink.internal.dto.eu.BaseResponse;
@@ -50,8 +58,10 @@ import org.openhab.binding.bluelink.internal.dto.eu.VehicleStatusResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.VehicleStatusResponse.VehicleStatusData;
 import org.openhab.binding.bluelink.internal.dto.eu.VehicleStatusResponse.VehicleStatusInfo;
 import org.openhab.binding.bluelink.internal.dto.eu.VehiclesResponse;
+import org.openhab.binding.bluelink.internal.dto.eu.ccs2.Ccs2VehicleStatusResponse;
 import org.openhab.binding.bluelink.internal.model.Brand;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
+import org.openhab.binding.bluelink.internal.model.PlugType;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -72,14 +82,20 @@ import com.google.gson.reflect.TypeToken;
 public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     private static final String HTTP_USER_AGENT = "okhttp/3.12.0";
     private static final DateTimeFormatter EU_DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private static final String SPA_API_URL_V1 = "/api/v1/spa/";
+    public static final long CCS2_FORCE_REFRESH_DELAY_SECONDS = 25;
 
+    private final ScheduledExecutorService scheduler;
     private final BrandConfig brandConfig;
     private final String refreshToken;
+    private final Map<String, ScheduledFuture<?>> ccs2RefreshTasks = new ConcurrentHashMap<>();
     private @Nullable UUID deviceId;
 
-    public BluelinkApiEU(final HttpClient httpClient, final Brand brand, final Map<String, String> properties,
-            final @Nullable String baseUrl, final TimeZoneProvider timeZoneProvider, final String refreshToken) {
+    public BluelinkApiEU(final HttpClient httpClient, final ScheduledExecutorService scheduler, final Brand brand,
+            final Map<String, String> properties, final @Nullable String baseUrl,
+            final TimeZoneProvider timeZoneProvider, final String refreshToken) {
         super(httpClient, timeZoneProvider, "", refreshToken, null);
+        this.scheduler = scheduler;
         this.refreshToken = refreshToken;
         final BrandConfig baseBrandConfig = BrandConfig.forBrand(brand);
         if (baseUrl == null) {
@@ -92,6 +108,24 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         if (storedDeviceId != null && !storedDeviceId.isBlank()) {
             this.deviceId = UUID.fromString(storedDeviceId);
         }
+    }
+
+    private void cancelCcs2RefreshTask(final String vehicleId) {
+        final ScheduledFuture<?> task = ccs2RefreshTasks.remove(vehicleId);
+        if (task != null) {
+            task.cancel(true);
+        }
+    }
+
+    private void cancelAllCcs2RefreshTasks() {
+        ccs2RefreshTasks.values().forEach(task -> task.cancel(true));
+        ccs2RefreshTasks.clear();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        cancelAllCcs2RefreshTasks();
     }
 
     @Override
@@ -133,7 +167,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
      */
     private void registerDevice() throws BluelinkApiException {
         ensureAuthenticated();
-        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/notifications/register";
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "notifications/register";
         final RegistrationRequest payload = new RegistrationRequest(
                 // ThreadLocalRandom is good enough, we don't need cryptographically secure randomness
                 String.format("%064x", ThreadLocalRandom.current().nextLong()), brandConfig.pushType,
@@ -157,7 +191,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     @Override
     public List<Vehicle> getVehicles() throws BluelinkApiException {
         ensureAuthenticated();
-        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles";
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles";
         final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
                 TimeUnit.SECONDS);
         addStandardHeaders(request);
@@ -175,7 +209,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     /**
      * Whether the vehicle supports the CCU/CCS2 protocol.
-     * 
+     *
      * @param vehicle the vehicle to check
      * @return true if the vehicle supports CCU/CCS2 protocol, false otherwise
      */
@@ -188,77 +222,138 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             throws BluelinkApiException {
         ensureAuthenticated();
 
-        if (isCcsProtocol(vehicle)) {
-            throw new BluelinkApiException(
-                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
-        }
-
         final String vehicleId = vehicle.id();
         if (vehicleId == null) {
             throw new BluelinkApiException("Vehicle ID is missing");
         }
 
-        final @Nullable VehicleStatusData data;
+        boolean ccs2Protocol = isCcsProtocol(vehicle);
+
+        final @Nullable CommonVehicleStatus data;
         if (forceRefresh) {
-            final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/status";
-            final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
-                    TimeUnit.SECONDS);
-            addStandardHeaders(request);
-            addAuthHeaders(request);
+            if (ccs2Protocol) {
+                final String wakeUrl = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId
+                        + "/ccs2/carstatus";
+                final Request wakeRequest = httpClient.newRequest(wakeUrl).method(HttpMethod.GET)
+                        .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                addStandardHeaders(wakeRequest);
+                addAuthHeaders(wakeRequest);
+                addCcs2Headers(wakeRequest);
+                sendRequest(wakeRequest, "force refresh CCU/CCS2 vehicle status");
 
-            final BaseResponse<VehicleStatusData> response = sendRequest(request, new TypeToken<>() {
-            }, "get vehicle status (force refresh)");
-            data = response.result();
+                cancelCcs2RefreshTask(vehicleId);
+                final ScheduledFuture<?> future = scheduler.schedule(() -> {
+                    try {
+                        getVehicleStatus(vehicle, false, cb);
+                    } catch (final BluelinkApiException e) {
+                        logger.debug("Failed to fetch CCU/CCS2 status after forced refresh: {}", e.getMessage());
+                    } finally {
+                        ccs2RefreshTasks.remove(vehicleId);
+                    }
+                }, CCS2_FORCE_REFRESH_DELAY_SECONDS, TimeUnit.SECONDS);
+                ccs2RefreshTasks.put(vehicleId, future);
+                return true;
+            } else {
+                final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/status";
+                final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
+                        TimeUnit.SECONDS);
+                addStandardHeaders(request);
+                addAuthHeaders(request);
+
+                final BaseResponse<VehicleStatusData> response = sendRequest(request, new TypeToken<>() {
+                }, "get vehicle status (force refresh)");
+                data = response.result();
+            }
         } else {
-            final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/status/latest";
+            final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId
+                    + (ccs2Protocol ? "/ccs2/carstatus/latest" : "/status/latest");
             final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
                     TimeUnit.SECONDS);
             addStandardHeaders(request);
             addAuthHeaders(request);
 
-            final BaseResponse<VehicleStatusResponse> response = sendRequest(request, new TypeToken<>() {
-            }, "get vehicle status");
-            final VehicleStatusResponse result = response.result();
-            if (result == null || result.vehicleStatusInfo() == null) {
-                return false;
+            IVehicleLocation location;
+            if (ccs2Protocol) {
+                addCcs2Headers(request);
+                final BaseResponse<Ccs2VehicleStatusResponse> response = sendRequest(request, new TypeToken<>() {
+                }, "get CCU/CCS2 vehicle status");
+                final var result = response.result();
+                if (result == null || result.state() == null || result.state().vehicle() == null) {
+                    return false;
+                }
+                final var state = result.state().vehicle();
+                location = state.location();
+
+                final var drivetrain = state.drivetrain();
+                if (drivetrain == null) {
+                    return false;
+                }
+                final var odometer = drivetrain.odometer();
+                cb.acceptOdometer(new QuantityType<>(odometer, KILO(METRE)));
+
+                if (state.electronics() != null && state.electronics().smartKey() != null) {
+                    cb.acceptSmartKeyBatteryWarning(state.electronics().smartKey().batteryWarning() > 0);
+                }
+
+                final var lastUpdateTime = result.lastUpdateTime();
+                if (lastUpdateTime != null) {
+                    try {
+                        final Instant instant = Instant.ofEpochMilli(Long.parseLong(lastUpdateTime));
+                        cb.acceptLastUpdateTimestamp(instant);
+                    } catch (final NumberFormatException e) {
+                        logger.warn("unexpected time format: {}", lastUpdateTime);
+                    }
+                }
+
+                data = result.toCommonVehicleStatus(vehicle);
+            } else {
+                final BaseResponse<VehicleStatusResponse> response = sendRequest(request, new TypeToken<>() {
+                }, "get vehicle status");
+                final VehicleStatusResponse result = response.result();
+                if (result == null || result.vehicleStatusInfo() == null) {
+                    return false;
+                }
+
+                final VehicleStatusInfo statusInfo = result.vehicleStatusInfo();
+                location = statusInfo.vehicleLocation();
+
+                final DrivingRange odometer = statusInfo.odometer();
+                if (odometer != null) {
+                    final var range = odometer.getRange();
+                    if (range instanceof QuantityType<?> qt) {
+                        @SuppressWarnings("unchecked")
+                        final QuantityType<javax.measure.quantity.Length> length = (QuantityType<javax.measure.quantity.Length>) qt;
+                        cb.acceptOdometer(length);
+                    }
+                }
+
+                data = statusInfo.vehicleStatus();
             }
 
-            final VehicleStatusInfo statusInfo = result.vehicleStatusInfo();
-            final var location = statusInfo.vehicleLocation();
             if (location != null && location.coord() != null) {
                 final var coord = location.coord();
                 cb.acceptLocation(new PointType(new DecimalType(coord.lat()), new DecimalType(coord.lon()),
                         new DecimalType(coord.alt())));
             }
-
-            final DrivingRange odometer = statusInfo.odometer();
-            if (odometer != null) {
-                final var range = odometer.getRange();
-                if (range instanceof QuantityType<?> qt) {
-                    @SuppressWarnings("unchecked")
-                    final QuantityType<javax.measure.quantity.Length> length = (QuantityType<javax.measure.quantity.Length>) qt;
-                    cb.acceptOdometer(length);
-                }
-            }
-
-            data = statusInfo.vehicleStatus();
         }
+
         if (data == null) {
             return false;
         }
         cb.acceptStatus(data);
 
-        if (data.time() != null) {
-            try {
-                final ZoneId tz = timeZoneProvider.getTimeZone();
-                final LocalDateTime ldt = LocalDateTime.parse(data.time(), EU_DATETIME_FORMAT);
-                cb.acceptLastUpdateTimestamp(ldt.atZone(tz).toInstant());
-            } catch (final DateTimeParseException e) {
-                logger.warn("unexpected time format: {}", data.time());
+        if (data instanceof VehicleStatusData vsData) {
+            if (vsData.time() != null) {
+                try {
+                    final ZoneId tz = timeZoneProvider.getTimeZone();
+                    final LocalDateTime ldt = LocalDateTime.parse(vsData.time(), EU_DATETIME_FORMAT);
+                    cb.acceptLastUpdateTimestamp(ldt.atZone(tz).toInstant());
+                } catch (final DateTimeParseException e) {
+                    logger.warn("unexpected time format: {}", vsData.time());
+                }
             }
+            cb.acceptSmartKeyBatteryWarning(vsData.smartKeyBatteryWarning());
         }
-
-        cb.acceptSmartKeyBatteryWarning(data.smartKeyBatteryWarning());
 
         return true;
     }
@@ -306,29 +401,19 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             throw new BluelinkApiException("Vehicle ID is missing");
         }
 
-        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/control/" + endpoint;
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/control/" + endpoint;
         final ControlRequest payload = new ControlRequest(this.deviceId, action, null, null, null, null);
         return sendControlAction(url, payload);
     }
 
     @Override
     public boolean lockVehicle(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            throw new BluelinkApiException(
-                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
-        } else {
-            return sendControlAction(vehicle, "door", "close");
-        }
+        return sendControlAction(vehicle, "door", "close");
     }
 
     @Override
     public boolean unlockVehicle(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            throw new BluelinkApiException(
-                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
-        } else {
-            return sendControlAction(vehicle, "door", "open");
-        }
+        return sendControlAction(vehicle, "door", "open");
     }
 
     @Override
@@ -339,58 +424,38 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             throw new BluelinkApiException("Vehicle ID is missing");
         }
 
-        if (isCcsProtocol(vehicle)) {
-            throw new BluelinkApiException(
-                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
-        } else {
-            final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/control/temperature";
-            final AirTemperature airTemperature = AirTemperature.of(vehicle, temperature);
-            final ControlRequest payload = new ControlRequest(deviceId, "start", 0,
-                    new ControlRequest.Options(defrost, heat ? 1 : 0), airTemperature.value(), "C");
-            return sendControlAction(url, payload);
-        }
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/control/temperature";
+        final AirTemperature airTemperature = AirTemperature.of(vehicle, temperature);
+        final ControlRequest payload = new ControlRequest(deviceId, "start", 0,
+                new ControlRequest.Options(defrost, heat ? 1 : 0), airTemperature.value(), "C");
+        return sendControlAction(url, payload);
     }
 
     @Override
     public boolean climateStop(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            throw new BluelinkApiException(
-                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
-        } else {
-            return sendControlAction(vehicle, "temperature", "stop");
-        }
+        return sendControlAction(vehicle, "temperature", "stop");
     }
 
     @Override
     public boolean startCharging(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            throw new BluelinkApiException(
-                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
-        } else {
-            return sendControlAction(vehicle, "charge", "start");
-        }
+        return sendControlAction(vehicle, "charge", "start");
     }
 
     @Override
     public boolean stopCharging(final IVehicle vehicle) throws BluelinkApiException {
-        if (isCcsProtocol(vehicle)) {
-            throw new BluelinkApiException(
-                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
-        } else {
-            return sendControlAction(vehicle, "charge", "stop");
-        }
+        return sendControlAction(vehicle, "charge", "stop");
     }
 
     /**
      * Send a charge limit request to the Bluelink EU API both for legacy and CCU/CCS2 protocol.
      *
-     * @param vehicle
-     * @param plugType
-     * @param limit
-     * @return
+     * @param vehicle the vehicle to send the request for
+     * @param plugType the EV charging type
+     * @param limit the charge limit
+     * @return true on success
      * @throws BluelinkApiException
      */
-    private boolean sendChargeLimitRequest(final IVehicle vehicle, int plugType, int limit)
+    private boolean sendChargeLimitRequest(final IVehicle vehicle, final PlugType plugType, final int limit)
             throws BluelinkApiException {
         ensureAuthenticated();
 
@@ -400,9 +465,9 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         }
         boolean ccuCcs2ProtocolSupport = isCcsProtocol(vehicle);
 
-        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/charge/target";
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/charge/target";
         final ChargeLimitsRequest payload = new ChargeLimitsRequest(
-                List.of(new ChargeLimitsRequest.ChargeLimit(plugType, limit)));
+                List.of(new ChargeLimitsRequest.ChargeLimit(plugType.ordinal(), limit)));
         final String payloadJson = gson.toJson(payload);
         logger.debug("send charge limit request: {}", payloadJson);
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
@@ -411,7 +476,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         addStandardHeaders(request);
         addAuthHeaders(request);
         if (ccuCcs2ProtocolSupport) {
-            addCcuCcs2Headers(request);
+            addCcs2Headers(request);
         }
 
         final BaseResponse<?> response = sendRequest(request, new TypeToken<>() {
@@ -424,12 +489,12 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public boolean setChargeLimitDC(final IVehicle vehicle, final int limit) throws BluelinkApiException {
-        return sendChargeLimitRequest(vehicle, 0, limit);
+        return sendChargeLimitRequest(vehicle, PlugType.DC, limit);
     }
 
     @Override
     public boolean setChargeLimitAC(final IVehicle vehicle, final int limit) throws BluelinkApiException {
-        return sendChargeLimitRequest(vehicle, 1, limit);
+        return sendChargeLimitRequest(vehicle, PlugType.AC, limit);
     }
 
     @Override
@@ -438,7 +503,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
                 .header("Stamp", generateStamp()).header(HttpHeader.USER_AGENT, HTTP_USER_AGENT);
     }
 
-    private void addCcuCcs2Headers(final Request request) {
+    private void addCcs2Headers(final Request request) {
         request.header("Ccuccs2protocolsupport", "1");
     }
 

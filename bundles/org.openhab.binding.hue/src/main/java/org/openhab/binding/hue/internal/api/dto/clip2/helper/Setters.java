@@ -36,10 +36,8 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
-import org.openhab.binding.hue.internal.exceptions.CriticalFieldMissingException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -353,31 +351,6 @@ public class Setters {
         }
 
         return resources;
-    }
-
-    /**
-     * Create an OnOffType command based on the given brightness (absolute) or brightness delta (relative to cached
-     * value). The purpose is to send a "hard" ON if the lamp is definitely ON and a hard "OFF" if it is definitely OFF,
-     * and thus avoiding sending "soft off" commands to the light.
-     *
-     * 
-     * @param brightnessValue the target brightness or the delta to be added to the prior cached value.
-     * @param valueIsAbsolute true if the brightnessValue is an absolute value, false if it is a delta.
-     * @param source the cached resource to get the prior brightness from when valueIsAbsolute is false (may be null).
-     * @return the OnOffType command to be sent.
-     * @throws CriticalFieldMissingException if there is not enough data to create the command.
-     */
-    public static OnOffType getHardOnOff(Resource target, Double brightnessValue, boolean valueIsAbsolute,
-            @Nullable Resource source) throws CriticalFieldMissingException {
-        Double bri;
-        if (valueIsAbsolute) {
-            bri = brightnessValue;
-        } else if (source != null && source.getDimmingValue() instanceof Double dim) {
-            bri = dim + brightnessValue;
-        } else {
-            throw new CriticalFieldMissingException("Not enough data to create hard on/off command");
-        }
-        return OnOffType.from(bri > 0.0);
     }
 
     /**

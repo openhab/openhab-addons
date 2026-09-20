@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tuya.internal.TuyaDynamicCommandDescriptionProvider;
 import org.openhab.binding.tuya.internal.TuyaDynamicStateDescriptionProvider;
+import org.openhab.binding.tuya.internal.TuyaSchemaService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -40,8 +41,8 @@ public class TuyaSubDeviceHandler extends BaseTuyaDeviceHandler {
 
     public TuyaSubDeviceHandler(Thing thing, Gson gson,
             TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
-            TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
-        super(thing, gson, dynamicCommandDescriptionProvider, dynamicStateDescriptionProvider);
+            TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider, TuyaSchemaService schemaService) {
+        super(thing, gson, dynamicCommandDescriptionProvider, dynamicStateDescriptionProvider, schemaService);
     }
 
     /**
