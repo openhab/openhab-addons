@@ -39,6 +39,7 @@ public class StateTypeAdapter extends TypeAdapter<State> {
     public State read(JsonReader reader) throws IOException {
         if (reader.peek() == JsonToken.NULL) {
             reader.nextNull();
+            logger.warn("Couldn't deserialize null state");
             return null;
         }
         String value = reader.nextString();

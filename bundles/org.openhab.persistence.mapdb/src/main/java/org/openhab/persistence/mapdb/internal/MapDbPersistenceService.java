@@ -185,7 +185,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
         return map.values().stream().map(this::deserialize).flatMap(MapDbPersistenceService::streamOptional)
-                .collect(Collectors.<PersistenceItemInfo> toUnmodifiableSet());
+                .collect(Collectors.<PersistenceItemInfo>toUnmodifiableSet());
     }
 
     @Override
@@ -266,10 +266,13 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @SuppressWarnings("null")
     private Optional<MapDbItem> deserialize(String json) {
         MapDbItem item = mapper.fromJson(json, MapDbItem.class);
-        // fromJson can return null state field if invalid (see StateTypeAdapter), contradicting @NonNull annotation for
-        // field
-        if (item == null || item.getState() == null) {
-            logger.warn("Deserialized invalid item: {}", item);
+        State state = item != null ? item.getState() : null;
+        if (item == null) {
+            logger.warn("Unable to deserialize item: {}", json);
+            return Optional.empty();
+        } else if (state == null) {
+            // fromJson can return null state field if invalid (see StateTypeAdapter), contradicting @NonNull annotation
+            // for field. This is already logged in StateTypeAdapter, so just return empty here.
             return Optional.empty();
         } else if (logger.isDebugEnabled()) {
             logger.debug("Deserialized '{}' with state '{}' from '{}'", item.getName(), item.getState(), json);
