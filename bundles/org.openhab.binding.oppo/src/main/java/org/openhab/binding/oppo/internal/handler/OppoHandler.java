@@ -112,7 +112,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     private volatile boolean srcCmdDebounce = false;
     private volatile boolean isStopped = true;
     private OppoPlayerModel model = OppoPlayerModel.BDP83;
-    private boolean isDvdModel = false;
     private boolean isBdpIP = false;
     private volatile boolean isVbModeSet = false;
     private volatile boolean isInitialQuery = false;
@@ -141,7 +140,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         model = THING_TYPE_PLAYER.equals(thing.getThingTypeUID()) //
                 ? OppoPlayerModel.fromModelNumber(config.model)
                 : OppoPlayerModel.fromThingTypeUID(thing.getThingTypeUID());
-        isDvdModel = model == OppoPlayerModel.DV983H;
         isBdpIP = false;
 
         final String serialPort = config.serialPort;
@@ -166,7 +164,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         }
 
         // For BDP direct IP connection or the DVD model, verbose mode is not supported
-        if (isBdpIP || isDvdModel) {
+        if (isBdpIP || model.isDvd()) {
             verboseMode = 0;
         } else {
             verboseMode = config.verboseMode ? 3 : 2;
@@ -178,10 +176,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         }
 
         if (serialPort != null) {
-            connector = new OppoSerialConnector(serialPortManager, serialPort, isDvdModel,
+            connector = new OppoSerialConnector(serialPortManager, serialPort, model.isDvd(),
                     getThing().getUID().getAsString());
         } else if (port != null) {
-            connector = new OppoIpConnector(host, port, isBdpIP, isDvdModel, getThing().getUID().getAsString());
+            connector = new OppoIpConnector(host, port, isBdpIP, model.isDvd(), getThing().getUID().getAsString());
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.port-select");
             return;
@@ -249,7 +247,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case CHANNEL_VOLUME:
                         if (command instanceof PercentType) {
-                            if (!isDvdModel) {
+                            if (!model.isDvd()) {
                                 connector.sendCommand(OppoCommand.SET_VOLUME_LEVEL, commandStr);
                             } else {
                                 try {
@@ -1010,7 +1008,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      */
     private void handleControlCommand(Command command) throws OppoException {
         if (command instanceof PlayPauseType) {
-            if (isDvdModel) {
+            if (model.isDvd()) {
                 connector.sendCommand(OppoCommand.PLAY_PAUSE);
             } else if (command == PlayPauseType.PLAY) {
                 connector.sendCommand(OppoCommand.PLAY);
@@ -1094,26 +1092,26 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 new StateOption("UHD50", "UHD50"), //
                 new StateOption("UHD60", "UHD60"), //
                 new StateOption("1080P_AUTO", getString("auto_1080p", "1080P Auto")), //
+                new StateOption("1080PAUTO", getString("auto_1080p", "1080P Auto")), // DV-983H
                 new StateOption("1080P24", "1080P24"), //
                 new StateOption("1080P50", "1080P50"), //
                 new StateOption("1080P60", "1080P60"), //
                 new StateOption("1080P", "1080P"), //
+                new StateOption("1080IAUTO", getString("auto_1080i", "1080I Auto")), // DV-983H
                 new StateOption("1080I50", "1080I50"), //
                 new StateOption("1080I60", "1080I60"), //
                 new StateOption("1080I", "1080I"), //
+                new StateOption("720PAUTO", getString("auto_720p", "720P Auto")), // DV-983H
                 new StateOption("720P50", "720P50"), //
                 new StateOption("720P60", "720P60"), //
                 new StateOption("720P", "720P"), //
                 new StateOption("576P", "576P"), //
                 new StateOption("576I", "576I"), //
+                new StateOption("480PAUTO", getString("auto_480p", "480P Auto")), // DV-983H
                 new StateOption("480P", "480P"), //
                 new StateOption("SDP", "480P"), //
                 new StateOption("480I", "480I"), //
-                new StateOption("SDI", "480I"), //
-                new StateOption("480PAUTO", "480PAUTO"), // DV-983H specific modes
-                new StateOption("720PAUTO", "720PAUTO"), //
-                new StateOption("1080IAUTO", "1080IAUTO"), //
-                new StateOption("1080PAUTO", "1080PAUTO"));
+                new StateOption("SDI", "480I"));
     }
 
     private @Nullable String getString(String i18nKey, String defaultStr) {

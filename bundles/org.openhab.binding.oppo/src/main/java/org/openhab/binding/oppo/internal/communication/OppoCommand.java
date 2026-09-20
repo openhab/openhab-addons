@@ -27,7 +27,10 @@ public enum OppoCommand {
     POWER_OFF("POF"),
     PLAY("PLA"),
     PAUSE("PAU"),
-    PLAY_PAUSE("PLP"), // DV-983H only
+    /**
+     * DV-983H only
+     */
+    PLAY_PAUSE("PLP"),
     PREV("PRE"),
     REWIND("REV"),
     FFORWARD("FWD"),

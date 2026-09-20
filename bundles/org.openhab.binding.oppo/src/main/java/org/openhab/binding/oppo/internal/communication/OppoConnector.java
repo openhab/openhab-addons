@@ -256,72 +256,91 @@ public abstract class OppoConnector {
 
         logger.debug("handleIncomingMessage: {}", message);
 
-        if (!isDvdModel) {
-            if (NOP_OK.equals(message)) {
-                dispatchKeyValue(NOP, OK);
-                return;
-            }
-
-            // Before verbose mode 2 & 3 get set, these are the responses to QPW
-            if (OK_ON.equals(message)) {
-                dispatchKeyValue(QPW, ON);
-                return;
-            }
-
-            if (OK_OFF.equals(message)) {
-                dispatchKeyValue(QPW, OFF);
-                return;
-            }
-
-            // Player sent an OK response to a query: @QDT OK DVD-VIDEO or a volume update @VUP OK 100
-            Matcher matcher = QRY_PATTERN.matcher(message);
-            if (matcher.find()) {
-                // pull out the inquiry type and the remainder of the message
-                dispatchKeyValue(matcher.group(1), matcher.group(2));
-                return;
-            }
-
-            // Player sent a status update ie: @UTC 000 000 T 00:00:01
-            matcher = STUS_PATTERN.matcher(message);
-            if (matcher.find()) {
-                // pull out the update type and the remainder of the message
-                dispatchKeyValue(matcher.group(1), matcher.group(2));
-                return;
-            }
+        if (isDvdModel) {
+            handleDvdMessage(message);
         } else {
-            // The DV-983H responses are completely different than the Blu-ray models
-            Matcher matcher = DV983H_POWER_PATTERN.matcher(message);
-            if (matcher.find()) {
-                dispatchKeyValue(QPW, matcher.group(1));
-                return;
-            }
+            handleBdpMessage(message);
+        }
+    }
 
-            matcher = DV983H_DISC_TYPE_PATTERN.matcher(message.toUpperCase(Locale.ENGLISH));
-            if (matcher.find()) {
-                dispatchKeyValue(UDT, matcher.group(1));
-                return;
-            }
+    /**
+     * Process a message from the Blu-ray player and dispatch it to the event listener
+     *
+     * @param message the received message
+     */
+    private void handleBdpMessage(String message) {
+        if (NOP_OK.equals(message)) {
+            dispatchKeyValue(NOP, OK);
+            return;
+        }
 
-            matcher = DV983H_VOLUME_PATTERN.matcher(message);
-            if (matcher.find()) {
-                try {
-                    // DV-983H volume is 00-20, multiply by 5 to get 0-100%
-                    dispatchKeyValue(QVL, String.valueOf(Integer.parseInt(matcher.group(1)) * 5));
-                } catch (NumberFormatException e) {
-                    logger.debug("Unable to parse volume for message: {}", message);
-                }
-                return;
-            }
+        // Before verbose mode 2 & 3 get set, these are the responses to QPW
+        if (OK_ON.equals(message)) {
+            dispatchKeyValue(QPW, ON);
+            return;
+        }
 
-            if (message.contains(DV983H_MUTE_STRING)) {
-                dispatchKeyValue(QVL, MUTE);
-                return;
-            }
+        if (OK_OFF.equals(message)) {
+            dispatchKeyValue(QPW, OFF);
+            return;
+        }
 
-            if (message.contains(DV983H_FIRMWARE_STRING)) {
-                dispatchKeyValue(QVR, message);
-                return;
+        // Player sent an OK response to a query: @QDT OK DVD-VIDEO or a volume update @VUP OK 100
+        Matcher matcher = QRY_PATTERN.matcher(message);
+        if (matcher.find()) {
+            // pull out the inquiry type and the remainder of the message
+            dispatchKeyValue(matcher.group(1), matcher.group(2));
+            return;
+        }
+
+        // Player sent a status update ie: @UTC 000 000 T 00:00:01
+        matcher = STUS_PATTERN.matcher(message);
+        if (matcher.find()) {
+            // pull out the update type and the remainder of the message
+            dispatchKeyValue(matcher.group(1), matcher.group(2));
+            return;
+        }
+
+        logger.debug("unhandled message: {}", message);
+    }
+
+    /**
+     * Process a message from the DV-983H and dispatch it to the event listener
+     *
+     * @param message the received message
+     */
+    private void handleDvdMessage(String message) {
+        Matcher matcher = DV983H_POWER_PATTERN.matcher(message);
+        if (matcher.find()) {
+            dispatchKeyValue(QPW, matcher.group(1));
+            return;
+        }
+
+        matcher = DV983H_DISC_TYPE_PATTERN.matcher(message.toUpperCase(Locale.ENGLISH));
+        if (matcher.find()) {
+            dispatchKeyValue(UDT, matcher.group(1));
+            return;
+        }
+
+        matcher = DV983H_VOLUME_PATTERN.matcher(message);
+        if (matcher.find()) {
+            try {
+                // DV-983H volume is 00-20, multiply by 5 to get 0-100%
+                dispatchKeyValue(QVL, String.valueOf(Integer.parseInt(matcher.group(1)) * 5));
+            } catch (NumberFormatException e) {
+                logger.debug("Unable to parse volume for message: {}", message);
             }
+            return;
+        }
+
+        if (message.contains(DV983H_MUTE_STRING)) {
+            dispatchKeyValue(QVL, MUTE);
+            return;
+        }
+
+        if (message.contains(DV983H_FIRMWARE_STRING)) {
+            dispatchKeyValue(QVR, message);
+            return;
         }
 
         logger.debug("unhandled message: {}", message);

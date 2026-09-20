@@ -67,7 +67,7 @@ Some notes:
 - Available HDMI modes for BDP-83 & BDP-9x: AUTO, SRC, 1080P, 1080I, 720P, SDP, SDI
 - Available HDMI modes for BDP-10x: AUTO, SRC, 4K2K, 1080P, 1080I, 720P, SDP, SDI
 - Available HDMI modes for UDP-20x: AUTO, SRC, UHD_AUTO, UHD24, UHD50, UHD60, 1080P_AUTO, 1080P24, 1080P50, 1080P60, 1080I50, 1080I60, 720P50, 720P60, 576P, 576I, 480P, 480I
-- Available HDMI modes for DV-983H: 480P, 720P60, 1080I60, 1080P60, 576P, 720P50, 1080I50, 1080P50, 480PAUTO, 720PAUTO, 1080IAUTO, 1080PAUTO
+- Available HDMI modes for DV-983H: 1080PAUTO, 1080P50, 1080P60, 1080IAUTO, 1080I50, 1080I60, 720PAUTO, 720P50, 720P60, 576P, 480PAUTO, 480P
 
 - On Linux, you may get an error stating the serial port cannot be opened when the Oppo binding tries to load.
 - You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
