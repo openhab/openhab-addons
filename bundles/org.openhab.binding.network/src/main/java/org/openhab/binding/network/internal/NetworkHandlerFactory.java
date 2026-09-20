@@ -23,11 +23,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.network.internal.handler.NetworkHandler;
 import org.openhab.binding.network.internal.handler.SpeedTestHandler;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -38,14 +40,16 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The handler factory retrieves the binding configuration and is responsible for creating
- * PING_DEVICE and SERVICE_DEVICE handlers.
+ * PING_DEVICE, SERVICE_DEVICE and HTTP_DEVICE handlers.
  *
  * @author David Graeff - Initial contribution
+ * @author Alexander Friese - Add HTTP presence detection
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = BINDING_CONFIGURATION_PID)
@@ -57,24 +61,21 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
     private final ScheduledExecutorService executor = ThreadPoolManager
             .getScheduledPool(NETWORK_HANDLER_THREADPOOL_NAME);
     private volatile @Nullable ExecutorService resolver;
+    private final HttpClient httpClient;
+
+    @Activate
+    public NetworkHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            ComponentContext componentContext, Map<String, Object> config) {
+        super.activate(componentContext);
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        modified(config);
+        this.resolver = new ThreadPoolExecutor(1, Integer.MAX_VALUE, 20L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(), new NamedThreadFactory(NETWORK_RESOLVER_THREADPOOL_NAME));
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-    }
-
-    // The activate component call is used to access the bindings configuration
-    @Activate
-    protected void activate(ComponentContext componentContext, Map<String, Object> config) {
-        super.activate(componentContext);
-        modified(config);
-        ExecutorService resolver = this.resolver;
-        if (resolver != null) {
-            // This should not happen
-            resolver.shutdownNow();
-        }
-        this.resolver = new ThreadPoolExecutor(1, Integer.MAX_VALUE, 20L, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(), new NamedThreadFactory(NETWORK_RESOLVER_THREADPOOL_NAME));
     }
 
     @Override
@@ -109,9 +110,14 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(PING_DEVICE) || thingTypeUID.equals(BACKWARDS_COMPATIBLE_DEVICE)) {
-            return new NetworkHandler(thing, executor, resolver, false, configuration);
+            return new NetworkHandler(thing, executor, resolver, NetworkDeviceType.PING, configuration, httpClient,
+                    getBundleContext());
         } else if (thingTypeUID.equals(SERVICE_DEVICE)) {
-            return new NetworkHandler(thing, executor, resolver, true, configuration);
+            return new NetworkHandler(thing, executor, resolver, NetworkDeviceType.TCP_SERVICE, configuration,
+                    httpClient, getBundleContext());
+        } else if (thingTypeUID.equals(HTTP_DEVICE)) {
+            return new NetworkHandler(thing, executor, resolver, NetworkDeviceType.HTTP, configuration, httpClient,
+                    getBundleContext());
         } else if (thingTypeUID.equals(SPEEDTEST_DEVICE)) {
             return new SpeedTestHandler(thing);
         }

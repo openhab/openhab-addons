@@ -1,7 +1,7 @@
 # Network Binding
 
 This binding allows checking whether a device is currently available on the network.
-This is either done using [ping](https://en.wikipedia.org/wiki/Ping_%28networking_utility%29) or by a successful TCP connection on a specified port.
+This is either done using [ping](https://en.wikipedia.org/wiki/Ping_%28networking_utility%29), by a successful TCP connection on a specified port or by the HTTP status code which is returned for a URL.
 
 It is also capable to perform bandwidth speed tests.
 
@@ -30,6 +30,7 @@ binding.network:numberOfDiscoveryThreads=100
 
 - **pingdevice:** Detects device presence by using ICMP pings, ARP pings and DHCP packet sniffing.
 - **servicedevice:** Detects device presence by scanning for a specific open tcp port.
+- **httpdevice:** Detects device presence by requesting a URL and evaluating the returned HTTP status code.
 - **speedtest:** Monitors available bandwidth for upload and download.
 
 ## Discovery
@@ -45,6 +46,7 @@ Please note: things discovered by the network binding will be provided with a ti
 network:pingdevice:one_device [ hostname="192.168.0.64" ]
 network:pingdevice:second_device [ hostname="192.168.0.65", macAddress="6f:70:65:6e:48:41", retry=1, timeout=5000, refreshInterval=60000, networkInterfaceNames="eth0","wlan0" ]
 network:servicedevice:important_server [ hostname="192.168.0.62", port=1234 ]
+network:httpdevice:important_webservice [ url="https://192.168.0.62/health", treatRedirectAsError=true, ignoreCertificateErrors=true ]
 network:speedtest:local "SpeedTest 50Mo" @ "Internet" [refreshInterval=20, uploadSize=1000000, url="https://bouygues.testdebit.info/", fileName="50M.iso"]
 ```
 
@@ -69,6 +71,22 @@ Use the following options for a **network:pingdevice**:
 Use the following additional options for a **network:servicedevice**:
 
 - **port:** Must not be 0. The destination port needs to be a TCP service.
+
+Use the following options for a **network:httpdevice**:
+
+- **url:** The `http://` or `https://` URL which is requested.
+  The certificate of an `https://` URL must be trusted by the openHAB runtime unless certificate errors are ignored.
+- **treatRedirectAsError:** When set to true, a redirection status code (3xx) is treated as an error.
+  Redirects are never followed, so the status code of the first response is evaluated. Default: `false`.
+- **treatClientErrorAsError:** When set to true, a client error status code (4xx) is treated as an error.
+  Server error status codes (5xx) are always treated as an error. Default: `true`.
+- **ignoreCertificateErrors:** When set to true, certificate errors of an `https://` URL are ignored, which is needed
+  for a self-signed certificate for example.
+  Be aware that no certificate is validated for the host and port of the configured URL as long as the thing is
+  initialized, which also applies to other add-ons communicating with that host and port. Default: `false`.
+- **retry:** After how many refresh interval cycles the device will be assumed to be offline. Default: `1`.
+- **timeout:** How long the request will wait for a response, in milliseconds. Default: `5000` (5 seconds).
+- **refreshInterval:** How often the URL will be requested, in milliseconds. Default: `60000` (one minute).
 
 Use the following options for a **network:speedtest**:
 
@@ -189,6 +207,7 @@ Things support the following channels:
 | online          | Switch      | This channel indicates whether a device is online                                             |
 | lastseen        | DateTime    | The last seen date/time of the device in question. May be January 1, 1970 if no time is known |
 | latency         | Number:Time | This channel indicates the ping latency. May be 0 if no time is known                         |
+| httpStatus      | Number      | The HTTP status code returned by the last request, only supported by **httpdevice**           |
 
 ## Examples
 
@@ -197,6 +216,7 @@ demo.things:
 ```java
 Thing network:pingdevice:devicename [ hostname="192.168.0.42", macAddress="6f:70:65:6e:48:41", useIOSWakeUp="false" ]
 Thing network:pingdevice:router [ hostname="192.168.0.1", useArpPing="false" ]
+Thing network:httpdevice:webservice [ url="https://192.168.0.62/health" ]
 Thing network:speedtest:local "SpeedTest 50Mo" @ "Internet" [url="https://bouygues.testdebit.info/", fileName="50M.iso"]
 ```
 
@@ -207,6 +227,9 @@ Switch MyDevice { channel="network:pingdevice:devicename:online" }
 Number:Time MyDeviceResponseTime { channel="network:pingdevice:devicename:latency" }
 
 Number:Time MyRouterResponseTime { channel="network:pingdevice:router:latency" }
+
+Switch MyWebservice { channel="network:httpdevice:webservice:online" }
+Number MyWebserviceHttpStatus { channel="network:httpdevice:webservice:httpStatus" }
 
 String Speedtest_Running "Test running ... [%s]" {channel="network:speedtest:local:isRunning"}
 Number:Dimensionless Speedtest_Progress "Test progress [%d %unit%]"  {channel="network:speedtest:local:progress"}
@@ -229,6 +252,11 @@ sitemap demo label="Main Menu"
 
     Frame {
         Text item=MyRouterResponseTime label="Router Response Time [%s]"
+    }
+
+    Frame {
+        Text item=MyWebservice label="Webservice [%s]"
+        Text item=MyWebserviceHttpStatus label="Webservice HTTP Status [%d]"
     }
 
     Frame label="SpeedTest" {
