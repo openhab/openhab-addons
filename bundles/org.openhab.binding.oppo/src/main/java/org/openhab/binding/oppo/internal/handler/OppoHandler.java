@@ -34,7 +34,6 @@ import org.openhab.binding.oppo.internal.OppoPlayerModel;
 import org.openhab.binding.oppo.internal.OppoStateDescriptionOptionProvider;
 import org.openhab.binding.oppo.internal.communication.OppoCommand;
 import org.openhab.binding.oppo.internal.communication.OppoConnector;
-import org.openhab.binding.oppo.internal.communication.OppoDefaultConnector;
 import org.openhab.binding.oppo.internal.communication.OppoIpConnector;
 import org.openhab.binding.oppo.internal.communication.OppoMessageEvent;
 import org.openhab.binding.oppo.internal.communication.OppoMessageEventListener;
@@ -93,14 +92,14 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
     private OppoStateDescriptionOptionProvider stateDescriptionProvider;
     private SerialPortManager serialPortManager;
-    private OppoConnector connector = new OppoDefaultConnector();
+    private OppoConnector connector = new OppoIpConnector();
 
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final @Nullable Bundle bundle;
 
     private long lastEventReceived = System.currentTimeMillis();
-    private String verboseMode = VERBOSE_2;
+    private int verboseMode = 0;
     private String currentTitle = BLANK;
     private String currentChapter = BLANK;
     private String currentTimeMode = T;
@@ -141,6 +140,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         model = THING_TYPE_PLAYER.equals(thing.getThingTypeUID()) //
                 ? OppoPlayerModel.fromModelNumber(config.model)
                 : OppoPlayerModel.fromThingTypeUID(thing.getThingTypeUID());
+        isBdpIP = false;
 
         final String serialPort = config.serialPort;
         final String host = config.host;
@@ -154,16 +154,21 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 configError = "@text/error.rfc2217";
             }
         } else {
-            isBdpIP = false;
             if (port == null) {
                 port = model.getPort();
-                isBdpIP = port != UDP20X_PORT;
-            } else if (port <= 0) {
+                isBdpIP = port == BDP83_PORT || port == BDP10X_PORT;
+            }
+            if (port <= 0) {
                 configError = "@text/error.invalid-port";
             }
         }
 
-        this.verboseMode = config.verboseMode && !isBdpIP ? VERBOSE_3 : VERBOSE_2;
+        // For BDP direct IP connection or the DVD model, verbose mode is not supported
+        if (isBdpIP || model.isDvd()) {
+            verboseMode = 0;
+        } else {
+            verboseMode = config.verboseMode ? 3 : 2;
+        }
 
         if (configError != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configError);
@@ -171,9 +176,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         }
 
         if (serialPort != null) {
-            connector = new OppoSerialConnector(serialPortManager, serialPort, getThing().getUID().getAsString());
+            connector = new OppoSerialConnector(serialPortManager, serialPort, model.isDvd(),
+                    getThing().getUID().getAsString());
         } else if (port != null) {
-            connector = new OppoIpConnector(host, port, isBdpIP, getThing().getUID().getAsString());
+            connector = new OppoIpConnector(host, port, isBdpIP, model.isDvd(), getThing().getUID().getAsString());
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.port-select");
             return;
@@ -241,7 +247,17 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         break;
                     case CHANNEL_VOLUME:
                         if (command instanceof PercentType) {
-                            connector.sendCommand(OppoCommand.SET_VOLUME_LEVEL, commandStr);
+                            if (!model.isDvd()) {
+                                connector.sendCommand(OppoCommand.SET_VOLUME_LEVEL, commandStr);
+                            } else {
+                                try {
+                                    // DV-983H volume is 00-20, divide 0-100% by 5 to get the proper range
+                                    final int volume = Integer.parseInt(commandStr) / 5;
+                                    connector.sendCommand(OppoCommand.SET_VOLUME_LEVEL, String.format("%02d", volume));
+                                } catch (NumberFormatException e) {
+                                    logger.debug("Unable to compute volume for command: {}", commandStr);
+                                }
+                            }
                         }
                         break;
                     case CHANNEL_MUTE:
@@ -275,7 +291,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         }
                         break;
                     case CHANNEL_CONTROL:
-                        this.handleControlCommand(command);
+                        handleControlCommand(command);
                         break;
                     case CHANNEL_TIME_MODE:
                         if (command instanceof StringType) {
@@ -378,13 +394,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      */
     @Override
     public void onNewMessageEvent(OppoMessageEvent evt) {
-        lastEventReceived = System.currentTimeMillis();
-
         String key = evt.getKey();
         String updateData = evt.getValue().trim();
-        if (this.getThing().getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
 
         synchronized (sequenceLock) {
             try {
@@ -439,8 +450,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 timecode = getSecondsFromTimecode(updateData);
                             }
 
-                            // these are used with verbose mode 2 and BDP direct IP
-                            if (VERBOSE_2.equals(this.verboseMode) && ((key.equals(QTE) && T.equals(currentTimeMode))
+                            // these are used with verbose mode 0 and 2
+                            if (verboseMode <= 2 && ((key.equals(QTE) && T.equals(currentTimeMode))
                                     || (key.equals(QTR) && X.equals(currentTimeMode))
                                     || (key.equals(QCE) && C.equals(currentTimeMode))
                                     || (key.equals(QCR) && K.equals(currentTimeMode)))) {
@@ -665,14 +676,19 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         updateChannelState(CHANNEL_HDR_MODE, updateData);
                         break;
                     case SVM: // Verbose mode set successful message
-                        isVbModeSet = updateData.equals(verboseMode);
+                        isVbModeSet = updateData.equals(String.valueOf(verboseMode));
                         if (isVbModeSet) {
                             logger.debug("Verbose mode {} set successful", updateData);
                         }
                         break;
                     default:
                         logger.debug("onNewMessageEvent: unhandled key {}, value: {}", key, updateData);
-                        break;
+                        return;
+                }
+
+                lastEventReceived = System.currentTimeMillis();
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
                 }
             } catch (OppoException | InterruptedException e) {
                 logger.debug("Exception processing event from player: {}", e.getMessage());
@@ -762,7 +778,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                             connector.sendCommand(OppoCommand.QUERY_PLAYBACK_STATUS);
 
-                            updateStatus(ThingStatus.ONLINE);
                             isInitialQuery = false;
                             isVbModeSet = false;
                         } catch (OppoException | InterruptedException e) {
@@ -804,20 +819,20 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
 
                 synchronized (sequenceLock) {
                     try {
-                        // Verbose mode 2 & 3 only do once until power comes on OR always for BDP direct IP
-                        if ((!isPowerOn && !isInitialQuery) || isBdpIP) {
+                        // Verbose mode 2 & 3 only do once until power comes on OR always for verbose mode 0
+                        if ((!isPowerOn && !isInitialQuery) || verboseMode == 0) {
                             connector.sendCommand(OppoCommand.QUERY_POWER_STATUS);
                         }
 
                         if (isPowerOn) {
-                            // the verbose mode must be set while the player is on
-                            if (!isVbModeSet && !isBdpIP) {
-                                connector.sendCommand(OppoCommand.SET_VERBOSE_MODE, this.verboseMode);
+                            // If applicable, the verbose mode must be set while the player is on
+                            if (!isVbModeSet && verboseMode != 0) {
+                                connector.sendCommand(OppoCommand.SET_VERBOSE_MODE, String.valueOf(verboseMode));
                                 Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                             }
 
-                            // Verbose mode 2 & 3 only do once OR always for BDP direct IP
-                            if (!isInitialQuery || isBdpIP) {
+                            // Verbose mode 2 & 3 only do once OR always for verbose mode 0
+                            if (!isInitialQuery || verboseMode == 0) {
                                 // check firmware until successful
                                 if (!isFirmwareSet) {
                                     connector.sendCommand(OppoCommand.QUERY_FIRMWARE_VERSION);
@@ -835,8 +850,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                 }
                             }
 
-                            // for Verbose mode 2 get the current play back time if we are playing
-                            if (VERBOSE_2.equals(this.verboseMode) && PLAY.equals(currentPlayMode)) {
+                            // For verbose mode 0 or 2 get the current play back time if we are playing
+                            if (verboseMode <= 2 && PLAY.equals(currentPlayMode)) {
                                 switch (currentTimeMode) {
                                     case T:
                                         connector.sendCommand(OppoCommand.QUERY_TITLE_ELAPSED);
@@ -872,7 +887,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                                     Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                                     connector.sendCommand(OppoCommand.QUERY_TITLE_REMAIN);
                                 }
-                            } else if (!isBdpIP) {
+                            } else if (verboseMode != 0) {
                                 // Verbose mode 3 - QUERY_TITLE_ELAPSED and QUERY_TITLE_REMAIN polling if necessary
                                 if (PLAY.equals(currentPlayMode) && (isLinked(CHANNEL_TITLE_ELAPSED)
                                         || isLinked(CHANNEL_TITLE_LENGTH) || isLinked(CHANNEL_TITLE_END_TIME)
@@ -993,7 +1008,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      */
     private void handleControlCommand(Command command) throws OppoException {
         if (command instanceof PlayPauseType) {
-            if (command == PlayPauseType.PLAY) {
+            if (model.isDvd()) {
+                connector.sendCommand(OppoCommand.PLAY_PAUSE);
+            } else if (command == PlayPauseType.PLAY) {
                 connector.sendCommand(OppoCommand.PLAY);
             } else if (command == PlayPauseType.PAUSE) {
                 connector.sendCommand(OppoCommand.PAUSE);
@@ -1075,18 +1092,22 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 new StateOption("UHD50", "UHD50"), //
                 new StateOption("UHD60", "UHD60"), //
                 new StateOption("1080P_AUTO", getString("auto_1080p", "1080P Auto")), //
+                new StateOption("1080PAUTO", getString("auto_1080p", "1080P Auto")), // DV-983H
                 new StateOption("1080P24", "1080P24"), //
                 new StateOption("1080P50", "1080P50"), //
                 new StateOption("1080P60", "1080P60"), //
                 new StateOption("1080P", "1080P"), //
+                new StateOption("1080IAUTO", getString("auto_1080i", "1080I Auto")), // DV-983H
                 new StateOption("1080I50", "1080I50"), //
                 new StateOption("1080I60", "1080I60"), //
                 new StateOption("1080I", "1080I"), //
+                new StateOption("720PAUTO", getString("auto_720p", "720P Auto")), // DV-983H
                 new StateOption("720P50", "720P50"), //
                 new StateOption("720P60", "720P60"), //
                 new StateOption("720P", "720P"), //
                 new StateOption("576P", "576P"), //
                 new StateOption("576I", "576I"), //
+                new StateOption("480PAUTO", getString("auto_480p", "480P Auto")), // DV-983H
                 new StateOption("480P", "480P"), //
                 new StateOption("SDP", "480P"), //
                 new StateOption("480I", "480I"), //

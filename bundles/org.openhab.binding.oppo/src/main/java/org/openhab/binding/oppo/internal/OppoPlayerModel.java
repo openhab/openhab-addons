@@ -31,29 +31,33 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public enum OppoPlayerModel {
     /**
-     * OPPO BDP-83 Blu-ray player
+     * OPPO BDP-83 Blu-ray Player
      */
-    BDP83(83, THING_TYPE_BDP83, BDP83_PORT, OppoCommand.QUERY_COMMANDS_83, BDPXX_HDMI_MODES, true),
+    BDP83(83, THING_TYPE_BDP83, BDP83_PORT, OppoCommand.QUERY_COMMANDS_83, BDPXX_HDMI_MODES, true, false),
     /**
      * OPPO BDP-93/95 Blu-ray Player
      */
-    BDP93(93, THING_TYPE_BDP93, BDP10X_PORT, OppoCommand.QUERY_COMMANDS_83, BDPXX_HDMI_MODES, true),
+    BDP93(93, THING_TYPE_BDP93, BDP10X_PORT, OppoCommand.QUERY_COMMANDS_83, BDPXX_HDMI_MODES, true, false),
     /**
      * OPPO BDP-103/103D Blu-ray Player
      */
-    BDP103(103, THING_TYPE_BDP103, BDP10X_PORT, OppoCommand.QUERY_COMMANDS_10X, BDP10X_HDMI_MODES, true),
+    BDP103(103, THING_TYPE_BDP103, BDP10X_PORT, OppoCommand.QUERY_COMMANDS_10X, BDP10X_HDMI_MODES, true, false),
     /**
      * OPPO BDP-105/105D Blu-ray Player
      */
-    BDP105(105, THING_TYPE_BDP105, BDP10X_PORT, OppoCommand.QUERY_COMMANDS_10X, BDP10X_HDMI_MODES, true),
+    BDP105(105, THING_TYPE_BDP105, BDP10X_PORT, OppoCommand.QUERY_COMMANDS_10X, BDP10X_HDMI_MODES, true, false),
     /**
      * OPPO UDP-203 Ultra HD Blu-ray Player
      */
-    UDP203(203, THING_TYPE_UDP203, UDP20X_PORT, OppoCommand.QUERY_COMMANDS_20X, UDP20X_HDMI_MODES, false),
+    UDP203(203, THING_TYPE_UDP203, UDP20X_PORT, OppoCommand.QUERY_COMMANDS_20X, UDP20X_HDMI_MODES, false, false),
     /**
      * OPPO UDP-205 Ultra HD Blu-ray Player
      */
-    UDP205(205, THING_TYPE_UDP205, UDP20X_PORT, OppoCommand.QUERY_COMMANDS_20X, UDP20X_HDMI_MODES, false);
+    UDP205(205, THING_TYPE_UDP205, UDP20X_PORT, OppoCommand.QUERY_COMMANDS_20X, UDP20X_HDMI_MODES, false, false),
+    /**
+     * OPPO DV-983H DVD Player
+     */
+    DV983H(983, THING_TYPE_DV983H, -1, OppoCommand.QUERY_COMMANDS_983H, DV983H_HDMI_MODES, false, true);
 
     private final int modelNumber;
     private final ThingTypeUID thingTypeUID;
@@ -61,15 +65,17 @@ public enum OppoPlayerModel {
     private final Set<OppoCommand> queryCommands;
     private final Set<String> hdmiModes;
     private final boolean needsHdmiModeWorkaround;
+    private final boolean isDvd;
 
     OppoPlayerModel(int model, ThingTypeUID thingTypeUID, int port, Set<OppoCommand> queryCommands,
-            Set<String> hdmiModes, boolean needsHdmiModeWorkaround) {
+            Set<String> hdmiModes, boolean needsHdmiModeWorkaround, boolean isDvd) {
         this.modelNumber = model;
         this.thingTypeUID = thingTypeUID;
         this.port = port;
         this.queryCommands = queryCommands;
         this.hdmiModes = hdmiModes;
         this.needsHdmiModeWorkaround = needsHdmiModeWorkaround;
+        this.isDvd = isDvd;
     }
 
     public int getModelNumber() {
@@ -94,6 +100,10 @@ public enum OppoPlayerModel {
 
     public boolean needsHdmiModeWorkaround() {
         return needsHdmiModeWorkaround;
+    }
+
+    public boolean isDvd() {
+        return isDvd;
     }
 
     private static final Map<Integer, OppoPlayerModel> BY_MODEL_NUMBER = Arrays.stream(values())

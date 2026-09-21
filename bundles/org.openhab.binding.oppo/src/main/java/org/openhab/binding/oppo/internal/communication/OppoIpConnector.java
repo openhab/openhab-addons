@@ -47,9 +47,10 @@ public class OppoIpConnector extends OppoConnector {
      * @param address the IP address of the player or serial over ip adapter
      * @param port the TCP port to be used
      * @param isBdpIP indicates if the BDP series direct IP connection protocol should be used
+     * @param isDvdModel indicates if the protocol for the DV-983H should be used
      * @param uid the thing uid string
      */
-    public OppoIpConnector(@Nullable String address, int port, boolean isBdpIP, String uid) {
+    public OppoIpConnector(@Nullable String address, int port, boolean isBdpIP, boolean isDvdModel, String uid) {
         this.address = address;
         this.port = port;
         this.uid = uid;
@@ -57,6 +58,16 @@ public class OppoIpConnector extends OppoConnector {
         if (isBdpIP) {
             super.setOverrideCmdPreamble();
         }
+        super.isDvdModel = isDvdModel;
+    }
+
+    /**
+     * Default constructor for temporary connector object that gets replaced during initialize()
+     */
+    public OppoIpConnector() {
+        this.address = "";
+        this.port = -1;
+        this.uid = "";
     }
 
     @Override
