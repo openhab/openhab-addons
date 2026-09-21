@@ -156,13 +156,13 @@ Treat `instanceId` as an opaque identifier. `maxEvents` limits the published lis
 | Parameter | Default | Current behavior |
 |---|---|---|
 | `url` | Required | Account endpoint used for principal and Calendar Home discovery |
-| `username` | Required | Authentication username |
-| `password` | Required | Password or application password |
+| `username` | Optional | Username used for authentication. Configure both `username` and `password`, or leave both empty for anonymous access. |
+| `password` | Optional | Password or application password used for authentication. Configure both `username` and `password`, or leave both empty for anonymous access. |
 | `requestTimeout` | `30` | Request timeout in seconds, 1–300 |
 | `refreshInterval` | `300` | Polling delay in seconds; minimum 30 |
 | `discoveryMode` | `AUTO` | Discovery and account-check mode: `AUTO` or `DIRECT` |
 | `calendarHome` | Empty | Optional Calendar Home URL for `DIRECT` |
-| `authType` | `AUTO` | `BASIC`, `DIGEST`, or `AUTO` to accept either authentication challenge |
+| `authType` | `AUTO` | `BASIC`, `DIGEST`, or `AUTO` to accept either authentication challenge. Used when username and password are configured. |
 | `verifyCertificate` | `true` | Validates TLS certificates; `false` disables verification for this account only |
 | `syncMode` | `AUTO` | `AUTO`, `SYNC_TOKEN`, `ETAG`, or `FULL` |
 | `maxPastDays` | `30` | Days before today in the sync horizon, 0–36500 |
@@ -199,9 +199,6 @@ things:
       url: "https://caldav.example.net/caldav/"
       username: "user@example.net"
       password: "SECRET"
-      discoveryMode: AUTO
-      refreshInterval: 300
-      requestTimeout: 30
 
   caldav:calendar:ionos:family:
     bridge: caldav:account:ionos
@@ -209,11 +206,6 @@ things:
     config:
       path: "https://caldav.example.net/caldav/family/"
       calendarId: "family"
-      enabled: true
-      rangeAnchor: TODAY
-      rangeStartOffset: 0
-      rangeEndOffset: 6
-      maxEvents: 500
 ```
 
 ### Classic `.things` and `.items`
@@ -222,36 +214,58 @@ things:
 Bridge caldav:account:ionos "CalDAV Account" [
     url="https://caldav.example.net/caldav/",
     username="user@example.net",
-    password="SECRET",
-    discoveryMode="AUTO",
-    refreshInterval=300,
-    requestTimeout=30
+    password="SECRET"
 ] {
     Thing calendar family "Family Calendar" [
         path="https://caldav.example.net/caldav/family/",
-        calendarId="family",
-        enabled=true,
-        rangeAnchor="TODAY",
-        rangeStartOffset=0,
-        rangeEndOffset=6,
-        maxEvents=500
+        calendarId="family"
     ]
 }
 ```
 
 ```text
-String   Family_Cal_Events     "Calendar events [%s]" { channel="caldav:calendar:ionos:family:events#json" }
-Number   Family_Cal_Count       "Event count [%d]"      { channel="caldav:calendar:ionos:family:events#count" }
-Switch   Family_Cal_Truncated   "Event list truncated [%s]" { channel="caldav:calendar:ionos:family:events#truncated" }
-DateTime Family_Cal_LastSync    "Last sync [%1$tF %1$tR]" { channel="caldav:calendar:ionos:family:sync#last" }
-String   Family_Cal_SyncStatus  "Sync [%s]"             { channel="caldav:calendar:ionos:family:sync#status" }
+String   Family_Cal_Events     "Calendar events" { channel="caldav:calendar:ionos:family:events#json" }
+Number   Family_Cal_Count       "Event count"      { channel="caldav:calendar:ionos:family:events#count" }
+Switch   Family_Cal_Truncated   "Event list truncated" { channel="caldav:calendar:ionos:family:events#truncated" }
+DateTime Family_Cal_LastSync    "Last sync" { channel="caldav:calendar:ionos:family:sync#last" }
+String   Family_Cal_SyncStatus  "Sync"             { channel="caldav:calendar:ionos:family:sync#status" }
 ```
 
-### IONOS CalDAV
+### Example: IONOS CalDAV
 
-IONOS Mail Business provides the individual calendar URL in Webmail under the calendar's properties. Copy that complete URL into the Calendar Thing's `path`, and use your full email address as the username. See the [IONOS CalDAV instructions](https://www.ionos.com/help/email/managing-mail-business/syncing-mail-business-calendar-with-mac-os-x/).
+IONOS Mail Business was used as a real-world interoperability test environment during development of this binding. The tested service is based on an Open-Xchange (OX) system. The binding itself uses standard CalDAV and WebDAV mechanisms and is not specific to IONOS or Open-Xchange.
 
-Configure the account `url` with an endpoint supporting principal and Calendar Home discovery, or use `DIRECT` with the actual Calendar Home. Do not construct a collection URL from its display name or `calendarId`. The `calendarId` parameter is required by the metadata but does not replace `path` in requests.
+For the tested IONOS Mail Business setup, the CalDAV account endpoint was:
+
+```text
+https://dav.mailbusiness.ionos.de/caldav/
+```
+
+This endpoint can be configured as the Account Thing `url`.
+
+With automatic discovery enabled, the server returns the available Calendar Collections. Their URLs follow this form:
+
+```text
+https://dav.mailbusiness.ionos.de/caldav/<calendar-id>/
+```
+
+For example:
+
+```text
+Account URL:
+https://dav.mailbusiness.ionos.de/caldav/
+
+Discovered Calendar Collection:
+https://dav.mailbusiness.ionos.de/caldav/<calendar-id>/
+```
+
+The `<calendar-id>` is assigned by the server and must not be derived from the calendar display name.
+
+For the tested IONOS setup, the complete Calendar Collection URL could also be obtained from the calendar properties in Webmail and configured directly as the Calendar Thing `path`.
+
+The exact endpoints and discovery behavior exposed by a CalDAV provider can depend on the server software and its configuration. Other Open-Xchange installations, other providers, or differently configured systems may therefore use different URL structures or discovery settings.
+
+Automatic discovery should be preferred when the configured Account URL exposes the required CalDAV discovery properties. If discovery is not available for a particular server configuration, `DIRECT` mode can be used with the corresponding Calendar Home.
 
 ## Security
 
@@ -265,9 +279,9 @@ Configure the account `url` with an endpoint supporting principal and Calendar H
 
 ## Time Zones and All-Day Events
 
-The time range and floating timestamps use the time zone configured in openHAB. `TODAY` uses local midnight; `NOW` uses the current time. Both apply offsets in calendar days, and the exclusive end is the anchor plus `rangeEndOffset + 1` days. The end offset must be at least the start offset.
+The time range and floating timestamps use the time zone configured in openHAB. Time zones defined in the iCalendar data, such as TZID/VTIMEZONE, are respected. The per-collection CalDAV `calendar-timezone` property is currently not used. `TODAY` uses local midnight; `NOW` uses the current time. Both apply offsets in calendar days, and the exclusive end is the anchor plus `rangeEndOffset + 1` days. The end offset must be at least the start offset.
 
-Timed recurrences preserve local wall-clock time across daylight-saving changes. All-day dates remain date-only values in JSON, with exclusive end dates. Without DTEND or DURATION, an all-day event lasts one day and a timed event has duration zero. Zero-duration events belong to the output range when their start is within `[startInclusive, endExclusive)`.
+Timed recurrences preserve local wall-clock time across daylight-saving changes. All-day dates remain date-only values in JSON, with exclusive end dates. Zero-duration events belong to the output range when their start is within `[startInclusive, endExclusive)`.
 
 A time-zone change invalidates derived event data until synchronization recalculates it. Data extending beyond a cached horizon is marked stale while awaiting synchronization.
 

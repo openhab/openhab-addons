@@ -31,11 +31,11 @@
 				<label>@text/config.account.url.label</label>
 				<description>@text/config.account.url.description</description>
 			</parameter>
-			<parameter name="username" type="text" required="true" groupName="connection">
+			<parameter name="username" type="text" required="false" groupName="connection">
 				<label>@text/config.account.username.label</label>
 				<description>@text/config.account.username.description</description>
 			</parameter>
-			<parameter name="password" type="text" required="true" groupName="connection">
+			<parameter name="password" type="text" required="false" groupName="connection">
 				<context>password</context>
 				<label>@text/config.account.password.label</label>
 				<description>@text/config.account.password.description</description>

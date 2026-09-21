@@ -14,7 +14,9 @@ package org.openhab.binding.caldav.internal.client;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.w3c.dom.Element;
@@ -36,8 +38,24 @@ public final class CalendarDiscoveryParser {
         return propertyHref(xml, baseUri, DAV_NAMESPACE, "current-user-principal");
     }
 
-    public static URI calendarHome(String xml, URI baseUri) throws Exception {
-        return propertyHref(xml, baseUri, CALDAV_NAMESPACE, "calendar-home-set");
+    public static List<URI> calendarHomes(String xml, URI baseUri) throws Exception {
+        Set<URI> homes = new LinkedHashSet<>();
+        for (Element response : responses(xml)) {
+            for (Element prop : properties(response)) {
+                for (Element property : DavResponse.children(prop, CALDAV_NAMESPACE, "calendar-home-set")) {
+                    for (Element href : DavResponse.children(property, DAV_NAMESPACE, "href")) {
+                        String value = href.getTextContent().trim();
+                        if (!value.isBlank()) {
+                            homes.add(CalDavUris.resolve(baseUri, value));
+                        }
+                    }
+                }
+            }
+        }
+        if (homes.isEmpty()) {
+            throw new IllegalArgumentException("Required discovery property is unavailable");
+        }
+        return List.copyOf(homes);
     }
 
     private static URI propertyHref(String xml, URI baseUri, String namespace, String name) throws Exception {

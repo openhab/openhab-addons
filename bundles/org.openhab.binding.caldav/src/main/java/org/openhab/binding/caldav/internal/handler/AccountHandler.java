@@ -14,7 +14,9 @@ package org.openhab.binding.caldav.internal.handler;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -160,18 +162,29 @@ public class AccountHandler extends BaseBridgeHandler {
                 current.http.start();
             }
             URI base = URI.create(current.configuration.url);
-            URI home;
+            List<CalendarCollection> collections;
             if ("DIRECT".equals(current.configuration.discoveryMode)) {
-                home = current.configuration.calendarHome.isBlank() ? base
+                URI home = current.configuration.calendarHome.isBlank() ? base
                         : CalDavUris.resolve(base, current.configuration.calendarHome);
+                collections = CalendarDiscoveryParser
+                        .collections(current.client.request("PROPFIND", home, COLLECTIONS, "1"), home);
             } else {
                 URI principal = CalendarDiscoveryParser
                         .currentUserPrincipal(current.client.request("PROPFIND", base, PRINCIPAL, "0"), base);
-                home = CalendarDiscoveryParser.calendarHome(current.client.request("PROPFIND", principal, HOME, "0"),
-                        principal);
+                List<URI> homes = CalendarDiscoveryParser
+                        .calendarHomes(current.client.request("PROPFIND", principal, HOME, "0"), principal);
+                Map<URI, CalendarCollection> discovered = new LinkedHashMap<>();
+                for (URI home : homes) {
+                    if (!current.valid || Thread.currentThread().isInterrupted()) {
+                        return;
+                    }
+                    for (CalendarCollection collection : CalendarDiscoveryParser
+                            .collections(current.client.request("PROPFIND", home, COLLECTIONS, "1"), home)) {
+                        discovered.putIfAbsent(collection.uri(), collection);
+                    }
+                }
+                collections = List.copyOf(discovered.values());
             }
-            List<CalendarCollection> collections = CalendarDiscoveryParser
-                    .collections(current.client.request("PROPFIND", home, COLLECTIONS, "1"), home);
             if (!current.valid) {
                 return;
             }

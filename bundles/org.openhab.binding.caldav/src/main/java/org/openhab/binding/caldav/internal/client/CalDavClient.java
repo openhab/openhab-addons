@@ -48,15 +48,17 @@ public final class CalDavClient implements DavTransport {
         this.client = client;
         this.origin = CalDavUris.validate(URI.create(configuration.url));
         this.timeout = configuration.requestTimeout;
-        URI authRoot = origin.resolve("/");
-        var store = client.getAuthenticationStore();
-        if (!"BASIC".equals(configuration.authType)) {
-            store.addAuthentication(new DigestAuthentication(authRoot, Authentication.ANY_REALM, configuration.username,
-                    configuration.password));
-        }
-        if (!"DIGEST".equals(configuration.authType)) {
-            store.addAuthentication(new BasicAuthentication(authRoot, Authentication.ANY_REALM, configuration.username,
-                    configuration.password));
+        if (!configuration.username.isBlank()) {
+            URI authRoot = origin.resolve("/");
+            var store = client.getAuthenticationStore();
+            if (!"BASIC".equals(configuration.authType)) {
+                store.addAuthentication(new DigestAuthentication(authRoot, Authentication.ANY_REALM,
+                        configuration.username, configuration.password));
+            }
+            if (!"DIGEST".equals(configuration.authType)) {
+                store.addAuthentication(new BasicAuthentication(authRoot, Authentication.ANY_REALM,
+                        configuration.username, configuration.password));
+            }
         }
     }
 

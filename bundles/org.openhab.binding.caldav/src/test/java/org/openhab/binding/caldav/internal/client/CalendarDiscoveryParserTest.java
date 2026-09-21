@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URI;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -35,8 +36,57 @@ class CalendarDiscoveryParserTest {
 
         assertEquals(URI.create("https://caldav.example.test/principals/user/"),
                 CalendarDiscoveryParser.currentUserPrincipal(principal, BASE_URI));
-        assertEquals(URI.create("https://caldav.example.test/calendars/user/"),
-                CalendarDiscoveryParser.calendarHome(home, BASE_URI));
+        assertEquals(List.of(URI.create("https://caldav.example.test/calendars/user/")),
+                CalendarDiscoveryParser.calendarHomes(home, BASE_URI));
+    }
+
+    @Test
+    void resolvesAllHomesInServerOrderAndRemovesDuplicates() throws Exception {
+        String xml = homeResponse("<d:href> /calendars/user/ </d:href><d:href>shared/</d:href>"
+                + "<d:href>https://caldav.example.test/calendars/user/</d:href><d:href> </d:href>");
+        assertEquals(
+                List.of(URI.create("https://caldav.example.test/calendars/user/"),
+                        URI.create("https://caldav.example.test/dav/shared/")),
+                CalendarDiscoveryParser.calendarHomes(xml, BASE_URI));
+    }
+
+    @Test
+    void rejectsForeignHomeEvenAfterValidHome() {
+        for (String href : List.of("https://foreign.example/calendars/", "http://caldav.example.test/calendars/",
+                "https://caldav.example.test:8443/calendars/", "http://[invalid")) {
+            assertThrows(IllegalArgumentException.class, () -> CalendarDiscoveryParser
+                    .calendarHomes(homeResponse("<d:href>/valid/</d:href><d:href>" + href + "</d:href>"), BASE_URI));
+        }
+    }
+
+    @Test
+    void rejectsMissingOrBlankHomes() {
+        for (String hrefs : List.of("", "<d:href> </d:href>")) {
+            assertThrows(IllegalArgumentException.class,
+                    () -> CalendarDiscoveryParser.calendarHomes(homeResponse(hrefs), BASE_URI));
+        }
+    }
+
+    @Test
+    void collectsHomesAcrossSuccessfulPropertiesOnly() throws Exception {
+        String xml = homeResponse("<d:href>/first/</d:href>").replace("</d:response>", """
+                <d:propstat><d:prop><c:calendar-home-set><d:href>/ignored/</d:href></c:calendar-home-set>
+                </d:prop><d:status>HTTP/1.1 404 Not Found</d:status></d:propstat></d:response>
+                <d:response><d:propstat><d:prop><c:calendar-home-set><d:href>/second/</d:href>
+                </c:calendar-home-set></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response>
+                """);
+        assertEquals(List.of(BASE_URI.resolve("/first/"), BASE_URI.resolve("/second/")),
+                CalendarDiscoveryParser.calendarHomes(xml, BASE_URI));
+        assertThrows(IllegalArgumentException.class, () -> CalendarDiscoveryParser.calendarHomes(
+                homeResponse("<d:href>/ignored/</d:href>").replace("200 OK", "404 Not Found"), BASE_URI));
+    }
+
+    private static String homeResponse(String hrefs) {
+        return """
+                <d:multistatus xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav">
+                <d:response><d:propstat><d:prop><c:calendar-home-set>%s</c:calendar-home-set></d:prop>
+                <d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response></d:multistatus>
+                """.formatted(hrefs);
     }
 
     @Test

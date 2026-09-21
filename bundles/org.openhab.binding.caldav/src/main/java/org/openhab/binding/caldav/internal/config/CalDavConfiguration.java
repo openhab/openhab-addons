@@ -33,9 +33,12 @@ public final class CalDavConfiguration {
 
     public static void validate(AccountConfiguration c) {
         CalDavUris.validate(URI.create(c.url));
-        if (c.username.isBlank() || c.password.isBlank() || c.requestTimeout < 1 || c.requestTimeout > 300
-                || c.refreshInterval < 30 || c.maxPastDays < 0 || c.maxFutureDays < 1 || c.maxPastDays > 36500
-                || c.maxFutureDays > 36500 || !Set.of("AUTO", "BASIC", "DIGEST").contains(c.authType)
+        if (c.username.isBlank() != c.password.isBlank()) {
+            throw new IllegalArgumentException("Username and password must both be provided or both be empty");
+        }
+        if (c.requestTimeout < 1 || c.requestTimeout > 300 || c.refreshInterval < 30 || c.maxPastDays < 0
+                || c.maxFutureDays < 1 || c.maxPastDays > 36500 || c.maxFutureDays > 36500
+                || !Set.of("AUTO", "BASIC", "DIGEST").contains(c.authType)
                 || !Set.of("AUTO", "DIRECT").contains(c.discoveryMode)
                 || !Set.of("AUTO", "FULL", "ETAG", "SYNC_TOKEN").contains(c.syncMode) || !c.readOnly) {
             throw new IllegalArgumentException("Invalid account settings; calendar writes are not supported");

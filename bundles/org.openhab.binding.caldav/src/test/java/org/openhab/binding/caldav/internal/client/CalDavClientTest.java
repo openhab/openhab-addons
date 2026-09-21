@@ -22,16 +22,20 @@ import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HexFormat;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.binding.caldav.internal.config.AccountConfiguration;
+import org.openhab.binding.caldav.internal.config.CalDavConfiguration;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -55,6 +59,10 @@ class CalDavClientTest {
 
     @Test
     void basicChallengeAndRedirectDoNotLeakCredentials() throws Exception {
+        checkBasicChallenge("BASIC");
+    }
+
+    private void checkBasicChallenge(String authType) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         AtomicInteger redirected = new AtomicInteger();
         server.createContext("/", exchange -> {
@@ -89,7 +97,7 @@ class CalDavClientTest {
         try {
             server.start();
             http.start();
-            var config = config(server, "BASIC");
+            var config = config(server, authType);
             var client = new CalDavClient(http, config);
             assertEquals("ok", client.request("PROPFIND", URI.create(config.url), "", "0"));
             assertEquals(302, assertThrows(CalDavHttpException.class,
@@ -105,6 +113,10 @@ class CalDavClientTest {
 
     @Test
     void digestChallengeAuthenticatesReportWithCorrectMethod() throws Exception {
+        checkDigestChallenge("DIGEST");
+    }
+
+    private void checkDigestChallenge(String authType) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/", exchange -> {
             try (exchange) {
@@ -130,9 +142,74 @@ class CalDavClientTest {
         try {
             server.start();
             http.start();
-            var config = config(server, "DIGEST");
+            var config = config(server, authType);
             assertEquals("",
                     new CalDavClient(http, config).request("REPORT", URI.create(config.url), "<report/>", "1"));
+        } finally {
+            http.stop();
+            server.stop(0);
+        }
+    }
+
+    @Test
+    void autoAuthenticatesBasicAndDigestChallenges() throws Exception {
+        checkBasicChallenge("AUTO");
+        checkDigestChallenge("AUTO");
+    }
+
+    @Test
+    void anonymousRequestDoesNotSendAuthorization() throws Exception {
+        for (String authType : List.of("AUTO", "BASIC", "DIGEST")) {
+            checkAnonymousRequest(authType, false);
+        }
+    }
+
+    @Test
+    void anonymousClientDoesNotAuthenticateWhenChallenged() throws Exception {
+        for (String authType : List.of("AUTO", "BASIC", "DIGEST")) {
+            checkAnonymousRequest(authType, true);
+        }
+    }
+
+    private void checkAnonymousRequest(String authType, boolean challenge) throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicInteger requests = new AtomicInteger();
+        AtomicReference<@Nullable String> authorization = new AtomicReference<>();
+        server.createContext("/", exchange -> {
+            try (exchange) {
+                requests.incrementAndGet();
+                authorization.set(exchange.getRequestHeaders().getFirst("Authorization"));
+                if (challenge && !"/public".equals(exchange.getRequestURI().getPath())) {
+                    exchange.getResponseHeaders().add("WWW-Authenticate", "Basic realm=\"calendar\"");
+                    exchange.getResponseHeaders().add("WWW-Authenticate",
+                            "Digest realm=\"calendar\", nonce=\"testnonce\", algorithm=MD5, qop=\"auth\"");
+                    exchange.sendResponseHeaders(401, -1);
+                } else {
+                    exchange.sendResponseHeaders(207, 2);
+                    exchange.getResponseBody().write("ok".getBytes(StandardCharsets.UTF_8));
+                }
+            }
+        });
+        HttpClient http = new HttpClient();
+        try {
+            server.start();
+            http.start();
+            var config = config(server, authType);
+            config.username = "";
+            config.password = "";
+            CalDavConfiguration.validate(config);
+            var client = new CalDavClient(http, config);
+            if (challenge) {
+                assertEquals(401, assertThrows(CalDavHttpException.class,
+                        () -> client.request("PROPFIND", URI.create(config.url), "", "0")).statusCode());
+            } else {
+                assertEquals("ok", client.request("PROPFIND", URI.create(config.url), "", "0"));
+            }
+            assertNull(authorization.get());
+            assertEquals(1, requests.get());
+            assertEquals("ok", client.request("PROPFIND", URI.create(config.url + "public"), "", "0"));
+            assertNull(authorization.get());
+            assertEquals(2, requests.get());
         } finally {
             http.stop();
             server.stop(0);

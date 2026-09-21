@@ -16,9 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +33,7 @@ import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.openhab.binding.caldav.internal.client.CalendarCollection;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -48,6 +54,7 @@ import com.sun.net.httpserver.HttpServer;
 class AccountHandlerTest {
     private static final class Handler extends AccountHandler {
         final CountDownLatch online = new CountDownLatch(1);
+        final CountDownLatch offline = new CountDownLatch(1);
         final AtomicInteger publications = new AtomicInteger();
 
         Handler(Bridge bridge, HttpClientFactory factory) {
@@ -59,8 +66,96 @@ class AccountHandlerTest {
             publications.incrementAndGet();
             if (status == ThingStatus.ONLINE) {
                 online.countDown();
+            } else if (status == ThingStatus.OFFLINE) {
+                offline.countDown();
             }
         }
+    }
+
+    @Test
+    void autoDiscoversBothHomesAndKeepsFirstDuplicateName() throws Exception {
+        checkAutoDiscovery(false);
+    }
+
+    @Test
+    void autoDoesNotPublishPartialDiscoveryWhenSecondHomeFails() throws Exception {
+        checkAutoDiscovery(true);
+    }
+
+    private void checkAutoDiscovery(boolean failSecondHome) throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicBoolean fail = new AtomicBoolean();
+        LinkedBlockingQueue<String> requests = new LinkedBlockingQueue<>();
+        server.createContext("/", exchange -> {
+            try (exchange) {
+                String path = exchange.getRequestURI().getPath();
+                requests.add(exchange.getRequestMethod() + " " + path + " "
+                        + exchange.getRequestHeaders().getFirst("Depth"));
+                if (fail.get() && "/home-b/".equals(path)) {
+                    exchange.sendResponseHeaders(500, -1);
+                    return;
+                }
+                String response = switch (path) {
+                    case "/" -> discoveryProperty(
+                            "<d:current-user-principal><d:href>/principal/</d:href></d:current-user-principal>");
+                    case "/principal/" -> discoveryProperty(
+                            "<c:calendar-home-set><d:href>/home-a/</d:href><d:href>/home-b/</d:href><d:href>/home-a/</d:href></c:calendar-home-set>");
+                    case "/home-a/" -> calendarResponse("/calendars/a/", "First");
+                    case "/home-b/" ->
+                        calendarResponse("/calendars/a/", "Duplicate") + calendarResponse("/calendars/b/", "Second");
+                    default -> throw new IllegalArgumentException("Unexpected discovery path");
+                };
+                byte[] data = ("<d:multistatus xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">" + response
+                        + "</d:multistatus>").getBytes(StandardCharsets.UTF_8);
+                exchange.sendResponseHeaders(207, data.length);
+                exchange.getResponseBody().write(data);
+            }
+        });
+        server.start();
+        HttpClient http = new HttpClient();
+        HttpClientFactory factory = mock(HttpClientFactory.class);
+        when(factory.createHttpClient(eq("caldav"), any(SslContextFactory.Client.class))).thenReturn(http);
+        String url = "http://127.0.0.1:" + server.getAddress().getPort() + "/";
+        Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "auto")
+                .withConfiguration(new Configuration(
+                        Map.of("url", url, "username", "user", "password", "secret", "discoveryMode", "AUTO")))
+                .build();
+        Handler handler = new Handler(bridge, factory);
+        LinkedBlockingQueue<List<CalendarCollection>> results = new LinkedBlockingQueue<>();
+        try {
+            handler.initialize();
+            assertTrue(handler.online.await(10, TimeUnit.SECONDS));
+            requests.clear();
+            fail.set(failSecondHome);
+            handler.discover(results::add);
+            if (failSecondHome) {
+                assertTrue(handler.offline.await(10, TimeUnit.SECONDS));
+                assertTrue(results.isEmpty());
+            } else {
+                assertEquals(
+                        List.of(new CalendarCollection(URI.create(url + "calendars/a/"), "First"),
+                                new CalendarCollection(URI.create(url + "calendars/b/"), "Second")),
+                        results.poll(10, TimeUnit.SECONDS));
+            }
+            List<String> expected = List.of("PROPFIND / 0", "PROPFIND /principal/ 0", "PROPFIND /home-a/ 1",
+                    "PROPFIND /home-b/ 1");
+            assertEquals(expected, List.copyOf(requests));
+        } finally {
+            handler.dispose();
+            http.stop();
+            server.stop(0);
+        }
+    }
+
+    private static String discoveryProperty(String property) {
+        return "<d:response><d:propstat><d:prop>" + property
+                + "</d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response>";
+    }
+
+    private static String calendarResponse(String href, String name) {
+        return "<d:response><d:href>" + href + "</d:href><d:propstat><d:prop><d:displayname>" + name
+                + "</d:displayname><d:resourcetype><d:collection/><c:calendar/></d:resourcetype>"
+                + "</d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response>";
     }
 
     @Test
