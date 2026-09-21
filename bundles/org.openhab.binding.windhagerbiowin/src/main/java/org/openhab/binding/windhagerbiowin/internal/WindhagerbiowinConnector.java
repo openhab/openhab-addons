@@ -123,10 +123,12 @@ public class WindhagerbiowinConnector {
         try {
             HttpResponse<String> response = sendRequest(uri, null);
             if (response != null && response.statusCode() == 401) {
-                String challenge = response.headers().firstValue("WWW-Authenticate").orElse("");
-                String authorization = createDigestAuthorization(challenge, uri, "GET");
-                if (authorization != null) {
-                    response = sendRequest(uri, authorization);
+                var challengeHeader = response.headers().firstValue("WWW-Authenticate");
+                if (challengeHeader.isPresent()) {
+                    String authorization = createDigestAuthorization(challengeHeader.get(), uri, "GET");
+                    if (authorization != null) {
+                        response = sendRequest(uri, authorization);
+                    }
                 }
             }
             return response;
