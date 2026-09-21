@@ -90,6 +90,7 @@ public class WebInterface implements AtomicReferenceTrait {
      * request executor
      */
     private final WebRequestExecutor requestExecutor;
+    private final Object requestLifecycleLock = new Object();
     private final AtomicLong requestGeneration = new AtomicLong();
     private final AtomicLong rateLimitPauseUntilMillis = new AtomicLong();
 
@@ -104,7 +105,7 @@ public class WebInterface implements AtomicReferenceTrait {
      *
      * @author afriese - initial contribution
      */
-    private class WebRequestExecutor implements Runnable {
+    private class WebRequestExecutor {
 
         /**
          * queue which holds the commands to execute
@@ -156,7 +157,10 @@ public class WebInterface implements AtomicReferenceTrait {
         /**
          * authenticates with the Solaredge WEB interface
          */
-        private synchronized void authenticate() {
+        private synchronized void authenticate(long generation) {
+            if (generation != requestGeneration.get()) {
+                return;
+            }
             setAuthenticated(false);
 
             if (preCheck()) {
@@ -169,7 +173,7 @@ public class WebInterface implements AtomicReferenceTrait {
                 } else {
                     tokenCheckCommand = new PublicApiKeyCheck(handler, this::processAuthenticationResult);
                 }
-                tokenCheckCommand.bindRequestGeneration(requestGeneration.get(), requestGeneration::get);
+                tokenCheckCommand.bindRequestGeneration(generation, requestGeneration::get);
                 tokenCheckCommand.performAction(httpClient);
             }
         }
@@ -230,18 +234,20 @@ public class WebInterface implements AtomicReferenceTrait {
          * @param command
          */
         void enqueue(SolarEdgeCommand command) {
-            if (isRateLimitPaused()
-                    || !command.bindRequestGeneration(requestGeneration.get(), requestGeneration::get)) {
-                return;
-            }
-            try {
-                commandQueue.add(command);
-            } catch (IllegalStateException ex) {
-                if (commandQueue.size() >= WEB_REQUEST_QUEUE_MAX_SIZE) {
-                    logger.debug(
-                            "Could not add command to command queue because queue is already full. Maybe SolarEdge is down?");
-                } else {
-                    logger.warn("Could not add command to queue - IllegalStateException");
+            synchronized (requestLifecycleLock) {
+                if (isRateLimitPaused()
+                        || !command.bindRequestGeneration(requestGeneration.get(), requestGeneration::get)) {
+                    return;
+                }
+                try {
+                    commandQueue.add(command);
+                } catch (IllegalStateException ex) {
+                    if (commandQueue.size() >= WEB_REQUEST_QUEUE_MAX_SIZE) {
+                        logger.debug(
+                                "Could not add command to command queue because queue is already full. Maybe SolarEdge is down?");
+                    } else {
+                        logger.warn("Could not add command to queue - IllegalStateException");
+                    }
                 }
             }
         }
@@ -249,16 +255,19 @@ public class WebInterface implements AtomicReferenceTrait {
         /**
          * executes the web request
          */
-        @Override
-        public void run() {
+        void run(long generation) {
+            if (generation != requestGeneration.get()) {
+                return;
+            }
             if (isRateLimitPaused()) {
                 return;
             }
             if (!isAuthenticated()) {
-                authenticate();
+                authenticate(generation);
             }
 
-            if (!isRateLimitPaused() && isAuthenticated() && !commandQueue.isEmpty()) {
+            if (generation == requestGeneration.get() && !isRateLimitPaused() && isAuthenticated()
+                    && !commandQueue.isEmpty()) {
                 try {
                     executeCommand();
                 } catch (Exception ex) {
@@ -306,8 +315,10 @@ public class WebInterface implements AtomicReferenceTrait {
         long now = clock.millis();
         long delay = retryAfterDelayMillis(retryAfter, now);
         long pauseUntil = now + delay;
-        rateLimitPauseUntilMillis.accumulateAndGet(pauseUntil, Math::max);
-        requestExecutor.commandQueue.clear();
+        synchronized (requestLifecycleLock) {
+            rateLimitPauseUntilMillis.accumulateAndGet(pauseUntil, Math::max);
+            requestExecutor.commandQueue.clear();
+        }
         logger.debug("Pausing Monitoring API V2 requests for {} seconds after HTTP 429", delay / 1000);
     }
 
@@ -340,13 +351,17 @@ public class WebInterface implements AtomicReferenceTrait {
     }
 
     public void start() {
-        requestGeneration.incrementAndGet();
-        rateLimitPauseUntilMillis.set(0);
-        requestExecutor.commandQueue.clear();
-        this.config = handler.getConfiguration();
-        setAuthenticated(false);
-        updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
-                WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
+        synchronized (requestLifecycleLock) {
+            cancelJobReference(requestExecutorJobReference);
+            long generation = requestGeneration.incrementAndGet();
+            rateLimitPauseUntilMillis.set(0);
+            requestExecutor.commandQueue.clear();
+            this.config = handler.getConfiguration();
+            setAuthenticated(false);
+            updateJobReference(requestExecutorJobReference,
+                    scheduler.scheduleWithFixedDelay(() -> requestExecutor.run(generation), WEB_REQUEST_INITIAL_DELAY,
+                            WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
+        }
     }
 
     /**
@@ -363,11 +378,13 @@ public class WebInterface implements AtomicReferenceTrait {
      */
     public void dispose() {
         logger.debug("Webinterface disposed.");
-        requestGeneration.incrementAndGet();
-        rateLimitPauseUntilMillis.set(0);
-        requestExecutor.commandQueue.clear();
-        cancelJobReference(requestExecutorJobReference);
-        setAuthenticated(false);
+        synchronized (requestLifecycleLock) {
+            cancelJobReference(requestExecutorJobReference);
+            requestGeneration.incrementAndGet();
+            rateLimitPauseUntilMillis.set(0);
+            requestExecutor.commandQueue.clear();
+            setAuthenticated(false);
+        }
     }
 
     /**

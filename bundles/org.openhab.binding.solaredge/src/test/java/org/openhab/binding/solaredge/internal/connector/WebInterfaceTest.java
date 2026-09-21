@@ -166,4 +166,29 @@ public class WebInterfaceTest {
         jobs.getValue().run();
         verify(staleOnDispose, never()).performAction(httpClient);
     }
+
+    @Test
+    public void ignoresScheduledExecutorFromPreviousGeneration() {
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        SolarEdgeHandler handler = mock(SolarEdgeHandler.class);
+        HttpClient httpClient = mock(HttpClient.class);
+        SolarEdgeConfiguration config = new SolarEdgeConfiguration();
+        config.setTokenOrApiKey("api-key");
+        when(handler.getConfiguration()).thenReturn(config);
+        when(scheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), eq(TimeUnit.MILLISECONDS)))
+                .thenReturn(mock(ScheduledFuture.class));
+
+        WebInterface connector = new WebInterface(scheduler, handler, httpClient);
+        ArgumentCaptor<Runnable> jobs = ArgumentCaptor.forClass(Runnable.class);
+        connector.start();
+        verify(scheduler).scheduleWithFixedDelay(jobs.capture(), anyLong(), anyLong(), eq(TimeUnit.MILLISECONDS));
+        Runnable previousJob = jobs.getValue();
+
+        connector.start();
+        verify(scheduler, times(2)).scheduleWithFixedDelay(jobs.capture(), anyLong(), anyLong(),
+                eq(TimeUnit.MILLISECONDS));
+        previousJob.run();
+
+        verify(httpClient, never()).newRequest(anyString());
+    }
 }
