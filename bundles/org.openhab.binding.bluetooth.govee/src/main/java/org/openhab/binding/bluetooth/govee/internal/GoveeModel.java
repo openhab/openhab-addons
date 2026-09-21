@@ -44,6 +44,7 @@ public enum GoveeModel {
     B5178(THING_TYPE_HYGROMETER_MONITOR, "Govee Smart Thermo-Hygrometer", true);
 
     private static final byte[] SCAN_HEADER = { (byte) 0x88, (byte) 0xEC };
+    private static final byte[] SCAN_HEADER2 = { (byte) 0x01, (byte) 0x00 };
 
     private final ThingTypeUID thingTypeUID;
     private final String label;
@@ -69,93 +70,91 @@ public enum GoveeModel {
         return supportsWarningBroadcast;
     }
 
-    /**
-     * Minimum required size of scanning data packet. This value must be aligned
-     * with the decoding implementation in {@link #onScanRecordReceived}.
-     *
-     * <p>
-     * This is the minimal size required for decoding, the actual package
-     * might contain more data.
-     * </p>
-     *
-     * @param model
-     * @return size of payload of scanning data without the manufacturer id
-     */
-    private int scanPacketSize() {
-        switch (this) {
-            default:
-                return 7;
-            case H5072:
-            case H5075:
-                return 5;
-            case H5179:
-                return 8;
-            case H5051:
-            case H5052:
-            case H5071:
-            case H5074:
-                return 7;
-        }
-    }
-
     @Nullable
     ManufacturerDataSet parseManufacturerData(byte[] scanData) {
-        int dataPacketSize = scanPacketSize();
-
-        if ((2 + dataPacketSize) > scanData.length || scanData[0] != SCAN_HEADER[0] || scanData[1] != SCAN_HEADER[1]) {
+        if (scanData.length < 2) {
             return null;
         }
 
-        ByteBuffer data = ByteBuffer.wrap(scanData, 2, dataPacketSize);
+        ByteBuffer data = ByteBuffer.wrap(scanData);
 
-        short temperature;
-        int humidity;
-        int battery;
-        int wifiLevel = 0;
-
-        switch (this) {
-            default:
-                data.position(2);// we throw this away
-                // fall through
-            case H5072:
-            case H5075:
-                data.order(ByteOrder.BIG_ENDIAN);
-                int l = data.getInt();
-                l = l & 0xFFFFFF;
-
-                boolean positive = (l & 0x800000) == 0;
-                int tem = (short) ((l / 1000) * 10);
-                if (!positive) {
-                    tem = -tem;
+        if ((scanData[0] == SCAN_HEADER[0] && scanData[1] == SCAN_HEADER[1])) {
+            switch (this) {
+                case H5072:
+                case H5075:
+                    return readManufacturerDataAtOffset(data, 3);
+                case H5051:
+                case H5052:
+                case H5071:
+                case H5074:
+                    if (scanData.length < 8) {
+                        return null;
+                    }
+                    data.order(ByteOrder.LITTLE_ENDIAN);
+                    short temperature = data.getShort(3);
+                    int humidity = Short.toUnsignedInt(data.getShort(5));
+                    int battery = Byte.toUnsignedInt(data.get(7));
+                    return new ManufacturerDataSet(temperature, humidity, battery);
+                default:
+                    return null;
+            }
+        } else if (scanData[0] == SCAN_HEADER2[0] && scanData[1] == SCAN_HEADER2[1]) {
+            switch (this) {
+                case H5101:
+                case H5102:
+                case B5175:
+                case H5177:
+                case H5179: {
+                    return readManufacturerDataAtOffset(data, 4);
                 }
-                temperature = (short) tem;
-                humidity = (l % 1000) * 10;
-                battery = data.get();
-                break;
-            case H5179:
-                data.order(ByteOrder.LITTLE_ENDIAN);
-                data.position(3);
-                temperature = data.getShort();
-                humidity = data.getShort();
-                battery = Byte.toUnsignedInt(data.get());
-                break;
-            case H5051:
-            case H5052:
-            case H5071:
-            case H5074:
-                data.order(ByteOrder.LITTLE_ENDIAN);
-                boolean hasWifi = data.get() == 0;
-                temperature = data.getShort();
-                humidity = Short.toUnsignedInt(data.getShort());
-                battery = Byte.toUnsignedInt(data.get());
-                wifiLevel = hasWifi ? Byte.toUnsignedInt(data.get()) : 0;
-                break;
+                case B5178: {
+                    // byte 4 holds the sensor ID
+                    return readManufacturerDataAtOffset(data, 5);
+                }
+                default:
+                    return null;
+            }
+        } else {
+            return null;
         }
-
-        return new ManufacturerDataSet(temperature, humidity, battery, wifiLevel);
     }
 
-    record ManufacturerDataSet(short temperature, int humidity, int battery, int wifiLevel) {
+    // Read packed manufacturer data in the form temperature / humidity / battery
+    // 4 bytes will be read by this function
+    @Nullable
+    private static ManufacturerDataSet readManufacturerDataAtOffset(ByteBuffer buffer, int pos) {
+        if (buffer.limit() <= (pos + 3)) {
+            return null; // Buffer to small to decode
+        }
+        int l = readIntHighbitSign(buffer, pos, 3);
+        short temperature = (short) (l / 1000 * 10);
+        int humidity = Math.abs(l % 1000) * 10;
+        int fourthByte = buffer.get(pos + 3);
+        boolean error = (fourthByte & 0x80) == 0x80; // extract high bit, currently not reported
+        int battery = fourthByte & (0xFF ^ 0x80); // mask out high bit
+        return new ManufacturerDataSet(temperature, humidity, battery);
+    }
+
+    private static int readIntHighbitSign(ByteBuffer buffer, int pos, int length) {
+        int result = 0;
+        boolean invert = false;
+        for (int i = 0; i < length; i++) {
+            int value = 0xFF & buffer.get(pos + i);
+            // highest bit of first value encodes the sign
+            if (i == 0 && (value & 0x80) > 0) {
+                invert = true;
+                value ^= 0x80;
+            }
+            result <<= 8;
+            result |= value;
+        }
+        if (invert) {
+            result = result * -1;
+        }
+        return result;
+    }
+
+    record ManufacturerDataSet(short temperature, int humidity, int battery) {
     }
 
     public static @Nullable GoveeModel getGoveeModel(BluetoothDevice device) {
