@@ -96,17 +96,29 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
         }
 
         Map<Integer, List<Channel>> channelsByRefreshInterval = new HashMap<>();
+        boolean hasUsableChannel = false;
         for (Channel channel : getThing().getChannels()) {
             WindhagerbiowinChannelConfiguration channelConfig = channel.getConfiguration()
                     .as(WindhagerbiowinChannelConfiguration.class);
-            if (channelConfig.path.isBlank() || channelConfig.refreshInterval < 1) {
+            if (channelConfig.path.isBlank()) {
+                logger.debug("Skipping channel {} without a configured path.", channel.getUID());
+                continue;
+            }
+            if (channelConfig.refreshInterval < 1) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Channel path and refresh interval must be configured.");
+                        "Channel refresh interval must be configured.");
                 return;
             }
 
+            hasUsableChannel = true;
             channelsByRefreshInterval.computeIfAbsent(channelConfig.refreshInterval, key -> new ArrayList<>())
                     .add(channel);
+        }
+
+        if (!hasUsableChannel) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "At least one channel with a configured path must be defined.");
+            return;
         }
 
         for (Map.Entry<Integer, List<Channel>> entry : channelsByRefreshInterval.entrySet()) {

@@ -15,10 +15,6 @@
 		<label>Windhagerbiowin Binding Thing</label>
 		<description>Sample thing for Windhagerbiowin Binding</description>
 
-		<channels>
-			<channel id="channel1" typeId="biowin-value"/>
-		</channels>
-
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
