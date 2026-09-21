@@ -60,7 +60,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 
-@SuppressWarnings("nullUncheckedConversion")
+@SuppressWarnings("all")
 class AutomowerHandlerCacheTest {
     @Test
     void successfulCalendarUpdateReplacesOnlyTargetWorkAreaTasks() throws Exception {

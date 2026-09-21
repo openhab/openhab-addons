@@ -35,7 +35,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.RefreshType;
 
-@SuppressWarnings("nullUncheckedConversion")
+@SuppressWarnings("all")
 class AutomowerHandlerCommandTest {
     @Test
     void handleCommandDispatchesSettingsStatusStatisticsAndRefresh() {
@@ -101,7 +101,7 @@ class AutomowerHandlerCommandTest {
         verify(handler, never()).sendAutomowerCommand(org.mockito.ArgumentMatchers.any(AutomowerCommand.class));
     }
 
-    @SuppressWarnings("nullUncheckedConversion")
+    @SuppressWarnings("all")
     private AutomowerHandler createHandler() {
         Thing thing = Mockito.mock(Thing.class);
         ThingUID thingUID = new ThingUID("automower:automower:mower-1");

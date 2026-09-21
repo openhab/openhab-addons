@@ -338,7 +338,7 @@ class AutomowerWebSocketMessageTest {
         assertEquals(7, message.getCode());
     }
 
-    @SuppressWarnings("nullUncheckedConversion")
+    @SuppressWarnings("all")
     private AutomowerHandler createHandler() throws ReflectiveOperationException {
         Thing thing = Mockito.mock(Thing.class);
         Mockito.when(thing.getUID()).thenReturn(new ThingUID("automower:automower:mower-1"));

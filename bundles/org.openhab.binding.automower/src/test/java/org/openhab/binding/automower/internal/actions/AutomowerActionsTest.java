@@ -123,7 +123,7 @@ class AutomowerActionsTest {
         return actions;
     }
 
-    @SuppressWarnings("nullUncheckedConversion")
+    @SuppressWarnings("all")
     private AutomowerHandler mockHandler() {
         return mock(AutomowerHandler.class);
     }
