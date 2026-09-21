@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -74,7 +74,9 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
 
-    private final AtomicBoolean connectionStartRunning = new AtomicBoolean();
+    private final ExecutorService connectingScheduler = ThreadPoolManager.getPool("bluez-connect");
+
+    private AtomicBoolean connectionStartRunning = new AtomicBoolean();
 
     // Device from native lib
     private @Nullable BluetoothDevice device = null;
@@ -112,7 +114,12 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         }
         logger.debug("updateBlueZDevice({})", blueZDevice);
 
+        BluetoothDevice oldDevice = this.device;
         this.device = blueZDevice;
+
+        if (oldDevice != this.device) { // see #connect for explanation
+            connectionStartRunning = new AtomicBoolean();
+        }
 
         if (blueZDevice == null) {
             return;
@@ -206,11 +213,13 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
      */
     synchronized void resetForRemoval() {
         this.device = null;
+        this.connectionStartRunning = new AtomicBoolean(); // see #connect for explanation
         supportedServices.clear();
         setConnectionState(ConnectionState.DISCONNECTED);
     }
 
     @Override
+    @SuppressWarnings({ "PMD.CompareObjectsWithEquals" })
     public boolean connect() {
         BluetoothDevice dev = device;
 
@@ -220,10 +229,19 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
         logger.debug("Connect({})", dev);
 
+        // The dev == device checks ensure that we only change connection
+        // state if the device we connect is still the device backing this
+        // object
+        // connectionStartRunning is retained here in a local variable so that
+        // in case of a device switch, the AtomicBoolean associated with the
+        // correct device is used.
+        AtomicBoolean connectionStartRunning = this.connectionStartRunning;
         if (Boolean.FALSE.equals(dev.isConnected())) {
             if (connectionStartRunning.compareAndSet(false, true)) {
                 CompletableFuture.runAsync(() -> {
-                    setConnectionState(ConnectionState.CONNECTING);
+                    if (dev == device) {
+                        setConnectionState(ConnectionState.CONNECTING);
+                    }
                     // BlueZ Device.Connect() is unreliable while the adapter is actively discovering
                     // (the call blocks / does not complete). Pause discovery first; the bridge's periodic
                     // refresh job resumes it shortly after.
@@ -234,11 +252,15 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     logger.debug("Connect result: {}", ret);
                     ConnectionState cs1 = ret ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED;
                     logger.debug("Updating connection state after connect: {}", cs1);
-                    setConnectionState(cs1);
-                }, scheduler).handle((voidResult, th) -> {
+                    if (dev == device) {
+                        setConnectionState(cs1);
+                    }
+                }, connectingScheduler).handle((voidResult, th) -> {
                     if (th != null) {
                         logger.debug("Failed to connect", th);
-                        setConnectionState(ConnectionState.DISCONNECTED);
+                        if (dev == device) {
+                            setConnectionState(ConnectionState.DISCONNECTED);
+                        }
                     }
                     connectionStartRunning.set(false);
                     return null;
@@ -250,7 +272,9 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         } else {
             logger.debug("Device was already connected");
             // we might be stuck in another state atm so we need to trigger a connected in this case
-            setConnectionState(ConnectionState.CONNECTED);
+            if (dev == device) {
+                setConnectionState(ConnectionState.CONNECTED);
+            }
         }
 
         return false;
@@ -293,19 +317,32 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         return services;
     }
 
-    private @Nullable CompletableFuture<BluetoothGattCharacteristic> getDBusBlueZCharacteristicByUUID(String uuid) {
+    private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByUUIDNow(String uuid) {
         BluetoothDevice dev = device;
         if (dev == null) {
             return null;
         }
+        for (BluetoothGattService service : getGattServicesRefreshed(dev)) {
+            for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
+                if (characteristic != null && uuid.equalsIgnoreCase(characteristic.getUuid())) {
+                    return characteristic;
+                }
+            }
+        }
+        return null;
+    }
+
+    private @Nullable CompletableFuture<BluetoothGattCharacteristic> getDBusBlueZCharacteristicByUUID(String uuid) {
+        BluetoothDevice dev = device;
+        if (dev == null) {
+            return CompletableFuture.failedFuture(new IllegalStateException("DBusBlueZ device is not set"));
+        }
         AtomicInteger atomicInteger = new AtomicInteger();
         return RetryFuture.callWithRetry(() -> {
-            if (Boolean.TRUE.equals(dev.isServicesResolved())) {
-                for (BluetoothGattService service : getGattServicesRefreshed(dev)) {
-                    for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
-                        if (characteristic != null && uuid.equalsIgnoreCase(characteristic.getUuid())) {
-                            return characteristic;
-                        }
+            for (BluetoothGattService service : getGattServicesRefreshed(dev)) {
+                for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
+                    if (characteristic != null && uuid.equalsIgnoreCase(characteristic.getUuid())) {
+                        return characteristic;
                     }
                 }
             }
@@ -585,17 +622,12 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public boolean isNotifying(BluetoothCharacteristic characteristic) {
-        try {
-            BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUID(characteristic.getUuid().toString()).get();
-            if (c != null) {
-                Boolean isNotifying = c.isNotifying();
-                return Objects.requireNonNullElse(isNotifying, false);
-            } else {
-                logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
-                return false;
-            }
-        } catch (InterruptedException | ExecutionException ex) {
-            logger.warn("Fetchig characteristic '{}' for device '{}'.", characteristic.getUuid(), address, ex);
+        BluetoothGattCharacteristic c = getDBusBlueZCharacteristicByUUIDNow(characteristic.getUuid().toString());
+        if (c != null) {
+            Boolean isNotifying = c.isNotifying();
+            return Objects.requireNonNullElse(isNotifying, false);
+        } else {
+            logger.warn("Characteristic '{}' is missing on device '{}'.", characteristic.getUuid(), address);
             return false;
         }
     }
