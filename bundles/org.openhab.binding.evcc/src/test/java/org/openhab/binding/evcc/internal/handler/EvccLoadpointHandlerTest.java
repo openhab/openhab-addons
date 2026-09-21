@@ -21,6 +21,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -184,12 +185,13 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
 
     @Test
     public void testEnableAndDisableSettingsUseNestedApiPaths() {
-        handler.endpoint = "http://evcc/api/loadpoints/1";
+        EvccLoadpointHandler testHandler = Objects.requireNonNull(handler);
+        testHandler.endpoint = "http://evcc/api/loadpoints/1";
 
-        handler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-enable-threshold"), new DecimalType(100));
-        handler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-enable-delay"), new DecimalType(10));
-        handler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-disable-threshold"), new DecimalType(-50));
-        handler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-disable-delay"), new DecimalType(20));
+        testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-enable-threshold"), new DecimalType(100));
+        testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-enable-delay"), new DecimalType(10));
+        testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-disable-threshold"), new DecimalType(-50));
+        testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-disable-delay"), new DecimalType(20));
 
         assertEquals(java.util.List.of("http://evcc/api/loadpoints/1/enable/threshold/100",
                 "http://evcc/api/loadpoints/1/enable/delay/10", "http://evcc/api/loadpoints/1/disable/threshold/-50",
