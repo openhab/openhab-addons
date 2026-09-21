@@ -156,6 +156,16 @@ Number:Energy             KebaTotalEnergy       "Energy during all sessions [%.1
 Switch                    KebaInputSwitch                                                 {channel="keba:kecontact:1:input"}
 Switch                    KebaOutputSwitch                                                {channel="keba:kecontact:1:output"}
 Number:Energy             KebaSetEnergyLimit    "Set charge energy limit [%.1f Wh]"       {channel="keba:kecontact:1:setenergylimit"}
+
+Number                    KebaModbusState       "Operating State [%s]"                    {channel="keba:kecontact-modbus:1:state"}
+Number:ElectricCurrent    KebaModbusI1                                                    {channel="keba:kecontact-modbus:1:I1"}
+Number:ElectricCurrent    KebaModbusI2                                                    {channel="keba:kecontact-modbus:1:I2"}
+Number:ElectricCurrent    KebaModbusI3                                                    {channel="keba:kecontact-modbus:1:I3"}
+Number:Power              KebaModbusPower       "Active power [%.3f W]"                   {channel="keba:kecontact-modbus:1:power"}
+Number:Energy             KebaModbusSessionEnergy                                        {channel="keba:kecontact-modbus:1:sessionconsumption"}
+Number:Energy             KebaModbusTotalEnergy "Energy during all sessions [%.1f Wh]"    {channel="keba:kecontact-modbus:1:totalconsumption"}
+Number:ElectricCurrent    KebaModbusSetCurrent  "Set charging current [%.3f A]"           {channel="keba:kecontact-modbus:1:setchargingcurrent"}
+Switch                    KebaModbusEnabled     "Wallbox enabled"                         {channel="keba:kecontact-modbus:1:enableduser"}
 ```
 
 demo.sitemap:
@@ -192,9 +202,11 @@ Enable `DEBUG` or `TRACE` (even more verbose) logging for the logger named:
 org.openhab.binding.keba
 ```
 
-If everything is working fine, you see the cyclic reception of `report 1`, `2` & `3` from the station. The frequency is according to the `refreshInterval` configuration.
+For the `kecontact` (UDP) Thing type, if everything is working fine, you see the cyclic reception of `report 1`, `2` & `3` from the station. The frequency is according to the `refreshInterval` configuration.
 
-### UDP Ports used
+For the `kecontact-modbus` Thing type there is no equivalent `report` message; instead you see the individual Modbus read/write requests and their responses (or, on failure, read/write errors), one register at a time, at the configured `refreshInterval`.
+
+### UDP Ports used (`kecontact` Thing type only)
 
 ```text
 Send port = UDP 7090
@@ -221,10 +233,24 @@ The right configuration can be validated as follows:
 - UDP response of `report 1`:
   - `DIP-Sw1` `0x20` Bit is set (enable at least `DEBUG` log-level for the binding)
 
+### Modbus TCP Port used (`kecontact-modbus` Thing type only)
+
+The default Modbus TCP port is `502` (configurable via the `port` parameter); the default Unit ID is `255` (configurable via the `unitId` parameter).
+Unlike the UDP interface, the Modbus TCP interface is disabled by default and must be enabled explicitly:
+
+- On the KeContact P30, set `DIP switch 1.3` to `ON` (the same DIP switch used for the UDP interface, since only one of the two network interfaces can be active at a time), then select the Modbus TCP protocol via the WebGUI or Installation Manual instructions.
+- On the KeContact P40, there are no DIP switches; enable the Modbus TCP interface and configure its port/Unit ID via the KEBA eMobility App, OCPP or REST API.
+
+After enabling or changing the interface, power-cycle the station; a WebGUI/App SW-reset alone may not be sufficient to apply the new configuration.
+
 ### Supported stations
 
 - KeContact P20 charging station with network connection (LSA+ socket)
   - Product code: `KC-P20-xxxxxx2x-xxx` or `KC-P20-xxxxxx3x-xxx`
   - Firmware version: 2.5 or higher
+  - UDP interface only
 - KeContact P30 charging station (c- or x-series) or BMW wallbox
-  - Firmware version 3.05 or higher
+  - UDP interface: firmware version 3.9.24 or higher
+  - Modbus TCP interface: firmware version 3.10.16 (c-series) or 1.11 (x-series) or higher
+- KeContact P40 / P40 Pro charging station
+  - Modbus TCP interface only; the UDP interface is not supported
