@@ -133,8 +133,8 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
             logger.debug("Refresh is already running - skipping execution");
             return;
         }
+        BluetoothDevice device = this.device;
         try {
-            BluetoothDevice device = this.device;
             if (device == null) {
                 logger.debug("Device not present - skipping execution");
                 return;
@@ -149,7 +149,7 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
             device.discoverServices();
             device.awaitServiceDiscovery(10, TimeUnit.SECONDS);
 
-            EncryptionHelper encryptionHelper = encryptionHandshake();
+            EncryptionHelper encryptionHelper = encryptionHandshake(device);
 
             BluetoothCharacteristic characteristic = device.getCharacteristic(PROTOCOL_CHAR_UUID);
 
@@ -233,7 +233,7 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
         } catch (InterruptedException | ExecutionException | TimeoutException ex) {
             logger.warn("Failed to run refresh", ex);
         } finally {
-            if (device.getConnectionState() == ConnectionState.CONNECTED) {
+            if (device != null && device.getConnectionState() == ConnectionState.CONNECTED) {
                 device.disconnect();
             }
             logger.debug("Refresh done (finally-block)");
@@ -295,7 +295,8 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
      * @throws ExecutionException
      * @throws TimeoutException
      */
-    private EncryptionHelper encryptionHandshake() throws InterruptedException, ExecutionException, TimeoutException {
+    private EncryptionHelper encryptionHandshake(BluetoothDevice device)
+            throws InterruptedException, ExecutionException, TimeoutException {
         BluetoothService service = device.getServices(UUID_SVC_GOVEE_AUTH);
         // For devices that don't support/require encryption and thus don't offer
         // the authentication service, return a replacement, that just copys the
@@ -331,9 +332,6 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
             CompletableFuture<byte[]> result = listenForCharacteristicUpdate(authNotify);
             device.writeCharacteristic(authWrite, encryptedTx1);
             byte[] rx1 = pskEncryption.decrypt(result.get(30, TimeUnit.SECONDS));
-            if (logger.isDebugEnabled()) {
-                logger.debug("Received as RX1: {}", HexFormat.ofDelimiter(" ").formatHex(rx1));
-            }
             if (rx1[0] != ((byte) 0xE7) || rx1[1] != ((byte) 0x01)) {
                 throw new IllegalStateException("Encryption Handshake failed");
             }
@@ -373,7 +371,7 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
         switch (channelUID.getId()) {
             case CHANNEL_ID_BATTERY, CHANNEL_ID_TEMPERATURE, CHANNEL_ID_HUMIDITY -> {
                 if (command == RefreshType.REFRESH) {
-                    refresh();
+                    scheduler.execute(() -> refresh());
                 }
             }
         }
@@ -434,9 +432,8 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Govee device [{}] received broadcast: tem = {}, hum = {}, battery = {}, wifiLevel = {}",
-                    this.address, manufacturerDataset.temperature(), manufacturerDataset.humidity(),
-                    manufacturerDataset.battery(), manufacturerDataset.wifiLevel());
+            logger.debug("Govee device [{}] received broadcast: tem = {}, hum = {}, battery = {}", this.address,
+                    manufacturerDataset.temperature(), manufacturerDataset.humidity(), manufacturerDataset.battery());
         }
 
         if (manufacturerDataset.temperature() == 0 && manufacturerDataset.humidity() == 0
