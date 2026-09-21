@@ -156,6 +156,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     public void dispose() {
         BluetoothDevice dev = device;
+        device = null;
         if (dev != null) {
             if (Boolean.TRUE.equals(dev.isPaired())) {
                 return;
@@ -275,9 +276,8 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             if (dev == device) {
                 setConnectionState(ConnectionState.CONNECTED);
             }
+            return true;
         }
-
-        return false;
     }
 
     @Override
@@ -322,7 +322,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         if (dev == null) {
             return null;
         }
-        for (BluetoothGattService service : getGattServicesRefreshed(dev)) {
+        for (BluetoothGattService service : dev.getGattServices()) {
             for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
                 if (characteristic != null && uuid.equalsIgnoreCase(characteristic.getUuid())) {
                     return characteristic;
