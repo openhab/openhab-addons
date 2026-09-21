@@ -41,6 +41,7 @@ class DreameStatusMapperTest {
         assertEquals("upgrading", DreameStatusMapper.stateName(14));
         assertEquals("charging_paused_hot", DreameStatusMapper.stateName(15));
         assertEquals("charging_paused_cold", DreameStatusMapper.stateName(16));
+        assertEquals("paused_at_maintenance_point", DreameStatusMapper.stateName(75));
         assertEquals("unknown", DreameStatusMapper.stateName(99));
     }
 
@@ -55,7 +56,7 @@ class DreameStatusMapperTest {
     void derivesTaskActivityFromSafeMowerStates() {
         assertEquals(Boolean.TRUE, DreameStatusMapper.taskActiveFromState(1));
         assertEquals(Boolean.TRUE, DreameStatusMapper.taskActiveFromState(5));
-        for (int state : new int[] { 2, 3, 4, 6, 13 }) {
+        for (int state : new int[] { 2, 3, 4, 6, 13, 75 }) {
             assertEquals(Boolean.FALSE, DreameStatusMapper.taskActiveFromState(state));
         }
         assertNull(DreameStatusMapper.taskActiveFromState(11));

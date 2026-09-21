@@ -51,6 +51,7 @@
 			<channel id="error-code" typeId="error-code"/>
 			<channel id="firmware" typeId="firmware"/>
 			<channel id="do-not-disturb" typeId="do-not-disturb"/>
+			<channel id="do-not-disturb-active" typeId="do-not-disturb-active"/>
 			<channel id="current-zone" typeId="current-zone"/>
 			<channel id="mowing-sessions" typeId="mowing-sessions"/>
 			<channel id="total-mowing-time" typeId="total-mowing-time"/>
@@ -124,7 +125,7 @@
 
 	<channel-type id="error-code">
 		<item-type>String</item-type>
-		<label>Device Status Code</label>
+		<label>Error Code</label>
 		<description>Current proprietary Dreame device status or error code</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -139,7 +140,15 @@
 	<channel-type id="do-not-disturb">
 		<item-type>Switch</item-type>
 		<label>Do Not Disturb</label>
-		<description>Enables or disables do not disturb mode</description>
+		<description>Enables or disables do not disturb mode; availability depends on the mower model and firmware</description>
+	</channel-type>
+
+	<channel-type id="do-not-disturb-active">
+		<item-type>Switch</item-type>
+		<label>Do Not Disturb Active</label>
+		<description>Indicates whether the enabled do not disturb schedule is currently active; availability depends on the
+			mower model and firmware</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="current-zone">
@@ -285,8 +294,8 @@
 	<channel-type id="current-map-id">
 		<item-type>Number</item-type>
 		<label>Current Map ID</label>
-		<description>Identifier of the active map</description>
-		<state readOnly="true"/>
+		<description>Identifier of the active map; writable for MOVA mowers to select the map used by openHAB</description>
+		<state min="1" step="1"/>
 	</channel-type>
 
 	<channel-type id="maps">

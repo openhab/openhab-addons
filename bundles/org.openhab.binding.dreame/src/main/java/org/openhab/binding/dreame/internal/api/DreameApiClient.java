@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.dreame.internal.model.DreameAction;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
@@ -34,6 +35,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 /**
  * Implements Dreamehome OAuth login and account device discovery.
@@ -143,11 +146,39 @@ public class DreameApiClient implements DreameMowerApi {
 
     public synchronized void setProperty(DreameDevice device, DreameProperty property, boolean value)
             throws DreameCloudException {
+        setProperty(device, property, new JsonPrimitive(value));
+    }
+
+    @Override
+    public synchronized void setDnd(DreameDevice device, boolean enabled, @Nullable String taskConfiguration)
+            throws DreameCloudException {
+        if ("mova.mower.g2584d".equals(device.model())) {
+            throw new DreameCloudException("Do not disturb commands are not yet supported for this mower model");
+        }
+        if (taskConfiguration == null) {
+            setProperty(device, DreameProperty.DND, enabled);
+            return;
+        }
+        JsonElement parsed;
+        try {
+            parsed = JsonParser.parseString(taskConfiguration);
+        } catch (RuntimeException e) {
+            throw new DreameCloudException("Invalid do not disturb task configuration", e);
+        }
+        if (!(parsed instanceof JsonArray tasks) || tasks.isEmpty() || !tasks.get(0).isJsonObject()) {
+            throw new DreameCloudException("Unsupported do not disturb task configuration");
+        }
+        tasks.get(0).getAsJsonObject().addProperty("en", enabled);
+        setProperty(device, DreameProperty.DND_TASK, new JsonPrimitive(gson.toJson(tasks)));
+    }
+
+    private void setProperty(DreameDevice device, DreameProperty property, JsonElement value)
+            throws DreameCloudException {
         JsonObject parameter = new JsonObject();
         parameter.addProperty("did", device.id());
         parameter.addProperty("siid", property.serviceId());
         parameter.addProperty("piid", property.propertyId());
-        parameter.addProperty("value", value);
+        parameter.add("value", value);
         JsonArray parameters = new JsonArray();
         parameters.add(parameter);
         sendCommand(device, "set_properties", parameters);
@@ -183,6 +214,35 @@ public class DreameApiClient implements DreameMowerApi {
         if (result instanceof JsonObject object && object.has("code") && object.get("code").getAsInt() != 0) {
             throw new DreameCloudException("Cloud service rejected zone mowing");
         }
+    }
+
+    @Override
+    public synchronized void selectMap(DreameDevice device, int mapIndex) throws DreameCloudException {
+        JsonElement result = sendCommand(device, "action", createMapSelectionParameters(device, mapIndex));
+        if (result instanceof JsonObject object && object.has("code") && object.get("code").getAsInt() != 0) {
+            throw new DreameCloudException("Cloud service rejected map selection");
+        }
+    }
+
+    static JsonObject createMapSelectionParameters(DreameDevice device, int mapIndex) {
+        if (mapIndex < 0) {
+            throw new IllegalArgumentException("Map index must not be negative");
+        }
+        JsonObject data = new JsonObject();
+        data.addProperty("idx", Integer.toString(mapIndex));
+        JsonObject selection = new JsonObject();
+        selection.addProperty("m", "a");
+        selection.addProperty("p", 0);
+        selection.addProperty("o", 200);
+        selection.add("d", data);
+        JsonArray input = new JsonArray();
+        input.add(selection);
+        JsonObject parameters = new JsonObject();
+        parameters.addProperty("did", device.id());
+        parameters.addProperty("siid", 2);
+        parameters.addProperty("aiid", 50);
+        parameters.add("in", input);
+        return parameters;
     }
 
     public synchronized BigDecimal getCuttingHeight(DreameDevice device, int mapIndex) throws DreameCloudException {

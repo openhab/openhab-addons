@@ -27,6 +27,8 @@ public enum DreameProperty {
     CHARGING_STATUS(3, 3, 2),
     STATUS(5, 4, 1),
     DND(70, 5, 1),
+    DND_TASK(73, 5, 4),
+    DND_STATUS(74, 2, 51),
     TOTAL_MOWING_TIME(110, 12, 2),
     MOWING_SESSIONS(111, 12, 3),
     TOTAL_MOWED_AREA(112, 12, 4);

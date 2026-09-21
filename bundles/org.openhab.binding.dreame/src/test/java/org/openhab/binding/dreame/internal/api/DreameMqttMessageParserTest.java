@@ -29,6 +29,8 @@ import org.openhab.binding.dreame.internal.model.DreameMowerTaskStatus;
 import org.openhab.binding.dreame.internal.model.DreameProperty;
 import org.openhab.binding.dreame.internal.model.DreameStatus;
 
+import com.google.gson.JsonParser;
+
 /**
  * Tests MQTT events and proprietary mower telemetry frames.
  *
@@ -53,6 +55,20 @@ class DreameMqttMessageParserTest {
         assertEquals(1, status.integer(DreameProperty.STATE, -1));
         assertEquals(76, status.integer(DreameProperty.BATTERY_LEVEL, -1));
         assertEquals(2, status.properties().size());
+    }
+
+    @Test
+    void mqttParserKeepsMovaDndStatusAndTimeWindow() throws DreameCloudException {
+        String payload = """
+                {"data":{"method":"properties_changed","params":[
+                  {"siid":2,"piid":51,"value":{"start":1320,"end":480,"value":1}}
+                ]}}
+                """;
+
+        DreameStatus status = new DreameMqttMessageParser().parse(payload, List.of(DreameProperty.DND_STATUS));
+
+        assertEquals(JsonParser.parseString("{\"start\":1320,\"end\":480,\"value\":1}"),
+                status.value(DreameProperty.DND_STATUS));
     }
 
     @Test

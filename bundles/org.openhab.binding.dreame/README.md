@@ -6,6 +6,9 @@ It uses the selected cloud service for authentication, discovery, commands, peri
 > **Development status:** The Dreame A1 Pro 2000 (`dreame.mower.g2540d`) has been tested with firmware `4.3.6_0623` in the European cloud region, including the `start`, `pause`, `stop` and `dock` commands.
 > The MOVA 1000 (`mova.mower.g2405c`) has been community-tested with MOVAhome, including discovery, MQTT updates,
 > commands, zone mowing and map rendering.
+> The MOVA LiDAX 1200 (`mova.mower.g2529d`) has been community-tested with MOVAhome, including commands, MQTT
+> updates, task state, docking state and the statistics refresh after returning to the dock.
+> The MOVA LiDAX Ultra 1600 AWD (`mova.mower.g2584d`) has also been community-tested with MOVAhome.
 > Other mower models use the same protocol family but still require testing.
 
 ## Supported Things
@@ -17,8 +20,11 @@ It uses the selected cloud service for authentication, discovery, commands, peri
 
 The binding accepts devices whose model identifier starts with `dreame.mower.` or `mova.mower.`.
 Known mower identifiers include A1 (`dreame.mower.p2255`), A1 Pro (`dreame.mower.g2422` and `dreame.mower.g2540d`), A2 (`dreame.mower.g2408`), A2 1200 (`dreame.mower.g2568a`) and A3 (`dreame.mower.g3255`).
-Known MOVA identifiers include MOVA 600 (`mova.mower.g2405a`), MOVA 600 Kit (`mova.mower.g2405b`) and MOVA 1000 (`mova.mower.g2405c`).
-The `dreame.mower.g2540d` and `mova.mower.g2405c` models are confirmed with physical mowers.
+Known MOVA identifiers include MOVA 600 (`mova.mower.g2405a`), MOVA 600 Kit (`mova.mower.g2405b`), MOVA 1000
+(`mova.mower.g2405c`), MOVA LiDAX 1200 (`mova.mower.g2529d`) and MOVA LiDAX Ultra 1600 AWD
+(`mova.mower.g2584d`).
+The `dreame.mower.g2540d`, `mova.mower.g2405c`, `mova.mower.g2529d` and `mova.mower.g2584d` models are confirmed
+with physical mowers.
 
 ## Discovery
 
@@ -53,8 +59,9 @@ An unsupported property is reported as `UNDEF`.
 | `charging-status`       | String               | R      | Current charging state                           |
 | `error-code`            | String               | R      | Proprietary device status or error code          |
 | `firmware`              | String               | R      | Installed firmware version                       |
-| `do-not-disturb`        | Switch               | RW     | Do not disturb setting; model-dependent          |
-| `current-zone`          | String               | R      | Active mowing region identifier                  |
+| `do-not-disturb`        | Switch               | RW²    | Do not disturb setting; model-dependent          |
+| `do-not-disturb-active` | Switch               | R      | Whether the configured DND window is active      |
+| `current-zone`          | String               | R      | Active mowing zone identifier                    |
 | `mowing-progress`       | Number:Dimensionless | R      | Progress of the current mowing task              |
 | `planned-mowing-area`   | Number:Area          | R      | Planned area of the current mowing task          |
 | `current-mowed-area`    | Number:Area          | R      | Area completed during the current mowing task    |
@@ -71,7 +78,7 @@ An unsupported property is reported as `UNDEF`.
 | `task-operation`        | Number               | R      | Proprietary Dreame task operation code           |
 | `task-state`            | String               | R      | State derived from observed task operation codes  |
 | `task-time`             | Number               | R      | Raw undocumented task time field                  |
-| `current-map-id`        | Number               | R      | Identifier of the active map                      |
+| `current-map-id`        | Number               | R/W¹   | Identifier of the active map                      |
 | `maps`                  | String               | R      | Available map descriptors as JSON                 |
 | `zones`                 | String               | R      | Active-map mowing-zone descriptors as JSON        |
 | `map-svg`               | Image                | R      | Rendered SVG image of the active map              |
@@ -93,6 +100,7 @@ zones of the active map. Empty, non-numeric, non-positive and unknown zone IDs a
 BLE and LTE values are `UNDEF` when the mower reports its protocol sentinel for an unavailable radio.
 The `error-code`, `task-operation` and `task-time` values are intentionally exposed without an inferred meaning where
 Dreame does not publish a protocol definition.
+Mower state code `75` is shown as `paused_at_maintenance_point` and sets `task-active` to `OFF`.
 The `task-active` channel is `ON` while an observed work sequence is running, including return-to-dock, and `OFF` while
 it is paused or after the mower reaches the dock. Until the first task activity message arrives, the binding initializes
 this channel from known mower states and leaves it unchanged for unknown states.
@@ -175,9 +183,16 @@ If a newly added channel does not appear after updating a development JAR, disab
 
 ## Known Limitations
 
-- Mower models other than `dreame.mower.g2540d` and `mova.mower.g2405c` still require physical-device testing.
-- The active map ID is read-only; selecting another stored map is not yet implemented.
+- Mower models other than `dreame.mower.g2540d`, `mova.mower.g2405c`, `mova.mower.g2529d` and
+  `mova.mower.g2584d` still require physical-device testing.
+- ¹ The active map can be selected on MOVA mowers. This selects the map used by the openHAB cloud session; other MOVAhome app sessions may continue to display another map.
 - Lifetime statistics and do not disturb are not exposed by all mower firmware versions.
+- ² On the MOVA LiDAX Ultra 1600 AWD (`mova.mower.g2584d`), do not disturb is currently read-only: MQTT reports its
+  state and schedule at property `2/51`, but the command format has not been verified. The binding therefore does not
+  send do not disturb commands for this model. To prevent a linked Item from showing an optimistic command value,
+  disable autoupdate for that Item until writing has been validated on a physical mower.
+- `do-not-disturb-active` is calculated from the enabled flag and time window reported by the mower, using the local
+  time zone of the openHAB server. Time windows crossing midnight are supported.
 - Map details depend on the geometry and metadata supplied by the mower firmware.
 - Position values use the native Dreame map coordinate system and are not geographic coordinates.
 - The integration depends on private Dreamehome and MOVAhome cloud APIs and may require updates if they change.

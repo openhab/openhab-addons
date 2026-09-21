@@ -35,6 +35,7 @@ public final class DreameBindingConstants {
     public static final String CHANNEL_ERROR_CODE = "error-code";
     public static final String CHANNEL_FIRMWARE = "firmware";
     public static final String CHANNEL_DND = "do-not-disturb";
+    public static final String CHANNEL_DND_ACTIVE = "do-not-disturb-active";
     public static final String CHANNEL_CURRENT_ZONE = "current-zone";
     public static final String CHANNEL_MOWING_SESSIONS = "mowing-sessions";
     public static final String CHANNEL_TOTAL_MOWING_TIME = "total-mowing-time";

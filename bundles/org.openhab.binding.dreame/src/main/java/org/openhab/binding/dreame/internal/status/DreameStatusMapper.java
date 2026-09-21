@@ -39,6 +39,7 @@ public final class DreameStatusMapper {
             case 14 -> "upgrading";
             case 15 -> "charging_paused_hot";
             case 16 -> "charging_paused_cold";
+            case 75 -> "paused_at_maintenance_point";
             default -> "unknown";
         };
     }
@@ -54,7 +55,7 @@ public final class DreameStatusMapper {
     public static @Nullable Boolean taskActiveFromState(int state) {
         return switch (state) {
             case 1, 5 -> true;
-            case 2, 3, 4, 6, 13 -> false;
+            case 2, 3, 4, 6, 13, 75 -> false;
             default -> null;
         };
     }
