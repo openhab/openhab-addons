@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.emerald.internal.api;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -32,7 +34,26 @@ public class EmeraldList {
     public @NonNullByDefault({}) Info info;
 
     public class Info {
-        public @NonNullByDefault({}) Property[] property;
+        public @NonNullByDefault({}) Property[] property = new Property[0];
+
+        @SerializedName("shared_property")
+        public @NonNullByDefault({}) Property[] sharedProperty = new Property[0];
+    }
+
+    /**
+     * Returns all properties associated with the account, including shared properties.
+     */
+    public List<Property> getAllProperties() {
+        List<Property> all = new java.util.ArrayList<>();
+        if (info != null) {
+            if (info.property != null) {
+                all.addAll(java.util.Arrays.asList(info.property));
+            }
+            if (info.sharedProperty != null) {
+                all.addAll(java.util.Arrays.asList(info.sharedProperty));
+            }
+        }
+        return all;
     }
 
     public class Property {
@@ -95,16 +116,12 @@ public class EmeraldList {
      * Finds a heat pump and its parent property by UUID.
      */
     public @Nullable HeatpumpContext findHeatpump(String uuid) {
-        if (info == null || info.property == null) {
-            return null;
-        }
-        for (Property prop : info.property) {
-            if (prop.heatpump == null) {
-                continue;
-            }
-            for (Heatpump hp : prop.heatpump) {
-                if (uuid.equals(hp.id)) {
-                    return new HeatpumpContext(prop, hp);
+        for (Property prop : getAllProperties()) {
+            if (prop.heatpump != null) {
+                for (Heatpump hp : prop.heatpump) {
+                    if (uuid.equals(hp.id)) {
+                        return new HeatpumpContext(prop, hp);
+                    }
                 }
             }
         }

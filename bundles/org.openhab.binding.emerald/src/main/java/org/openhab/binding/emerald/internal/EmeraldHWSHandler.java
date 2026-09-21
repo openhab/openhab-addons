@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link EmeraldHWSHandler} is responsible for handling commands, which are
@@ -144,6 +144,44 @@ public class EmeraldHWSHandler extends BaseThingHandler {
         }
     }
 
+    private void syncDevice(EmeraldList.Heatpump hp) {
+        Map<String, String> properties = editProperties();
+        if (!hp.softVersion.isEmpty()) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, hp.softVersion);
+        }
+        if (!hp.hwVersion.isEmpty()) {
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, hp.hwVersion);
+        }
+        if (!hp.macAddress.isEmpty()) {
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, hp.macAddress);
+        }
+        if (!hp.brand.isEmpty()) {
+            properties.put(Thing.PROPERTY_VENDOR, hp.brand);
+        }
+        if (!hp.model.isEmpty()) {
+            properties.put(Thing.PROPERTY_MODEL_ID, hp.model);
+        }
+        if (!hp.serialNumber.isEmpty()) {
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, hp.serialNumber);
+        }
+        if (!hp.wifiName.isEmpty()) {
+            properties.put(PROPERTY_SSID_NAME, hp.wifiName);
+        }
+        updateProperties(properties);
+
+        cachedCurrentTemp = hp.lastState.tempCurrent;
+        cachedSetTemp = hp.lastState.tempSet;
+
+        updateState(EmeraldBindingConstants.CHANNEL_POWER,
+                OnOffType.from("1".equals(hp.lastState.switchOn) || "on".equalsIgnoreCase(hp.lastState.switchOn)));
+        updateState(EmeraldBindingConstants.CHANNEL_MODE, new DecimalType(hp.lastState.mode));
+        updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
+                new QuantityType<>(cachedCurrentTemp, SIUnits.CELSIUS));
+        updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE,
+                new QuantityType<>(cachedSetTemp, SIUnits.CELSIUS));
+        calculateAndPublishCapacity();
+    }
+
     @Override
     public void initialize() {
         EmeraldHWSConfiguration localConfig = getConfigAs(EmeraldHWSConfiguration.class);
@@ -162,71 +200,41 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             return;
         }
 
-        updateStatus(ThingStatus.ONLINE);
-
         EmeraldList api = getApi();
-        if (api != null) {
-
-            EmeraldList.HeatpumpContext ctx = api.findHeatpump(localConfig.uuid);
-
-            scheduler.execute(() -> {
-                if (ctx != null) {
-                    EmeraldList.Heatpump hp = ctx.heatpump();
-                    Map<String, String> properties = editProperties();
-                    if (!hp.softVersion.isEmpty()) {
-                        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, hp.softVersion);
-                    }
-                    if (!hp.hwVersion.isEmpty()) {
-                        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hp.hwVersion);
-                    }
-                    if (!hp.macAddress.isEmpty()) {
-                        properties.put(Thing.PROPERTY_MAC_ADDRESS, hp.macAddress);
-                    }
-                    if (!hp.brand.isEmpty()) {
-                        properties.put(Thing.PROPERTY_VENDOR, hp.brand);
-                    }
-                    if (!hp.model.isEmpty()) {
-                        properties.put(Thing.PROPERTY_MODEL_ID, hp.model);
-                    }
-                    if (!hp.serialNumber.isEmpty()) {
-                        properties.put(Thing.PROPERTY_SERIAL_NUMBER, hp.serialNumber);
-                    }
-                    if (!hp.wifiName.isEmpty()) {
-                        properties.put(PROPERTY_SSID_NAME, hp.wifiName);
-                    }
-                    updateProperties(properties);
-
-                    updateStatus(ThingStatus.ONLINE);
-                    return;
-                }
-            });
+        if (api == null) {
+            // API data is not yet ready; bridge will call updateChannels() once polled
+            return;
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.conf-error.uuid-not-found");
+        EmeraldList.HeatpumpContext ctx = api.findHeatpump(localConfig.uuid);
+        if (ctx != null) {
+            syncDevice(ctx.heatpump());
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.uuid-not-found");
+        }
     }
 
     public void updateChannels() {
         logger.debug("Updating channels");
-        EmeraldList api = getApi();
+        EmeraldHWSConfiguration localConfig = config;
+        if (localConfig == null) {
+            return;
+        }
 
+        EmeraldList api = getApi();
         if (api != null) {
-            EmeraldList.HeatpumpContext ctx = api.findHeatpump(config.uuid);
+            EmeraldList.HeatpumpContext ctx = api.findHeatpump(localConfig.uuid);
 
             if (ctx != null) {
-                EmeraldList.Heatpump hp = ctx.heatpump();
-
-                cachedCurrentTemp = hp.lastState.tempCurrent;
-                cachedSetTemp = hp.lastState.tempSet;
-
-                updateState(EmeraldBindingConstants.CHANNEL_POWER, OnOffType
-                        .from("1".equals(hp.lastState.switchOn) || "on".equalsIgnoreCase(hp.lastState.switchOn)));
-                updateState(EmeraldBindingConstants.CHANNEL_MODE, new DecimalType(hp.lastState.mode));
-                updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
-                        new QuantityType<>(cachedCurrentTemp, SIUnits.CELSIUS));
-                updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE,
-                        new QuantityType<>(cachedSetTemp, SIUnits.CELSIUS));
-                calculateAndPublishCapacity();
+                syncDevice(ctx.heatpump());
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error.uuid-not-found");
             }
         }
     }
@@ -266,61 +274,57 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             boolean dataFound = false;
 
             for (JsonObject payload : objectsToProcess) {
-                if (payload.has("temp_current")) {
+                if (payload.has("temp_current") && payload.get("temp_current").isJsonPrimitive()) {
                     cachedCurrentTemp = payload.get("temp_current").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_CURRENT_TEMPERATURE,
                             new QuantityType<>(cachedCurrentTemp, SIUnits.CELSIUS));
                     dataFound = true;
                 }
 
-                if (payload.has("temp_set")) {
+                if (payload.has("temp_set") && payload.get("temp_set").isJsonPrimitive()) {
                     cachedSetTemp = payload.get("temp_set").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_SET_TEMPERATURE,
                             new QuantityType<>(cachedSetTemp, SIUnits.CELSIUS));
                     dataFound = true;
                 }
 
-                if (payload.has("switch")) {
+                if (payload.has("switch") && payload.get("switch").isJsonPrimitive()) {
                     JsonElement switchElement = payload.get("switch");
                     OnOffType powerState = OnOffType.OFF;
 
-                    try {
-                        if (switchElement.getAsJsonPrimitive().isNumber()) {
-                            powerState = (switchElement.getAsInt() == 1) ? OnOffType.ON : OnOffType.OFF;
-                        } else {
-                            String switchStr = switchElement.getAsString();
-                            if ("on".equalsIgnoreCase(switchStr) || "1".equals(switchStr)) {
-                                powerState = OnOffType.ON;
-                            }
+                    if (switchElement.getAsJsonPrimitive().isNumber()) {
+                        powerState = (switchElement.getAsInt() == 1) ? OnOffType.ON : OnOffType.OFF;
+                    } else {
+                        String switchStr = switchElement.getAsString();
+                        if ("on".equalsIgnoreCase(switchStr) || "1".equals(switchStr)) {
+                            powerState = OnOffType.ON;
                         }
-                    } catch (JsonSyntaxException e) {
-                        logger.warn("Could not parse switch state from MQTT: {}", switchElement);
                     }
 
                     updateState(EmeraldBindingConstants.CHANNEL_POWER, powerState);
                     dataFound = true;
                 }
 
-                if (payload.has("mode")) {
+                if (payload.has("mode") && payload.get("mode").isJsonPrimitive()) {
                     int mode = payload.get("mode").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_MODE, new DecimalType(mode));
                     dataFound = true;
                 }
 
-                if (payload.has("fault")) {
+                if (payload.has("fault") && payload.get("fault").isJsonPrimitive()) {
                     int faultCode = payload.get("fault").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_FAULT, new DecimalType(faultCode));
                     dataFound = true;
                 }
 
-                if (payload.has("defrost")) {
+                if (payload.has("defrost") && payload.get("defrost").isJsonPrimitive()) {
                     String defrostState = payload.get("defrost").getAsString();
                     OnOffType isDefrosting = "1".equals(defrostState) ? OnOffType.ON : OnOffType.OFF;
                     updateState(EmeraldBindingConstants.CHANNEL_DEFROST, isDefrosting);
                     dataFound = true;
                 }
 
-                if (payload.has("work_state")) {
+                if (payload.has("work_state") && payload.get("work_state").isJsonPrimitive()) {
                     int workState = payload.get("work_state").getAsInt();
                     updateState(EmeraldBindingConstants.CHANNEL_WORK_STATE, new DecimalType(workState));
                     dataFound = true;
@@ -334,7 +338,8 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                 logger.debug("Parsed MQTT message did not contain channel state data (Metadata only).");
             }
 
-        } catch (JsonSyntaxException e) {
+        } catch (JsonParseException | IllegalStateException | NumberFormatException | UnsupportedOperationException
+                | ClassCastException e) {
             logger.warn("Error parsing incoming MQTT message for Thing {}: {}", thing.getUID().getId(), e.getMessage());
         }
     }

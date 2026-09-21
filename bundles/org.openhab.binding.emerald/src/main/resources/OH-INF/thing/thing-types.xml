@@ -61,12 +61,8 @@
 	<channel-type id="mode">
 		<item-type>Number</item-type>
 		<label>Mode</label>
-		<description>Mode the HWS is set to</description>
-		<tags>
-			<tag>Control</tag>
-			<tag>Mode</tag>
-		</tags>
-		<state pattern="%.0f %unit%">
+		<description>Operating mode of the Heat Pump (0 = Boost, 1 = Normal, 2 = Quiet)</description>
+		<state pattern="%s">
 			<options>
 				<option value="0">Boost</option>
 				<option value="1">Normal</option>

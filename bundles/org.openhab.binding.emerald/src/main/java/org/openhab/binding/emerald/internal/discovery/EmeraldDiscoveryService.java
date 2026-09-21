@@ -62,19 +62,17 @@ public class EmeraldDiscoveryService extends AbstractThingHandlerDiscoveryServic
 
     private void discover() {
         EmeraldList api = getApi();
-        if (api == null || api.info == null || api.info.property == null) {
-            return;
-        }
-
-        for (EmeraldList.Property property : api.info.property) {
-            if (property.heatpump == null) {
-                continue;
-            }
-            for (EmeraldList.Heatpump hp : property.heatpump) {
-                ThingUID uid = new ThingUID(THING_TYPE_HWS, bridgeUid, hp.id);
-                thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid)
-                        .withProperties(Map.of(CONFIG_UUID, hp.id)).withRepresentationProperty(CONFIG_UUID)
-                        .withLabel("Emerald HWS").build());
+        if (api != null) {
+            for (EmeraldList.Property property : api.getAllProperties()) {
+                if (property.heatpump == null) {
+                    continue;
+                }
+                for (EmeraldList.Heatpump hp : property.heatpump) {
+                    ThingUID uid = new ThingUID(THING_TYPE_HWS, bridgeUid, hp.id);
+                    thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUid)
+                            .withProperties(Map.of("uuid", hp.id)).withRepresentationProperty("uuid")
+                            .withLabel("Emerald HWS").build());
+                }
             }
         }
     }

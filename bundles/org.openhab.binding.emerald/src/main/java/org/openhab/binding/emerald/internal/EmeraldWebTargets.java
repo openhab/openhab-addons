@@ -45,6 +45,7 @@ public class EmeraldWebTargets {
 
     // Header & Content Constants
     private static final String MIME_TYPE_JSON = "application/json";
+    private static final String HEADER_AMZ_TARGET = "x-amz-target";
     private static final String MIME_TYPE_AMZ_JSON = "application/x-amz-json-1.1";
     private static final String ACCEPT_ALL = "*/*";
     private static final String BROWSER_USER_AGENT = "EmeraldPlanet/2.5.3 (com.emerald-ems.customer; build:5; iOS 17.2.1) Alamofire/5.4.1";
@@ -54,8 +55,8 @@ public class EmeraldWebTargets {
     private static final String AWS_REGION = "ap-southeast-2";
     private static final String IDENTITY_POOL_ID = "ap-southeast-2:f5bbb02c-c00e-4f10-acb3-e7d1b05268e8";
 
-    private String getTokenUri = "https://api.emerald-ems.com.au/api/v1/customer/sign-in";
-    private String getListUri = "https://api.emerald-ems.com.au/api/v1/customer/property/list";
+    private static final String GET_TOKEN_URI = "https://api.emerald-ems.com.au/api/v1/customer/sign-in";
+    private static final String GET_LIST_URI = "https://api.emerald-ems.com.au/api/v1/customer/property/list";
     private final Logger logger = LoggerFactory.getLogger(EmeraldWebTargets.class);
     private HttpClient httpClient;
     String token = "";
@@ -76,18 +77,16 @@ public class EmeraldWebTargets {
         payload.addProperty("password", password);
         payload.addProperty("email", email);
 
-        String response = invoke(getTokenUri, HttpMethod.POST, null, null, payload.toString());
+        String response = invoke(GET_TOKEN_URI, HttpMethod.POST, null, null, payload.toString());
         return gson.fromJson(response, Login.class);
     }
 
     @Nullable
     public EmeraldList getList(String email, String password)
             throws EmeraldCommunicationException, EmeraldAuthenticationException {
-        String response = invoke(getListUri, email, password);
+        String response = invoke(GET_LIST_URI, email, password);
         return gson.fromJson(response, EmeraldList.class);
     }
-
-    // --- NEW AWS COGNITO METHODS ---
 
     /**
      * Step 1: Exchange for Unauthenticated AWS Identity ID
@@ -132,9 +131,10 @@ public class EmeraldWebTargets {
 
     private String invokeAws(String uri, String amzTarget, String payload)
             throws InterruptedException, TimeoutException, ExecutionException, EmeraldCommunicationException {
-        Request request = httpClient.newRequest(uri).method(HttpMethod.POST).header(MIME_TYPE_AMZ_JSON, amzTarget)
+        Request request = httpClient.newRequest(uri).method(HttpMethod.POST)
+                .header(HttpHeader.CONTENT_TYPE, MIME_TYPE_AMZ_JSON).header(HEADER_AMZ_TARGET, amzTarget)
                 .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                .content(new StringContentProvider(payload), "application/x-amz-json-1.1");
+                .content(new StringContentProvider(payload), MIME_TYPE_AMZ_JSON);
 
         ContentResponse response = request.send();
         if (!HttpStatus.isSuccess(response.getStatus())) {
@@ -142,6 +142,10 @@ public class EmeraldWebTargets {
                     "AWS returned error: " + response.getStatus() + " - " + response.getContentAsString());
         }
         return response.getContentAsString();
+    }
+
+    public void resetToken() {
+        this.token = "";
     }
 
     private String invoke(String uri, String email, String password)
@@ -170,14 +174,18 @@ public class EmeraldWebTargets {
                         .header(HttpHeader.ACCEPT_LANGUAGE, BROWSER_LANGUAGE_HEADER).header(headerKey, headerValue)
                         .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
                         .content(new StringContentProvider(params), MIME_TYPE_JSON);
-                if (logger.isTraceEnabled() && !jsonResponse.isEmpty() && !getTokenUri.equals(uri)) {
+                if (logger.isTraceEnabled() && !jsonResponse.isEmpty() && !GET_TOKEN_URI.equals(uri)) {
                     logger.trace("{} request for {}", method, uri);
                 }
                 ContentResponse response = request.send();
                 status = response.getStatus();
                 jsonResponse = response.getContentAsString();
                 if (!jsonResponse.isEmpty()) {
-                    logger.trace("JSON response: '{}'", jsonResponse);
+                    if (uri.equals(GET_TOKEN_URI)) {
+                        logger.trace("JSON response received from authentication endpoint (redacted for security)");
+                    } else {
+                        logger.trace("JSON response: '{}'", jsonResponse);
+                    }
                 }
                 if (status == HttpStatus.UNAUTHORIZED_401) {
                     throw new EmeraldAuthenticationException("Unauthorized");
