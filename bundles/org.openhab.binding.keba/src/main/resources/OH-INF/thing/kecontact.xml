@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="kecontact">
-		<label>KeContact EV Charging Station</label>
-		<description>A KeContact EV Charging Station</description>
+		<label>KeContact EV Charging Station (UDP)</label>
+		<description>A KEBA KeContact P20 or P30 EV Charging Station accessed via its UDP interface</description>
 		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
 			<channel id="enabledsystem" typeId="enabledsystem"/>
