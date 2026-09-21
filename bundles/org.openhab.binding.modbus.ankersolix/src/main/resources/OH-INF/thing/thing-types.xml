@@ -479,7 +479,7 @@
 			<tag>Measurement</tag>
 			<tag>StateOfCharge</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ankersolix-pv-power">
@@ -599,7 +599,7 @@
 			<tag>Setpoint</tag>
 			<tag>StateOfCharge</tag>
 		</tags>
-		<state min="80" max="100" step="1" readOnly="false" pattern="%.0f %%"/>
+		<state min="80" max="100" step="1" readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ankersolix-discharge-limit-soc">
@@ -609,7 +609,7 @@
 			<tag>Setpoint</tag>
 			<tag>StateOfCharge</tag>
 		</tags>
-		<state min="0" max="20" step="1" readOnly="false" pattern="%.0f %%"/>
+		<state min="0" max="20" step="1" readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ankersolix-backup-reserve-soc">
@@ -619,7 +619,7 @@
 			<tag>Setpoint</tag>
 			<tag>StateOfCharge</tag>
 		</tags>
-		<state min="0" max="100" step="1" readOnly="false" pattern="%.0f %%"/>
+		<state min="0" max="100" step="1" readOnly="false" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ankersolix-operating-mode">
@@ -855,7 +855,7 @@
 			<tag>Measurement</tag>
 			<tag>Brightness</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ankersolix-wallbox-session-duration">
