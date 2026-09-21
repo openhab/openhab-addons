@@ -45,6 +45,7 @@ public enum GoveeModel {
 
     private static final byte[] SCAN_HEADER = { (byte) 0x88, (byte) 0xEC };
     private static final byte[] SCAN_HEADER2 = { (byte) 0x01, (byte) 0x00 };
+    private static final byte[] SCAN_HEADER3 = { (byte) 0x88, (byte) 0x01 };
 
     private final ThingTypeUID thingTypeUID;
     private final String label;
@@ -87,14 +88,7 @@ public enum GoveeModel {
                 case H5052:
                 case H5071:
                 case H5074:
-                    if (scanData.length < 8) {
-                        return null;
-                    }
-                    data.order(ByteOrder.LITTLE_ENDIAN);
-                    short temperature = data.getShort(3);
-                    int humidity = Short.toUnsignedInt(data.getShort(5));
-                    int battery = Byte.toUnsignedInt(data.get(7));
-                    return new ManufacturerDataSet(temperature, humidity, battery);
+                    return readManufacturerDataAtOffset2(data, 3);
                 default:
                     return null;
             }
@@ -110,6 +104,14 @@ public enum GoveeModel {
                 case B5178: {
                     // byte 4 holds the sensor ID
                     return readManufacturerDataAtOffset(data, 5);
+                }
+                default:
+                    return null;
+            }
+        } else if (scanData[0] == SCAN_HEADER3[0] && scanData[1] == SCAN_HEADER3[1]) {
+            switch (this) {
+                case H5179: {
+                    return readManufacturerDataAtOffset2(data, 6);
                 }
                 default:
                     return null;
@@ -132,6 +134,20 @@ public enum GoveeModel {
         int fourthByte = buffer.get(pos + 3);
         boolean error = (fourthByte & 0x80) == 0x80; // extract high bit, currently not reported
         int battery = fourthByte & (0xFF ^ 0x80); // mask out high bit
+        return new ManufacturerDataSet(temperature, humidity, battery);
+    }
+
+    // Read packed manufacturer data in the form short(temperature) / short(humidity) / byte(battery)
+    // 4 bytes will be read by this function
+    @Nullable
+    private static ManufacturerDataSet readManufacturerDataAtOffset2(ByteBuffer buffer, int pos) {
+        if (buffer.limit() <= (pos + 4)) {
+            return null; // Buffer to small to decode
+        }
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        short temperature = buffer.getShort(pos);
+        int humidity = Short.toUnsignedInt(buffer.getShort(pos + 2));
+        int battery = Byte.toUnsignedInt(buffer.get(pos + 4));
         return new ManufacturerDataSet(temperature, humidity, battery);
     }
 
