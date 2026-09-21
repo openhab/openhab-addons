@@ -120,4 +120,13 @@ public class DreameStatus {
         JsonElement value = values.get(property);
         return value == null || value.isJsonNull() ? fallback : value.getAsBoolean();
     }
+
+    public @Nullable String string(DreameProperty property) {
+        JsonElement value = values.get(property);
+        return value == null || value.isJsonNull() ? null : value.getAsString();
+    }
+
+    public @Nullable JsonElement value(DreameProperty property) {
+        return values.get(property);
+    }
 }

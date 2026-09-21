@@ -23,6 +23,7 @@ import org.openhab.binding.dreame.internal.model.DreameDevice;
 import org.openhab.binding.dreame.internal.util.DreameDiagnostics;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -67,6 +68,12 @@ public class DreameMowerDiscoveryService extends AbstractThingHandlerDiscoverySe
         ThingUID bridgeUID = thingHandler.getThing().getUID();
         for (DreameDevice device : thingHandler.getDevices()) {
             ThingUID thingUID = new ThingUID(THING_TYPE_MOWER, bridgeUID, thingId(device.id()));
+            if (isAlreadyConfigured(thingHandler.getThing().getThings(), thingUID, device.id())) {
+                thingRemoved(thingUID);
+                logger.trace("Skipping already configured mower {} ({})", DreameDiagnostics.maskIdentifier(device.id()),
+                        device.model());
+                continue;
+            }
             thingDiscovered(DiscoveryResultBuilder
                     .create(thingUID).withBridge(bridgeUID).withLabel(device.name()).withProperties(Map.of("deviceId",
                             device.id(), "model", device.model(), "firmwareVersion", device.version()))
@@ -79,6 +86,16 @@ public class DreameMowerDiscoveryService extends AbstractThingHandlerDiscoverySe
     public void dispose() {
         thingHandler.setDiscoveryService(null);
         super.dispose();
+    }
+
+    static boolean isAlreadyConfigured(Iterable<Thing> things, ThingUID discoveredThingUID, String deviceId) {
+        for (Thing thing : things) {
+            if (discoveredThingUID.equals(thing.getUID())
+                    || deviceId.equals(thing.getConfiguration().get("deviceId"))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static String thingId(String deviceId) {

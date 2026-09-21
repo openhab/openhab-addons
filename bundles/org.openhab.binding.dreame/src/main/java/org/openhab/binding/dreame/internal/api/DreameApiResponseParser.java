@@ -77,13 +77,20 @@ final class DreameApiResponseParser {
     DreameStatus parseProperties(JsonArray result, List<DreameProperty> requested) {
         Map<Integer, DreameProperty> propertiesById = requested.stream()
                 .collect(java.util.stream.Collectors.toMap(DreameProperty::id, property -> property));
+        Map<String, DreameProperty> propertiesByAddress = requested.stream().collect(java.util.stream.Collectors
+                .toMap(property -> propertyAddress(property.serviceId(), property.propertyId()), property -> property));
         DreameStatus status = new DreameStatus();
         for (JsonElement element : result) {
-            if (element instanceof JsonObject property && property.has("did") && property.has("value")
+            if (element instanceof JsonObject property && property.has("value")
                     && (!property.has("code") || property.get("code").getAsInt() == 0)) {
                 try {
-                    DreameProperty mappedProperty = propertiesById
-                            .get(Integer.parseInt(property.get("did").getAsString()));
+                    DreameProperty mappedProperty = property.has("siid") && property.has("piid")
+                            ? propertiesByAddress.get(
+                                    propertyAddress(property.get("siid").getAsInt(), property.get("piid").getAsInt()))
+                            : null;
+                    if (mappedProperty == null && property.has("did")) {
+                        mappedProperty = propertiesById.get(Integer.parseInt(property.get("did").getAsString()));
+                    }
                     if (mappedProperty != null) {
                         status.put(mappedProperty, property.get("value"));
                     }
@@ -93,6 +100,10 @@ final class DreameApiResponseParser {
             }
         }
         return status;
+    }
+
+    private static String propertyAddress(int serviceId, int propertyId) {
+        return serviceId + ":" + propertyId;
     }
 
     DreameMowingStatistics parseMowingStatistics(JsonObject response) throws DreameCloudException {

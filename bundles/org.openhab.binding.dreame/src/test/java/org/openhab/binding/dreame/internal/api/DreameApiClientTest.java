@@ -14,6 +14,7 @@ package org.openhab.binding.dreame.internal.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_SELF;
@@ -144,6 +145,51 @@ class DreameApiClientTest {
     }
 
     @Test
+    void propertyParserMapsMovaValuesWithDeviceIdInDid() {
+        String json = """
+                [
+                  {"did":"-123456789","siid":2,"piid":1,"code":0,"value":13},
+                  {"did":"-123456789","siid":3,"piid":1,"code":0,"value":100},
+                  {"did":"-123456789","siid":3,"piid":2,"code":0,"value":2}
+                ]
+                """;
+
+        DreameStatus status = new DreameApiResponseParser().parseProperties(
+                JsonParser.parseString(json).getAsJsonArray(),
+                List.of(DreameProperty.STATE, DreameProperty.BATTERY_LEVEL, DreameProperty.CHARGING_STATUS));
+
+        assertEquals(13, status.integer(DreameProperty.STATE, -1));
+        assertEquals(100, status.integer(DreameProperty.BATTERY_LEVEL, -1));
+        assertEquals(2, status.integer(DreameProperty.CHARGING_STATUS, -1));
+        assertEquals(3, status.properties().size());
+    }
+
+    @Test
+    void propertyParserMapsAddressedValueWithoutDid() {
+        String json = """
+                [{"siid":5,"piid":1,"code":0,"value":true}]
+                """;
+
+        DreameStatus status = new DreameApiResponseParser()
+                .parseProperties(JsonParser.parseString(json).getAsJsonArray(), List.of(DreameProperty.DND));
+
+        assertTrue(status.contains(DreameProperty.DND));
+        assertEquals(true, status.bool(DreameProperty.DND, false));
+    }
+
+    @Test
+    void propertyParserMapsDndTaskConfiguration() {
+        String json = """
+                [{"siid":5,"piid":4,"code":0,"value":"[{\\\"id\\\":1,\\\"en\\\":true}]"}]
+                """;
+
+        DreameStatus status = new DreameApiResponseParser()
+                .parseProperties(JsonParser.parseString(json).getAsJsonArray(), List.of(DreameProperty.DND_TASK));
+
+        assertEquals("[{\"id\":1,\"en\":true}]", status.string(DreameProperty.DND_TASK));
+    }
+
+    @Test
     void historyParserAggregatesMissionCompletionEvents() throws DreameCloudException {
         DreameMowingStatistics statistics = new DreameApiResponseParser()
                 .parseMowingStatistics(JsonParser.parseString("""
@@ -176,6 +222,24 @@ class DreameApiClientTest {
                 "eu.iot.dreame.tech:8883", "{}");
 
         assertEquals("/dreame-iot-com-eu/device/sendCommand", DreameApiClient.commandPath(device));
+    }
+
+    @Test
+    void rejectsUnverifiedMovaDndWriteBeforeCloudRequest() {
+        DreameDevice device = new DreameDevice("123", "MOVA", "mova.mower.g2584d", "1.0", "42", "host:19973", "{}");
+        DreameApiClient client = new DreameApiClient(Objects.requireNonNull(mock(HttpClient.class)), Clock.systemUTC());
+
+        assertThrows(DreameCloudException.class, () -> client.setDnd(device, true, null));
+    }
+
+    @Test
+    void mapSelectionUsesConfirmedMovaActionPayload() {
+        DreameDevice device = new DreameDevice("123", "MOVA 1000", "mova.mower.g2405c", "1.0", "42",
+                "20000.mt.eu.iot.dreame.tech:19973", "{}");
+
+        assertEquals("""
+                {"did":"123","siid":2,"aiid":50,"in":[{"m":"a","p":0,"o":200,"d":{"idx":"1"}}]}""",
+                DreameApiClient.createMapSelectionParameters(device, 1).toString());
     }
 
     @Test

@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -71,6 +74,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Represents one Dreame robotic mower.
@@ -83,12 +90,14 @@ public class DreameMowerHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DreameMowerHandler.class);
 
     private static final List<DreameProperty> POLLED_PROPERTIES = List.of(DreameProperty.STATE, DreameProperty.ERROR,
-            DreameProperty.BATTERY_LEVEL, DreameProperty.CHARGING_STATUS, DreameProperty.STATUS, DreameProperty.DND);
+            DreameProperty.BATTERY_LEVEL, DreameProperty.CHARGING_STATUS, DreameProperty.STATUS, DreameProperty.DND,
+            DreameProperty.DND_TASK, DreameProperty.DND_STATUS);
     private static final Duration STATISTICS_REFRESH_INTERVAL = Duration.ofMinutes(15);
     private static final Duration MAP_REFRESH_INTERVAL = Duration.ofMinutes(15);
     private static final Duration PNG_REFRESH_INTERVAL = Duration.ofSeconds(10);
     private static final long STATISTICS_EVENT_DELAY_SECONDS = 2;
     private static final long STATISTICS_DOCKED_DELAY_SECONDS = 5;
+    private static final int POLLING_FAILURE_THRESHOLD = 3;
 
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> statisticsRefreshJob;
@@ -97,11 +106,16 @@ public class DreameMowerHandler extends BaseThingHandler {
     private final AtomicLong updateSequence = new AtomicLong();
     private final AtomicBoolean pollInProgress = new AtomicBoolean();
     private final AtomicBoolean pollPending = new AtomicBoolean();
+    private final AtomicInteger consecutivePollingFailures = new AtomicInteger();
     private final Map<DreameProperty, Long> mqttPropertyRevisions = new ConcurrentHashMap<>();
     private DreameMowerConfiguration config = new DreameMowerConfiguration();
     private volatile boolean active;
     private volatile @Nullable DreameMapData mapData;
     private volatile @Nullable DreameMowerPose mowerPose;
+    private volatile @Nullable String dndTaskConfiguration;
+    private volatile @Nullable OnOffType lastDndState;
+    private volatile @Nullable DndSchedule dndSchedule;
+    private volatile boolean movaDndStatusObserved;
     private Instant nextStatisticsRefresh = Instant.EPOCH;
     private Instant nextMapRefresh = Instant.EPOCH;
     private Instant nextPngRefresh = Instant.EPOCH;
@@ -155,7 +169,17 @@ public class DreameMowerHandler extends BaseThingHandler {
                 validateZoneIds(zoneIds);
                 account.getApiClient().startZoneMowing(device, zoneIds);
             } else if (CHANNEL_DND.equals(channelUID.getId()) && command instanceof OnOffType onOff) {
-                account.getApiClient().setProperty(device, DreameProperty.DND, onOff == OnOffType.ON);
+                if (!supportsDndWriting(device.model())) {
+                    logger.warn("Do not disturb commands are not yet supported for {}", device.model());
+                    OnOffType currentState = lastDndState;
+                    if (currentState != null) {
+                        updateState(CHANNEL_DND, currentState);
+                    }
+                    return;
+                }
+                account.getApiClient().setDnd(device, onOff == OnOffType.ON, dndTaskConfiguration);
+            } else if (CHANNEL_CURRENT_MAP_ID.equals(channelUID.getId()) && command instanceof DecimalType decimal) {
+                selectMap(account, device, decimal);
             } else if (CHANNEL_CUTTING_HEIGHT.equals(channelUID.getId()) && command instanceof DecimalType decimal) {
                 if (!supportsElectronicCuttingHeight(device.model())) {
                     throw new IllegalArgumentException(
@@ -197,6 +221,28 @@ public class DreameMowerHandler extends BaseThingHandler {
         if (!invalid.isEmpty()) {
             throw new IllegalArgumentException("Unknown zone IDs: " + invalid);
         }
+    }
+
+    private void selectMap(DreameAccountHandler account, DreameDevice device, DecimalType mapId)
+            throws DreameCloudException {
+        if (!device.model().startsWith("mova.mower.")) {
+            throw new IllegalArgumentException("Map selection is currently supported only for MOVA mowers");
+        }
+        DreameMapData currentMapData = mapData;
+        if (currentMapData == null) {
+            throw new IllegalArgumentException("Map data is not available yet");
+        }
+        int requestedMapId;
+        try {
+            requestedMapId = mapId.toBigDecimal().intValueExact();
+        } catch (ArithmeticException e) {
+            throw new IllegalArgumentException("Map ID must be an integer", e);
+        }
+        int mapIndex = currentMapData.maps().stream().filter(map -> map.id() == requestedMapId).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown map ID: " + requestedMapId)).index();
+        account.getApiClient().selectMap(device, mapIndex);
+        nextMapRefresh = Instant.EPOCH;
+        refreshMapData(account, device);
     }
 
     @Override
@@ -241,16 +287,23 @@ public class DreameMowerHandler extends BaseThingHandler {
             DreameStatus status = account.getApiClient().getProperties(device, POLLED_PROPERTIES);
             logger.trace("Received properties {} for device {} ({})", status.properties(),
                     DreameDiagnostics.maskIdentifier(device.id()), device.model());
-            updateStatusChannels(status, true, pollRevision);
+            updateStatusChannels(status, pollRevision);
             refreshStatistics(account, device);
             refreshMapData(account, device);
             updateState(CHANNEL_FIRMWARE, new StringType(device.version()));
+            consecutivePollingFailures.set(0);
             updateStatus(ThingStatus.ONLINE);
             ensureMqtt(account, device);
         } catch (DreameCloudException e) {
+            int failures = consecutivePollingFailures.incrementAndGet();
             logger.debug("Cloud polling failed for device {}: {}", DreameDiagnostics.maskIdentifier(device.id()),
                     e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            if (failures >= POLLING_FAILURE_THRESHOLD) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } else {
+                logger.debug("Tolerating cloud polling failure {} of {} for device {}; MQTT connected={}", failures,
+                        POLLING_FAILURE_THRESHOLD, DreameDiagnostics.maskIdentifier(device.id()), isMqttConnected());
+            }
         }
     }
 
@@ -274,6 +327,7 @@ public class DreameMowerHandler extends BaseThingHandler {
             nextPngRefresh = Instant.EPOCH;
             updateMapImage();
         } catch (DreameCloudException e) {
+            nextMapRefresh = Instant.EPOCH;
             logger.debug("Cloud map query failed for device {}: {}", DreameDiagnostics.maskIdentifier(device.id()),
                     e.getMessage());
         }
@@ -363,10 +417,12 @@ public class DreameMowerHandler extends BaseThingHandler {
             stopMqtt();
             DreameMqttClient newClient = new DreameMqttClient(nextConfiguration, POLLED_PROPERTIES, status -> {
                 if (active) {
+                    consecutivePollingFailures.set(0);
                     long revision = updateSequence.incrementAndGet();
                     status.properties().forEach(property -> mqttPropertyRevisions.put(property, revision));
                     scheduler.execute(() -> {
                         if (active) {
+                            updateStatus(ThingStatus.ONLINE);
                             updateChannelsFromMqtt(status);
                             if (status.mapChanged()) {
                                 logger.debug("Refreshing map data after MQTT change notification for device {}",
@@ -400,7 +456,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         logger.trace("Received MQTT properties {} position={} task={} taskActive={} missionCompleted={} mapChanged={}",
                 status.properties(), status.mowerPose() != null, status.mowerTaskStatus() != null,
                 status.mowerTaskActive(), status.missionCompleted(), status.mapChanged());
-        updateStatusChannels(status, false, null);
+        updateStatusChannels(status, null);
         DreameMowerPose pose = status.mowerPose();
         if (pose != null) {
             mowerPose = pose;
@@ -462,7 +518,7 @@ public class DreameMowerHandler extends BaseThingHandler {
         }
     }
 
-    private void updateStatusChannels(DreameStatus status, boolean clearMissing, @Nullable Long pollRevision) {
+    void updateStatusChannels(DreameStatus status, @Nullable Long pollRevision) {
         if (status.contains(DreameProperty.STATE) && canApply(DreameProperty.STATE, pollRevision)) {
             Boolean taskActive = taskActiveFromState(status.integer(DreameProperty.STATE, 0));
             if (taskActive != null) {
@@ -470,38 +526,134 @@ public class DreameMowerHandler extends BaseThingHandler {
             }
         }
         updateIntegerState(status, DreameProperty.STATE, CHANNEL_STATE, value -> new StringType(stateName(value)),
-                clearMissing, pollRevision);
-        updateIntegerState(status, DreameProperty.BATTERY_LEVEL, CHANNEL_BATTERY_LEVEL, DecimalType::new, clearMissing,
                 pollRevision);
+        updateIntegerState(status, DreameProperty.BATTERY_LEVEL, CHANNEL_BATTERY_LEVEL, DecimalType::new, pollRevision);
         updateIntegerState(status, DreameProperty.CHARGING_STATUS, CHANNEL_CHARGING_STATUS,
-                value -> new StringType(chargingName(value)), clearMissing, pollRevision);
+                value -> new StringType(chargingName(value)), pollRevision);
         updateIntegerState(status, DreameProperty.ERROR, CHANNEL_ERROR_CODE,
-                value -> new StringType(Integer.toString(value)), clearMissing, pollRevision);
-        if (canApply(DreameProperty.DND, pollRevision)) {
-            if (status.contains(DreameProperty.DND)) {
-                updateState(CHANNEL_DND, OnOffType.from(status.bool(DreameProperty.DND, false)));
-            } else if (clearMissing) {
-                updateState(CHANNEL_DND, UnDefType.UNDEF);
+                value -> new StringType(Integer.toString(value)), pollRevision);
+        if (!movaDndStatusObserved && status.contains(DreameProperty.DND)
+                && canApply(DreameProperty.DND, pollRevision)) {
+            updateDndState(status.bool(DreameProperty.DND, false));
+        }
+        if (!movaDndStatusObserved && status.contains(DreameProperty.DND_TASK)
+                && canApply(DreameProperty.DND_TASK, pollRevision)) {
+            String taskConfiguration = status.string(DreameProperty.DND_TASK);
+            Boolean enabled = dndTaskEnabled(taskConfiguration);
+            if (enabled != null) {
+                dndTaskConfiguration = taskConfiguration;
+                updateDndState(enabled);
             }
         }
-        updateIntegerState(status, DreameProperty.MOWING_SESSIONS, CHANNEL_MOWING_SESSIONS, DecimalType::new, false,
+        if (status.contains(DreameProperty.DND_STATUS) && canApply(DreameProperty.DND_STATUS, pollRevision)) {
+            @Nullable
+            DndSchedule schedule = dndStatusSchedule(status.value(DreameProperty.DND_STATUS));
+            if (schedule != null) {
+                movaDndStatusObserved = true;
+                dndSchedule = schedule;
+                updateDndState(schedule.enabled());
+            }
+        }
+        updateDndActiveState();
+        updateIntegerState(status, DreameProperty.MOWING_SESSIONS, CHANNEL_MOWING_SESSIONS, DecimalType::new,
                 pollRevision);
         updateIntegerState(status, DreameProperty.TOTAL_MOWING_TIME, CHANNEL_TOTAL_MOWING_TIME,
-                value -> new QuantityType<>(value, Units.MINUTE), false, pollRevision);
+                value -> new QuantityType<>(value, Units.MINUTE), pollRevision);
         updateIntegerState(status, DreameProperty.TOTAL_MOWED_AREA, CHANNEL_TOTAL_MOWED_AREA,
-                value -> new QuantityType<>(value, SIUnits.SQUARE_METRE), false, pollRevision);
+                value -> new QuantityType<>(value, SIUnits.SQUARE_METRE), pollRevision);
+    }
+
+    static @Nullable Boolean dndTaskEnabled(@Nullable String taskConfiguration) {
+        if (taskConfiguration == null || taskConfiguration.isBlank()) {
+            return null;
+        }
+        try {
+            JsonElement parsed = JsonParser.parseString(taskConfiguration);
+            if (parsed instanceof JsonArray tasks && !tasks.isEmpty() && tasks.get(0).isJsonObject()) {
+                JsonElement enabled = tasks.get(0).getAsJsonObject().get("en");
+                return enabled == null || enabled.isJsonNull() ? null : enabled.getAsBoolean();
+            }
+        } catch (RuntimeException e) {
+            // Unsupported device-specific payload; leave the existing channel state unchanged.
+        }
+        return null;
+    }
+
+    static @Nullable Boolean dndStatusEnabled(@Nullable JsonElement configuration) {
+        @Nullable
+        DndSchedule schedule = dndStatusSchedule(configuration);
+        return schedule == null ? null : schedule.enabled();
+    }
+
+    static @Nullable DndSchedule dndStatusSchedule(@Nullable JsonElement configuration) {
+        if (!(configuration instanceof JsonObject object)
+                || !(object.get("value") instanceof com.google.gson.JsonPrimitive value) || !value.isNumber()
+                || !(object.get("start") instanceof com.google.gson.JsonPrimitive start) || !start.isNumber()
+                || !(object.get("end") instanceof com.google.gson.JsonPrimitive end) || !end.isNumber()) {
+            return null;
+        }
+        try {
+            int enabled = value.getAsBigDecimal().intValueExact();
+            int startMinute = start.getAsBigDecimal().intValueExact();
+            int endMinute = end.getAsBigDecimal().intValueExact();
+            if ((enabled == 0 || enabled == 1) && isMinuteOfDay(startMinute) && isMinuteOfDay(endMinute)) {
+                return new DndSchedule(enabled == 1, startMinute, endMinute);
+            }
+        } catch (ArithmeticException e) {
+            // Ignore malformed model-specific values.
+        }
+        return null;
+    }
+
+    static boolean isDndActive(DndSchedule schedule, int minuteOfDay) {
+        if (!schedule.enabled() || !isMinuteOfDay(minuteOfDay)) {
+            return false;
+        }
+        int startMinute = schedule.startMinute();
+        int endMinute = schedule.endMinute();
+        if (startMinute == endMinute) {
+            return true;
+        }
+        return startMinute < endMinute ? minuteOfDay >= startMinute && minuteOfDay < endMinute
+                : minuteOfDay >= startMinute || minuteOfDay < endMinute;
+    }
+
+    private static boolean isMinuteOfDay(int minute) {
+        return minute >= 0 && minute < 24 * 60;
+    }
+
+    static boolean supportsDndWriting(String model) {
+        return !"mova.mower.g2584d".equals(model);
+    }
+
+    private void updateDndState(boolean enabled) {
+        OnOffType state = OnOffType.from(enabled);
+        lastDndState = state;
+        updateState(CHANNEL_DND, state);
+    }
+
+    private void updateDndActiveState() {
+        @Nullable
+        DndSchedule schedule = dndSchedule;
+        if (schedule == null) {
+            updateState(CHANNEL_DND_ACTIVE, UnDefType.UNDEF);
+            return;
+        }
+        LocalTime now = LocalTime.now(ZoneId.systemDefault());
+        updateState(CHANNEL_DND_ACTIVE, OnOffType.from(isDndActive(schedule, now.getHour() * 60 + now.getMinute())));
+    }
+
+    record DndSchedule(boolean enabled, int startMinute, int endMinute) {
     }
 
     private void updateIntegerState(DreameStatus status, DreameProperty property, String channel,
-            IntegerStateConverter converter, boolean clearMissing, @Nullable Long pollRevision) {
+            IntegerStateConverter converter, @Nullable Long pollRevision) {
         if (!canApply(property, pollRevision)) {
             logger.trace("Ignoring stale REST value for {} because a newer MQTT update was received", property);
             return;
         }
         if (status.contains(property)) {
             updateState(channel, converter.convert(status.integer(property, 0)));
-        } else if (clearMissing) {
-            updateState(channel, UnDefType.UNDEF);
         }
     }
 
@@ -511,6 +663,11 @@ public class DreameMowerHandler extends BaseThingHandler {
 
     static boolean isPollPropertyCurrent(long pollRevision, @Nullable Long mqttRevision) {
         return mqttRevision == null || mqttRevision <= pollRevision;
+    }
+
+    private boolean isMqttConnected() {
+        DreameMqttClient client = mqttClient;
+        return client != null && client.isConnected();
     }
 
     @FunctionalInterface
@@ -560,9 +717,14 @@ public class DreameMowerHandler extends BaseThingHandler {
     public void dispose() {
         active = false;
         pollPending.set(false);
+        consecutivePollingFailures.set(0);
         mqttPropertyRevisions.clear();
         mapData = null;
         mowerPose = null;
+        dndTaskConfiguration = null;
+        lastDndState = null;
+        dndSchedule = null;
+        movaDndStatusObserved = false;
         stopPolling();
         stopStatisticsRefresh();
         stopMqtt();
