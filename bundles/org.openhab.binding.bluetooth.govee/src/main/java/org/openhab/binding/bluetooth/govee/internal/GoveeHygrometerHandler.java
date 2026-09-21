@@ -163,7 +163,7 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
                 CompletableFuture<?> future = device.enableNotifications(characteristic).thenCompose(v -> {
                     CompletableFuture<@Nullable TemHumDTO> resultHandler = new CompletableFuture<>();
                     logger.debug("Execute GetTemHumCommand");
-                    executeCommand(encryptionHelper, characteristic, new GetTemHumCommand(resultHandler));
+                    executeCommand(device, encryptionHelper, characteristic, new GetTemHumCommand(resultHandler));
                     logger.debug("Executed GetTemHumCommand");
                     return resultHandler;
                 }).handle((dto, th) -> {
@@ -174,7 +174,7 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
                 }).thenCompose(v -> {
                     CompletableFuture<@Nullable QuantityType<Dimensionless>> resultHandler = new CompletableFuture<>();
                     logger.debug("Execute GetBatteryCommand");
-                    executeCommand(encryptionHelper, characteristic, new GetBatteryCommand(resultHandler));
+                    executeCommand(device, encryptionHelper, characteristic, new GetBatteryCommand(resultHandler));
                     logger.debug("Executed GetBatteryCommand");
                     return resultHandler;
                 }).handle((dto, th) -> {
@@ -187,7 +187,7 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
                     future = future.thenCompose(v -> {
                         CompletableFuture<@Nullable QuantityType<Temperature>> caliFuture = new CompletableFuture<>();
                         logger.debug("Execute GetOrSetTemCaliCommand");
-                        executeCommand(encryptionHelper, characteristic,
+                        executeCommand(device, encryptionHelper, characteristic,
                                 new GetOrSetTemCaliCommand(temCali, caliFuture));
                         logger.debug("Executed GetOrSetTemCaliCommand");
                         return caliFuture;
@@ -197,7 +197,7 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
                     future = future.thenCompose(v -> {
                         CompletableFuture<@Nullable QuantityType<Dimensionless>> caliFuture = new CompletableFuture<>();
                         logger.debug("Execute GetOrSetHumCaliCommand");
-                        executeCommand(encryptionHelper, characteristic,
+                        executeCommand(device, encryptionHelper, characteristic,
                                 new GetOrSetHumCaliCommand(humCali, caliFuture));
                         logger.debug("Executed GetOrSetHumCaliCommand");
                         return caliFuture;
@@ -207,7 +207,7 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
                     future = future.thenCompose(v -> {
                         CompletableFuture<@Nullable WarningSettingsDTO<Temperature>> temWarnFuture = new CompletableFuture<>();
                         logger.debug("Execute GetOrSetTemWarningCommand");
-                        executeCommand(encryptionHelper, characteristic,
+                        executeCommand(device, encryptionHelper, characteristic,
                                 new GetOrSetTemWarningCommand(temWarnSettings, temWarnFuture));
                         logger.debug("Executed GetOrSetTemWarningCommand");
                         return temWarnFuture;
@@ -215,7 +215,7 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
                     future = future.thenCompose(v -> {
                         CompletableFuture<@Nullable WarningSettingsDTO<Dimensionless>> humWarnFuture = new CompletableFuture<>();
                         logger.debug("Execute GetOrSetHumWarningCommand");
-                        executeCommand(encryptionHelper, characteristic,
+                        executeCommand(device, encryptionHelper, characteristic,
                                 new GetOrSetHumWarningCommand(humWarnSettings, humWarnFuture));
                         logger.debug("Executed GetOrSetHumWarningCommand");
                         return humWarnFuture;
@@ -241,7 +241,7 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
         }
     }
 
-    private CompletableFuture<@Nullable Void> executeCommand(EncryptionHelper encryptionHelper,
+    private CompletableFuture<@Nullable Void> executeCommand(BluetoothDevice device, EncryptionHelper encryptionHelper,
             BluetoothCharacteristic characteristic, GoveeCommand command) {
         // Register the listener for the reply to the command
         // this will wait for max. 5 seconds for the reply
