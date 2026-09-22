@@ -44,7 +44,7 @@ public class AutoBlindHubActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "force refresh", description = "Clear command suppression and poll the hub for current shade positions")
+    @RuleAction(label = "@text/action.forceRefresh.label", description = "@text/action.forceRefresh.description")
     public void forceRefresh() {
         AutoBlindHubHandler localHandler = handler;
         if (localHandler != null) {
