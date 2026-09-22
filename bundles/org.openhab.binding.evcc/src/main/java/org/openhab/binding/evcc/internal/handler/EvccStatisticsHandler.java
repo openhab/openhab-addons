@@ -70,7 +70,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
             JsonObject statisticsUpdate = value.getAsJsonObject();
             for (String statisticsKey : statisticsUpdate.keySet()) {
                 JsonObject statistic = statisticsUpdate.getAsJsonObject(statisticsKey);
-                logger.debug("Updating statistics for {}", statisticsKey);
+                logger.trace("Updating statistics for {}", statisticsKey);
                 for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : statistic.entrySet()) {
                     String entryKey = entry.getKey();
                     JsonElement entryValue = entry.getValue();
@@ -98,7 +98,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        logger.debug("Statistics handler initializing from state");
+        logger.trace("Statistics handler initializing from state");
         state = state.has(JSON_KEY_STATISTICS) ? state.getAsJsonObject(JSON_KEY_STATISTICS) : new JsonObject();
         if (state.isEmpty()) {
             logger.debug("No statistics state available");
@@ -106,7 +106,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
         }
         for (String statisticsKey : state.keySet()) {
             JsonObject statistic = state.getAsJsonObject(statisticsKey);
-            logger.debug("Extracting statistics for {}", statisticsKey);
+            logger.trace("Extracting statistics for {}", statisticsKey);
             for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : statistic.entrySet()) {
                 String key = entry.getKey();
                 JsonElement value = entry.getValue();
@@ -121,7 +121,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
                 }
             }
         }
-        logger.debug("Statistics handler initialized successfully");
+        logger.trace("Statistics handler initialized successfully");
         updateStatus(ThingStatus.ONLINE);
     }
 }

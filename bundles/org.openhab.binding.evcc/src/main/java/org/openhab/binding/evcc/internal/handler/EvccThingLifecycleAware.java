@@ -60,4 +60,19 @@ public interface EvccThingLifecycleAware {
      * @return the index of the thing
      */
     Object getIdentifier();
+
+    /**
+     * Whether this handler has started or completed disposal.
+     *
+     * Callers that dispatch updates to this handler asynchronously (e.g. from websocket
+     * callbacks) must check this - while synchronized on the handler instance together with
+     * the handler's own dispose() - before invoking any other method on it. This closes the
+     * race window where a message is already in flight to a handler that is concurrently
+     * being disposed (for example during binding reinitialization), which would otherwise
+     * reach openHAB core APIs (isLinked(), updateState(), ...) after the framework has
+     * detached the handler's callback.
+     *
+     * @return true once dispose() has started (or completed) for this handler
+     */
+    boolean isDisposed();
 }

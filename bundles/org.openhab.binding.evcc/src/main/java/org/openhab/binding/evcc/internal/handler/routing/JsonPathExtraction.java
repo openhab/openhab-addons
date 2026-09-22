@@ -55,7 +55,7 @@ public class JsonPathExtraction implements ExtractionStrategy {
     @Nullable
     public JsonElement extract(JsonElement root) {
         try {
-            logger.debug("Extracting with path: {}", jsonPath);
+            logger.trace("Extracting with path: {}", jsonPath);
             return extractPath(root, jsonPath);
         } catch (Exception e) {
             logger.debug("Failed to extract path '{}': {}", jsonPath, e.getMessage());

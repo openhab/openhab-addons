@@ -94,6 +94,7 @@ public class EvccBindingConstants {
     public static final String JSON_KEY_FORECAST = "forecast";
     public static final String JSON_KEY_GRID = "grid";
     public static final String JSON_KEY_GRID_CONFIGURED = "gridConfigured";
+    public static final String JSON_KEY_HOME_POWER = "homePower";
     public static final String JSON_KEY_LIMIT_SOC = "limitSoc";
     public static final String JSON_KEY_LOADPOINTS = "loadpoints";
     public static final String JSON_KEY_OFFERED_CURRENT = "offeredCurrent";

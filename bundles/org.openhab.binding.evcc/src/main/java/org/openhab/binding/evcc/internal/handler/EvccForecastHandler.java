@@ -76,7 +76,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        logger.debug("Forecast handler {} initializing from state", subType);
+        logger.trace("Forecast handler {} initializing from state", subType);
         if (state.isJsonNull() || state.isEmpty() || !state.has(JSON_KEY_FORECAST)) {
             logger.debug("No forecast state available for type {}", subType);
             return;
@@ -107,7 +107,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             }
         }
         propagate(forecastArray, getThingKey(subType), obj -> parseForecast(obj, getThingKey(subType)));
-        logger.debug("Forecast handler {} initialized successfully", subType);
+        logger.trace("Forecast handler {} initialized successfully", subType);
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -165,18 +165,18 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     private void propagate(JsonArray array, String key, Function<JsonObject, @Nullable ForecastData> parser) {
         ChannelUID uid = new ChannelUID(thing.getUID(), key);
         if (!isLinked(uid)) {
-            logger.debug("Channel {} not linked, skipping TimeSeries update", key);
+            logger.trace("Channel {} not linked, skipping TimeSeries update", key);
             return;
         }
         TimeSeries ts = getTimeSeries(array, parser);
-        logger.debug("Sending TimeSeries for channel {} with {} entries", key, ts.size());
+        logger.trace("Sending TimeSeries for channel {} with {} entries", key, ts.size());
         setForecastChannelState(ts, uid);
         sendTimeSeries(uid, ts);
     }
 
     @Override
     public void handleUpdate(String key, JsonElement value) {
-        logger.debug("Forecast handler {} received update for key '{}'", subType, key);
+        logger.trace("Forecast handler {} received update for key '{}'", subType, key);
         JsonArray forecastArray;
         if ("solar".equals(subType) && value instanceof JsonObject solar) {
             forecastArray = solar.has("timeseries") ? solar.getAsJsonArray("timeseries") : new JsonArray();
@@ -192,13 +192,13 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             return;
         }
         propagate(forecastArray, getThingKey(subType), obj -> parseForecast(obj, getThingKey(subType)));
-        logger.debug("Forecast handler {} updated successfully", subType);
+        logger.trace("Forecast handler {} updated successfully", subType);
         updateStatus(ThingStatus.ONLINE);
     }
 
     private TimeSeries getTimeSeries(JsonArray forecastArray, Function<JsonObject, @Nullable ForecastData> parser) {
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-        logger.debug("Processing forecast array with {} entries", forecastArray.size());
+        logger.trace("Processing forecast array with {} entries", forecastArray.size());
 
         for (JsonElement data : forecastArray) {
             ForecastData parsed = null;
@@ -251,7 +251,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 }
             }
         }
-        logger.debug("Created TimeSeries with {} entries from {} forecast array entries", timeSeries.size(),
+        logger.trace("Created TimeSeries with {} entries from {} forecast array entries", timeSeries.size(),
                 forecastArray.size());
         return timeSeries;
     }
@@ -268,7 +268,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                         .orElse(new TimeSeries.Entry(now, UnDefType.UNDEF)));
 
         if (current != null && current.state() != UnDefType.UNDEF) {
-            logger.debug("Setting forecast channel {} to state {}", channelUID.getId(), current.state());
+            logger.trace("Setting forecast channel {} to state {}", channelUID.getId(), current.state());
             updateState(channelUID, current.state());
         }
     }

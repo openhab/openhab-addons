@@ -68,14 +68,14 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        logger.debug("Battery handler initializing from state");
+        logger.trace("Battery handler initializing from state");
         state = getBatteryState(state);
         if (state.isEmpty()) {
             logger.debug("No battery state found for index {}", index);
             return;
         }
         createChannelsAndSetStatesFromApiResponse(state);
-        logger.debug("Battery handler initialized successfully");
+        logger.trace("Battery handler initialized successfully");
         updateStatus(ThingStatus.ONLINE);
     }
 

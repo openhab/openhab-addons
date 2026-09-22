@@ -117,7 +117,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     }
 
     private void applyPlanState(JsonObject state) {
-        logger.debug("Plan handler vehicle {} index {} initializing from state", vehicleID, index);
+        logger.trace("Plan handler vehicle {} index {} initializing from state", vehicleID, index);
         if (state.has(JSON_KEY_VEHICLES)) {
             state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleID);
             if (state.isEmpty()) {
@@ -162,7 +162,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 cachedRepeatingPlans.set(index - 1, state.deepCopy());
             }
             createChannelsAndSetStatesFromApiResponse(state);
-            logger.debug("Plan handler vehicle {} index {} initialized successfully", vehicleID, index);
+            logger.trace("Plan handler vehicle {} index {} initialized successfully", vehicleID, index);
             updateStatus(ThingStatus.ONLINE);
         }
     }

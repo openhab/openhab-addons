@@ -86,10 +86,10 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        logger.debug("Heating handler initializing from state");
+        logger.trace("Heating handler initializing from state");
         updateJSON(state);
         createChannelsAndSetStatesFromApiResponse(state);
-        logger.debug("Heating handler initialized successfully");
+        logger.trace("Heating handler initialized successfully");
         updateStatus(ThingStatus.ONLINE);
     }
 

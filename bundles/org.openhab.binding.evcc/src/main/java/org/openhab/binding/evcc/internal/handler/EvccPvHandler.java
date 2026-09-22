@@ -63,14 +63,14 @@ public class EvccPvHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        logger.debug("PV handler initializing from state");
+        logger.trace("PV handler initializing from state");
         state = getStateFromCachedState(state);
         if (state.isEmpty()) {
             logger.debug("No PV state found for index {}", index);
             return;
         }
         createChannelsAndSetStatesFromApiResponse(state);
-        logger.debug("PV handler initialized successfully");
+        logger.trace("PV handler initialized successfully");
         updateStatus(ThingStatus.ONLINE);
     }
 

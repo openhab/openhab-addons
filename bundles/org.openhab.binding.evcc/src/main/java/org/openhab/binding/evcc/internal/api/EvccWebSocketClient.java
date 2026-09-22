@@ -89,6 +89,7 @@ public class EvccWebSocketClient {
 
     public void stop() {
         stopWatchdog();
+        stopReconnect();
         closeSession();
         try {
             client.stop();
@@ -136,6 +137,13 @@ public class EvccWebSocketClient {
         Optional.ofNullable(watchdogJob).ifPresent(wj -> {
             wj.cancel(false);
             watchdogJob = null;
+        });
+    }
+
+    private void stopReconnect() {
+        Optional.ofNullable(reconnectJob).ifPresent(job -> {
+            job.cancel(false);
+            reconnectJob = null;
         });
     }
 

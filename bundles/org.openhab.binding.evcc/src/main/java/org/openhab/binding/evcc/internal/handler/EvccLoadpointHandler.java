@@ -114,7 +114,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        logger.debug("Loadpoint handler {} initializing from state", index);
+        logger.trace("Loadpoint handler {} initializing from state", index);
         JsonArray loadpoints = state.getAsJsonArray(JSON_KEY_LOADPOINTS);
         if (loadpoints == null || index >= loadpoints.size() || !loadpoints.get(index).isJsonObject()) {
             logger.debug("Loadpoint index {} out of bounds or invalid (size {})", index,
@@ -124,7 +124,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
         state = loadpoints.get(index).getAsJsonObject();
         modifyJSON(state);
         createChannelsAndSetStatesFromApiResponse(state);
-        logger.debug("Loadpoint handler {} initialized successfully", index);
+        logger.trace("Loadpoint handler {} initialized successfully", index);
         updateStatus(ThingStatus.ONLINE);
     }
 

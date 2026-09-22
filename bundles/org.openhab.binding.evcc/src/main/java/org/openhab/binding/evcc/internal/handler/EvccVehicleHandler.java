@@ -77,14 +77,14 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        logger.debug("Vehicle handler {} initializing from state", getIdentifier());
+        logger.trace("Vehicle handler {} initializing from state", getIdentifier());
         JsonObject vehicleState = getStateFromCachedState(state);
         if (vehicleState.isEmpty()) {
             logger.debug("No vehicle state found for {}", getIdentifier());
             return;
         }
         createChannelsAndSetStatesFromApiResponse(vehicleState);
-        logger.debug("Vehicle handler {} initialized successfully", getIdentifier());
+        logger.trace("Vehicle handler {} initialized successfully", getIdentifier());
         updateStatus(ThingStatus.ONLINE);
     }
 

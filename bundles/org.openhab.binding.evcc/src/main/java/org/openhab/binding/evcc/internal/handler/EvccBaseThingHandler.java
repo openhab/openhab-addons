@@ -86,6 +86,10 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     protected @Nullable EvccBridgeHandler bridgeHandler;
     protected String endpoint = "";
     protected String smartCostType = "";
+    // Guarded together with dispose() by synchronizing on `this`; see isDisposed() javadoc
+    // in EvccThingLifecycleAware for why this must be checked-and-acted-upon atomically by
+    // any caller that dispatches updates to this handler from another thread.
+    private volatile boolean disposed = false;
 
     public EvccBaseThingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
@@ -124,6 +128,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
      */
     @Override
     public void initialize() {
+        disposed = false;
         updateStatus(ThingStatus.UNKNOWN);
         if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof EvccBridgeHandler handler) {
             bridgeHandler = handler;
@@ -137,10 +142,22 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
      *
      * Unregisters this handler from the bridge handler to stop receiving updates.
      * Called when the handler is being removed or deactivated.
+     *
+     * Synchronizes on {@code this} - the same monitor used by callers dispatching updates to
+     * this handler (see {@link EvccThingLifecycleAware#isDisposed()}) - so that disposal is
+     * atomic with respect to any update currently in flight or about to be dispatched.
      */
     @Override
     public void dispose() {
-        Optional.ofNullable(bridgeHandler).ifPresent(handler -> handler.unregister(this));
+        synchronized (this) {
+            disposed = true;
+            Optional.ofNullable(bridgeHandler).ifPresent(handler -> handler.unregister(this));
+        }
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return disposed;
     }
 
     /**
@@ -324,15 +341,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     private boolean syncThingChannels(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {
         boolean channelsChanged = addNonExistingChannels(channels, jsonState);
 
-        if (JSON_KEY_FORECAST.equals(type)) {
-            return channelsChanged;
-        }
-        boolean removed = channels.removeIf(c -> {
-            String id = c.getUID().getId();
-            return !validChannelIds.contains(id) && !isLinked(c.getUID());
-        });
-
-        return channelsChanged || removed;
+        // Never remove channels on partial updates - they may reappear in future messages
+        // or be unlinked channels that should be preserved
+        return channelsChanged;
     }
 
     private boolean addNonExistingChannels(List<Channel> channels, JsonObject jsonState) {
@@ -400,6 +411,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
      * @param partialState The partial JSON state containing only the fields to update
      */
     protected void updateOnlyPresentChannels(JsonObject partialState) {
+        logger.trace("updateOnlyPresentChannels called with {} entries", partialState.size());
+
         // First, sync any new channels that may not exist yet
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
         boolean channelsChanged = false;
@@ -408,12 +421,14 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             String key = entry.getKey();
             JsonElement value = entry.getValue();
             if (value.isJsonPrimitive()) {
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), key);
+                String thingKey = getThingKey(key);
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), thingKey);
                 Channel existingChannel = getThing().getChannel(channelUID);
                 if (existingChannel == null) {
                     @Nullable
-                    Channel newChannel = createChannel(key, value);
+                    Channel newChannel = createChannel(thingKey, value);
                     if (null != newChannel) {
+                        logger.debug("Created new channel: {}", thingKey);
                         channels.add(newChannel);
                         channelsChanged = true;
                     }
@@ -422,15 +437,29 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
 
         if (channelsChanged) {
+            logger.debug("Updating thing with {} new channels", channels.size());
             channels.sort(Comparator.comparing(c -> c.getUID().getId()));
             updateThing(editThing().withChannels(channels).build());
         }
 
         // Then update all present channels
         for (Map.Entry<String, JsonElement> entry : partialState.entrySet()) {
-            ChannelUID channelUID = new ChannelUID(getThing().getUID(), entry.getKey());
-            if (isLinked(channelUID)) {
-                resolveAndUpdateState(channelUID, entry.getKey(), entry.getValue());
+            String key = entry.getKey();
+            JsonElement value = entry.getValue();
+            String thingKey = getThingKey(key);
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), thingKey);
+            logger.trace("Processing update for key '{}' (channel '{}'), checking if linked...", key, thingKey);
+            try {
+                if (isLinked(channelUID)) {
+                    logger.trace("Updating linked channel {}", thingKey);
+                    resolveAndUpdateState(channelUID, key, value);
+                } else {
+                    logger.trace("Channel {} not linked, skipping update", thingKey);
+                }
+            } catch (IllegalStateException e) {
+                logger.debug("Handler disposed while processing channel {}", thingKey);
+            } catch (Exception e) {
+                logger.error("Unexpected error updating channel {}: {}", thingKey, e.getMessage(), e);
             }
         }
     }
@@ -447,7 +476,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     protected void addPhaseChannels(JsonObject state, JsonArray values, String prefix, String datapoint) {
         int phase = 1;
         for (JsonElement value : values) {
-            state.add(prefix + datapoint + "L" + phase, value);
+            String channelKey = prefix + datapoint + "L" + phase;
+            state.add(channelKey, value);
+            logger.trace("Added phase channel: {} = {}", channelKey, value);
             phase++;
         }
     }

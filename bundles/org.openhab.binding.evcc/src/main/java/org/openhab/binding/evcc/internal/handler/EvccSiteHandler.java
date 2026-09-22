@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.evcc.internal.handler.routing.FixedValueExtraction;
 import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
 import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
 import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
@@ -83,7 +82,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     @Override
     public void initializeThingFromLatestState(JsonObject state) {
-        logger.debug("Site handler initializing from state");
+        logger.trace("Site handler initializing from state");
         // Set the smart cost type
         if (state.has(JSON_KEY_SMART_COST_TYPE) && !state.get(JSON_KEY_SMART_COST_TYPE).isJsonNull()) {
             smartCostType = state.get(JSON_KEY_SMART_COST_TYPE).getAsString();
@@ -93,7 +92,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             modifyJSON(state);
         }
         createChannelsAndSetStatesFromApiResponse(state);
-        logger.debug("Site handler initialized successfully");
+        logger.trace("Site handler initialized successfully");
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -107,9 +106,8 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             router.registerRoute(new HandlerRoute(JSON_KEY_GRID, new JsonPathExtraction("$"), this, JSON_KEY_GRID));
             router.registerRoute(new HandlerRoute(PROPERTY_TYPE_SITE, new ObjectFieldExtraction(JSON_KEY_GRID), this,
                     JSON_KEY_GRID));
-            router.registerRoute(new HandlerRoute("pvEnergy", new FixedValueExtraction(), this, "pvEnergy"));
-            router.registerRoute(new HandlerRoute("pvPower", new FixedValueExtraction(), this, "pvPower"));
-            router.registerRoute(new HandlerRoute("tariffGrid", new FixedValueExtraction(), this, "tariffGrid"));
+            router.registerRoute(
+                    new HandlerRoute(JSON_KEY_HOME_POWER, new JsonPathExtraction("$"), this, JSON_KEY_HOME_POWER));
         });
     }
 
@@ -139,6 +137,8 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleUpdate(String key, JsonElement value) {
+        logger.trace("EvccSiteHandler.handleUpdate called with key='{}', type={}", key,
+                value.getClass().getSimpleName());
         if (JSON_KEY_GRID.equals(key) && value.isJsonObject()) {
             JsonObject gridUpdate = value.getAsJsonObject();
             JsonObject updateState = new JsonObject();

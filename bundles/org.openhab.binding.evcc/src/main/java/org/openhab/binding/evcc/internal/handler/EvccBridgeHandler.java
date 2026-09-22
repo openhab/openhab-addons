@@ -82,6 +82,11 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     private String endpoint = "";
 
+    // Set at the very start of dispose() so that websocket callbacks racing with (or
+    // triggered by) shutdown - e.g. Jetty's async onClose firing from closeSession() -
+    // stop touching the handler once the framework may have already detached its callback.
+    private volatile boolean disposed = false;
+
     public EvccBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, TranslationProvider i18nProvider,
             LocaleProvider localeProvider) {
         super(bridge);
@@ -98,6 +103,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        disposed = false;
         EvccBridgeConfiguration cfg = getConfigAs(EvccBridgeConfiguration.class);
 
         endpoint = cfg.scheme + "://" + cfg.host + ":" + cfg.port + "/api";
@@ -119,6 +125,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
      */
     @Override
     public void dispose() {
+        disposed = true;
         Optional.ofNullable(wsClient).ifPresent(EvccWebSocketClient::stop);
         stopPlanRefreshTask();
         listeners.clear();
@@ -172,6 +179,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
      * Updates bridge status to ONLINE and logs the connection event.
      */
     private void onConnected() {
+        if (disposed) {
+            return;
+        }
         updateStatus(ThingStatus.ONLINE);
         logger.info("EVCC WebSocket connected");
     }
@@ -182,6 +192,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
      * Updates bridge status to OFFLINE with communication error detail and logs the event.
      */
     private void onDisconnected() {
+        if (disposed) {
+            return;
+        }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "WebSocket disconnected");
         logger.info("EVCC WebSocket disconnected");
     }
@@ -195,6 +208,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
      * @param state The complete current state from the EVCC API
      */
     private void onFullState(JsonObject state) {
+        if (disposed) {
+            return;
+        }
         logger.debug("Received full state from WebSocket");
         cachedState.updateFull(state);
         if (!initialStateReceived) {
@@ -204,10 +220,15 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         processPendingHandlers();
         JsonObject stateCopy = cachedState.getCopy();
         for (EvccThingLifecycleAware listener : new ArrayList<>(listeners.values())) {
-            try {
-                listener.initializeThingFromLatestState(stateCopy);
-            } catch (Exception e) {
-                logListenerError(listener, e);
+            synchronized (listener) {
+                if (listener.isDisposed()) {
+                    continue;
+                }
+                try {
+                    listener.initializeThingFromLatestState(stateCopy);
+                } catch (Exception e) {
+                    logListenerError(listener, e);
+                }
             }
         }
     }
@@ -221,7 +242,12 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
      * @param key The update key (e.g., "battery", "grid", "pv.0")
      * @param value The updated value (partial JSON structure)
      */
-    private void onPartialUpdate(String key, JsonElement value) {
+    // Package-private (rather than private) so tests can exercise the exact production
+    // path (cache merge + dispatch) without needing a real websocket connection.
+    void onPartialUpdate(String key, JsonElement value) {
+        if (disposed) {
+            return;
+        }
         logger.trace("Received partial update: {}", key);
         cachedState.updatePartial(key, value);
         processPendingHandlers();
@@ -259,12 +285,19 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
      */
     private void activateHandler(String handlerKey, EvccThingLifecycleAware handler) {
         listeners.put(handlerKey, handler);
-        try {
-            logger.debug("Initializing handler from latest state: {}", handlerKey);
-            handler.initializeThingFromLatestState(cachedState.getCopy());
-            logger.debug("Successfully activated handler: {}", handlerKey);
-        } catch (Exception e) {
-            logListenerError(handler, e);
+        synchronized (handler) {
+            if (handler.isDisposed()) {
+                logger.debug("Handler {} is already disposed, skipping activation", handlerKey);
+                listeners.remove(handlerKey);
+                return;
+            }
+            try {
+                logger.trace("Initializing handler from latest state: {}", handlerKey);
+                handler.initializeThingFromLatestState(cachedState.getCopy());
+                logger.trace("Successfully activated handler: {}", handlerKey);
+            } catch (Exception e) {
+                logListenerError(handler, e);
+            }
         }
     }
 
@@ -278,7 +311,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         if (pendingHandlers.isEmpty()) {
             return;
         }
-        logger.debug("Processing {} pending handler(s)", pendingHandlers.size());
+        logger.trace("Processing {} pending handler(s)", pendingHandlers.size());
         List<String> keysToRemove = new ArrayList<>();
         for (Map.Entry<String, EvccThingLifecycleAware> entry : pendingHandlers.entrySet()) {
             try {
@@ -290,10 +323,10 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         }
         keysToRemove.forEach(key -> {
             pendingHandlers.remove(key);
-            logger.debug("Removed handler from pending queue: {}", key);
+            logger.trace("Removed handler from pending queue: {}", key);
         });
         if (!pendingHandlers.isEmpty()) {
-            logger.debug("Still {} handler(s) pending after processing", pendingHandlers.size());
+            logger.trace("Still {} handler(s) pending after processing", pendingHandlers.size());
         }
     }
 
@@ -308,6 +341,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     public void unregister(EvccThingLifecycleAware handler) {
         listeners.remove(handler.getType() + "$" + handler.getIdentifier());
         pendingHandlers.remove(handler.getType() + "$" + handler.getIdentifier());
+        messageRouter.unregisterRoutes(handler);
         updatePlanRefreshTask();
     }
 
@@ -326,27 +360,47 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     /**
      * Dispatch an update to relevant handlers based on the message key.
      *
+     * evcc's websocket protocol reports changes using dot notation for the exact subtree
+     * that changed (e.g. "loadpoints.1.chargePower", "forecast.solar"), not just for the
+     * top-level key that routes are registered under ("loadpoints", "forecast"). Since
+     * routes match their configured key exactly, such a dotted key would otherwise never be
+     * routed at all. To handle this, the root segment of a dotted key is routed using the
+     * up-to-date merged value already held for that root in the cache (which
+     * {@link CachedJsonState#updatePartial(String, JsonElement)} keeps assembled from dot
+     * notation), rather than the raw single-field value.
+     *
      * If a route matches the key, it is dispatched through the router.
      * Otherwise, if the key is a top-level key (no dots) and a site handler exists,
      * route it to the site handler as a fallback. This provides a safety net for
      * new evcc API fields that haven't been explicitly routed yet.
      *
-     * @param key The update key (e.g., "battery", "pv.0", "grid")
+     * @param key The update key (e.g., "battery", "loadpoints.0.chargePower", "grid")
      * @param value The update value (JSON structure)
      */
     private void dispatchUpdate(String key, JsonElement value) {
-        if (messageRouter.route(key, value)) {
+        logger.trace("Dispatching WebSocket update: key='{}', value type={}", key, value.getClass().getSimpleName());
+        int dotIndex = key.indexOf('.');
+        String routeKey = dotIndex < 0 ? key : key.substring(0, dotIndex);
+        JsonElement routeValue = dotIndex < 0 ? value : cachedState.get(routeKey);
+        if (routeValue != null && messageRouter.route(routeKey, routeValue)) {
+            logger.trace("Update for key '{}' was routed successfully via root key '{}'", key, routeKey);
             return;
         }
         // Fallback: route top-level keys to site handler if no explicit route matched
         if (!key.contains(".")) {
             EvccThingLifecycleAware siteHandler = listeners.get("site$");
             if (siteHandler != null) {
-                logger.debug("Routing unmatched top-level key '{}' to site handler", key);
-                try {
-                    siteHandler.handleUpdate(key, value);
-                } catch (Exception e) {
-                    logger.warn("Site handler failed to process fallback update for key '{}'", key, e);
+                synchronized (siteHandler) {
+                    if (siteHandler.isDisposed()) {
+                        logger.debug("Site handler is disposed, skipping fallback update for key '{}'", key);
+                        return;
+                    }
+                    logger.trace("Routing unmatched top-level key '{}' to site handler", key);
+                    try {
+                        siteHandler.handleUpdate(key, value);
+                    } catch (Exception e) {
+                        logger.warn("Site handler failed to process fallback update for key '{}'", key, e);
+                    }
                 }
                 return;
             }
@@ -410,10 +464,15 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
             if (!(listener instanceof EvccPlanHandler planHandler)) {
                 continue;
             }
-            try {
-                planHandler.refreshFromState(stateCopy);
-            } catch (Exception e) {
-                logListenerError(planHandler, e);
+            synchronized (planHandler) {
+                if (planHandler.isDisposed()) {
+                    continue;
+                }
+                try {
+                    planHandler.refreshFromState(stateCopy);
+                } catch (Exception e) {
+                    logListenerError(planHandler, e);
+                }
             }
         }
     }
