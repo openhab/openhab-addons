@@ -75,17 +75,17 @@ public class WindhagerbiowinConnector {
     }
 
     /**
-     * Reads a numeric value from a BioWin webserver path.
+     * Reads a numeric value from a BioWin webserver OID.
      *
-     * @param path the BioWin path, for example {@code 0/802/435/heat}
+     * @param oid the BioWin OID, for example {@code 0/802/435/heat}
      * @return the parsed value, or {@code null} if the request fails or the response is not numeric
      */
-    public @Nullable BigDecimal readValue(String path) {
-        if (path.isBlank()) {
+    public @Nullable BigDecimal readValue(String oid) {
+        if (oid.isBlank()) {
             return null;
         }
 
-        HttpResponse<String> response = sendRequest(DATAPOINT_API_PATH + normalizeOid(path));
+        HttpResponse<String> response = sendRequest(DATAPOINT_API_PATH + normalizeOid(oid));
         if (response == null || response.statusCode() < 200 || response.statusCode() >= 300) {
             return null;
         }
@@ -93,17 +93,17 @@ public class WindhagerbiowinConnector {
         try {
             return new BigDecimal(readValueElement(response.body()).getAsString());
         } catch (RuntimeException e) {
-            logger.debug("BioWin returned a non-numeric value for path {}", path);
+            logger.debug("BioWin returned a non-numeric value for oid {}", oid);
             return null;
         }
     }
 
-    public @Nullable String readString(String path) {
-        if (path.isBlank()) {
+    public @Nullable String readString(String oid) {
+        if (oid.isBlank()) {
             return null;
         }
 
-        HttpResponse<String> response = sendRequest(DATAPOINT_API_PATH + normalizeOid(path));
+        HttpResponse<String> response = sendRequest(DATAPOINT_API_PATH + normalizeOid(oid));
         if (response == null || response.statusCode() < 200 || response.statusCode() >= 300) {
             return null;
         }
@@ -111,13 +111,13 @@ public class WindhagerbiowinConnector {
         try {
             return readValueElement(response.body()).getAsString();
         } catch (RuntimeException e) {
-            logger.debug("BioWin returned an invalid response for path {}", path);
+            logger.debug("BioWin returned an invalid response for oid {}", oid);
             return null;
         }
     }
 
-    private @Nullable HttpResponse<String> sendRequest(String path) {
-        String normalizedPath = path.isBlank() ? "" : "/" + path.replaceFirst("^/+", "");
+    private @Nullable HttpResponse<String> sendRequest(String oid) {
+        String normalizedPath = oid.isBlank() ? "" : "/" + oid.replaceFirst("^/+", "");
         URI uri = URI.create("http://" + hostname + ":" + port + normalizedPath);
 
         try {
@@ -134,9 +134,9 @@ public class WindhagerbiowinConnector {
             return response;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.debug("Interrupted while requesting BioWin path {}", path);
+            logger.debug("Interrupted while requesting BioWin oid {}", oid);
         } catch (Exception e) {
-            logger.debug("Unable to request BioWin path {}: {}", path, e.getMessage());
+            logger.debug("Unable to request BioWin oid {}: {}", oid, e.getMessage());
         }
         return null;
     }
@@ -150,8 +150,8 @@ public class WindhagerbiowinConnector {
         return value;
     }
 
-    private static String normalizeOid(String path) {
-        return path.replaceFirst("^/+", "");
+    private static String normalizeOid(String oid) {
+        return oid.replaceFirst("^/+", "");
     }
 
     private @Nullable HttpResponse<String> sendRequest(URI uri, @Nullable String authorization)

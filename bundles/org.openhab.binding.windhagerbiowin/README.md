@@ -62,9 +62,9 @@ _Here you should provide information about available channel types, what their m
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-| Channel  | Type   | Read/Write | Description                                                            |
-|----------|--------|------------|------------------------------------------------------------------------|
-| channel1 | Number | R          | Reads a BioWin value using a configured path such as 0/802/435/heat. |
+| Channel  | Type   | Read/Write | Description                                                          |
+|----------|--------|------------|----------------------------------------------------------------------|
+| channel1 | Number | R          | Reads a BioWin value using a configured OID such as 0/802/435/heat. |
 
 ## Full Example
 

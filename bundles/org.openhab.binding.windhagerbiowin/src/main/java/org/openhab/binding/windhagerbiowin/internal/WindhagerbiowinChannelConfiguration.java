@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class WindhagerbiowinChannelConfiguration {
 
     /**
-     * BioWin channel path such as 0/802/435/heat.
+     * BioWin OID such as 0/802/435/heat.
      */
-    public String path = "";
+    public String oid = "";
 
     /**
      * Refresh interval for this channel in seconds.

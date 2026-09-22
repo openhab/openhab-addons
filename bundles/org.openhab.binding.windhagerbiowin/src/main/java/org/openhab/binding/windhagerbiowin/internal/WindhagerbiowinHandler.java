@@ -100,8 +100,8 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
         for (Channel channel : getThing().getChannels()) {
             WindhagerbiowinChannelConfiguration channelConfig = channel.getConfiguration()
                     .as(WindhagerbiowinChannelConfiguration.class);
-            if (channelConfig.path.isBlank()) {
-                logger.debug("Skipping channel {} without a configured path.", channel.getUID());
+            if (channelConfig.oid.isBlank()) {
+                logger.debug("Skipping channel {} without a configured oid.", channel.getUID());
                 continue;
             }
             if (channelConfig.refreshInterval < 1) {
@@ -117,7 +117,7 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
 
         if (!hasUsableChannel) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "At least one channel with a configured path must be defined.");
+                    "At least one channel with a configured oid must be defined.");
             return;
         }
 
@@ -151,20 +151,20 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
 
         String acceptedItemType = channel.getAcceptedItemType();
         if ("String".equalsIgnoreCase(acceptedItemType)) {
-            String value = localConnector.readString(channelConfig.path);
+            String value = localConnector.readString(channelConfig.oid);
             if (value != null) {
                 updateState(channelUID, new StringType(value));
             } else {
-                logger.debug("Could not read configured BioWin string path {}", channelConfig.path);
+                logger.debug("Could not read configured BioWin string oid {}", channelConfig.oid);
             }
             return;
         }
 
-        BigDecimal value = localConnector.readValue(channelConfig.path);
+        BigDecimal value = localConnector.readValue(channelConfig.oid);
         if (value != null) {
             updateState(channelUID, new DecimalType(value));
         } else {
-            logger.debug("Could not read configured BioWin path {}", channelConfig.path);
+            logger.debug("Could not read configured BioWin oid {}", channelConfig.oid);
         }
     }
 

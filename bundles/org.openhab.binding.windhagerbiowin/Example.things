@@ -1,0 +1,15 @@
+Thing windhagerbiowin:sample:myheater [
+  hostname="192.168.1.50",
+  port=80,
+  username="admin",
+  password="secret"
+] {
+  Type biowin-value : channel1 [
+    oid="0/802/435/heat",
+    refreshInterval=60
+  ]
+  Type biowin-value : channel3 [
+    oid="0/802/435/power",
+    refreshInterval=120
+  ]
+}
