@@ -20,12 +20,18 @@ Optionally, a refresh interval (in seconds) can be defined as the parameter `ref
 The `kecontact-modbus` Thing connects directly to the wallbox's Modbus TCP interface; it does not require a separate Modbus bridge Thing to be configured.
 The Modbus TCP interface must be enabled on the wallbox beforehand (via the KEBA eMobility App, OCPP or REST API); it cannot be used at the same time as the UDP interface.
 
-| Parameter       | Description                                                                          | Default |
-| --------------- | ------------------------------------------------------------------------------------- | ------- |
-| ipAddress       | Network address of the wallbox                                                        | -       |
-| port            | TCP port of the Modbus TCP interface of the wallbox                                    | 502     |
-| unitId          | Modbus unit id (slave address) of the wallbox                                          | 255     |
-| refreshInterval | Refresh interval in seconds for each individual register (only one register can be read at a time) | 5       |
+| Parameter          | Description                                                                                 | Default |
+| ------------------ | ------------------------------------------------------------------------------------------- | ------- |
+| ipAddress          | Network address of the wallbox                                                               | -       |
+| port               | TCP port of the Modbus TCP interface of the wallbox                                          | 502     |
+| unitId             | Modbus unit id (slave address) of the wallbox                                                | 255     |
+| refreshInterval    | Refresh interval in seconds for frequently changing registers                               | 12      |
+| refreshIntervalSlow| Refresh interval in seconds for registers that change infrequently                           | 60      |
+
+The Modbus interface requires at least five seconds between different write jobs. The binding queues writes
+separately at this interval while retaining a 500 ms delay between all Modbus transactions, including reads.
+The fast polling interval has a minimum of 10 seconds because the 12 frequently changing registers require at
+least 6 seconds at the configured 500 ms transaction delay; the additional margin allows for request processing.
 
 The KEBA Modbus TCP register set is smaller than what the UDP interface exposes; channels not backed by a documented register (e.g. pilot current/duty cycle, X1/X2 relay state, display text, RFID authentication) are not available on this Thing type. Registers that are only available on certain models (e.g. P30's persisted failsafe setting or P40's fast charging) are not yet supported.
 
@@ -84,18 +90,15 @@ The `kecontact-modbus` Thing type supports the following channels instead:
 | maxchargingcurrent      | Number:ElectricCurrent   | yes       | maximum charging current currently offered to the vehicle               |
 | maxsupportedcurrent     | Number:ElectricCurrent   | yes       | maximum current the wallbox hardware can support                        |
 | sessionrfidtag          | String                   | yes       | RFID tag used for the last charging session (needs to be enabled on the wallbox) |
-| phaseswitchsource       | Number                   | yes       | source used to trigger the phase switching                              |
+| phaseswitchsource       | Number                   | no        | source that is allowed to control the phase switching                   |
 | phaseswitchstate        | Number                   | yes       | number of phases currently used (1 or 3)                                 |
-| failsafecurrentsetting  | Number:ElectricCurrent   | yes       | currently active failsafe current                                      |
-| failsafetimeoutsetting  | Number:Time              | yes       | currently active failsafe timeout                                       |
+| failsafecurrentsetting  | Number:ElectricCurrent   | no        | charging current to fall back to if the connection is lost              |
+| failsafetimeoutsetting  | Number:Time              | no        | timeout after which the failsafe current is applied                     |
 | setchargingcurrent      | Number:ElectricCurrent   | no        | sets the charging current the wallbox should offer to the vehicle       |
 | setenergylimit          | Number:Energy            | no        | set an energy limit for an already running or the next charging session |
 | unlockplug              | Switch                   | no        | send ON to unlock the plug (charging session must be stopped beforehand) |
 | enableduser             | Switch                   | no        | enable or disable the wallbox                                          |
-| setphaseswitchsource    | Number                   | no        | sets the source that is allowed to control the phase switching          |
 | triggerphaseswitch      | Number                   | no        | triggers the phase switch (0 = 1 phase, 1 = 3 phases)                    |
-| setfailsafecurrent      | Number:ElectricCurrent   | no        | sets the charging current to fall back to if the connection is lost     |
-| setfailsafetimeout      | Number:Time              | no        | sets the timeout after which the failsafe current is applied            |
 
 ## Rule Actions
 
@@ -127,7 +130,7 @@ demo.Things:
 
 ```java
 Thing keba:kecontact:1 [ipAddress="192.168.0.64", refreshInterval=30]
-Thing keba:kecontact-modbus:1 [ipAddress="192.168.0.65", refreshInterval=5]
+Thing keba:kecontact-modbus:1 [ipAddress="192.168.0.65", refreshInterval=12, refreshIntervalSlow=60]
 ```
 
 demo.items:
@@ -202,9 +205,18 @@ Enable `DEBUG` or `TRACE` (even more verbose) logging for the logger named:
 org.openhab.binding.keba
 ```
 
+For Modbus TCP request and response diagnostics, also enable `DEBUG` or `TRACE` logging for the core Modbus
+transport logger:
+
+```text
+org.openhab.core.io.transport.modbus
+```
+
 For the `kecontact` (UDP) Thing type, if everything is working fine, you see the cyclic reception of `report 1`, `2` & `3` from the station. The frequency is according to the `refreshInterval` configuration.
 
-For the `kecontact-modbus` Thing type there is no equivalent `report` message; instead you see the individual Modbus read/write requests and their responses (or, on failure, read/write errors), one register at a time, at the configured `refreshInterval`.
+For the `kecontact-modbus` Thing type there is no equivalent `report` message; with the core Modbus logger enabled,
+you see the individual Modbus read/write requests and their responses (or, on failure, read/write errors), one
+register at a time, at the configured fast or slow refresh interval.
 
 ### UDP Ports used (`kecontact` Thing type only)
 

@@ -84,10 +84,7 @@ public class KebaBindingConstants {
     public static final String CHANNEL_FAILSAFE_TIMEOUT_SETTING = "failsafetimeoutsetting";
     public static final String CHANNEL_SET_CHARGING_CURRENT = "setchargingcurrent";
     public static final String CHANNEL_UNLOCK_PLUG = "unlockplug";
-    public static final String CHANNEL_SET_PHASE_SWITCH_SOURCE = "setphaseswitchsource";
     public static final String CHANNEL_TRIGGER_PHASE_SWITCH = "triggerphaseswitch";
-    public static final String CHANNEL_SET_FAILSAFE_CURRENT = "setfailsafecurrent";
-    public static final String CHANNEL_SET_FAILSAFE_TIMEOUT = "setfailsafetimeout";
 
     public enum KebaType {
         P20,

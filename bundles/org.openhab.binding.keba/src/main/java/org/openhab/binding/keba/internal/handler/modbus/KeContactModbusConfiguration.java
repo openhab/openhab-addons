@@ -27,5 +27,6 @@ public class KeContactModbusConfiguration {
     public @Nullable String ipAddress;
     public int port = 502;
     public int unitId = 255;
-    public int refreshInterval = 5;
+    public int refreshInterval = 12;
+    public int refreshIntervalSlow = 60;
 }

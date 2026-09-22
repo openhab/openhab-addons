@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="kecontact-modbus">
-		<label>KeContact EV Charging Station (Modbus TCP)</label>
+		<label>KeContact (Modbus TCP)</label>
 		<description>A KEBA KeContact P30 or P40 EV Charging Station accessed via its Modbus TCP interface</description>
 		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
@@ -40,16 +40,13 @@
 			<channel id="sessionconsumption" typeId="modbus-sessionenergy"/>
 			<channel id="phaseswitchsource" typeId="modbus-phaseswitchsource"/>
 			<channel id="phaseswitchstate" typeId="modbus-phaseswitchstate"/>
-			<channel id="failsafecurrentsetting" typeId="modbus-failsafecurrentsetting"/>
-			<channel id="failsafetimeoutsetting" typeId="modbus-failsafetimeoutsetting"/>
+			<channel id="failsafecurrentsetting" typeId="modbus-failsafecurrent"/>
+			<channel id="failsafetimeoutsetting" typeId="modbus-failsafetimeout"/>
 			<channel id="setchargingcurrent" typeId="modbus-setchargingcurrent"/>
 			<channel id="setenergylimit" typeId="modbus-setenergylimit"/>
 			<channel id="unlockplug" typeId="modbus-unlockplug"/>
 			<channel id="enableduser" typeId="modbus-enableduser"/>
-			<channel id="setphaseswitchsource" typeId="modbus-setphaseswitchsource"/>
 			<channel id="triggerphaseswitch" typeId="modbus-triggerphaseswitch"/>
-			<channel id="setfailsafecurrent" typeId="modbus-setfailsafecurrent"/>
-			<channel id="setfailsafetimeout" typeId="modbus-setfailsafetimeout"/>
 		</channels>
 
 		<properties>
@@ -58,6 +55,7 @@
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
 				<label>Network Address</label>
 				<description>Network address of the wallbox</description>
 			</parameter>
@@ -71,10 +69,15 @@
 				<description>Modbus unit id (slave address) of the wallbox</description>
 				<default>255</default>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" min="1">
-				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in seconds for each individual register</description>
-				<default>5</default>
+			<parameter name="refreshInterval" type="integer" min="10" unit="s">
+				<label>Fast Refresh Interval</label>
+				<description>Refresh interval in seconds for frequently changing values</description>
+				<default>12</default>
+			</parameter>
+			<parameter name="refreshIntervalSlow" type="integer" min="10" unit="s">
+				<label>Slow Refresh Interval</label>
+				<description>Refresh interval in seconds for values that change infrequently</description>
+				<default>60</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -83,6 +86,9 @@
 		<item-type>Number</item-type>
 		<label>Operation State</label>
 		<description>Current operational state of the wallbox</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Starting</option>
@@ -98,6 +104,9 @@
 		<item-type>Number</item-type>
 		<label>Cable State</label>
 		<description>State of the charging cable</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No cable plugged</option>
@@ -112,6 +121,9 @@
 		<item-type>Number</item-type>
 		<label>Error Code</label>
 		<description>Error code of the wallbox, if in error. 0 means no error</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="modbus-current" advanced="true">
@@ -170,12 +182,20 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Max. Charging Current</label>
 		<description>Maximum charging current currently offered to the vehicle</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="modbus-maxsupportedcurrent" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Max. Supported Current</label>
 		<description>Maximum current value that can be supported by the hardware of the wallbox</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="modbus-rfidtag" advanced="true">
@@ -197,10 +217,14 @@
 	<channel-type id="modbus-phaseswitchsource" advanced="true">
 		<item-type>Number</item-type>
 		<label>Phase Switching Source</label>
-		<description>Source used to trigger the phase switching</description>
-		<state readOnly="true">
+		<description>Source that is allowed to control the phase switching. "Toggle via UDP" can only be reported, not set,
+			since the UDP and Modbus TCP interfaces cannot be enabled at the same time</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="false">
 			<options>
-				<option value="0">No phase toggle source available</option>
+				<option value="0">Phase switching deactivated</option>
 				<option value="1">Toggle via OCPP</option>
 				<option value="2">Toggle via REST API</option>
 				<option value="3">Toggle via Modbus TCP</option>
@@ -212,6 +236,9 @@
 		<item-type>Number</item-type>
 		<label>Phase Switching State</label>
 		<description>Number of phases that are currently used</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="1">Single-phase charging</option>
@@ -219,17 +246,24 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="modbus-failsafecurrentsetting" advanced="true">
+	<channel-type id="modbus-failsafecurrent" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Failsafe Current</label>
-		<description>Currently active failsafe current (if the connection to the wallbox is lost)</description>
-		<state pattern="%.3f %unit%" readOnly="true"></state>
+		<description>Charging current to fall back to if the connection to the wallbox is lost</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.3f %unit%" readOnly="false"></state>
 	</channel-type>
-	<channel-type id="modbus-failsafetimeoutsetting" advanced="true">
+	<channel-type id="modbus-failsafetimeout" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Failsafe Timeout</label>
-		<description>Currently active failsafe timeout</description>
-		<state pattern="%d %unit%" readOnly="true"></state>
+		<description>Timeout after which the failsafe current is applied if no command was received</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="modbus-setchargingcurrent">
 		<item-type>Number:ElectricCurrent</item-type>
@@ -245,12 +279,19 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Limit</label>
 		<description>Sets an energy limit for an already running or the next charging session</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="modbus-unlockplug" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Unlock Plug</label>
 		<description>Send ON to unlock the plug. The charging session must be stopped beforehand</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="modbus-enableduser">
@@ -263,41 +304,19 @@
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
-	<channel-type id="modbus-setphaseswitchsource" advanced="true">
-		<item-type>Number</item-type>
-		<label>Set Phase Switching Source</label>
-		<description>Sets the source that is allowed to control the phase switching</description>
-		<state readOnly="false">
-			<options>
-				<option value="0">Phase switching deactivated</option>
-				<option value="1">Toggle via OCPP</option>
-				<option value="2">Toggle via REST API</option>
-				<option value="3">Toggle via Modbus TCP</option>
-			</options>
-		</state>
-	</channel-type>
 	<channel-type id="modbus-triggerphaseswitch" advanced="true">
 		<item-type>Number</item-type>
 		<label>Trigger Phase Switch</label>
 		<description>Triggers the phase switch. 0 = 1 phase, 1 = 3 phases</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">1 phase</option>
 				<option value="1">3 phases</option>
 			</options>
 		</state>
-	</channel-type>
-	<channel-type id="modbus-setfailsafecurrent" advanced="true">
-		<item-type>Number:ElectricCurrent</item-type>
-		<label>Set Failsafe Current</label>
-		<description>Sets the charging current to fall back to if the connection to the wallbox is lost</description>
-		<state pattern="%.3f %unit%" readOnly="false"></state>
-	</channel-type>
-	<channel-type id="modbus-setfailsafetimeout" advanced="true">
-		<item-type>Number:Time</item-type>
-		<label>Set Failsafe Timeout</label>
-		<description>Sets the timeout after which the failsafe current is applied if no command was received</description>
-		<state pattern="%d %unit%" readOnly="false"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

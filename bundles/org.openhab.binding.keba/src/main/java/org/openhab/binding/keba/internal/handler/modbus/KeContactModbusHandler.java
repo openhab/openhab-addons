@@ -15,6 +15,8 @@ package org.openhab.binding.keba.internal.handler.modbus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,6 +63,8 @@ public class KeContactModbusHandler extends BaseThingHandler {
 
     private static final int READ_REGISTER_LENGTH = 2;
     private static final int MAX_TRIES = 3;
+    private static final int MIN_FAST_REFRESH_INTERVAL_SECONDS = 10;
+    private static final long WRITE_INTERVAL_MILLIS = 5000;
 
     private final Logger logger = LoggerFactory.getLogger(KeContactModbusHandler.class);
     private final ModbusManager modbusManager;
@@ -68,6 +72,9 @@ public class KeContactModbusHandler extends BaseThingHandler {
     private KeContactModbusConfiguration config = new KeContactModbusConfiguration();
     private volatile @Nullable ModbusCommunicationInterface comms;
     private final List<PollTask> pollTasks = new ArrayList<>();
+    private final List<ScheduledFuture<?>> writeTasks = new ArrayList<>();
+    private final Object writeLock = new Object();
+    private long nextWriteNanos;
     private int slaveId;
 
     public KeContactModbusHandler(Thing thing, ModbusManager modbusManager) {
@@ -80,40 +87,51 @@ public class KeContactModbusHandler extends BaseThingHandler {
         config = getConfigAs(KeContactModbusConfiguration.class);
         String host = config.ipAddress;
         if (host == null || host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Network address not set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-no-address");
             return;
         }
-        if (config.refreshInterval <= 0) {
+        if (config.refreshInterval < MIN_FAST_REFRESH_INTERVAL_SECONDS || config.refreshIntervalSlow <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid refresh interval: " + config.refreshInterval);
+                    "@text/offline.config-error-invalid-refresh [\"fast=" + config.refreshInterval + ", slow="
+                            + config.refreshIntervalSlow + "\"]");
             return;
         }
 
         slaveId = config.unitId;
         updateStatus(ThingStatus.UNKNOWN);
 
-        ModbusTCPSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint(host, config.port, false);
-        EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
-        // KEBA recommends at least 0.5s between reads and 5s between writes to the same station
-        poolConfiguration.setInterTransactionDelayMillis(500);
-        ModbusCommunicationInterface localComms = comms = modbusManager.newModbusCommunicationInterface(endpoint,
-                poolConfiguration);
+        // opening the Modbus TCP connection and registering the polls can involve blocking I/O, so run it in the
+        // background instead of blocking the calling thread
+        scheduler.execute(() -> {
+            ModbusTCPSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint(host, config.port, false);
+            EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
+            // KEBA recommends at least 0.5s between reads and 5s between writes to the same station
+            poolConfiguration.setInterTransactionDelayMillis(500);
+            ModbusCommunicationInterface localComms = comms = modbusManager.newModbusCommunicationInterface(endpoint,
+                    poolConfiguration);
 
-        long refreshMillis = config.refreshInterval * 1000L;
-        long initialDelay = 0;
-        for (KebaModbusReadRegister register : KebaModbusReadRegister.values()) {
-            ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
-                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, register.getAddress(), READ_REGISTER_LENGTH,
-                    MAX_TRIES);
-            pollTasks.add(localComms.registerRegularPoll(request, refreshMillis, initialDelay,
-                    result -> handleReadResult(register, result), this::handleReadError));
-            // stagger the individual polls a bit to avoid bursting the single register-at-a-time interface
-            initialDelay += 200;
-        }
+            long initialDelay = 0;
+            for (KebaModbusReadRegister register : KebaModbusReadRegister.values()) {
+                long refreshMillis = (register.isFast() ? config.refreshInterval : config.refreshIntervalSlow) * 1000L;
+                ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
+                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, register.getAddress(), READ_REGISTER_LENGTH,
+                        MAX_TRIES);
+                pollTasks.add(localComms.registerRegularPoll(request, refreshMillis, initialDelay,
+                        result -> handleReadResult(register, result), this::handleReadError));
+                // stagger the individual polls a bit to avoid bursting the single register-at-a-time interface
+                initialDelay += 200;
+            }
+        });
     }
 
     @Override
     public void dispose() {
+        synchronized (writeLock) {
+            writeTasks.forEach(task -> task.cancel(false));
+            writeTasks.clear();
+            nextWriteNanos = 0;
+        }
         ModbusCommunicationInterface localComms = comms;
         pollTasks.forEach(task -> {
             if (localComms != null) {
@@ -144,7 +162,7 @@ public class KeContactModbusHandler extends BaseThingHandler {
 
     private void handleReadError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "Modbus read error: " + failure.getCause().getMessage());
+                "@text/offline.comm-error-modbus-read [\"" + failure.getCause().getMessage() + "\"]");
     }
 
     private org.openhab.core.types.State toState(KebaModbusReadRegister register, DecimalType value) {
@@ -188,10 +206,26 @@ public class KeContactModbusHandler extends BaseThingHandler {
 
         ModbusWriteRegisterRequestBlueprint request = new ModbusWriteRegisterRequestBlueprint(slaveId,
                 register.getAddress(), new ModbusRegisterArray(rawValue), false, MAX_TRIES);
-        localComms.submitOneTimeWrite(request,
-                result -> logger.debug("Modbus write to register {} successful", register.getAddress()),
-                failure -> logger.warn("Modbus write to register {} failed: {}", register.getAddress(),
-                        failure.getCause().getMessage()));
+        scheduleWrite(localComms, request, register);
+    }
+
+    private void scheduleWrite(ModbusCommunicationInterface localComms, ModbusWriteRegisterRequestBlueprint request,
+            KebaModbusWriteRegister register) {
+        synchronized (writeLock) {
+            long now = System.nanoTime();
+            long scheduledAt = Math.max(now, nextWriteNanos);
+            nextWriteNanos = scheduledAt + TimeUnit.MILLISECONDS.toNanos(WRITE_INTERVAL_MILLIS);
+            long delay = TimeUnit.NANOSECONDS.toMillis(scheduledAt - now);
+            ScheduledFuture<?> task = scheduler.schedule(() -> {
+                if (localComms.equals(comms)) {
+                    localComms.submitOneTimeWrite(request,
+                            result -> logger.debug("Modbus write to register {} successful", register.getAddress()),
+                            failure -> logger.warn("Modbus write to register {} failed: {}", register.getAddress(),
+                                    failure.getCause().getMessage()));
+                }
+            }, delay, TimeUnit.MILLISECONDS);
+            writeTasks.add(task);
+        }
     }
 
     private void refreshChannel(ModbusCommunicationInterface comms, String channelId) {
@@ -206,38 +240,42 @@ public class KeContactModbusHandler extends BaseThingHandler {
         }
     }
 
-    private @Nullable Integer toRawValue(KebaModbusWriteRegister register, Command command) {
+    static @Nullable Integer toRawValue(KebaModbusWriteRegister register, Command command) {
         return switch (register.getKind()) {
-            case SWITCH -> command == OnOffType.ON ? 1 : 0;
-            case SWITCH_TRIGGER -> command == OnOffType.ON ? 0 : null;
-            case NUMBER -> command instanceof DecimalType decimal ? decimal.intValue() : null;
+            case SWITCH -> toRawValue(register, command == OnOffType.ON ? 1 : 0);
+            case SWITCH_TRIGGER -> command == OnOffType.ON ? toRawValue(register, 0) : null;
+            case NUMBER -> command instanceof DecimalType decimal ? toRawValue(register, decimal.longValue()) : null;
             case CURRENT_MA -> {
                 if (command instanceof QuantityType<?> quantity) {
                     QuantityType<?> ampere = Objects.requireNonNull(quantity.toUnit(Units.AMPERE));
-                    yield (int) Math.round(ampere.doubleValue() * 1000.0);
+                    yield toRawValue(register, Math.round(ampere.doubleValue() * 1000.0));
                 } else if (command instanceof DecimalType decimal) {
-                    yield decimal.intValue();
+                    yield toRawValue(register, decimal.longValue());
                 }
                 yield null;
             }
             case ENERGY_10WH -> {
                 if (command instanceof QuantityType<?> quantity) {
                     QuantityType<?> wattHour = Objects.requireNonNull(quantity.toUnit(Units.WATT_HOUR));
-                    yield (int) Math.round(wattHour.doubleValue() / 10.0);
+                    yield toRawValue(register, Math.round(wattHour.doubleValue() / 10.0));
                 } else if (command instanceof DecimalType decimal) {
-                    yield decimal.intValue();
+                    yield toRawValue(register, decimal.longValue());
                 }
                 yield null;
             }
             case TIME_S -> {
                 if (command instanceof QuantityType<?> quantity) {
                     QuantityType<?> seconds = Objects.requireNonNull(quantity.toUnit(Units.SECOND));
-                    yield (int) Math.round(seconds.doubleValue());
+                    yield toRawValue(register, Math.round(seconds.doubleValue()));
                 } else if (command instanceof DecimalType decimal) {
-                    yield decimal.intValue();
+                    yield toRawValue(register, decimal.longValue());
                 }
                 yield null;
             }
         };
+    }
+
+    private static @Nullable Integer toRawValue(KebaModbusWriteRegister register, long value) {
+        return value >= 0 && value <= register.getMaxRawValue() && value <= 0xFFFFL ? (int) value : null;
     }
 }

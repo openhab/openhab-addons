@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="kecontact">
-		<label>KeContact EV Charging Station (UDP)</label>
+		<label>KeContact (UDP)</label>
 		<description>A KEBA KeContact P20 or P30 EV Charging Station accessed via its UDP interface</description>
 		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
@@ -64,10 +64,11 @@
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
+				<context>network-address</context>
 				<label>Network Address</label>
 				<description>Network address of the wallbox</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false">
+			<parameter name="refreshInterval" type="integer" required="false" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds</description>
 				<default>15</default>
@@ -80,6 +81,9 @@
 		<item-type>Number</item-type>
 		<label>Operation State</label>
 		<description>Current operational state of the wallbox</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Starting</option>
@@ -94,18 +98,27 @@
 		<item-type>String</item-type>
 		<label>Error Code 1</label>
 		<description>Error code state, if in error. See the KeContact FAQ</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="error2" advanced="true">
 		<item-type>String</item-type>
 		<label>Error Code 2</label>
 		<description>Error code state, if in error. See the KeContact FAQ</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="plugwallbox" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Wallbox Plugged</label>
 		<description>State of the wallbox plug, e.g. ON if plugged in, OFF if unplugged</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="plugvehicle">
@@ -122,6 +135,9 @@
 		<item-type>Switch</item-type>
 		<label>Plug Lock</label>
 		<description>Indicator if the plug is locked by the electrical vehicle</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="enabledsystem">
@@ -148,12 +164,18 @@
 		<item-type>Switch</item-type>
 		<label>X1</label>
 		<description>State of the X1 input</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="x2" advanced="true">
 		<item-type>Switch</item-type>
 		<label>X2</label>
 		<description>State of the X2 output</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="current_settable">
@@ -180,12 +202,20 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Max. System Current</label>
 		<description>Maximal System Current</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="failsafecurrent" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Failsafe Current</label>
 		<description>Failsafe Current (if network is lost)</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="range" advanced="true">
@@ -302,12 +332,19 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Limit</label>
 		<description>An energy limit for an already running or the next charging session</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="authenticate">
 		<item-type>String</item-type>
 		<label>Authenticate</label>
 		<description>Authenticate and start a charging session</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 </thing:thing-descriptions>

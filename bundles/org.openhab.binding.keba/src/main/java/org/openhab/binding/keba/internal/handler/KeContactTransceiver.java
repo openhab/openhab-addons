@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.keba.internal.KebaBindingConstants;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -45,17 +47,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
-
+@NonNullByDefault
 public class KeContactTransceiver {
 
     public static final int LISTENER_PORT_NUMBER = 7090;
     public static final int LISTENING_INTERVAL = 100;
     public static final int BUFFER_SIZE = 1024;
 
-    private DatagramChannel broadcastChannel;
-    private SelectionKey broadcastKey;
-    private Selector selector;
-    private Thread transceiverThread;
+    private @Nullable DatagramChannel broadcastChannel;
+    private @Nullable SelectionKey broadcastKey;
+    private @Nullable Selector selector;
+    private @Nullable Thread transceiverThread;
     private boolean isStarted = false;
     private Set<KeContactHandler> handlers = Collections.synchronizedSet(new HashSet<>());
     private Map<KeContactHandler, DatagramChannel> datagramChannels = Collections.synchronizedMap(new HashMap<>());
@@ -74,6 +76,7 @@ public class KeContactTransceiver {
                 if (transceiverThread == null) {
                     transceiverThread = new Thread(transceiverRunnable,
                             "OH-binding-" + KebaBindingConstants.BINDING_ID + "-Transceiver");
+                    transceiverThread.setDaemon(true);
                     transceiverThread.start();
                 }
 
@@ -105,17 +108,23 @@ public class KeContactTransceiver {
                 this.removeConnection(listener);
             }
 
-            try {
-                broadcastChannel.close();
-            } catch (IOException e) {
-                logger.error("An exception occurred while closing the broadcast channel on port number {} : '{}'",
-                        LISTENER_PORT_NUMBER, e.getMessage(), e);
+            DatagramChannel localBroadcastChannel = broadcastChannel;
+            if (localBroadcastChannel != null) {
+                try {
+                    localBroadcastChannel.close();
+                } catch (IOException e) {
+                    logger.error("An exception occurred while closing the broadcast channel on port number {} : '{}'",
+                            LISTENER_PORT_NUMBER, e.getMessage(), e);
+                }
             }
 
-            try {
-                selector.close();
-            } catch (IOException e) {
-                logger.error("An exception occurred while closing the selector: '{}'", e.getMessage(), e);
+            Selector localSelector = selector;
+            if (localSelector != null) {
+                try {
+                    localSelector.close();
+                } catch (IOException e) {
+                    logger.error("An exception occurred while closing the selector: '{}'", e.getMessage(), e);
+                }
             }
 
             logger.debug("Stopping the the KEBA KeContact transceiver");
@@ -178,7 +187,7 @@ public class KeContactTransceiver {
         }
     }
 
-    protected ByteBuffer send(String message, KeContactHandler handler) {
+    protected @Nullable ByteBuffer send(String message, KeContactHandler handler) {
         ReentrantLock handlerLock = locks.get(handler);
 
         if (handlerLock != null) {

@@ -25,14 +25,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum KebaModbusWriteRegister {
 
-    SET_CHARGING_CURRENT(5004, CHANNEL_SET_CHARGING_CURRENT, Kind.CURRENT_MA),
-    SET_ENERGY(5010, CHANNEL_SETENERGY, Kind.ENERGY_10WH),
-    UNLOCK_PLUG(5012, CHANNEL_UNLOCK_PLUG, Kind.SWITCH_TRIGGER),
-    ENABLE_DISABLE(5014, CHANNEL_ENABLED_USER, Kind.SWITCH),
-    SET_PHASE_SWITCH_SOURCE(5050, CHANNEL_SET_PHASE_SWITCH_SOURCE, Kind.NUMBER),
-    TRIGGER_PHASE_SWITCH(5052, CHANNEL_TRIGGER_PHASE_SWITCH, Kind.NUMBER),
-    SET_FAILSAFE_CURRENT(5016, CHANNEL_SET_FAILSAFE_CURRENT, Kind.CURRENT_MA),
-    SET_FAILSAFE_TIMEOUT(5018, CHANNEL_SET_FAILSAFE_TIMEOUT, Kind.TIME_S);
+    SET_CHARGING_CURRENT(5004, CHANNEL_SET_CHARGING_CURRENT, Kind.CURRENT_MA, 63000),
+    SET_ENERGY(5010, CHANNEL_SETENERGY, Kind.ENERGY_10WH, 65535),
+    UNLOCK_PLUG(5012, CHANNEL_UNLOCK_PLUG, Kind.SWITCH_TRIGGER, 0),
+    ENABLE_DISABLE(5014, CHANNEL_ENABLED_USER, Kind.SWITCH, 1),
+    SET_PHASE_SWITCH_SOURCE(5050, CHANNEL_PHASE_SWITCH_SOURCE, Kind.NUMBER, 4),
+    TRIGGER_PHASE_SWITCH(5052, CHANNEL_TRIGGER_PHASE_SWITCH, Kind.NUMBER, 1),
+    SET_FAILSAFE_CURRENT(5016, CHANNEL_FAILSAFE_CURRENT_SETTING, Kind.CURRENT_MA, 63000),
+    SET_FAILSAFE_TIMEOUT(5018, CHANNEL_FAILSAFE_TIMEOUT_SETTING, Kind.TIME_S, 65535);
 
     /**
      * How a {@link org.openhab.core.types.Command} sent to the channel has to be converted into a raw
@@ -56,11 +56,13 @@ public enum KebaModbusWriteRegister {
     private final int address;
     private final String channelId;
     private final Kind kind;
+    private final long maxRawValue;
 
-    KebaModbusWriteRegister(int address, String channelId, Kind kind) {
+    KebaModbusWriteRegister(int address, String channelId, Kind kind, long maxRawValue) {
         this.address = address;
         this.channelId = channelId;
         this.kind = kind;
+        this.maxRawValue = maxRawValue;
     }
 
     public int getAddress() {
@@ -73,6 +75,10 @@ public enum KebaModbusWriteRegister {
 
     public Kind getKind() {
         return kind;
+    }
+
+    public long getMaxRawValue() {
+        return maxRawValue;
     }
 
     public static KebaModbusWriteRegister fromChannelId(String channelId) {
