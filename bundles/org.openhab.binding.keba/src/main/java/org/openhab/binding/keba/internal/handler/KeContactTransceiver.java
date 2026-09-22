@@ -37,6 +37,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -66,26 +67,25 @@ public class KeContactTransceiver {
     private Map<KeContactHandler, ByteBuffer> buffers = Collections.synchronizedMap(new HashMap<>());
     private Map<KeContactHandler, ReentrantLock> locks = Collections.synchronizedMap(new HashMap<>());
     private Map<KeContactHandler, Boolean> flags = Collections.synchronizedMap(new HashMap<>());
+    private Map<KeContactHandler, Boolean> awaitingResponses = Collections.synchronizedMap(new HashMap<>());
     private Map<KeContactHandler, Condition> responseConditions = Collections.synchronizedMap(new HashMap<>());
+    private final java.util.concurrent.ScheduledExecutorService transceiverScheduler = ThreadPoolManager
+            .getScheduledPool("keba");
 
     private final Logger logger = LoggerFactory.getLogger(KeContactTransceiver.class);
 
     public void start() {
-        KeContactHandler handler = handlers.stream().findFirst().orElse(null);
-        if (handler == null) {
-            return;
-        }
-        start(handler);
+        startTransceiver();
     }
 
-    private void start(KeContactHandler schedulerHandler) {
+    private void startTransceiver() {
         if (!isStarted) {
             logger.debug("Starting the the KEBA KeContact transceiver");
             try {
                 selector = Selector.open();
 
                 if (transceiverTask == null) {
-                    transceiverTask = schedulerHandler.submitTransceiver(transceiverRunnable);
+                    transceiverTask = transceiverScheduler.submit(transceiverRunnable);
                 }
 
                 broadcastChannel = DatagramChannel.open();
@@ -99,7 +99,7 @@ public class KeContactTransceiver {
                     broadcastKey = broadcastChannel.register(selector, broadcastChannel.validOps());
                 }
 
-                for (KeContactHandler listener : handlers) {
+                for (KeContactHandler listener : snapshotHandlers()) {
                     establishConnection(listener);
                 }
 
@@ -112,7 +112,7 @@ public class KeContactTransceiver {
 
     public void stop() {
         if (isStarted) {
-            for (KeContactHandler listener : handlers) {
+            for (KeContactHandler listener : snapshotHandlers()) {
                 this.removeConnection(listener);
             }
 
@@ -144,6 +144,7 @@ public class KeContactTransceiver {
 
             locks.clear();
             flags.clear();
+            awaitingResponses.clear();
             responseConditions.clear();
 
             isStarted = false;
@@ -161,6 +162,8 @@ public class KeContactTransceiver {
             handlers.add(handler);
             ReentrantLock handlerLock = new ReentrantLock();
             locks.put(handler, handlerLock);
+            flags.put(handler, Boolean.FALSE);
+            awaitingResponses.put(handler, Boolean.FALSE);
             responseConditions.put(handler, handlerLock.newCondition());
 
             if (logger.isTraceEnabled()) {
@@ -169,7 +172,7 @@ public class KeContactTransceiver {
             }
 
             if (handlers.size() == 1) {
-                start(handler);
+                startTransceiver();
             }
 
             if (!isConnected(handler)) {
@@ -186,6 +189,7 @@ public class KeContactTransceiver {
                 handlerLock.lock();
                 try {
                     flags.put(handler, Boolean.FALSE);
+                    awaitingResponses.put(handler, Boolean.FALSE);
                     buffers.remove(handler);
                     responseCondition.signalAll();
                 } finally {
@@ -219,6 +223,7 @@ public class KeContactTransceiver {
                 buffer.put(messageBytes);
 
                 flags.put(handler, Boolean.TRUE);
+                awaitingResponses.put(handler, Boolean.TRUE);
                 buffers.put(handler, buffer);
 
                 if (logger.isTraceEnabled()) {
@@ -226,7 +231,7 @@ public class KeContactTransceiver {
                             handler.getThing().getUID());
                 }
                 responseCondition.await(KeContactHandler.REPORT_INTERVAL, TimeUnit.MILLISECONDS);
-
+                awaitingResponses.put(handler, Boolean.FALSE);
                 return buffers.remove(handler);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -265,7 +270,7 @@ public class KeContactTransceiver {
                             KeContactHandler theHandler = null;
                             boolean error = false;
 
-                            for (KeContactHandler handler : handlers) {
+                            for (KeContactHandler handler : snapshotHandlers()) {
                                 if (theChannel.equals(datagramChannels.get(handler))) {
                                     theHandler = handler;
                                     break;
@@ -275,8 +280,7 @@ public class KeContactTransceiver {
                             if (theHandler != null) {
                                 ReentrantLock theLock = locks.get(theHandler);
                                 Boolean theFlag = flags.get(theHandler);
-                                if (theLock != null && theLock.isLocked() && theFlag != null
-                                        && theFlag.equals(Boolean.TRUE)) {
+                                if (theLock != null && theFlag != null && theFlag.equals(Boolean.TRUE)) {
                                     ByteBuffer theBuffer = buffers.remove(theHandler);
                                     flags.put(theHandler, Boolean.FALSE);
 
@@ -340,21 +344,23 @@ public class KeContactTransceiver {
                                 if (!error) {
                                     readBuffer.flip();
                                     if (readBuffer.remaining() > 0) {
-                                        for (KeContactHandler handler : handlers) {
+                                        for (KeContactHandler handler : snapshotHandlers()) {
                                             if (clientAddress != null && handler.getIPAddress()
                                                     .equals(clientAddress.getAddress().getHostAddress())) {
                                                 ReentrantLock theLock = locks.get(handler);
-                                                if (theLock != null && theLock.isLocked()) {
-                                                    buffers.put(handler, readBuffer);
+                                                if (theLock != null
+                                                        && Boolean.TRUE.equals(awaitingResponses.get(handler))) {
+                                                    buffers.put(handler, copyBuffer(readBuffer));
+                                                    awaitingResponses.put(handler, Boolean.FALSE);
                                                     signalResponse(handler);
                                                 } else {
-                                                    handler.onData(readBuffer);
+                                                    handler.onData(copyBuffer(readBuffer));
                                                 }
                                             }
                                         }
                                     }
                                 } else {
-                                    handlers.forEach(listener -> listener.updateStatusFromTransceiver(
+                                    snapshotHandlers().forEach(listener -> listener.updateStatusFromTransceiver(
                                             ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                             "The transceiver is offline"));
                                     reset();
@@ -363,7 +369,7 @@ public class KeContactTransceiver {
                                 DatagramChannel theChannel = (DatagramChannel) selKey.channel();
                                 KeContactHandler theHandler = null;
 
-                                for (KeContactHandler handlers : handlers) {
+                                for (KeContactHandler handlers : snapshotHandlers()) {
                                     if (datagramChannels.get(handlers).equals(theChannel)) {
                                         theHandler = handlers;
                                         break;
@@ -400,8 +406,10 @@ public class KeContactTransceiver {
                                         readBuffer.flip();
                                         if (readBuffer.remaining() > 0) {
                                             ReentrantLock theLock = locks.get(theHandler);
-                                            if (theLock != null && theLock.isLocked()) {
-                                                buffers.put(theHandler, readBuffer);
+                                            if (theLock != null
+                                                    && Boolean.TRUE.equals(awaitingResponses.get(theHandler))) {
+                                                buffers.put(theHandler, copyBuffer(readBuffer));
+                                                awaitingResponses.put(theHandler, Boolean.FALSE);
                                                 signalResponse(theHandler);
                                             }
                                         }
@@ -433,6 +441,19 @@ public class KeContactTransceiver {
                 handlerLock.unlock();
             }
         }
+    }
+
+    private Set<KeContactHandler> snapshotHandlers() {
+        synchronized (handlers) {
+            return new HashSet<>(handlers);
+        }
+    }
+
+    private static ByteBuffer copyBuffer(ByteBuffer source) {
+        ByteBuffer copy = ByteBuffer.allocate(source.remaining());
+        copy.put(source.duplicate());
+        copy.flip();
+        return copy;
     }
 
     private void establishConnection(KeContactHandler handler) {

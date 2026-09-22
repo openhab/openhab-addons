@@ -22,13 +22,14 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -88,17 +89,17 @@ public class KeContactHandler extends BaseThingHandler {
     private final KeContactTransceiver transceiver;
 
     private @Nullable ScheduledFuture<?> pollingJob;
-    private final List<ScheduledFuture<?>> reportTasks = new ArrayList<>();
+    private final List<ScheduledFuture<?>> reportTasks = Collections.synchronizedList(new ArrayList<>());
     private @Nullable ExpiringCacheMap<String, ByteBuffer> cache;
 
     private String ipAddress = "";
     private int refreshInterval = POLLING_REFRESH_INTERVAL_DEFAULT;
-    private int maxPresetCurrent = 0;
-    private int maxSystemCurrent = 63000;
+    private volatile int maxPresetCurrent = 0;
+    private volatile int maxSystemCurrent = 63000;
     private @Nullable KebaType type;
     private @Nullable KebaSeries series;
-    private int lastState = -1; // trigger a report100 at startup
-    private boolean isReport100needed = true;
+    private volatile int lastState = -1; // trigger a report100 at startup
+    private final AtomicBoolean isReport100needed = new AtomicBoolean(true);
     private final AtomicInteger consecutiveCommunicationFailures = new AtomicInteger();
 
     public KeContactHandler(Thing thing, KeContactTransceiver transceiver) {
@@ -178,8 +179,10 @@ public class KeContactHandler extends BaseThingHandler {
             localPollingJob.cancel(true);
             pollingJob = null;
         }
-        reportTasks.forEach(task -> task.cancel(true));
-        reportTasks.clear();
+        synchronized (reportTasks) {
+            reportTasks.forEach(task -> task.cancel(true));
+            reportTasks.clear();
+        }
 
         transceiver.unRegisterHandler(this);
     }
@@ -200,10 +203,6 @@ public class KeContactHandler extends BaseThingHandler {
         updateStatus(status, statusDetail, description);
     }
 
-    Future<?> submitTransceiver(Runnable runnable) {
-        return scheduler.submit(runnable);
-    }
-
     private void pollingRunnable() {
         try {
             logger.debug("Running pollingRunnable to connect Keba wallbox");
@@ -220,9 +219,8 @@ public class KeContactHandler extends BaseThingHandler {
                 processReport(localCache, CACHE_REPORT_1);
                 scheduleReport(localCache, CACHE_REPORT_2, REPORT_INTERVAL);
                 scheduleReport(localCache, CACHE_REPORT_3, REPORT_INTERVAL * 2L);
-                if (isReport100needed) {
+                if (isReport100needed.getAndSet(false)) {
                     scheduleReport(localCache, CACHE_REPORT_100, REPORT_INTERVAL * 3L);
-                    isReport100needed = false;
                 }
             }
         } catch (InterruptedIOException e) {
@@ -251,7 +249,10 @@ public class KeContactHandler extends BaseThingHandler {
     private void scheduleReport(ExpiringCacheMap<String, ByteBuffer> localCache, String report, long delayMillis) {
         ScheduledFuture<?> task = scheduler.schedule(() -> processReport(localCache, report), delayMillis,
                 TimeUnit.MILLISECONDS);
-        reportTasks.add(task);
+        synchronized (reportTasks) {
+            reportTasks.removeIf(ScheduledFuture::isDone);
+            reportTasks.add(task);
+        }
     }
 
     private void processReport(ExpiringCacheMap<String, ByteBuffer> localCache, String report) {
@@ -354,7 +355,7 @@ public class KeContactHandler extends BaseThingHandler {
                         updateState(CHANNEL_STATE, newState);
                         if (lastState != state) {
                             // the state is different from the last one, so we will trigger a report100
-                            isReport100needed = true;
+                            isReport100needed.set(true);
                             lastState = state;
                         }
                         break;

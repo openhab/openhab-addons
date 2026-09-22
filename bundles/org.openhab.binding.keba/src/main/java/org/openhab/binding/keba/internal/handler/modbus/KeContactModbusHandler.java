@@ -78,6 +78,7 @@ public class KeContactModbusHandler extends BaseThingHandler {
     private final List<ScheduledFuture<?>> writeTasks = new ArrayList<>();
     private final Object writeLock = new Object();
     private final AtomicInteger consecutiveReadFailures = new AtomicInteger();
+    private final AtomicInteger connectionGeneration = new AtomicInteger();
     private long nextWriteNanos;
     private int slaveId;
 
@@ -111,16 +112,28 @@ public class KeContactModbusHandler extends BaseThingHandler {
 
         slaveId = config.unitId;
         updateStatus(ThingStatus.UNKNOWN);
+        int generation = connectionGeneration.incrementAndGet();
 
         // opening the Modbus TCP connection and registering the polls can involve blocking I/O, so run it in the
         // background instead of blocking the calling thread
         scheduler.execute(() -> {
+            if (generation != connectionGeneration.get()) {
+                return;
+            }
             ModbusTCPSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint(host, config.port, false);
             EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
             // KEBA recommends at least 0.5s between reads and 5s between writes to the same station
             poolConfiguration.setInterTransactionDelayMillis(500);
             ModbusCommunicationInterface localComms = comms = modbusManager.newModbusCommunicationInterface(endpoint,
                     poolConfiguration);
+            if (generation != connectionGeneration.get()) {
+                try {
+                    localComms.close();
+                } catch (Exception e) {
+                    logger.debug("Error closing stale Modbus communication interface: {}", e.getMessage());
+                }
+                return;
+            }
 
             long initialDelay = 0;
             for (KebaModbusReadRegister register : KebaModbusReadRegister.values()) {
@@ -128,8 +141,16 @@ public class KeContactModbusHandler extends BaseThingHandler {
                 ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                         ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, register.getAddress(), READ_REGISTER_LENGTH,
                         MAX_TRIES);
-                pollTasks.add(localComms.registerRegularPoll(request, refreshMillis, initialDelay,
-                        result -> handleReadResult(register, result), this::handleReadError));
+                PollTask pollTask = localComms.registerRegularPoll(request, refreshMillis, initialDelay,
+                        result -> handleReadResult(register, result), this::handleReadError);
+                synchronized (pollTasks) {
+                    if (generation == connectionGeneration.get()) {
+                        pollTasks.add(pollTask);
+                    } else {
+                        localComms.unregisterRegularPoll(pollTask);
+                        break;
+                    }
+                }
                 // stagger the individual polls a bit to avoid bursting the single register-at-a-time interface
                 initialDelay += 200;
             }
@@ -143,18 +164,21 @@ public class KeContactModbusHandler extends BaseThingHandler {
     }
 
     private void disposeCommunication() {
+        connectionGeneration.incrementAndGet();
         synchronized (writeLock) {
             writeTasks.forEach(task -> task.cancel(false));
             writeTasks.clear();
             nextWriteNanos = 0;
         }
         ModbusCommunicationInterface localComms = comms;
-        pollTasks.forEach(task -> {
-            if (localComms != null) {
-                localComms.unregisterRegularPoll(task);
-            }
-        });
-        pollTasks.clear();
+        synchronized (pollTasks) {
+            pollTasks.forEach(task -> {
+                if (localComms != null) {
+                    localComms.unregisterRegularPoll(task);
+                }
+            });
+            pollTasks.clear();
+        }
         if (localComms != null) {
             try {
                 localComms.close();
@@ -273,7 +297,8 @@ public class KeContactModbusHandler extends BaseThingHandler {
 
     static @Nullable Integer toRawValue(KebaModbusWriteRegister register, Command command) {
         return switch (register.getKind()) {
-            case SWITCH -> toRawValue(register, command == OnOffType.ON ? 1 : 0);
+            case SWITCH -> command == OnOffType.ON ? toRawValue(register, 1)
+                    : command == OnOffType.OFF ? toRawValue(register, 0) : null;
             case SWITCH_TRIGGER -> command == OnOffType.ON ? toRawValue(register, 0) : null;
             case NUMBER -> command instanceof DecimalType decimal ? toRawValue(register, decimal.longValue()) : null;
             case CURRENT_MA -> {
