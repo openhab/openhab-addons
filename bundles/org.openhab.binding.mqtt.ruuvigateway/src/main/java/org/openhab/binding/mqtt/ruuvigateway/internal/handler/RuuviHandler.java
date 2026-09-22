@@ -232,7 +232,8 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
         MqttBrokerConnection localConnection = connection;
         String localTopic = topic;
         if (localConnection != null && localTopic != null) {
-            return localConnection.unsubscribe(localTopic, this).thenCompose(unsubscribeSuccessful -> null);
+            return localConnection.unsubscribe(localTopic, this).thenAccept(unsubscribeSuccessful -> {
+            });
         } else {
             return CompletableFuture.completedFuture(null);
         }
