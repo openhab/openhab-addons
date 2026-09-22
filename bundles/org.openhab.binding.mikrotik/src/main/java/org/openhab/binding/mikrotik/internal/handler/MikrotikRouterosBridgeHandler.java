@@ -16,14 +16,19 @@ import static org.openhab.binding.mikrotik.internal.MikrotikBindingConstants.*;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mikrotik.internal.MikrotikBindingConstants;
+import org.openhab.binding.mikrotik.internal.MikrotikThingDiscoveryService;
 import org.openhab.binding.mikrotik.internal.config.RouterosThingConfig;
 import org.openhab.binding.mikrotik.internal.model.RouterosDevice;
 import org.openhab.binding.mikrotik.internal.model.RouterosRouterboardInfo;
@@ -38,6 +43,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -88,6 +94,20 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
 
     public @Nullable RouterosDevice getRouteros() {
         return routeros;
+    }
+
+    public Set<String> getKidControlNames() {
+        if (routeros == null) {
+            return Set.of();
+        }
+        return routeros.getKidControlNames();
+    }
+
+    public List<Map<String, String>> getDevices() {
+        if (routeros == null) {
+            return List.of();
+        }
+        return routeros.updateDeviceData();
     }
 
     public @Nullable RouterosThingConfig getBridgeConfig() {
@@ -226,10 +246,18 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                     throw new ChannelUpdateException(getThing().getUID(), channel.getUID(), e);
                 }
             }
+            // Fetch data once and then each kid control handler can re-use the same data
+            List<Map<String, String>> kids = routeros.updateKidControlCache();
+            List<Map<String, String>> devices = routeros.updateDeviceData();
+
             // refresh all the client things below
             getThing().getThings().forEach(thing -> {
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof MikrotikBaseThingHandler<?> thingHandler) {
+                if (handler instanceof MikrotikKidControlHandler thingHandler) {
+                    thingHandler.refresh(kids, devices);
+                } else if (handler instanceof MikrotikDeviceHandler thingHandler) {
+                    thingHandler.refresh(devices);
+                } else if (handler instanceof MikrotikBaseThingHandler<?> thingHandler) {
                     thingHandler.refresh();
                 }
             });
@@ -311,5 +339,10 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
             updateState(channelID, newState);
             currentState.put(channelID, newState);
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(MikrotikThingDiscoveryService.class);
     }
 }
