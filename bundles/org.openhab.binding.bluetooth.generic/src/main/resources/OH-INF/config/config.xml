@@ -6,6 +6,19 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="binding:bluetooth:generic">
+		<parameter name="pollOnlyLinkedCharacteristics" type="boolean">
+			<label>Poll Only Linked Characteristics</label>
+			<description>Whether to read and subscribe only to characteristics whose channel has a linked item</description>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
+		<parameter name="reconnectOnUnresolvedServices" type="boolean">
+			<label>Reconnect On Unresolved Services</label>
+			<description>Whether to recover a connection with unresolved GATT services by reconnecting instead of
+				disconnecting</description>
+			<advanced>true</advanced>
+			<default>true</default>
+		</parameter>
 		<parameter name="gattExtensionsFolder" type="text">
 			<label>Custom GATT Extensions Folder</label>
 			<description>Folder containing custom GATT specification XML files for non-standard services and characteristics,
