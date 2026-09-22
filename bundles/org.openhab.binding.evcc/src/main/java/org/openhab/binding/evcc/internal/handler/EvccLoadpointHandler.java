@@ -89,12 +89,14 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             if ("phasesconfigured".equals(datapoint)) {
                 datapoint = JSON_KEY_PHASES;
             }
-            // Special Handling for enable and disable endpoints
-            if (datapoint.contains("enable")) {
-                datapoint += "/enable/" + datapoint.replace("enable", "");
-            } else if (datapoint.contains("disable")) {
-                datapoint += "/disable/" + datapoint.replace("disable", "");
-            }
+            // Special handling for the nested enable and disable endpoints
+            datapoint = switch (datapoint) {
+                case "enabledelay" -> "enable/delay";
+                case "enablethreshold" -> "enable/threshold";
+                case "disabledelay" -> "disable/delay";
+                case "disablethreshold" -> "disable/threshold";
+                default -> datapoint;
+            };
             String value;
             if (state instanceof OnOffType) {
                 value = state == OnOffType.ON ? "true" : "false";
