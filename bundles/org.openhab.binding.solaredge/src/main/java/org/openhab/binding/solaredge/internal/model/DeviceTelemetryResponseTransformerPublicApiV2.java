@@ -77,11 +77,7 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
                     discharge, unit);
             putPowerType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_CHARGE_DISCHARGE),
                     charge == null || discharge == null ? null : charge - discharge, unit);
-            Double level = averageLatest(storage.values().stream().map(s -> s.stateOfEnergy).toList());
-            // The API currently returns fractions although its documentation describes values from 0 to 100.
-            if (level != null && level >= 0 && level <= 1) {
-                level *= 100;
-            }
+            Double level = toPercent(averageLatest(storage.values().stream().map(s -> s.stateOfEnergy).toList()));
             putPercentType(result, channelProvider.getChannel(CHANNEL_GROUP_LIVE, CHANNEL_ID_BATTERY_LEVEL), level);
         }
         return result;
@@ -91,10 +87,7 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
         Map<String, MeterTelemetry> meters = response.meters;
         Map<String, StorageTelemetry> storage = response.storage;
         Double level = storage == null ? null
-                : averageLatest(storage.values().stream().map(s -> s.stateOfEnergy).toList());
-        if (level != null && level >= 0 && level <= 1) {
-            level *= 100;
-        }
+                : toPercent(averageLatest(storage.values().stream().map(s -> s.stateOfEnergy).toList()));
         return new LivePowers(
                 meters == null ? null : sumLatest(meters.values().stream().map(m -> m.importPower).toList()),
                 meters == null ? null : sumLatest(meters.values().stream().map(m -> m.exportPower).toList()),
@@ -183,6 +176,10 @@ public class DeviceTelemetryResponseTransformerPublicApiV2 extends AbstractDataR
             }
         }
         return count == 0 ? null : sum / count;
+    }
+
+    private static @Nullable Double toPercent(@Nullable Double value) {
+        return value == null ? null : value * 100;
     }
 
     private static @Nullable Double latest(@Nullable Series series) {

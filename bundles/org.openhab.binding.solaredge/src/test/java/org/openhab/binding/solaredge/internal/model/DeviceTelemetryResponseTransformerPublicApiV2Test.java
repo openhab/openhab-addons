@@ -77,6 +77,20 @@ public class DeviceTelemetryResponseTransformerPublicApiV2Test {
     }
 
     @Test
+    public void convertsFullBatteryStateOfEnergyToOneHundredPercent() {
+        DeviceTelemetryResponsePublicApiV2 response = parse("""
+                {"storage":{"7E047411":{
+                  "stateOfEnergy":{"unit":"PERCENTAGE","values":[{"value":1.0}]}
+                }}}
+                """);
+
+        Map<Channel, State> result = transformer.transformLive(response);
+
+        assertEquals("100 %", state(result, "battery_level"));
+        assertEquals(100.0, transformer.extractLivePowers(response).level());
+    }
+
+    @Test
     public void doesNotDeriveCombinedBatteryPowerFromIncompleteTelemetry() {
         DeviceTelemetryResponsePublicApiV2 response = parse("""
                 {"storage":{"7E047411":{
