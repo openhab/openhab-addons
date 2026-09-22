@@ -53,6 +53,9 @@ public class KebaBindingConstants {
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_OUTPUT = "output";
     public static final String CHANNEL_SERIAL = "serial";
+    public static final String PROPERTY_MODEL = "model";
+    public static final String PROPERTY_FIRMWARE = "firmware";
+    public static final String PROPERTY_SERIAL = "serial";
     public static final String CHANNEL_UPTIME = "uptime";
     public static final String CHANNEL_I1 = "I1";
     public static final String CHANNEL_I2 = "I2";

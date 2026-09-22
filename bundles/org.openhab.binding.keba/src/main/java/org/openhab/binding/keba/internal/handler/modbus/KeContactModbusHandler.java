@@ -14,9 +14,11 @@ package org.openhab.binding.keba.internal.handler.modbus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,6 +66,7 @@ public class KeContactModbusHandler extends BaseThingHandler {
     private static final int READ_REGISTER_LENGTH = 2;
     private static final int MAX_TRIES = 3;
     private static final int MIN_FAST_REFRESH_INTERVAL_SECONDS = 10;
+    private static final int MAX_CONSECUTIVE_READ_FAILURES = 3;
     private static final long WRITE_INTERVAL_MILLIS = 5000;
 
     private final Logger logger = LoggerFactory.getLogger(KeContactModbusHandler.class);
@@ -74,12 +77,20 @@ public class KeContactModbusHandler extends BaseThingHandler {
     private final List<PollTask> pollTasks = new ArrayList<>();
     private final List<ScheduledFuture<?>> writeTasks = new ArrayList<>();
     private final Object writeLock = new Object();
+    private final AtomicInteger consecutiveReadFailures = new AtomicInteger();
     private long nextWriteNanos;
     private int slaveId;
 
     public KeContactModbusHandler(Thing thing, ModbusManager modbusManager) {
         super(thing);
         this.modbusManager = modbusManager;
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        disposeCommunication();
+        initialize();
     }
 
     @Override
@@ -127,6 +138,11 @@ public class KeContactModbusHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        disposeCommunication();
+        super.dispose();
+    }
+
+    private void disposeCommunication() {
         synchronized (writeLock) {
             writeTasks.forEach(task -> task.cancel(false));
             writeTasks.clear();
@@ -147,11 +163,12 @@ public class KeContactModbusHandler extends BaseThingHandler {
             }
         }
         comms = null;
-        super.dispose();
+        consecutiveReadFailures.set(0);
     }
 
     private void handleReadResult(KebaModbusReadRegister register, AsyncModbusReadResult result) {
         result.getRegisters().ifPresent(registers -> {
+            consecutiveReadFailures.set(0);
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -161,11 +178,22 @@ public class KeContactModbusHandler extends BaseThingHandler {
     }
 
     private void handleReadError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "@text/offline.comm-error-modbus-read [\"" + failure.getCause().getMessage() + "\"]");
+        if (consecutiveReadFailures.incrementAndGet() >= MAX_CONSECUTIVE_READ_FAILURES) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-modbus-read [\"" + getFailureMessage(failure) + "\"]");
+        }
     }
 
-    private org.openhab.core.types.State toState(KebaModbusReadRegister register, DecimalType value) {
+    private static String getFailureMessage(AsyncModbusFailure<?> failure) {
+        Throwable cause = failure.getCause();
+        if (cause == null) {
+            return "Unknown Modbus error";
+        }
+        String message = cause.getMessage();
+        return message != null ? message : "Unknown Modbus error";
+    }
+
+    static org.openhab.core.types.State toState(KebaModbusReadRegister register, DecimalType value) {
         return switch (register.getKind()) {
             case CURRENT_MA -> new QuantityType<>(value.doubleValue() / 1000.0, Units.AMPERE);
             case VOLTAGE_V -> new QuantityType<>(value.doubleValue(), Units.VOLT);
@@ -218,10 +246,13 @@ public class KeContactModbusHandler extends BaseThingHandler {
             long delay = TimeUnit.NANOSECONDS.toMillis(scheduledAt - now);
             ScheduledFuture<?> task = scheduler.schedule(() -> {
                 if (localComms.equals(comms)) {
-                    localComms.submitOneTimeWrite(request,
-                            result -> logger.debug("Modbus write to register {} successful", register.getAddress()),
-                            failure -> logger.warn("Modbus write to register {} failed: {}", register.getAddress(),
-                                    failure.getCause().getMessage()));
+                    localComms.submitOneTimeWrite(request, result -> {
+                        logger.debug("Modbus write to register {} successful", register.getAddress());
+                        if (register == KebaModbusWriteRegister.UNLOCK_PLUG) {
+                            updateState(register.getChannelId(), OnOffType.OFF);
+                        }
+                    }, failure -> logger.warn("Modbus write to register {} failed: {}", register.getAddress(),
+                            getFailureMessage(failure)));
                 }
             }, delay, TimeUnit.MILLISECONDS);
             writeTasks.add(task);

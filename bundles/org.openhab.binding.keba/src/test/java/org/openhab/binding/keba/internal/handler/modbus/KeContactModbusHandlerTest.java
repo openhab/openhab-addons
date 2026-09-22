@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 
 class KeContactModbusHandlerTest {
@@ -81,5 +82,31 @@ class KeContactModbusHandlerTest {
         assertNull(KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.SET_ENERGY, new DecimalType(65536)));
         assertNull(KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.SET_FAILSAFE_CURRENT,
                 new DecimalType(63001)));
+    }
+
+    @Test
+    void convertsReadValuesToEngineeringUnits() {
+        assertEquals(new QuantityType<>(12.345, Units.AMPERE),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.CURRENT_L1, new DecimalType(12345)));
+        assertEquals(new QuantityType<>(1234.5, Units.WATT_HOUR),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.SESSION_ENERGY, new DecimalType(12345)));
+        assertEquals(new QuantityType<>(123.0, Units.VOLT),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.VOLTAGE_L1, new DecimalType(123)));
+        assertEquals(new QuantityType<>(12.345, Units.WATT),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.ACTIVE_POWER, new DecimalType(12345)));
+        assertEquals(new QuantityType<>(12.3, Units.PERCENT),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.POWER_FACTOR, new DecimalType(123)));
+        assertEquals(new QuantityType<>(123, Units.SECOND),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.FAILSAFE_TIMEOUT_SETTING, new DecimalType(123)));
+    }
+
+    @Test
+    void convertsReadValuesToStringAndNumberStates() {
+        assertEquals(new StringType("12345"),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.SERIAL, new DecimalType(12345)));
+        assertEquals(new StringType("00003039"),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.RFID_TAG, new DecimalType(12345)));
+        assertEquals(new DecimalType(12345),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.STATE, new DecimalType(12345)));
     }
 }
