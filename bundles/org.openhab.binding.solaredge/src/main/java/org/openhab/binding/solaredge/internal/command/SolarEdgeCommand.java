@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solaredge.internal.command;
 
+import java.util.function.LongSupplier;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
@@ -35,4 +37,7 @@ public interface SolarEdgeCommand extends SuccessListener, FailureListener, Cont
      * @param asyncclient
      */
     void performAction(HttpClient asyncclient);
+
+    /** Bind the command to the connector generation in which it was first queued. */
+    boolean bindRequestGeneration(long generation, LongSupplier currentGeneration);
 }

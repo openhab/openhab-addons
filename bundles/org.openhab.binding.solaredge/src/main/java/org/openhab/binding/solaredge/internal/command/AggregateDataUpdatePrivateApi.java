@@ -116,7 +116,7 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommand implements So
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
+    protected void handleResponse(@Nullable Result result) {
         logger.debug("[AggregateDataUpdatePrivateApi] onComplete()");
         logger.trace("URL: {}", getURL());
 

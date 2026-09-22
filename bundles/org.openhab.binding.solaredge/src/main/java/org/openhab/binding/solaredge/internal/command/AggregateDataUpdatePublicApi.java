@@ -90,7 +90,7 @@ public class AggregateDataUpdatePublicApi extends AbstractCommand implements Sol
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
+    protected void handleResponse(@Nullable Result result) {
         logger.debug("[AggregateDataUpdatePublicApi] onComplete()");
         logger.trace("URL: {}", getURL());
 

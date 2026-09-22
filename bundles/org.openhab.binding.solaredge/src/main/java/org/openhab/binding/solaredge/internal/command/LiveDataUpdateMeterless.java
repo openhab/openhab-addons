@@ -59,7 +59,7 @@ public class LiveDataUpdateMeterless extends AbstractCommand implements SolarEdg
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
+    protected void handleResponse(@Nullable Result result) {
         logger.debug("[LiveDataUpdateMeterless] onComplete()");
         logger.trace("URL: {}", getURL());
 

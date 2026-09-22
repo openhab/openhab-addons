@@ -19,34 +19,36 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 
 /**
- * checks validity of the token by accessing the webinterface
+ * Checks a SolarEdge Monitoring API V2 Fleet API key.
  *
- * @author Alexander Friese - initial contribution
+ * @author Ronny Grun - Initial contribution
  */
 @NonNullByDefault
-public class PrivateApiTokenCheck extends AbstractCommand implements SolarEdgeCommand {
+public class PublicApiV2KeyCheck extends AbstractCommand {
 
-    public PrivateApiTokenCheck(SolarEdgeHandler handler, StatusUpdateListener listener) {
-        super(handler.getConfiguration(), listener);
+    public PublicApiV2KeyCheck(SolarEdgeHandler handler, StatusUpdateListener listener) {
+        super(handler.getConfiguration(), listener, handler::getPublicApiV2Credential,
+                handler::invalidatePublicApiV2Credential, handler::recordPublicApiV2Request,
+                response -> handler.updatePublicApiV2RateLimit(
+                        response.getHeaders().get(PUBLIC_DATA_API_V2_RATE_LIMIT_MINUTE_HEADER),
+                        response.getHeaders().get(PUBLIC_DATA_API_V2_RATE_LIMIT_REMAINING_MINUTE_HEADER),
+                        response.getHeaders().get(PUBLIC_DATA_API_V2_RETRY_AFTER_HEADER),
+                        response.getStatus() == HttpStatus.TOO_MANY_REQUESTS_429));
     }
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-        // as a token is used no real login is to be done here. It is just checked if a protected page can be retrieved
-        // and therefore the token is valid.
-        requestToPrepare.followRedirects(false);
-        requestToPrepare.method(HttpMethod.GET);
-
-        return requestToPrepare;
+        return requestToPrepare.followRedirects(false).method(HttpMethod.GET);
     }
 
     @Override
     protected String getURL() {
-        return PRIVATE_DATA_API_URL + config.getSolarId() + PRIVATE_DATA_API_URL_LIVE_DATA_SUFFIX;
+        return PUBLIC_DATA_API_V2_URL + config.getSolarId();
     }
 
     @Override
