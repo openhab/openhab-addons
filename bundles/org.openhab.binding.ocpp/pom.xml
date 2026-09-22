@@ -15,25 +15,20 @@
   <name>openHAB Add-ons :: Bundles :: OCPP Binding</name>
 
   <properties>
-    <!-- The ChargeTime OCA-OCPP jars are plain (non-OSGi) jars, so they are inlined into this
-         bundle. Java-WebSocket is an OSGi bundle upstream but is inlined too to keep the feature
-         self-contained (only this bundle + openHAB core). gson is provided by core, so it stays a
-         normal import and is NOT inlined. -->
-    <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd, @ocpp16-2.0.jar, @ocpp-common-2.0.jar, @ocpp-json-2.0.jar, @Java-WebSocket-1.6.0.jar</bnd.includeresource>
-    <!-- The ChargeTime 'common' jar carries SOAP transport classes we never load (JSON only). Their
-         javax.xml.bind / javax.xml.soap references were removed from the JDK after Java 8 and are
-         not exported by the runtime, so make those imports optional; the bundle resolves without
-         them. -->
-    <bnd.importpackage>javax.xml.bind.*;resolution:=optional,javax.xml.soap.*;resolution:=optional,com.sun.net.httpserver.*;resolution:=optional</bnd.importpackage>
+    <ocpp.version>2.0</ocpp.version>
+    <websocket.version>1.6.0</websocket.version>
+    <!-- The ChargeTime jars reference JAXB and javax.annotation, neither of which the runtime exports;
+         the classes that use them are never loaded, so the imports are optional. -->
+    <bnd.importpackage>javax.xml.bind.*;resolution:=optional,javax.annotation;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>
-    <!-- ChargeTime OCA-OCPP 2.0: ocpp16 (models and profiles), ocpp-json (transport), ocpp-common (base).
-         slf4j, gson and jaxb come from the platform and are excluded; Java-WebSocket 1.6.0 matches ocpp-json 2.0. -->
+    <!-- ChargeTime OCA-OCPP: ocpp16 (models and profiles), ocpp-json (transport), ocpp-common (base).
+         slf4j, gson and jaxb come from the platform and are excluded. -->
     <dependency>
       <groupId>eu.chargetime.ocpp</groupId>
       <artifactId>ocpp16</artifactId>
-      <version>2.0</version>
+      <version>${ocpp.version}</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -49,7 +44,7 @@
     <dependency>
       <groupId>eu.chargetime.ocpp</groupId>
       <artifactId>ocpp-json</artifactId>
-      <version>2.0</version>
+      <version>${ocpp.version}</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -60,16 +55,12 @@
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>org.java-websocket</groupId>
-          <artifactId>Java-WebSocket</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>eu.chargetime.ocpp</groupId>
       <artifactId>ocpp-common</artifactId>
-      <version>2.0</version>
+      <version>${ocpp.version}</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -82,11 +73,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Pinned to match the version already shipped in-tree (see ojelectronics binding). -->
+    <!-- Declared directly, not for a version: the reactor embeds only direct dependencies
+         (excludeTransitive), and this one has to be inlined for the bundle to resolve. -->
     <dependency>
       <groupId>org.java-websocket</groupId>
       <artifactId>Java-WebSocket</artifactId>
-      <version>1.6.0</version>
+      <version>${websocket.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
