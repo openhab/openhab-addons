@@ -67,7 +67,6 @@ public class EnergyMeter {
             serialNumber = SerialNumber.fromRaw(buffer.getInt());
 
             int offset = HEADER_LENGTH;
-            boolean hasData = false;
             while (offset + Integer.BYTES <= bytes.length) {
                 int obis = readInt32(bytes, offset);
                 offset += Integer.BYTES;
@@ -87,7 +86,6 @@ public class EnergyMeter {
                     break;
                 }
 
-                hasData = true;
                 ObisId obisId = ObisId.fromCode(obis);
                 if (obisId == ObisId.VERSION) {
                     states.put(obisId, decodeVersion(bytes, offset));
@@ -99,9 +97,6 @@ public class EnergyMeter {
                 offset += valueLength;
             }
 
-            if (!hasData) {
-                throw new IOException("Empty SMA telegram with no OBIS data");
-            }
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -111,12 +106,8 @@ public class EnergyMeter {
         return serialNumber;
     }
 
-    @Nullable
-    public State getState(ObisId obisId) {
-        if (ObisId.VERSION == obisId) {
-            return states.getOrDefault(obisId, StringType.EMPTY);
-        }
-        return states.getOrDefault(obisId, getQuantityType(obisId));
+    public @Nullable State getState(ObisId obisId) {
+        return states.get(obisId);
     }
 
     private BigDecimal scaleValue(long rawValue, ObisId obisId) {
@@ -150,7 +141,7 @@ public class EnergyMeter {
             case POSITIVE_REACTIVE_ENERGY, POSITIVE_REACTIVE_ENERGY_L1, POSITIVE_REACTIVE_ENERGY_L2,
                     POSITIVE_REACTIVE_ENERGY_L3, NEGATIVE_REACTIVE_ENERGY, NEGATIVE_REACTIVE_ENERGY_L1,
                     NEGATIVE_REACTIVE_ENERGY_L2, NEGATIVE_REACTIVE_ENERGY_L3 ->
-                (Unit<?>) Units.VAR_HOUR;
+                (Unit<?>) Units.KILOVAR_HOUR;
             case POSITIVE_APPARENT_POWER, POSITIVE_APPARENT_POWER_L1, POSITIVE_APPARENT_POWER_L2,
                     POSITIVE_APPARENT_POWER_L3, NEGATIVE_APPARENT_POWER, NEGATIVE_APPARENT_POWER_L1,
                     NEGATIVE_APPARENT_POWER_L2, NEGATIVE_APPARENT_POWER_L3 ->
@@ -158,7 +149,7 @@ public class EnergyMeter {
             case POSITIVE_APPARENT_ENERGY, POSITIVE_APPARENT_ENERGY_L1, POSITIVE_APPARENT_ENERGY_L2,
                     POSITIVE_APPARENT_ENERGY_L3, NEGATIVE_APPARENT_ENERGY, NEGATIVE_APPARENT_ENERGY_L1,
                     NEGATIVE_APPARENT_ENERGY_L2, NEGATIVE_APPARENT_ENERGY_L3 ->
-                (Unit<?>) Units.VOLT_AMPERE_HOUR;
+                (Unit<?>) Units.KILOVOLT_AMPERE.multiply(Units.HOUR);
             case POSITIVE_ACTIVE_POWER, POSITIVE_ACTIVE_POWER_L1, POSITIVE_ACTIVE_POWER_L2, POSITIVE_ACTIVE_POWER_L3,
                     NEGATIVE_ACTIVE_POWER, NEGATIVE_ACTIVE_POWER_L1, NEGATIVE_ACTIVE_POWER_L2,
                     NEGATIVE_ACTIVE_POWER_L3 ->

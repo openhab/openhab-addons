@@ -34,7 +34,19 @@ public final class SerialNumber {
 
     public static boolean matches(String configuredValue, String actualDecimalValue) {
         String normalizedConfiguredValue = normalize(configuredValue);
-        return !normalizedConfiguredValue.isEmpty() && normalizedConfiguredValue.equals(actualDecimalValue);
+        if (normalizedConfiguredValue.isEmpty()) {
+            return false;
+        }
+        if (normalizedConfiguredValue.equals(actualDecimalValue)) {
+            return true;
+        }
+
+        String candidate = removeHexPrefix(configuredValue.trim());
+        try {
+            return Integer.toUnsignedString(Integer.parseUnsignedInt(candidate, 16)).equals(actualDecimalValue);
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     public static String normalize(@Nullable String value) {

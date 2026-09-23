@@ -18,6 +18,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -34,6 +35,7 @@ import org.slf4j.LoggerFactory;
  * It handles udp/multicast traffic and broadcast received data to subsequent payload handlers.
  *
  * @author Łukasz Dywicki - Initial contribution
+ * @author Marcel Goerentz - Improve datagram processing
  */
 
 @NonNullByDefault
@@ -135,6 +137,7 @@ public class PacketListener {
             DatagramSocket socket = this.socket;
 
             try {
+                socket.setSoTimeout(5000);
                 do {
                     // this loop is intended to receive all packets queued on the socket,
                     // having a receive() call without loop causes packets to get queued over time,
@@ -147,9 +150,11 @@ public class PacketListener {
                     for (PayloadHandler handler : handlers) {
                         handler.handle(meter);
                     }
-                    // Reset packet length for next receive
                     msgPacket.setLength(bytes.length);
-                } while (socket.getReceiveBufferSize() > 0);
+                    socket.setSoTimeout(1);
+                } while (true);
+            } catch (SocketTimeoutException e) {
+                // No more datagrams are queued.
             } catch (IOException e) {
                 logger.debug("Unexpected payload received for group {}", group, e);
             }

@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Osman Basha - Initial contribution
+ * @author Marcel Goerentz - Add unit-aware state handling
  */
 @NonNullByDefault
 public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHandler {
