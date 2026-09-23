@@ -277,14 +277,12 @@ class CciAuthenticator {
         return new CcsToken(accessToken, tokenExpiry(response.expiresTime()));
     }
 
-    // expiresTime is a unix timestamp; fall back to a fixed lifetime if it looks wrong
+    // expiresTime is the token lifetime in seconds; fall back to a fixed lifetime if it looks wrong
     private static Instant tokenExpiry(final @Nullable Long expiresTime) {
         final Instant now = Instant.now();
-        if (expiresTime != null) {
-            final Instant expiry = Instant.ofEpochSecond(expiresTime);
-            if (expiry.isAfter(now.plus(TOKEN_EXPIRY_MARGIN)) && expiry.isBefore(now.plus(MAX_TOKEN_LIFETIME))) {
-                return expiry;
-            }
+        if (expiresTime != null && expiresTime > TOKEN_EXPIRY_MARGIN.toSeconds()
+                && expiresTime <= MAX_TOKEN_LIFETIME.toSeconds()) {
+            return now.plusSeconds(expiresTime);
         }
         return now.plus(DEFAULT_TOKEN_LIFETIME);
     }

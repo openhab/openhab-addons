@@ -85,7 +85,7 @@ class CciAuthenticatorTest {
 
         assertEquals(CCS_ACCESS_TOKEN, token.accessToken());
         final Duration lifetime = Duration.between(Instant.now(), token.expiry());
-        assertTrue(lifetime.toSeconds() > 3500 && lifetime.toSeconds() <= 3600, "lifetime " + lifetime);
+        assertTrue(lifetime.toSeconds() > 86300 && lifetime.toSeconds() <= 86400, "lifetime " + lifetime);
         assertTrue(authenticator.hasSession());
 
         final List<LoggedRequest> signIn = SERVER.findAll(postRequestedFor(urlEqualTo("/auth/account/signin")));
@@ -119,7 +119,7 @@ class CciAuthenticatorTest {
         SERVER.stubFor(post(urlEqualTo("/domain/api/v2/auth/token-refresh")).willReturn(json("""
                 {"accessToken": "cci-access-2", "refreshToken": "cci-refresh-2"}
                 """).withHeader("Set-Cookie", "t=rotated-exchangeable; Path=/; HttpOnly")));
-        stubs.stubTokenExchange("ccs-2", Instant.now().plusSeconds(30).getEpochSecond());
+        stubs.stubTokenExchange("ccs-2", Instant.now().plusSeconds(3600).getEpochSecond());
 
         final CciAuthenticator.CcsToken token = authenticator.refresh();
 
@@ -249,7 +249,7 @@ class CciAuthenticatorTest {
 
         assertThrows(RetryableRequestException.class, () -> authenticator.refresh());
 
-        stubs.stubTokenExchange("ccs-2", Instant.now().plusSeconds(3600).getEpochSecond());
+        stubs.stubTokenExchange("ccs-2", 3600);
         assertEquals("ccs-2", authenticator.refresh().accessToken());
         SERVER.verify(postRequestedFor(urlEqualTo("/domain/api/v2/auth/token-refresh"))
                 .withRequestBody(matchingJsonPath("$.refreshToken", equalTo("cci-refresh-2"))));

@@ -13,6 +13,7 @@
 package org.openhab.binding.bluelink.internal.handler;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -231,6 +232,32 @@ class BluelinkAccountHandlerTest extends JavaTest {
 
             final var vehicle = handler.getVehicles().getFirst();
             assertTrue(handler.setChargeLimitAC(vehicle, 90));
+        }
+
+        @Test
+        void testVehicleRequestBringsBridgeOnlineAfterFailedLogin() throws BluelinkApiException {
+            waitForAssert(() -> Mockito.verify(callback).statusUpdated(eq(bridge),
+                    argThat(status -> status.getStatus() == ThingStatus.ONLINE)));
+            handler.dispose();
+            Mockito.clearInvocations(bridge, callback);
+            stubFor(post(urlEqualTo("/auth/api/v2/user/oauth2/token")).inScenario("login").whenScenarioStateIs(STARTED)
+                    .willReturn(aResponse().withStatus(503)).willSetStateTo("up"));
+            stubFor(post(urlEqualTo("/auth/api/v2/user/oauth2/token")).inScenario("login").whenScenarioStateIs("up")
+                    .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
+                            .withBody(TOKEN_RESPONSE_EU)));
+
+            handler = new BluelinkAccountHandler(bridge, HTTP_CLIENT, timeZoneProvider, localeProvider);
+            handler.setCallback(callback);
+            handler.initialize();
+            waitForAssert(() -> Mockito.verify(callback).statusUpdated(eq(bridge),
+                    argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                            && status.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)));
+
+            assertEquals(2, handler.getVehicles().size());
+
+            Mockito.verify(bridge).setProperty("deviceId", "122c2e30-d642-4d34-ba07-7ce7d787349a");
+            Mockito.verify(callback).statusUpdated(eq(bridge),
+                    argThat(status -> status.getStatus() == ThingStatus.ONLINE));
         }
     }
 

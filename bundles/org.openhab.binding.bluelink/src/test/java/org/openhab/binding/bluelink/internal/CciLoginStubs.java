@@ -20,7 +20,6 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPublicKey;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HexFormat;
@@ -79,7 +78,7 @@ public final class CciLoginStubs {
         stubSignInRedirect("https://oneapp.hyundai.com/redirect?code=" + AUTH_CODE + "&state=ccsp");
         server.stubFor(post(urlPathEqualTo("/domain/api/v1/auth/token")).withQueryParam("code", equalTo(AUTH_CODE))
                 .willReturn(json(cciTokens(CCI_ACCESS_TOKEN, CCI_REFRESH_TOKEN))));
-        stubTokenExchange(CCS_ACCESS_TOKEN, Instant.now().plusSeconds(3600).getEpochSecond());
+        stubTokenExchange(CCS_ACCESS_TOKEN, 86400);
     }
 
     public void stubTokenExchange(final String ccsAccessToken, final long expiresTime) {

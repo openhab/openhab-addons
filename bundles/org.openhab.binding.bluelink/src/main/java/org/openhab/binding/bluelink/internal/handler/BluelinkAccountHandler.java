@@ -191,13 +191,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
             }
             if (loggedIn) {
                 logger.debug("Bluelink login successful");
-                final Map<String, String> apiProps = bluelinkApi.getProperties();
-                if (!apiProps.isEmpty()) {
-                    final Map<String, String> thingProps = editProperties();
-                    thingProps.putAll(apiProps);
-                    updateProperties(thingProps);
-                }
-                updateStatus(ThingStatus.ONLINE);
+                setOnline(bluelinkApi);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/account-handler.login.login-failed");
@@ -234,20 +228,46 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         }
     }
 
+    private void setOnline(final AbstractBluelinkApi<?> bluelinkApi) {
+        final Map<String, String> apiProps = bluelinkApi.getProperties();
+        if (!apiProps.isEmpty()) {
+            final Map<String, String> thingProps = editProperties();
+            thingProps.putAll(apiProps);
+            updateProperties(thingProps);
+        }
+        updateStatus(ThingStatus.ONLINE);
+    }
+
     // vehicle handlers authenticate on their own, so a working API also brings the bridge back online
-    private void markOnline() {
+    private void markOnline(final AbstractBluelinkApi<?> bluelinkApi, final long generation) {
+        synchronized (loginLock) {
+            if (isStale(generation)) {
+                return;
+            }
+            // already authenticated again, a pending login retry would only log in once more
+            final ScheduledFuture<?> task = loginTask;
+            if (task != null) {
+                task.cancel(false);
+                loginTask = null;
+            }
+        }
         if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
+            setOnline(bluelinkApi);
         }
     }
 
     private boolean call(final ApiCall call) throws BluelinkApiException {
-        final AbstractBluelinkApi<?> bluelinkApi = api;
+        final AbstractBluelinkApi<?> bluelinkApi;
+        final long generation;
+        synchronized (loginLock) {
+            bluelinkApi = api;
+            generation = loginGeneration.get();
+        }
         if (bluelinkApi == null) {
             return false;
         }
         final boolean result = call.run(bluelinkApi);
-        markOnline();
+        markOnline(bluelinkApi, generation);
         return result;
     }
 
@@ -287,14 +307,19 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
 
     public List<? extends IVehicle> getVehicles() throws BluelinkApiException {
         final Backoff backoff = new Backoff(Duration.ofSeconds(1), Duration.ofMillis(300), 3);
-        final AbstractBluelinkApi<?> bluelinkApi = api;
+        final AbstractBluelinkApi<?> bluelinkApi;
+        final long generation;
+        synchronized (loginLock) {
+            bluelinkApi = api;
+            generation = loginGeneration.get();
+        }
         if (bluelinkApi == null) {
             return List.of();
         }
         while (true) {
             try {
                 final List<? extends IVehicle> vehicles = bluelinkApi.getVehicles();
-                markOnline();
+                markOnline(bluelinkApi, generation);
                 return vehicles;
             } catch (final RetryableRequestException e) {
                 if (backoff.hasMoreAttempts()) {

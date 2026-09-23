@@ -221,7 +221,7 @@ public class BluelinkApiEUTest {
 
         // expired token: refresh the CCI session instead of logging in again
         stubs.stubTokenRefresh("cci-access-2", "cci-refresh-2");
-        stubs.stubTokenExchange("ccs-2", Instant.now().plusSeconds(3600).getEpochSecond());
+        stubs.stubTokenExchange("ccs-2", 3600);
         api.accessTokenExpiry = Instant.now().minusSeconds(1);
         assertTrue(api.login());
 
