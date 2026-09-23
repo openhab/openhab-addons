@@ -17,7 +17,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.after;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,6 +29,7 @@ import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -158,5 +162,40 @@ public class GoEChargerV2HandlerTest {
                         && status.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR));
         verify(callback, timeout(10_000).atLeastOnce()).stateUpdated(new ChannelUID(THING_UID, TEMPERATURE_TYPE2_PORT),
                 UnDefType.UNDEF);
+    }
+
+    @Test
+    public void cancelledRefreshDoesNotPublishAfterReinitialize() throws InterruptedException {
+        Semaphore requestStarted = new Semaphore(0);
+        CountDownLatch requestInterrupted = new CountDownLatch(1);
+        GoEChargerV2Handler handler = new GoEChargerV2Handler(thing, mock(HttpClient.class)) {
+            @Override
+            protected @Nullable GoEStatusResponseBaseDTO getGoEData() throws InterruptedException {
+                requestStarted.release();
+                try {
+                    Thread.sleep(30_000);
+                } catch (InterruptedException e) {
+                    requestInterrupted.countDown();
+                    throw e;
+                }
+                return null;
+            }
+        };
+        handler.setCallback(callback);
+        this.handler = handler;
+
+        handler.initialize();
+        assertTrue(requestStarted.tryAcquire(10, TimeUnit.SECONDS), "refresh did not start");
+        clearInvocations(callback);
+
+        // same sequence as BaseThingHandler.handleConfigurationUpdate()
+        handler.dispose();
+        handler.initialize();
+
+        assertTrue(requestInterrupted.await(10, TimeUnit.SECONDS), "in-flight request was not interrupted");
+        assertTrue(requestStarted.tryAcquire(10, TimeUnit.SECONDS), "refresh job was not restarted");
+        verify(callback, after(500).never()).statusUpdated(any(),
+                argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
+        verify(callback, never()).stateUpdated(any(), any());
     }
 }
