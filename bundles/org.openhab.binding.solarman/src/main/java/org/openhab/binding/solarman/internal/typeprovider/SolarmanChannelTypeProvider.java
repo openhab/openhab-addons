@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.DefinitionParser;
 import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
@@ -100,7 +101,11 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
         String itemType = getItemType(item);
 
         StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create()
-                .withPattern(computePatternForItem(item)).withReadOnly(true);
+                .withReadOnly(true);
+        String pattern = computePatternForItem(item, itemType);
+        if (pattern != null) {
+            stateDescriptionFragmentBuilder.withPattern(pattern);
+        }
 
         StateChannelTypeBuilder stateChannelTypeBuilder = ChannelTypeBuilder
                 .state(channelTypeUID, item.getName(), itemType)
@@ -111,7 +116,11 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
         return stateChannelTypeBuilder.build();
     }
 
-    private String computePatternForItem(ParameterItem item) {
+    private @Nullable String computePatternForItem(ParameterItem item, String itemType) {
+        if (CoreItemFactory.STRING.equals(itemType) || CoreItemFactory.DATETIME.equals(itemType)) {
+            return null;
+        }
+
         long decimalPoints = 0;
 
         BigDecimal scale = Objects.requireNonNullElse(item.getScale(), BigDecimal.ONE);
