@@ -1,7 +1,7 @@
 # evcc Binding
 
 This binding integrates [evcc](https://evcc.io), an extensible **E**lectric **V**ehicle **C**harge **C**ontroller and home energy management system.
-The binding is compatible to evcc [version 0.315.0](https://github.com/evcc-io/evcc/releases/tag/0.315.0) or newer and was tested with [version 0.301.1](https://github.com/evcc-io/evcc/releases/tag/0.315.0).
+The binding is compatible to evcc [version 0.316.0](https://github.com/evcc-io/evcc/releases/tag/0.316.0) or newer and was tested with [version 0.316.0](https://github.com/evcc-io/evcc/releases/tag/0.316.0).
 
 **Important compatibility note:** Starting with this version of the binding, evcc versions **below 0.209.8** are no longer supported due to changes in the evcc API.
 If you are currently running evcc `< 0.209.8`, you must either upgrade your evcc installation to at least `0.209.8` or continue using an older version of this binding that still supports the legacy API.

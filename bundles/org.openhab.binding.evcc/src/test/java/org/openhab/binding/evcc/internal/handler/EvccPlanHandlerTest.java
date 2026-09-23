@@ -13,12 +13,12 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -26,7 +26,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -71,14 +73,21 @@ public class EvccPlanHandlerTest {
     public void setup() {
         requestedUrls.clear();
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
-        when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "plan"));
+        when(thing.getProperties()).thenReturn(Map.of("vehicleId", "vehicle_1", "type", "vehicle"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         Configuration configuration = mock(Configuration.class);
-        when(configuration.get("index")).thenReturn("0");
         when(configuration.get("vehicleId")).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
-        handler = createHandler();
-        handler.endpoint = "http://evcc/api/vehicles/vehicle_1/plan/soc";
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        when(bridgeHandler.getBaseURL()).thenReturn("http://evcc/api");
+        when(bridgeHandler.getMessageRouter()).thenReturn(mock(MessageRouter.class));
+        LocaleProvider localeProvider = mock(LocaleProvider.class);
+        when(localeProvider.getLocale()).thenReturn(Locale.ENGLISH);
+        when(bridgeHandler.getLocaleProvider()).thenReturn(localeProvider);
+        EvccPlanHandler localHandler = createHandler();
+        localHandler.bridgeHandler = bridgeHandler;
+        localHandler.initialize();
+        handler = localHandler;
     }
 
     @Test

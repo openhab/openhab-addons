@@ -15,7 +15,6 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -25,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -93,13 +93,18 @@ public class EvccLoadpointHandlerTest {
     public void setup() {
         requestedUrls.clear();
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
-        when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "loadpoint"));
+        when(thing.getProperties()).thenReturn(Map.of("vehicleId", "vehicle_1", "type", "vehicle"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         Configuration configuration = mock(Configuration.class);
-        when(configuration.get("index")).thenReturn("0");
-        when(configuration.get("id")).thenReturn("vehicle_1");
+        when(configuration.get("vehicleId")).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
-        handler = createHandler();
+        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        when(bridgeHandler.getBaseURL()).thenReturn("http://evcc/api");
+        when(bridgeHandler.getMessageRouter()).thenReturn(mock(MessageRouter.class));
+        EvccLoadpointHandler localHandler = createHandler();
+        localHandler.bridgeHandler = bridgeHandler;
+        localHandler.initialize();
+        handler = localHandler;
     }
 
     @Test

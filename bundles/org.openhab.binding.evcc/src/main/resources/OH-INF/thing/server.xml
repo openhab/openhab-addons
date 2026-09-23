@@ -6,6 +6,7 @@
 	<bridge-type id="server">
 		<label>Server</label>
 		<description>Connection to evcc instance</description>
+		<representation-property>host</representation-property>
 		<config-description>
 			<parameter name="scheme" type="text">
 				<label>Protocol Scheme</label>

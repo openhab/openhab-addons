@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.discovery;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.CONFIG_HOST;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.CONFIG_PORT;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.THING_TYPE_SERVER;
 
 import java.util.Set;
@@ -37,6 +39,8 @@ import org.osgi.service.component.annotations.Component;
 public class EvccMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_http._tcp.local.";
+    private static final String SERVICE_NAME = "evcc";
+    private static final int DEFAULT_PORT = 7070;
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -50,31 +54,46 @@ public class EvccMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo serviceInfo) {
-        if (!"evcc".equalsIgnoreCase(serviceInfo.getName())) {
-            return null;
-        }
-        String[] addresses = serviceInfo.getHostAddresses();
-        if (addresses.length == 0) {
-            return null;
-        }
-        String host = addresses[0];
-        int port = serviceInfo.getPort();
         ThingUID uid = getThingUID(serviceInfo);
-        return uid == null ? null
-                : DiscoveryResultBuilder.create(uid).withLabel("evcc instance (" + host + ")")
-                        .withProperty("host", host).withProperty("port", port).build();
+        if (uid == null) {
+            return null;
+        }
+        String host = hostname(serviceInfo);
+        int port = serviceInfo.getPort();
+        if (port <= 0) {
+            port = DEFAULT_PORT;
+        }
+        return DiscoveryResultBuilder.create(uid).withLabel("evcc instance (" + host + ")")
+                .withProperty(CONFIG_HOST, host).withProperty(CONFIG_PORT, port).withRepresentationProperty(CONFIG_HOST)
+                .build();
     }
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo serviceInfo) {
-        if (!"evcc".equalsIgnoreCase(serviceInfo.getName())) {
+        if (!SERVICE_NAME.equalsIgnoreCase(serviceInfo.getName())) {
             return null;
         }
-        String[] addresses = serviceInfo.getHostAddresses();
-        if (addresses.length == 0) {
+        String host = hostname(serviceInfo);
+        if (host.isEmpty()) {
             return null;
         }
-        return new ThingUID(THING_TYPE_SERVER, addresses[0].replace(".", "_"));
+        return new ThingUID(THING_TYPE_SERVER, host.replaceAll("[^A-Za-z0-9_]", "_"));
+    }
+
+    /**
+     * Returns evcc's advertised mDNS hostname (for example {@code evcc.local}) without the trailing dot.
+     * <p>
+     * The hostname is preferred over the raw IP address because it is stable across DHCP lease changes, so a bridge
+     * configured with it keeps working after evcc's address changes. evcc always advertises the fixed service instance
+     * name {@code evcc} and carries no unique identifier, so the hostname is also the only host-specific value
+     * available.
+     *
+     * @param serviceInfo the discovered mDNS service
+     * @return the hostname without a trailing dot, or an empty string if none is advertised
+     */
+    private String hostname(ServiceInfo serviceInfo) {
+        String server = serviceInfo.getServer();
+        return server == null ? "" : server.replaceAll("\\.+$", "");
     }
 
     @Override

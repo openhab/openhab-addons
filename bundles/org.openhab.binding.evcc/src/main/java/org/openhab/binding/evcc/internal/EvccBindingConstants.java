@@ -52,6 +52,10 @@ public class EvccBindingConstants {
 
     public static final List<String> SUPPORTED_FORECAST_TYPES = List.of("co2", "feedin", "grid", "solar");
 
+    // Bridge configuration parameters (must match EvccBridgeConfiguration field names)
+    public static final String CONFIG_HOST = "host";
+    public static final String CONFIG_PORT = "port";
+
     // Properties
     public static final String PROPERTY_FORECAST = "forecast";
     public static final String PROPERTY_ID = "id";
