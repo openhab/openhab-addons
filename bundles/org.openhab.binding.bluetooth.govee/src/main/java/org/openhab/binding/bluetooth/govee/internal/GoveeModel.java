@@ -14,16 +14,19 @@ package org.openhab.binding.bluetooth.govee.internal;
 
 import static org.openhab.binding.bluetooth.govee.internal.GoveeBindingConstants.*;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
+import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Connor Petty - Initial contribution
- *
+ * @author Matthias Bläsing - Fix reading advertisement data
  */
 @NonNullByDefault
 public enum GoveeModel {
@@ -39,6 +42,10 @@ public enum GoveeModel {
     H5179(THING_TYPE_HYGROMETER_MONITOR, "Govee Smart Thermo-Hygrometer", true),
     B5175(THING_TYPE_HYGROMETER_MONITOR, "Govee Smart Thermo-Hygrometer", true),
     B5178(THING_TYPE_HYGROMETER_MONITOR, "Govee Smart Thermo-Hygrometer", true);
+
+    private static final byte[] SCAN_HEADER = { (byte) 0x88, (byte) 0xEC };
+    private static final byte[] SCAN_HEADER2 = { (byte) 0x01, (byte) 0x00 };
+    private static final byte[] SCAN_HEADER3 = { (byte) 0x01, (byte) 0x88 };
 
     private final ThingTypeUID thingTypeUID;
     private final String label;
@@ -64,7 +71,109 @@ public enum GoveeModel {
         return supportsWarningBroadcast;
     }
 
-    public static @Nullable GoveeModel getGoveeModel(BluetoothDiscoveryDevice device) {
+    @Nullable
+    ManufacturerDataSet parseManufacturerData(byte[] scanData) {
+        if (scanData.length < 2) {
+            return null;
+        }
+
+        ByteBuffer data = ByteBuffer.wrap(scanData);
+
+        if ((scanData[0] == SCAN_HEADER[0] && scanData[1] == SCAN_HEADER[1])) {
+            switch (this) {
+                case H5072:
+                case H5075:
+                    return readManufacturerDataAtOffset(data, 3);
+                case H5051:
+                case H5052:
+                case H5071:
+                case H5074:
+                    return readManufacturerDataAtOffset2(data, 3);
+                default:
+                    return null;
+            }
+        } else if (scanData[0] == SCAN_HEADER2[0] && scanData[1] == SCAN_HEADER2[1]) {
+            switch (this) {
+                case H5101:
+                case H5102:
+                case B5175:
+                case H5177:
+                case H5179: {
+                    return readManufacturerDataAtOffset(data, 4);
+                }
+                case B5178: {
+                    // byte 4 holds the sensor ID
+                    return readManufacturerDataAtOffset(data, 5);
+                }
+                default:
+                    return null;
+            }
+        } else if (scanData[0] == SCAN_HEADER3[0] && scanData[1] == SCAN_HEADER3[1]) {
+            switch (this) {
+                case H5179: {
+                    return readManufacturerDataAtOffset2(data, 6);
+                }
+                default:
+                    return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    // Read packed manufacturer data in the form temperature / humidity / battery
+    // 4 bytes will be read by this function
+    @Nullable
+    private static ManufacturerDataSet readManufacturerDataAtOffset(ByteBuffer buffer, int pos) {
+        if (buffer.limit() <= (pos + 3)) {
+            return null; // Buffer to small to decode
+        }
+        int l = readIntHighbitSign(buffer, pos, 3);
+        short temperature = (short) (l / 1000 * 10);
+        int humidity = Math.abs(l % 1000) * 10;
+        int fourthByte = buffer.get(pos + 3);
+        boolean error = (fourthByte & 0x80) == 0x80; // extract high bit, currently not reported
+        int battery = fourthByte & (0xFF ^ 0x80); // mask out high bit
+        return new ManufacturerDataSet(temperature, humidity, battery);
+    }
+
+    // Read packed manufacturer data in the form short(temperature) / short(humidity) / byte(battery)
+    // 4 bytes will be read by this function
+    @Nullable
+    private static ManufacturerDataSet readManufacturerDataAtOffset2(ByteBuffer buffer, int pos) {
+        if (buffer.limit() <= (pos + 4)) {
+            return null; // Buffer to small to decode
+        }
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        short temperature = buffer.getShort(pos);
+        int humidity = Short.toUnsignedInt(buffer.getShort(pos + 2));
+        int battery = Byte.toUnsignedInt(buffer.get(pos + 4));
+        return new ManufacturerDataSet(temperature, humidity, battery);
+    }
+
+    private static int readIntHighbitSign(ByteBuffer buffer, int pos, int length) {
+        int result = 0;
+        boolean invert = false;
+        for (int i = 0; i < length; i++) {
+            int value = 0xFF & buffer.get(pos + i);
+            // highest bit of first value encodes the sign
+            if (i == 0 && (value & 0x80) > 0) {
+                invert = true;
+                value ^= 0x80;
+            }
+            result <<= 8;
+            result |= value;
+        }
+        if (invert) {
+            result = result * -1;
+        }
+        return result;
+    }
+
+    record ManufacturerDataSet(short temperature, int humidity, int battery) {
+    }
+
+    public static @Nullable GoveeModel getGoveeModel(BluetoothDevice device) {
         String name = device.getName();
         if (name != null) {
             if ((name.startsWith("Govee") && name.length() >= 11) || name.startsWith("GVH")) {
