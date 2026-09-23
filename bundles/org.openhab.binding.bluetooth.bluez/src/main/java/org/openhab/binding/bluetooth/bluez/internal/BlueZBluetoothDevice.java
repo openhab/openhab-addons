@@ -76,10 +76,8 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     private final ExecutorService connectingScheduler = ThreadPoolManager.getPool("bluez-connect");
 
-    private AtomicBoolean connectionStartRunning = new AtomicBoolean();
-
-    // Device from native lib
-    private @Nullable BluetoothDevice device = null;
+    // Device from native lib with
+    private volatile DeviceState deviceState = new DeviceState(null);
 
     // Bridge handler kept to allow re-resolving a stale BlueZ device object on demand.
     private final BlueZBridgeHandler bridgeHandler;
@@ -98,7 +96,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public synchronized void updateBlueZDevice(@Nullable BluetoothDevice blueZDevice) {
-        BluetoothDevice cachedDevice = this.device;
+        BluetoothDevice cachedDevice = this.deviceState.device();
         if (cachedDevice != null && cachedDevice == blueZDevice) {
             // Same cached BlueZ object as last time. Normally nothing to do, but the GATT may have
             // resolved since we first saw it (e.g. a connect that completed after this object was
@@ -111,15 +109,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
             setConnectionState(ConnectionState.CONNECTED);
             discoverServices();
             return;
+        } else if (cachedDevice != blueZDevice) {
+            this.deviceState = new DeviceState(blueZDevice);
         }
         logger.debug("updateBlueZDevice({})", blueZDevice);
-
-        BluetoothDevice oldDevice = this.device;
-        this.device = blueZDevice;
-
-        if (oldDevice != this.device) { // see #connect for explanation
-            connectionStartRunning = new AtomicBoolean();
-        }
 
         if (blueZDevice == null) {
             return;
@@ -155,8 +148,8 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
      */
     @Override
     public void dispose() {
-        BluetoothDevice dev = device;
-        device = null;
+        BluetoothDevice dev = deviceState.device();
+        deviceState = new DeviceState(null);
         if (dev != null) {
             if (Boolean.TRUE.equals(dev.isPaired())) {
                 return;
@@ -213,8 +206,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
      * not reliably emit a per-device removal before removing the adapter).
      */
     synchronized void resetForRemoval() {
-        this.device = null;
-        this.connectionStartRunning = new AtomicBoolean(); // see #connect for explanation
+        this.deviceState = new DeviceState(null); // see #connect for explanation
         supportedServices.clear();
         setConnectionState(ConnectionState.DISCONNECTED);
     }
@@ -222,7 +214,16 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     @SuppressWarnings({ "PMD.CompareObjectsWithEquals" })
     public boolean connect() {
-        BluetoothDevice dev = device;
+        // The dev == device checks below ensure that we only change connection
+        // state if the device we connect is still the device backing this
+        // object
+        // connectionStartRunning is retained here in a local variable so that
+        // in case of a device switch, the AtomicBoolean associated with the
+        // correct device is used.
+
+        DeviceState devState = this.deviceState;
+        BluetoothDevice dev = devState.device();
+        AtomicBoolean connectionStartRunning = devState.connectionStartRunning();
 
         if (dev == null) {
             return false;
@@ -230,17 +231,10 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
         logger.debug("Connect({})", dev);
 
-        // The dev == device checks ensure that we only change connection
-        // state if the device we connect is still the device backing this
-        // object
-        // connectionStartRunning is retained here in a local variable so that
-        // in case of a device switch, the AtomicBoolean associated with the
-        // correct device is used.
-        AtomicBoolean connectionStartRunning = this.connectionStartRunning;
         if (Boolean.FALSE.equals(dev.isConnected())) {
             if (connectionStartRunning.compareAndSet(false, true)) {
                 CompletableFuture.runAsync(() -> {
-                    if (dev == device) {
+                    if (dev == deviceState.device()) {
                         setConnectionState(ConnectionState.CONNECTING);
                     }
                     // BlueZ Device.Connect() is unreliable while the adapter is actively discovering
@@ -253,13 +247,13 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     logger.debug("Connect result: {}", ret);
                     ConnectionState cs1 = ret ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED;
                     logger.debug("Updating connection state after connect: {}", cs1);
-                    if (dev == device) {
+                    if (dev == deviceState.device()) {
                         setConnectionState(cs1);
                     }
                 }, connectingScheduler).handle((voidResult, th) -> {
                     if (th != null) {
                         logger.debug("Failed to connect", th);
-                        if (dev == device) {
+                        if (dev == deviceState.device()) {
                             setConnectionState(ConnectionState.DISCONNECTED);
                         }
                     }
@@ -273,7 +267,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         } else {
             logger.debug("Device was already connected");
             // we might be stuck in another state atm so we need to trigger a connected in this case
-            if (dev == device) {
+            if (dev == deviceState.device()) {
                 setConnectionState(ConnectionState.CONNECTED);
             }
             return true;
@@ -282,7 +276,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public boolean disconnect() {
-        BluetoothDevice dev = device;
+        BluetoothDevice dev = deviceState.device();
         if (dev != null) {
             logger.debug("Disconnecting '{}'", address);
             try {
@@ -318,7 +312,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     }
 
     private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByUUIDNow(String uuid) {
-        BluetoothDevice dev = device;
+        BluetoothDevice dev = deviceState.device();
         if (dev == null) {
             return null;
         }
@@ -333,7 +327,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     }
 
     private @Nullable CompletableFuture<BluetoothGattCharacteristic> getDBusBlueZCharacteristicByUUID(String uuid) {
-        BluetoothDevice dev = device;
+        BluetoothDevice dev = deviceState.device();
         if (dev == null) {
             return CompletableFuture.failedFuture(new IllegalStateException("DBusBlueZ device is not set"));
         }
@@ -356,7 +350,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     }
 
     private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByDBusPath(String dBusPath) {
-        BluetoothDevice dev = device;
+        BluetoothDevice dev = deviceState.device();
         if (dev == null) {
             return null;
         }
@@ -374,7 +368,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public CompletableFuture<@Nullable Void> enableNotifications(BluetoothCharacteristic characteristic) {
-        BluetoothDevice dev = device;
+        BluetoothDevice dev = deviceState.device();
         if (dev == null || Boolean.FALSE.equals(dev.isConnected())) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
@@ -405,7 +399,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     public CompletableFuture<@Nullable Void> writeCharacteristic(BluetoothCharacteristic characteristic, byte[] value) {
         logger.debug("writeCharacteristic()");
 
-        BluetoothDevice dev = device;
+        BluetoothDevice dev = deviceState.device();
         if (dev == null || Boolean.FALSE.equals(dev.isConnected())) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
@@ -513,7 +507,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public boolean discoverServices() {
-        BluetoothDevice dev = device;
+        BluetoothDevice dev = deviceState.device();
         if (dev == null) {
             return false;
         }
@@ -601,7 +595,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic) {
-        BluetoothDevice dev = device;
+        BluetoothDevice dev = deviceState.device();
         if (dev == null || !Boolean.TRUE.equals(dev.isConnected())) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
@@ -634,7 +628,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
 
     @Override
     public CompletableFuture<@Nullable Void> disableNotifications(BluetoothCharacteristic characteristic) {
-        BluetoothDevice dev = device;
+        BluetoothDevice dev = deviceState.device();
         if (dev == null || Boolean.FALSE.equals(dev.isConnected())) {
             String message;
             if (dev == null) {
@@ -674,5 +668,15 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     public boolean disableNotifications(BluetoothDescriptor descriptor) {
         // Not sure if it is possible to implement this
         return false;
+    }
+
+    /**
+     * DeviceState combines the native bluetooth device and device dependent state
+     */
+    private record DeviceState(@Nullable BluetoothDevice device, AtomicBoolean connectionStartRunning) {
+
+        public DeviceState(@Nullable BluetoothDevice device) {
+            this(device, new AtomicBoolean());
+        }
     }
 }
