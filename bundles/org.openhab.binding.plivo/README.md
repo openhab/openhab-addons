@@ -38,9 +38,7 @@ The account bridge itself must be created manually with your [Plivo console](htt
 | useCloudWebhook       | boolean | Use openHAB Cloud for webhook callbacks (no port forwarding needed) | false   | no       | yes      |
 
 The Auth ID and Auth Token can be found in the [Plivo console](https://cx.plivo.com/).
-
-Use main account credentials (an Auth ID starting with `MA`).
-Plivo signs the `Ma-V2` and `Ma-V3` callback signatures with the main account Auth Token, so a subaccount (`SA`) can send messages and calls but cannot validate incoming callbacks.
+Both main account (`MA`) and subaccount (`SA`) credentials are supported.
 
 To receive incoming messages and calls, and to place outbound voice calls, you need **one** of the following:
 
