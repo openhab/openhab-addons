@@ -49,24 +49,14 @@ import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWe
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioApiWebhookEventTypesResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioCloudPersonId;
 import org.openhab.binding.rachio.internal.api.json.RachioApiGsonDTO.RachioCloudStatus;
+import org.openhab.binding.rachio.internal.api.json.RachioBaseStation;
+import org.openhab.binding.rachio.internal.api.json.RachioBaseStationListResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioPlannedRunSkipOverrideRequest;
+import org.openhab.binding.rachio.internal.api.json.RachioProgramSkipOverrideRequest;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.RachioProperty;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.RachioPropertyEntityLookupResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.RachioPropertyListResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStation;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStationListResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioPlannedRunSkipOverrideRequest;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioProgramSkipOverrideRequest;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayViewsRequest;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayViewsResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDefaultRuntimeRequest;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveListResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgram;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgramListResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveStartWateringRequest;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveStopWateringRequest;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioCurrentScheduleResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioDeviceEventListResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioFlexScheduleRuleResponse;
@@ -76,6 +66,15 @@ import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioScheduleRuleCommandRequest;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioScheduleRuleResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioSeasonalAdjustmentRequest;
+import org.openhab.binding.rachio.internal.api.json.RachioValve;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayViewsRequest;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayViewsResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDefaultRuntimeRequest;
+import org.openhab.binding.rachio.internal.api.json.RachioValveListResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgram;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgramListResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValveStartWateringRequest;
+import org.openhab.binding.rachio.internal.api.json.RachioValveStopWateringRequest;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookTarget;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager;
@@ -765,7 +764,7 @@ public class RachioApi {
         logger.debug("Load Rachio Smart Hose Timer base station '{}'.", baseStationId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + VALVE_GET_BASE_STATION + urlEncode(baseStationId), null,
                 readPriority(requestPurpose), requestPurpose).resultString;
-        return RachioSmartHoseTimerGsonDTO.parseBaseStation(json);
+        return RachioBaseStation.fromJson(json);
     }
 
     public List<RachioValve> listValves(String baseStationId) throws RachioApiException {
@@ -786,7 +785,7 @@ public class RachioApi {
         logger.debug("Load Rachio Smart Hose Timer valve '{}'.", valveId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + VALVE_GET_VALVE + urlEncode(valveId), null,
                 readPriority(requestPurpose), requestPurpose).resultString;
-        return RachioSmartHoseTimerGsonDTO.parseValve(json);
+        return RachioValve.fromJson(json);
     }
 
     public void setValveDefaultRuntime(String valveId, int defaultRuntimeSeconds) throws RachioApiException {
@@ -848,7 +847,7 @@ public class RachioApi {
         logger.debug("Load Smart Hose Timer Program V2 '{}'.", programId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + PROGRAM_GET_PROGRAM_V2 + urlEncode(programId), null,
                 readPriority(requestPurpose), requestPurpose).resultString;
-        return RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
+        return RachioValveProgram.fromJson(json);
     }
 
     public RachioValveProgram getValveProgram(String programId) throws RachioApiException {
@@ -860,21 +859,21 @@ public class RachioApi {
         logger.debug("Load legacy Smart Hose Timer Program '{}'.", programId);
         String json = httpGet(APIURL_CLOUD_REST_BASE + PROGRAM_GET_PROGRAM + urlEncode(programId), null,
                 readPriority(requestPurpose), requestPurpose).resultString;
-        return RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
+        return RachioValveProgram.fromJson(json);
     }
 
     public RachioValveProgram createValveProgramV2(RachioValveProgram program) throws RachioApiException {
         logger.debug("Create Smart Hose Timer Program V2 '{}'.", program.getThingName());
         String json = httpPost(APIURL_CLOUD_REST_BASE + PROGRAM_CREATE_PROGRAM_V2, GSON.toJson(program),
                 Priority.HIGH).resultString;
-        return RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
+        return RachioValveProgram.fromJson(json);
     }
 
     public RachioValveProgram updateValveProgramV2(RachioValveProgram program) throws RachioApiException {
         logger.debug("Update Smart Hose Timer Program V2 '{}'.", program.id);
         String json = httpPut(APIURL_CLOUD_REST_BASE + PROGRAM_UPDATE_PROGRAM_V2, GSON.toJson(program),
                 Priority.HIGH).resultString;
-        return RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
+        return RachioValveProgram.fromJson(json);
     }
 
     public void deleteValveProgram(String programId) throws RachioApiException {

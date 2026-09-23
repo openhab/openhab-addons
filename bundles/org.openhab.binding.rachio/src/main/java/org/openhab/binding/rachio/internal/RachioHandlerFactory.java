@@ -14,6 +14,7 @@ package org.openhab.binding.rachio.internal;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,6 +35,7 @@ import org.openhab.binding.rachio.internal.handler.RachioScheduleHandler;
 import org.openhab.binding.rachio.internal.handler.RachioValveHandler;
 import org.openhab.binding.rachio.internal.handler.RachioValveProgramHandler;
 import org.openhab.binding.rachio.internal.handler.RachioZoneHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
@@ -64,18 +66,29 @@ import org.slf4j.LoggerFactory;
 public class RachioHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(RachioHandlerFactory.class);
     private final HttpClient httpClient;
+    private final TimeZoneProvider timeZoneProvider;
     private final Map<String, RachioBridgeHandler> bridgeList = new ConcurrentHashMap<>();
     private volatile @Nullable WebhookService webhookService;
     private final RachioCloudWebhookRegistry cloudWebhookRegistry = new RachioCloudWebhookRegistry(
             this::getCloudWebhookProvider);
 
     @Activate
-    public RachioHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public RachioHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TimeZoneProvider timeZoneProvider) {
+        this(httpClientFactory.getCommonHttpClient(), timeZoneProvider);
+    }
+
+    RachioHandlerFactory(HttpClientFactory httpClientFactory) {
         this(httpClientFactory.getCommonHttpClient());
     }
 
     RachioHandlerFactory(HttpClient httpClient) {
+        this(httpClient, () -> ZoneOffset.UTC);
+    }
+
+    RachioHandlerFactory(HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClient;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -277,7 +290,8 @@ public class RachioHandlerFactory extends BaseThingHandlerFactory {
 
     private RachioBridgeHandler createBridge(Bridge bridgeThing) {
         ThingUID bridgeUID = bridgeThing.getUID();
-        RachioBridgeHandler cloudHandler = new RachioBridgeHandler(bridgeThing, httpClient, cloudWebhookRegistry);
+        RachioBridgeHandler cloudHandler = new RachioBridgeHandler(bridgeThing, httpClient, cloudWebhookRegistry,
+                timeZoneProvider);
         bridgeList.put(bridgeUID.toString(), cloudHandler);
         return cloudHandler;
     }

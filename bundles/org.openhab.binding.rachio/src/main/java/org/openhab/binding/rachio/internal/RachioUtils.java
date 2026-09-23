@@ -15,8 +15,7 @@ package org.openhab.binding.rachio.internal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,6 +34,21 @@ public class RachioUtils {
 
     public static String getString(@Nullable String value) {
         return value != null ? value : "";
+    }
+
+    public static String firstNonBlank(@Nullable String... values) {
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        return "";
+    }
+
+    public static void putIfNotBlank(Map<String, String> values, String key, @Nullable String value) {
+        if (value != null && !value.isBlank()) {
+            values.put(key, value);
+        }
     }
 
     public static String exceptionMessage(Throwable e) {
@@ -122,6 +136,6 @@ public class RachioUtils {
     }
 
     public static DateTimeType getTimestamp() {
-        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(now()), ZoneId.systemDefault()));
+        return new DateTimeType(Instant.ofEpochSecond(now()));
     }
 }

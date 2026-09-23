@@ -14,22 +14,26 @@ package org.openhab.binding.rachio.internal.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStationListResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayViewsResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveListResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgram;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgramListResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioBaseStation;
+import org.openhab.binding.rachio.internal.api.json.RachioBaseStationListResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValve;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayRun;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayViewsResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValveListResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgram;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgramListResponse;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -41,6 +45,42 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 class RachioSmartHoseTimerApiTest {
+    @Test
+    void deviceDtosTolerateExplicitNullStrings() {
+        RachioBaseStation baseStation = RachioBaseStation
+                .fromJson("{\"id\":null,\"name\":null,\"serialNumber\":null,\"status\":null}");
+        RachioValve valve = RachioValve
+                .fromJson("{\"id\":null,\"name\":null,\"status\":null,\"state\":{\"flowDetectedText\":null}}");
+
+        assertThat(baseStation.getThingName(), is("Rachio BaseStation"));
+        assertThat(baseStation.hasOnlineState(), is(false));
+        assertThat(valve.getThingName(), is("Rachio Valve"));
+        assertThat(valve.hasOnlineState(), is(false));
+        assertThat(valve.flowDetected(), is(false));
+    }
+
+    @Test
+    void programDtoToleratesExplicitNullStringsAndLists() {
+        RachioValveProgram program = RachioValveProgram.fromJson(
+                "{\"id\":null,\"name\":null,\"type\":null,\"valveId\":null,\"valveIds\":null,\"resourceId\":{\"valveId\":null}}");
+
+        assertThat(program.getThingName(), is("Rachio Valve Program"));
+        assertThat(program.getProgramType(), is(""));
+        assertThat(program.getValveId(), is(""));
+    }
+
+    @Test
+    void dayViewDtoToleratesExplicitNullRunCollectionsAndFields() {
+        RachioValveDayViewsResponse emptyResponse = RachioValveDayViewsResponse
+                .fromJson("{\"dayViews\":[{\"runs\":null,\"plannedRuns\":null,\"completedRuns\":null}]}");
+        RachioValveDayViewsResponse runResponse = RachioValveDayViewsResponse
+                .fromJson("{\"dayViews\":[{\"runs\":[{\"programId\":null,\"status\":null,\"startTime\":null}]}]}");
+
+        assertThat(emptyResponse.getRuns().isEmpty(), is(true));
+        assertThat(runResponse.getRuns().get(0).getProgramId(), is(""));
+        assertThat(runResponse.getRuns().get(0).getStartInstant(ZoneOffset.UTC), is(nullValue()));
+    }
+
     @Test
     void baseStationListResponseParsesWrappedList() {
         String json = """
@@ -100,7 +140,7 @@ class RachioSmartHoseTimerApiTest {
                 }
                 """;
 
-        RachioValve valve = RachioSmartHoseTimerGsonDTO.parseValve(json);
+        RachioValve valve = RachioValve.fromJson(json);
 
         assertThat(valve.id, is("valve-id"));
         assertThat(valve.getThingName(), is("Front Yard"));
@@ -187,8 +227,8 @@ class RachioSmartHoseTimerApiTest {
         assertThat(response.programs.get(0).plannedRuns, is(JsonParser.parseString(plannedRunsJson)));
         assertThat(response.programs.get(1).getValveId(), is("another-valve-id"));
 
-        RachioValveProgram program = RachioSmartHoseTimerGsonDTO.parseValveProgram(
-                "{\"program\":{\"id\":\"program-id\",\"plannedRuns\":%s}}".formatted(plannedRunsJson));
+        RachioValveProgram program = RachioValveProgram
+                .fromJson("{\"program\":{\"id\":\"program-id\",\"plannedRuns\":%s}}".formatted(plannedRunsJson));
 
         assertThat(program.id, is("program-id"));
         assertThat(program.getValveId(), is(""));
@@ -207,7 +247,7 @@ class RachioSmartHoseTimerApiTest {
                 }
                 """;
 
-        RachioValveProgram program = RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
+        RachioValveProgram program = RachioValveProgram.fromJson(json);
         RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson("[" + json + "]");
 
         assertThat(program.getValveId(), is("valve-id"));
@@ -218,7 +258,7 @@ class RachioSmartHoseTimerApiTest {
     @ValueSource(strings = { "{\"id\":\"program-id\"}", "{\"id\":\"program-id\",\"plannedRuns\":null}",
             "{\"id\":\"program-id\",\"plannedRuns\":[]}" })
     void valveProgramsAcceptMissingNullAndEmptyPlannedRuns(String json) {
-        RachioValveProgram program = RachioSmartHoseTimerGsonDTO.parseValveProgram(json);
+        RachioValveProgram program = RachioValveProgram.fromJson(json);
         RachioValveProgramListResponse response = RachioValveProgramListResponse.fromJson("[" + json + "]");
 
         assertThat(program.id, is("program-id"));
@@ -229,9 +269,10 @@ class RachioSmartHoseTimerApiTest {
 
     @Test
     void valveDayViewsResponseFindsUpcomingSkippedAndCompletedRuns() {
-        String yesterday = Instant.now().minusSeconds(86400).toString();
-        String tomorrow = Instant.now().plusSeconds(86400).toString();
-        String nextWeek = Instant.now().plusSeconds(604800).toString();
+        Instant now = Instant.parse("2026-06-20T12:00:00Z");
+        String yesterday = now.minusSeconds(86400).toString();
+        String tomorrow = now.plusSeconds(86400).toString();
+        String nextWeek = now.plusSeconds(604800).toString();
         String json = """
                 {
                   "dayViews": [
@@ -272,9 +313,37 @@ class RachioSmartHoseTimerApiTest {
         RachioValveDayViewsResponse response = RachioValveDayViewsResponse.fromJson(json);
 
         assertThat(response.dayViews.size(), is(1));
-        assertThat(Objects.requireNonNull(response.findNextPlannedRun()).getPlannedRunId(), is("planned-next"));
-        assertThat(Objects.requireNonNull(response.findNextSkippedRun()).getPlannedRunId(), is("planned-skipped"));
-        assertThat(Objects.requireNonNull(response.findLastCompletedRun()).getPlannedRunId(), is("completed-run"));
+        assertThat(Objects.requireNonNull(response.findNextPlannedRun(now, ZoneOffset.UTC)).getPlannedRunId(),
+                is("planned-next"));
+        assertThat(Objects.requireNonNull(response.findNextSkippedRun(now, ZoneOffset.UTC)).getPlannedRunId(),
+                is("planned-skipped"));
+        assertThat(Objects.requireNonNull(response.findLastCompletedRun(now, ZoneOffset.UTC)).getPlannedRunId(),
+                is("completed-run"));
+    }
+
+    @Test
+    void dateOnlyValveRunUsesPropertyTimeZoneAtLocalMidnight() {
+        RachioValveDayRun run = new RachioValveDayRun();
+        run.date = "2026-03-29";
+
+        assertThat(run.getStartInstant(ZoneId.of("Europe/Budapest")), is(Instant.parse("2026-03-28T23:00:00Z")));
+        assertThat(run.getStartInstant(ZoneId.of("America/Denver")), is(Instant.parse("2026-03-29T06:00:00Z")));
+    }
+
+    @Test
+    void malformedValveRunIsNotSelectedAsNextRun() {
+        RachioValveDayViewsResponse response = RachioValveDayViewsResponse.fromJson("""
+                {
+                  "dayViews": [{
+                    "plannedRuns": [{
+                      "plannedRunId": "malformed-run",
+                      "plannedRunStartTime": "not-a-timestamp"
+                    }]
+                  }]
+                }
+                """);
+
+        assertThat(response.findNextPlannedRun(Instant.parse("2026-06-20T12:00:00Z"), ZoneOffset.UTC), is(nullValue()));
     }
 
     @Test

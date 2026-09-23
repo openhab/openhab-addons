@@ -18,66 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_DURATION;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_END;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_NAME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_RUNNING;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_START;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_TYPE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ACTIVE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ACTIVE_ZONE_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ACTIVE_ZONE_NAME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ACTIVE_ZONE_NUMBER;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_PAUSED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_API_EVENT_TYPE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_EVENT;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_EVENTTS;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_SCHEDULE_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_START;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_TYPE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHEDULE_LAST_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_LAST_WATERED_DATE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_CLIMATE_SKIP;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_DEVICE_ZONE_RUN_COMPLETED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_DEVICE_ZONE_RUN_PAUSED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_DEVICE_ZONE_RUN_STARTED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_DEVICE_ZONE_RUN_STOPPED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_FREEZE_SKIP;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_NO_SKIP;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_PROGRAM_RAIN_SKIP_CANCELED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_PROGRAM_RAIN_SKIP_CREATED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_RAIN_DELAY_OFF;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_RAIN_DELAY_ON;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_RAIN_SENSOR_DETECTION_OFF;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_RAIN_SENSOR_DETECTION_ON;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_RAIN_SKIP;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_SCHEDULE_COMPLETED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_SCHEDULE_STARTED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_SCHEDULE_STOPPED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_VALVE_RUN_END;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_VALVE_RUN_START;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_WIND_SKIP;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_APIKEY;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_AUTO_CONFIGURE_HOSE_TIMER_WEBHOOKS;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_AUTO_CONFIGURE_WEBHOOKS;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_FORECAST_UNITS;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_PUBLIC_WEBHOOK_URL;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PARAM_USE_CLOUD_WEBHOOK;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_LAST_WEBHOOK_EVENT_TIMESTAMP;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_LAST_WEBHOOK_EVENT_TYPE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_CLOUD;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_SCHEDULE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_VALVE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_VALVE_PROGRAM;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -106,8 +53,9 @@ import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudScheduleRule;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgram;
+import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.RachioProperty;
+import org.openhab.binding.rachio.internal.api.json.RachioValve;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgram;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookMode;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
@@ -141,6 +89,20 @@ import com.google.gson.Gson;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioBridgeHandlerConfigurationTest {
+    @Test
+    void smartHoseTimeZoneUsesAndCachesPropertyTimeZone() throws Exception {
+        RachioBridgeHandler handler = Mockito
+                .spy(new RachioBridgeHandler(BridgeBuilder.create(THING_TYPE_CLOUD, "bridge").build(),
+                        Mockito.mock(HttpClient.class), () -> null, () -> ZoneId.of("Europe/Budapest")));
+        RachioProperty property = new RachioProperty();
+        property.timeZone = "America/Denver";
+        Mockito.doReturn(property).when(handler).findPropertyForBaseStation("base-station-id");
+
+        assertThat(handler.getSmartHoseTimeZone("base-station-id"), is(ZoneId.of("America/Denver")));
+        assertThat(handler.getSmartHoseTimeZone("base-station-id"), is(ZoneId.of("America/Denver")));
+        verify(handler).findPropertyForBaseStation("base-station-id");
+    }
+
     private static final HttpClient HTTP_CLIENT = Mockito.mock(HttpClient.class);
 
     @Test

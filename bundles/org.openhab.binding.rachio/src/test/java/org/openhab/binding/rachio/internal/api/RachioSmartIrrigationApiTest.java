@@ -51,6 +51,8 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 @SuppressWarnings({ "null" })
 class RachioSmartIrrigationApiTest {
+    private static final LocalDate FORECAST_DATE = LocalDate.of(2026, 6, 20);
+
     @Test
     void currentScheduleRemainsEssentialWhenOptionalForecastIsLocallyThrottled() throws Exception {
         RachioApi api = new RachioApi("person-id", Mockito.mock(HttpClient.class));
@@ -169,9 +171,10 @@ class RachioSmartIrrigationApiTest {
 
         RachioForecastResponse response = Objects
                 .requireNonNull(new Gson().fromJson(json, RachioForecastResponse.class));
-        RachioForecastEntry todayForecast = Objects.requireNonNull(response.getTodayForecast());
+        RachioForecastEntry todayForecast = Objects
+                .requireNonNull(response.getTodayForecast(FORECAST_DATE, ZoneOffset.UTC));
 
-        assertThat(response.getSummary(), is("Cloudy"));
+        assertThat(response.getSummary(FORECAST_DATE, ZoneOffset.UTC), is("Cloudy"));
         assertThat(response.getUpdated(), is("2026-05-17T03:00:00Z"));
         assertThat(todayForecast.getHighTemperature(), is(24.5));
         assertThat(todayForecast.getWind(), is(10.5));
@@ -198,19 +201,23 @@ class RachioSmartIrrigationApiTest {
                 """;
 
         RachioForecastResponse response = RachioForecastResponse.fromJson(json);
-        RachioForecastEntry todayForecast = Objects.requireNonNull(response.getTodayForecast());
+        RachioForecastEntry todayForecast = Objects
+                .requireNonNull(response.getTodayForecast(FORECAST_DATE, ZoneOffset.UTC));
 
-        assertThat(response.hasUsefulData(), is(true));
-        assertThat(response.getSummary(), is("Partly cloudy"));
+        assertThat(response.hasUsefulData(FORECAST_DATE, ZoneOffset.UTC), is(true));
+        assertThat(response.getSummary(FORECAST_DATE, ZoneOffset.UTC), is("Partly cloudy"));
         assertThat(response.getUpdated(), is("2026-05-17T03:00:00Z"));
         assertThat(todayForecast.getHighTemperature(), is(26.0));
         assertThat(todayForecast.getLowTemperature(), is(14.0));
         assertThat(todayForecast.precipitation, is(2.5));
         assertThat(todayForecast.precipitationProbability, is(0.4));
         assertThat(todayForecast.getWind(), is(7.5));
-        assertThat(response.shapeSummary().contains("topLevelKeys=updatedAt,weather"), is(true));
-        assertThat(response.shapeSummary().contains("selectedEntryKeys=conditions,temperatureHigh"), is(true));
-        assertThat(response.shapeSummary().contains("matchedAliases=updatedAt,conditions"), is(true));
+        assertThat(response.shapeSummary(FORECAST_DATE, ZoneOffset.UTC).contains("topLevelKeys=updatedAt,weather"),
+                is(true));
+        assertThat(response.shapeSummary(FORECAST_DATE, ZoneOffset.UTC)
+                .contains("selectedEntryKeys=conditions,temperatureHigh"), is(true));
+        assertThat(response.shapeSummary(FORECAST_DATE, ZoneOffset.UTC).contains("matchedAliases=updatedAt,conditions"),
+                is(true));
     }
 
     @Test
@@ -281,11 +288,14 @@ class RachioSmartIrrigationApiTest {
                   }
                 }
                 """);
-        RachioForecastEntry todayForecast = Objects.requireNonNull(response.getTodayForecast());
+        RachioForecastEntry todayForecast = Objects
+                .requireNonNull(response.getTodayForecast(FORECAST_DATE, ZoneOffset.UTC));
 
         assertThat(Double.isNaN(todayForecast.precipitation), is(true));
-        assertThat(response.parsedFieldSummary().contains("precipitation=false"), is(true));
-        assertThat(response.shapeSummary().contains("matchedAliases=temperatureMax,precipIntensity"), is(true));
+        assertThat(response.parsedFieldSummary(FORECAST_DATE, ZoneOffset.UTC).contains("precipitation=false"),
+                is(true));
+        assertThat(response.shapeSummary(FORECAST_DATE, ZoneOffset.UTC)
+                .contains("matchedAliases=temperatureMax,precipIntensity"), is(true));
     }
 
     @Test
@@ -302,8 +312,8 @@ class RachioSmartIrrigationApiTest {
                 """);
 
         assertThat(response.getUpdated(), is("2026-06-20T08:05:00Z"));
-        assertThat(response.hasUsefulData(), is(false));
-        assertThat(response.getTodayForecast() == null, is(true));
+        assertThat(response.hasUsefulData(FORECAST_DATE, ZoneOffset.UTC), is(false));
+        assertThat(response.getTodayForecast(FORECAST_DATE, ZoneOffset.UTC) == null, is(true));
     }
 
     @Test
@@ -316,9 +326,10 @@ class RachioSmartIrrigationApiTest {
                 }
                 """);
 
-        assertThat(response.hasUsefulData(), is(false));
-        assertThat(response.getTodayForecast() == null, is(true));
-        assertThat(response.parsedFieldSummary().contains("precipitation=false"), is(true));
+        assertThat(response.hasUsefulData(FORECAST_DATE, ZoneOffset.UTC), is(false));
+        assertThat(response.getTodayForecast(FORECAST_DATE, ZoneOffset.UTC) == null, is(true));
+        assertThat(response.parsedFieldSummary(FORECAST_DATE, ZoneOffset.UTC).contains("precipitation=false"),
+                is(true));
     }
 
     @Test
@@ -331,7 +342,7 @@ class RachioSmartIrrigationApiTest {
                 }
                 """);
 
-        assertThat(response.hasUsefulData(), is(false));
+        assertThat(response.hasUsefulData(FORECAST_DATE, ZoneOffset.UTC), is(false));
     }
 
     private static void setField(Object target, String fieldName, Object value) throws ReflectiveOperationException {

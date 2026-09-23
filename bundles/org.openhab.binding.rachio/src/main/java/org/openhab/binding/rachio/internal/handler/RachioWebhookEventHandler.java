@@ -23,7 +23,19 @@ import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType
  */
 @NonNullByDefault
 interface RachioWebhookEventHandler {
+    /**
+     * Checks whether this handler supports the supplied webhook resource type.
+     *
+     * @param resourceType the webhook resource type
+     * @return {@code true} if this handler supports the resource type
+     */
     boolean supports(RachioWebhookResourceType resourceType);
 
+    /**
+     * Handles a webhook event.
+     *
+     * @param event the normalized webhook event
+     * @return {@code true} if the event was handled
+     */
     boolean handle(RachioEventGsonDTO event);
 }

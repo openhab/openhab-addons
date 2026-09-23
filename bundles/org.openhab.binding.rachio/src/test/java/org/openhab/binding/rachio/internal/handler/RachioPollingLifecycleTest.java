@@ -16,8 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_CLOUD;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.util.Collection;
 import java.util.List;

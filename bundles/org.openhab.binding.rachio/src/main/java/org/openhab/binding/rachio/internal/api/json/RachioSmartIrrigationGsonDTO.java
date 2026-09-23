@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.rachio.internal.api.json;
 
+import static org.openhab.binding.rachio.internal.RachioUtils.firstNonBlank;
+
 import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -230,11 +232,6 @@ public class RachioSmartIrrigationGsonDTO {
             return response;
         }
 
-        public String getSummary() {
-            ZoneId zoneId = ZoneId.systemDefault();
-            return getSummary(LocalDate.now(zoneId), zoneId);
-        }
-
         public String getSummary(LocalDate currentDate, ZoneId zoneId) {
             ForecastSelection selection = selectTodayForecast(currentDate, zoneId);
             return getSummary(selection, currentDate, zoneId);
@@ -242,11 +239,6 @@ public class RachioSmartIrrigationGsonDTO {
 
         public String getUpdated() {
             return firstNonBlank(updated, updatedAt);
-        }
-
-        public String buildSummary(String forecastUnits) {
-            ZoneId zoneId = ZoneId.systemDefault();
-            return buildSummary(forecastUnits, LocalDate.now(zoneId), zoneId);
         }
 
         public String buildSummary(String forecastUnits, LocalDate currentDate, ZoneId zoneId) {
@@ -282,18 +274,8 @@ public class RachioSmartIrrigationGsonDTO {
             return String.join(", ", parts);
         }
 
-        public @Nullable RachioForecastEntry getTodayForecast() {
-            ZoneId zoneId = ZoneId.systemDefault();
-            return getTodayForecast(LocalDate.now(zoneId), zoneId);
-        }
-
         public @Nullable RachioForecastEntry getTodayForecast(LocalDate currentDate, ZoneId zoneId) {
             return selectTodayForecast(currentDate, zoneId).entry;
-        }
-
-        public boolean hasUsefulData() {
-            ZoneId zoneId = ZoneId.systemDefault();
-            return hasUsefulData(LocalDate.now(zoneId), zoneId);
         }
 
         public boolean hasUsefulData(LocalDate currentDate, ZoneId zoneId) {
@@ -301,11 +283,6 @@ public class RachioSmartIrrigationGsonDTO {
             RachioForecastEntry todayForecast = selection.entry;
             return !getSummary(selection, currentDate, zoneId).isBlank()
                     || (todayForecast != null && todayForecast.hasUsefulData());
-        }
-
-        public String parsedFieldSummary() {
-            ZoneId zoneId = ZoneId.systemDefault();
-            return parsedFieldSummary(LocalDate.now(zoneId), zoneId);
         }
 
         public String parsedFieldSummary(LocalDate currentDate, ZoneId zoneId) {
@@ -319,11 +296,6 @@ public class RachioSmartIrrigationGsonDTO {
                     + (todayForecast != null && !Double.isNaN(todayForecast.precipitationProbability)) + ", wind="
                     + (todayForecast != null && !Double.isNaN(todayForecast.getWind())) + ", updated="
                     + !getUpdated().isBlank();
-        }
-
-        public String shapeSummary() {
-            ZoneId zoneId = ZoneId.systemDefault();
-            return shapeSummary(LocalDate.now(zoneId), zoneId);
         }
 
         public String shapeSummary(LocalDate currentDate, ZoneId zoneId) {
@@ -349,8 +321,9 @@ public class RachioSmartIrrigationGsonDTO {
         private boolean summaryBelongsToIgnoredDatedTopLevelEntry(@Nullable RachioForecastEntry selectedForecast,
                 LocalDate currentDate, ZoneId zoneId) {
             RachioForecastEntry topLevelEntry = today;
+            String summary = firstNonBlank(this.summary);
             if (topLevelEntry == null || Objects.equals(topLevelEntry, selectedForecast) || summary.isBlank()
-                    || !summary.equals(topLevelEntry.summary)) {
+                    || !summary.equals(firstNonBlank(topLevelEntry.summary))) {
                 return false;
             }
             LocalDate topLevelDate = topLevelEntry.getForecastDate(zoneId);
@@ -576,13 +549,13 @@ public class RachioSmartIrrigationGsonDTO {
         }
 
         public boolean hasUsefulData() {
-            return !summary.isBlank() || !Double.isNaN(getHighTemperature()) || !Double.isNaN(getLowTemperature())
-                    || !Double.isNaN(precipitation) || !Double.isNaN(precipitationProbability)
-                    || !Double.isNaN(getWind());
+            return !firstNonBlank(summary).isBlank() || !Double.isNaN(getHighTemperature())
+                    || !Double.isNaN(getLowTemperature()) || !Double.isNaN(precipitation)
+                    || !Double.isNaN(precipitationProbability) || !Double.isNaN(getWind());
         }
 
         private boolean hasForecastDateTimeValue() {
-            return !date.isBlank() || !time.isBlank();
+            return !firstNonBlank(date, time).isBlank();
         }
 
         private String getForecastDateTimeForLog() {
@@ -595,7 +568,7 @@ public class RachioSmartIrrigationGsonDTO {
         }
 
         private static @Nullable LocalDate parseForecastDate(String value, ZoneId zoneId) {
-            String trimmed = value.trim();
+            String trimmed = firstNonBlank(value).trim();
             if (trimmed.isBlank()) {
                 return null;
             }
@@ -679,12 +652,19 @@ public class RachioSmartIrrigationGsonDTO {
         public String nextScheduledRun = "";
         public String nextScheduledStart = "";
         public double seasonalAdjustment = 0;
-        public List<RachioScheduleRuleZone> zones = new ArrayList<>();
+        public @Nullable List<RachioScheduleRuleZone> zones = new ArrayList<>();
 
         public String getZoneSummary() {
             List<String> zoneIds = new ArrayList<>();
+            List<RachioScheduleRuleZone> zones = this.zones;
+            if (zones == null) {
+                return "";
+            }
             for (RachioScheduleRuleZone zone : zones) {
-                zoneIds.add(zone.zoneId);
+                String zoneId = firstNonBlank(zone.zoneId);
+                if (!zoneId.isBlank()) {
+                    zoneIds.add(zoneId);
+                }
             }
             return String.join(",", zoneIds);
         }
@@ -735,15 +715,6 @@ public class RachioSmartIrrigationGsonDTO {
             this.id = id;
             this.adjustment = adjustment;
         }
-    }
-
-    private static String firstNonBlank(String... values) {
-        for (String value : values) {
-            if (!value.isBlank()) {
-                return value;
-            }
-        }
-        return "";
     }
 
     private static int firstPositive(int... values) {

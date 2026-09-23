@@ -13,6 +13,7 @@
 package org.openhab.binding.rachio.internal.api;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.firstNonBlank;
 
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -489,25 +490,10 @@ public class RachioDevice extends RachioCloudDevice {
                 lastApiEventType);
     }
 
-    public boolean applyForecast(RachioForecastResponse forecast) {
-        return applyForecast(forecast, DEFAULT_FORECAST_UNITS, "");
-    }
-
-    public boolean applyForecast(RachioForecastResponse forecast, String forecastUnits, String retrievedAt) {
-        return applyForecastInternal(forecast, forecastUnits, retrievedAt, parseInstant(retrievedAt));
-    }
-
     public boolean applyForecast(RachioForecastResponse forecast, String forecastUnits, String retrievedAt,
-            Instant retrievedAtInstant) {
-        return applyForecastInternal(forecast, forecastUnits, retrievedAt, retrievedAtInstant);
-    }
-
-    private boolean applyForecastInternal(RachioForecastResponse forecast, String forecastUnits, String retrievedAt,
-            @Nullable Instant retrievedAtInstant) {
-        ZoneId forecastZoneId = getForecastZoneId();
-        LocalDate forecastLocalDate = retrievedAtInstant != null
-                ? LocalDate.ofInstant(retrievedAtInstant, forecastZoneId)
-                : LocalDate.now(forecastZoneId);
+            Instant retrievedAtInstant, ZoneId fallbackZoneId) {
+        ZoneId forecastZoneId = getForecastZoneId(fallbackZoneId);
+        LocalDate forecastLocalDate = LocalDate.ofInstant(retrievedAtInstant, forecastZoneId);
         if (!forecast.hasUsefulData(forecastLocalDate, forecastZoneId)) {
             return false;
         }
@@ -552,28 +538,18 @@ public class RachioDevice extends RachioCloudDevice {
         return true;
     }
 
-    private @Nullable Instant parseInstant(String value) {
-        if (value.isBlank()) {
-            return null;
-        }
-        try {
-            return Instant.parse(value);
-        } catch (DateTimeException e) {
-            return null;
-        }
-    }
-
-    private ZoneId getForecastZoneId() {
+    public ZoneId getForecastZoneId(ZoneId fallbackZoneId) {
         ZoneOffset offset = getUtcOffsetZone();
-        return offset != null ? offset : ZoneId.systemDefault();
+        return offset != null ? offset : fallbackZoneId;
     }
 
     private @Nullable ZoneOffset getUtcOffsetZone() {
-        if (utcOffset == 0) {
+        Long configuredUtcOffset = utcOffset;
+        if (configuredUtcOffset == null) {
             return null;
         }
 
-        long offsetSeconds = utcOffset;
+        long offsetSeconds = configuredUtcOffset.longValue();
         long absoluteOffset = Math.abs(offsetSeconds);
         if (absoluteOffset <= 18L * 60 && offsetSeconds % 15 == 0) {
             offsetSeconds *= 60;
@@ -595,15 +571,6 @@ public class RachioDevice extends RachioCloudDevice {
         lastSkipScheduleId = scheduleId;
         lastSkipStartTime = startTime;
         lastSkipReason = reason;
-    }
-
-    private String firstNonBlank(String... values) {
-        for (String value : values) {
-            if (!value.isBlank()) {
-                return value;
-            }
-        }
-        return "";
     }
 
     public String getScheduleRuleName(String scheduleId) {

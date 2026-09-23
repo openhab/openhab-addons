@@ -15,9 +15,7 @@ package org.openhab.binding.rachio.internal.api;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_QUERY_BASE_STATION_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_QUERY_LIGHTING_AREA_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_QUERY_LOCATION_ID;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.util.Objects;
 

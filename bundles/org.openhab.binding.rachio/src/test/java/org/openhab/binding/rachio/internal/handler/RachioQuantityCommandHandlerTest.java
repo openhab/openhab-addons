@@ -20,24 +20,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_RUNTIME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_RUN_ZONES;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_DEFAULT_RUNTIME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_RUNTIME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_AVAILABLE_WATER;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_DEPTH_OF_WATER;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_MOISTURE_LEVEL;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_MOISTURE_PERCENT;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_ROOT_ZONE_DEPTH;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUNTIME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_SATURATED_DEPTH_OF_WATER;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_YARD_AREA_SQUARE_FEET;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_VALVE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
@@ -50,7 +33,7 @@ import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioDeviceGsonDTO.RachioCloudDevice;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
+import org.openhab.binding.rachio.internal.api.json.RachioValve;
 import org.openhab.binding.rachio.internal.api.json.RachioZoneGsonDTO.RachioCloudZone;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -177,11 +160,13 @@ class RachioQuantityCommandHandlerTest {
         RachioValveHandler handler = new RachioValveHandler(thing(thingUID));
         RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
         handler.cloudHandler = bridgeHandler;
-        setField(handler, "valve", valve("valve-id"));
+        RachioValve snapshotValve = valve("valve-id");
+        setField(handler, "valve", snapshotValve);
 
         handler.handleCommand(new ChannelUID(thingUID, CHANNEL_VALVE_DEFAULT_RUNTIME), QuantityType.valueOf("15 min"));
 
         verify(bridgeHandler).setValveDefaultRuntime(eq("valve-id"), eq(900));
+        assertThat(snapshotValve.getDefaultRuntimeSeconds(), is(300));
     }
 
     @Test
@@ -281,6 +266,26 @@ class RachioQuantityCommandHandlerTest {
         setField(handler, "zone", zone);
 
         handler.handleCommand(new ChannelUID(thingUID, CHANNEL_ZONE_MOISTURE_PERCENT), new DecimalType("0.4"));
+
+        verify(bridgeHandler).setZoneMoisturePercent("zone-id", 0.4);
+        verify(callback).stateUpdated(new ChannelUID(thingUID, CHANNEL_ZONE_MOISTURE_PERCENT),
+                RachioQuantityTypes.fractionOrUndef(0.4));
+    }
+
+    @Test
+    void moisturePercentCommandConvertsPercentUnitToApiFraction() throws Exception {
+        ThingUID thingUID = new ThingUID(THING_TYPE_ZONE, "bridge", "zone");
+        RachioZoneHandler handler = new RachioZoneHandler(thing(thingUID));
+        ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
+        RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        RachioDevice device = deviceWithZones(zone("zone-id", 1));
+        RachioZone zone = Objects.requireNonNull(device.getZoneByNumber(1));
+        handler.setCallback(callback);
+        handler.cloudHandler = bridgeHandler;
+        setField(handler, "dev", device);
+        setField(handler, "zone", zone);
+
+        handler.handleCommand(new ChannelUID(thingUID, CHANNEL_ZONE_MOISTURE_PERCENT), QuantityType.valueOf("40 %"));
 
         verify(bridgeHandler).setZoneMoisturePercent("zone-id", 0.4);
         verify(callback).stateUpdated(new ChannelUID(thingUID, CHANNEL_ZONE_MOISTURE_PERCENT),

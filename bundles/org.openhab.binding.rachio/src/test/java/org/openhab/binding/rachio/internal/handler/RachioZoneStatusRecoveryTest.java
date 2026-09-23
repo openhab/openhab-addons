@@ -22,10 +22,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUN_TOTAL;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_ZONE_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_CLOUD;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;

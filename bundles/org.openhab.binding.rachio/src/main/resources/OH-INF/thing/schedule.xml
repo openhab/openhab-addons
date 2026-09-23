@@ -102,7 +102,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="schedule-seasonal-adjustment">
-		<item-type unitHint="one">Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Seasonal Adjustment</label>
 		<description>Seasonal adjustment value for the schedule rule. Sending a number updates the adjustment.</description>
 		<tags>

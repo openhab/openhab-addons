@@ -14,14 +14,13 @@ package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 import static org.openhab.binding.rachio.internal.RachioUtils.exceptionMessage;
+import static org.openhab.binding.rachio.internal.RachioUtils.firstNonBlank;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
 import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,9 +32,9 @@ import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO.RachioWebhookPayload;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayRun;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayViewsResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgram;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayRun;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayViewsResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgram;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -46,7 +45,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -269,19 +267,16 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
         }
 
         try {
+            ZoneId zoneId = zoneIdOrUtc(
+                    handler.getSmartHoseTimeZoneForValve(valveId, currentProgram.getBaseStationId()));
             RachioValveDayViewsResponse summary = handler.getValveDayViews(valveId);
             if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
                 return;
             }
-            long now = System.currentTimeMillis();
-            RachioValveDayRun loadedNextProgramRun = summary.getRuns().stream()
-                    .filter(run -> currentProgram.id.equalsIgnoreCase(run.getProgramId()))
-                    .filter(run -> run.getStartEpochMillis() >= now)
-                    .min(Comparator.comparingLong(RachioValveDayRun::getStartEpochMillis)).orElse(null);
-            RachioValveDayRun loadedNextSkippedProgramRun = summary.getRuns().stream()
-                    .filter(run -> currentProgram.id.equalsIgnoreCase(run.getProgramId()))
-                    .filter(RachioValveDayRun::isSkipped).filter(run -> run.getStartEpochMillis() >= now)
-                    .min(Comparator.comparingLong(RachioValveDayRun::getStartEpochMillis)).orElse(null);
+            Instant now = Instant.now();
+            RachioValveDayRun loadedNextProgramRun = summary.findNextProgramRun(currentProgram.id, false, now, zoneId);
+            RachioValveDayRun loadedNextSkippedProgramRun = summary.findNextProgramRun(currentProgram.id, true, now,
+                    zoneId);
             if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
                 nextProgramRun = loadedNextProgramRun;
                 nextSkippedProgramRun = loadedNextSkippedProgramRun;
@@ -486,36 +481,5 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
                         e.getClass().getSimpleName());
             }
         }
-    }
-
-    private State stringOrUndef(String value) {
-        return value.isBlank() ? UnDefType.UNDEF : new StringType(value);
-    }
-
-    private State dateTimeOrUndef(String value) {
-        if (value.isBlank()) {
-            return UnDefType.UNDEF;
-        }
-        try {
-            if (value.chars().allMatch(Character::isDigit)) {
-                long epoch = Long.parseLong(value);
-                long epochMillis = value.length() > 10 ? epoch : epoch * 1000L;
-                return new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()));
-            }
-            return new DateTimeType(value);
-        } catch (RuntimeException e) {
-            logger.trace("{}: Unable to parse DateTime channel value '{}'", thingId, value);
-            return UnDefType.UNDEF;
-        }
-    }
-
-    private String firstNonBlank(String... values) {
-        for (String value : values) {
-            if (!value.isBlank()) {
-                return value;
-            }
-        }
-        return "";
     }
 }

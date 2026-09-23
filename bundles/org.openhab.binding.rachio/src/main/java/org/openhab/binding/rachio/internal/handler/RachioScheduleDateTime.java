@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.rachio.internal.handler;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.rachio.internal.RachioDateTime;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -30,8 +27,6 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 final class RachioScheduleDateTime {
-    private static final long EPOCH_SECONDS_THRESHOLD = 10_000_000_000L;
-
     private RachioScheduleDateTime() {
     }
 
@@ -71,38 +66,9 @@ final class RachioScheduleDateTime {
     }
 
     private static ParseResult parse(String value) {
-        if (isIntegerValue(value)) {
-            try {
-                long epoch = Long.parseLong(value);
-                long epochMillis = Math.abs(epoch) < EPOCH_SECONDS_THRESHOLD ? Math.multiplyExact(epoch, 1000L) : epoch;
-                State state = new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()));
-                return new ParseResult(state, "epoch");
-            } catch (RuntimeException e) {
-                return new ParseResult(null, "unparseable");
-            }
-        }
-
-        try {
-            return new ParseResult(new DateTimeType(value), "iso");
-        } catch (RuntimeException e) {
-            return new ParseResult(null, "unparseable");
-        }
-    }
-
-    private static boolean isIntegerValue(String value) {
-        int length = value.length();
-        int start = length > 0 && (value.charAt(0) == '+' || value.charAt(0) == '-') ? 1 : 0;
-        if (start == length) {
-            return false;
-        }
-        for (int i = start; i < length; i++) {
-            char ch = value.charAt(i);
-            if (ch < '0' || ch > '9') {
-                return false;
-            }
-        }
-        return true;
+        DateTimeType state = RachioDateTime.parse(value);
+        String valueType = state == null ? "unparseable" : RachioDateTime.isIntegerValue(value) ? "epoch" : "iso";
+        return new ParseResult(state, valueType);
     }
 
     private static String nullToEmpty(@Nullable String value) {

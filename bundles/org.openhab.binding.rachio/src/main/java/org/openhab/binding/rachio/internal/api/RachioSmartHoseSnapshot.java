@@ -16,9 +16,9 @@ import java.time.Instant;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStation;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgram;
+import org.openhab.binding.rachio.internal.api.json.RachioBaseStation;
+import org.openhab.binding.rachio.internal.api.json.RachioValve;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgram;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

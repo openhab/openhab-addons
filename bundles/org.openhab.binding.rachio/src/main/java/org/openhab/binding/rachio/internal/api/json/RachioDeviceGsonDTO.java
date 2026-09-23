@@ -45,7 +45,7 @@ public class RachioDeviceGsonDTO {
         public boolean deleted = false; // "deleted":false,
         public boolean rainSensorTripped = false;
         public boolean homeKitCompatible = false; // "homeKitCompatible":false
-        public long utcOffset = 0;
+        public @Nullable Long utcOffset;
     }
 
     public static class RachioCloudScheduleRule {

@@ -25,7 +25,17 @@ import org.openhab.binding.rachio.internal.api.RachioZone;
 
 @NonNullByDefault
 public interface RachioStatusListener {
+    /**
+     * Handles a controller or zone state change.
+     *
+     * @param updatedDev the updated controller, or {@code null} if no controller changed
+     * @param updatedZone the updated zone, or {@code null} if no zone changed
+     * @return {@code true} if the state change was handled
+     */
     boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone);
 
+    /**
+     * Handles a binding configuration update.
+     */
     void onConfigurationUpdated();
 }

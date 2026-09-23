@@ -22,5 +22,10 @@ import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
  */
 @NonNullByDefault
 public interface RachioSmartHoseStatusListener {
+    /**
+     * Handles a reconciled Smart Hose Timer state change.
+     *
+     * @param snapshot the latest reconciled Smart Hose Timer snapshot
+     */
     void onSmartHoseStateChanged(RachioSmartHoseSnapshot snapshot);
 }

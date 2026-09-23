@@ -20,12 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.HTTP_TIMEOUT_MS;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.RACHIO_JSON_RATE_LIMIT;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.RACHIO_JSON_RATE_REMAINING;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.RACHIO_JSON_RATE_RESET;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_WEBHOOK_APPLICATION_JSON;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.SERVLET_WEBHOOK_USER_AGENT;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.net.URI;
 import java.net.UnknownHostException;

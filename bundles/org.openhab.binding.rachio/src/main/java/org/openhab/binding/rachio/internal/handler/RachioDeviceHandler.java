@@ -13,14 +13,15 @@
 package org.openhab.binding.rachio.internal.handler;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.firstNonBlank;
 import static org.openhab.binding.rachio.internal.RachioUtils.getTimestamp;
 import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -54,7 +55,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -549,17 +549,22 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
                 return;
             }
             Instant retrievedAt = Instant.ofEpochMilli(now);
-            boolean usefulForecast = d.applyForecast(forecast, forecastUnits, retrievedAt.toString(), retrievedAt);
+            ZoneId fallbackZoneId = zoneIdOrUtc(handler.getTimeZone());
+            ZoneId forecastZoneId = d.getForecastZoneId(fallbackZoneId);
+            LocalDate forecastLocalDate = LocalDate.ofInstant(retrievedAt, forecastZoneId);
+            boolean usefulForecast = d.applyForecast(forecast, forecastUnits, retrievedAt.toString(), retrievedAt,
+                    fallbackZoneId);
             logger.debug("{}: Forecast response for controller '{}' using {} units parsed: {}", thingId, d.id,
-                    forecastUnits, forecast.parsedFieldSummary());
-            logger.trace("{}: Forecast response shape for controller '{}': {}", thingId, d.id, forecast.shapeSummary());
+                    forecastUnits, forecast.parsedFieldSummary(forecastLocalDate, forecastZoneId));
+            logger.trace("{}: Forecast response shape for controller '{}': {}", thingId, d.id,
+                    forecast.shapeSummary(forecastLocalDate, forecastZoneId));
             if (usefulForecast) {
                 optionalEnrichmentLoaded = true;
                 updateForecastChannels(d, forecastUnits);
                 logger.debug("{}: Loaded useful forecast for controller '{}' using {} units", thingId, d.id,
                         forecastUnits);
                 logger.debug("{}: Applied forecast channel updates for controller '{}': {}", thingId, d.id,
-                        forecast.parsedFieldSummary());
+                        forecast.parsedFieldSummary(forecastLocalDate, forecastZoneId));
             } else {
                 optionalEnrichmentRetrySoon = true;
                 logger.debug(
@@ -1029,15 +1034,6 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
         }
     }
 
-    private String firstNonBlank(@Nullable String... values) {
-        for (String value : values) {
-            if (value != null && !value.isBlank()) {
-                return value;
-            }
-        }
-        return "";
-    }
-
     private int positiveValue(@Nullable Integer... values) {
         for (Integer value : values) {
             if (value != null && value > 0) {
@@ -1434,40 +1430,6 @@ public class RachioDeviceHandler extends AbstractRachioThingHandler {
             return;
         }
         updateStatus(ThingStatus.ONLINE);
-    }
-
-    private State stringOrUndef(String value) {
-        return value.isBlank() ? UnDefType.UNDEF : new StringType(value);
-    }
-
-    private State optionalStringState(String value) {
-        return value.isBlank() ? UnDefType.NULL : new StringType(value);
-    }
-
-    private State optionalDateTimeState(String value) {
-        return value.isBlank() ? UnDefType.NULL : parseDateTimeState(value);
-    }
-
-    private State dateTimeOrUndef(String value) {
-        if (value.isBlank()) {
-            return UnDefType.UNDEF;
-        }
-        return parseDateTimeState(value);
-    }
-
-    private State parseDateTimeState(String value) {
-        try {
-            if (value.chars().allMatch(Character::isDigit)) {
-                long epoch = Long.parseLong(value);
-                long epochMillis = value.length() > 10 ? epoch : epoch * 1000L;
-                return new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()));
-            }
-            return new DateTimeType(value);
-        } catch (RuntimeException e) {
-            logger.trace("{}: Unable to parse DateTime channel value '{}'", thingId, value);
-            return UnDefType.UNDEF;
-        }
     }
 
     private void updateProperties() {

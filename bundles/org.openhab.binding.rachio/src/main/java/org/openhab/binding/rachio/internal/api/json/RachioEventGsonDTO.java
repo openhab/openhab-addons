@@ -13,6 +13,7 @@
 package org.openhab.binding.rachio.internal.api.json;
 
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
+import static org.openhab.binding.rachio.internal.RachioUtils.firstNonBlank;
 
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -232,7 +233,7 @@ public class RachioEventGsonDTO {
     }
 
     public void normalize() {
-        if (isLegacyEvent() || resourceType.isEmpty()) {
+        if (isLegacyEvent() || isBlank(resourceType)) {
             return;
         }
 
@@ -241,21 +242,21 @@ public class RachioEventGsonDTO {
         }
 
         RachioWebhookPayload eventPayload = payload;
-        if ("VALVE".equals(resourceType) && resourceId.isBlank() && eventPayload != null
-                && !eventPayload.valveId.isBlank()) {
+        if ("VALVE".equals(resourceType) && isBlank(resourceId) && eventPayload != null
+                && !isBlank(eventPayload.valveId)) {
             resourceId = eventPayload.valveId;
         }
-        if ("PROGRAM".equals(resourceType) && resourceId.isBlank() && eventPayload != null
-                && !eventPayload.programId.isBlank()) {
+        if ("PROGRAM".equals(resourceType) && isBlank(resourceId) && eventPayload != null
+                && !isBlank(eventPayload.programId)) {
             resourceId = eventPayload.programId;
         }
 
-        if (timestamp.isEmpty()) {
+        if (isBlank(timestamp)) {
             timestamp = createDate > 0 ? Long.toString(createDate) : "";
         }
 
-        if (summary.isBlank()) {
-            summary = eventType;
+        if (isBlank(summary)) {
+            summary = firstNonBlank(eventType);
         }
         if (eventPayload != null) {
             startTime = firstNonBlank(eventPayload.startTime, startTime);
@@ -405,13 +406,14 @@ public class RachioEventGsonDTO {
         }
 
         RachioWebhookPayload eventPayload = payload;
-        if (eventPayload != null && !eventPayload.durationSeconds.isEmpty()) {
+        if (eventPayload != null && !isBlank(eventPayload.durationSeconds)) {
             return Math.max(0, eventPayload.getDurationSeconds());
         }
         return -1;
     }
 
     private static int getSecondsUntil(String timestamp) {
+        timestamp = firstNonBlank(timestamp);
         if (timestamp.isEmpty()) {
             return -1;
         }
@@ -424,7 +426,7 @@ public class RachioEventGsonDTO {
     }
 
     private boolean isLegacyEvent() {
-        return !type.isEmpty() || !subType.isEmpty() || !deviceId.isEmpty();
+        return !firstNonBlank(type, subType, deviceId).isEmpty();
     }
 
     private static @Nullable String getLegacyNotificationType(@Nullable String candidate) {
@@ -480,19 +482,10 @@ public class RachioEventGsonDTO {
             scheduleId = firstNonBlank(eventPayload.scheduleId, scheduleId);
             scheduleName = firstNonBlank(eventPayload.scheduleName, scheduleName);
             scheduleType = firstNonBlank(eventPayload.runType, scheduleType);
-            if (!eventPayload.plannedRunStartTime.isEmpty()) {
-                startTime = eventPayload.plannedRunStartTime;
+            if (!isBlank(eventPayload.plannedRunStartTime)) {
+                startTime = firstNonBlank(eventPayload.plannedRunStartTime);
             }
         }
-    }
-
-    private String firstNonBlank(String... values) {
-        for (String value : values) {
-            if (!isBlank(value)) {
-                return value;
-            }
-        }
-        return "";
     }
 
     public static class RachioWebhookPayload {
@@ -553,6 +546,7 @@ public class RachioEventGsonDTO {
 
         private static int parseInt(String value) {
             try {
+                value = firstNonBlank(value);
                 return value.isEmpty() ? 0 : Double.valueOf(value).intValue();
             } catch (RuntimeException e) {
                 return 0;

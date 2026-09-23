@@ -20,10 +20,12 @@ import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,17 +56,17 @@ import org.openhab.binding.rachio.internal.api.RachioDevice;
 import org.openhab.binding.rachio.internal.api.RachioDiscoverySnapshot;
 import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
 import org.openhab.binding.rachio.internal.api.RachioZone;
+import org.openhab.binding.rachio.internal.api.json.RachioBaseStation;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioPropertyGsonDTO.RachioProperty;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStation;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayViewsResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgram;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioCurrentScheduleResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioDeviceEventListResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioFlexScheduleRuleResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioForecastResponse;
 import org.openhab.binding.rachio.internal.api.json.RachioSmartIrrigationGsonDTO.RachioScheduleRuleResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValve;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayViewsResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgram;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookMode;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookTarget;
@@ -74,6 +76,7 @@ import org.openhab.binding.rachio.internal.handler.RachioCloudWebhookRegistry.Cl
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.Priority;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -108,9 +111,11 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(RachioBridgeHandler.class);
     private final Object lifecycleLock = new Object();
     private final HttpClient httpClient;
+    private final TimeZoneProvider timeZoneProvider;
     private volatile RachioApi rachioApi;
     private final RachioCloudWebhookRegistry cloudWebhookRegistry;
     private final Map<String, String> knownModernIrrigationWebhookRegistrations = new ConcurrentHashMap<>();
+    private final Map<String, ZoneId> smartHoseTimeZones = new ConcurrentHashMap<>();
     private volatile RachioConfiguration thingConfig = new RachioConfiguration();
     private final Set<RachioDiscoveryService> discoveryServices = new CopyOnWriteArraySet<>();
     private final AtomicReference<@Nullable Future<?>> initializationJob = new AtomicReference<>();
@@ -144,18 +149,29 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
      * @param httpClient shared HTTP client managed by openHAB core
      */
     public RachioBridgeHandler(Bridge bridge, HttpClient httpClient) {
-        this(bridge, httpClient, () -> null);
+        this(bridge, httpClient, () -> null, () -> ZoneOffset.UTC);
     }
 
     public RachioBridgeHandler(Bridge bridge, HttpClient httpClient,
             Supplier<@Nullable WebhookService> webhookServiceSupplier) {
-        this(bridge, httpClient, new RachioCloudWebhookRegistry(webhookServiceSupplier));
+        this(bridge, httpClient, webhookServiceSupplier, () -> ZoneOffset.UTC);
+    }
+
+    public RachioBridgeHandler(Bridge bridge, HttpClient httpClient,
+            Supplier<@Nullable WebhookService> webhookServiceSupplier, TimeZoneProvider timeZoneProvider) {
+        this(bridge, httpClient, new RachioCloudWebhookRegistry(webhookServiceSupplier), timeZoneProvider);
     }
 
     public RachioBridgeHandler(Bridge bridge, HttpClient httpClient, RachioCloudWebhookRegistry cloudWebhookRegistry) {
+        this(bridge, httpClient, cloudWebhookRegistry, () -> ZoneOffset.UTC);
+    }
+
+    public RachioBridgeHandler(Bridge bridge, HttpClient httpClient, RachioCloudWebhookRegistry cloudWebhookRegistry,
+            TimeZoneProvider timeZoneProvider) {
         super(bridge);
         this.httpClient = httpClient;
         this.cloudWebhookRegistry = cloudWebhookRegistry;
+        this.timeZoneProvider = timeZoneProvider;
         rachioApi = new RachioApi("", httpClient);
     }
 
@@ -173,6 +189,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             generation = ++lifecycleGeneration;
             thingConfig = configuration;
             smartHoseSnapshot = RachioSmartHoseSnapshot.EMPTY;
+            smartHoseTimeZones.clear();
         }
         cancelInitializationJob();
         releaseCloudWebhookUrl("bridge reinitialization");
@@ -759,6 +776,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                 return;
             }
             smartHoseSnapshot = updatedSnapshot;
+            smartHoseTimeZones.clear();
             if (!updatedSnapshot.hasSameContent(currentSnapshot)) {
                 logger.debug("RachioCloud: Smart Hose snapshot updated (baseStations={}, valves={}, programs={})",
                         updatedSnapshot.baseStations().size(), updatedSnapshot.valves().size(),
@@ -908,10 +926,53 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
     }
 
     public RachioValveDayViewsResponse getValveDayViews(String valveId) throws RachioApiException {
-        LocalDate today = LocalDate.now(ZoneId.systemDefault());
+        ZoneId zoneId = getSmartHoseTimeZoneForValve(valveId, "");
+        LocalDate today = LocalDate.now(zoneId);
         LocalDate end = today.plusDays(getHoseSummaryLookaheadDays());
         LocalDate start = today.minusDays(getHoseSummaryLookbackDays());
         return rachioApi.getValveDayViews(valveId, start, end);
+    }
+
+    public ZoneId getTimeZone() {
+        return timeZoneProvider.getTimeZone();
+    }
+
+    public ZoneId getSmartHoseTimeZone(String baseStationId) {
+        if (baseStationId.isBlank()) {
+            return getTimeZone();
+        }
+        return Objects
+                .requireNonNull(smartHoseTimeZones.computeIfAbsent(baseStationId, this::resolveSmartHoseTimeZone));
+    }
+
+    public ZoneId getSmartHoseTimeZoneForValve(String valveId, String baseStationId) {
+        String resolvedBaseStationId = baseStationId;
+        if (resolvedBaseStationId.isBlank()) {
+            RachioValve valve = smartHoseSnapshot.valves().get(valveId);
+            if (valve != null) {
+                resolvedBaseStationId = valve.baseStationId;
+            }
+        }
+        return getSmartHoseTimeZone(resolvedBaseStationId);
+    }
+
+    private ZoneId resolveSmartHoseTimeZone(String baseStationId) {
+        try {
+            RachioProperty property = findPropertyForBaseStation(baseStationId);
+            if (property != null && !property.timeZone.isBlank()) {
+                try {
+                    return ZoneId.of(property.timeZone);
+                } catch (DateTimeException e) {
+                    logger.debug(
+                            "RachioCloud: Property for Smart Hose base station '{}' returned invalid time zone '{}'",
+                            baseStationId, property.timeZone);
+                }
+            }
+        } catch (RachioApiException e) {
+            logger.debug("RachioCloud: Unable to resolve time zone for Smart Hose base station '{}': {}", baseStationId,
+                    e.getMessage());
+        }
+        return getTimeZone();
     }
 
     public void createSkipOverride(String programId, String timestamp) throws RachioApiException {
@@ -1934,6 +1995,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
         cancelInitializationJob();
         releaseCloudWebhookUrl("bridge disposal");
         smartHoseSnapshot = RachioSmartHoseSnapshot.EMPTY;
+        smartHoseTimeZones.clear();
         super.dispose();
     }
 }

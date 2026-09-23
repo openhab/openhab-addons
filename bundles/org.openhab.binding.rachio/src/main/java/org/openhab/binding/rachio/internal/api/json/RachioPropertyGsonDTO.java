@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.rachio.internal.api.json;
 
+import static org.openhab.binding.rachio.internal.RachioUtils.firstNonBlank;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,15 +149,6 @@ public class RachioPropertyGsonDTO {
 
     private static @Nullable RachioProperty parsePropertyObject(JsonObject object) {
         return GSON.fromJson(object, RachioProperty.class);
-    }
-
-    private static String firstNonBlank(String... values) {
-        for (String value : values) {
-            if (!value.isBlank()) {
-                return value;
-            }
-        }
-        return "";
     }
 
     private static String readString(@Nullable JsonObject object, String memberName) {

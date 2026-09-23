@@ -20,7 +20,6 @@ import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,9 +32,9 @@ import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
 import org.openhab.binding.rachio.internal.api.RachioZone;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO.RachioWebhookPayload;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayRun;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayViewsResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValve;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayRun;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayViewsResponse;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -63,6 +62,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
     private final AtomicBoolean webhookSummaryRefreshPending = new AtomicBoolean();
     private volatile @Nullable RachioValve valve;
     private volatile int runTime = 0;
+    private volatile int pendingDefaultRuntimeSeconds = 0;
     private volatile OnOffType runState = OnOffType.OFF;
     private volatile String lastEvent = "";
     private volatile @Nullable DateTimeType lastEventTime;
@@ -81,6 +81,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
     public void initialize() {
         long generation = beginHandlerInitialization();
         thingId = getThing().getUID().getAsString();
+        pendingDefaultRuntimeSeconds = 0;
         String valveId = getThingConfigurationOrPropertyString(PROPERTY_VALVE_ID);
         logger.debug("Initializing Rachio Valve Thing '{}', configured valveId='{}'", getThing().getUID(), valveId);
 
@@ -157,7 +158,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
                     logger.debug("{}: Set Smart Hose Timer valve '{}' default runtime to {} sec", thingId,
                             currentValve.getThingName(), defaultRuntime);
                     handler.setValveDefaultRuntime(currentValve.id, defaultRuntime);
-                    currentValve.defaultRuntimeSeconds = defaultRuntime;
+                    pendingDefaultRuntimeSeconds = defaultRuntime;
                     logger.debug(
                             "{}: ValveState.matches may remain false until the physical valve synchronizes the cloud-side default runtime update",
                             thingId);
@@ -193,7 +194,9 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
         if (runTime > 0) {
             return runTime;
         }
-        int valveDefaultRuntime = currentValve.getDefaultRuntimeSeconds();
+        int pendingDefaultRuntime = pendingDefaultRuntimeSeconds;
+        int valveDefaultRuntime = pendingDefaultRuntime > 0 ? pendingDefaultRuntime
+                : currentValve.getDefaultRuntimeSeconds();
         if (valveDefaultRuntime > 0) {
             return valveDefaultRuntime;
         }
@@ -221,6 +224,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
             if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
                 return false;
             }
+            pendingDefaultRuntimeSeconds = 0;
             valve = loadedValve;
             RachioValve currentValve = loadedValve;
             if (currentValve.id.isBlank()) {
@@ -308,13 +312,17 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
             return;
         }
         try {
+            RachioValve currentValve = valve;
+            ZoneId zoneId = zoneIdOrUtc(handler.getSmartHoseTimeZoneForValve(valveId,
+                    currentValve != null ? currentValve.baseStationId : ""));
             RachioValveDayViewsResponse summary = handler.getValveDayViews(valveId);
             if (!isHandlerLifecycleCurrent(generation) || !isSameInstance(cloudHandler, handler)) {
                 return;
             }
-            nextPlannedRun = summary.findNextPlannedRun();
-            nextSkippedRun = summary.findNextSkippedRun();
-            lastCompletedRun = summary.findLastCompletedRun();
+            Instant now = Instant.now();
+            nextPlannedRun = summary.findNextPlannedRun(now, zoneId);
+            nextSkippedRun = summary.findNextSkippedRun(now, zoneId);
+            lastCompletedRun = summary.findLastCompletedRun(now, zoneId);
             logger.debug("{}: Loaded Smart Hose Timer summary for valve '{}': {} day views", thingId, valveId,
                     summary.dayViews.size());
         } catch (RachioApiThrottledException e) {
@@ -487,8 +495,9 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
         updateChannel(CHANNEL_VALVE_ONLINE, onlineState(currentValve));
         updateChannel(CHANNEL_VALVE_RUN, runState);
         updateChannel(CHANNEL_VALVE_RUNTIME, RachioQuantityTypes.seconds(runTime));
-        updateChannel(CHANNEL_VALVE_DEFAULT_RUNTIME,
-                RachioQuantityTypes.seconds(currentValve.getDefaultRuntimeSeconds()));
+        int pendingDefaultRuntime = pendingDefaultRuntimeSeconds;
+        updateChannel(CHANNEL_VALVE_DEFAULT_RUNTIME, RachioQuantityTypes
+                .seconds(pendingDefaultRuntime > 0 ? pendingDefaultRuntime : currentValve.getDefaultRuntimeSeconds()));
         updateChannel(CHANNEL_VALVE_STATE_MATCHES,
                 currentValve.hasStateMatches() ? currentValve.stateMatches() ? OnOffType.ON : OnOffType.OFF
                         : UnDefType.UNDEF);
@@ -556,6 +565,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
         if (updatedValve == null || getHandlerLifecycleGeneration() < 0) {
             return;
         }
+        pendingDefaultRuntimeSeconds = 0;
         valve = updatedValve;
         thingId = updatedValve.getThingName();
         goOnline();
@@ -603,27 +613,5 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
             return UnDefType.UNDEF;
         }
         return RachioQuantityTypes.percentOrUndef(batteryLevel.doubleValue());
-    }
-
-    private State stringOrUndef(String value) {
-        return value.isBlank() ? UnDefType.UNDEF : new StringType(value);
-    }
-
-    private State dateTimeOrUndef(String value) {
-        if (value.isBlank()) {
-            return UnDefType.UNDEF;
-        }
-        try {
-            if (value.chars().allMatch(Character::isDigit)) {
-                long epoch = Long.parseLong(value);
-                long epochMillis = value.length() > 10 ? epoch : epoch * 1000L;
-                return new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()));
-            }
-            return new DateTimeType(value);
-        } catch (RuntimeException e) {
-            logger.trace("{}: Unable to parse DateTime channel value '{}'", thingId, value);
-            return UnDefType.UNDEF;
-        }
     }
 }

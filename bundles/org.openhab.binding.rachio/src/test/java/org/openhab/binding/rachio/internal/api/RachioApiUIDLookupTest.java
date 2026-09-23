@@ -16,11 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_DEV_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_ZONE_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_CLOUD;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.util.Collections;
 import java.util.Map;

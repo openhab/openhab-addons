@@ -19,8 +19,6 @@ import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -487,45 +485,51 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         }
     }
 
-    private synchronized void updateZoneImageChannel(RachioZone z) {
+    private void updateZoneImageChannel(RachioZone z) {
         String imageUrl = z.getImageDownloadUrl();
-        if (imageUrl.isBlank()) {
-            cancelImageDownload();
-            cachedImageUrl = "";
-            cachedImage = null;
-            failedImageUrl = "";
-            failedImageAtMillis = 0;
-            updateChannel(CHANNEL_ZONE_IMAGE, UnDefType.NULL);
-            return;
-        }
+        State imageState = null;
+        synchronized (this) {
+            if (imageUrl.isBlank()) {
+                cancelImageDownloadLocked();
+                cachedImageUrl = "";
+                cachedImage = null;
+                failedImageUrl = "";
+                failedImageAtMillis = 0;
+                imageState = UnDefType.NULL;
+            } else {
+                RawType image = cachedImage;
+                if (imageUrl.equals(cachedImageUrl) && image != null) {
+                    imageState = image;
+                } else {
+                    Future<?> downloadJob = imageDownloadJob;
+                    if (imageUrl.equals(pendingImageUrl) && downloadJob != null && !downloadJob.isDone()) {
+                        return;
+                    }
+                    long now = System.currentTimeMillis();
+                    if (imageUrl.equals(failedImageUrl) && now - failedImageAtMillis < ZONE_IMAGE_RETRY_DELAY_MILLIS) {
+                        return;
+                    }
 
-        RawType image = cachedImage;
-        if (imageUrl.equals(cachedImageUrl) && image != null) {
-            updateChannel(CHANNEL_ZONE_IMAGE, image);
-            return;
-        }
-        Future<?> downloadJob = imageDownloadJob;
-        if (imageUrl.equals(pendingImageUrl) && downloadJob != null && !downloadJob.isDone()) {
-            return;
-        }
-        long now = System.currentTimeMillis();
-        if (imageUrl.equals(failedImageUrl) && now - failedImageAtMillis < ZONE_IMAGE_RETRY_DELAY_MILLIS) {
-            return;
-        }
-
-        cancelImageDownload();
-        pendingImageUrl = imageUrl;
-        long generation = ++imageRequestGeneration;
-        try {
-            imageDownloadJob = scheduler.submit(() -> downloadZoneImage(imageUrl, z.name, generation));
-        } catch (RuntimeException e) {
-            pendingImageUrl = "";
-            failedImageUrl = imageUrl;
-            failedImageAtMillis = now;
-            if (cachedImage == null) {
-                updateChannel(CHANNEL_ZONE_IMAGE, UnDefType.NULL);
+                    cancelImageDownloadLocked();
+                    pendingImageUrl = imageUrl;
+                    long generation = ++imageRequestGeneration;
+                    try {
+                        imageDownloadJob = scheduler.submit(() -> downloadZoneImage(imageUrl, z.name, generation));
+                    } catch (RuntimeException e) {
+                        pendingImageUrl = "";
+                        failedImageUrl = imageUrl;
+                        failedImageAtMillis = now;
+                        if (cachedImage == null) {
+                            imageState = UnDefType.NULL;
+                        }
+                        logger.debug("{}: Unable to schedule image download for zone '{}': {}", thingId, z.name,
+                                e.getMessage());
+                    }
+                }
             }
-            logger.debug("{}: Unable to schedule image download for zone '{}': {}", thingId, z.name, e.getMessage());
+        }
+        if (imageState != null) {
+            updateChannel(CHANNEL_ZONE_IMAGE, imageState);
         }
     }
 
@@ -571,7 +575,13 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         }
     }
 
-    private synchronized void cancelImageDownload() {
+    private void cancelImageDownload() {
+        synchronized (this) {
+            cancelImageDownloadLocked();
+        }
+    }
+
+    private void cancelImageDownloadLocked() {
         imageRequestGeneration++;
         Future<?> downloadJob = imageDownloadJob;
         if (downloadJob != null) {
@@ -601,7 +611,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         if (epochMillis <= 0) {
             return UnDefType.NULL;
         }
-        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(epochMillis), ZoneId.systemDefault()));
+        return new DateTimeType(Instant.ofEpochMilli(epochMillis));
     }
 
     @Override

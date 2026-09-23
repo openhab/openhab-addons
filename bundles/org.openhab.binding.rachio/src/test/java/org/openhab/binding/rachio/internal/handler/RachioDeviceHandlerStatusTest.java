@@ -23,39 +23,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_DURATION;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_END;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_NAME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_RUNNING;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_START;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_CURRENT_SCHEDULE_TYPE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ACTIVE_ZONE_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ACTIVE_ZONE_NAME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ACTIVE_ZONE_NUMBER;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_ONLINE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_RAIN_SENSOR_TRIPPED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_PRECIPITATION;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_PRECIPITATION_PROBABILITY;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_SUMMARY;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_TODAY_HIGH;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_TODAY_LOW;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_UPDATED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FORECAST_WIND;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_REASON;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_SCHEDULE_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_START;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_SKIP_TYPE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHED_END;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHED_INFO;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHED_NAME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHED_START;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_DEV_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_FLEX_SCHEDULE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_SCHEDULE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -754,7 +727,7 @@ class RachioDeviceHandlerStatusTest {
     @Test
     void forecastSelectionUsesControllerUtcOffsetForLocalDate() {
         RachioDevice device = device("ONLINE");
-        device.utcOffset = -25_200_000;
+        device.utcOffset = -25_200_000L;
         RachioForecastResponse forecast = RachioForecastResponse.fromJson("""
                 {
                   "dailyForecasts": [
@@ -768,11 +741,27 @@ class RachioDeviceHandlerStatusTest {
                 """);
 
         boolean applied = device.applyForecast(forecast, "US", "2026-07-01T01:00:00Z",
-                Instant.parse("2026-07-01T01:00:00Z"));
+                Instant.parse("2026-07-01T01:00:00Z"), ZoneOffset.UTC);
 
         assertThat(applied, is(true));
         assertThat(device.forecastSummary, is("Controller-local today"));
         assertThat(device.forecastTodayHigh, is(82.0));
+    }
+
+    @Test
+    void explicitZeroUtcOffsetOverridesOpenhabTimeZone() {
+        RachioDevice device = device("ONLINE");
+        device.utcOffset = 0L;
+
+        assertThat(device.getForecastZoneId(ZoneId.of("America/New_York")), is(ZoneOffset.UTC));
+    }
+
+    @Test
+    void missingUtcOffsetUsesOpenhabTimeZone() {
+        RachioDevice device = device("ONLINE");
+        ZoneId openhabZoneId = ZoneId.of("Europe/Budapest");
+
+        assertThat(device.getForecastZoneId(openhabZoneId), is(openhabZoneId));
     }
 
     @Test
@@ -783,11 +772,11 @@ class RachioDeviceHandlerStatusTest {
         metricToday.highTemperature = 30;
         metricToday.windSpeed = 20;
 
-        assertThat(metricForecast.buildSummary("METRIC"),
+        assertThat(metricForecast.buildSummary("METRIC", LocalDate.of(2026, 6, 16), ZoneOffset.UTC),
                 is("18-30 \u00B0C, precipitation chance 0%, precipitation 2.5 mm, wind 20 km/h"));
 
         RachioForecastResponse usForecast = numericForecast(0.25, 0);
-        assertThat(usForecast.buildSummary("US"),
+        assertThat(usForecast.buildSummary("US", LocalDate.of(2026, 6, 16), ZoneOffset.UTC),
                 is("61-82 \u00B0F, precipitation chance 0%, precipitation 0.25 in, wind 8.5 mph"));
     }
 

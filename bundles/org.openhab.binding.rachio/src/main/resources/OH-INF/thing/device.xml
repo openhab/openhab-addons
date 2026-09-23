@@ -316,7 +316,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="device-forecast-precipitation-probability">
-		<item-type unitHint="one">Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Precipitation Probability</label>
 		<description>Today's forecast precipitation probability as a 0..1 fraction.</description>
 		<tags>

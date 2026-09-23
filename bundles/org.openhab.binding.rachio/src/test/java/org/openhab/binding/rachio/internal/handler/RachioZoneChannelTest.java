@@ -16,24 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_DEVICE_PAUSE_TIME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_ENABLED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_LAST_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_LAST_UPDATE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_NAME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_NEXT_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_SEASONAL_ADJUSTMENT;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_SKIP;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_SKIP_FORWARD_ZONE_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_START;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_START_TIME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_TYPE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_FLEX_SCHEDULE_ZONES;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_SCHEDULE_SEASONAL_ADJUSTMENT;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_ZONE_RUNTIME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_DEVICE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_SCHEDULE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_ZONE;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -106,7 +89,7 @@ class RachioZoneChannelTest {
         assertChannel(xml, CHANNEL_FLEX_SCHEDULE_SKIP_FORWARD_ZONE_RUN, "schedule-rule-skip-forward-zone-run");
         assertChannel(xml, CHANNEL_FLEX_SCHEDULE_LAST_UPDATE, "flex-schedule-last-update");
         assertThat(xml, containsString("<channel-type id=\"flex-schedule-seasonal-adjustment\">"));
-        assertThat(xml, containsString("<item-type unitHint=\"one\">Number:Dimensionless</item-type>"));
+        assertThat(xml, containsString("<item-type unitHint=\"%\">Number:Dimensionless</item-type>"));
     }
 
     @Test
@@ -280,15 +263,17 @@ class RachioZoneChannelTest {
         assertThat(zoneXml, containsString("<item-type unitHint=\"in\">Number:Length</item-type>"));
         assertThat(zoneXml, containsString("<item-type unitHint=\"ft2\">Number:Area</item-type>"));
         assertThat(zoneXml, containsString("<item-type unitHint=\"mm\">Number:Length</item-type>"));
+        assertThat(zoneXml, containsString("<item-type unitHint=\"%\">Number:Dimensionless</item-type>"));
         assertThat(deviceXml, containsString("<item-type>Number:Temperature</item-type>"));
         assertThat(deviceXml, containsString("<item-type unitHint=\"mm\">Number:Length</item-type>"));
-        assertThat(deviceXml, containsString("<item-type unitHint=\"one\">Number:Dimensionless</item-type>"));
+        assertThat(deviceXml, containsString("<item-type unitHint=\"%\">Number:Dimensionless</item-type>"));
         assertThat(deviceXml, containsString("<item-type>Number:Speed</item-type>"));
         assertThat(valveXml, containsString("<item-type unitHint=\"%\">Number:Dimensionless</item-type>"));
-        assertThat(scheduleXml, containsString("<item-type unitHint=\"one\">Number:Dimensionless</item-type>"));
-        assertThat(flexScheduleXml, containsString("<item-type unitHint=\"one\">Number:Dimensionless</item-type>"));
+        assertThat(scheduleXml, containsString("<item-type unitHint=\"%\">Number:Dimensionless</item-type>"));
+        assertThat(flexScheduleXml, containsString("<item-type unitHint=\"%\">Number:Dimensionless</item-type>"));
         assertThat(valveProgramXml, containsString("<item-type unitHint=\"s\">Number:Time</item-type>"));
         assertThat(valveProgramXml, containsString("<item-type unitHint=\"d\">Number:Time</item-type>"));
+        assertThat(valveProgramXml, containsString("<item-type unitHint=\"%\">Number:Dimensionless</item-type>"));
     }
 
     @Test

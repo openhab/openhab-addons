@@ -22,39 +22,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_BASE_STATION_NAME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_EVENT;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_LAST_EVENTTS;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_CANCEL_NEXT_PLANNED_RUN_SKIP;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_DEFAULT_RUNTIME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_FLOW_DETECTED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_LAST_END_REASON;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_LAST_RUN_TYPE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_NAME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_NEXT_PLANNED_RUN_PROGRAM_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_NEXT_PLANNED_RUN_SKIPPED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_PROGRAM_DURATION;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_PROGRAM_LAST_RAIN_SKIP_CANCELED_START;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_PROGRAM_LAST_RAIN_SKIP_START;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_PROGRAM_NAME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_PROGRAM_NEXT_RUNTIME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_PROGRAM_NEXT_RUN_SKIPPED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_PROGRAM_SKIP_NEXT_PLANNED_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_PROGRAM_VALVE_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_RUNTIME;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.CHANNEL_VALVE_SKIP_NEXT_PLANNED_RUN;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_PROGRAM_RAIN_SKIP_CANCELED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_PROGRAM_RAIN_SKIP_CREATED;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_VALVE_RUN_END;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.EVENT_VALVE_RUN_START;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_BASE_STATION_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_VALVE_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.PROPERTY_VALVE_PROGRAM_ID;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_BASE_STATION;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_CLOUD;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_VALVE;
-import static org.openhab.binding.rachio.internal.RachioBindingConstants.THING_TYPE_VALVE_PROGRAM;
+import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.lang.reflect.Field;
 import java.time.Duration;
@@ -70,15 +38,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.RachioConfiguration;
 import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
+import org.openhab.binding.rachio.internal.api.json.RachioBaseStation;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO;
 import org.openhab.binding.rachio.internal.api.json.RachioEventGsonDTO.RachioWebhookPayload;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioBaseStation;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValve;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayRun;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayView;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveDayViewsResponse;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveProgram;
-import org.openhab.binding.rachio.internal.api.json.RachioSmartHoseTimerGsonDTO.RachioValveState;
+import org.openhab.binding.rachio.internal.api.json.RachioValve;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayRun;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayView;
+import org.openhab.binding.rachio.internal.api.json.RachioValveDayViewsResponse;
+import org.openhab.binding.rachio.internal.api.json.RachioValveProgram;
+import org.openhab.binding.rachio.internal.api.json.RachioValveState;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookMode;
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
@@ -301,15 +269,14 @@ class RachioSmartHoseTimerHandlerTest {
     }
 
     @Test
-    void valveProgramSkipCommandNoOpsWhenSummaryIdentifiersAreMissing() throws Exception {
+    void valveProgramSkipUsesProgramAndTimestampWhenPlannedRunIdIsMissing() throws Exception {
         Thing thing = thing(THING_TYPE_VALVE_PROGRAM, "program", Map.of(PROPERTY_VALVE_PROGRAM_ID, PROGRAM_ID));
         RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
         ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
         TestValveProgramHandler handler = new TestValveProgramHandler(thing, bridgeHandler, ThingStatus.ONLINE);
         when(bridgeHandler.getValveProgramForInitialization(PROGRAM_ID))
                 .thenReturn(program(PROGRAM_ID, "Program", VALVE_ID, 300));
-        when(bridgeHandler.getValveDayViews(VALVE_ID))
-                .thenReturn(summary(programRunWithoutTimestamp(PROGRAM_ID, false)));
+        when(bridgeHandler.getValveDayViews(VALVE_ID)).thenReturn(summary(programRunWithoutPlannedRunId(PROGRAM_ID)));
         handler.setCallback(callback);
         handler.initialize();
         clearInvocations(callback, bridgeHandler);
@@ -318,7 +285,7 @@ class RachioSmartHoseTimerHandlerTest {
                 OnOffType.ON);
 
         verify(bridgeHandler, never()).createPlannedRunSkipOverride(anyString(), anyString());
-        verify(bridgeHandler, never()).createSkipOverride(anyString(), anyString());
+        verify(bridgeHandler).createSkipOverride(eq(PROGRAM_ID), anyString());
         verify(callback).stateUpdated(new ChannelUID(thing.getUID(), CHANNEL_VALVE_PROGRAM_SKIP_NEXT_PLANNED_RUN),
                 OnOffType.OFF);
         verify(callback, never()).statusUpdated(eq(thing),
@@ -647,12 +614,13 @@ class RachioSmartHoseTimerHandlerTest {
         return run;
     }
 
-    private RachioValveDayRun programRunWithoutTimestamp(String programId, boolean skipped) {
+    private RachioValveDayRun programRunWithoutPlannedRunId(String programId) {
         RachioValveDayRun run = new RachioValveDayRun();
         run.programId = programId;
         run.valveId = VALVE_ID;
+        run.startTime = Instant.now().plusSeconds(3600).toString();
         run.durationSeconds = 300;
-        run.skipped = Boolean.valueOf(skipped);
+        run.skipped = Boolean.FALSE;
         return run;
     }
 

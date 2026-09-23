@@ -15,6 +15,8 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.openhab.binding.rachio.internal.RachioUtils.i18nText;
 import static org.openhab.binding.rachio.internal.RachioUtils.isSameInstance;
 
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +27,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.rachio.internal.RachioDateTime;
 import org.openhab.binding.rachio.internal.api.RachioApiThrottledException;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -34,6 +39,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -254,6 +260,34 @@ public abstract class AbstractRachioThingHandler extends BaseThingHandler implem
 
         updateState(channelName, newValue);
         return true;
+    }
+
+    protected State stringOrUndef(@Nullable String value) {
+        return value == null || value.isBlank() ? UnDefType.UNDEF : new StringType(value);
+    }
+
+    protected State optionalStringState(@Nullable String value) {
+        return value == null || value.isBlank() ? UnDefType.NULL : new StringType(value);
+    }
+
+    protected State dateTimeOrUndef(@Nullable String value) {
+        if (value == null || value.isBlank()) {
+            return UnDefType.UNDEF;
+        }
+        DateTimeType state = RachioDateTime.parse(value);
+        if (state == null) {
+            logger.trace("{}: Unable to parse DateTime channel value '{}'", thingId, value);
+            return UnDefType.UNDEF;
+        }
+        return state;
+    }
+
+    protected State optionalDateTimeState(@Nullable String value) {
+        return value == null || value.isBlank() ? UnDefType.NULL : dateTimeOrUndef(value);
+    }
+
+    protected ZoneId zoneIdOrUtc(@Nullable ZoneId zoneId) {
+        return zoneId != null ? zoneId : ZoneOffset.UTC;
     }
 
     protected long scheduleLocalThrottleRetry(String operation, Runnable retryAction) {
