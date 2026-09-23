@@ -376,7 +376,14 @@ public class ShieldTVConnectionManager {
                 androidtvPKI.generateNewKeyPair(encryptionKey);
                 androidtvPKI.saveKeyStore(config.keystorePassword, this.encryptionKey);
             } else {
-                androidtvPKI.loadFromKeyStore(config.keystorePassword, this.encryptionKey);
+                try {
+                    androidtvPKI.loadFromKeyStore(config.keystorePassword, this.encryptionKey);
+                } catch (Exception e) {
+                    logger.warn("{} - Failed to load keystore from {}, regenerating: {}", handler.getThingID(),
+                            config.keystoreFileName, e.getMessage());
+                    androidtvPKI.generateNewKeyPair(encryptionKey);
+                    androidtvPKI.saveKeyStore(config.keystorePassword, this.encryptionKey);
+                }
             }
 
             logger.trace("{} - Initializing SSL Context", handler.getThingID());
