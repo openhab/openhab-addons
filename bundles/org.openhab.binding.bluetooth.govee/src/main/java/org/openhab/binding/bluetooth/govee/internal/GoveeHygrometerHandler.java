@@ -93,6 +93,8 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
 
     private final AtomicBoolean refreshRunning = new AtomicBoolean();
 
+    private @Nullable volatile CompletableFuture<?> refreshFuture;
+
     public GoveeHygrometerHandler(Thing thing) {
         super(thing);
     }
@@ -159,30 +161,34 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
             WarningSettingsDTO<Dimensionless> humWarnSettings = config.getHumidityWarningSettings();
 
             if (characteristic != null) {
+                CompletableFuture<?> startFuture = new CompletableFuture<>();
                 logger.debug("Before enable notifications");
-                CompletableFuture<?> future = device.enableNotifications(characteristic).thenCompose(v -> {
-                    CompletableFuture<@Nullable TemHumDTO> resultHandler = new CompletableFuture<>();
-                    logger.debug("Execute GetTemHumCommand");
-                    executeCommand(device, encryptionHelper, characteristic, new GetTemHumCommand(resultHandler));
-                    logger.debug("Executed GetTemHumCommand");
-                    return resultHandler;
-                }).handle((dto, th) -> {
-                    logger.debug("Received temperature and humidity data: {}", dto, th);
-                    updateTemperatureAndHumidity(dto, th);
-                    logger.debug("Update of temperature and humidity is done");
-                    return dto;
-                }).thenCompose(v -> {
-                    CompletableFuture<@Nullable QuantityType<Dimensionless>> resultHandler = new CompletableFuture<>();
-                    logger.debug("Execute GetBatteryCommand");
-                    executeCommand(device, encryptionHelper, characteristic, new GetBatteryCommand(resultHandler));
-                    logger.debug("Executed GetBatteryCommand");
-                    return resultHandler;
-                }).handle((dto, th) -> {
-                    logger.debug("Received battery data: {}", dto);
-                    updateBattery(dto, th);
-                    logger.debug("Update of battery data is done");
-                    return dto;
-                });
+                CompletableFuture<?> future = startFuture.thenCompose(v -> device.enableNotifications(characteristic))
+                        .thenCompose(v -> {
+                            CompletableFuture<@Nullable TemHumDTO> resultHandler = new CompletableFuture<>();
+                            logger.debug("Execute GetTemHumCommand");
+                            executeCommand(device, encryptionHelper, characteristic,
+                                    new GetTemHumCommand(resultHandler));
+                            logger.debug("Executed GetTemHumCommand");
+                            return resultHandler.handle((dto, th) -> {
+                                logger.debug("Received temperature and humidity data: {}", dto, th);
+                                updateTemperatureAndHumidity(dto, th);
+                                logger.debug("Update of temperature and humidity is done");
+                                return dto;
+                            });
+                        }).thenCompose(v -> {
+                            CompletableFuture<@Nullable QuantityType<Dimensionless>> resultHandler = new CompletableFuture<>();
+                            logger.debug("Execute GetBatteryCommand");
+                            executeCommand(device, encryptionHelper, characteristic,
+                                    new GetBatteryCommand(resultHandler));
+                            logger.debug("Executed GetBatteryCommand");
+                            return resultHandler.handle((dto, th) -> {
+                                logger.debug("Received battery data: {}", dto);
+                                updateBattery(dto, th);
+                                logger.debug("Update of battery data is done");
+                                return dto;
+                            });
+                        });
                 if (temCali != null) {
                     future = future.thenCompose(v -> {
                         CompletableFuture<@Nullable QuantityType<Temperature>> caliFuture = new CompletableFuture<>();
@@ -227,11 +233,20 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
                     logger.debug("Executed disableNotifications");
                     return result;
                 });
-                future.get();
+                refreshFuture = future;
+                if (!scanJob.isCancelled()) { // scanJob#isCanceled indicates that the device is disposed
+                    startFuture.complete(null);
+                    future.get();
+                    refreshFuture = null;
+                }
                 logger.debug("Refresh done");
             }
         } catch (InterruptedException | ExecutionException | TimeoutException ex) {
             logger.warn("Failed to run refresh", ex);
+            if (ex instanceof InterruptedException) {
+                // Restore interrupted flag
+                Thread.currentThread().interrupt();
+            }
         } finally {
             if (device != null && device.getConnectionState() == ConnectionState.CONNECTED) {
                 device.disconnect();
@@ -279,6 +294,10 @@ public class GoveeHygrometerHandler extends BeaconBluetoothHandler {
     @Override
     public void dispose() {
         scanJob.cancel(false);
+        CompletableFuture refreshFuture = this.refreshFuture;
+        if (refreshFuture != null) {
+            refreshFuture.cancel(false);
+        }
         super.dispose();
     }
 
