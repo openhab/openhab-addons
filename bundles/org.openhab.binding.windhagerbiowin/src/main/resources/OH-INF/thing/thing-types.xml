@@ -6,12 +6,6 @@
 
 	<!-- BioWin Thing Type -->
 	<thing-type id="biowin">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="WindhagerbiowinBridge" />
-			</supported-bridge-type-refs>
-		-->
-
 		<label>Windhagerbiowin Binding Thing</label>
 		<description>BioWin thing for Windhagerbiowin Binding</description>
 
