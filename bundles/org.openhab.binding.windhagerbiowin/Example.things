@@ -1,4 +1,4 @@
-Thing windhagerbiowin:sample:myheater [
+Thing windhagerbiowin:biowin:myheater [
   hostname="192.168.1.50",
   port=80,
   username="admin",

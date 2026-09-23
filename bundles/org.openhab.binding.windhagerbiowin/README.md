@@ -14,7 +14,7 @@ _Which different types are supported, which models were tested etc.?_
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
 - `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+- `biowin`: BioWin heater Thing with the ThingTypeUID `biowin`
 
 ## Discovery
 
@@ -47,7 +47,7 @@ _This should be mainly about its mandatory and optional configuration parameters
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-### `sample` Thing Configuration
+### `BioWin` Thing Configuration
 
 | Name     | Type    | Description                                        | Default | Required | Advanced |
 |----------|---------|----------------------------------------------------|---------|----------|----------|

@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
+	<!-- BioWin Thing Type -->
+	<thing-type id="biowin">
 		<!-- Comment this in for Things which need a Bridge to function.
 			<supported-bridge-type-refs>
 			<bridge-type-ref id="WindhagerbiowinBridge" />
@@ -13,7 +13,7 @@
 		-->
 
 		<label>Windhagerbiowin Binding Thing</label>
-		<description>Sample thing for Windhagerbiowin Binding</description>
+		<description>BioWin thing for Windhagerbiowin Binding</description>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
