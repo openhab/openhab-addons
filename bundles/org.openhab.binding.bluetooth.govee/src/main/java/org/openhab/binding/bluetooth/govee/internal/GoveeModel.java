@@ -45,7 +45,7 @@ public enum GoveeModel {
 
     private static final byte[] SCAN_HEADER = { (byte) 0x88, (byte) 0xEC };
     private static final byte[] SCAN_HEADER2 = { (byte) 0x01, (byte) 0x00 };
-    private static final byte[] SCAN_HEADER3 = { (byte) 0x88, (byte) 0x01 };
+    private static final byte[] SCAN_HEADER3 = { (byte) 0x01, (byte) 0x88 };
 
     private final ThingTypeUID thingTypeUID;
     private final String label;

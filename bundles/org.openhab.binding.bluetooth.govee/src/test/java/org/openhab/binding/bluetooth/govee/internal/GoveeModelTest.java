@@ -141,7 +141,7 @@ class GoveeModelTest {
     void testDecodeManufacturerDataH5179_2() {
         // Advertising data from
         // https://github.com/Bluetooth-Devices/govee-ble/blob/20cbc524d6addc3734e4fa9ea7ec6ed1a434d255/tests/test_parser.py
-        byte[] testData = new byte[] { (byte) 0x88, 0x01, (byte) 0xec, 0x00, 0x01, 0x01, 0x0A, 0x0A, (byte) 0xa4, 0x06,
+        byte[] testData = new byte[] { 0x01, (byte) 0x88, (byte) 0xec, 0x00, 0x01, 0x01, 0x0A, 0x0A, (byte) 0xa4, 0x06,
                 0x64 };
         GoveeModel.ManufacturerDataSet manufacturerData = GoveeModel.H5179.parseManufacturerData(testData);
         assertMatches(new ManufacturerDataSet((short) 2570, 1700, 100), manufacturerData);
