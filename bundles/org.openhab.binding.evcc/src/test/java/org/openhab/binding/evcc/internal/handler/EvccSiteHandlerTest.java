@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +35,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.State;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -53,6 +56,7 @@ public class EvccSiteHandlerTest {
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
     private boolean updateStateCalled = false;
     private final Set<String> linkedChannelIdsChecked = new HashSet<>();
+    private final List<String> requestedUrls = new ArrayList<>();
 
     private EvccSiteHandler createHandler() {
         return new EvccSiteHandler(thing, channelTypeRegistry) {
@@ -91,6 +95,11 @@ public class EvccSiteHandlerTest {
                 linkedChannelIdsChecked.add(channelUID.getId());
                 return true;
             }
+
+            @Override
+            protected void performApiRequest(String url, String method, JsonElement payload) {
+                requestedUrls.add(url);
+            }
         };
     }
 
@@ -103,6 +112,7 @@ public class EvccSiteHandlerTest {
         lastThingStatus = ThingStatus.UNKNOWN;
         updateStateCalled = false;
         linkedChannelIdsChecked.clear();
+        requestedUrls.clear();
     }
 
     @Test
@@ -138,5 +148,18 @@ public class EvccSiteHandlerTest {
         assertSame(true, linkedChannelIdsChecked.contains("site-grid-energy"));
         assertSame(false, linkedChannelIdsChecked.contains("gridPower"));
         assertSame(false, linkedChannelIdsChecked.contains("gridEnergy"));
+    }
+
+    @Test
+    public void commandsUseSiteApiPaths() {
+        handler.endpoint = "http://evcc/api";
+
+        handler.handleCommand(new ChannelUID("test:thing:uid:site-battery-priority"),
+                org.openhab.core.library.types.OnOffType.ON);
+        handler.handleCommand(new ChannelUID("test:thing:uid:site-battery-soc-limit"),
+                new org.openhab.core.library.types.DecimalType(80));
+
+        assertEquals(List.of("http://evcc/api/batterypriority/true", "http://evcc/api/batterysoclimit/80"),
+                requestedUrls);
     }
 }

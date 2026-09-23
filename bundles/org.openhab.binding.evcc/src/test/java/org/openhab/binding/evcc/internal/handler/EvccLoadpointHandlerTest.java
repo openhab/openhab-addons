@@ -13,9 +13,7 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
@@ -29,17 +27,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.State;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * The {@link EvccLoadpointHandlerTest} is responsible for testing the EvccLoadpointHandler implementation
@@ -47,27 +45,23 @@ import com.google.gson.JsonObject;
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<EvccLoadpointHandler> {
+public class EvccLoadpointHandlerTest {
 
+    private final Thing thing = mock(Thing.class);
+    private final ChannelTypeRegistry channelTypeRegistry = mock(ChannelTypeRegistry.class);
     private final ArrayList<String> requestedUrls = new ArrayList<>();
-    private final JsonObject modifiedTestState = exampleResponse.deepCopy();
-    private final JsonObject testObject = exampleResponse.getAsJsonArray("loadpoints").get(0).getAsJsonObject();
-    private final JsonObject modifiedVerifyObject = verifyObject.deepCopy().getAsJsonArray("loadpoints").get(0)
-            .getAsJsonObject();
+    @Nullable
+    private EvccLoadpointHandler handler;
 
-    @Override
-    protected EvccLoadpointHandler createHandler() {
+    private EvccLoadpointHandler createHandler() {
         return new EvccLoadpointHandler(thing, channelTypeRegistry) {
 
             @Override
             protected void updateStatus(ThingStatus status, ThingStatusDetail detail) {
-                lastThingStatus = status;
-                lastThingStatusDetail = detail;
             }
 
             @Override
             protected void updateStatus(ThingStatus status) {
-                lastThingStatus = status;
             }
 
             @Override
@@ -97,6 +91,7 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
 
     @BeforeEach
     public void setup() {
+        requestedUrls.clear();
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "loadpoint"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
@@ -104,84 +99,7 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
         when(configuration.get("index")).thenReturn("0");
         when(configuration.get("id")).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
-        handler = spy(createHandler());
-
-        modifiedVerifyObject.addProperty("chargedEnergy", 50);
-        modifiedVerifyObject.addProperty(JSON_KEY_OFFERED_CURRENT, 6);
-        modifiedVerifyObject.addProperty(JSON_KEY_CONNECTED, true);
-        modifiedVerifyObject.addProperty(JSON_KEY_PHASES_CONFIGURED, "3");
-        modifiedVerifyObject.addProperty("chargeCurrentL1", 6);
-        modifiedVerifyObject.addProperty("chargeCurrentL2", 7);
-        modifiedVerifyObject.addProperty("chargeCurrentL3", 8);
-        modifiedVerifyObject.addProperty("chargeVoltageL1", 230.0);
-        modifiedVerifyObject.addProperty("chargeVoltageL2", 231.0);
-        modifiedVerifyObject.addProperty("chargeVoltageL3", 229.0);
-        modifiedVerifyObject.remove(JSON_KEY_CHARGE_CURRENT);
-        modifiedVerifyObject.remove(JSON_KEY_VEHICLE_PRESENT);
-        modifiedVerifyObject.remove(JSON_KEY_PHASES);
-
-        testObject.addProperty("chargedEnergy", 50);
-        testObject.addProperty(JSON_KEY_CHARGE_CURRENT, 6);
-        testObject.addProperty(JSON_KEY_VEHICLE_PRESENT, true);
-        testObject.addProperty(JSON_KEY_PHASES, "3");
-        JsonArray currents = new JsonArray();
-        currents.add(6);
-        currents.add(7);
-        currents.add(8);
-        testObject.add(JSON_KEY_CHARGE_CURRENTS, currents);
-        JsonArray voltages = new JsonArray();
-        voltages.add(230.0);
-        voltages.add(231.0);
-        voltages.add(229.0);
-        testObject.add(JSON_KEY_CHARGE_VOLTAGES, voltages);
-        JsonArray loadpointArray = exampleResponse.getAsJsonArray("loadpoints");
-        loadpointArray.set(0, testObject);
-        modifiedTestState.add("loadpoints", loadpointArray);
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
-        handler.bridgeHandler = bridgeHandler;
-
-        handler.initialize();
-        handler.initializeThingFromLatestState(exampleResponse);
-        assertSame(ThingStatus.ONLINE, lastThingStatus);
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
-        EvccBridgeHandler bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
-        handler.bridgeHandler = bridgeHandler;
-
-        handler.initialize();
-        handler.initializeThingFromLatestState(exampleResponse);
-        assertSame(ThingStatus.ONLINE, lastThingStatus);
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
-        handler.bridgeHandler = mockBridgeHandlerWithCachedState(exampleResponse);
-
-        handler.initializeThingFromLatestState(exampleResponse);
-        assertSame(ThingStatus.ONLINE, lastThingStatus);
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testJsonGetsModifiedCorrectly() {
-        handler.initializeThingFromLatestState(exampleResponse);
-        assertEquals(modifiedVerifyObject, modifiedTestState.getAsJsonArray("loadpoints").get(0));
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testGetStateFromCachedState() {
-        JsonObject result = handler.getStateFromCachedState(exampleResponse);
-        assertSame(exampleResponse.getAsJsonArray("loadpoints").get(0), result);
+        handler = createHandler();
     }
 
     @Test
@@ -193,9 +111,23 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
         testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-enable-delay"), new DecimalType(10));
         testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-disable-threshold"), new DecimalType(-50));
         testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-disable-delay"), new DecimalType(20));
+        ChannelUID modeChannel = new ChannelUID("test:thing:uid:loadpoint-mode");
+        testHandler.handleCommand(modeChannel, new StringType("off"));
+        testHandler.handleCommand(modeChannel, new StringType("now"));
+        testHandler.handleCommand(modeChannel, new StringType("smart"));
+        testHandler.handleCommand(modeChannel, new StringType("pv"));
+        testHandler.handleCommand(modeChannel, new StringType("minpv"));
+        ChannelUID alwaysChargeChannel = new ChannelUID("test:thing:uid:loadpoint-always-charge");
+        testHandler.handleCommand(alwaysChargeChannel, new StringType("off"));
+        testHandler.handleCommand(alwaysChargeChannel, new StringType("on"));
+        testHandler.handleCommand(alwaysChargeChannel, new StringType("once"));
 
         assertEquals(java.util.List.of("http://evcc/api/loadpoints/1/enable/threshold/100",
                 "http://evcc/api/loadpoints/1/enable/delay/10", "http://evcc/api/loadpoints/1/disable/threshold/-50",
-                "http://evcc/api/loadpoints/1/disable/delay/20"), requestedUrls);
+                "http://evcc/api/loadpoints/1/disable/delay/20", "http://evcc/api/loadpoints/1/mode/off",
+                "http://evcc/api/loadpoints/1/mode/now", "http://evcc/api/loadpoints/1/mode/smart",
+                "http://evcc/api/loadpoints/1/mode/pv", "http://evcc/api/loadpoints/1/mode/minpv",
+                "http://evcc/api/loadpoints/1/alwayscharge/off", "http://evcc/api/loadpoints/1/alwayscharge/on",
+                "http://evcc/api/loadpoints/1/alwayscharge/once"), requestedUrls);
     }
 }

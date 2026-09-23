@@ -142,6 +142,8 @@ Number:EnergyPrice       Evcc_Forecast_Grid                      "Grid Forecast"
 
 Note: The `heating` Thing is derived from the `loadpoint` Thing and inherits almost all of its channels. Only the temperature‑related channels differ, which is why the example uses different demo UIDs.
 
+The Loadpoint `Mode` channel supports `off`, `now`, `smart`, `pv`, and `minpv`. `smart` is the current evcc mode name introduced by the mode redesign. The legacy `pv` and `minpv` values remain available for compatibility with older evcc instances and are deprecated by newer evcc versions; use `smart` for new configurations where supported. The separate `Always Charge` channel is added only when the evcc state exposes `alwaysCharge` (evcc 0.316.0 and newer), and supports `off`, `on`, and `once` through the new `alwayscharge` API endpoint. On newer evcc versions, it represents the former `minpv` behavior.
+
 ```java
 Number:Temperature       Evcc_Loadpoint_Effective_Limit_Temperature        "Effective Charging Limit Temperature [%s]" { channel="evcc:battery:demo-server:demo-heating:loadpoint-effective-limit-temperature" }
 Number:Temperature       Evcc_Loadpoint_Effective_Plan_Temperature         "Effective Plan Limit Temperature [%s]"     { channel="evcc:battery:demo-server:demo-heating:loadpoint-effective-plan-temperature" }
