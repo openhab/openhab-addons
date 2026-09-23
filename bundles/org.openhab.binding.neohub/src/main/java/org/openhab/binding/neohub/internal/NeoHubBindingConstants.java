@@ -208,4 +208,7 @@ public class NeoHubBindingConstants {
      */
     public static final String HM_GET_COMMAND_QUEUE = "hm_get_command_queue";
     public static final String HM_SET_COMMAND_RESPONSE = "hm_set_command_response";
+
+    // i18n text keys
+    public static final String TEXT_ONLINE_BATTERY_LOW = "@text/online.battery-low";
 }
