@@ -17,10 +17,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
@@ -86,8 +86,9 @@ public class FcmRegistrar {
 
         try {
             Request request = httpClient.newRequest(URL_CHECKIN).method(HttpMethod.POST)
-                    .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
-                    .content(new StringContentProvider(checkinPayload));
+                    .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+                    .headers(h -> h.add("Content-Type", "application/json"))
+                    .body(new StringRequestContent(checkinPayload));
 
             ContentResponse response = request.send();
 
@@ -127,8 +128,9 @@ public class FcmRegistrar {
 
         try {
             Request request = httpClient.newRequest(URL_FIS).method(HttpMethod.POST)
-                    .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS).header("Content-Type", "application/json")
-                    .header("x-goog-api-key", FCM_API_KEY).content(new StringContentProvider(fisPayload));
+                    .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+                    .headers(h -> h.add("Content-Type", "application/json").add("x-goog-api-key", FCM_API_KEY))
+                    .body(new StringRequestContent(fisPayload));
 
             ContentResponse response = request.send();
 
@@ -165,10 +167,11 @@ public class FcmRegistrar {
         try {
             Request request = httpClient.newRequest(URL_REGISTER).method(HttpMethod.POST)
                     .timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
-                    .header("Authorization", "AidLogin " + androidId + ":" + securityToken)
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .header("X-Goog-Firebase-Installations-Auth", fisToken).header("app", "com.chrome.linux")
-                    .header("gcm_ver", "221440039").content(new StringContentProvider(payloadBuilder.toString()));
+                    .headers(h -> h.add("Authorization", "AidLogin " + androidId + ":" + securityToken)
+                            .add("Content-Type", "application/x-www-form-urlencoded")
+                            .add("X-Goog-Firebase-Installations-Auth", fisToken).add("app", "com.chrome.linux")
+                            .add("gcm_ver", "221440039"))
+                    .body(new StringRequestContent(payloadBuilder.toString()));
 
             ContentResponse response = request.send();
             if (response.getStatus() != HttpStatus.OK_200) {

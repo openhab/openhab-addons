@@ -92,7 +92,7 @@ public class EmbyHandlerFactory extends BaseThingHandlerFactory {
         // Configure and start the WebSocket client
         WebSocketClient client = this.webSocketClient;
         // Set max text message size to 512KB to handle large Emby session messages
-        client.getPolicy().setMaxTextMessageSize(512 * 1024);
+        client.setMaxTextMessageSize(512 * 1024);
         try {
             client.start();
         } catch (Exception e) {

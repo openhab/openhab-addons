@@ -31,9 +31,9 @@ import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.autelis.internal.AutelisBindingConstants;
@@ -469,7 +469,7 @@ public class AutelisHandler extends BaseThingHandler {
         String getURL = url + (url.contains("?") ? "&" : "?") + "timestamp=" + System.currentTimeMillis();
         logger.trace("Getting URL {} ", getURL);
         Request request = client.newRequest(getURL).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        request.header(HttpHeader.AUTHORIZATION, basicAuthentication);
+        request.headers(headers -> headers.put(HttpHeader.AUTHORIZATION, basicAuthentication));
         try {
             ContentResponse response = request.send();
             int statusCode = response.getStatus();

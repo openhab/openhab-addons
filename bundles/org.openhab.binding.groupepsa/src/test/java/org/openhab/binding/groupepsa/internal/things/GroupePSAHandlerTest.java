@@ -21,9 +21,8 @@ import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpContentResponse;
-import org.eclipse.jetty.client.HttpResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,9 +75,11 @@ public class GroupePSAHandlerTest {
         }
     }
 
-    static HttpContentResponse createHttpResponse(String file) throws GroupePSACommunicationException {
-        return new HttpContentResponse(new HttpResponse(null, null).status(200),
-                getResourceFileAsString("/" + file).getBytes(), "json", "UTF-8");
+    static ContentResponse createHttpResponse(String file) throws GroupePSACommunicationException {
+        ContentResponse response = mock(ContentResponse.class);
+        doReturn(200).when(response).getStatus();
+        doReturn(getResourceFileAsString("/" + file)).when(response).getContentAsString();
+        return response;
     }
 
     @BeforeEach

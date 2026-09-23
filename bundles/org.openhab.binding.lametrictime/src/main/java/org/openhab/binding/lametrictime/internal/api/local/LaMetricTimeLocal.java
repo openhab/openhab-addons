@@ -15,8 +15,6 @@ package org.openhab.binding.lametrictime.internal.api.local;
 import java.util.List;
 import java.util.SortedMap;
 
-import javax.ws.rs.client.ClientBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.api.local.dto.Api;
@@ -30,6 +28,8 @@ import org.openhab.binding.lametrictime.internal.api.local.dto.UpdateAction;
 import org.openhab.binding.lametrictime.internal.api.local.dto.WidgetUpdates;
 import org.openhab.binding.lametrictime.internal.api.local.dto.Wifi;
 import org.openhab.binding.lametrictime.internal.api.local.impl.LaMetricTimeLocalImpl;
+
+import jakarta.ws.rs.client.ClientBuilder;
 
 /**
  * Interface for local device access.

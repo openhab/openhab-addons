@@ -14,13 +14,13 @@ package org.openhab.io.neeo.internal.servletservices;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * The default implementation of {@link ServletService} that simply does nothing (allowing subclasses to override
@@ -44,8 +44,8 @@ class DefaultServletService implements ServletService {
     /**
      * Overridden to simply do nothing
      *
-     * @see org.openhab.io.neeo.internal.servletservices.ServletService#handleGet(javax.servlet.http.HttpServletRequest,
-     *      java.lang.String[], javax.servlet.http.HttpServletResponse)
+     * @see org.openhab.io.neeo.internal.servletservices.ServletService#handleGet(jakarta.servlet.http.HttpServletRequest,
+     *      java.lang.String[], jakarta.servlet.http.HttpServletResponse)
      */
     @Override
     public void handleGet(HttpServletRequest req, String[] paths, HttpServletResponse resp) throws IOException {
@@ -55,8 +55,8 @@ class DefaultServletService implements ServletService {
      * Overridden to simply do nothing
      *
      * @see
-     *      org.openhab.io.neeo.internal.servletservices.ServletService#handlePost(javax.servlet.http.HttpServletRequest,
-     *      java.lang.String[], javax.servlet.http.HttpServletResponse)
+     *      org.openhab.io.neeo.internal.servletservices.ServletService#handlePost(jakarta.servlet.http.HttpServletRequest,
+     *      java.lang.String[], jakarta.servlet.http.HttpServletResponse)
      */
     @Override
     public void handlePost(HttpServletRequest req, String[] paths, HttpServletResponse resp) throws IOException {

@@ -15,8 +15,6 @@ package org.openhab.binding.mielecloud.internal.config.servlet;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
@@ -27,6 +25,8 @@ import org.openhab.binding.mielecloud.internal.config.exception.OngoingAuthoriza
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Servlet gathers and processes required information to perform an authorization with the Miele cloud service

@@ -34,10 +34,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.enturno.internal.EnturNoConfiguration;
 import org.openhab.binding.enturno.internal.EnturNoHandler;
@@ -131,9 +131,11 @@ public class EnturNoConnection {
             Request request = httpClient.newRequest(url);
             request.method(POST);
             request.timeout(10, TimeUnit.SECONDS);
-            request.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE);
-            request.header(REQUIRED_CLIENT_NAME_HEADER, REQUIRED_CLIENT_NAME);
-            request.content(new StringContentProvider(getRequestBody(params)));
+            request.headers(h -> {
+                h.add(HttpHeader.CONTENT_TYPE, CONTENT_TYPE);
+                h.add(REQUIRED_CLIENT_NAME_HEADER, REQUIRED_CLIENT_NAME);
+            });
+            request.body(new StringRequestContent(getRequestBody(params)));
 
             logger.trace("Request body: {}", getRequestBody(params));
 

@@ -29,9 +29,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -188,19 +188,22 @@ public class CommonSetup {
     }
 
     public ContentResponse sendPost(String content) throws InterruptedException, TimeoutException, ExecutionException {
-        return client.newRequest(basePath).method(HttpMethod.POST).header(HttpHeader.CONTENT_TYPE, "application/json")
-                .content(new StringContentProvider(content)).send();
+        return client.newRequest(basePath).method(HttpMethod.POST)
+                .headers(h -> h.put(HttpHeader.CONTENT_TYPE, "application/json"))
+                .body(new StringRequestContent(content)).send();
     }
 
     public ContentResponse sendPost(String path, String content)
             throws InterruptedException, TimeoutException, ExecutionException {
         return client.newRequest(basePath + path).method(HttpMethod.POST)
-                .header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(content)).send();
+                .headers(h -> h.put(HttpHeader.CONTENT_TYPE, "application/json"))
+                .body(new StringRequestContent(content)).send();
     }
 
     public ContentResponse sendPut(String path, String content)
             throws InterruptedException, TimeoutException, ExecutionException {
         return client.newRequest(basePath + path).method(HttpMethod.PUT)
-                .header(HttpHeader.CONTENT_TYPE, "application/json").content(new StringContentProvider(content)).send();
+                .headers(h -> h.put(HttpHeader.CONTENT_TYPE, "application/json"))
+                .body(new StringRequestContent(content)).send();
     }
 }

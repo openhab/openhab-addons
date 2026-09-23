@@ -37,11 +37,11 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.Authentication;
+import org.eclipse.jetty.client.BytesRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.client.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.tr064.internal.Tr064CommunicationException;
@@ -120,11 +120,11 @@ public class SOAPConnector {
         Request request = httpClient.newRequest(endpointBaseURL + soapRequest.service.getControlURL())
                 .method(HttpMethod.POST);
         soapMessage.getMimeHeaders().getAllHeaders()
-                .forEachRemaining(header -> request.header(header.getName(), header.getValue()));
+                .forEachRemaining(header -> request.headers(h -> h.add(header.getName(), header.getValue())));
         try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             soapMessage.writeTo(os);
             byte[] content = os.toByteArray();
-            request.content(new BytesContentProvider(content));
+            request.body(new BytesRequestContent(content));
         }
 
         return request;
@@ -171,10 +171,6 @@ public class SOAPConnector {
     public synchronized SOAPMessage doSOAPRequestUncached(SOAPRequest soapRequest) throws Tr064CommunicationException {
         try {
             Request request = prepareSOAPRequest(soapRequest).timeout(timeout, TimeUnit.SECONDS);
-            if (logger.isTraceEnabled()) {
-                request.getContent().forEach(buffer -> logger.trace("Request: {}", new String(buffer.array())));
-            }
-
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 // retry once if authentication expired

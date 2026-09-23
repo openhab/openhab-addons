@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
@@ -36,6 +34,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.SystemManager.ModelInfo;
 import com.google.gson.annotations.SerializedName;
 
 import inet.ipaddr.mac.MACAddress;
+import jakarta.ws.rs.core.UriBuilder;
 
 /**
  * The {@link PlayerManager} is the Java class used to handle api requests related to player

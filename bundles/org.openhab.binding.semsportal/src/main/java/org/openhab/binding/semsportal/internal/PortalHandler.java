@@ -12,20 +12,17 @@
  */
 package org.openhab.binding.semsportal.internal;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.core.MediaType;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.semsportal.internal.dto.BaseResponse;
 import org.openhab.binding.semsportal.internal.dto.LoginRequest;
@@ -49,6 +46,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * The {@link PortalHandler} is responsible for handling commands, which are
@@ -149,12 +148,12 @@ public class PortalHandler extends BaseBridgeHandler {
 
     private @Nullable String sendPost(String url, String payload) {
         try {
-            Request request = httpClient.POST(url).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
-                    .header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .header(HTTP_HEADER_TOKEN, gson.toJson(sessionToken))
-                    .content(new StringContentProvider(payload, StandardCharsets.UTF_8.name()),
-                            MediaType.APPLICATION_JSON);
-            request.getHeaders().remove(HttpHeader.ACCEPT_ENCODING);
+            final String tokenHeader = gson.toJson(sessionToken);
+            Request request = httpClient.POST(url).timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).headers(h -> {
+                h.add(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+                h.add(HTTP_HEADER_TOKEN, tokenHeader);
+            }).body(new StringRequestContent(MediaType.APPLICATION_JSON, payload));
+            request.headers(f -> f.remove(HttpHeader.ACCEPT_ENCODING));
             ContentResponse response = request.send();
             logger.trace("received response: {}", response.getContentAsString());
             return response.getContentAsString();

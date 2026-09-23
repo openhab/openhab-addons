@@ -23,11 +23,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.Authentication;
+import org.eclipse.jetty.client.AuthenticationStore;
+import org.eclipse.jetty.client.DigestAuthentication;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.util.DigestAuthentication;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -123,7 +123,7 @@ public abstract class WlanThermoHandler extends BaseThingHandler {
     protected boolean doPost(String endpoint, String json) throws InterruptedException {
         try {
             URI uri = config.getUri(endpoint);
-            int status = httpClient.POST(uri).content(new StringContentProvider(json), "application/json")
+            int status = httpClient.POST(uri).body(new StringRequestContent("application/json", json))
                     .timeout(5, TimeUnit.SECONDS).send().getStatus();
             if (status == 401) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

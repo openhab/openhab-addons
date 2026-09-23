@@ -33,10 +33,10 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.util.BasicAuthentication;
-import org.eclipse.jetty.client.util.DigestAuthentication;
+import org.eclipse.jetty.client.Authentication;
+import org.eclipse.jetty.client.AuthenticationStore;
+import org.eclipse.jetty.client.BasicAuthentication;
+import org.eclipse.jetty.client.DigestAuthentication;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
 import org.openhab.binding.http.internal.config.HttpThingConfig;
 import org.openhab.binding.http.internal.http.HttpAuthException;
@@ -377,7 +377,7 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
             rateLimitedHttpClient.newPriorityRequest(uri, config.commandMethod, command, config.contentType)
                     .thenAccept(request -> {
                         request.timeout(config.timeout, TimeUnit.MILLISECONDS);
-                        config.getHeaders().forEach(request::header);
+                        request.headers(h -> config.getHeaders().forEach(h::add));
 
                         CompletableFuture<@Nullable ChannelHandlerContent> responseContentFuture = new CompletableFuture<>();
                         responseContentFuture.exceptionally(t -> {

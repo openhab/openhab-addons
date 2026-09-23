@@ -17,10 +17,10 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaProtocolVersi
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags;
+
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * A helper class for sending {@link EmotivaSubscriptionDTO} messages.

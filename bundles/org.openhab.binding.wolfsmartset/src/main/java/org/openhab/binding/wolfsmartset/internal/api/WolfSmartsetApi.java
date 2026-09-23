@@ -35,11 +35,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.ContentResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
@@ -421,9 +421,9 @@ public class WolfSmartsetApi {
             Request request = httpClient.newRequest(requestUrl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
             // using HTTP GET with ContentType application/x-www-form-urlencoded like the iOS App does
-            request.header(HttpHeader.AUTHORIZATION, serviceToken);
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION, serviceToken));
             request.method(HttpMethod.GET);
-            request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"));
 
             for (Entry<String, String> entry : params.entrySet()) {
                 logger.debug("Send request param: {}={} to {}", entry.getKey(), entry.getValue().toString(), url);
@@ -442,7 +442,7 @@ public class WolfSmartsetApi {
             loginFailedCounterCheck();
 
             var request = createPOSTRequest(url, json);
-            request.header(HttpHeader.AUTHORIZATION, serviceToken);
+            request.headers(h -> h.add(HttpHeader.AUTHORIZATION, serviceToken));
             return request;
         });
     }
@@ -451,11 +451,11 @@ public class WolfSmartsetApi {
         var requestUrl = WOLF_API_URL + url;
         Request request = httpClient.newRequest(requestUrl).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
-        request.header(HttpHeader.ACCEPT, "application/json");
-        request.header(HttpHeader.CONTENT_TYPE, "application/json");
+        request.headers(h -> h.add(HttpHeader.ACCEPT, "application/json"));
+        request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/json"));
         request.method(HttpMethod.POST);
 
-        request.content(new StringContentProvider(json.toString()), "application/json");
+        request.body(new StringRequestContent("application/json", json.toString()));
         return request;
     }
 
@@ -545,14 +545,14 @@ public class WolfSmartsetApi {
 
             String url = WOLF_API_URL + "connect/token";
             Request request = httpClient.POST(url).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+            request.headers(h -> h.add(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded"));
 
             // Building Request body exacly the way the iOS App did this
             var encodedUser = URLEncoder.encode(username, StandardCharsets.UTF_8);
             var encodedPassword = URLEncoder.encode(password, StandardCharsets.UTF_8);
             var authRequestBody = "grant_type=password&username=" + encodedUser + "&password=" + encodedPassword;
 
-            request.content(new StringContentProvider("application/x-www-form-urlencoded", authRequestBody,
+            request.body(new StringRequestContent("application/x-www-form-urlencoded", authRequestBody,
                     StandardCharsets.UTF_8));
 
             final ContentResponse response;
