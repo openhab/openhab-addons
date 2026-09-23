@@ -24,12 +24,12 @@ import org.eclipse.jdt.annotation.Nullable;
 public class BluelinkAccountConfiguration {
 
     /**
-     * Bluelink account username (email). Not required for EU region when a refresh token is used.
+     * Bluelink account username (email).
      */
     public @Nullable String username;
 
     /**
-     * Bluelink account password (EU region: password or refresh token).
+     * Bluelink account password.
      */
     public @Nullable String password;
 

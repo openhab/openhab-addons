@@ -29,8 +29,8 @@ registered to your account.
 
 | Parameter  | Required | Description                                                                          |
 |------------|----------|--------------------------------------------------------------------------------------|
-| `username` | No       | Bluelink account email (EU: not required with a refresh token)                       |
-| `password` | Yes      | Bluelink account password (EU: password or refresh token)                            |
+| `username` | Yes      | Bluelink account email                                                               |
+| `password` | Yes      | Bluelink account password                                                            |
 | `pin`      | No       | Bluelink service PIN (required for lock/unlock commands, not required for EU region) |
 | `region`   | No       | Country code (`US`, `CA`, or `EU`), autodetected if absent                           |
 | `brand`    | No       | One of `hyundai`, `kia`, `genesis` (required for CA and EU)                          |
@@ -38,9 +38,8 @@ registered to your account.
 #### EU Region Notes
 
 For the EU region, log in with your account email and password.
-Alternatively, put an OAuth2 refresh token in the `password` field. `username` may then be left empty.
-A refresh token is typically valid for 180 days, after which you will need to provide a new one.
-The following script may be used to obtain a refresh token: [RustyDust/bluelink_refresh_token](https://github.com/RustyDust/bluelink_refresh_token).
+Refresh tokens are no longer supported, as new ones cannot be obtained since August 2026.
+If you used a refresh token before, enter your account email and password instead.
 
 Both legacy and newer CCS2/CCU-based vehicles are supported in the EU region.
 

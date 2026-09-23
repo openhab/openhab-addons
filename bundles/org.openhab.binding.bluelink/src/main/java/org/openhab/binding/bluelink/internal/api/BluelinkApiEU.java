@@ -31,7 +31,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import javax.measure.quantity.Temperature;
 
@@ -47,7 +46,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
 import org.openhab.binding.bluelink.internal.dto.DrivingRange;
 import org.openhab.binding.bluelink.internal.dto.IVehicleLocation;
-import org.openhab.binding.bluelink.internal.dto.TokenResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.AirTemperature;
 import org.openhab.binding.bluelink.internal.dto.eu.BaseResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.ChargeLimitsRequest;
@@ -86,8 +84,6 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     private static final DateTimeFormatter EU_DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     private static final String SPA_API_URL_V1 = "/api/v1/spa/";
     public static final long CCS2_FORCE_REFRESH_DELAY_SECONDS = 25;
-    // same heuristic as hyundai_kia_connect_api to tell a legacy refresh token from an account password
-    private static final Pattern REFRESH_TOKEN_PATTERN = Pattern.compile("[A-Z0-9]{48}");
 
     private final ScheduledExecutorService scheduler;
     private final BrandConfig brandConfig;
@@ -95,9 +91,6 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     private final Map<String, ScheduledFuture<?>> ccs2RefreshTasks = new ConcurrentHashMap<>();
     private @Nullable UUID deviceId;
 
-    /**
-     * @param password the account password, or a legacy refresh token (see {@link #isRefreshToken})
-     */
     public BluelinkApiEU(final HttpClient httpClient, final ScheduledExecutorService scheduler, final Brand brand,
             final Map<String, String> properties, final @Nullable String baseUrl,
             final TimeZoneProvider timeZoneProvider, final String username, final String password) {
@@ -108,8 +101,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             this.brandConfig = baseBrandConfig;
         } else {
             this.brandConfig = new BrandConfig(baseUrl, baseUrl, baseBrandConfig.ccspServiceId, baseBrandConfig.appId,
-                    baseBrandConfig.clientSecret, baseBrandConfig.cfb, baseBrandConfig.pushType,
-                    baseBrandConfig.cci.withApiBaseUrl(baseUrl));
+                    baseBrandConfig.cfb, baseBrandConfig.pushType, baseBrandConfig.cci.withApiBaseUrl(baseUrl));
         }
         this.cciAuthenticator = new CciAuthenticator(httpClient, timeZoneProvider, brandConfig.cci,
                 brandConfig.loginBaseUrl);
@@ -160,15 +152,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         return true;
     }
 
-    public static boolean isRefreshToken(final String password) {
-        return REFRESH_TOKEN_PATTERN.matcher(password).matches();
-    }
-
     private void authenticate() throws BluelinkApiException {
-        if (isRefreshToken(password)) {
-            authenticateWithRefreshToken();
-            return;
-        }
         if (cciAuthenticator.hasSession()) {
             try {
                 applyToken(cciAuthenticator.refresh());
@@ -180,16 +164,6 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             }
         }
         applyToken(cciAuthenticator.login(username, password));
-    }
-
-    private void authenticateWithRefreshToken() throws BluelinkApiException {
-        final String loginUrl = brandConfig.loginBaseUrl + "/auth/api/v2/user/oauth2/token";
-        final String formBody = "grant_type=refresh_token&refresh_token=" + password + "&client_id="
-                + brandConfig.ccspServiceId + "&client_secret=" + brandConfig.clientSecret;
-        final Request request = httpClient.newRequest(loginUrl).method(HttpMethod.POST)
-                .header(HttpHeader.USER_AGENT, HTTP_USER_AGENT)
-                .content(new StringContentProvider(formBody), "application/x-www-form-urlencoded");
-        doLogin(request, TokenResponse.class, t -> t);
     }
 
     private void applyToken(final CciAuthenticator.CcsToken token) {
@@ -597,27 +571,27 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
                 info.ccuCCS2ProtocolSupport() != 0);
     }
 
-    record BrandConfig(String apiBaseUrl, String loginBaseUrl, String ccspServiceId, String appId, String clientSecret,
-            String cfb, String pushType, CciAuthenticator.Config cci) {
+    record BrandConfig(String apiBaseUrl, String loginBaseUrl, String ccspServiceId, String appId, String cfb,
+            String pushType, CciAuthenticator.Config cci) {
 
         static BrandConfig forBrand(final Brand brand) {
             return switch (brand) {
-                case HYUNDAI -> new BrandConfig("https://prd.eu-ccapi.hyundai.com:8080",
-                        "https://idpconnect-eu.hyundai.com", "6d477c38-3ca4-4cf3-9557-2a1929a94654",
-                        "014d2225-8495-4735-812d-2616334fd15d", "KUy49XxPzLpLuoK0xhBC77W6VXhmtQR9iQhmIFjjoY4IpxsV",
-                        "RFtoRq/vDXJmRndoZaZQyfOot7OrIqGVFj96iY2WL3yyH5Z/pUvlUhqmCxD2t+D65SQ=", "GCM",
-                        new CciAuthenticator.Config("4f4953b5-02e1-4dbc-8599-87e983ee1be5",
-                                "https://oneapp.hyundai.com/redirect", "https://cci-api-eu.hyundai.com",
-                                "com.hyundai.oneapp.eu", "hyundai", "18.7", "APNS"));
+                case HYUNDAI ->
+                    new BrandConfig("https://prd.eu-ccapi.hyundai.com:8080", "https://idpconnect-eu.hyundai.com",
+                            "6d477c38-3ca4-4cf3-9557-2a1929a94654", "014d2225-8495-4735-812d-2616334fd15d",
+                            "RFtoRq/vDXJmRndoZaZQyfOot7OrIqGVFj96iY2WL3yyH5Z/pUvlUhqmCxD2t+D65SQ=", "GCM",
+                            new CciAuthenticator.Config("4f4953b5-02e1-4dbc-8599-87e983ee1be5",
+                                    "https://oneapp.hyundai.com/redirect", "https://cci-api-eu.hyundai.com",
+                                    "com.hyundai.oneapp.eu", "hyundai", "18.7", "APNS"));
                 case KIA -> new BrandConfig("https://prd.eu-ccapi.kia.com:8080", "https://idpconnect-eu.kia.com",
-                        "fdc85c00-0a2f-4c64-bcb4-2cfb1500730a", "a2b8469b-30a3-4361-8e13-6fceea8fbe74", "secret",
+                        "fdc85c00-0a2f-4c64-bcb4-2cfb1500730a", "a2b8469b-30a3-4361-8e13-6fceea8fbe74",
                         "wLTVxwidmH8CfJYBWSnHD6E0huk0ozdiuygB4hLkM5XCgzAL1Dk5sE36d/bx5PFMbZs=", "APNS",
                         new CciAuthenticator.Config("01b36c86-79e8-486c-8009-15f2ad88d670",
                                 "https://oneapp.kia.com/redirect", "https://cci-api-eu.kia.com", "com.kia.oneapp.eu",
                                 "kia", "27", "IOS_APPSTORE"));
                 case GENESIS ->
                     new BrandConfig("https://prd-eu-ccapi.genesis.com:8080", "https://idpconnect-eu.genesis.com",
-                            "3020afa2-30ff-412a-aa51-d28fbe901e10", "f11f2b86-e0e7-4851-90df-5600b01d8b70", "secret",
+                            "3020afa2-30ff-412a-aa51-d28fbe901e10", "f11f2b86-e0e7-4851-90df-5600b01d8b70",
                             "RFtoRq/vDXJmRndoZaZQyYo3/qFLtVReW8P7utRPcc0ZxOzOELm9mexvviBk/qqIp4A=", "GCM",
                             new CciAuthenticator.Config("50e3b8b0-ced5-43b7-8a42-f86ac92fe50e",
                                     "https://oneapp.genesis.com/redirect", "https://cci-api-eu.genesis.com",

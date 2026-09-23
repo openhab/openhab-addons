@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Pattern;
 
 import javax.measure.quantity.Temperature;
 
@@ -64,6 +65,9 @@ import org.slf4j.LoggerFactory;
 public class BluelinkAccountHandler extends BaseBridgeHandler {
 
     private static final Duration LOGIN_RETRY_DELAY = Duration.ofMinutes(5);
+    // EU refresh tokens (valid for 180 days) cannot be obtained since August 2026,
+    // so this hint can be removed once the last ones have expired in early 2027
+    private static final Pattern LEGACY_REFRESH_TOKEN = Pattern.compile("[A-Z0-9]{48}");
 
     private final Logger logger = LoggerFactory.getLogger(BluelinkAccountHandler.class);
 
@@ -116,23 +120,10 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         // Validate credentials
         final String username = config.username;
         final String password = config.password;
-        if (region == Region.EU) {
-            if (password == null || password.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/account-handler.initialize.missing-token");
-                return;
-            }
-            if (!BluelinkApiEU.isRefreshToken(password) && (username == null || username.isBlank())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/account-handler.initialize.missing-credentials");
-                return;
-            }
-        } else {
-            if (username == null || username.isBlank() || password == null || password.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/account-handler.initialize.missing-credentials");
-                return;
-            }
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/account-handler.initialize.missing-credentials");
+            return;
         }
 
         // Determine brand
@@ -156,13 +147,11 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
 
         // baseUrl override for tests
         final String baseUrl = config.apiBaseUrl;
-        // After validation, we know password is non-null for all regions, and username is non-null for US/CA
-        final String user = username != null ? username : "";
         final AbstractBluelinkApi<?> newApi = switch (region) {
-            case US -> new BluelinkApiUS(httpClient, baseUrl, timeZoneProvider, user, password, config.pin);
-            case CA -> new BluelinkApiCA(httpClient, brand, baseUrl, timeZoneProvider, user, password, config.pin);
+            case US -> new BluelinkApiUS(httpClient, baseUrl, timeZoneProvider, username, password, config.pin);
+            case CA -> new BluelinkApiCA(httpClient, brand, baseUrl, timeZoneProvider, username, password, config.pin);
             case EU -> new BluelinkApiEU(httpClient, scheduler, brand, editProperties(), baseUrl, timeZoneProvider,
-                    user, password);
+                    username, password);
         };
         logger.debug("Created API for region {} brand {}", region, brand);
         updateStatus(ThingStatus.UNKNOWN);
@@ -206,13 +195,22 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                 final ThingStatusDetail detail = e.getReason() == LoginRejectedException.Reason.BLOCKED
                         ? ThingStatusDetail.COMMUNICATION_ERROR
                         : ThingStatusDetail.CONFIGURATION_ERROR;
-                updateStatus(ThingStatus.OFFLINE, detail, e.getStatusDescription());
+                updateStatus(ThingStatus.OFFLINE, detail,
+                        isLegacyRefreshToken(e) ? "@text/account-handler.login.refresh-token"
+                                : e.getStatusDescription());
             }
         } catch (final BluelinkApiException e) {
             if (!isStale(generation)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
             }
         }
+    }
+
+    private boolean isLegacyRefreshToken(final LoginRejectedException e) {
+        final String password = getConfigAs(BluelinkAccountConfiguration.class).password;
+        return (e.getReason() == LoginRejectedException.Reason.INVALID_CREDENTIALS
+                || e.getReason() == LoginRejectedException.Reason.REJECTED) && password != null
+                && LEGACY_REFRESH_TOKEN.matcher(password).matches();
     }
 
     // the handler was disposed or re-initialized while this login was running

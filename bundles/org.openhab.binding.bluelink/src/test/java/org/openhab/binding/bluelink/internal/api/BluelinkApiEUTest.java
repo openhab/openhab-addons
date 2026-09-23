@@ -37,6 +37,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openhab.binding.bluelink.internal.CciLoginStubs;
 import org.openhab.binding.bluelink.internal.MockApiData;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
@@ -73,8 +75,7 @@ public class BluelinkApiEUTest {
         WIREMOCK_SERVER.start();
         WireMock.configureFor("localhost", WIREMOCK_SERVER.port());
 
-        stubFor(post(urlEqualTo("/auth/api/v2/user/oauth2/token")).willReturn(aResponse().withStatus(200)
-                .withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE_EU)));
+        new CciLoginStubs(WIREMOCK_SERVER).stubLogin();
         stubFor(post(urlEqualTo("/api/v1/spa/notifications/register")).willReturn(aResponse().withStatus(200)
                 .withHeader("Content-Type", "application/json").withBody(DEVICE_REGISTRATION_RESPONSE_EU)));
         stubFor(get(urlPathEqualTo("/api/v1/spa/vehicles/test-vehicle-id/status/latest")).willReturn(aResponse()
@@ -97,7 +98,7 @@ public class BluelinkApiEUTest {
     void testLoginAndGetVehicleStatus() throws BluelinkApiException {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
         final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, SCHEDULER, Brand.HYUNDAI, Map.of(), baseUrl,
-                timeZoneProvider, "", MockApiData.TEST_REFRESH_TOKEN);
+                timeZoneProvider, MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD);
         assertTrue(api.login());
 
         // Verify device ID was obtained
@@ -225,31 +226,35 @@ public class BluelinkApiEUTest {
         api.accessTokenExpiry = Instant.now().minusSeconds(1);
         assertTrue(api.login());
 
-        verify(0, postRequestedFor(urlEqualTo("/auth/api/v2/user/oauth2/token"))
-                .withRequestBody(containing("refresh_token=" + MockApiData.TEST_PASSWORD)));
         verify(1, postRequestedFor(urlEqualTo("/auth/account/signin")));
         verify(1, postRequestedFor(urlEqualTo("/domain/api/v2/auth/token-refresh")));
         assertEquals("ccs-2", api.accessToken);
     }
 
-    @Test
-    void testRefreshTokenIsUsedDespiteUsername() throws Exception {
+    @ParameterizedTest
+    @CsvSource({ "HYUNDAI, 4f4953b5-02e1-4dbc-8599-87e983ee1be5, com.hyundai.oneapp.eu, hyundai, 18.7, APNS",
+            "KIA, 01b36c86-79e8-486c-8009-15f2ad88d670, com.kia.oneapp.eu, kia, 27, IOS_APPSTORE",
+            "GENESIS, 50e3b8b0-ced5-43b7-8a42-f86ac92fe50e, com.genesis.oneapp.eu, genesis, 18.7, APNS" })
+    void testPasswordLoginUsesBrandClient(final Brand brand, final String oneAppClientId, final String packageId,
+            final String clientName, final String osVersion, final String notificationProvider) throws Exception {
         resetAllRequests();
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
-        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, SCHEDULER, Brand.HYUNDAI, Map.of(), baseUrl,
-                timeZoneProvider, MockApiData.TEST_USERNAME, MockApiData.TEST_REFRESH_TOKEN);
+        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, SCHEDULER, brand, Map.of(), baseUrl, timeZoneProvider,
+                MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD);
         assertTrue(api.login());
 
-        verify(postRequestedFor(urlEqualTo("/auth/api/v2/user/oauth2/token"))
-                .withRequestBody(containing("refresh_token=" + MockApiData.TEST_REFRESH_TOKEN)));
-        verify(0, postRequestedFor(urlEqualTo("/auth/account/signin")));
+        verify(getRequestedFor(urlPathEqualTo("/auth/api/v2/user/oauth2/authorize")).withQueryParam("client_id",
+                equalTo(oneAppClientId)));
+        verify(postRequestedFor(urlPathEqualTo("/domain/api/v1/auth/token")).withHeader("client-id", equalTo(packageId))
+                .withHeader("client-name", equalTo(clientName)).withHeader("client-os-version", equalTo(osVersion))
+                .withHeader("client-notification-provider-type", equalTo(notificationProvider)));
     }
 
     @Test
     void testLoginAndGetVehicleStatusForCcs2Protocol() throws BluelinkApiException {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
         final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, SCHEDULER, Brand.HYUNDAI, Map.of(), baseUrl,
-                timeZoneProvider, "", MockApiData.TEST_REFRESH_TOKEN);
+                timeZoneProvider, MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD);
         assertTrue(api.login());
 
         // Verify device ID was obtained
@@ -438,7 +443,7 @@ public class BluelinkApiEUTest {
 
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
         final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, mockScheduler, Brand.HYUNDAI, Map.of(), baseUrl,
-                timeZoneProvider, "", MockApiData.TEST_REFRESH_TOKEN);
+                timeZoneProvider, MockApiData.TEST_USERNAME, MockApiData.TEST_PASSWORD);
         assertTrue(api.login());
 
         final IVehicle vehicle = new Vehicle(TEST_VEHICLE_ID, "KMHXX00XXXX000000", "My Car", IVehicle.EngineType.EV,
