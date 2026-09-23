@@ -81,6 +81,12 @@ class EvccBridgeHandlerTest {
         }
 
         @Override
+        public void applyNormalizedUpdate(JsonObject normalized) {
+            lastKey = null;
+            lastValue = normalized;
+        }
+
+        @Override
         public String getType() {
             return type;
         }

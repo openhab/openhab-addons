@@ -48,6 +48,17 @@ public interface EvccThingLifecycleAware {
     void handleUpdate(String key, JsonElement value);
 
     /**
+     * Apply an already-normalized update whose members map directly to channel keys.
+     *
+     * Used by the router for routes that carry a {@code StateTransformer}: the transformation has already reshaped
+     * the extracted data into final channel keys, so the members are applied as-is (without the dispatch-key
+     * prefixing performed by {@link #handleUpdate}).
+     *
+     * @param normalized The normalized update whose members map directly to channel keys
+     */
+    void applyNormalizedUpdate(JsonObject normalized);
+
+    /**
      * This method shall return the type of the thing
      *
      * @return the type of the thing

@@ -232,6 +232,18 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     /**
+     * Apply an already-normalized update. The router calls this for routes that carry a state transformer;
+     * the members already map directly to channel keys, so they are applied without prefixing.
+     *
+     * @param normalized The normalized update whose members map directly to channel keys
+     */
+    @Override
+    public void applyNormalizedUpdate(JsonObject normalized) {
+        updateOnlyPresentChannels(normalized);
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    /**
      * Get the handler type identifier.
      *
      * @return The type string (e.g., "battery", "pv", "loadpoint")
@@ -461,25 +473,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             } catch (Exception e) {
                 logger.error("Unexpected error updating channel {}: {}", thingKey, e.getMessage(), e);
             }
-        }
-    }
-
-    /**
-     * Transforms a phase array into individual phase channels.
-     * For example, [10, 20, 30] becomes: gridCurrentL1=10, gridCurrentL2=20, gridCurrentL3=30
-     *
-     * @param state The target JsonObject to add phase channels to
-     * @param values The phase array [L1, L2, L3]
-     * @param prefix The channel prefix (e.g., "grid", "charge")
-     * @param datapoint The measurement type (e.g., "Current", "Voltage", "Power")
-     */
-    protected void addPhaseChannels(JsonObject state, JsonArray values, String prefix, String datapoint) {
-        int phase = 1;
-        for (JsonElement value : values) {
-            String channelKey = prefix + datapoint + "L" + phase;
-            state.add(channelKey, value);
-            logger.trace("Added phase channel: {} = {}", channelKey, value);
-            phase++;
         }
     }
 

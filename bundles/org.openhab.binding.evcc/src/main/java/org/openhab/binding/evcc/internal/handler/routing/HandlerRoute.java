@@ -33,6 +33,7 @@ public class HandlerRoute {
     private final ExtractionStrategy extraction;
     private final EvccThingLifecycleAware handler;
     private final String dispatchKey;
+    private final @Nullable StateTransformer transformer;
 
     /**
      * Create a handler route with extraction, handler, and dispatch key.
@@ -44,10 +45,35 @@ public class HandlerRoute {
      */
     public HandlerRoute(String routeKey, ExtractionStrategy extraction, EvccThingLifecycleAware handler,
             String dispatchKey) {
+        this(routeKey, extraction, handler, dispatchKey, null);
+    }
+
+    /**
+     * Create a handler route that normalizes the extracted data before dispatch.
+     *
+     * @param routeKey The incoming message key to match (e.g., "grid", "loadpoints")
+     * @param extraction The extraction strategy to apply to the message
+     * @param handler The target handler to dispatch to
+     * @param dispatchKey The key to pass to the handler's handleUpdate method
+     * @param transformer The transformer applied to the extracted object before dispatch, or {@code null} for none
+     */
+    public HandlerRoute(String routeKey, ExtractionStrategy extraction, EvccThingLifecycleAware handler,
+            String dispatchKey, @Nullable StateTransformer transformer) {
         this.routeKey = routeKey;
         this.extraction = extraction;
         this.handler = handler;
         this.dispatchKey = dispatchKey;
+        this.transformer = transformer;
+    }
+
+    /**
+     * Get the transformer that normalizes extracted data before dispatch.
+     *
+     * @return The transformer, or {@code null} when the extracted data is dispatched unchanged
+     */
+    @Nullable
+    public StateTransformer getTransformer() {
+        return transformer;
     }
 
     /**

@@ -15,14 +15,15 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.evcc.internal.handler.routing.GridStateTransformer;
 import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
 import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
 import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.binding.evcc.internal.handler.routing.ObjectFieldExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.StateTransformer;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -33,7 +34,6 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -47,6 +47,8 @@ import com.google.gson.JsonObject;
 public class EvccSiteHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccSiteHandler.class);
+
+    private final StateTransformer gridTransformer = new GridStateTransformer();
 
     public EvccSiteHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
@@ -89,7 +91,13 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
         }
 
         if (state.has(JSON_KEY_GRID_CONFIGURED)) {
-            modifyJSON(state);
+            JsonElement grid = state.get(JSON_KEY_GRID);
+            if (grid != null && grid.isJsonObject()) {
+                gridTransformer.transform(grid.getAsJsonObject()).entrySet()
+                        .forEach(entry -> state.add(entry.getKey(), entry.getValue()));
+            }
+            state.remove(JSON_KEY_GRID);
+            state.remove(JSON_KEY_GRID_CONFIGURED);
         }
         createChannelsAndSetStatesFromApiResponse(state);
         logger.trace("Site handler initialized successfully");
@@ -103,65 +111,13 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             endpoint = handler.getBaseURL();
             handler.register(this);
             MessageRouter router = handler.getMessageRouter();
-            router.registerRoute(new HandlerRoute(JSON_KEY_GRID, new JsonPathExtraction("$"), this, JSON_KEY_GRID));
+            router.registerRoute(
+                    new HandlerRoute(JSON_KEY_GRID, new JsonPathExtraction("$"), this, JSON_KEY_GRID, gridTransformer));
             router.registerRoute(new HandlerRoute(PROPERTY_TYPE_SITE, new ObjectFieldExtraction(JSON_KEY_GRID), this,
-                    JSON_KEY_GRID));
+                    JSON_KEY_GRID, gridTransformer));
             router.registerRoute(
                     new HandlerRoute(JSON_KEY_HOME_POWER, new JsonPathExtraction("$"), this, JSON_KEY_HOME_POWER));
         });
-    }
-
-    private void modifyJSON(JsonObject state) {
-        for (Map.Entry<String, JsonElement> entry : state.get(JSON_KEY_GRID).getAsJsonObject().entrySet()) {
-            switch (entry.getKey()) {
-                case "currents":
-                    addPhaseChannels(state, entry.getValue().getAsJsonArray(), "grid", "Current");
-                    break;
-                case "voltages":
-                    addPhaseChannels(state, entry.getValue().getAsJsonArray(), "grid", "Voltage");
-                    break;
-                case "powers":
-                    addPhaseChannels(state, entry.getValue().getAsJsonArray(), "grid", "Power");
-                    break;
-                default:
-                    state.add(JSON_KEY_GRID + Utils.capitalizeFirstLetter(entry.getKey()), entry.getValue());
-            }
-        }
-        state.remove(JSON_KEY_GRID);
-        state.remove(JSON_KEY_GRID_CONFIGURED);
-    }
-
-    protected void addMeasurementDatapointsToState(JsonObject state, JsonArray values, String datapoint) {
-        addPhaseChannels(state, values, "grid", datapoint);
-    }
-
-    @Override
-    public void handleUpdate(String key, JsonElement value) {
-        logger.trace("EvccSiteHandler.handleUpdate called with key='{}', type={}", key,
-                value.getClass().getSimpleName());
-        if (JSON_KEY_GRID.equals(key) && value.isJsonObject()) {
-            JsonObject gridUpdate = value.getAsJsonObject();
-            JsonObject updateState = new JsonObject();
-            for (Map.Entry<String, JsonElement> entry : gridUpdate.entrySet()) {
-                switch (entry.getKey()) {
-                    case "currents":
-                        addMeasurementDatapointsToState(updateState, entry.getValue().getAsJsonArray(), "Current");
-                        break;
-                    case "voltages":
-                        addMeasurementDatapointsToState(updateState, entry.getValue().getAsJsonArray(), "Voltage");
-                        break;
-                    case "powers":
-                        addMeasurementDatapointsToState(updateState, entry.getValue().getAsJsonArray(), "Power");
-                        break;
-                    default:
-                        updateState.add("grid" + Utils.capitalizeFirstLetter(entry.getKey()), entry.getValue());
-                }
-            }
-            updateOnlyPresentChannels(updateState);
-            updateStatus(ThingStatus.ONLINE);
-            return;
-        }
-        super.handleUpdate(key, value);
     }
 
     @Override

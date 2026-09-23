@@ -176,4 +176,26 @@ class MessageRouterTest {
         assertTrue(router.route("grid", message));
         verify(handler, never()).handleUpdate("grid", message);
     }
+
+    @Test
+    void testRouteWithTransformerAppliesNormalizedUpdate() {
+        EvccThingLifecycleAware handler = mock(EvccThingLifecycleAware.class);
+        StateTransformer transformer = source -> {
+            JsonObject out = new JsonObject();
+            out.add("gridPower", source.get("power"));
+            return out;
+        };
+        HandlerRoute route = new HandlerRoute("grid", passThroughExtraction, handler, "grid", transformer);
+        router.registerRoute(route);
+
+        JsonObject message = new JsonObject();
+        message.add("power", new JsonPrimitive(-222));
+
+        assertTrue(router.route("grid", message));
+
+        JsonObject expected = new JsonObject();
+        expected.add("gridPower", new JsonPrimitive(-222));
+        verify(handler).applyNormalizedUpdate(expected);
+        verify(handler, never()).handleUpdate("grid", message);
+    }
 }

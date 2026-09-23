@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.handler.EvccThingLifecycleAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +92,13 @@ public class MessageRouter {
                             continue;
                         }
                         try {
-                            handler.handleUpdate(route.getDispatchKey(), processed);
+                            @Nullable
+                            StateTransformer transformer = route.getTransformer();
+                            if (transformer != null && processed.isJsonObject()) {
+                                handler.applyNormalizedUpdate(transformer.transform(processed.getAsJsonObject()));
+                            } else {
+                                handler.handleUpdate(route.getDispatchKey(), processed);
+                            }
                         } catch (Exception e) {
                             logger.warn("Handler failed to process routed message for {}", route.getRouteKey(), e);
                         }

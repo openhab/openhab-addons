@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.evcc.internal.handler.routing.GridStateTransformer;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -142,7 +143,8 @@ public class EvccSiteHandlerTest {
         gridUpdate.addProperty("power", 2000);
         gridUpdate.addProperty("energy", 10000);
 
-        handler.handleUpdate("grid", gridUpdate);
+        // The router applies the grid transformer before dispatching the normalized update to the handler.
+        handler.applyNormalizedUpdate(new GridStateTransformer().transform(gridUpdate));
 
         assertSame(true, linkedChannelIdsChecked.contains("site-grid-power"));
         assertSame(true, linkedChannelIdsChecked.contains("site-grid-energy"));

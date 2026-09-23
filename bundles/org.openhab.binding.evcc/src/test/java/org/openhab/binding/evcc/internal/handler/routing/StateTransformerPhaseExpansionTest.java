@@ -10,45 +10,38 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evcc.internal.handler;
+package org.openhab.binding.evcc.internal.handler.routing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.mock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.type.ChannelTypeRegistry;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * Tests for {@link EvccBaseThingHandler#addPhaseChannels}, the array-to-per-phase-channel
- * flattening used by every handler that reports 3-phase measurements (grid currents/voltages,
- * battery/loadpoint charge phases). This transformation directly feeds the routed "grid"/"battery"
- * update objects that {@link EvccSiteHandlerTest} verifies are mapped to the correct channel IDs,
- * so its correctness is a prerequisite for routing to reach the right channels with the right
+ * Tests for {@link StateTransformer#expandPhases}, the array-to-per-phase-channel flattening shared by every
+ * transformer that reports 3-phase measurements (grid currents/voltages/powers, loadpoint charge phases). This
+ * transformation feeds the routed "grid"/"loadpoint" update objects that the handler tests verify are mapped to the
+ * correct channel IDs, so its correctness is a prerequisite for routing to reach the right channels with the right
  * values.
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-class EvccBaseThingHandlerPhaseChannelsTest {
-
-    private final EvccBaseThingHandler handler = new EvccSiteHandler(mock(Thing.class),
-            mock(ChannelTypeRegistry.class));
+class StateTransformerPhaseExpansionTest {
 
     @Test
-    void addPhaseChannelsMapsArrayEntriesToOneIndexedPhaseKeys() {
+    void expandPhasesMapsArrayEntriesToOneIndexedPhaseKeys() {
         JsonObject state = new JsonObject();
         JsonArray currents = new JsonArray();
         currents.add(6);
         currents.add(7);
         currents.add(8);
 
-        handler.addPhaseChannels(state, currents, "grid", "Current");
+        StateTransformer.expandPhases(state, currents, "grid", "Current");
 
         assertEquals(6, state.get("gridCurrentL1").getAsInt());
         assertEquals(7, state.get("gridCurrentL2").getAsInt());
@@ -56,13 +49,13 @@ class EvccBaseThingHandlerPhaseChannelsTest {
     }
 
     @Test
-    void addPhaseChannelsUsesPrefixAndDatapointToBuildChannelKey() {
+    void expandPhasesUsesPrefixAndDatapointToBuildChannelKey() {
         JsonObject state = new JsonObject();
         JsonArray voltages = new JsonArray();
         voltages.add(230.0);
         voltages.add(231.0);
 
-        handler.addPhaseChannels(state, voltages, "charge", "Voltage");
+        StateTransformer.expandPhases(state, voltages, "charge", "Voltage");
 
         assertEquals(230.0, state.get("chargeVoltageL1").getAsDouble());
         assertEquals(231.0, state.get("chargeVoltageL2").getAsDouble());
@@ -70,10 +63,10 @@ class EvccBaseThingHandlerPhaseChannelsTest {
     }
 
     @Test
-    void addPhaseChannelsWithEmptyArrayAddsNoChannels() {
+    void expandPhasesWithEmptyArrayAddsNoChannels() {
         JsonObject state = new JsonObject();
 
-        handler.addPhaseChannels(state, new JsonArray(), "grid", "Power");
+        StateTransformer.expandPhases(state, new JsonArray(), "grid", "Power");
 
         assertEquals(0, state.size());
     }
