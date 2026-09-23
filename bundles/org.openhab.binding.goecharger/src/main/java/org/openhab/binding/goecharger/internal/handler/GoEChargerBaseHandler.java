@@ -138,19 +138,24 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
         } catch (IllegalArgumentException e) {
             logger.debug("Invalid configuration getting data: {}", e.toString());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+        } catch (RuntimeException e) {
+            // scheduleWithFixedDelay silently stops the periodic execution once an exception escapes the task.
+            // An unexpected value in a single response must not kill the refresh job for good.
+            logger.warn("Unexpected error while refreshing go-e Charger data", e);
+            updateChannelsAndStatus(null, e.toString());
         }
     }
 
     private void startAutomaticRefresh() {
         ScheduledFuture<?> refreshJob = this.refreshJob;
-        if (refreshJob != null && !refreshJob.isCancelled()) {
+        if (refreshJob != null && !refreshJob.isDone()) {
             logger.debug("Refresh job is already running, not starting a new one.");
             return;
         }
 
         int delay = config.refreshInterval.intValue();
         logger.debug("Running refresh job with delay {} s", delay);
-        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, delay, TimeUnit.SECONDS);
+        this.refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, delay, TimeUnit.SECONDS);
     }
 
     @Override
