@@ -273,7 +273,14 @@ public class RobonectHandler extends BaseThingHandler {
                 }
                 updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
             }
-            updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(info.getWlan().getSignal()));
+            if (info.getWlan() != null && info.getWlan().getSignal() != null) {
+                int signal = info.getWlan().getSignal();
+                updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, new DecimalType(signal));
+                updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(convertSignalStrength(signal)));
+            } else {
+                updateState(CHANNEL_WLAN_SIGNAL, UnDefType.UNDEF);
+                updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, UnDefType.UNDEF);
+            }
             updateState(CHANNEL_JOB, OnOffType.from(robonectClient.isJobRunning()));
         } else {
             logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());
@@ -284,6 +291,19 @@ public class RobonectHandler extends BaseThingHandler {
         updateState(CHANNEL_ERROR_DATE, UnDefType.UNDEF);
         updateState(CHANNEL_ERROR_CODE, UnDefType.UNDEF);
         updateState(CHANNEL_ERROR_MESSAGE, UnDefType.UNDEF);
+    }
+
+    private int convertSignalStrength(int signal) {
+        if (signal >= -70) {
+            return 4;
+        }
+        if (signal >= -78) {
+            return 3;
+        }
+        if (signal >= -87) {
+            return 2;
+        }
+        return signal >= -120 ? 1 : 0;
     }
 
     private void updateErrorInfo(ErrorEntry error) {

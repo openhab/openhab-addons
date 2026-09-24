@@ -278,6 +278,7 @@ public class RobonectHandlerTest {
         ArgumentCaptor<State> stateCaptorMode = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> stateCaptorStarted = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> stateCaptorWlan = ArgumentCaptor.forClass(State.class);
+        ArgumentCaptor<State> stateCaptorWlanStrength = ArgumentCaptor.forClass(State.class);
 
         // given
         MowerInfo mowerInfo = createSuccessfulMowerInfoResponse();
@@ -316,6 +317,9 @@ public class RobonectHandlerTest {
         verify(callbackMock, times(1)).stateUpdated(
                 eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_WLAN_SIGNAL)),
                 stateCaptorWlan.capture());
+        verify(callbackMock, times(1)).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_WLAN_SIGNAL_STRENGTH)),
+                stateCaptorWlanStrength.capture());
 
         assertEquals("Mowy", stateCaptorName.getValue().toFullString());
         assertEquals(99, ((DecimalType) stateCaptorBattery.getValue()).intValue());
@@ -324,7 +328,8 @@ public class RobonectHandlerTest {
         assertEquals(22, ((QuantityType<?>) stateCaptorHours.getValue()).intValue());
         assertEquals(MowerMode.AUTO.name(), stateCaptorMode.getValue().toFullString());
         assertEquals(OnOffType.ON, stateCaptorStarted.getValue());
-        assertEquals(-88, ((DecimalType) stateCaptorWlan.getValue()).intValue());
+        assertEquals(1, ((DecimalType) stateCaptorWlan.getValue()).intValue());
+        assertEquals(-88, ((DecimalType) stateCaptorWlanStrength.getValue()).intValue());
     }
 
     private MowerInfo createSuccessfulMowerInfoResponse() {

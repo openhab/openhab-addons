@@ -42,6 +42,7 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_TIMER_STATUS = "timer-status";
     public static final String CHANNEL_TIMER_NEXT_TIMER = "timer-next";
     public static final String CHANNEL_WLAN_SIGNAL = "wlan-signal";
+    public static final String CHANNEL_WLAN_SIGNAL_STRENGTH = "wlan-signal-strength";
 
     public static final String CHANNEL_JOB = "job";
 

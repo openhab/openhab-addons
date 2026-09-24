@@ -14,6 +14,7 @@
 			<channel id="timestamp" typeId="timestampType"/>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="wlan-signal" typeId="system.signal-strength"/>
+			<channel id="wlan-signal-strength" typeId="wlanStrengthType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
@@ -127,6 +128,13 @@
 		<label>Mower Name</label>
 		<description>The name of the mower</description>
 		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="wlanStrengthType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>WLAN Signal Strength</label>
+		<description>The raw WLAN signal strength in dBm.</description>
+		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
 
 	<channel-type id="idType">
