@@ -1,10 +1,10 @@
 # evcc Binding
 
 This binding integrates [evcc](https://evcc.io), an extensible **E**lectric **V**ehicle **C**harge **C**ontroller and home energy management system.
-The binding is compatible to evcc [version 0.316.0](https://github.com/evcc-io/evcc/releases/tag/0.316.0) or newer and was tested with [version 0.316.0](https://github.com/evcc-io/evcc/releases/tag/0.316.0).
+The binding is compatible to evcc [version 0.316.0](https://github.com/evcc-io/evcc/releases/tag/0.316.0) or newer and was tested with that same version.
 
-**Important compatibility note:** Starting with this version of the binding, evcc versions **below 0.209.8** are no longer supported due to changes in the evcc API.
-If you are currently running evcc `< 0.209.8`, you must either upgrade your evcc installation to at least `0.209.8` or continue using an older version of this binding that still supports the legacy API.
+**Important compatibility note:** Starting with this version of the binding, evcc versions **below 0.316.0** are no longer supported due to changes in the evcc API.
+If you are currently running an older evcc version, you must either upgrade your evcc installation to at least `0.316.0` or continue using an older version of this binding that still supports the legacy API.
 
 The binding has been refactored to use WebSocket connections for real-time state delivery instead of HTTP polling.
 This provides instant updates without configuration delay and eliminates the polling interval parameter.
@@ -88,7 +88,7 @@ These channels are dynamically added to the Thing during their initialization; t
 ### `demo.things` Example
 
 ```java
-Bridge evcc:server:demo-server "Demo" [scheme="http", host="evcc.local", port=7070, refreshInterval=30] {
+Bridge evcc:server:demo-server "Demo" [scheme="http", host="evcc.local", port=7070] {
     // This thing will only exist once per evcc instance
     Thing site demo-site "Site - evcc Demo"
     // You can define as many Battery things as you have batteries configured in your evcc instance
