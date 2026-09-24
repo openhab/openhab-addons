@@ -43,6 +43,9 @@ import org.openhab.binding.robonect.internal.model.DriveMotor;
 import org.openhab.binding.robonect.internal.model.DriveMotors;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
+import org.openhab.binding.robonect.internal.model.ExtInfo;
+import org.openhab.binding.robonect.internal.model.Extension;
+import org.openhab.binding.robonect.internal.model.Extensions;
 import org.openhab.binding.robonect.internal.model.Host;
 import org.openhab.binding.robonect.internal.model.HourGeneral;
 import org.openhab.binding.robonect.internal.model.HourInfo;
@@ -311,20 +314,24 @@ public class RobonectHandler extends BaseThingHandler {
         }
         updateWeatherSwitch(CHANNEL_WEATHER_BREAK, weather.getWeatherBreak());
         updateWeatherNumber(CHANNEL_WEATHER_RAIN, weather.getRain());
-        if (weather.getTemperature() != null)
-            updateState(CHANNEL_WEATHER_TEMPERATURE, new QuantityType<>(weather.getTemperature(), SIUnits.CELSIUS));
-        if (weather.getHumidity() != null)
-            updateState(CHANNEL_WEATHER_HUMIDITY, new QuantityType<>(weather.getHumidity(), Units.PERCENT));
+        Integer temperature = weather.getTemperature();
+        if (temperature != null)
+            updateState(CHANNEL_WEATHER_TEMPERATURE, new QuantityType<>(temperature, SIUnits.CELSIUS));
+        Integer humidity = weather.getHumidity();
+        if (humidity != null)
+            updateState(CHANNEL_WEATHER_HUMIDITY, new QuantityType<>(humidity, Units.PERCENT));
         updateWeatherSwitch(CHANNEL_WEATHER_DAY, weather.getDay());
         if (weather.getCity() != null)
             updateState(CHANNEL_WEATHER_CITY, new StringType(weather.getCity()));
-        if (weather.getRemaining() != null)
-            updateState(CHANNEL_WEATHER_REMAINING, new QuantityType<>(weather.getRemaining(), Units.SECOND));
+        Integer remaining = weather.getRemaining();
+        if (remaining != null)
+            updateState(CHANNEL_WEATHER_REMAINING, new QuantityType<>(remaining, Units.SECOND));
         WeatherService service = info.getService();
         if (service != null) {
             updateWeatherSwitch(CHANNEL_WEATHER_ENABLED, service.getEnable());
-            if (service.getInterval() != null)
-                updateState(CHANNEL_WEATHER_INTERVAL, new QuantityType<>(service.getInterval(), Units.MINUTE));
+            Integer interval = service.getInterval();
+            if (interval != null)
+                updateState(CHANNEL_WEATHER_INTERVAL, new QuantityType<>(interval, Units.MINUTE));
             WeatherConfig config = service.getConfig();
             if (config != null) {
                 updateWeatherNumber(CHANNEL_WEATHER_MAX_RAIN, config.getMaxrain());
@@ -400,6 +407,28 @@ public class RobonectHandler extends BaseThingHandler {
             if (ap.getSsid() != null)
                 updateState(CHANNEL_WLAN_AP_SSID, new StringType(ap.getSsid()));
         }
+    }
+
+    /** Updates optional GPIO and output extension state. */
+    private void refreshExtensionInfo() {
+        ExtInfo info = robonectClient.getExtInfo();
+        Extensions extensions = info.getExt();
+        if (!info.isSuccessful() || extensions == null) {
+            return;
+        }
+        updateExtension("extension-gpio-1-", extensions.getGpio1());
+        updateExtension("extension-gpio-2-", extensions.getGpio2());
+        updateExtension("extension-output-1-", extensions.getOut1());
+        updateExtension("extension-output-2-", extensions.getOut2());
+    }
+
+    private void updateExtension(String prefix, @Nullable Extension extension) {
+        if (extension == null) {
+            return;
+        }
+        updateWeatherSwitch(prefix + "flash", extension.getFlashonerror());
+        updateWeatherSwitch(prefix + "inverted", extension.getInverted());
+        updateWeatherSwitch(prefix + "status", extension.getStatus());
     }
 
     private void updateWeatherSwitch(String channel, @Nullable Boolean value) {
@@ -621,10 +650,15 @@ public class RobonectHandler extends BaseThingHandler {
                     updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
                 }
             }
-            if (info.getWlan() != null && info.getWlan().getSignal() != null) {
-                int signal = info.getWlan().getSignal();
+            if (info.getWlan() != null) {
+                Integer signal = info.getWlan().getSignal();
+                if (signal != null) {
                 updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, new DecimalType(signal));
                 updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(convertSignalStrength(signal)));
+                } else {
+                    updateState(CHANNEL_WLAN_SIGNAL, UnDefType.UNDEF);
+                    updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, UnDefType.UNDEF);
+                }
             } else {
                 updateState(CHANNEL_WLAN_SIGNAL, UnDefType.UNDEF);
                 updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, UnDefType.UNDEF);
@@ -660,12 +694,14 @@ public class RobonectHandler extends BaseThingHandler {
         }
         BatteryCapacity capacity = battery.getCapacity();
         if (capacity != null) {
-            if (capacity.getFull() != null) {
-                updateState(CHANNEL_BATTERY_CAPACITY, new QuantityType<>(capacity.getFull(), Units.MILLIAMPERE_HOUR));
+            Integer full = capacity.getFull();
+            if (full != null) {
+                updateState(CHANNEL_BATTERY_CAPACITY, new QuantityType<>(full, Units.MILLIAMPERE_HOUR));
             }
-            if (capacity.getRemaining() != null) {
+            Integer remainingCapacity = capacity.getRemaining();
+            if (remainingCapacity != null) {
                 updateState(CHANNEL_BATTERY_REMAINING_CAPACITY,
-                        new QuantityType<>(capacity.getRemaining(), Units.MILLIAMPERE_HOUR));
+                        new QuantityType<>(remainingCapacity, Units.MILLIAMPERE_HOUR));
             }
         }
     }
@@ -688,11 +724,13 @@ public class RobonectHandler extends BaseThingHandler {
         }
         BladeMotor blade = info.getBlade();
         if (blade != null) {
-            if (blade.getAverage() != null) {
-                updateState(CHANNEL_BLADE_MOTOR_AVERAGE, new DecimalType(blade.getAverage()));
+            Integer average = blade.getAverage();
+            if (average != null) {
+                updateState(CHANNEL_BLADE_MOTOR_AVERAGE, new DecimalType(average));
             }
-            if (blade.getSpeed() != null) {
-                updateState(CHANNEL_BLADE_MOTOR_SPEED, new DecimalType(blade.getSpeed()));
+            Integer speed = blade.getSpeed();
+            if (speed != null) {
+                updateState(CHANNEL_BLADE_MOTOR_SPEED, new DecimalType(speed));
             }
             if (blade.getCurrent() != null) {
                 updateState(CHANNEL_BLADE_MOTOR_CURRENT, new QuantityType<>(blade.getCurrent() / 1000.0, Units.AMPERE));
@@ -714,11 +752,13 @@ public class RobonectHandler extends BaseThingHandler {
         updateHours(CHANNEL_STATISTICS_MOWING_HOURS, general.getMow());
         updateHours(CHANNEL_STATISTICS_SEARCHING_HOURS, general.getSearch());
         updateHours(CHANNEL_STATISTICS_CHARGING_HOURS, general.getCharge());
-        if (general.getCharges() != null) {
-            updateState(CHANNEL_STATISTICS_CHARGES, new DecimalType(general.getCharges()));
+        Integer charges = general.getCharges();
+        if (charges != null) {
+            updateState(CHANNEL_STATISTICS_CHARGES, new DecimalType(charges));
         }
-        if (general.getErrors() != null) {
-            updateState(CHANNEL_STATISTICS_ERRORS, new DecimalType(general.getErrors()));
+        Integer errors = general.getErrors();
+        if (errors != null) {
+            updateState(CHANNEL_STATISTICS_ERRORS, new DecimalType(errors));
         }
     }
 
@@ -780,16 +820,21 @@ public class RobonectHandler extends BaseThingHandler {
         String prefix = "wire-sensor-" + number + "-";
         if (sensor.getDescription() != null)
             updateState(prefix + "label", new StringType(sensor.getDescription()));
-        if (sensor.getQuality() != null)
-            updateState(prefix + "quality", new QuantityType<>(sensor.getQuality(), Units.PERCENT));
-        if (sensor.getA() != null)
-            updateState(prefix + "a", new DecimalType(sensor.getA()));
-        if (sensor.getN() != null)
-            updateState(prefix + "n", new DecimalType(sensor.getN()));
-        if (sensor.getF() != null)
-            updateState(prefix + "f", new DecimalType(sensor.getF()));
-        if (sensor.getG1() != null)
-            updateState(prefix + "g1", new DecimalType(sensor.getG1()));
+        Integer quality = sensor.getQuality();
+        if (quality != null)
+            updateState(prefix + "quality", new QuantityType<>(quality, Units.PERCENT));
+        Integer a = sensor.getA();
+        if (a != null)
+            updateState(prefix + "a", new DecimalType(a));
+        Integer n = sensor.getN();
+        if (n != null)
+            updateState(prefix + "n", new DecimalType(n));
+        Integer f = sensor.getF();
+        if (f != null)
+            updateState(prefix + "f", new DecimalType(f));
+        Integer g1 = sensor.getG1();
+        if (g1 != null)
+            updateState(prefix + "g1", new DecimalType(g1));
     }
 
     private void updateRemoteStart(int number, @Nullable Remote remote) {
@@ -801,12 +846,15 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(prefix + "name", new StringType(remote.getName()));
         if (remote.getVisible() != null)
             updateState(prefix + "visible", OnOffType.from(remote.getVisible()));
-        if (remote.getPath() != null)
-            updateState(prefix + "path", new DecimalType(remote.getPath()));
-        if (remote.getProportion() != null)
-            updateState(prefix + "proportion", new QuantityType<>(remote.getProportion(), Units.PERCENT));
-        if (remote.getDistance() != null)
-            updateState(prefix + "distance", new QuantityType<>(remote.getDistance(), SIUnits.METRE));
+        Integer path = remote.getPath();
+        if (path != null)
+            updateState(prefix + "path", new DecimalType(path));
+        Integer proportion = remote.getProportion();
+        if (proportion != null)
+            updateState(prefix + "proportion", new QuantityType<>(proportion, Units.PERCENT));
+        Integer distance = remote.getDistance();
+        if (distance != null)
+            updateState(prefix + "distance", new QuantityType<>(distance, SIUnits.METRE));
         if (remote.getCorridorcut() != null)
             updateState(prefix + "corridor-cut", OnOffType.from(remote.getCorridorcut()));
     }
@@ -830,8 +878,9 @@ public class RobonectHandler extends BaseThingHandler {
         if (motor == null) {
             return;
         }
-        if (motor.getPower() != null) {
-            updateState(powerChannel, new QuantityType<>(motor.getPower(), Units.PERCENT));
+        Integer power = motor.getPower();
+        if (power != null) {
+            updateState(powerChannel, new QuantityType<>(power, Units.PERCENT));
         }
         if (motor.getSpeed() != null) {
             updateState(speedChannel, new QuantityType<>(motor.getSpeed() / 100.0, Units.METRE_PER_SECOND));
@@ -1043,6 +1092,7 @@ public class RobonectHandler extends BaseThingHandler {
                     refreshPortalInfo();
                     refreshTimersInfo();
                     refreshWeatherInfo();
+                    refreshExtensionInfo();
                     refreshDoorInfo();
                 }
                 updateStatus(ThingStatus.ONLINE);
