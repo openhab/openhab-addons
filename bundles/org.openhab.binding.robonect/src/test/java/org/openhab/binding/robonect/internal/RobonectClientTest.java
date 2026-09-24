@@ -96,6 +96,20 @@ public class RobonectClientTest {
     }
 
     @Test
+    public void shouldRetrieveWlanInfo() throws InterruptedException, ExecutionException, TimeoutException {
+        when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=wlan")).thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenReturn(responseMock);
+        when(responseMock.getEncoding()).thenReturn("utf8");
+        when(responseMock.getContentAsString())
+                .thenReturn("{\"successful\": true, \"station\": {\"ssid\": \"mower\"}}");
+
+        assertEquals("mower", subject.getWlanInfo().getStation().getSsid());
+        verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=wlan");
+    }
+
+    @Test
     public void shouldResetErrors() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=error&reset")).thenReturn(requestMock);
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);

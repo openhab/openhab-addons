@@ -44,6 +44,7 @@ import org.openhab.binding.robonect.internal.model.TimersInfo;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.WireInfo;
+import org.openhab.binding.robonect.internal.model.WlanInfo;
 import org.openhab.binding.robonect.internal.model.cmd.BatteryCommand;
 import org.openhab.binding.robonect.internal.model.cmd.Command;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand;
@@ -64,6 +65,7 @@ import org.openhab.binding.robonect.internal.model.cmd.TimerCommand;
 import org.openhab.binding.robonect.internal.model.cmd.VersionCommand;
 import org.openhab.binding.robonect.internal.model.cmd.WeatherCommand;
 import org.openhab.binding.robonect.internal.model.cmd.WireCommand;
+import org.openhab.binding.robonect.internal.model.cmd.WlanCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -388,6 +390,11 @@ public class RobonectClient {
      */
     public WireInfo getWireInfo() {
         return parser.parse(sendCommand(new WireCommand()), WireInfo.class);
+    }
+
+    /** Returns WLAN, access-point, and DHCP state. */
+    public WlanInfo getWlanInfo() {
+        return parser.parse(sendCommand(new WlanCommand()), WlanInfo.class);
     }
 
     /**
