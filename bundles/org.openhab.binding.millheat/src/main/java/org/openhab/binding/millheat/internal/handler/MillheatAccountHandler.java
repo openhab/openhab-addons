@@ -89,6 +89,9 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
 
     private MillheatModel model = new MillheatModel(0);
     private @Nullable ScheduledFuture<?> statusFuture;
+    private @Nullable ScheduledFuture<?> reinitializeFuture;
+    /** Set in dispose() so work already in flight cannot publish state afterwards. */
+    private volatile boolean disposed;
     private @Nullable MillheatDiscoveryService discoveryService;
     private @NonNullByDefault({}) MillheatAccountConfiguration config;
 
@@ -135,6 +138,9 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     }
 
     private void connect() {
+        if (disposed) {
+            return;
+        }
         try {
             signIn();
         } catch (final MillheatCommunicationException e) {
@@ -150,7 +156,14 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         }
 
         try {
-            model = refreshModel();
+            final MillheatModel refreshed = refreshModel();
+            // Sign-in and the initial refresh are network calls, so the handler may have been
+            // disposed while they ran. Discard the result rather than starting polling and
+            // discovery on a handler that is going away.
+            if (disposed) {
+                return;
+            }
+            model = refreshed;
             updateStatus(ThingStatus.ONLINE);
             updateThingStatuses();
             initPolling();
@@ -170,18 +183,30 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     }
 
     private void scheduleReinitialize() {
-        scheduler.schedule(this::connect, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
+        if (disposed) {
+            return;
+        }
+        reinitializeFuture = scheduler.schedule(this::connect, REINITIALIZE_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
+        disposed = true;
         stopPolling();
+        final ScheduledFuture<?> localReinitialize = reinitializeFuture;
+        if (localReinitialize != null) {
+            localReinitialize.cancel(true);
+        }
+        reinitializeFuture = null;
         client.clearTokens();
         super.dispose();
     }
 
     private void initPolling() {
         stopPolling();
+        if (disposed) {
+            return;
+        }
         statusFuture = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 updateModelFromServerWithRetry(true);
