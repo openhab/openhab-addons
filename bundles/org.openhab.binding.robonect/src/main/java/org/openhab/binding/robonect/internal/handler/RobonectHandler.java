@@ -50,7 +50,11 @@ import org.openhab.binding.robonect.internal.model.Remote;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.Sensor;
+import org.openhab.binding.robonect.internal.model.TimerFull;
+import org.openhab.binding.robonect.internal.model.TimerInfo;
+import org.openhab.binding.robonect.internal.model.TimersInfo;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
+import org.openhab.binding.robonect.internal.model.Weekdays;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -164,7 +168,97 @@ public class RobonectHandler extends BaseThingHandler {
                     logger.debug("Got error reset command {} but On is expected.", command);
                 }
                 break;
+            default:
+                if (channelUID.getId().startsWith("timer-")) {
+                    updateTimer(channelUID.getId(), command);
+                }
+                break;
         }
+    }
+
+    /** Updates a single setting for one of the fourteen configurable timers. */
+    private void updateTimer(String channelId, Command command) {
+        String[] parts = channelId.split("-");
+        if (parts.length != 3)
+            return;
+        try {
+            int timer = Integer.parseInt(parts[1]);
+            String setting = parts[2];
+            String value;
+            String parameter;
+            if (command instanceof OnOffType onOff && switch (setting) {
+                case "enabled", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday" -> true;
+                default -> false;
+            }) {
+                parameter = switch (setting) {
+                    case "enabled" -> "enable";
+                    case "monday" -> "mo";
+                    case "tuesday" -> "tu";
+                    case "wednesday" -> "we";
+                    case "thursday" -> "th";
+                    case "friday" -> "fr";
+                    case "saturday" -> "sa";
+                    default -> "su";
+                };
+                value = onOff == OnOffType.ON ? "1" : "0";
+            } else if (command instanceof DecimalType decimal && (setting.equals("start") || setting.equals("end"))) {
+                int minutes = decimal.intValue();
+                if (minutes < 0 || minutes >= 24 * 60) {
+                    logger.debug("Ignoring invalid timer value {}", minutes);
+                    return;
+                }
+                parameter = setting;
+                value = "%02d:%02d".formatted(minutes / 60, minutes % 60);
+            } else {
+                return;
+            }
+            TimerInfo result = robonectClient.updateTimer(timer, parameter, value);
+            if (result.isSuccessful() && result.getTimer() != null)
+                updateTimerState(result.getTimer());
+            else
+                refreshTimersInfo();
+        } catch (NumberFormatException e) {
+            logger.debug("Ignoring malformed timer channel {}", channelId);
+        }
+    }
+
+    /** Updates timer channels from a complete timer response. */
+    private void updateTimerState(TimerFull timer) {
+        if (timer.getId() == null || timer.getId() < 0 || timer.getId() >= 14)
+            return;
+        String prefix = "timer-" + (timer.getId() + 1) + "-";
+        if (timer.getEnabled() != null)
+            updateState(prefix + "enabled", OnOffType.from(timer.getEnabled()));
+        updateTimerTime(prefix + "start", timer.getStart());
+        updateTimerTime(prefix + "end", timer.getEnd());
+        Weekdays days = timer.getWeekdays();
+        if (days == null)
+            return;
+        updateTimerDay(prefix, "monday", days.getMo());
+        updateTimerDay(prefix, "tuesday", days.getTu());
+        updateTimerDay(prefix, "wednesday", days.getWe());
+        updateTimerDay(prefix, "thursday", days.getTh());
+        updateTimerDay(prefix, "friday", days.getFr());
+        updateTimerDay(prefix, "saturday", days.getSa());
+        updateTimerDay(prefix, "sunday", days.getSu());
+    }
+
+    private void updateTimerTime(String channel, String time) {
+        if (time != null && time.matches("\\d{2}:\\d{2}"))
+            updateState(channel, new DecimalType(
+                    Integer.parseInt(time.substring(0, 2)) * 60 + Integer.parseInt(time.substring(3, 5))));
+    }
+
+    private void updateTimerDay(String prefix, String day, Boolean value) {
+        if (value != null)
+            updateState(prefix + day, OnOffType.from(value));
+    }
+
+    /** Refreshes all editable timer configurations. */
+    private void refreshTimersInfo() {
+        TimersInfo info = robonectClient.getTimersInfo();
+        if (info.isSuccessful() && info.getTimers() != null)
+            info.getTimers().forEach(this::updateTimerState);
     }
 
     private void handleJobCommand(ChannelUID channelUID, Command command) {
@@ -696,6 +790,7 @@ public class RobonectHandler extends BaseThingHandler {
                     refreshRemoteInfo();
                     refreshWireInfo();
                     refreshPortalInfo();
+                    refreshTimersInfo();
                 }
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;

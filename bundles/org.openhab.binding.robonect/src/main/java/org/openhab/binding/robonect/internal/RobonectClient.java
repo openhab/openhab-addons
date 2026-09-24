@@ -37,6 +37,8 @@ import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.PortalInfo;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
+import org.openhab.binding.robonect.internal.model.TimerInfo;
+import org.openhab.binding.robonect.internal.model.TimersInfo;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.cmd.BatteryCommand;
@@ -51,6 +53,7 @@ import org.openhab.binding.robonect.internal.model.cmd.RemoteCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StartCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StatusCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StopCommand;
+import org.openhab.binding.robonect.internal.model.cmd.TimerCommand;
 import org.openhab.binding.robonect.internal.model.cmd.VersionCommand;
 import org.openhab.binding.robonect.internal.model.cmd.WireCommand;
 import org.slf4j.Logger;
@@ -348,6 +351,28 @@ public class RobonectClient {
      */
     public PortalInfo getPortalInfo() {
         return parser.parse(sendCommand(new PortalCommand()), PortalInfo.class);
+    }
+
+    /**
+     * Returns all timer configurations reported by the mower.
+     *
+     * @return the timer configurations including their success status
+     */
+    public TimersInfo getTimersInfo() {
+        return parser.parse(sendCommand(new TimerCommand()), TimersInfo.class);
+    }
+
+    /**
+     * Updates one value of an individual timer.
+     *
+     * @param timer timer number from 1 to 14
+     * @param parameter API parameter name
+     * @param value API parameter value
+     * @return the updated timer including its success status
+     */
+    public TimerInfo updateTimer(int timer, String parameter, String value) {
+        return parser.parse(sendCommand(new TimerCommand().withTimer(timer).withValue(parameter, value)),
+                TimerInfo.class);
     }
 
     /**
