@@ -90,7 +90,9 @@ public class Room {
             case COMFORT, NORMAL -> comfortTemp;
             case SLEEP -> sleepTemp;
             case AWAY -> awayTemp;
-            case VACATION -> home.getVacationTemperature();
+            // Advanced vacation mode makes each room fall back to its own away temperature, so
+            // reporting the house-wide vacation temperature would be a setpoint no device follows.
+            case VACATION -> home.isAdvancedVacationMode() ? awayTemp : home.getVacationTemperature();
             default -> null;
         };
     }
