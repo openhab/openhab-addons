@@ -65,6 +65,30 @@
 			<channel id="remote-5-proportion" typeId="remoteProportionType"/>
 			<channel id="remote-5-distance" typeId="remoteDistanceType"/>
 			<channel id="remote-5-corridor-cut" typeId="remoteSwitchType"/>
+			<channel id="wire-sensor-1-label" typeId="wireSensorLabelType"/>
+			<channel id="wire-sensor-1-quality" typeId="wireSensorQualityType"/>
+			<channel id="wire-sensor-1-a" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-1-n" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-1-f" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-1-g1" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-2-label" typeId="wireSensorLabelType"/>
+			<channel id="wire-sensor-2-quality" typeId="wireSensorQualityType"/>
+			<channel id="wire-sensor-2-a" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-2-n" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-2-f" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-2-g1" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-3-label" typeId="wireSensorLabelType"/>
+			<channel id="wire-sensor-3-quality" typeId="wireSensorQualityType"/>
+			<channel id="wire-sensor-3-a" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-3-n" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-3-f" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-3-g1" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-4-label" typeId="wireSensorLabelType"/>
+			<channel id="wire-sensor-4-quality" typeId="wireSensorQualityType"/>
+			<channel id="wire-sensor-4-a" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-4-n" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-4-f" typeId="wireSensorValueType"/>
+			<channel id="wire-sensor-4-g1" typeId="wireSensorValueType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
@@ -301,6 +325,23 @@
 		<item-type>Number:Length</item-type>
 		<label>Remote Start Distance</label>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="wireSensorLabelType">
+		<item-type>String</item-type>
+		<label>Boundary Wire Sensor Label</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="wireSensorQualityType">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Boundary Wire Sensor Quality</label>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+	<channel-type id="wireSensorValueType">
+		<item-type>Number</item-type>
+		<label>Boundary Wire Sensor Value</label>
+		<description>The unscaled diagnostic value reported by the mower.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="idType">

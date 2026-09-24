@@ -46,7 +46,9 @@ import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.Remote;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
+import org.openhab.binding.robonect.internal.model.Sensor;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
+import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -402,6 +404,37 @@ public class RobonectHandler extends BaseThingHandler {
         updateRemoteStart(5, info.getRemoteStart5());
     }
 
+    /**
+     * Updates the boundary-wire sensor measurements exposed by the mower.
+     */
+    private void refreshWireInfo() {
+        WireInfo info = robonectClient.getWireInfo();
+        List<Sensor> sensors = info.getSensors();
+        if (!info.isSuccessful() || sensors == null) {
+            logger.debug("Could not retrieve boundary-wire information: {}", info.getErrorMessage());
+            return;
+        }
+        for (int index = 0; index < Math.min(4, sensors.size()); index++) {
+            updateWireSensor(index + 1, sensors.get(index));
+        }
+    }
+
+    private void updateWireSensor(int number, Sensor sensor) {
+        String prefix = "wire-sensor-" + number + "-";
+        if (sensor.getDescription() != null)
+            updateState(prefix + "label", new StringType(sensor.getDescription()));
+        if (sensor.getQuality() != null)
+            updateState(prefix + "quality", new QuantityType<>(sensor.getQuality(), Units.PERCENT));
+        if (sensor.getA() != null)
+            updateState(prefix + "a", new DecimalType(sensor.getA()));
+        if (sensor.getN() != null)
+            updateState(prefix + "n", new DecimalType(sensor.getN()));
+        if (sensor.getF() != null)
+            updateState(prefix + "f", new DecimalType(sensor.getF()));
+        if (sensor.getG1() != null)
+            updateState(prefix + "g1", new DecimalType(sensor.getG1()));
+    }
+
     private void updateRemoteStart(int number, @Nullable Remote remote) {
         if (remote == null) {
             return;
@@ -635,6 +668,7 @@ public class RobonectHandler extends BaseThingHandler {
                     refreshMotorInfo();
                     refreshHourInfo();
                     refreshRemoteInfo();
+                    refreshWireInfo();
                 }
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;

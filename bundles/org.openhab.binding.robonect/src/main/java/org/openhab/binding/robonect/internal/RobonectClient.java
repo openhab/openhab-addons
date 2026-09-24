@@ -37,6 +37,7 @@ import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
+import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.cmd.BatteryCommand;
 import org.openhab.binding.robonect.internal.model.cmd.Command;
 import org.openhab.binding.robonect.internal.model.cmd.ErrorCommand;
@@ -49,6 +50,7 @@ import org.openhab.binding.robonect.internal.model.cmd.StartCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StatusCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StopCommand;
 import org.openhab.binding.robonect.internal.model.cmd.VersionCommand;
+import org.openhab.binding.robonect.internal.model.cmd.WireCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -326,6 +328,15 @@ public class RobonectClient {
      */
     public RemoteInfo getRemoteInfo() {
         return parser.parse(sendCommand(new RemoteCommand()), RemoteInfo.class);
+    }
+
+    /**
+     * Returns boundary-wire sensor information.
+     *
+     * @return the sensor information including its success status
+     */
+    public WireInfo getWireInfo() {
+        return parser.parse(sendCommand(new WireCommand()), WireInfo.class);
     }
 
     /**
