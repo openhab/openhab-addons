@@ -30,6 +30,7 @@ import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectEndpoint;
 import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.config.RobonectConfig;
+import org.openhab.binding.robonect.internal.model.AccessPoint;
 import org.openhab.binding.robonect.internal.model.Address;
 import org.openhab.binding.robonect.internal.model.Battery;
 import org.openhab.binding.robonect.internal.model.BatteryCapacity;
@@ -61,7 +62,9 @@ import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.Weather;
 import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.Weekdays;
+import org.openhab.binding.robonect.internal.model.WifiStation;
 import org.openhab.binding.robonect.internal.model.WireInfo;
+import org.openhab.binding.robonect.internal.model.WlanInfo;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
@@ -306,6 +309,30 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_WEATHER_REMAINING, new QuantityType<>(weather.getRemaining(), Units.SECOND));
     }
 
+    /** Updates non-sensitive WLAN and access-point state. */
+    private void refreshWlanInfo() {
+        WlanInfo info = robonectClient.getWlanInfo();
+        if (!info.isSuccessful()) {
+            return;
+        }
+        WifiStation station = info.getStation();
+        if (station != null) {
+            if (station.getEnable() != null)
+                updateState(CHANNEL_WLAN_ENABLED, OnOffType.from(station.getEnable()));
+            if (station.getSsid() != null)
+                updateState(CHANNEL_WLAN_SSID, new StringType(station.getSsid()));
+            if (station.getIp() != null)
+                updateState(CHANNEL_WLAN_IP, new StringType(station.getIp()));
+        }
+        AccessPoint ap = info.getAp();
+        if (ap != null) {
+            if (ap.getEnable() != null)
+                updateState(CHANNEL_WLAN_AP_ENABLED, OnOffType.from(ap.getEnable()));
+            if (ap.getSsid() != null)
+                updateState(CHANNEL_WLAN_AP_SSID, new StringType(ap.getSsid()));
+        }
+    }
+
     private void updateWeatherSwitch(String channel, @Nullable Boolean value) {
         if (value != null)
             updateState(channel, OnOffType.from(value));
@@ -373,6 +400,15 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_TIMER_NEXT_TIMER:
             case CHANNEL_TIMER_STATUS:
             case CHANNEL_WLAN_SIGNAL:
+                refreshMowerInfo();
+                break;
+            case CHANNEL_WLAN_ENABLED:
+            case CHANNEL_WLAN_SSID:
+            case CHANNEL_WLAN_IP:
+            case CHANNEL_WLAN_AP_ENABLED:
+            case CHANNEL_WLAN_AP_SSID:
+                refreshWlanInfo();
+                break;
             case CHANNEL_JOB:
                 refreshMowerInfo();
                 break;

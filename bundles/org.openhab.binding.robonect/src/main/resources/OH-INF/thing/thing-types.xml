@@ -27,6 +27,11 @@
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="wlan-signal" typeId="system.signal-strength"/>
 			<channel id="wlan-signal-strength" typeId="wlanStrengthType"/>
+			<channel id="wlan-enabled" typeId="wlanSwitchType"/>
+			<channel id="wlan-ssid" typeId="wlanStringType"/>
+			<channel id="wlan-ip" typeId="wlanStringType"/>
+			<channel id="wlan-ap-enabled" typeId="wlanSwitchType"/>
+			<channel id="wlan-ap-ssid" typeId="wlanStringType"/>
 			<channel id="battery-voltage" typeId="batteryVoltageType"/>
 			<channel id="battery-current" typeId="batteryCurrentType"/>
 			<channel id="battery-temperature" typeId="batteryTemperatureType"/>
@@ -656,6 +661,18 @@
 		<label>Robonect Service Operation</label>
 		<description>Executes the selected Robonect service operation when switched on.</description>
 		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="wlanSwitchType">
+		<item-type>Switch</item-type>
+		<label>WLAN Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wlanStringType">
+		<item-type>String</item-type>
+		<label>WLAN Information</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="doorSwitchType">
