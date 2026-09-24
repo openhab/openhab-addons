@@ -72,8 +72,19 @@ Thing robonect:mower:automower "Mower" @ "Garden" [ host="192.168.2.1", pollInte
 
 ### Offline Trigger Channel
 
-This channel s triggered if the mower is longer than the configured `offlineTriggerTimeout` offline.
-This may indicate that the mower may stuck somewhere in error state but does not have a signal.
+This channel is triggered if the mower is offline longer than the configured `offlineTriggerTimeout`.
+This may indicate that the mower is stuck somewhere in an error state but does not have a signal.
+
+### Additional Robonect Information
+
+Robonect firmware 1.x exposes optional telemetry and configuration channels for battery and motor diagnostics,
+statistics, remote-start points, timers, boundary-wire sensors, weather, WLAN, portal, GPIO extensions, door control,
+and service operations. Unsupported endpoints are ignored, so these channels can remain unset on older firmware.
+
+The weather, timer, push, and service channels can change mower configuration. Push credentials are intentionally not
+exposed as channels. To receive a push notification, configure the Robonect push URL as
+`http://<openhab-host>:8080/robonect/robonect:mower:<thing-id>`. A received notification triggers an immediate status
+refresh; it does not expose the notification payload to openHAB.
 
 ## Full Example
 
