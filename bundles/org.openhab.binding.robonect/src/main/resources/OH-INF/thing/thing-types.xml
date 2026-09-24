@@ -26,6 +26,7 @@
 			<channel id="job" typeId="jobType"/>
 
 			<channel id="offlineTrigger" typeId="offlineTriggerType"/>
+			<channel id="reset-error" typeId="resetErrorType"/>
 
 			<channel id="error-code" typeId="errorCodeType"/>
 			<channel id="error-message" typeId="errorMessageType"/>
@@ -131,6 +132,13 @@
 		<label>Status Duration</label>
 		<description>The number of seconds the mower is in the current status.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="resetErrorType">
+		<item-type>Switch</item-type>
+		<label>Reset Errors</label>
+		<description>Resets the mower's current error state.</description>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="distanceType">

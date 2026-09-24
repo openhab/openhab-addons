@@ -139,6 +139,14 @@ public class RobonectHandler extends BaseThingHandler {
                     logger.debug("Got job update of type {} but OnOffType is expected.", command.getClass().getName());
                 }
                 break;
+
+            case CHANNEL_RESET_ERROR:
+                if (command == OnOffType.ON) {
+                    resetErrors();
+                } else {
+                    logger.debug("Got error reset command {} but On is expected.", command);
+                }
+                break;
         }
     }
 
@@ -193,6 +201,15 @@ public class RobonectHandler extends BaseThingHandler {
     private void logErrorFromResponse(RobonectAnswer result) {
         if (!result.isSuccessful()) {
             logger.debug("Could not send EOD Trigger. Robonect error message: {}", result.getErrorMessage());
+        }
+    }
+
+    private void resetErrors() {
+        RobonectAnswer answer = robonectClient.resetErrors();
+        if (answer.isSuccessful()) {
+            refreshMowerInfo();
+        } else {
+            logger.debug("Could not reset mower errors. Robonect error message: {}", answer.getErrorMessage());
         }
     }
 

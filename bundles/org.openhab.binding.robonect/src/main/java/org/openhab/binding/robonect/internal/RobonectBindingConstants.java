@@ -50,6 +50,7 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_LAST_ERROR_CODE = "last-error-code";
     public static final String CHANNEL_LAST_ERROR_MESSAGE = "last-error-message";
     public static final String CHANNEL_LAST_ERROR_DATE = "last-error-date";
+    public static final String CHANNEL_RESET_ERROR = "reset-error";
 
     public static final String CHANNEL_HEALTH_TEMP = "health-temperature";
     public static final String CHANNEL_HEALTH_HUM = "health-humidity";

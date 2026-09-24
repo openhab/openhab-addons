@@ -240,6 +240,21 @@ public class RobonectHandlerTest {
     }
 
     @Test
+    public void shouldResetErrorsOnOnCommand() {
+        RobonectAnswer response = new RobonectAnswer();
+        response.setSuccessful(true);
+
+        when(robonectClientMock.resetErrors()).thenReturn(response);
+        when(robonectClientMock.getMowerInfo()).thenReturn(createSuccessfulMowerInfoResponse());
+
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_RESET_ERROR),
+                OnOffType.ON);
+
+        verify(robonectClientMock).resetErrors();
+        verify(robonectClientMock).getMowerInfo();
+    }
+
+    @Test
     public void shouldUpdateAllChannels() {
         ArgumentCaptor<State> stateCaptorName = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> stateCaptorBattery = ArgumentCaptor.forClass(State.class);
