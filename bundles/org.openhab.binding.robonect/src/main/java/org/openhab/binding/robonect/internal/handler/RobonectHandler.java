@@ -214,20 +214,12 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void handleStartStop(final OnOffType command) {
-        RobonectAnswer answer = null;
-        boolean currentlyStopped = robonectClient.getMowerInfo().getStatus().isStopped();
-        if (command == OnOffType.ON && currentlyStopped) {
-            answer = robonectClient.start();
-        } else if (command == OnOffType.OFF && !currentlyStopped) {
-            answer = robonectClient.stop();
-        }
-        if (answer != null) {
-            if (answer.isSuccessful()) {
-                updateState(CHANNEL_MOWER_START, command);
-            } else {
-                logErrorFromResponse(answer);
-                refreshMowerInfo();
-            }
+        RobonectAnswer answer = command == OnOffType.ON ? robonectClient.start() : robonectClient.stop();
+        if (answer.isSuccessful()) {
+            updateState(CHANNEL_MOWER_START, command);
+        } else {
+            logErrorFromResponse(answer);
+            refreshMowerInfo();
         }
     }
 

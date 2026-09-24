@@ -255,6 +255,19 @@ public class RobonectHandlerTest {
     }
 
     @Test
+    public void shouldSendStartCommandWithoutReadingTheCurrentState() {
+        RobonectAnswer response = new RobonectAnswer();
+        response.setSuccessful(true);
+        when(robonectClientMock.start()).thenReturn(response);
+
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_MOWER_START),
+                OnOffType.ON);
+
+        verify(robonectClientMock).start();
+        verify(robonectClientMock, never()).getMowerInfo();
+    }
+
+    @Test
     public void shouldUpdateAllChannels() {
         ArgumentCaptor<State> stateCaptorName = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> stateCaptorBattery = ArgumentCaptor.forClass(State.class);
