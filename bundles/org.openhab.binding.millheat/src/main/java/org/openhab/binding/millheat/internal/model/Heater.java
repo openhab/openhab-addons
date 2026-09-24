@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.millheat.internal.model;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.millheat.internal.dto.DeviceDTO;
@@ -27,6 +29,21 @@ import org.openhab.binding.millheat.internal.dto.HeaterShadowDTO;
 @NonNullByDefault
 public class Heater {
     public static final String FAMILY_HEATERS = "Heaters";
+    public static final String FAMILY_SOCKETS = "Sockets";
+    public static final String FAMILY_FLOOR_HEATERS = "Floor Heaters";
+
+    /**
+     * The families this binding models. All three share one settings shadow in the cloud API, so
+     * the same channels and the same write payload apply to them. The other families the API can
+     * return, such as Sensors, Air Purifiers and Heat Pumps, carry unrelated state and would reject
+     * a heater settings payload.
+     */
+    private static final Set<String> SUPPORTED_FAMILIES = Set.of(FAMILY_HEATERS, FAMILY_SOCKETS, FAMILY_FLOOR_HEATERS);
+
+    /** Whether this binding can model the given device. */
+    public static boolean isSupported(final DeviceDTO device) {
+        return SUPPORTED_FAMILIES.contains(device.family());
+    }
 
     private final String id;
     private final String name;

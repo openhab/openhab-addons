@@ -159,6 +159,8 @@ public class MillHeatAccountHandlerTest {
         // rather than the literal "weekly_program".
         assertNotEquals(ModeType.WEEKLY_PROGRAM, room.getMode());
 
+        // The house response also carries an air sensor, a family this binding does not model; it
+        // must not become a heater with heater channels.
         assertEquals(1, room.getHeaters().size());
         final Heater heater = room.getHeaters().get(0);
         assertEquals(DEVICE_ID, heater.getId());
@@ -171,6 +173,22 @@ public class MillHeatAccountHandlerTest {
         verify(getRequestedFor(urlEqualTo("/houses")));
         verify(getRequestedFor(urlEqualTo("/houses/" + HOUSE_ID + "/devices")));
         verify(getRequestedFor(urlEqualTo("/rooms/" + ROOM_ID + "/devices")));
+    }
+
+    @Test
+    public void testUnsupportedDeviceFamiliesAreNotModelled() throws Exception {
+        stubSignIn("/sign_in_ok.json");
+        stubModelEndpoints();
+
+        final MillheatAccountHandler subject = newHandler();
+        subject.signIn();
+        final MillheatModel model = subject.refreshModel();
+
+        assertTrue(model.findHeaterById(DEVICE_ID).isPresent(), "the heater should be modelled");
+        assertTrue(model.findHeaterById("55555555-5555-4555-8555-555555555555").isEmpty(),
+                "the air sensor should not be modelled as a heater");
+        assertTrue(model.findHeaterByMacOrId("11:22:33:44:55:66", null).isEmpty(),
+                "and must not be reachable by its MAC either");
     }
 
     @Test

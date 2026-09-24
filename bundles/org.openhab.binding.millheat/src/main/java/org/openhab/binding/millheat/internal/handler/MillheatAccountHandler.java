@@ -243,16 +243,33 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                 final List<DeviceDTO> devices = roomDevices.devices();
                 if (devices != null) {
                     for (final DeviceDTO device : devices) {
-                        room.addHeater(new Heater(device, room));
+                        if (isModelled(device)) {
+                            room.addHeater(new Heater(device, room));
+                        }
                     }
                 }
             }
 
             for (final DeviceDTO device : client.getIndependentDevices(home.getId())) {
-                home.addHeater(new Heater(device, null));
+                if (isModelled(device)) {
+                    home.addHeater(new Heater(device, null));
+                }
             }
         }
         return newModel;
+    }
+
+    /**
+     * A house returns every device family the account owns, but this binding exposes heater
+     * channels only. Anything else would be discovered as a heater and could be sent a settings
+     * payload its family does not accept.
+     */
+    private boolean isModelled(final DeviceDTO device) {
+        if (Heater.isSupported(device)) {
+            return true;
+        }
+        logger.debug("Ignoring device {} of unsupported family '{}'", device.deviceId(), device.family());
+        return false;
     }
 
     private static String nameOf(final RoomDevicesDTO roomDevices) {
