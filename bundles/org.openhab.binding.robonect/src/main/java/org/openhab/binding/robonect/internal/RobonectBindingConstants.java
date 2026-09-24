@@ -31,6 +31,9 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_MOWER_NAME = "name";
     public static final String CHANNEL_MOWER_ID = "id";
     public static final String CHANNEL_TIMESTAMP = "timestamp";
+    public static final String CHANNEL_SERVICE_REBOOT = "service-reboot";
+    public static final String CHANNEL_SERVICE_SHUTDOWN = "service-shutdown";
+    public static final String CHANNEL_SERVICE_SLEEP = "service-sleep";
     public static final String CHANNEL_STATUS_BATTERY = "battery";
     public static final String CHANNEL_STATUS_DURATION = "status-duration";
     public static final String CHANNEL_STATUS_DISTANCE = "status-distance";

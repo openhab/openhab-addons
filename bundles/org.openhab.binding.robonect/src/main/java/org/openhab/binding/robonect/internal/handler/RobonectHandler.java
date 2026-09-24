@@ -59,6 +59,7 @@ import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.Weekdays;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
+import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -169,6 +170,15 @@ public class RobonectHandler extends BaseThingHandler {
                 } else {
                     logger.debug("Got error reset command {} but On is expected.", command);
                 }
+                break;
+            case CHANNEL_SERVICE_REBOOT:
+                performServiceOperation(command, Operation.REBOOT);
+                break;
+            case CHANNEL_SERVICE_SHUTDOWN:
+                performServiceOperation(command, Operation.SHUTDOWN);
+                break;
+            case CHANNEL_SERVICE_SLEEP:
+                performServiceOperation(command, Operation.SLEEP);
                 break;
             default:
                 if (channelUID.getId().startsWith("timer-")) {
@@ -355,6 +365,19 @@ public class RobonectHandler extends BaseThingHandler {
             refreshMowerInfo();
         } else {
             logger.debug("Could not reset mower errors. Robonect error message: {}", answer.getErrorMessage());
+        }
+    }
+
+    /** Performs a service operation when the corresponding switch is turned on. */
+    private void performServiceOperation(Command command, Operation operation) {
+        if (command != OnOffType.ON) {
+            logger.debug("Got service operation command {} but On is expected.", command);
+            return;
+        }
+        RobonectAnswer answer = robonectClient.performServiceOperation(operation);
+        if (!answer.isSuccessful()) {
+            logger.debug("Could not perform service operation {}. Robonect error message: {}", operation,
+                    answer.getErrorMessage());
         }
     }
 

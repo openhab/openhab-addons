@@ -34,6 +34,7 @@ import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
+import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
 
 /**
  * The goal of this class is to test the functionality of the RobonectClient,
@@ -103,6 +104,20 @@ public class RobonectClientTest {
         when(responseMock.getContentAsString()).thenReturn("{\"successful\": true}");
         subject.resetErrors();
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=error&reset");
+    }
+
+    @Test
+    public void shouldCallServiceOperation() throws InterruptedException, ExecutionException, TimeoutException {
+        when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=service&sleep")).thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenReturn(responseMock);
+        when(responseMock.getEncoding()).thenReturn("utf8");
+        when(responseMock.getContentAsString()).thenReturn("{\"successful\": true}");
+
+        subject.performServiceOperation(Operation.SLEEP);
+
+        verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=service&sleep");
     }
 
     @Test

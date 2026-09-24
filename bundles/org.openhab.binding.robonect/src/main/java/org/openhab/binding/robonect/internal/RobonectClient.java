@@ -51,6 +51,8 @@ import org.openhab.binding.robonect.internal.model.cmd.MotorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.NameCommand;
 import org.openhab.binding.robonect.internal.model.cmd.PortalCommand;
 import org.openhab.binding.robonect.internal.model.cmd.RemoteCommand;
+import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand;
+import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
 import org.openhab.binding.robonect.internal.model.cmd.StartCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StatusCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StopCommand;
@@ -289,6 +291,16 @@ public class RobonectClient {
     public RobonectAnswer resetErrors() {
         String responseString = sendCommand(new ErrorCommand().withReset(true));
         return parser.parse(responseString, RobonectAnswer.class);
+    }
+
+    /**
+     * Changes the Robonect module's operating state.
+     *
+     * @param operation the requested service operation
+     * @return the operation result including its success status
+     */
+    public RobonectAnswer performServiceOperation(Operation operation) {
+        return parser.parse(sendCommand(new ServiceCommand(operation)), RobonectAnswer.class);
     }
 
     /**

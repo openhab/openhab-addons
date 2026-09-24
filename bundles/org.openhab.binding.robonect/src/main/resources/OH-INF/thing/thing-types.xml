@@ -12,6 +12,15 @@
 			<channel id="name" typeId="nameType"/>
 			<channel id="id" typeId="idType"/>
 			<channel id="timestamp" typeId="timestampType"/>
+			<channel id="service-reboot" typeId="serviceOperationType">
+				<label>Reboot Robonect</label>
+			</channel>
+			<channel id="service-shutdown" typeId="serviceOperationType">
+				<label>Shut Down Robonect</label>
+			</channel>
+			<channel id="service-sleep" typeId="serviceOperationType">
+				<label>Put Robonect to Sleep</label>
+			</channel>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="wlan-signal" typeId="system.signal-strength"/>
 			<channel id="wlan-signal-strength" typeId="wlanStrengthType"/>
@@ -637,6 +646,13 @@
 		<label>Blade In Use Days</label>
 		<description>The number of days since the blades have been replaced</description>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="serviceOperationType">
+		<item-type>Switch</item-type>
+		<label>Robonect Service Operation</label>
+		<description>Executes the selected Robonect service operation when switched on.</description>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="modeType">
