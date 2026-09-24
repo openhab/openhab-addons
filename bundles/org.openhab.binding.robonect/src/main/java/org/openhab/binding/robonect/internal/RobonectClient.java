@@ -37,6 +37,7 @@ import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.PortalInfo;
+import org.openhab.binding.robonect.internal.model.PushInfo;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.Status;
@@ -57,6 +58,7 @@ import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.MotorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.NameCommand;
 import org.openhab.binding.robonect.internal.model.cmd.PortalCommand;
+import org.openhab.binding.robonect.internal.model.cmd.PushCommand;
 import org.openhab.binding.robonect.internal.model.cmd.RemoteCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
@@ -411,6 +413,16 @@ public class RobonectClient {
      */
     public PortalInfo getPortalInfo() {
         return parser.parse(sendCommand(new PortalCommand()), PortalInfo.class);
+    }
+
+    /** Returns the module push-service settings. */
+    public PushInfo getPushInfo() {
+        return parser.parse(sendCommand(new PushCommand()), PushInfo.class);
+    }
+
+    /** Updates one push-service property. */
+    public PushInfo updatePush(String parameter, String value) {
+        return parser.parse(sendCommand(new PushCommand().withValue(parameter, value)), PushInfo.class);
     }
 
     /**

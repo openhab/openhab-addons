@@ -53,6 +53,10 @@ import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.PortalInfo;
+import org.openhab.binding.robonect.internal.model.Push;
+import org.openhab.binding.robonect.internal.model.PushInfo;
+import org.openhab.binding.robonect.internal.model.PushServer;
+import org.openhab.binding.robonect.internal.model.PushTriggers;
 import org.openhab.binding.robonect.internal.model.Remote;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
@@ -209,6 +213,11 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_WEATHER_SKIP_DAY:
             case CHANNEL_WEATHER_SKIP_NIGHT:
                 updateWeather(channelUID.getId(), command);
+                break;
+            case CHANNEL_PUSH_URL:
+            case CHANNEL_PUSH_USERNAME:
+            case CHANNEL_PUSH_INTERVAL:
+                updatePush(channelUID.getId(), command);
                 break;
             default:
                 if (channelUID.getId().startsWith("timer-")) {
@@ -420,6 +429,44 @@ public class RobonectHandler extends BaseThingHandler {
         updateExtension("extension-gpio-2-", extensions.getGpio2());
         updateExtension("extension-output-1-", extensions.getOut1());
         updateExtension("extension-output-2-", extensions.getOut2());
+    }
+
+    /** Updates non-sensitive push-service settings. */
+    private void refreshPushInfo() {
+        PushInfo info = robonectClient.getPushInfo();
+        Push push = info.getPush();
+        if (!info.isSuccessful() || push == null) {
+            return;
+        }
+        PushServer server = push.getServer();
+        if (server != null) {
+            if (server.getUrl() != null)
+                updateState(CHANNEL_PUSH_URL, new StringType(server.getUrl()));
+            if (server.getName() != null)
+                updateState(CHANNEL_PUSH_USERNAME, new StringType(server.getName()));
+        }
+        PushTriggers triggers = push.getTrigger();
+        if (triggers != null) {
+            Integer interval = triggers.getInterval();
+            if (interval != null)
+                updateState(CHANNEL_PUSH_INTERVAL, new QuantityType<>(interval, Units.SECOND));
+        }
+    }
+
+    private void updatePush(String channelId, Command command) {
+        String parameter;
+        String value;
+        if (command instanceof StringType string) {
+            parameter = channelId.equals(CHANNEL_PUSH_URL) ? "url" : channelId.equals(CHANNEL_PUSH_USERNAME) ? "name" : null;
+            value = string.toFullString();
+        } else if (command instanceof QuantityType<?> quantity && channelId.equals(CHANNEL_PUSH_INTERVAL)) {
+            parameter = "interval";
+            value = quantity.toBigDecimal().toPlainString();
+        } else {
+            return;
+        }
+        if (parameter != null && robonectClient.updatePush(parameter, value).isSuccessful())
+            refreshPushInfo();
     }
 
     private void updateExtension(String prefix, @Nullable Extension extension) {
@@ -1093,6 +1140,7 @@ public class RobonectHandler extends BaseThingHandler {
                     refreshTimersInfo();
                     refreshWeatherInfo();
                     refreshExtensionInfo();
+                    refreshPushInfo();
                     refreshDoorInfo();
                 }
                 updateStatus(ThingStatus.ONLINE);

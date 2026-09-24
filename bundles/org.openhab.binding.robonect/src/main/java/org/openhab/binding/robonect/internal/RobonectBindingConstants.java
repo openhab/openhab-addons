@@ -106,6 +106,9 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_EXTENSION_OUTPUT_2_FLASH = "extension-output-2-flash";
     public static final String CHANNEL_EXTENSION_OUTPUT_2_INVERTED = "extension-output-2-inverted";
     public static final String CHANNEL_EXTENSION_OUTPUT_2_STATUS = "extension-output-2-status";
+    public static final String CHANNEL_PUSH_URL = "push-url";
+    public static final String CHANNEL_PUSH_USERNAME = "push-username";
+    public static final String CHANNEL_PUSH_INTERVAL = "push-interval";
 
     public static final String CHANNEL_JOB = "job";
 

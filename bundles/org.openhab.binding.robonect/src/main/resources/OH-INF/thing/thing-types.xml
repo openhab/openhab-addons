@@ -278,6 +278,9 @@
 			<channel id="extension-output-2-flash" typeId="extensionSwitchType"/>
 			<channel id="extension-output-2-inverted" typeId="extensionSwitchType"/>
 			<channel id="extension-output-2-status" typeId="extensionSwitchType"/>
+			<channel id="push-url" typeId="pushStringType"/>
+			<channel id="push-username" typeId="pushStringType"/>
+			<channel id="push-interval" typeId="pushIntervalType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
@@ -605,6 +608,16 @@
 		<item-type>Switch</item-type>
 		<label>Extension State</label>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="pushStringType">
+		<item-type>String</item-type>
+		<label>Push Service Setting</label>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="pushIntervalType">
+		<item-type>Number:Time</item-type>
+		<label>Push Service Interval</label>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="idType">
