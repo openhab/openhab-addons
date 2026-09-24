@@ -9,6 +9,7 @@
 		<parameter name="remoteStart" type="text">
 			<label>Remote Start</label>
 			<description>The location to start the mowing job from.</description>
+			<default>STANDARD</default>
 			<options>
 				<option value="STANDARD">Standard</option>
 				<option value="REMOTE_1">Remote 1</option>
@@ -26,12 +27,23 @@
 		<parameter name="afterMode" type="text">
 			<label>After Job Mode</label>
 			<description>The Mode to put the mower into after the job is done.</description>
+			<default>AUTO</default>
 			<options>
 				<option value="AUTO">Auto</option>
 				<option value="HOME">Home</option>
 				<option value="EOD">End of day</option>
 			</options>
 
+		</parameter>
+		<parameter name="start" type="integer" min="0" max="1439" unit="m">
+			<context>time</context>
+			<label>Job Start Time</label>
+			<description>The time at which the job starts, expressed as minutes after midnight.</description>
+		</parameter>
+		<parameter name="end" type="integer" min="0" max="1439" unit="m">
+			<context>time</context>
+			<label>Job End Time</label>
+			<description>The time at which the job ends, expressed as minutes after midnight.</description>
 		</parameter>
 	</config-description>
 

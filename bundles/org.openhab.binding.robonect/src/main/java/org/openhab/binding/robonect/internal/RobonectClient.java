@@ -69,13 +69,13 @@ public class RobonectClient {
      */
     public static class JobSettings {
 
-        private static final String TIME_REGEX = "^[012]\\d:\\d\\d$";
-
         private final Logger logger = LoggerFactory.getLogger(RobonectClient.class);
 
         private ModeCommand.RemoteStart remoteStart;
         private ModeCommand.Mode after;
         private int duration;
+        private Integer start;
+        private Integer end;
 
         /**
          * returns the 'remote start' setting for the job. See {@link ModeCommand.RemoteStart} for details.
@@ -127,6 +127,46 @@ public class RobonectClient {
         public JobSettings withDuration(int duration) {
             this.duration = duration;
             return this;
+        }
+
+        /**
+         * Sets the job start time as minutes after midnight.
+         *
+         * @param start the start time, or {@code null} to omit it from the command
+         * @return this job settings instance
+         */
+        public JobSettings withStart(Integer start) {
+            this.start = start;
+            return this;
+        }
+
+        /**
+         * Sets the job end time as minutes after midnight.
+         *
+         * @param end the end time, or {@code null} to omit it from the command
+         * @return this job settings instance
+         */
+        public JobSettings withEnd(Integer end) {
+            this.end = end;
+            return this;
+        }
+
+        private String getStart() {
+            return formatTime(start);
+        }
+
+        private String getEnd() {
+            return formatTime(end);
+        }
+
+        private String formatTime(Integer minutesAfterMidnight) {
+            if (minutesAfterMidnight == null) {
+                return null;
+            }
+            if (minutesAfterMidnight < 0 || minutesAfterMidnight >= 24 * 60) {
+                throw new IllegalArgumentException("Time must be between 0 and 1439 minutes after midnight");
+            }
+            return "%02d:%02d".formatted(minutesAfterMidnight / 60, minutesAfterMidnight % 60);
         }
     }
 
@@ -327,8 +367,9 @@ public class RobonectClient {
     }
 
     public RobonectAnswer startJob(JobSettings settings) {
-        Command jobCommand = new ModeCommand(ModeCommand.Mode.JOB).withRemoteStart(settings.remoteStart)
-                .withAfter(settings.after).withDuration(settings.duration);
+        Command jobCommand = new ModeCommand(ModeCommand.Mode.JOB).withRemoteStart(settings.getRemoteStart())
+                .withAfter(settings.getAfterMode()).withDuration(settings.getDuration()).withStart(settings.getStart())
+                .withEnd(settings.getEnd());
         String responseString = sendCommand(jobCommand);
         RobonectAnswer answer = parser.parse(responseString, RobonectAnswer.class);
         if (answer.isSuccessful()) {

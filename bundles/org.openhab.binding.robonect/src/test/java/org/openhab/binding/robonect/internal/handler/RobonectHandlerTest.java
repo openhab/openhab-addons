@@ -37,6 +37,7 @@ import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.MowerStatus;
 import org.openhab.binding.robonect.internal.model.NextTimer;
+import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.Status;
 import org.openhab.binding.robonect.internal.model.Timer;
 import org.openhab.binding.robonect.internal.model.Wlan;

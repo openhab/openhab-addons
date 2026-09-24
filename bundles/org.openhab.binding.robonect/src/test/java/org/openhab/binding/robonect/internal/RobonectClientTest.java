@@ -33,6 +33,7 @@ import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
+import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 
 /**
  * The goal of this class is to test the functionality of the RobonectClient,
@@ -102,6 +103,24 @@ public class RobonectClientTest {
         when(responseMock.getContentAsString()).thenReturn("{\"successful\": true}");
         subject.resetErrors();
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=error&reset");
+    }
+
+    @Test
+    public void shouldStartJobWithStartAndEndTimes() throws InterruptedException, ExecutionException, TimeoutException {
+        when(httpClientMock.newRequest(
+                "http://123.456.789.123/json?cmd=mode&mode=job&remotestart=0&after=4&start=00:00&end=23:59&duration=60"))
+                .thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenReturn(responseMock);
+        when(responseMock.getEncoding()).thenReturn("utf8");
+        when(responseMock.getContentAsString()).thenReturn("{\"successful\": true}");
+
+        subject.startJob(new RobonectClient.JobSettings().withRemoteStart(ModeCommand.RemoteStart.STANDARD)
+                .withAfterMode(ModeCommand.Mode.AUTO).withStart(0).withEnd(1439).withDuration(60));
+
+        verify(httpClientMock).newRequest(
+                "http://123.456.789.123/json?cmd=mode&mode=job&remotestart=0&after=4&start=00:00&end=23:59&duration=60");
     }
 
     @Test

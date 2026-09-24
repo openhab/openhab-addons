@@ -154,10 +154,10 @@ public class RobonectHandler extends BaseThingHandler {
         JobChannelConfig jobConfig = getThing().getChannel(channelUID.getId()).getConfiguration()
                 .as(JobChannelConfig.class);
         if (command == OnOffType.ON) {
-            robonectClient.startJob(
-                    new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode()))
-                            .withRemoteStart(ModeCommand.RemoteStart.valueOf(jobConfig.getRemoteStart()))
-                            .withDuration(jobConfig.getDuration()));
+            robonectClient.startJob(new RobonectClient.JobSettings()
+                    .withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode()))
+                    .withRemoteStart(ModeCommand.RemoteStart.valueOf(jobConfig.getRemoteStart()))
+                    .withDuration(jobConfig.getDuration()).withStart(jobConfig.getStart()).withEnd(jobConfig.getEnd()));
         } else if (command == OnOffType.OFF) {
             robonectClient.stopJob(
                     new RobonectClient.JobSettings().withAfterMode(ModeCommand.Mode.valueOf(jobConfig.getAfterMode())));

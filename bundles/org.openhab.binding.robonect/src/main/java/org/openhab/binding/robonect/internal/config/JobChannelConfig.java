@@ -25,6 +25,10 @@ public class JobChannelConfig {
 
     private int duration;
 
+    private Integer start;
+
+    private Integer end;
+
     public String getRemoteStart() {
         return remoteStart;
     }
@@ -47,5 +51,21 @@ public class JobChannelConfig {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public Integer getStart() {
+        return start;
+    }
+
+    public void setStart(Integer start) {
+        this.start = start;
+    }
+
+    public Integer getEnd() {
+        return end;
+    }
+
+    public void setEnd(Integer end) {
+        this.end = end;
     }
 }
