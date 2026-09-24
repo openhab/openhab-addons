@@ -266,6 +266,18 @@
 			<channel id="weather-max-humidity" typeId="weatherNumberType"/>
 			<channel id="weather-skip-day" typeId="weatherSwitchType"/>
 			<channel id="weather-skip-night" typeId="weatherSwitchType"/>
+			<channel id="extension-gpio-1-flash" typeId="extensionSwitchType"/>
+			<channel id="extension-gpio-1-inverted" typeId="extensionSwitchType"/>
+			<channel id="extension-gpio-1-status" typeId="extensionSwitchType"/>
+			<channel id="extension-gpio-2-flash" typeId="extensionSwitchType"/>
+			<channel id="extension-gpio-2-inverted" typeId="extensionSwitchType"/>
+			<channel id="extension-gpio-2-status" typeId="extensionSwitchType"/>
+			<channel id="extension-output-1-flash" typeId="extensionSwitchType"/>
+			<channel id="extension-output-1-inverted" typeId="extensionSwitchType"/>
+			<channel id="extension-output-1-status" typeId="extensionSwitchType"/>
+			<channel id="extension-output-2-flash" typeId="extensionSwitchType"/>
+			<channel id="extension-output-2-inverted" typeId="extensionSwitchType"/>
+			<channel id="extension-output-2-status" typeId="extensionSwitchType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
@@ -588,6 +600,11 @@
 		<item-type>Number</item-type>
 		<label>Weather Mowing Restriction</label>
 		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="extensionSwitchType">
+		<item-type>Switch</item-type>
+		<label>Extension State</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="idType">

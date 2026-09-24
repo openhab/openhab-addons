@@ -29,6 +29,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.DoorInfo;
 import org.openhab.binding.robonect.internal.model.ErrorList;
+import org.openhab.binding.robonect.internal.model.ExtInfo;
 import org.openhab.binding.robonect.internal.model.HourInfo;
 import org.openhab.binding.robonect.internal.model.ModelParser;
 import org.openhab.binding.robonect.internal.model.MotorInfo;
@@ -50,6 +51,7 @@ import org.openhab.binding.robonect.internal.model.cmd.Command;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ErrorCommand;
+import org.openhab.binding.robonect.internal.model.cmd.ExtCommand;
 import org.openhab.binding.robonect.internal.model.cmd.HourCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.MotorCommand;
@@ -345,6 +347,11 @@ public class RobonectClient {
     public ErrorList errorList() {
         String responseString = sendCommand(new ErrorCommand());
         return parser.parse(responseString, ErrorList.class);
+    }
+
+    /** Returns optional GPIO and output extension state. */
+    public ExtInfo getExtInfo() {
+        return parser.parse(sendCommand(new ExtCommand()), ExtInfo.class);
     }
 
     /**

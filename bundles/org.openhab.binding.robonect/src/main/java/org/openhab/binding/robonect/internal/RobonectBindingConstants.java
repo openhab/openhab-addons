@@ -94,6 +94,18 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_WEATHER_MAX_HUMIDITY = "weather-max-humidity";
     public static final String CHANNEL_WEATHER_SKIP_DAY = "weather-skip-day";
     public static final String CHANNEL_WEATHER_SKIP_NIGHT = "weather-skip-night";
+    public static final String CHANNEL_EXTENSION_GPIO_1_FLASH = "extension-gpio-1-flash";
+    public static final String CHANNEL_EXTENSION_GPIO_1_INVERTED = "extension-gpio-1-inverted";
+    public static final String CHANNEL_EXTENSION_GPIO_1_STATUS = "extension-gpio-1-status";
+    public static final String CHANNEL_EXTENSION_GPIO_2_FLASH = "extension-gpio-2-flash";
+    public static final String CHANNEL_EXTENSION_GPIO_2_INVERTED = "extension-gpio-2-inverted";
+    public static final String CHANNEL_EXTENSION_GPIO_2_STATUS = "extension-gpio-2-status";
+    public static final String CHANNEL_EXTENSION_OUTPUT_1_FLASH = "extension-output-1-flash";
+    public static final String CHANNEL_EXTENSION_OUTPUT_1_INVERTED = "extension-output-1-inverted";
+    public static final String CHANNEL_EXTENSION_OUTPUT_1_STATUS = "extension-output-1-status";
+    public static final String CHANNEL_EXTENSION_OUTPUT_2_FLASH = "extension-output-2-flash";
+    public static final String CHANNEL_EXTENSION_OUTPUT_2_INVERTED = "extension-output-2-inverted";
+    public static final String CHANNEL_EXTENSION_OUTPUT_2_STATUS = "extension-output-2-status";
 
     public static final String CHANNEL_JOB = "job";
 
