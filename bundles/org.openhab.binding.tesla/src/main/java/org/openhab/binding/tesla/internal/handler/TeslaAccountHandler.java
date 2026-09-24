@@ -14,6 +14,7 @@ package org.openhab.binding.tesla.internal.handler;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -183,9 +184,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             return true;
         } else if (response != null && response.getStatus() == 401) {
             logger.debug("The access token has expired, trying to get a new one.");
-            ThingStatusInfo authenticationResult = authenticate();
-            updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
-                    authenticationResult.getDescription());
+            reauthenticate();
         } else {
             apiIntervalErrors++;
             if (immediatelyFail || apiIntervalErrors >= API_MAXIMUM_ERRORS_IN_INTERVAL) {
@@ -307,7 +306,14 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                         "No refresh token is provided.");
             }
 
-            this.logonToken = ssoHandler.getAccessToken(refreshToken);
+            try {
+                this.logonToken = ssoHandler.getAccessToken(refreshToken);
+            } catch (IOException e) {
+                logger.debug("Failed to obtain an access token, will try again: {}", e.getMessage());
+                this.logonToken = null;
+                return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to obtain access token for API: " + e.getMessage());
+            }
             if (this.logonToken == null) {
                 return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Failed to obtain access token for API - the refresh token might be invalid.");
@@ -315,6 +321,17 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         }
 
         return new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+    }
+
+    /**
+     * Obtains a new access token and applies the result to the account status. Without an access token no request
+     * is sent, so the status is the only way back: the connect job retries after a communication error, whereas a
+     * rejected refresh token needs to be fixed by the user.
+     */
+    void reauthenticate() {
+        ThingStatusInfo authenticationResult = authenticate();
+        updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
+                authenticationResult.getDescription());
     }
 
     protected @Nullable String invokeAndParse(@Nullable String vehicleId, @Nullable String command,
