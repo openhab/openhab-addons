@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="tedee" xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+	<type>binding</type>
+	<name>Tedee Binding</name>
+	<description>Local Tedee Bridge and Lock integration.</description>
+	<connection>local</connection>
+</addon:addon>
