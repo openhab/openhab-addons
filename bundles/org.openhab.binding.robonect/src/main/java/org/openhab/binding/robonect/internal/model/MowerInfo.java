@@ -21,11 +21,13 @@ package org.openhab.binding.robonect.internal.model;
 public class MowerInfo extends RobonectAnswer {
 
     private String name;
+    private String id;
     private Status status;
     private Timer timer;
     private Wlan wlan;
     private Health health;
     private Blades blades;
+    private Clock clock;
     private ErrorEntry error;
 
     /**
@@ -33,6 +35,13 @@ public class MowerInfo extends RobonectAnswer {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * @return the identifier reported by Robonect, if available
+     */
+    public String getId() {
+        return id;
     }
 
     /**
@@ -77,8 +86,19 @@ public class MowerInfo extends RobonectAnswer {
         return blades;
     }
 
+    /**
+     * @return the clock reported by Robonect, if available
+     */
+    public Clock getClock() {
+        return clock;
+    }
+
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setStatus(Status status) {
@@ -99,6 +119,10 @@ public class MowerInfo extends RobonectAnswer {
 
     public void setBlades(Blades blades) {
         this.blades = blades;
+    }
+
+    public void setClock(Clock clock) {
+        this.clock = clock;
     }
 
     public void setError(ErrorEntry error) {

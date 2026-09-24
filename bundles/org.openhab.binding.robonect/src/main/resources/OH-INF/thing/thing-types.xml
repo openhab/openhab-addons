@@ -10,6 +10,8 @@
 		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 		<channels>
 			<channel id="name" typeId="nameType"/>
+			<channel id="id" typeId="idType"/>
+			<channel id="timestamp" typeId="timestampType"/>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="wlan-signal" typeId="system.signal-strength"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
@@ -125,6 +127,20 @@
 		<label>Mower Name</label>
 		<description>The name of the mower</description>
 		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="idType">
+		<item-type>String</item-type>
+		<label>Mower ID</label>
+		<description>The identifier reported by the mower.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timestampType">
+		<item-type>DateTime</item-type>
+		<label>Mower Time</label>
+		<description>The current time reported by the mower.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="durationType">

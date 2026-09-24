@@ -29,6 +29,8 @@ public class RobonectBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_MOWER_NAME = "name";
+    public static final String CHANNEL_MOWER_ID = "id";
+    public static final String CHANNEL_TIMESTAMP = "timestamp";
     public static final String CHANNEL_STATUS_BATTERY = "battery";
     public static final String CHANNEL_STATUS_DURATION = "status-duration";
     public static final String CHANNEL_STATUS_DISTANCE = "status-distance";

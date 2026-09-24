@@ -244,6 +244,9 @@ public class RobonectHandler extends BaseThingHandler {
                 clearErrorInfo();
             }
             updateState(CHANNEL_MOWER_NAME, new StringType(info.getName()));
+            if (info.getId() != null) {
+                updateState(CHANNEL_MOWER_ID, new StringType(info.getId()));
+            }
             updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
             updateState(CHANNEL_STATUS, new DecimalType(info.getStatus().getStatus().getStatusCode()));
             updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(info.getStatus().getDuration(), Units.SECOND));
@@ -260,6 +263,9 @@ public class RobonectHandler extends BaseThingHandler {
                 updateState(CHANNEL_BLADES_QUALITY, new QuantityType<>(info.getBlades().getQuality(), Units.PERCENT));
                 updateState(CHANNEL_BLADES_REPL_DAYS, new QuantityType<>(info.getBlades().getDays(), Units.DAY));
                 updateState(CHANNEL_BLADES_USAGE_HOURS, new QuantityType<>(info.getBlades().getHours(), Units.HOUR));
+            }
+            if (info.getClock() != null && info.getClock().getUnix() != null) {
+                updateState(CHANNEL_TIMESTAMP, convertUnixToDateTimeType(info.getClock().getUnix()));
             }
             if (info.getTimer() != null) {
                 if (info.getTimer().getNext() != null) {
