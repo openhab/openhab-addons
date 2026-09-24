@@ -193,6 +193,28 @@ public class RobonectClientTest {
     }
 
     @Test
+    public void shouldRetrieveVersionOneInformation()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=version")).thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenReturn(responseMock);
+        when(responseMock.getEncoding()).thenReturn("utf8");
+        when(responseMock.getContentAsString()).thenReturn(
+                """
+                        {"successful":true,"serial":"1234","mower":{"hardware":{"serial":456,"production":"2020"},"msw":{"title":"MSW","version":"1.2","compiled":"2020-01-01"},"sub":{"version":"1"}},"bootloader":{"version":"1"},"wlan":{"at-version":"AT","sdk-version":"SDK"},"application":{"version":"1.6","compiled":"2020-01-01","comment":"release"},"robonect":{"version":"HW1"}}
+                        """);
+
+        VersionInfo info = subject.getVersionInfo();
+
+        assertEquals("1234", info.getSerial());
+        assertEquals(Integer.valueOf(456), info.getMower().getHardware().getSerial());
+        assertEquals("1.2", info.getMower().getMsw().getVersion());
+        assertEquals("AT", info.getWlan().getAtVersion());
+        assertEquals("1.6", info.getApplication().getVersion());
+    }
+
+    @Test
     public void shouldHandleProperEncoding() throws InterruptedException, ExecutionException, TimeoutException {
         byte[] responseBytesISO88591 = "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 7, \"stopped\": true, \"duration\": 192, \"mode\": 1, \"battery\": 95, \"hours\": 41}, \"timer\": {\"status\": 2}, \"error\" : {\"error_code\": 15, \"error_message\": \"Utanför arbetsområdet\", \"date\": \"02.05.2017\", \"time\": \"20:36:43\", \"unix\": 1493757403}, \"wlan\": {\"signal\": -75}}"
                 .getBytes(StandardCharsets.ISO_8859_1);

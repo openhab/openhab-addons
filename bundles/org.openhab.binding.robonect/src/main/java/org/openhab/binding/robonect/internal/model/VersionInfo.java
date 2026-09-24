@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Answer object for holding version information.
  * 
@@ -19,25 +21,28 @@ package org.openhab.binding.robonect.internal.model;
  */
 public class VersionInfo extends RobonectAnswer {
 
+    public static final String NOT_AVAILABLE = "n/a";
+
     private static final RobonectVersion NA_VERSION = new RobonectVersion();
+
+    private @Nullable String serial;
+    private @Nullable VersionMower mower;
+    private @Nullable VersionDetail bootloader;
+    private @Nullable VersionWlan wlan;
+    private @Nullable VersionDetail application;
 
     /**
      * encapsulates the robonect version information.
      */
     public static class RobonectVersion {
 
-        private static final String NA = "n/a";
-
         private String serial;
-
         private String version;
-
         private String compiled;
-
         private String comment;
 
         public RobonectVersion() {
-            this(NA, NA, NA, NA);
+            this(NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE);
         }
 
         public RobonectVersion(String serial, String version, String compiled, String comment) {
@@ -90,6 +95,26 @@ public class VersionInfo extends RobonectAnswer {
         public void setComment(String comment) {
             this.comment = comment;
         }
+    }
+
+    public @Nullable String getSerial() {
+        return serial;
+    }
+
+    public @Nullable VersionMower getMower() {
+        return mower;
+    }
+
+    public @Nullable VersionDetail getBootloader() {
+        return bootloader;
+    }
+
+    public @Nullable VersionWlan getWlan() {
+        return wlan;
+    }
+
+    public @Nullable VersionDetail getApplication() {
+        return application;
     }
 
     private RobonectVersion robonect;

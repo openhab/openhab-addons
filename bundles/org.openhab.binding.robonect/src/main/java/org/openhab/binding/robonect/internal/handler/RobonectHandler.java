@@ -719,15 +719,29 @@ public class RobonectHandler extends BaseThingHandler {
         VersionInfo info = robonectClient.getVersionInfo();
         if (info.isSuccessful()) {
             Map<String, String> properties = editProperties();
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, info.getRobonect().getSerial());
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, info.getRobonect().getVersion());
-            properties.put(PROPERTY_COMPILED, info.getRobonect().getCompiled());
-            properties.put(PROPERTY_COMMENT, info.getRobonect().getComment());
+            if (info.getApplication() != null) {
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, valueOrNotAvailable(info.getSerial()));
+                properties.put(Thing.PROPERTY_HARDWARE_VERSION, valueOrNotAvailable(info.getRobonect().getVersion()));
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
+                        valueOrNotAvailable(info.getApplication().getVersion()));
+                properties.put(PROPERTY_COMPILED, valueOrNotAvailable(info.getApplication().getCompiled()));
+                properties.put(PROPERTY_COMMENT, valueOrNotAvailable(info.getApplication().getComment()));
+            } else {
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, valueOrNotAvailable(info.getRobonect().getSerial()));
+                properties.put(Thing.PROPERTY_HARDWARE_VERSION, VersionInfo.NOT_AVAILABLE);
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, valueOrNotAvailable(info.getRobonect().getVersion()));
+                properties.put(PROPERTY_COMPILED, valueOrNotAvailable(info.getRobonect().getCompiled()));
+                properties.put(PROPERTY_COMMENT, valueOrNotAvailable(info.getRobonect().getComment()));
+            }
             updateProperties(properties);
         } else {
             logger.debug("Could not retrieve mower version info. Robonect error response message: {}",
                     info.getErrorMessage());
         }
+    }
+
+    private String valueOrNotAvailable(@Nullable String value) {
+        return value == null ? VersionInfo.NOT_AVAILABLE : value;
     }
 
     private void refreshLastErrorInfo() {
