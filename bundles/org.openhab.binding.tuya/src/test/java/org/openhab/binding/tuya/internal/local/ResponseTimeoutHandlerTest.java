@@ -193,4 +193,36 @@ public class ResponseTimeoutHandlerTest {
         assertFalse(channel.isOpen());
         assertNull(channel.readOutbound());
     }
+
+    @Test
+    public void writeDuringTheConnectionCheckDoesNotExtendIt() {
+        EmbeddedChannel channel = channel();
+
+        channel.writeOutbound(STATUS_QUERY);
+        letResponseTimeoutPass(channel);
+        assertProbeSent(channel);
+
+        // Sending to a device that is being checked must not buy it time
+        channel.writeOutbound(new MessageWrapper<>(CommandType.CONTROL_NEW, Map.of("dps", Map.of(1, true))));
+        letProbeTimeoutPass(channel);
+
+        assertFalse(channel.isOpen());
+    }
+
+    @Test
+    public void commandAcknowledgedDuringTheConnectionCheckKeepsTheConnection() {
+        EmbeddedChannel channel = channel();
+
+        channel.writeOutbound(STATUS_QUERY);
+        letResponseTimeoutPass(channel);
+        assertProbeSent(channel);
+
+        channel.writeOutbound(new MessageWrapper<>(CommandType.CONTROL_NEW, Map.of("dps", Map.of(1, true))));
+        // The acknowledgement proves the device is there, which is what the check asked
+        channel.writeInbound(new MessageWrapper<>(CommandType.CONTROL_NEW, ""));
+        letProbeTimeoutPass(channel);
+
+        assertTrue(channel.isOpen());
+        channel.finishAndReleaseAll();
+    }
 }

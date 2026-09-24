@@ -239,16 +239,26 @@ public class TuyaDevice implements ChannelFutureListener {
                         && m.commandType != DP_REFRESH //
                         && m.commandType != DP_QUERY && m.commandType != DP_QUERY_NEW //
                 ) {
+                    // The acknowledgement is all a device sends in reply to a command that changes nothing it
+                    // reports, such as an infrared code. The status query still needs a real response, see
+                    // channelRead.
+                    boolean command = (m.commandType == CONTROL || m.commandType == CONTROL_NEW)
+                            && !statusQuery.equals(m);
+
+                    if (probeOutstanding && !probe.equals(m)) {
+                        // The device has already missed a deadline and is being checked. What we send in the
+                        // meantime must not buy it time: a device that answers nothing would otherwise keep its
+                        // connection for as long as anything is sent to it. Its acknowledgement still counts.
+                        awaitingCommandAck = awaitingCommandAck || command;
+                        return;
+                    }
+
                     var future = responseTimeout;
                     if (future != null) {
                         future.cancel(false);
                     }
 
-                    // The acknowledgement is all a device sends in reply to a command that changes nothing it
-                    // reports, such as an infrared code. The status query still needs a real response, see
-                    // channelRead.
-                    awaitingCommandAck = (m.commandType == CONTROL || m.commandType == CONTROL_NEW)
-                            && !statusQuery.equals(m);
+                    awaitingCommandAck = command;
                     // A probe is the last chance a connection gets, see TimeoutTask
                     probeOutstanding = probe.equals(m);
 
