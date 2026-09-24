@@ -100,7 +100,11 @@ public class MillheatCloudApiClient {
     private @Nullable String accessToken;
     private @Nullable String refreshToken;
     private Instant accessTokenExpiry = Instant.MIN;
-    private Instant rateLimitedUntil = Instant.MIN;
+    /**
+     * When set in the future, the account's hourly request budget is spent and no request may be
+     * sent until it passes. Volatile because every caller of the shared client observes it.
+     */
+    private volatile Instant rateLimitedUntil = Instant.MIN;
 
     public MillheatCloudApiClient(final HttpClient httpClient, final Gson gson, final RequestLogger requestLogger) {
         this.httpClient = httpClient;
@@ -272,6 +276,14 @@ public class MillheatCloudApiClient {
 
     private <T> @Nullable T execute(final Request request, final java.lang.reflect.Type responseType)
             throws MillheatCommunicationException {
+        // Enforced here rather than only where polling decides to run, so commands, discovery and
+        // sign-in respect the same deadline. It is left to expire on its own: clearing it on an
+        // unrelated success let a request already in flight erase a deadline just set by another.
+        final Instant budgetExhaustedUntil = rateLimitedUntil;
+        if (Instant.now().isBefore(budgetExhaustedUntil)) {
+            throw new MillheatCommunicationException(HttpStatus.TOO_MANY_REQUESTS_429,
+                    "Mill cloud API request budget exhausted, not retrying until " + budgetExhaustedUntil);
+        }
         final ContentResponse response;
         try {
             response = request.send();
@@ -303,7 +315,6 @@ public class MillheatCloudApiClient {
             throw new MillheatCommunicationException(status,
                     "Mill cloud API responded with " + status + ": " + payload);
         }
-        rateLimitedUntil = Instant.MIN;
         if (responseType == Void.class || payload.isBlank()) {
             return null;
         }

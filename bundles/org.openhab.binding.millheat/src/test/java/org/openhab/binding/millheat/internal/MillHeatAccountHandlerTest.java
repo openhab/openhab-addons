@@ -386,5 +386,12 @@ public class MillHeatAccountHandlerTest {
         assertTrue(failure.isRateLimited());
         // A 429 must not be retried, or the account digs itself deeper into the limit.
         verify(1, getRequestedFor(urlEqualTo("/houses")));
+
+        // The deadline holds for later calls too, including ones that never saw the 429, so no
+        // further request reaches the service until it expires.
+        final MillheatCommunicationException blocked = assertThrows(MillheatCommunicationException.class,
+                subject::refreshModel);
+        assertTrue(blocked.isRateLimited());
+        verify(1, getRequestedFor(urlEqualTo("/houses")));
     }
 }
