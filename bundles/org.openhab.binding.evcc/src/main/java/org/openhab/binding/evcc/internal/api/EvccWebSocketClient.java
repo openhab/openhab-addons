@@ -57,6 +57,9 @@ public class EvccWebSocketClient {
     private @Nullable Session session;
     private @Nullable ScheduledFuture<?> watchdogJob;
     private @Nullable ScheduledFuture<?> reconnectJob;
+    // Guards against reconnecting after stop() has been called, e.g. when closeSession() triggers
+    // an asynchronous handleClosed() callback after the client was already told to shut down.
+    private volatile boolean stopped;
 
     public EvccWebSocketClient(String wsUrl, ScheduledExecutorService scheduler,
             java.util.function.Consumer<JsonObject> onFullState,
@@ -75,6 +78,7 @@ public class EvccWebSocketClient {
     // --------------------------------------------------------------------
 
     public void start() {
+        stopped = false;
         try {
             client.getPolicy().setIdleTimeout(0); // Jetty 9
             client.getPolicy().setMaxTextMessageSize(512 * 1024);
@@ -88,6 +92,7 @@ public class EvccWebSocketClient {
     }
 
     public void stop() {
+        stopped = true;
         stopWatchdog();
         stopReconnect();
         closeSession();
@@ -102,6 +107,9 @@ public class EvccWebSocketClient {
     // --------------------------------------------------------------------
 
     private void connect() {
+        if (stopped) {
+            return;
+        }
         logger.info("Connecting EVCC WebSocket to {}", wsUrl);
 
         try {
@@ -115,6 +123,9 @@ public class EvccWebSocketClient {
     }
 
     private void scheduleReconnect() {
+        if (stopped) {
+            return;
+        }
         ScheduledFuture<?> job = reconnectJob;
         if (job != null && !job.isDone()) {
             return;

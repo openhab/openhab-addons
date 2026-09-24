@@ -99,7 +99,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 createForecastChannel(getThingKey(subType));
                 float scale = solar.get(JSON_KEY_SCALE).getAsFloat();
                 propagate(forecastArray, getThingKey("scaled"),
-                        obj -> parseScaledForecast(obj, getThingKey(subType), scale));
+                        obj -> parseScaledForecast(obj, getThingKey(subType), scale), scale);
             }
             default -> {
                 logger.warn("Unknown forecast type: {}", subType);
@@ -163,12 +163,17 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     }
 
     private void propagate(JsonArray array, String key, Function<JsonObject, @Nullable ForecastData> parser) {
+        propagate(array, key, parser, 1f);
+    }
+
+    private void propagate(JsonArray array, String key, Function<JsonObject, @Nullable ForecastData> parser,
+            float scale) {
         ChannelUID uid = new ChannelUID(thing.getUID(), key);
         if (!isLinked(uid)) {
             logger.trace("Channel {} not linked, skipping TimeSeries update", key);
             return;
         }
-        TimeSeries ts = getTimeSeries(array, parser);
+        TimeSeries ts = getTimeSeries(array, parser, scale);
         logger.trace("Sending TimeSeries for channel {} with {} entries", key, ts.size());
         setForecastChannelState(ts, uid);
         sendTimeSeries(uid, ts);
@@ -181,9 +186,12 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         if ("solar".equals(subType) && value instanceof JsonObject solar) {
             forecastArray = solar.has("timeseries") ? solar.getAsJsonArray("timeseries") : new JsonArray();
             modifyJSON(solar);
+            // Republish the scalar/aggregate channels (scale, today, tomorrow, dayAfterTomorrow) so
+            // that partial updates keep them in sync, not just the initial full-state snapshot.
+            createChannelsAndSetStatesFromApiResponse(solar);
             float scale = solar.get(JSON_KEY_SCALE).getAsFloat();
             propagate(forecastArray, getThingKey("scaled"),
-                    obj -> parseScaledForecast(obj, getThingKey(subType), scale));
+                    obj -> parseScaledForecast(obj, getThingKey(subType), scale), scale);
         } else if (value instanceof JsonArray forecast) {
             forecastArray = forecast;
         } else {
@@ -196,7 +204,8 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    private TimeSeries getTimeSeries(JsonArray forecastArray, Function<JsonObject, @Nullable ForecastData> parser) {
+    private TimeSeries getTimeSeries(JsonArray forecastArray, Function<JsonObject, @Nullable ForecastData> parser,
+            float scale) {
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
         logger.trace("Processing forecast array with {} entries", forecastArray.size());
 
@@ -212,7 +221,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                         // Solar format: [timestamp, value]
                         long timestamp = arr.get(0).getAsLong();
                         String timestampStr = Instant.ofEpochSecond(timestamp).toString();
-                        double value = arr.get(1).getAsNumber().doubleValue();
+                        double value = arr.get(1).getAsNumber().doubleValue() * scale;
 
                         StateResolver resolver = StateResolver.getInstance();
                         State state = resolver.resolveState(getThingKey(subType), new JsonPrimitive(value));
@@ -223,7 +232,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                         // Other forecast format: [start_timestamp, end_timestamp, value]
                         long startTimestamp = arr.get(0).getAsLong();
                         String timestampStr = Instant.ofEpochSecond(startTimestamp).toString();
-                        double value = arr.get(2).getAsNumber().doubleValue();
+                        double value = arr.get(2).getAsNumber().doubleValue() * scale;
 
                         StateResolver resolver = StateResolver.getInstance();
                         State state = resolver.resolveState(getThingKey(subType), new JsonPrimitive(value));

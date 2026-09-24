@@ -55,7 +55,7 @@ import com.google.gson.JsonPrimitive;
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccPlanHandler extends EvccBaseThingHandler {
+public class EvccPlanHandler extends EvccBaseThingHandler implements EvccPeriodicRefreshable {
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
@@ -104,6 +104,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         return String.join(".", vehicleID, String.valueOf(index));
     }
 
+    @Override
     public void refreshFromState(JsonObject state) {
         JsonElement plan = new PlanExtraction(vehicleID, index).extract(state);
         if (plan != null && plan.isJsonObject()) {

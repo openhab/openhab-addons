@@ -59,7 +59,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class EvccBridgeHandler extends BaseBridgeHandler {
-    private static final long PLAN_STATE_REFRESH_INTERVAL_MINUTES = 5;
+    private static final long PERIODIC_STATE_REFRESH_INTERVAL_MINUTES = 5;
 
     private final Logger logger = LoggerFactory.getLogger(EvccBridgeHandler.class);
 
@@ -76,7 +76,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     private volatile boolean initialStateReceived = false;
 
     private final MessageRouter messageRouter = new MessageRouter();
-    private @Nullable ScheduledFuture<?> planRefreshTask;
+    private @Nullable ScheduledFuture<?> periodicRefreshTask;
 
     private @Nullable EvccWebSocketClient wsClient;
 
@@ -127,7 +127,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         disposed = true;
         Optional.ofNullable(wsClient).ifPresent(EvccWebSocketClient::stop);
-        stopPlanRefreshTask();
+        stopPeriodicRefreshTask();
         listeners.clear();
         pendingHandlers.clear();
         requestQueue.stop();
@@ -271,7 +271,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
             logger.debug("Initial state not yet received, queuing handler for later activation: {}", handlerKey);
             pendingHandlers.put(handlerKey, handler);
         }
-        updatePlanRefreshTask();
+        updatePeriodicRefreshTask();
     }
 
     /**
@@ -342,7 +342,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         listeners.remove(handler.getType() + "$" + handler.getIdentifier());
         pendingHandlers.remove(handler.getType() + "$" + handler.getIdentifier());
         messageRouter.unregisterRoutes(handler);
-        updatePlanRefreshTask();
+        updatePeriodicRefreshTask();
     }
 
     /**
@@ -436,42 +436,43 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         return cachedState.getCopy();
     }
 
-    private void updatePlanRefreshTask() {
-        if (hasPlanHandler()) {
-            ScheduledFuture<?> currentPlanRefreshTask = planRefreshTask;
-            if (currentPlanRefreshTask == null || currentPlanRefreshTask.isCancelled()) {
-                planRefreshTask = scheduler.scheduleWithFixedDelay(this::refreshPlanHandlersFromState,
-                        PLAN_STATE_REFRESH_INTERVAL_MINUTES, PLAN_STATE_REFRESH_INTERVAL_MINUTES, TimeUnit.MINUTES);
+    private void updatePeriodicRefreshTask() {
+        if (hasPeriodicRefreshHandler()) {
+            ScheduledFuture<?> currentPeriodicRefreshTask = periodicRefreshTask;
+            if (currentPeriodicRefreshTask == null || currentPeriodicRefreshTask.isCancelled()) {
+                periodicRefreshTask = scheduler.scheduleWithFixedDelay(this::refreshPeriodicHandlersFromState,
+                        PERIODIC_STATE_REFRESH_INTERVAL_MINUTES, PERIODIC_STATE_REFRESH_INTERVAL_MINUTES,
+                        TimeUnit.MINUTES);
             }
         } else {
-            stopPlanRefreshTask();
+            stopPeriodicRefreshTask();
         }
     }
 
-    private boolean hasPlanHandler() {
-        return listeners.values().stream().anyMatch(EvccPlanHandler.class::isInstance)
-                || pendingHandlers.values().stream().anyMatch(EvccPlanHandler.class::isInstance);
+    private boolean hasPeriodicRefreshHandler() {
+        return listeners.values().stream().anyMatch(EvccPeriodicRefreshable.class::isInstance)
+                || pendingHandlers.values().stream().anyMatch(EvccPeriodicRefreshable.class::isInstance);
     }
 
-    private void stopPlanRefreshTask() {
-        Optional.ofNullable(planRefreshTask).ifPresent(task -> task.cancel(true));
-        planRefreshTask = null;
+    private void stopPeriodicRefreshTask() {
+        Optional.ofNullable(periodicRefreshTask).ifPresent(task -> task.cancel(true));
+        periodicRefreshTask = null;
     }
 
-    private void refreshPlanHandlersFromState() {
+    private void refreshPeriodicHandlersFromState() {
         JsonObject stateCopy = fetchStateSnapshot();
         for (EvccThingLifecycleAware listener : new ArrayList<>(listeners.values())) {
-            if (!(listener instanceof EvccPlanHandler planHandler)) {
+            if (!(listener instanceof EvccPeriodicRefreshable refreshableHandler)) {
                 continue;
             }
-            synchronized (planHandler) {
-                if (planHandler.isDisposed()) {
+            synchronized (listener) {
+                if (listener.isDisposed()) {
                     continue;
                 }
                 try {
-                    planHandler.refreshFromState(stateCopy);
+                    refreshableHandler.refreshFromState(stateCopy);
                 } catch (Exception e) {
-                    logListenerError(planHandler, e);
+                    logListenerError(listener, e);
                 }
             }
         }

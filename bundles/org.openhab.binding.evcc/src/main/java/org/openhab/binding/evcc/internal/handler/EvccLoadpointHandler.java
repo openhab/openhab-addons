@@ -47,7 +47,9 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccLoadpointHandler.class);
 
-    private final StateTransformer stateTransformer = new LoadpointStateTransformer();
+    // Not final: EvccHeatingHandler overrides this with a HeatingStateTransformer so that both the
+    // "loadpoints" route registered below and the full-state initialization use the correct transformer.
+    protected StateTransformer stateTransformer = new LoadpointStateTransformer();
     protected final int index;
 
     public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {

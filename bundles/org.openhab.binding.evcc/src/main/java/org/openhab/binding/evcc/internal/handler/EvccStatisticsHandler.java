@@ -39,7 +39,7 @@ import com.google.gson.JsonObject;
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccStatisticsHandler extends EvccBaseThingHandler {
+public class EvccStatisticsHandler extends EvccBaseThingHandler implements EvccPeriodicRefreshable {
 
     private final Logger logger = LoggerFactory.getLogger(EvccStatisticsHandler.class);
 
@@ -54,8 +54,8 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             handler.register(this);
             MessageRouter router = handler.getMessageRouter();
-            router.registerRoute(new HandlerRoute(JSON_KEY_STATISTICS, new JsonPathExtraction("$.statistics"), this,
-                    JSON_KEY_STATISTICS));
+            router.registerRoute(
+                    new HandlerRoute(JSON_KEY_STATISTICS, new JsonPathExtraction("$"), this, JSON_KEY_STATISTICS));
         });
     }
 
@@ -94,6 +94,13 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
     @Override
     public String getIdentifier() {
         return "";
+    }
+
+    @Override
+    public void refreshFromState(JsonObject state) {
+        if (state.has(JSON_KEY_STATISTICS)) {
+            handleUpdate(JSON_KEY_STATISTICS, state.get(JSON_KEY_STATISTICS));
+        }
     }
 
     @Override
