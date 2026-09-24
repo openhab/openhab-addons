@@ -90,7 +90,7 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
     public void dispose() {
         DDWRTBaseDevice d = getEntity();
         if (d != null) {
-            d.setUpdater(null);
+            d.clearUpdater(this);
         }
         super.dispose();
     }
