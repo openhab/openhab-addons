@@ -14,6 +14,8 @@ package org.openhab.binding.millheat.internal.dto;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Body of {@code PATCH /devices/&#123;deviceId&#125;/settings}. The contents of {@code settings}
  * replace {@code state.desired} in the device's AWS IoT Thing shadow, so only the keys being
@@ -21,5 +23,6 @@ import java.util.Map;
  *
  * @author Petter L. H. Eide - Initial contribution
  */
+@NonNullByDefault
 public record DeviceSettingsPatchRequest(String deviceType, boolean enabled, Map<String, Object> settings) {
 }
