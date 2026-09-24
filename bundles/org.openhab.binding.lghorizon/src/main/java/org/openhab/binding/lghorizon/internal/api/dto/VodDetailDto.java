@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
  * episode's own title and {@code seriesTitle} is the show name; for a movie, {@code title} is the movie
  * title and {@code seriesTitle} is absent.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 public class VodDetailDto {
 

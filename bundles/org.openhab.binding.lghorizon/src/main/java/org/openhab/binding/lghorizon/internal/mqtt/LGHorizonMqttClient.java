@@ -46,7 +46,7 @@ import com.google.gson.JsonSyntaxException;
  * <li>reconnects (including refreshing the token first) are handled by {@link LGHorizonReconnectStrategy}</li>
  * </ul>
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public class LGHorizonMqttClient implements MqttMessageSubscriber, MqttConnectionObserver {

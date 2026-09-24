@@ -58,7 +58,7 @@ import com.google.gson.JsonSyntaxException;
  * The access token obtained here is also used, unmodified, as the MQTT password (see {@link #getMqttToken()}) for the
  * real-time status channel.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public class LGHorizonAuthClient {

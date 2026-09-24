@@ -90,7 +90,7 @@ import com.google.gson.JsonSyntaxException;
  * Requires the device to have an actual box thing already configured.</li>
  * </ul>
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)

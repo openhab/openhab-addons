@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response body of {@code GET /purchaseService/v2/customers/{householdId}/entitlements}.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 public class EntitlementsDto {
 

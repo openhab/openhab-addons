@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * REST API constants for the LG Horizon service.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public class LGHorizonApiConstants {

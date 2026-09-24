@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
  * {@link ProviderPresets}. Always includes an empty "Custom" entry so users can fall through to the advanced
  * {@code country}/{@code apiUrl}/{@code useRefreshToken} parameters for anything not in the list.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 @Component(service = ConfigOptionProvider.class)

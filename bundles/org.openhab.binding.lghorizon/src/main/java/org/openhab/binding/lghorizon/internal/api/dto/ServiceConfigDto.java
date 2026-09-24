@@ -23,7 +23,7 @@ import com.google.gson.JsonObject;
  * Modeled as a raw {@link JsonObject} because the set of services differs slightly per provider and new ones are added
  * over time.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 public class ServiceConfigDto {
 

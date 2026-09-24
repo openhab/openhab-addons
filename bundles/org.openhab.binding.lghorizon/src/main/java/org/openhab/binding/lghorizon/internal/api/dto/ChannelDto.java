@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * A single entry of {@code GET /linearService/v2/channels}.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 public class ChannelDto {
 

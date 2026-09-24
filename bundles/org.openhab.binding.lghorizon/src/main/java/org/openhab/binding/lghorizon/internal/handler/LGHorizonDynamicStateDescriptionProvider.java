@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Reference;
  * number as the value, channel name as the label), sourced from the account's actual entitled channel line-up for the
  * box's own profile/language. Populated by {@link LGHorizonBoxHandler} via {@link #setStateOptions}.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 @Component(service = { DynamicStateDescriptionProvider.class, LGHorizonDynamicStateDescriptionProvider.class })

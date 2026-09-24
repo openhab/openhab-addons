@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * name is instead in the separate {@code showTitle} field, and {@code title} is a general/fallback label.
  * See {@link #getShowTitle()}, which applies this distinction. *
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 public class RecordingDetailDto {
 

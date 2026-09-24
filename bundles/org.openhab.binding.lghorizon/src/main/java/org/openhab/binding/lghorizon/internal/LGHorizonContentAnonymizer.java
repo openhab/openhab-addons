@@ -33,7 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * <li>Fields with no cross-referencing value (MAC/IP addresses) get a single fixed placeholder.</li>
  * </ul>
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public final class LGHorizonContentAnonymizer {

@@ -60,7 +60,7 @@ import com.google.gson.JsonObject;
  * {@link LGHorizonAccountHandler}; this handler only translates channel commands to/from the box's MQTT protocol and
  * keeps openHAB channel state up to date as MQTT status/UI-status messages arrive.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public class LGHorizonBoxHandler extends BaseThingHandler {

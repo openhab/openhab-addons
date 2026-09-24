@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.ServiceScope;
  * optional; when omitted, {@link LGHorizonBoxHandler#displayMessage} falls back to
  * {@link org.openhab.binding.lghorizon.internal.LGHorizonBindingConstants#DEFAULT_DISPLAY_MESSAGE_DURATION_SECONDS}.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @ThingActionsScope(name = "lghorizon")
 @NonNullByDefault

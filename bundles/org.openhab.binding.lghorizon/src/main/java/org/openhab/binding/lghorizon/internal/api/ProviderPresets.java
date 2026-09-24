@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * This is the single source of truth for known providers: both {@link #get(String)} (used to resolve a selected
  * provider to its connection details) and {@code LGHorizonConfigOptionProvider}.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public class ProviderPresets {

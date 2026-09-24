@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response body of {@code GET /personalizationService/v1/customer/{householdId}?with=profiles,devices}.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 public class CustomerDto {
 

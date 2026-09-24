@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.ServiceScope;
  * the bridge has successfully
  * logged in.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = ThingHandlerService.class)

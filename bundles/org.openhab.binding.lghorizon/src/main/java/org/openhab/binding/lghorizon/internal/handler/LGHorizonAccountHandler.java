@@ -87,7 +87,7 @@ import com.google.gson.JsonObject;
  * Individual set-top boxes are represented by child {@link LGHorizonBoxHandler} things, which register themselves here
  * to receive status updates and to send commands.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHorizonMqttListener {
@@ -502,7 +502,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
 
         this.languageByProfileId = profiles.stream().filter(p -> p.profileId != null)
-                .collect(Collectors.<CustomerDto.ProfileDto, String, String> toMap(p -> p.profileId,
+                .collect(Collectors.<CustomerDto.ProfileDto, String, String>toMap(p -> p.profileId,
                         p -> p.options != null && p.options.lang != null ? p.options.lang : DEFAULT_LANGUAGE));
 
         EntitlementsDto entitlementsDto = auth.get(auth.getServiceConfig().getServiceUrl(PURCHASE_SERVICE_URL_FIELD),

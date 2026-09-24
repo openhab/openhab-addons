@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * physical boxes respond), and the suggestion is withheld entirely once at least one {@code account} thing already
  * exists, since one configured account already covers however many boxes are in the household.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @Component(service = UpnpDiscoveryParticipant.class)
 @NonNullByDefault

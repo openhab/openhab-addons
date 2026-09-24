@@ -19,7 +19,7 @@ import com.google.gson.JsonObject;
 /**
  * Callback for events coming from {@link LGHorizonMqttClient}.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public interface LGHorizonMqttListener {

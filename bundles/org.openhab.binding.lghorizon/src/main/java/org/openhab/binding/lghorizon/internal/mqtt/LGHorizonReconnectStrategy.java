@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * This strategy instead fetches a fresh token and calls {@link MqttBrokerConnection#setCredentials(String, String)}
  * immediately before every reconnect attempt, with exponential backoff (5s, 10s, 20s, ... capped at 60s).
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public class LGHorizonReconnectStrategy extends AbstractReconnectStrategy {

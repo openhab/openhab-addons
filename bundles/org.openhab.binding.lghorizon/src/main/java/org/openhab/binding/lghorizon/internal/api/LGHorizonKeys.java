@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * W3C key names accepted by the set-top box's {@code CPE.KeyEvent} MQTT message.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public final class LGHorizonKeys {

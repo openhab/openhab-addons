@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Thrown for any failure talking to the LG Horizon cloud backend: network errors, unexpected payloads, or the backend
  * rejecting our credentials.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
 public class LGHorizonApiException extends Exception {

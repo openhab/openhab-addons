@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response body of {@code POST /auth-service/v1/authorization} and {@code POST /auth-service/v1/authorization/refresh}.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 public class AuthResponseDto {
 

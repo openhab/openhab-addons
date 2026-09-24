@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
  * Used to resolve title/episode metadata for linear TV, live-TV rewind (reviewBuffer) and catch-up replay -
  * all three share this identical endpoint and identifier shape.
  *
- * @author Mark - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 public class EventDetailDto {
 
