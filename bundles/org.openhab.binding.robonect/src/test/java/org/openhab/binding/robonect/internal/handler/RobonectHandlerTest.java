@@ -31,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.robonect.internal.RobonectBindingConstants;
 import org.openhab.binding.robonect.internal.RobonectClient;
+import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
@@ -48,6 +49,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -248,6 +250,52 @@ public class RobonectHandlerTest {
         DecimalType status = (DecimalType) value;
 
         assertEquals(MowerStatus.MOWING.getStatusCode(), status.intValue());
+    }
+
+    @Test
+    public void shouldUseAjaxUiInfoForJobTimes() {
+        MowerInfo mowerInfo = createSuccessfulMowerInfoResponse();
+        AjaxInfo ajaxInfo = new AjaxInfo();
+        ajaxInfo.setTimerMenuText("Job");
+        ajaxInfo.setControlMenuText("10:00 - 12:00");
+
+        subject.setAjaxUiScraping(true);
+        when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(robonectClientMock.getAjaxInfo()).thenReturn(ajaxInfo);
+
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
+                RefreshType.REFRESH);
+
+        verify(callbackMock).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_JOB)), eq(OnOffType.ON));
+        verify(callbackMock).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_JOB_START)),
+                eq(new QuantityType<>(600, Units.MINUTE)));
+        verify(callbackMock).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_JOB_END)),
+                eq(new QuantityType<>(720, Units.MINUTE)));
+        verify(callbackMock).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_MODE)),
+                eq(new StringType("AUTO")));
+    }
+
+    @Test
+    public void shouldUseAjaxUiInfoForEndOfDay() {
+        MowerInfo mowerInfo = createSuccessfulMowerInfoResponse();
+        mowerInfo.getStatus().setMode(MowerMode.HOME);
+        AjaxInfo ajaxInfo = new AjaxInfo();
+        ajaxInfo.setControlMenuText("End of day");
+
+        subject.setAjaxUiScraping(true);
+        when(robonectClientMock.getMowerInfo()).thenReturn(mowerInfo);
+        when(robonectClientMock.getAjaxInfo()).thenReturn(ajaxInfo);
+
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS),
+                RefreshType.REFRESH);
+
+        verify(callbackMock).stateUpdated(
+                eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_MODE)),
+                eq(new StringType("EOD")));
     }
 
     @Test

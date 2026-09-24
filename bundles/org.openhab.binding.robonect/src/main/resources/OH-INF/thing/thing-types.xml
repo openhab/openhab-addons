@@ -293,6 +293,8 @@
 			<channel id="timer-next" typeId="nextTimerType"/>
 
 			<channel id="job" typeId="jobType"/>
+			<channel id="job-start" typeId="jobTimeType"/>
+			<channel id="job-end" typeId="jobTimeType"/>
 
 			<channel id="offlineTrigger" typeId="offlineTriggerType"/>
 			<channel id="reset-error" typeId="resetErrorType"/>
@@ -371,6 +373,11 @@
 				<label>Detailed Information Interval</label>
 				<default>10</default>
 				<description>The number of normal polling cycles between detailed information requests.</description>
+			</parameter>
+			<parameter name="ajaxUiScraping" type="boolean" required="false">
+				<label>Ajax UI Scraping</label>
+				<default>false</default>
+				<description>Read additional job and end-of-day status from the localized Robonect web interface.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -765,6 +772,13 @@
 		<label>Mowing Job</label>
 		<description>Starts a mowing job</description>
 		<config-description-ref uri="channel-type:robonect:jobType"/>
+	</channel-type>
+
+	<channel-type id="jobTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Job Time</label>
+		<description>Minutes after midnight reported for the active mowing job.</description>
+		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="timerStatusType">

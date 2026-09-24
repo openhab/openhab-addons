@@ -13,6 +13,7 @@
 package org.openhab.binding.robonect.internal;
 
 import java.net.URI;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.concurrent.ExecutionException;
@@ -26,6 +27,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.DoorInfo;
 import org.openhab.binding.robonect.internal.model.ErrorList;
@@ -47,6 +49,7 @@ import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.WlanInfo;
+import org.openhab.binding.robonect.internal.model.cmd.AjaxCommand;
 import org.openhab.binding.robonect.internal.model.cmd.BatteryCommand;
 import org.openhab.binding.robonect.internal.model.cmd.Command;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand;
@@ -80,12 +83,15 @@ import org.slf4j.LoggerFactory;
  *      http://robonect.de/viewtopic.php?f=10&amp;t=37</a>. The API of the module is documented here.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Ajax UI compatibility
  */
 public class RobonectClient {
 
     private final Logger logger = LoggerFactory.getLogger(RobonectClient.class);
 
     private final String baseUrl;
+
+    private final String ajaxUrl;
 
     private final HttpClient httpClient;
 
@@ -237,6 +243,7 @@ public class RobonectClient {
     public RobonectClient(HttpClient httpClient, RobonectEndpoint endpoint) {
         this.httpClient = httpClient;
         this.baseUrl = "http://" + endpoint.getIpAddress() + "/json";
+        this.ajaxUrl = "http://" + endpoint.getIpAddress() + "/ajax";
         this.parser = new ModelParser();
 
         if (endpoint.isUseAuthentication()) {
@@ -271,6 +278,16 @@ public class RobonectClient {
             }
         }
         return mowerInfo;
+    }
+
+    /**
+     * Returns the localized status text used by the Robonect web interface.
+     *
+     * @return the UI status text
+     */
+    public AjaxInfo getAjaxInfo() {
+        String response = sendCommand(new AjaxCommand(1, 2), ajaxUrl);
+        return parser.parse(URLDecoder.decode(response, StandardCharsets.ISO_8859_1), AjaxInfo.class);
     }
 
     /**
@@ -503,12 +520,16 @@ public class RobonectClient {
     }
 
     private String sendCommand(Command command) {
+        return sendCommand(command, baseUrl);
+    }
+
+    private String sendCommand(Command command, String commandBaseUrl) {
         try {
             if (logger.isDebugEnabled()) {
-                logger.debug("send HTTP GET to: {} ", command.toCommandURL(baseUrl));
+                logger.debug("send HTTP GET to: {} ", command.toCommandURL(commandBaseUrl));
             }
-            ContentResponse response = httpClient.newRequest(command.toCommandURL(baseUrl)).method(HttpMethod.GET)
-                    .timeout(30000, TimeUnit.MILLISECONDS).send();
+            ContentResponse response = httpClient.newRequest(command.toCommandURL(commandBaseUrl))
+                    .method(HttpMethod.GET).timeout(30000, TimeUnit.MILLISECONDS).send();
             String responseString = null;
 
             // jetty uses UTF-8 as default encoding. However, HTTP 1.1 specifies ISO_8859_1
@@ -525,7 +546,8 @@ public class RobonectClient {
             }
             return responseString;
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            throw new RobonectCommunicationException("Could not send command " + command.toCommandURL(baseUrl), e);
+            throw new RobonectCommunicationException("Could not send command " + command.toCommandURL(commandBaseUrl),
+                    e);
         }
     }
 

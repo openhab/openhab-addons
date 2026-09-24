@@ -20,8 +20,11 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -33,6 +36,7 @@ import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.config.RobonectConfig;
 import org.openhab.binding.robonect.internal.model.AccessPoint;
 import org.openhab.binding.robonect.internal.model.Address;
+import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.Battery;
 import org.openhab.binding.robonect.internal.model.BatteryCapacity;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
@@ -52,6 +56,7 @@ import org.openhab.binding.robonect.internal.model.HourGeneral;
 import org.openhab.binding.robonect.internal.model.HourInfo;
 import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
+import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.PortalInfo;
 import org.openhab.binding.robonect.internal.model.Push;
@@ -112,6 +117,7 @@ import com.google.gson.JsonSyntaxException;
  * The channels are periodically updated by polling the mower via HTTP in a separate thread.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Ajax UI compatibility
  */
 public class RobonectHandler extends BaseThingHandler {
 
@@ -126,6 +132,13 @@ public class RobonectHandler extends BaseThingHandler {
 
     private RobonectClient robonectClient;
     private final @Nullable RobonectPushServlet pushServlet;
+    private boolean ajaxUiScraping;
+
+    private static final Set<String> JOB_TIMER_LABELS = Set.of("Auftrag", "Job", "Travail", "Ordine", "Jobb");
+    private static final Set<String> END_OF_DAY_LABELS = Set.of("Feierabend", "End of day", "Fin de journée de travail",
+            "Fine lavoro giornata", "Slutet av dagen");
+    private static final Pattern JOB_TIME_PATTERN = Pattern.compile("^(?:(\\d{1,2}:\\d{2})\\D+)?(\\d{1,2}:\\d{2})$");
+    private static final Pattern TIME_PATTERN = Pattern.compile("^(\\d{1,2}):(\\d{2})$");
 
     public RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
         this(thing, httpClientFactory, timeZoneProvider, null);
@@ -681,9 +694,7 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(status.getDuration(), Units.SECOND));
             updateState(CHANNEL_STATUS_DISTANCE, new QuantityType<>(status.getDistance(), SIUnits.METRE));
             updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(status.getHours(), Units.HOUR));
-            if (status.getMode() != null) {
-                updateState(CHANNEL_STATUS_MODE, new StringType(status.getMode().name()));
-            }
+            updateMowerModeAndJob(status.getMode());
             updateState(CHANNEL_MOWER_START, OnOffType.from(!status.isStopped()));
             if (info.getHealth() != null) {
                 updateState(CHANNEL_HEALTH_TEMP,
@@ -719,10 +730,105 @@ public class RobonectHandler extends BaseThingHandler {
                 updateState(CHANNEL_WLAN_SIGNAL, UnDefType.UNDEF);
                 updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, UnDefType.UNDEF);
             }
-            updateState(CHANNEL_JOB, OnOffType.from(robonectClient.isJobRunning()));
         } else {
             logger.debug("Could not retrieve complete mower information: {}", info.getErrorMessage());
         }
+    }
+
+    /**
+     * Updates the job and mode channels using the optional localized web-interface response.
+     *
+     * The public JSON API does not expose end-of-day mode or the active job time window. UI scraping is therefore
+     * opt-in and falls back to the JSON API when the UI response changes or cannot be read.
+     *
+     * @param mowerMode mode reported by the JSON status endpoint
+     */
+    private void updateMowerModeAndJob(@Nullable MowerMode mowerMode) {
+        if (!ajaxUiScraping) {
+            if (mowerMode != null) {
+                updateState(CHANNEL_STATUS_MODE, new StringType(mowerMode.name()));
+            }
+            updateState(CHANNEL_JOB, OnOffType.from(robonectClient.isJobRunning()));
+            updateState(CHANNEL_JOB_START, UnDefType.NULL);
+            updateState(CHANNEL_JOB_END, UnDefType.NULL);
+            return;
+        }
+
+        try {
+            AjaxInfo ajaxInfo = robonectClient.getAjaxInfo();
+            if (ajaxInfo == null) {
+                throw new JsonSyntaxException("Robonect web-interface response is empty");
+            }
+            String controlText = ajaxInfo.getControlMenuText();
+            String timerText = ajaxInfo.getTimerMenuText();
+            if (timerText != null && JOB_TIMER_LABELS.contains(timerText)) {
+                updateState(CHANNEL_JOB, OnOffType.ON);
+                updateJobTimes(controlText);
+            } else {
+                updateState(CHANNEL_JOB, OnOffType.OFF);
+                updateState(CHANNEL_JOB_START, UnDefType.NULL);
+                updateState(CHANNEL_JOB_END, UnDefType.NULL);
+            }
+            if (mowerMode != null) {
+                String mode = mowerMode == MowerMode.HOME && END_OF_DAY_LABELS.contains(controlText) ? "EOD"
+                        : mowerMode.name();
+                updateState(CHANNEL_STATUS_MODE, new StringType(mode));
+            }
+        } catch (RobonectCommunicationException | JsonSyntaxException | IllegalArgumentException e) {
+            logger.debug("Could not retrieve Robonect web-interface status. Falling back to the JSON API.", e);
+            if (mowerMode != null) {
+                updateState(CHANNEL_STATUS_MODE, new StringType(mowerMode.name()));
+            }
+            updateState(CHANNEL_JOB, OnOffType.from(robonectClient.isJobRunning()));
+            updateState(CHANNEL_JOB_START, UnDefType.NULL);
+            updateState(CHANNEL_JOB_END, UnDefType.NULL);
+        }
+    }
+
+    /**
+     * Updates the active job start and end channels from the localized menu text.
+     *
+     * @param controlText localized menu text that contains the job time window
+     */
+    private void updateJobTimes(@Nullable String controlText) {
+        if (controlText == null) {
+            updateState(CHANNEL_JOB_START, UnDefType.UNDEF);
+            updateState(CHANNEL_JOB_END, UnDefType.UNDEF);
+            return;
+        }
+        Matcher matcher = JOB_TIME_PATTERN.matcher(controlText);
+        if (!matcher.matches()) {
+            updateState(CHANNEL_JOB_START, UnDefType.UNDEF);
+            updateState(CHANNEL_JOB_END, UnDefType.UNDEF);
+            return;
+        }
+        updateJobTime(CHANNEL_JOB_START, matcher.group(1));
+        updateJobTime(CHANNEL_JOB_END, matcher.group(2));
+    }
+
+    /**
+     * Updates one job time channel with a number of minutes after midnight.
+     *
+     * @param channelId job time channel identifier
+     * @param value UI value in {@code HH:mm} format, or {@code null}
+     */
+    private void updateJobTime(String channelId, @Nullable String value) {
+        if (value == null) {
+            updateState(channelId, UnDefType.UNDEF);
+            return;
+        }
+        Matcher matcher = TIME_PATTERN.matcher(value);
+        if (!matcher.matches()) {
+            updateState(channelId, UnDefType.UNDEF);
+            return;
+        }
+        int hours = Integer.parseInt(matcher.group(1));
+        int minutes = Integer.parseInt(matcher.group(2));
+        if (hours >= 24 || minutes >= 60) {
+            updateState(channelId, UnDefType.UNDEF);
+            return;
+        }
+        updateState(channelId, new QuantityType<>(hours * 60 + minutes, Units.MINUTE));
     }
 
     /**
@@ -1059,6 +1165,7 @@ public class RobonectHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
+        ajaxUiScraping = robonectConfig.isAjaxUiScraping();
         RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
                 robonectConfig.getPassword());
 
@@ -1128,6 +1235,15 @@ public class RobonectHandler extends BaseThingHandler {
      */
     protected void setRobonectClient(RobonectClient robonectClient) {
         this.robonectClient = robonectClient;
+    }
+
+    /**
+     * Allows tests to enable UI scraping without initializing a Thing configuration.
+     *
+     * @param ajaxUiScraping whether UI scraping is enabled
+     */
+    protected void setAjaxUiScraping(boolean ajaxUiScraping) {
+        this.ajaxUiScraping = ajaxUiScraping;
     }
 
     private class MowerChannelPoller implements Runnable {

@@ -36,6 +36,8 @@ public class RobonectConfig {
 
     private int detailedInfoInterval = 10;
 
+    private boolean ajaxUiScraping;
+
     public String getHost() {
         return host;
     }
@@ -66,5 +68,9 @@ public class RobonectConfig {
 
     public int getDetailedInfoInterval() {
         return detailedInfoInterval;
+    }
+
+    public boolean isAjaxUiScraping() {
+        return ajaxUiScraping;
     }
 }

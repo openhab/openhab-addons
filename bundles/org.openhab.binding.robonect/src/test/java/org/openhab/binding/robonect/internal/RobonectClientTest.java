@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.robonect.internal.model.AjaxInfo;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
@@ -69,6 +70,23 @@ public class RobonectClientTest {
                 "{\"successful\": true, \"name\": \"Mein Automower\", \"status\": {\"status\": 17, \"stopped\": false, \"duration\": 4359, \"mode\": 0, \"battery\": 100, \"hours\": 29}, \"timer\": {\"status\": 2, \"next\": {\"date\": \"01.05.2017\", \"time\": \"19:00:00\", \"unix\": 1493665200}}, \"wlan\": {\"signal\": -76}}");
         subject.getMowerInfo();
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=status");
+    }
+
+    @Test
+    public void shouldDecodeAjaxUiResponse() throws InterruptedException, ExecutionException, TimeoutException {
+        when(httpClientMock.newRequest("http://123.456.789.123/ajax?type=1&group=2")).thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenReturn(responseMock);
+        when(responseMock.getEncoding()).thenReturn("utf8");
+        when(responseMock.getContentAsString())
+                .thenReturn("%7B%22tmnucontrol%22%3A%2210%3A00+-+12%3A00%22%2C%22tmnutimer%22%3A%22Job%22%7D");
+
+        AjaxInfo info = subject.getAjaxInfo();
+
+        assertEquals("10:00 - 12:00", info.getControlMenuText());
+        assertEquals("Job", info.getTimerMenuText());
+        verify(httpClientMock).newRequest("http://123.456.789.123/ajax?type=1&group=2");
     }
 
     @Test
