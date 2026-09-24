@@ -11,6 +11,11 @@ public class PushServer {
     private @Nullable String url;
     private @Nullable String name;
 
-    public @Nullable String getUrl() { return url; }
-    public @Nullable String getName() { return name; }
+    public @Nullable String getUrl() {
+        return url;
+    }
+
+    public @Nullable String getName() {
+        return name;
+    }
 }

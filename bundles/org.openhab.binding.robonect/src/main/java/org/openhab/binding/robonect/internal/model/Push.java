@@ -11,6 +11,11 @@ public class Push {
     private @Nullable PushServer server;
     private @Nullable PushTriggers trigger;
 
-    public @Nullable PushServer getServer() { return server; }
-    public @Nullable PushTriggers getTrigger() { return trigger; }
+    public @Nullable PushServer getServer() {
+        return server;
+    }
+
+    public @Nullable PushTriggers getTrigger() {
+        return trigger;
+    }
 }

@@ -12,7 +12,15 @@ public class Extension {
     private @Nullable Boolean inverted;
     private @Nullable Boolean status;
 
-    public @Nullable Boolean getFlashonerror() { return flashonerror; }
-    public @Nullable Boolean getInverted() { return inverted; }
-    public @Nullable Boolean getStatus() { return status; }
+    public @Nullable Boolean getFlashonerror() {
+        return flashonerror;
+    }
+
+    public @Nullable Boolean getInverted() {
+        return inverted;
+    }
+
+    public @Nullable Boolean getStatus() {
+        return status;
+    }
 }

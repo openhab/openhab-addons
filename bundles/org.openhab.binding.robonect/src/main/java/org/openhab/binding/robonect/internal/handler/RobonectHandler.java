@@ -465,7 +465,8 @@ public class RobonectHandler extends BaseThingHandler {
         String parameter;
         String value;
         if (command instanceof StringType string) {
-            parameter = channelId.equals(CHANNEL_PUSH_URL) ? "url" : channelId.equals(CHANNEL_PUSH_USERNAME) ? "name" : null;
+            parameter = channelId.equals(CHANNEL_PUSH_URL) ? "url"
+                    : channelId.equals(CHANNEL_PUSH_USERNAME) ? "name" : null;
             value = string.toFullString();
         } else if (command instanceof QuantityType<?> quantity && channelId.equals(CHANNEL_PUSH_INTERVAL)) {
             parameter = "interval";
@@ -708,8 +709,8 @@ public class RobonectHandler extends BaseThingHandler {
             if (info.getWlan() != null) {
                 Integer signal = info.getWlan().getSignal();
                 if (signal != null) {
-                updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, new DecimalType(signal));
-                updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(convertSignalStrength(signal)));
+                    updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, new DecimalType(signal));
+                    updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(convertSignalStrength(signal)));
                 } else {
                     updateState(CHANNEL_WLAN_SIGNAL, UnDefType.UNDEF);
                     updateState(CHANNEL_WLAN_SIGNAL_STRENGTH, UnDefType.UNDEF);

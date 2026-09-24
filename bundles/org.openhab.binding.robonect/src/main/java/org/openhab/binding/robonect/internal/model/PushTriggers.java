@@ -10,5 +10,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class PushTriggers {
     private @Nullable Integer interval;
 
-    public @Nullable Integer getInterval() { return interval; }
+    public @Nullable Integer getInterval() {
+        return interval;
+    }
 }
