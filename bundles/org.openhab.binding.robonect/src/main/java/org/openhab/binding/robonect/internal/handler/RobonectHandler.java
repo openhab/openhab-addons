@@ -43,6 +43,8 @@ import org.openhab.binding.robonect.internal.model.HourInfo;
 import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
+import org.openhab.binding.robonect.internal.model.Remote;
+import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
@@ -384,6 +386,41 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Updates the five remote-start point configurations when available.
+     */
+    private void refreshRemoteInfo() {
+        RemoteInfo info = robonectClient.getRemoteInfo();
+        if (!info.isSuccessful()) {
+            logger.debug("Could not retrieve remote-start information: {}", info.getErrorMessage());
+            return;
+        }
+        updateRemoteStart(1, info.getRemoteStart1());
+        updateRemoteStart(2, info.getRemoteStart2());
+        updateRemoteStart(3, info.getRemoteStart3());
+        updateRemoteStart(4, info.getRemoteStart4());
+        updateRemoteStart(5, info.getRemoteStart5());
+    }
+
+    private void updateRemoteStart(int number, @Nullable Remote remote) {
+        if (remote == null) {
+            return;
+        }
+        String prefix = "remote-" + number + "-";
+        if (remote.getName() != null)
+            updateState(prefix + "name", new StringType(remote.getName()));
+        if (remote.getVisible() != null)
+            updateState(prefix + "visible", OnOffType.from(remote.getVisible()));
+        if (remote.getPath() != null)
+            updateState(prefix + "path", new DecimalType(remote.getPath()));
+        if (remote.getProportion() != null)
+            updateState(prefix + "proportion", new QuantityType<>(remote.getProportion(), Units.PERCENT));
+        if (remote.getDistance() != null)
+            updateState(prefix + "distance", new QuantityType<>(remote.getDistance(), SIUnits.METRE));
+        if (remote.getCorridorcut() != null)
+            updateState(prefix + "corridor-cut", OnOffType.from(remote.getCorridorcut()));
+    }
+
     private void updateHours(String channel, Integer value) {
         if (value != null) {
             updateState(channel, new QuantityType<>(value, Units.HOUR));
@@ -597,6 +634,7 @@ public class RobonectHandler extends BaseThingHandler {
                     refreshBatteryInfo();
                     refreshMotorInfo();
                     refreshHourInfo();
+                    refreshRemoteInfo();
                 }
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;

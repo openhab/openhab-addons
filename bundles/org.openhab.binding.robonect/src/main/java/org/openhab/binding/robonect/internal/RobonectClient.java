@@ -34,6 +34,7 @@ import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.Name;
+import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.cmd.BatteryCommand;
@@ -43,6 +44,7 @@ import org.openhab.binding.robonect.internal.model.cmd.HourCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.MotorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.NameCommand;
+import org.openhab.binding.robonect.internal.model.cmd.RemoteCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StartCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StatusCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StopCommand;
@@ -315,6 +317,15 @@ public class RobonectClient {
      */
     public HourInfo getHourInfo() {
         return parser.parse(sendCommand(new HourCommand()), HourInfo.class);
+    }
+
+    /**
+     * Returns the configured remote-start points.
+     *
+     * @return the remote-start information including its success status
+     */
+    public RemoteInfo getRemoteInfo() {
+        return parser.parse(sendCommand(new RemoteCommand()), RemoteInfo.class);
     }
 
     /**
