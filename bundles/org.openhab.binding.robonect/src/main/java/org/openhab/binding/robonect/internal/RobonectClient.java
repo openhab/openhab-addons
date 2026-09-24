@@ -38,6 +38,7 @@ import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.PortalInfo;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
+import org.openhab.binding.robonect.internal.model.Status;
 import org.openhab.binding.robonect.internal.model.TimerInfo;
 import org.openhab.binding.robonect.internal.model.TimersInfo;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
@@ -45,9 +46,9 @@ import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.cmd.BatteryCommand;
 import org.openhab.binding.robonect.internal.model.cmd.Command;
-import org.openhab.binding.robonect.internal.model.cmd.ErrorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
+import org.openhab.binding.robonect.internal.model.cmd.ErrorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.HourCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.MotorCommand;
@@ -253,11 +254,11 @@ public class RobonectClient {
     public MowerInfo getMowerInfo() {
         String responseString = sendCommand(new StatusCommand());
         MowerInfo mowerInfo = parser.parse(responseString, MowerInfo.class);
-        if (jobRunning) {
+        Status status = mowerInfo.getStatus();
+        if (jobRunning && status != null) {
             // mode might have been changed on the mower. Also Mode JOB does not really exist on the mower, thus cannot
             // be checked here
-            if (mowerInfo.getStatus().getMode() == MowerMode.AUTO
-                    || mowerInfo.getStatus().getMode() == MowerMode.HOME) {
+            if (status.getMode() == MowerMode.AUTO || status.getMode() == MowerMode.HOME) {
                 jobRunning = false;
             } else if (mowerInfo.getError() != null) {
                 jobRunning = false;

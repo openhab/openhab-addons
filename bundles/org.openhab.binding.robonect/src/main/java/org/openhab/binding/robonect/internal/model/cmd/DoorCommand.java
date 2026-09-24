@@ -17,7 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 /** Queries or controls the optional Robonect door system. */
 public class DoorCommand implements Command {
     public enum Direction {
-        OPEN("open"), CLOSE("close");
+        OPEN("open"),
+        CLOSE("close");
 
         private final String parameter;
 

@@ -123,6 +123,16 @@ public class RobonectHandlerTest {
     }
 
     @Test
+    public void shouldIgnoreIncompleteMowerStatus() {
+        MowerInfo incompleteInfo = new MowerInfo();
+        incompleteInfo.setSuccessful(true);
+        when(robonectClientMock.getMowerInfo()).thenReturn(incompleteInfo);
+
+        assertDoesNotThrow(() -> subject.handleCommand(
+                new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS), RefreshType.REFRESH));
+    }
+
+    @Test
     public void shouldUpdateErrorChannelsIfErrorStatusReturned() throws InterruptedException {
         ArgumentCaptor<State> errorCodeCaptor = ArgumentCaptor.forClass(State.class);
         ArgumentCaptor<State> errorMessageCaptor = ArgumentCaptor.forClass(State.class);

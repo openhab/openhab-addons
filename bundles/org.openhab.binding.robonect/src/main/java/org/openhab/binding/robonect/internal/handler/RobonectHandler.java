@@ -35,11 +35,11 @@ import org.openhab.binding.robonect.internal.model.Battery;
 import org.openhab.binding.robonect.internal.model.BatteryCapacity;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.BladeMotor;
-import org.openhab.binding.robonect.internal.model.DriveMotor;
-import org.openhab.binding.robonect.internal.model.DriveMotors;
 import org.openhab.binding.robonect.internal.model.Door;
 import org.openhab.binding.robonect.internal.model.DoorInfo;
 import org.openhab.binding.robonect.internal.model.DoorState;
+import org.openhab.binding.robonect.internal.model.DriveMotor;
+import org.openhab.binding.robonect.internal.model.DriveMotors;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.Host;
@@ -53,6 +53,7 @@ import org.openhab.binding.robonect.internal.model.Remote;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.Sensor;
+import org.openhab.binding.robonect.internal.model.Status;
 import org.openhab.binding.robonect.internal.model.TimerFull;
 import org.openhab.binding.robonect.internal.model.TimerInfo;
 import org.openhab.binding.robonect.internal.model.TimersInfo;
@@ -61,8 +62,8 @@ import org.openhab.binding.robonect.internal.model.Weather;
 import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.Weekdays;
 import org.openhab.binding.robonect.internal.model.WireInfo;
-import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
+import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -71,8 +72,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -334,7 +335,8 @@ public class RobonectHandler extends BaseThingHandler {
     private void updateDoorState(@Nullable DoorState state, @Nullable DoorState pending) {
         if (pending != null && Boolean.TRUE.equals(pending.getOpen()) && !Boolean.TRUE.equals(pending.getClose())) {
             updateState(CHANNEL_DOOR_STATE, new PercentType(75));
-        } else if (pending != null && !Boolean.TRUE.equals(pending.getOpen()) && Boolean.TRUE.equals(pending.getClose())) {
+        } else if (pending != null && !Boolean.TRUE.equals(pending.getOpen())
+                && Boolean.TRUE.equals(pending.getClose())) {
             updateState(CHANNEL_DOOR_STATE, new PercentType(25));
         } else if (state != null && Boolean.TRUE.equals(state.getOpen()) && !Boolean.TRUE.equals(state.getClose())) {
             updateState(CHANNEL_DOOR_STATE, PercentType.ZERO);
@@ -436,7 +438,8 @@ public class RobonectHandler extends BaseThingHandler {
         } else if (command == StopMoveType.STOP) {
             answer = robonectClient.releaseDoor();
         } else {
-            logger.debug("Got door command of type {} but Up, Down, or Stop is expected.", command.getClass().getName());
+            logger.debug("Got door command of type {} but Up, Down, or Stop is expected.",
+                    command.getClass().getName());
             return;
         }
         if (answer.isSuccessful()) {
@@ -469,7 +472,8 @@ public class RobonectHandler extends BaseThingHandler {
 
     private void refreshMowerInfo() {
         MowerInfo info = robonectClient.getMowerInfo();
-        if (info.isSuccessful()) {
+        Status status = info.getStatus();
+        if (info.isSuccessful() && status != null) {
             if (info.getError() != null) {
                 updateErrorInfo(info.getError());
                 refreshLastErrorInfo();
@@ -480,13 +484,17 @@ public class RobonectHandler extends BaseThingHandler {
             if (info.getId() != null) {
                 updateState(CHANNEL_MOWER_ID, new StringType(info.getId()));
             }
-            updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
-            updateState(CHANNEL_STATUS, new DecimalType(info.getStatus().getStatus().getStatusCode()));
-            updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(info.getStatus().getDuration(), Units.SECOND));
-            updateState(CHANNEL_STATUS_DISTANCE, new QuantityType<>(info.getStatus().getDistance(), SIUnits.METRE));
-            updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(info.getStatus().getHours(), Units.HOUR));
-            updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
-            updateState(CHANNEL_MOWER_START, OnOffType.from(!info.getStatus().isStopped()));
+            updateState(CHANNEL_STATUS_BATTERY, new DecimalType(status.getBattery()));
+            if (status.getStatus() != null) {
+                updateState(CHANNEL_STATUS, new DecimalType(status.getStatus().getStatusCode()));
+            }
+            updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(status.getDuration(), Units.SECOND));
+            updateState(CHANNEL_STATUS_DISTANCE, new QuantityType<>(status.getDistance(), SIUnits.METRE));
+            updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(status.getHours(), Units.HOUR));
+            if (status.getMode() != null) {
+                updateState(CHANNEL_STATUS_MODE, new StringType(status.getMode().name()));
+            }
+            updateState(CHANNEL_MOWER_START, OnOffType.from(!status.isStopped()));
             if (info.getHealth() != null) {
                 updateState(CHANNEL_HEALTH_TEMP,
                         new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
@@ -504,7 +512,9 @@ public class RobonectHandler extends BaseThingHandler {
                 if (info.getTimer().getNext() != null) {
                     updateNextTimer(info);
                 }
-                updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
+                if (info.getTimer().getStatus() != null) {
+                    updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
+                }
             }
             if (info.getWlan() != null && info.getWlan().getSignal() != null) {
                 int signal = info.getWlan().getSignal();
@@ -516,7 +526,7 @@ public class RobonectHandler extends BaseThingHandler {
             }
             updateState(CHANNEL_JOB, OnOffType.from(robonectClient.isJobRunning()));
         } else {
-            logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());
+            logger.debug("Could not retrieve complete mower information: {}", info.getErrorMessage());
         }
     }
 
