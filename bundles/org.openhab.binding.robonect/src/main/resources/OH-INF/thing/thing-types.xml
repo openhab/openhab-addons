@@ -20,6 +20,15 @@
 			<channel id="battery-temperature" typeId="batteryTemperatureType"/>
 			<channel id="battery-capacity" typeId="batteryCapacityType"/>
 			<channel id="battery-remaining-capacity" typeId="batteryRemainingCapacityType"/>
+			<channel id="left-drive-power" typeId="driveMotorPowerType"/>
+			<channel id="left-drive-speed" typeId="driveMotorSpeedType"/>
+			<channel id="left-drive-current" typeId="driveMotorCurrentType"/>
+			<channel id="right-drive-power" typeId="driveMotorPowerType"/>
+			<channel id="right-drive-speed" typeId="driveMotorSpeedType"/>
+			<channel id="right-drive-current" typeId="driveMotorCurrentType"/>
+			<channel id="blade-motor-average" typeId="bladeMotorAverageType"/>
+			<channel id="blade-motor-speed" typeId="bladeMotorSpeedType"/>
+			<channel id="blade-motor-current" typeId="bladeMotorCurrentType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
@@ -170,6 +179,44 @@
 		<item-type>Number:ElectricCharge</item-type>
 		<label>Battery Remaining Capacity</label>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="driveMotorPowerType">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Drive Motor Power</label>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="driveMotorSpeedType">
+		<item-type>Number:Speed</item-type>
+		<label>Drive Motor Speed</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="driveMotorCurrentType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Drive Motor Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="bladeMotorAverageType">
+		<item-type>Number</item-type>
+		<label>Blade Motor Average</label>
+		<description>The unscaled average value reported by the mower.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bladeMotorSpeedType">
+		<item-type>Number</item-type>
+		<label>Blade Motor Speed</label>
+		<description>The unscaled blade motor speed reported by the mower.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bladeMotorCurrentType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Blade Motor Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="idType">

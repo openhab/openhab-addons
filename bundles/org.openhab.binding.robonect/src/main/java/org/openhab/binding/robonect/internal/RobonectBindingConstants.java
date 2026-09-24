@@ -48,6 +48,15 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_BATTERY_TEMPERATURE = "battery-temperature";
     public static final String CHANNEL_BATTERY_CAPACITY = "battery-capacity";
     public static final String CHANNEL_BATTERY_REMAINING_CAPACITY = "battery-remaining-capacity";
+    public static final String CHANNEL_LEFT_DRIVE_POWER = "left-drive-power";
+    public static final String CHANNEL_LEFT_DRIVE_SPEED = "left-drive-speed";
+    public static final String CHANNEL_LEFT_DRIVE_CURRENT = "left-drive-current";
+    public static final String CHANNEL_RIGHT_DRIVE_POWER = "right-drive-power";
+    public static final String CHANNEL_RIGHT_DRIVE_SPEED = "right-drive-speed";
+    public static final String CHANNEL_RIGHT_DRIVE_CURRENT = "right-drive-current";
+    public static final String CHANNEL_BLADE_MOTOR_AVERAGE = "blade-motor-average";
+    public static final String CHANNEL_BLADE_MOTOR_SPEED = "blade-motor-speed";
+    public static final String CHANNEL_BLADE_MOTOR_CURRENT = "blade-motor-current";
 
     public static final String CHANNEL_JOB = "job";
 

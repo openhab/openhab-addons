@@ -29,6 +29,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.ModelParser;
+import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.Name;
@@ -38,6 +39,7 @@ import org.openhab.binding.robonect.internal.model.cmd.BatteryCommand;
 import org.openhab.binding.robonect.internal.model.cmd.Command;
 import org.openhab.binding.robonect.internal.model.cmd.ErrorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
+import org.openhab.binding.robonect.internal.model.cmd.MotorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.NameCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StartCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StatusCommand;
@@ -293,6 +295,15 @@ public class RobonectClient {
      */
     public BatteryInfo getBatteryInfo() {
         return parser.parse(sendCommand(new BatteryCommand()), BatteryInfo.class);
+    }
+
+    /**
+     * Returns detailed motor information reported by the mower.
+     *
+     * @return the motor information including its success status
+     */
+    public MotorInfo getMotorInfo() {
+        return parser.parse(sendCommand(new MotorCommand()), MotorInfo.class);
     }
 
     /**

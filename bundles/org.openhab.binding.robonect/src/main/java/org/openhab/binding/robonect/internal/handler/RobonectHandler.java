@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.robonect.internal.RobonectClient;
 import org.openhab.binding.robonect.internal.RobonectCommunicationException;
@@ -32,8 +33,12 @@ import org.openhab.binding.robonect.internal.config.RobonectConfig;
 import org.openhab.binding.robonect.internal.model.Battery;
 import org.openhab.binding.robonect.internal.model.BatteryCapacity;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
+import org.openhab.binding.robonect.internal.model.BladeMotor;
+import org.openhab.binding.robonect.internal.model.DriveMotor;
+import org.openhab.binding.robonect.internal.model.DriveMotors;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
+import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
@@ -325,6 +330,60 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Updates motor channels when the mower supports the motor endpoint.
+     */
+    private void refreshMotorInfo() {
+        MotorInfo info = robonectClient.getMotorInfo();
+        if (!info.isSuccessful()) {
+            logger.debug("Could not retrieve motor information: {}", info.getErrorMessage());
+            return;
+        }
+        DriveMotors drive = info.getDrive();
+        if (drive != null) {
+            updateDriveMotor(CHANNEL_LEFT_DRIVE_POWER, CHANNEL_LEFT_DRIVE_SPEED, CHANNEL_LEFT_DRIVE_CURRENT,
+                    drive.getLeft());
+            updateDriveMotor(CHANNEL_RIGHT_DRIVE_POWER, CHANNEL_RIGHT_DRIVE_SPEED, CHANNEL_RIGHT_DRIVE_CURRENT,
+                    drive.getRight());
+        }
+        BladeMotor blade = info.getBlade();
+        if (blade != null) {
+            if (blade.getAverage() != null) {
+                updateState(CHANNEL_BLADE_MOTOR_AVERAGE, new DecimalType(blade.getAverage()));
+            }
+            if (blade.getSpeed() != null) {
+                updateState(CHANNEL_BLADE_MOTOR_SPEED, new DecimalType(blade.getSpeed()));
+            }
+            if (blade.getCurrent() != null) {
+                updateState(CHANNEL_BLADE_MOTOR_CURRENT, new QuantityType<>(blade.getCurrent() / 1000.0, Units.AMPERE));
+            }
+        }
+    }
+
+    /**
+     * Updates the channels for one drive motor.
+     *
+     * @param powerChannel the channel for motor power
+     * @param speedChannel the channel for motor speed
+     * @param currentChannel the channel for motor current
+     * @param motor the API result for the motor
+     */
+    private void updateDriveMotor(String powerChannel, String speedChannel, String currentChannel,
+            @Nullable DriveMotor motor) {
+        if (motor == null) {
+            return;
+        }
+        if (motor.getPower() != null) {
+            updateState(powerChannel, new QuantityType<>(motor.getPower(), Units.PERCENT));
+        }
+        if (motor.getSpeed() != null) {
+            updateState(speedChannel, new QuantityType<>(motor.getSpeed() / 100.0, Units.METRE_PER_SECOND));
+        }
+        if (motor.getCurrent() != null) {
+            updateState(currentChannel, new QuantityType<>(motor.getCurrent() / 1000.0, Units.AMPERE));
+        }
+    }
+
     private void clearErrorInfo() {
         updateState(CHANNEL_ERROR_DATE, UnDefType.UNDEF);
         updateState(CHANNEL_ERROR_CODE, UnDefType.UNDEF);
@@ -499,6 +558,7 @@ public class RobonectHandler extends BaseThingHandler {
                 }
                 refreshMowerInfo();
                 refreshBatteryInfo();
+                refreshMotorInfo();
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;
                 offlineTimeoutTriggered = false;
