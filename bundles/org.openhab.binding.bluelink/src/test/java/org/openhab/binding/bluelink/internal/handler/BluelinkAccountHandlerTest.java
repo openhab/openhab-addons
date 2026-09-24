@@ -28,6 +28,8 @@ import static org.openhab.binding.bluelink.internal.MockApiData.VEHICLES_RESPONS
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -63,6 +65,9 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.extension.ResponseDefinitionTransformerV2;
+import com.github.tomakehurst.wiremock.http.ResponseDefinition;
+import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 
 /**
  * Integration tests for the Bluelink binding using WireMock to mock the API.
@@ -76,8 +81,9 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 @NonNullByDefault
 class BluelinkAccountHandlerTest extends JavaTest {
 
+    private static final ResponseGate GATE = new ResponseGate();
     private static final WireMockServer WIREMOCK_SERVER = new WireMockServer(
-            WireMockConfiguration.options().dynamicPort());
+            WireMockConfiguration.options().dynamicPort().extensions(GATE));
     private static final HttpClient HTTP_CLIENT = new HttpClient();
 
     private @Mock @NonNullByDefault({}) Bridge bridge;
@@ -143,6 +149,33 @@ class BluelinkAccountHandlerTest extends JavaTest {
             assertEquals("IONIQ 6", vehicle.model());
             assertEquals(IVehicle.EngineType.EV, vehicle.engineType());
             assertTrue(vehicle.isElectric());
+        }
+
+        @Test
+        void testOutdatedLoginIsIgnoredAfterRecovery() throws Exception {
+            waitForAssert(() -> Mockito.verify(callback).statusUpdated(eq(bridge),
+                    argThat(status -> status.getStatus() == ThingStatus.ONLINE)));
+            handler.dispose();
+            Mockito.clearInvocations(bridge, callback);
+            GATE.reset();
+            stubFor(post(urlEqualTo("/v2/ac/oauth/token")).inScenario("gate").whenScenarioStateIs(STARTED)
+                    .willReturn(aResponse().withStatus(503).withTransformers(GATE.getName()))
+                    .willSetStateTo("released"));
+
+            handler = new BluelinkAccountHandler(bridge, HTTP_CLIENT, timeZoneProvider, localeProvider);
+            handler.setCallback(callback);
+            handler.initialize();
+            assertTrue(GATE.arrived.await(10, TimeUnit.SECONDS));
+
+            // a vehicle request logs in on its own and brings the bridge online while the first login still runs
+            assertThat(handler.getVehicles(), is(not(empty())));
+            Mockito.verify(callback).statusUpdated(eq(bridge),
+                    argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+
+            // the first login fails afterwards, but its result is outdated and must not take the bridge offline
+            GATE.released.countDown();
+            Mockito.verify(callback, Mockito.after(2000).never()).statusUpdated(eq(bridge),
+                    argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
         }
     }
 
@@ -301,6 +334,39 @@ class BluelinkAccountHandlerTest extends JavaTest {
                     argThat(status -> status.getStatus() == ThingStatus.OFFLINE
                             && status.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR));
             verify(0, getRequestedFor(urlPathEqualTo("/auth/api/v2/user/oauth2/authorize")));
+        }
+    }
+
+    // holds a response until the test releases it, so that a login can overlap with a vehicle request
+    @NonNullByDefault({})
+    private static final class ResponseGate implements ResponseDefinitionTransformerV2 {
+        private volatile CountDownLatch arrived = new CountDownLatch(1);
+        private volatile CountDownLatch released = new CountDownLatch(1);
+
+        void reset() {
+            arrived = new CountDownLatch(1);
+            released = new CountDownLatch(1);
+        }
+
+        @Override
+        public ResponseDefinition transform(final ServeEvent serveEvent) {
+            arrived.countDown();
+            try {
+                released.await(10, TimeUnit.SECONDS);
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            return serveEvent.getResponseDefinition();
+        }
+
+        @Override
+        public boolean applyGlobally() {
+            return false;
+        }
+
+        @Override
+        public String getName() {
+            return "gate";
         }
     }
 }

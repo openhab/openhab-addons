@@ -75,7 +75,8 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
     private final TimeZoneProvider timeZoneProvider;
     private final LocaleProvider localeProvider;
 
-    // guards api, loginTask and loginGeneration so that a finishing login cannot reschedule itself after dispose()
+    // guards api, loginTask and loginGeneration; status updates of a login or request are made under this lock
+    // together with the generation check, so an outdated result cannot overwrite a newer status
     private final Object loginLock = new Object();
     private volatile @Nullable AbstractBluelinkApi<?> api;
     private volatile @Nullable ScheduledFuture<?> loginTask;
@@ -175,34 +176,32 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
 
         try {
             final boolean loggedIn = bluelinkApi.login();
-            if (isStale(generation)) {
-                return;
-            }
-            if (loggedIn) {
-                logger.debug("Bluelink login successful");
-                setOnline(bluelinkApi);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/account-handler.login.login-failed");
-            }
+            updateIfCurrent(generation, () -> {
+                if (loggedIn) {
+                    logger.debug("Bluelink login successful");
+                    setOnline(bluelinkApi);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/account-handler.login.login-failed");
+                }
+            });
         } catch (final RetryableRequestException e) {
-            if (!isStale(generation)) {
+            updateIfCurrent(generation, () -> {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
-                scheduleLoginRetry(generation);
-            }
+                loginTask = scheduler.schedule(this::login, LOGIN_RETRY_DELAY.toSeconds(), TimeUnit.SECONDS);
+            });
         } catch (final LoginRejectedException e) {
-            if (!isStale(generation)) {
+            updateIfCurrent(generation, () -> {
                 final ThingStatusDetail detail = e.getReason() == LoginRejectedException.Reason.BLOCKED
                         ? ThingStatusDetail.COMMUNICATION_ERROR
                         : ThingStatusDetail.CONFIGURATION_ERROR;
                 updateStatus(ThingStatus.OFFLINE, detail,
                         isLegacyRefreshToken(e) ? "@text/account-handler.login.refresh-token"
                                 : e.getStatusDescription());
-            }
+            });
         } catch (final BluelinkApiException e) {
-            if (!isStale(generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
-            }
+            updateIfCurrent(generation, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    e.getStatusDescription()));
         }
     }
 
@@ -213,15 +212,12 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                 && LEGACY_REFRESH_TOKEN.matcher(password).matches();
     }
 
-    // the handler was disposed or re-initialized while this login was running
-    private boolean isStale(final long generation) {
-        return generation != loginGeneration.get();
-    }
-
-    private void scheduleLoginRetry(final long generation) {
+    // drops the update if the handler was disposed, re-initialized or recovered since the login or request started;
+    // status and property updates from the handler do not take the thing lock, so this cannot deadlock with dispose()
+    private void updateIfCurrent(final long generation, final Runnable update) {
         synchronized (loginLock) {
-            if (!isStale(generation)) {
-                loginTask = scheduler.schedule(this::login, LOGIN_RETRY_DELAY.toSeconds(), TimeUnit.SECONDS);
+            if (generation == loginGeneration.get()) {
+                update.run();
             }
         }
     }
@@ -238,20 +234,18 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
 
     // vehicle handlers authenticate on their own, so a working API also brings the bridge back online
     private void markOnline(final AbstractBluelinkApi<?> bluelinkApi, final long generation) {
-        synchronized (loginLock) {
-            if (isStale(generation)) {
+        updateIfCurrent(generation, () -> {
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
                 return;
             }
-            // already authenticated again, a pending login retry would only log in once more
+            // already authenticated again: cancel a pending retry and make a running one outdated
             final ScheduledFuture<?> task = loginTask;
-            if (task != null) {
-                task.cancel(false);
+            if (task != null && task.cancel(false)) {
                 loginTask = null;
             }
-        }
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            loginGeneration.incrementAndGet();
             setOnline(bluelinkApi);
-        }
+        });
     }
 
     private boolean call(final ApiCall call) throws BluelinkApiException {
