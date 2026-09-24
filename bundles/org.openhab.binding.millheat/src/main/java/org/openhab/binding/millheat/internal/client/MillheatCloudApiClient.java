@@ -74,6 +74,9 @@ public class MillheatCloudApiClient {
     public static String endpoint = "https://api.millnorwaycloud.com";
 
     private static final String BEARER_PREFIX = "Bearer ";
+    /** Endpoints whose request and response bodies carry credentials or tokens. */
+    private static final String AUTH_PATH_PREFIX = "/customer/auth/";
+
     private static final long REQUEST_TIMEOUT_SECONDS = 30;
     private static final long TOKEN_RENEWAL_MARGIN_SECONDS = 60;
     private static final long DEFAULT_TOKEN_LIFETIME_SECONDS = 600;
@@ -228,7 +231,9 @@ public class MillheatCloudApiClient {
                 .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
                 .header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString())
                 .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        requestLogger.listenTo(request);
+        // Sign-in carries the password and both auth endpoints return tokens, so their payloads
+        // must never reach the log.
+        requestLogger.listenTo(request, path.startsWith(AUTH_PATH_PREFIX));
         return request;
     }
 

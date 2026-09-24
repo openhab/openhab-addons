@@ -50,7 +50,10 @@ public final class RequestLogger {
         this.prefix = prefix;
     }
 
-    private void dump(final Request request) {
+    /** Stands in for any value that must not reach the log. */
+    private static final String REDACTED = "<redacted>";
+
+    private void dump(final Request request, final boolean redactContent) {
         final long idV = nextId.getAndIncrement();
         if (logger.isDebugEnabled()) {
             final String id = prefix + "-" + idV;
@@ -59,7 +62,7 @@ public final class RequestLogger {
                     String.format("Request %s\n%s > %s %s\n", id, id, theRequest.getMethod(), theRequest.getURI())));
             request.onRequestHeaders(theRequest -> {
                 for (final HttpField header : theRequest.getHeaders()) {
-                    group.append(String.format("%s > %s\n", id, header));
+                    group.append(String.format("%s > %s\n", id, redact(header)));
                 }
             });
             final StringBuilder contentBuffer = new StringBuilder();
@@ -69,7 +72,7 @@ public final class RequestLogger {
             request.onRequestSuccess(theRequest -> {
                 if (contentBuffer.length() > 0) {
                     group.append("\n");
-                    group.append(reformatJson(contentBuffer.toString()));
+                    group.append(redactContent ? REDACTED : reformatJson(contentBuffer.toString()));
                 }
                 String dataToLog = group.toString();
                 logger.debug(dataToLog);
@@ -85,7 +88,7 @@ public final class RequestLogger {
             });
             request.onResponseHeaders(theResponse -> {
                 for (final HttpField header : theResponse.getHeaders()) {
-                    group.append(String.format("%s < %s\n", id, header));
+                    group.append(String.format("%s < %s\n", id, redact(header)));
                 }
             });
             request.onResponseContent((theResponse, content) -> contentBuffer
@@ -93,7 +96,7 @@ public final class RequestLogger {
             request.onResponseSuccess(theResponse -> {
                 if (contentBuffer.length() > 0) {
                     group.append("\n");
-                    group.append(reformatJson(contentBuffer.toString()));
+                    group.append(redactContent ? REDACTED : reformatJson(contentBuffer.toString()));
                 }
                 String dataToLog = group.toString();
                 logger.debug(dataToLog);
@@ -116,8 +119,23 @@ public final class RequestLogger {
     }
 
     public Request listenTo(final Request request) {
-        dump(request);
+        return listenTo(request, false);
+    }
+
+    /**
+     * Logs the request and its response.
+     *
+     * @param redactContent when true the request and response bodies are replaced with a
+     *            placeholder. Set this for endpoints whose payloads carry credentials or tokens;
+     *            the {@code Authorization} header is redacted for every request regardless.
+     */
+    public Request listenTo(final Request request, final boolean redactContent) {
+        dump(request, redactContent);
         return request;
+    }
+
+    private static String redact(final HttpField header) {
+        return HttpHeader.AUTHORIZATION.is(header.getName()) ? header.getName() + ": " + REDACTED : header.toString();
     }
 
     private String reformatJson(final String jsonString) {
