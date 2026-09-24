@@ -15,6 +15,11 @@
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="wlan-signal" typeId="system.signal-strength"/>
 			<channel id="wlan-signal-strength" typeId="wlanStrengthType"/>
+			<channel id="battery-voltage" typeId="batteryVoltageType"/>
+			<channel id="battery-current" typeId="batteryCurrentType"/>
+			<channel id="battery-temperature" typeId="batteryTemperatureType"/>
+			<channel id="battery-capacity" typeId="batteryCapacityType"/>
+			<channel id="battery-remaining-capacity" typeId="batteryRemainingCapacityType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
@@ -135,6 +140,36 @@
 		<label>WLAN Signal Strength</label>
 		<description>The raw WLAN signal strength in dBm.</description>
 		<state readOnly="true" pattern="%d dBm"/>
+	</channel-type>
+
+	<channel-type id="batteryVoltageType">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="batteryCurrentType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Battery Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="batteryTemperatureType">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="batteryCapacityType">
+		<item-type>Number:ElectricCharge</item-type>
+		<label>Battery Capacity</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="batteryRemainingCapacityType">
+		<item-type>Number:ElectricCharge</item-type>
+		<label>Battery Remaining Capacity</label>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="idType">

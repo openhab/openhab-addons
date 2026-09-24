@@ -43,6 +43,11 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_TIMER_NEXT_TIMER = "timer-next";
     public static final String CHANNEL_WLAN_SIGNAL = "wlan-signal";
     public static final String CHANNEL_WLAN_SIGNAL_STRENGTH = "wlan-signal-strength";
+    public static final String CHANNEL_BATTERY_VOLTAGE = "battery-voltage";
+    public static final String CHANNEL_BATTERY_CURRENT = "battery-current";
+    public static final String CHANNEL_BATTERY_TEMPERATURE = "battery-temperature";
+    public static final String CHANNEL_BATTERY_CAPACITY = "battery-capacity";
+    public static final String CHANNEL_BATTERY_REMAINING_CAPACITY = "battery-remaining-capacity";
 
     public static final String CHANNEL_JOB = "job";
 

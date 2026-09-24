@@ -29,6 +29,9 @@ import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectEndpoint;
 import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.config.RobonectConfig;
+import org.openhab.binding.robonect.internal.model.Battery;
+import org.openhab.binding.robonect.internal.model.BatteryCapacity;
+import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
@@ -287,6 +290,41 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Updates detailed battery channels when the mower supports the battery endpoint.
+     */
+    private void refreshBatteryInfo() {
+        BatteryInfo info = robonectClient.getBatteryInfo();
+        List<Battery> batteries = info.getBatteries();
+        if (!info.isSuccessful() || batteries == null || batteries.isEmpty()) {
+            logger.debug("Could not retrieve detailed battery information: {}", info.getErrorMessage());
+            return;
+        }
+        Battery battery = batteries.getFirst();
+        Integer voltage = battery.getVoltage();
+        if (voltage != null) {
+            updateState(CHANNEL_BATTERY_VOLTAGE, new QuantityType<>(voltage / 1000.0, Units.VOLT));
+        }
+        Integer current = battery.getCurrent();
+        if (current != null) {
+            updateState(CHANNEL_BATTERY_CURRENT, new QuantityType<>(current / 1000.0, Units.AMPERE));
+        }
+        Integer temperature = battery.getTemperature();
+        if (temperature != null) {
+            updateState(CHANNEL_BATTERY_TEMPERATURE, new QuantityType<>(temperature / 10.0, SIUnits.CELSIUS));
+        }
+        BatteryCapacity capacity = battery.getCapacity();
+        if (capacity != null) {
+            if (capacity.getFull() != null) {
+                updateState(CHANNEL_BATTERY_CAPACITY, new QuantityType<>(capacity.getFull(), Units.MILLIAMPERE_HOUR));
+            }
+            if (capacity.getRemaining() != null) {
+                updateState(CHANNEL_BATTERY_REMAINING_CAPACITY,
+                        new QuantityType<>(capacity.getRemaining(), Units.MILLIAMPERE_HOUR));
+            }
+        }
+    }
+
     private void clearErrorInfo() {
         updateState(CHANNEL_ERROR_DATE, UnDefType.UNDEF);
         updateState(CHANNEL_ERROR_CODE, UnDefType.UNDEF);
@@ -460,6 +498,7 @@ public class RobonectHandler extends BaseThingHandler {
                     loadVersionInfo = false;
                 }
                 refreshMowerInfo();
+                refreshBatteryInfo();
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;
                 offlineTimeoutTriggered = false;
