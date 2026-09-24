@@ -28,14 +28,7 @@ import org.openhab.binding.atagone.internal.dto.SchedulesDTO;
 import com.google.gson.JsonObject;
 
 /**
- * Verifies that {@link AtagOneApiClient#validateComplete} rejects a reply with a missing section instead of
- * letting a DTO with null fields reach the handler, where it would NPE {@code updateChannels()} and — thrown
- * from a {@code scheduleWithFixedDelay} task — silently and permanently stop all future polls.
- * <p>
- * Also verifies {@link AtagOneApiClient#parseReplyObject}, which guards {@code pair()}, {@code retrieve()},
- * and {@code updateControl()} against a malformed/non-JSON HTTP body — a realistic failure mode given the
- * device's documented HTTP/1.0 flakiness — throwing {@link AtagOneCommunicationException} instead of letting
- * an unchecked Gson exception escape into a caller (e.g. {@code doPair()}) that only catches the checked type.
+ * Verifies {@link AtagOneApiClient#validateComplete} and {@link AtagOneApiClient#parseReplyObject}.
  *
  * @author Florian Lettner - Initial contribution
  */
@@ -139,14 +132,6 @@ class AtagOneApiClientValidationTest {
                 () -> client.parseReplyObject("{\"something_else\":{}}", "pair_reply"));
     }
 
-    /**
-     * Confirmed live (2026-09-16): serializing {@code entries}' start/end as floats (Gson's default
-     * for a {@code double[][][]}, e.g. {@code 0.0}/{@code 240.0}) makes the device silently wipe the
-     * whole schedule to empty while still returning {@code acc_status:2} — no error, no {@code resets}
-     * bump, nothing to distinguish it from a real success except an independent read-back. The device's
-     * own wire format (every {@code /retrieve} reply, and every write that has ever actually applied)
-     * uses bare integers for start/end, a float only for temp.
-     */
     @Test
     void scheduleToJsonEmitsStartEndAsIntegersAndTempAsFloat() {
         ScheduleDTO schedule = new ScheduleDTO();
@@ -166,7 +151,6 @@ class AtagOneApiClientValidationTest {
         double[][][] entries = new double[3][][];
         entries[0] = new double[0][]; // explicitly empty day
         entries[1] = new double[][] { { 600, 900, 19.0 } };
-        // entries[2] stays null — a defensively-possible shape, mirrored from ScheduleJson's own handling.
         schedule.entries = entries;
 
         String json = AtagOneApiClient.scheduleToJson(schedule).toString();

@@ -46,7 +46,6 @@ class AtagOneApiClientLiveTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AtagOneApiClientLiveTest.class);
 
-    /** Stable pseudo-MAC used as the client identifier for all test runs. */
     private static final String TEST_CLIENT_ID = "AA:BB:CC:DD:EE:FF";
 
     private static HttpClient httpClient;
@@ -70,14 +69,6 @@ class AtagOneApiClientLiveTest {
         }
     }
 
-    // ── Test 1: pairing ───────────────────────────────────────────────────────
-
-    /**
-     * pair() returns 1 (pending) if the user must press Accept, 2 (granted) if the device
-     * auto-accepts. Some firmware versions return 0 for an open-LAN client — the raw JSON is
-     * logged so it can be inspected. We assert only that the call completes without throwing;
-     * retrieve() performs the authoritative auth check.
-     */
     @Test
     @Order(1)
     void pairCompletesWithoutException() throws AtagOneCommunicationException {
@@ -90,8 +81,6 @@ class AtagOneApiClientLiveTest {
         }
         assertTrue(accStatus >= 0, "acc_status must be non-negative, got: " + accStatus);
     }
-
-    // ── Test 2: retrieve ──────────────────────────────────────────────────────
 
     @Test
     @Order(2)
@@ -167,8 +156,6 @@ class AtagOneApiClientLiveTest {
         LOGGER.info("  ch_mode_vacation : {} s", r.configuration.ch_mode_vacation);
         LOGGER.info("  boiler_id        : {}", r.configuration.boiler_id);
 
-        // ── Structural assertions ──────────────────────────────────────────────
-
         assertFalse(r.status.device_id.isEmpty(), "device_id must not be empty");
 
         assertTrue(r.report.room_temp >= 5 && r.report.room_temp <= 35,
@@ -197,16 +184,10 @@ class AtagOneApiClientLiveTest {
                         + r.configuration.dhw_max_set);
     }
 
-    // ── Test 3: safe write ────────────────────────────────────────────────────
-
     @Test
     @Order(3)
     void updateControlRoundTrip() throws AtagOneCommunicationException {
-        // Read the current room setpoint, then write it back — no change to the boiler. Uses
-        // ch_mode_temp (the target-temperature channel's field), confirmed live to be a genuinely
-        // writable control field. dhw_temp_setp was used here previously, but is confirmed
-        // read-only/derived — writing it is silently accepted and has no effect, which would make
-        // this test unable to distinguish a working round-trip from a no-op write.
+        // ch_mode_temp confirmed writable live; dhw_temp_setp is read-only (writes silently accepted but no effect).
         RetrieveReplyDTO before = apiClient.retrieve();
         double currentSetpoint = before.control.ch_mode_temp;
         LOGGER.info("updateControl round-trip: ch_mode_temp = {}", currentSetpoint);
@@ -214,18 +195,14 @@ class AtagOneApiClientLiveTest {
         ControlUpdateDTO update = new ControlUpdateDTO();
         update.ch_mode_temp = currentSetpoint;
 
-        // Should complete without throwing
         assertDoesNotThrow(() -> apiClient.updateControl(update));
 
-        // Read back and verify value is unchanged
         RetrieveReplyDTO after = apiClient.retrieve();
         assertEquals(currentSetpoint, after.control.ch_mode_temp, 0.5,
                 "Room setpoint changed unexpectedly after no-op write");
 
         LOGGER.info("updateControl round-trip: OK (ch_mode_temp still {})", after.control.ch_mode_temp);
     }
-
-    // ── Test 4: DHW schedule write ───────────────────────────────────────────
 
     @Test
     @Order(4)
@@ -246,8 +223,6 @@ class AtagOneApiClientLiveTest {
 
         LOGGER.info("updateDhwSchedule round-trip: OK (base_temp still {})", after.schedules.dhw_schedule.base_temp);
     }
-
-    // ── Test 5: CH schedule write ────────────────────────────────────────────
 
     @Test
     @Order(5)

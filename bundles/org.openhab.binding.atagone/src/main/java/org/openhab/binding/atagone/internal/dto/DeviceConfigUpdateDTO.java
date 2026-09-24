@@ -12,18 +12,12 @@
  */
 package org.openhab.binding.atagone.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Gson DTO for the {@code configuration} block in an {@code update_message}.
- * Only non-null fields are serialized by Gson.
- *
  * @author Florian Lettner - Initial contribution
  */
-@NonNullByDefault({})
 public class DeviceConfigUpdateDTO {
-    /** Vacation start in ATAG epoch (seconds since 2000-01-01 UTC). */
     public @Nullable Long start_vacation;
     public @Nullable Double ch_vacation_temp;
     public @Nullable Integer frost_prot_enabled;
@@ -50,7 +44,6 @@ public class DeviceConfigUpdateDTO {
     public @Nullable Integer dhw_legion_day;
     public @Nullable Integer dhw_legion_time;
 
-    /** True if at least one field has been set and this update carries a change to send. */
     public boolean hasChanges() {
         return start_vacation != null || ch_vacation_temp != null || frost_prot_enabled != null
                 || frost_prot_temp_room != null || summer_eco_mode != null || summer_eco_temp != null

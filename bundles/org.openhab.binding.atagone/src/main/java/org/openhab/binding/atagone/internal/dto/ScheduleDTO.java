@@ -12,22 +12,10 @@
  */
 package org.openhab.binding.atagone.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
- * Gson DTO for one schedule ({@code ch_schedule} or {@code dhw_schedule}) in the {@code schedules}
- * block of a {@code retrieve_reply}.
- * <p>
- * {@code entries} is one array per weekday, each holding that day's {@code [start, end, temp]}
- * triples (minutes-since-midnight, minutes-since-midnight, °C) — variable length per day, not fixed.
- * Outside every triple's window, {@code base_temp} is the fallback setpoint.
- *
  * @author Florian Lettner - Initial contribution
  */
-@NonNullByDefault({})
 public class ScheduleDTO {
-    /** Fallback setpoint (°C) for any time not covered by an entry. */
     public double base_temp;
-    /** Per-weekday arrays of {@code [start, end, temp]} triples. */
     public double[][][] entries;
 }

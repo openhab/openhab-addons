@@ -30,15 +30,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
- * JSON codec for the whole-week CH/DHW schedule shape shared by the {@code heating#schedule} /
- * {@code hotwater#schedule} read channels and the {@code setChSchedule}/{@code setDhwSchedule} Thing
- * Actions.
- * <p>
- * {@code days.<weekday>} array order is exactly {@code entries[dayIndex]} order, unmodified — a
- * caller (the schedule-editing UI this exists for) resolves "which period did I just edit" purely
- * from its position in this array, then calls {@code setChSchedulePeriod}/etc. with that same index.
- * Reordering or filtering periods here would silently misdirect a caller's next edit onto the wrong
- * period on the live boiler.
+ * JSON codec for the whole-week CH/DHW schedule channels and Thing Actions.
  *
  * @author Florian Lettner - Initial contribution
  */
@@ -47,22 +39,12 @@ public final class ScheduleJson {
 
     private static final Gson GSON = new GsonBuilder().create();
 
-    /**
-     * Upper bound on {@code parse}'s input, generous over a real full week (a few KB at most) but
-     * small enough to reject a deliberately oversized payload before it's even handed to the parser.
-     */
     private static final int MAX_INPUT_LENGTH = 16 * 1024;
-
-    /** Upper bound on periods accepted for a single weekday — real schedules hold at most a handful. */
     private static final int MAX_PERIODS_PER_DAY = 100;
 
     private ScheduleJson() {
     }
 
-    /**
-     * Serializes a schedule to the documented JSON shape — all seven weekdays always present, in
-     * monday..sunday order, each day's periods in {@code entries[dayIndex]} order unmodified.
-     */
     public static String toJson(double baseTemp, double[][][] entries) {
         JsonObject root = new JsonObject();
         root.addProperty("baseTemp", baseTemp);
@@ -85,18 +67,6 @@ public final class ScheduleJson {
         return GSON.toJson(root);
     }
 
-    /**
-     * Parses a (possibly partial) schedule write. Weekdays absent from {@code days} are filled from
-     * {@code currentEntries} unchanged — the device requires the whole schedule object on every
-     * write regardless, so this lets a caller save just the day(s) it actually edited in one call.
-     *
-     * @return the composed schedule ready to send, or {@code null} if the input is malformed, exceeds
-     *         {@link #MAX_INPUT_LENGTH} or {@link #MAX_PERIODS_PER_DAY}, names an unrecognized
-     *         weekday, names a weekday beyond {@code currentEntries.length}, contains a period failing
-     *         {@link #isValidPeriod}, or contains two periods on the same weekday that
-     *         {@link #periodsOverlap} — rejected outright rather than trimmed or reordered, since
-     *         resolving a conflict is a caller policy decision, not this codec's to make
-     */
     @Nullable
     public static ScheduleDTO parse(String json, double currentBaseTemp, double[][][] currentEntries) {
         if (json.length() > MAX_INPUT_LENGTH) {
@@ -112,9 +82,7 @@ public final class ScheduleJson {
         } catch (JsonParseException e) {
             return null;
         } catch (StackOverflowError e) {
-            // Gson's recursive-descent parser has no nesting-depth limit of its own; a deliberately
-            // deeply-nested payload (still well under MAX_INPUT_LENGTH — nesting is compact) would
-            // otherwise blow the calling thread's stack instead of failing this call cleanly.
+            // Gson has no nesting-depth limit; a deeply-nested payload would blow the stack without this catch.
             return null;
         }
 
@@ -201,25 +169,10 @@ public final class ScheduleJson {
         return element.getAsDouble();
     }
 
-    /**
-     * {@code 0 <= start < end <= 1440} — matches every observed device schedule (never wraps
-     * midnight, never zero-length). Applied to both this codec and the four per-period Thing Actions
-     * in {@link AtagOneHandler#composeSchedulePeriodChange}, so both write paths reject the same
-     * malformed period.
-     */
     public static boolean isValidPeriod(double startMinutes, double endMinutes) {
         return startMinutes >= 0 && endMinutes <= 1440 && startMinutes < endMinutes;
     }
 
-    /**
-     * True if half-open intervals {@code [aStart, aEnd)} and {@code [bStart, bEnd)} overlap — a
-     * period ending exactly when another starts does <em>not</em> count as overlapping. Rejection
-     * only, never resolution: which period should yield on a conflict is a caller/UI policy decision,
-     * not one either write path makes for the caller. Used both here (whole-schedule writes reject if
-     * any two periods within the same weekday overlap each other) and by
-     * {@link AtagOneHandler#composeSchedulePeriodChange} (a per-period write rejects if the new/edited
-     * period overlaps any <em>other</em> period already on that weekday).
-     */
     public static boolean periodsOverlap(double aStart, double aEnd, double bStart, double bEnd) {
         return aStart < bEnd && aEnd > bStart;
     }

@@ -25,10 +25,8 @@ import org.openhab.core.types.StateDescription;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Supplies the DHW target-temperature bounds actually reported by the device
- * ({@code configuration.dhw_min_set}/{@code dhw_max_set}), which vary by installation (a combi boiler's
- * range differs from a system boiler with a 3-port valve kit) and so cannot be hardcoded in
- * {@code thing-types.xml}.
+ * Supplies device-reported DHW target-temperature bounds, which vary by installation
+ * and cannot be hardcoded in {@code thing-types.xml}.
  *
  * @author Florian Lettner - Initial contribution
  */

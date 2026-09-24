@@ -30,16 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Single-write mode activation for the ATAG ONE binding, complementing the channel-based interface.
- * <p>
- * {@code preset-mode} is the only channel that can ever trigger a mode change — writing a duration
- * channel (vacation/extend/fireplace-duration) only updates the stored value, matching the device's
- * own behavior. That means activating with a <em>custom</em> duration normally takes two writes: set
- * the duration, then set preset-mode. These actions compose the full multi-field write in one call
- * instead, for rule authors who want precise, immediate control without that two-step sequence —
- * each action reuses the same {@code composeXxxActivation}/{@code composeCancel} methods on
- * {@link AtagOneHandler} that the {@code preset-mode} channel path uses, so the two can never drift
- * apart on what they actually send.
+ * Thing Actions for the ATAG ONE binding — single-call mode activation and schedule editing.
  *
  * @author Florian Lettner - Initial contribution
  */
@@ -64,9 +55,9 @@ public class AtagOneActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "activate vacation", description = "Activates vacation/holiday mode immediately for the given duration, composing the required ch_mode + start_vacation write in one call.")
+    @RuleAction(label = "@text/action.activate-vacation.label", description = "@text/action.activate-vacation.description")
     public void activateVacation(
-            @ActionInput(name = "durationSeconds", label = "Duration (s)", description = "Vacation duration in seconds") long durationSeconds) {
+            @ActionInput(name = "durationSeconds", label = "@text/action.activate-vacation.input.durationSeconds.label", description = "@text/action.activate-vacation.input.durationSeconds.description") long durationSeconds) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("activateVacation called with no handler bound");
@@ -86,9 +77,9 @@ public class AtagOneActions implements ThingActions {
         theHandler.sendComposedUpdate("action:activateVacation", control, configUpdate);
     }
 
-    @RuleAction(label = "activate extend", description = "Activates extend mode immediately, additive to the time remaining until the next schedule boundary.")
+    @RuleAction(label = "@text/action.activate-extend.label", description = "@text/action.activate-extend.description")
     public void activateExtend(
-            @ActionInput(name = "durationSeconds", label = "Duration (s)", description = "Additional duration in seconds, on top of the time remaining until the next schedule boundary") long durationSeconds) {
+            @ActionInput(name = "durationSeconds", label = "@text/action.activate-extend.input.durationSeconds.label", description = "@text/action.activate-extend.input.durationSeconds.description") long durationSeconds) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("activateExtend called with no handler bound");
@@ -109,9 +100,9 @@ public class AtagOneActions implements ThingActions {
         theHandler.sendComposedUpdate("action:activateExtend", control, configUpdate);
     }
 
-    @RuleAction(label = "activate fireplace", description = "Activates fireplace mode immediately for the given duration.")
+    @RuleAction(label = "@text/action.activate-fireplace.label", description = "@text/action.activate-fireplace.description")
     public void activateFireplace(
-            @ActionInput(name = "durationSeconds", label = "Duration (s)", description = "Fireplace duration in seconds") long durationSeconds) {
+            @ActionInput(name = "durationSeconds", label = "@text/action.activate-fireplace.input.durationSeconds.label", description = "@text/action.activate-fireplace.input.durationSeconds.description") long durationSeconds) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("activateFireplace called with no handler bound");
@@ -131,13 +122,13 @@ public class AtagOneActions implements ThingActions {
         theHandler.sendComposedUpdate("action:activateFireplace", control, configUpdate);
     }
 
-    @RuleAction(label = "set CH schedule period", description = "Sets or replaces one time period in a weekday's central heating schedule, resending the rest of the week unchanged. Rejected (returns false, no write sent) if the period overlaps another period already on that weekday.")
+    @RuleAction(label = "@text/action.set-ch-schedule-period.label", description = "@text/action.set-ch-schedule-period.description")
     public boolean setChSchedulePeriod(
-            @ActionInput(name = "weekday", label = "Weekday", description = "monday..sunday") String weekday,
-            @ActionInput(name = "periodIndex", label = "Period Index", description = "0-based position within the day's existing periods; equal to the current count to append a new one") int periodIndex,
-            @ActionInput(name = "startMinutes", label = "Start (min)", description = "Period start, minutes since midnight") int startMinutes,
-            @ActionInput(name = "endMinutes", label = "End (min)", description = "Period end, minutes since midnight") int endMinutes,
-            @ActionInput(name = "temperatureCelsius", label = "Temperature (°C)", description = "Setpoint for this period") double temperatureCelsius) {
+            @ActionInput(name = "weekday", label = "@text/action.set-ch-schedule-period.input.weekday.label", description = "@text/action.set-ch-schedule-period.input.weekday.description") String weekday,
+            @ActionInput(name = "periodIndex", label = "@text/action.set-ch-schedule-period.input.periodIndex.label", description = "@text/action.set-ch-schedule-period.input.periodIndex.description") int periodIndex,
+            @ActionInput(name = "startMinutes", label = "@text/action.set-ch-schedule-period.input.startMinutes.label", description = "@text/action.set-ch-schedule-period.input.startMinutes.description") int startMinutes,
+            @ActionInput(name = "endMinutes", label = "@text/action.set-ch-schedule-period.input.endMinutes.label", description = "@text/action.set-ch-schedule-period.input.endMinutes.description") int endMinutes,
+            @ActionInput(name = "temperatureCelsius", label = "@text/action.set-ch-schedule-period.input.temperatureCelsius.label", description = "@text/action.set-ch-schedule-period.input.temperatureCelsius.description") double temperatureCelsius) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("setChSchedulePeriod called with no handler bound");
@@ -153,10 +144,10 @@ public class AtagOneActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "clear CH schedule period", description = "Removes one time period from a weekday's central heating schedule, shifting later periods down.")
+    @RuleAction(label = "@text/action.clear-ch-schedule-period.label", description = "@text/action.clear-ch-schedule-period.description")
     public boolean clearChSchedulePeriod(
-            @ActionInput(name = "weekday", label = "Weekday", description = "monday..sunday") String weekday,
-            @ActionInput(name = "periodIndex", label = "Period Index", description = "0-based position within the day's existing periods") int periodIndex) {
+            @ActionInput(name = "weekday", label = "@text/action.clear-ch-schedule-period.input.weekday.label", description = "@text/action.clear-ch-schedule-period.input.weekday.description") String weekday,
+            @ActionInput(name = "periodIndex", label = "@text/action.clear-ch-schedule-period.input.periodIndex.label", description = "@text/action.clear-ch-schedule-period.input.periodIndex.description") int periodIndex) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("clearChSchedulePeriod called with no handler bound");
@@ -171,13 +162,13 @@ public class AtagOneActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "set DHW schedule period", description = "Sets or replaces one time period in a weekday's hot water schedule, resending the rest of the week unchanged. Rejected (returns false, no write sent) if the period overlaps another period already on that weekday.")
+    @RuleAction(label = "@text/action.set-dhw-schedule-period.label", description = "@text/action.set-dhw-schedule-period.description")
     public boolean setDhwSchedulePeriod(
-            @ActionInput(name = "weekday", label = "Weekday", description = "monday..sunday") String weekday,
-            @ActionInput(name = "periodIndex", label = "Period Index", description = "0-based position within the day's existing periods; equal to the current count to append a new one") int periodIndex,
-            @ActionInput(name = "startMinutes", label = "Start (min)", description = "Period start, minutes since midnight") int startMinutes,
-            @ActionInput(name = "endMinutes", label = "End (min)", description = "Period end, minutes since midnight") int endMinutes,
-            @ActionInput(name = "temperatureCelsius", label = "Temperature (°C)", description = "Setpoint for this period") double temperatureCelsius) {
+            @ActionInput(name = "weekday", label = "@text/action.set-dhw-schedule-period.input.weekday.label", description = "@text/action.set-dhw-schedule-period.input.weekday.description") String weekday,
+            @ActionInput(name = "periodIndex", label = "@text/action.set-dhw-schedule-period.input.periodIndex.label", description = "@text/action.set-dhw-schedule-period.input.periodIndex.description") int periodIndex,
+            @ActionInput(name = "startMinutes", label = "@text/action.set-dhw-schedule-period.input.startMinutes.label", description = "@text/action.set-dhw-schedule-period.input.startMinutes.description") int startMinutes,
+            @ActionInput(name = "endMinutes", label = "@text/action.set-dhw-schedule-period.input.endMinutes.label", description = "@text/action.set-dhw-schedule-period.input.endMinutes.description") int endMinutes,
+            @ActionInput(name = "temperatureCelsius", label = "@text/action.set-dhw-schedule-period.input.temperatureCelsius.label", description = "@text/action.set-dhw-schedule-period.input.temperatureCelsius.description") double temperatureCelsius) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("setDhwSchedulePeriod called with no handler bound");
@@ -193,10 +184,10 @@ public class AtagOneActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "clear DHW schedule period", description = "Removes one time period from a weekday's hot water schedule, shifting later periods down.")
+    @RuleAction(label = "@text/action.clear-dhw-schedule-period.label", description = "@text/action.clear-dhw-schedule-period.description")
     public boolean clearDhwSchedulePeriod(
-            @ActionInput(name = "weekday", label = "Weekday", description = "monday..sunday") String weekday,
-            @ActionInput(name = "periodIndex", label = "Period Index", description = "0-based position within the day's existing periods") int periodIndex) {
+            @ActionInput(name = "weekday", label = "@text/action.clear-dhw-schedule-period.input.weekday.label", description = "@text/action.clear-dhw-schedule-period.input.weekday.description") String weekday,
+            @ActionInput(name = "periodIndex", label = "@text/action.clear-dhw-schedule-period.input.periodIndex.label", description = "@text/action.clear-dhw-schedule-period.input.periodIndex.description") int periodIndex) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("clearDhwSchedulePeriod called with no handler bound");
@@ -211,9 +202,9 @@ public class AtagOneActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "set CH schedule", description = "Replaces the central heating schedule in one device write from JSON ({\"baseTemp\":..,\"days\":{\"monday\":[{\"start\":..,\"end\":..,\"temp\":..}],...}}); weekdays the JSON omits are resent unchanged. Rejected (returns false, no write sent) if any two periods on the same weekday overlap. Returns true once the write is parsed, validated and queued — not once the device has confirmed it; watch heating#schedule for the confirmed result.")
+    @RuleAction(label = "@text/action.set-ch-schedule.label", description = "@text/action.set-ch-schedule.description")
     public boolean setChSchedule(
-            @ActionInput(name = "json", label = "Schedule JSON", description = "Same shape as the heating#schedule channel") String json) {
+            @ActionInput(name = "json", label = "@text/action.set-ch-schedule.input.json.label", description = "@text/action.set-ch-schedule.input.json.description") String json) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("setChSchedule called with no handler bound");
@@ -228,9 +219,9 @@ public class AtagOneActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "set DHW schedule", description = "Replaces the hot water schedule in one device write from JSON ({\"baseTemp\":..,\"days\":{\"monday\":[{\"start\":..,\"end\":..,\"temp\":..}],...}}); weekdays the JSON omits are resent unchanged. Rejected (returns false, no write sent) if any two periods on the same weekday overlap. Returns true once the write is parsed, validated and queued — not once the device has confirmed it; watch hotwater#schedule for the confirmed result.")
+    @RuleAction(label = "@text/action.set-dhw-schedule.label", description = "@text/action.set-dhw-schedule.description")
     public boolean setDhwSchedule(
-            @ActionInput(name = "json", label = "Schedule JSON", description = "Same shape as the hotwater#schedule channel") String json) {
+            @ActionInput(name = "json", label = "@text/action.set-dhw-schedule.input.json.label", description = "@text/action.set-dhw-schedule.input.json.description") String json) {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("setDhwSchedule called with no handler bound");
@@ -245,8 +236,8 @@ public class AtagOneActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "cancel mode", description = "Cancels any active timed preset and returns to auto/schedule mode.")
-    public @ActionOutput(type = "java.lang.Boolean", label = "Requires Physical Confirmation", description = "true if the mode being left is fireplace — the write is accepted but has no effect until a button is pressed on the thermostat display; confirmed device behavior, no payload avoids it") boolean cancelMode() {
+    @RuleAction(label = "@text/action.cancel-mode.label", description = "@text/action.cancel-mode.description")
+    public @ActionOutput(type = "java.lang.Boolean", label = "@text/action.cancel-mode.output.label", description = "@text/action.cancel-mode.output.description") boolean cancelMode() {
         AtagOneHandler theHandler = handler;
         if (theHandler == null) {
             logger.warn("cancelMode called with no handler bound");

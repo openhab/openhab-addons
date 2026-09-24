@@ -12,17 +12,10 @@
  */
 package org.openhab.binding.atagone.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
- * Gson DTO for the {@code schedules} block in a {@code retrieve_reply}.
- *
  * @author Florian Lettner - Initial contribution
  */
-@NonNullByDefault({})
 public class SchedulesDTO {
-    /** Central heating schedule. */
     public ScheduleDTO ch_schedule;
-    /** Domestic hot water schedule. */
     public ScheduleDTO dhw_schedule;
 }

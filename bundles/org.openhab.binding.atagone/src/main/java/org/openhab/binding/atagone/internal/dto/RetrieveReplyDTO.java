@@ -12,17 +12,11 @@
  */
 package org.openhab.binding.atagone.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
- * Gson DTO for the {@code retrieve_reply} object returned by {@code POST /retrieve}.
- *
  * @author Florian Lettner - Initial contribution
  */
-@NonNullByDefault({})
 public class RetrieveReplyDTO {
     public int seqnr;
-    /** 1=pending, 2=granted, 3=denied. */
     public int acc_status;
     public StatusDTO status;
     public ReportDTO report;

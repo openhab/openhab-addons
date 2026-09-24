@@ -41,10 +41,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Discovers ATAG ONE thermostats by passively listening for their UDP broadcast on port 11000.
- * <p>
- * The thermostat broadcasts a 37-byte datagram every ~10 seconds:
- * {@code ONE <device_id>} (prefix "ONE " followed by the null-padded device identifier).
- * The source IP address of the datagram is used as the hostname for the discovered Thing.
+ * Datagram format: {@code "ONE <device_id>"}, 37 bytes, broadcast every ~10 seconds.
  *
  * @author Florian Lettner - Initial contribution
  */
@@ -55,7 +52,6 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_THERMOSTAT);
 
     private static final int DISCOVERY_PORT = 11000;
-    /** Socket timeout — device broadcasts every ~10 s, so 15 s gives at least one window. */
     private static final int SOCKET_TIMEOUT_MS = 15_000;
     private static final int MANUAL_DISCOVERY_TIME_S = 30;
     private static final int BACKGROUND_SCAN_INTERVAL_S = 30;
@@ -116,15 +112,6 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    /**
-     * Manual-scan variant of {@link #listenOnce()}: keeps receiving on a single bound socket until
-     * {@code deadlineMs}, announcing every valid datagram, instead of returning after the first one.
-     * The framework advertises a {@value #MANUAL_DISCOVERY_TIME_S}s manual scan window to the user —
-     * without this loop, a scan would silently end after the first datagram (or after one
-     * {@value #SOCKET_TIMEOUT_MS}ms timeout with none), missing any second device on the LAN or
-     * recovering from a first packet that turned out to be noise. Background discovery doesn't need
-     * this: it already gets repeated coverage over time via its own recurring schedule.
-     */
     private void listenUntilDeadline(long deadlineMs) {
         byte[] buf = new byte[64];
         try (DatagramSocket socket = new DatagramSocket(null)) {
@@ -166,8 +153,7 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
             }
         }
 
-        // Payload after "ONE ": "<device_id> (ST)" — the device ID is the first space-delimited token.
-        // The suffix " (ST)" is a status indicator (e.g. Standby); null bytes pad to exactly 37 bytes.
+        // Payload: "<device_id> (ST)" — device ID is the first space-delimited token; suffix is a status indicator; null bytes pad to 37 bytes.
         String rest = new String(data, BROADCAST_PREFIX.length, length - BROADCAST_PREFIX.length,
                 StandardCharsets.US_ASCII).replace("\0", "").trim();
         String deviceId = rest.contains(" ") ? rest.substring(0, rest.indexOf(' ')) : rest;
@@ -184,14 +170,12 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void announce(String deviceId, String host) {
-        // Thing UID suffix: replace characters not valid in a thing ID with underscores.
         String thingId = deviceId.replaceAll("[^A-Za-z0-9_-]", "_");
         ThingUID uid = new ThingUID(THING_TYPE_THERMOSTAT, thingId);
 
         Map<String, Object> properties = new HashMap<>();
         properties.put(PROPERTY_DEVICE_ID, deviceId);
-        // Pre-populate hostname so the user doesn't have to type it when accepting from Inbox.
-        properties.put("hostname", host);
+        properties.put(CONFIG_HOSTNAME, host);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withRepresentationProperty(PROPERTY_DEVICE_ID)
                 .withProperties(properties).withLabel("ATAG ONE Thermostat (" + host + ")").build();

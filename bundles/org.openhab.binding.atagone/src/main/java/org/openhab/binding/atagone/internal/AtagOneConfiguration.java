@@ -23,18 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AtagOneConfiguration {
 
-    /** IP address or hostname of the thermostat. Required. */
     public String hostname = "";
-
-    /** HTTP port of the local API. Defaults to 10000. */
     public int port = 10000;
-
-    /** Poll interval in seconds. */
     public int refreshInterval = 30;
-
-    /**
-     * Stable client identifier used for pairing (MAC-style hex string).
-     * Generated on first run and persisted; empty string means "not yet set".
-     */
     public String clientId = "";
 }

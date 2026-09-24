@@ -16,7 +16,6 @@ import static org.openhab.binding.atagone.internal.AtagOneBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -36,13 +35,13 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.atagone")
 public class AtagOneHandlerFactory extends BaseThingHandlerFactory {
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final AtagOneStateDescriptionProvider stateDescriptionProvider;
 
     @Activate
     public AtagOneHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference AtagOneStateDescriptionProvider stateDescriptionProvider) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -54,7 +53,7 @@ public class AtagOneHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_THERMOSTAT.equals(thing.getThingTypeUID())) {
-            return new AtagOneHandler(thing, httpClient, stateDescriptionProvider);
+            return new AtagOneHandler(thing, httpClientFactory.getCommonHttpClient(), stateDescriptionProvider);
         }
         return null;
     }

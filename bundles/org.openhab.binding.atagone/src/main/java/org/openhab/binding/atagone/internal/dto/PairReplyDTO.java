@@ -12,16 +12,10 @@
  */
 package org.openhab.binding.atagone.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
- * Gson DTO for the {@code pair_reply} object returned by {@code POST /pair}.
- *
  * @author Florian Lettner - Initial contribution
  */
-@NonNullByDefault({})
 public class PairReplyDTO {
     public int seqnr;
-    /** 1=pending (press Accept on device), 2=granted, 3=denied. */
     public int acc_status;
 }

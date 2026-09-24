@@ -19,38 +19,24 @@ import java.time.ZonedDateTime;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Converts between ATAG ONE device time (seconds since 2000-01-01 00:00:00 UTC) and Java time types.
- * <p>
- * The device counts seconds from 2000-01-01 UTC, not the Unix epoch (1970-01-01). Getting this offset
- * wrong produces vacation dates that are off by 30 years — the exact bug in kozmoz/atag-one-api issue #16.
+ * Converts between ATAG ONE device time (seconds since 2000-01-01 UTC) and Java time types.
+ * The device does not use the Unix epoch; wrong offset produces dates off by 30 years.
  *
  * @author Florian Lettner - Initial contribution
  */
 @NonNullByDefault
 public final class AtagEpoch {
 
-    /** Seconds between Unix epoch (1970-01-01 UTC) and ATAG epoch (2000-01-01 UTC). */
+    // Seconds between Unix epoch (1970-01-01 UTC) and ATAG epoch (2000-01-01 UTC).
     public static final long OFFSET = 946684800L;
 
     private AtagEpoch() {
     }
 
-    /**
-     * Converts an ATAG epoch value to a {@link ZonedDateTime} in UTC.
-     *
-     * @param atagSeconds seconds since 2000-01-01 00:00:00 UTC
-     * @return corresponding UTC {@link ZonedDateTime}
-     */
     public static ZonedDateTime toZonedDateTime(long atagSeconds) {
         return ZonedDateTime.ofInstant(Instant.ofEpochSecond(atagSeconds + OFFSET), ZoneId.of("UTC"));
     }
 
-    /**
-     * Converts a {@link ZonedDateTime} to an ATAG epoch value.
-     *
-     * @param zdt the date/time to convert (any zone; normalised to UTC internally)
-     * @return seconds since 2000-01-01 00:00:00 UTC
-     */
     public static long fromZonedDateTime(ZonedDateTime zdt) {
         return zdt.toInstant().getEpochSecond() - OFFSET;
     }

@@ -43,35 +43,15 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
- * HTTP client for the ATAG ONE local API (port 10000).
- * <p>
- * Three endpoints: {@code /pair}, {@code /retrieve}, {@code /update}. All use HTTP POST with JSON.
- * The device requires at least {@value #MIN_INTERVAL_MS} ms between consecutive requests; this
- * client enforces that with a synchronized rate limiter. Transient transport errors (EOF, timeout)
- * are retried up to {@value #MAX_RETRIES} times.
+ * HTTP client for the ATAG ONE local API (port 10000, three endpoints: /pair, /retrieve, /update).
  *
  * @author Florian Lettner - Initial contribution
  */
 @NonNullByDefault
 public class AtagOneApiClient {
 
-    /**
-     * Bitmask for retrieve: control(1)+schedules(2)+configuration(4)+report(8)+status(16)+details(64) = 95.
-     * wifi_scan(32) is deliberately excluded — it scans nearby APs and delays the response by several
-     * seconds. The wifi-signal channel is unaffected: rssi is reported in the report(8) section.
-     */
+    // wifi_scan(32) excluded: triggers an AP scan, delaying the device's response by several seconds
     private static final int INFO_BITMASK = 95;
-    /*
-     * Timeout, rate-limit gap, and retry count were originally tuned defensively without a reference
-     * point. pyatag (https://github.com/MatsNl/pyatag), the reference client this and other ATAG ONE
-     * integrations are built on, uses a 1000ms rate-limit gap and no per-attempt timeout ceiling at
-     * all (relying on aiohttp's ~300s session default) — evidence this device's brief unresponsive
-     * windows are longer than 5s, not just occasional network noise. Loosened accordingly, though not
-     * copied outright: an unbounded timeout is unsafe for a polling binding's Thing status, and
-     * MAX_RETRIES stays well short of pyatag's 10 since retries and timeout compound — 10 attempts at
-     * 15s each could block a single poll() call for 150s, longer than even this binding's own
-     * refreshInterval.
-     */
     private static final int REQUEST_TIMEOUT_S = 15;
     private static final long MIN_INTERVAL_MS = 1_000L;
     private static final int MAX_RETRIES = 7;
@@ -91,12 +71,6 @@ public class AtagOneApiClient {
         this.clientId = clientId;
     }
 
-    /**
-     * Sends a pairing request and returns the device's {@code acc_status}.
-     *
-     * @return 1 if the user must press Accept on the thermostat, 2 if granted, 3 if denied
-     * @throws AtagOneCommunicationException on transport or protocol failure
-     */
     public int pair() throws AtagOneCommunicationException {
         JsonObject accounts = new JsonObject();
         accounts.addProperty("user_account", "");
@@ -125,12 +99,6 @@ public class AtagOneApiClient {
         return dto.acc_status;
     }
 
-    /**
-     * Retrieves the full device state.
-     *
-     * @return parsed {@link RetrieveReplyDTO}
-     * @throws AtagOneCommunicationException on transport or protocol failure
-     */
     public RetrieveReplyDTO retrieve() throws AtagOneCommunicationException {
         JsonObject auth = new JsonObject();
         auth.addProperty("user_account", "");
@@ -159,23 +127,6 @@ public class AtagOneApiClient {
         return result;
     }
 
-    /**
-     * Parses {@code responseJson} and extracts the named top-level reply object (e.g.
-     * {@code pair_reply}, {@code retrieve_reply}, {@code update_reply}).
-     * <p>
-     * A malformed, empty, or non-object HTTP body — a realistic failure mode given this device's
-     * documented HTTP/1.0 flakiness — would otherwise throw an unchecked {@link JsonParseException} or
-     * {@link IllegalStateException} straight out of the caller. Both are translated here into the
-     * checked {@link AtagOneCommunicationException} every caller already handles, so a bad response
-     * can never silently break a caller's retry/recovery path (e.g. {@code doPair()}'s pairing retry,
-     * or the poll job restart in {@code AtagOneHandler}).
-     * <p>
-     * Package-private (not private) so {@code AtagOneApiClientValidationTest} can exercise it
-     * directly with hand-crafted malformed input, without standing up the HTTP layer.
-     *
-     * @throws AtagOneCommunicationException if the response cannot be parsed or the named reply object
-     *             is missing
-     */
     JsonObject parseReplyObject(String responseJson, String replyKey) throws AtagOneCommunicationException {
         JsonObject reply;
         try {
@@ -189,13 +140,6 @@ public class AtagOneApiClient {
         return reply;
     }
 
-    /**
-     * Verifies that every section {@link org.openhab.binding.atagone.internal.AtagOneHandler#updateChannels}
-     * unconditionally dereferences is present. A firmware reply missing a section (e.g. during the boiler's
-     * post-write API reinitialization window) would otherwise reach the handler as a DTO with null fields and
-     * crash it with an NPE — which, thrown from a {@code scheduleWithFixedDelay} task, would silently and
-     * permanently stop all future polls.
-     */
     static void validateComplete(RetrieveReplyDTO result) throws AtagOneCommunicationException {
         if (result.report == null || result.control == null || result.schedules == null
                 || result.configuration == null) {
@@ -209,24 +153,10 @@ public class AtagOneApiClient {
         }
     }
 
-    /**
-     * Sends a control update. See {@link ControlUpdateDTO} for which fields must be combined to
-     * activate or cancel each mode.
-     *
-     * @param controlUpdate fields to change; null fields are omitted from the JSON body
-     * @throws AtagOneCommunicationException on transport or protocol failure
-     */
     public void updateControl(ControlUpdateDTO controlUpdate) throws AtagOneCommunicationException {
         updateControl(controlUpdate, null);
     }
 
-    /**
-     * Sends a control and optional configuration update in a single request.
-     *
-     * @param controlUpdate control fields to change (null fields omitted)
-     * @param configUpdate configuration fields to change, or null to omit the configuration block
-     * @throws AtagOneCommunicationException on transport or protocol failure
-     */
     public void updateControl(ControlUpdateDTO controlUpdate, @Nullable DeviceConfigUpdateDTO configUpdate)
             throws AtagOneCommunicationException {
         JsonObject auth = new JsonObject();
@@ -253,22 +183,10 @@ public class AtagOneApiClient {
         logger.debug("updateControl() succeeded");
     }
 
-    /**
-     * Writes the CH schedule's fallback temperature. See {@link ScheduleDTO} for the required shape.
-     *
-     * @param chSchedule the complete schedule to send
-     * @throws AtagOneCommunicationException on transport or protocol failure
-     */
     public void updateChSchedule(ScheduleDTO chSchedule) throws AtagOneCommunicationException {
         updateSchedule("ch_schedule", chSchedule);
     }
 
-    /**
-     * Writes the DHW schedule's fallback temperature. See {@link ScheduleDTO} for the required shape.
-     *
-     * @param dhwSchedule the complete schedule to send
-     * @throws AtagOneCommunicationException on transport or protocol failure
-     */
     public void updateDhwSchedule(ScheduleDTO dhwSchedule) throws AtagOneCommunicationException {
         updateSchedule("dhw_schedule", dhwSchedule);
     }
@@ -298,20 +216,7 @@ public class AtagOneApiClient {
         logger.debug("updateSchedule({}) succeeded", key);
     }
 
-    /**
-     * Builds the {@code ch_schedule}/{@code dhw_schedule} JSON by hand instead of via
-     * {@code gson.toJsonTree(schedule)} on {@link ScheduleDTO} directly.
-     * <p>
-     * {@code entries} is a Java {@code double[][][]} because a period's three positions have no
-     * separate Java fields to carry distinct types — but the device's own wire format is mixed:
-     * {@code start}/{@code end} as bare integers, {@code temp} as a float (every {@code /retrieve}
-     * reply and every previously-confirmed-working write uses e.g. {@code [0,240,20.5]}, never
-     * {@code [0.0,240.0,20.5]}). Gson's default double serialization can't know that distinction and
-     * emits {@code 0.0}/{@code 240.0} for every position — confirmed live (2026-09-16) to make the
-     * device silently wipe the whole schedule to empty while still returning {@code acc_status:2}, no
-     * {@code resets} bump, and no other error signal. {@code base_temp} has no such ambiguity — it's
-     * always a genuine fractional value — so it's left to Gson via {@code addProperty(String, Number)}.
-     */
+    // Device requires integer start/end in entries ([0,240,20.5]); Gson's float serialization silently wipes the schedule.
     static JsonObject scheduleToJson(ScheduleDTO schedule) {
         JsonObject obj = new JsonObject();
         obj.addProperty("base_temp", schedule.base_temp);
@@ -333,13 +238,7 @@ public class AtagOneApiClient {
         return obj;
     }
 
-    /**
-     * Sends an HTTP POST with rate-limiting and retry on transient failures.
-     * Synchronized so only one request is in-flight at a time and the 1-second
-     * inter-request gap is respected across concurrent callers.
-     */
     private synchronized String sendRequest(String path, String body) throws AtagOneCommunicationException {
-        // Enforce minimum inter-request interval required by the device firmware.
         long now = System.currentTimeMillis();
         long elapsed = now - lastRequestMs;
         if (elapsed < MIN_INTERVAL_MS) {
@@ -351,12 +250,7 @@ public class AtagOneApiClient {
             }
         }
 
-        /*
-         * The device is an HTTP/1.0 server that closes every connection after responding. Jetty's
-         * pool may hand us a stale half-closed connection on the first attempt, producing an
-         * EOFException that is not a real failure. Retry that one time for free; any subsequent EOF
-         * within the same call counts toward MAX_RETRIES normally.
-         */
+        // HTTP/1.0 device: Jetty may reuse a stale pooled connection, producing an EOFException on first attempt.
         boolean staleCorrectionUsed = false;
         Exception lastException = new AtagOneCommunicationException("Unreachable");
         for (int attempt = 0; attempt <= MAX_RETRIES; attempt++) {

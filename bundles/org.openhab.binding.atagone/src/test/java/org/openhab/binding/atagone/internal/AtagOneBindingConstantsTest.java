@@ -33,18 +33,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * Guards against a specific silent-failure mode: once
- * {@code thing-types.xml} moves a channel under a {@code <channel-group-type>},
- * {@code org.openhab.core.thing.ChannelUID#getId()} starts returning the group-qualified id
- * ({@code "control#preset-mode"}), not the bare one. Every {@code CHANNEL_*} constant here MUST match that
- * shape, or {@code AtagOneHandler}'s channel-id switch and {@code updateState()} calls silently stop
- * matching anything — command handling and channel updates both fail with no exception, no log entry, and no
- * change in build/test result, since the existing tests exercise {@code buildControlUpdate} directly with
- * these same constants rather than through a real {@code ChannelUID}.
- * <p>
- * This test parses the actual {@code thing-types.xml} shipped with the binding and cross-checks every
- * {@code CHANNEL_*} constant against it, so a channel moved to a different group in the XML without the
- * matching constant update fails the build instead of only failing on a live device.
+ * Verifies that every {@code CHANNEL_*} constant is group-qualified and matches {@code thing-types.xml}.
+ * A mismatched constant causes silent channel-update and command-handling failures with no build error.
  *
  * @author Florian Lettner - Initial contribution
  */

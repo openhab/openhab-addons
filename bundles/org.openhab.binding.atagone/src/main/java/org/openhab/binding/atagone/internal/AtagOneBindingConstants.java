@@ -32,17 +32,6 @@ public class AtagOneBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_THERMOSTAT);
 
-    /*
-     * Standard channels.
-     *
-     * Values are group-qualified ("group#channel-id") to match ChannelUID.getId(), which — once a
-     * thing-type uses channel groups — returns the full grouped id, not the bare channel id. Getting
-     * this wrong is a silent failure, not a compile or startup error: handleCommand()'s switch on the
-     * bare id would match nothing for every writable channel, and updateChannels()'s updateState()
-     * calls would construct ChannelUIDs for channels that don't exist on the Thing. Keep these values
-     * in sync with the <channel-groups> mapping in thing-types.xml — a channel moved to a different
-     * group there must be moved here too.
-     */
     public static final String CHANNEL_ROOM_TEMPERATURE = "heating#room-temperature";
     public static final String CHANNEL_TARGET_TEMPERATURE = "heating#target-temperature";
     public static final String CHANNEL_CH_CONTROL_MODE = "heating#control-mode";
@@ -68,7 +57,6 @@ public class AtagOneBindingConstants {
     public static final String CHANNEL_BOILER_ERRORS = "alerts#boiler-errors";
     public static final String CHANNEL_TIME_TO_TARGET = "heating#time-to-target";
 
-    // Advanced diagnostic channels
     public static final String CHANNEL_AVERAGE_OUTSIDE_TEMPERATURE = "heating#average-outside-temperature";
     public static final String CHANNEL_PCB_TEMPERATURE = "device#pcb-temperature";
     public static final String CHANNEL_WIFI_SIGNAL = "device#wifi-signal";
@@ -86,7 +74,6 @@ public class AtagOneBindingConstants {
     public static final String CHANNEL_CH_SCHEDULE = "heating#schedule";
     public static final String CHANNEL_DHW_SCHEDULE = "hotwater#schedule";
 
-    // Settings channels (Phase F) — advanced="true", set-once configuration, not everyday channels.
     public static final String CHANNEL_FROST_PROTECTION = "heating#frost-protection";
     public static final String CHANNEL_FROST_PROTECTION_TEMPERATURE_ROOM = "heating#frost-protection-temperature-room";
     public static final String CHANNEL_FROST_PROTECTION_TEMPERATURE_OUTSIDE = "heating#frost-protection-temperature-outside";
@@ -105,7 +92,6 @@ public class AtagOneBindingConstants {
     public static final String CHANNEL_TIME_ZONE = "device#time-zone";
     public static final String CHANNEL_LANGUAGE = "device#language";
 
-    // Exposure reconciliation channels (Phase I) — values the portal shows that were missing.
     public static final String CHANNEL_DELTA_TEMPERATURE = "heating#delta-temperature";
     public static final String CHANNEL_CH_ACTIVE = "heating#central-heating-active";
     public static final String CHANNEL_DHW_ACTIVE = "hotwater#hot-water-active";
@@ -113,10 +99,8 @@ public class AtagOneBindingConstants {
     public static final String CHANNEL_NEXT_SCHEDULE_TIME = "control#next-schedule-time";
     public static final String CHANNEL_NEXT_SCHEDULE_TEMPERATURE = "control#next-schedule-temperature";
 
-    // Thing property key for the persisted client identifier
+    public static final String CONFIG_HOSTNAME = "hostname";
     public static final String PROPERTY_CLIENT_ID = "clientId";
-    // Thing property key for the device's own identifier — also the representation-property, shared
-    // with the discovery service so a manually-added Thing and a discovered one populate it the same way.
     public static final String PROPERTY_DEVICE_ID = "deviceId";
     public static final String PROPERTY_INSTALLER_ID = "installerId";
 
@@ -126,35 +110,12 @@ public class AtagOneBindingConstants {
     public static final int CH_MODE_EXTEND = 4;
     public static final int CH_MODE_FIREPLACE = 5;
 
-    /*
-     * Room-setpoint control vs. weather-compensated (outdoor-temperature-driven heating curve)
-     * control. Independent of ch_mode (the manual/auto/holiday/extend/fireplace preset) — this is a
-     * separate "Weather control" setting on the thermostat, not a manual/auto or heat/auto toggle,
-     * and stays fixed regardless of which ch_mode preset is active.
-     */
     public static final int CH_CONTROL_MODE_ROOM = 0;
     public static final int CH_CONTROL_MODE_WEATHER = 1;
 
-    /*
-     * Corrected 2026-09-14 — the original values (CH_ACTIVE=0x004, DHW_ACTIVE=0x010, FLAME=0x100)
-     * were never independently verified against a real device cycle and were wrong: a genuine DHW
-     * heating event was observed (via persistence: DHW tank temperature rising, CH circuit flat,
-     * physical display confirming DHW) misclassified as "ch", while the flame channel never once
-     * indicated ON despite the burner clearly firing (91-100% modulation, boiler flow temperature
-     * spiking). Independently corroborated against
-     * https://github.com/kozmoz/atag-one-api/wiki/Thermostat-Protocol: "&512 = dhw_schema, &256 =
-     * ch_schema, &8 = boilerHeating, &4 = dhwHeating, &2 = chHeating" — that source's boilerHeating
-     * bit is exactly this binding's previously-unused BURNER_ON constant, and its dhwHeating bit is
-     * exactly the value this binding had mislabeled CH_ACTIVE, which explains the bug precisely. Not
-     * yet re-verified live against this specific device's own CH/DHW cycle.
-     */
     public static final int BOILER_STATUS_CH_ACTIVE = 0x002;
     public static final int BOILER_STATUS_DHW_ACTIVE = 0x004;
     public static final int BOILER_STATUS_FLAME = 0x008;
-    /**
-     * "Which schedule (CH or DHW) is currently governing" — not an activity flag; resolves the previously-unknown 0x200
-     * bit. Not currently exposed as a channel.
-     */
     public static final int BOILER_STATUS_CH_SCHEMA = 0x100;
     public static final int BOILER_STATUS_DHW_SCHEMA = 0x200;
 
@@ -197,7 +158,6 @@ public class AtagOneBindingConstants {
     public static final Map<String, Integer> WDR_TEMPERATURE_INFLUENCE_BY_NAME = Map.of("off", 0, "less", 1, "medium",
             2, "more", 3, "room-control", 4);
 
-    /** Verified live 2026-09-13: Off/1h/2h/3h/Automatic map to 0/60/120/180/1440 minutes. */
     public static final Map<Integer, String> MAX_PREHEAT_NAMES = Map.of(0, "off", 60, "1h", 120, "2h", 180, "3h", 1440,
             "automatic");
     public static final Map<String, Integer> MAX_PREHEAT_BY_NAME = Map.of("off", 0, "1h", 60, "2h", 120, "3h", 180,
@@ -210,10 +170,6 @@ public class AtagOneBindingConstants {
             Map.entry("tuesday", 2), Map.entry("wednesday", 3), Map.entry("thursday", 4), Map.entry("friday", 5),
             Map.entry("saturday", 6), Map.entry("sunday", 7));
 
-    /**
-     * Only {@code 1=Berlin} is device-confirmed; the rest follow the app/portal dropdown's order,
-     * corroborated but not individually live-tested against this device.
-     */
     public static final Map<Integer, String> TIME_ZONE_NAMES = Map.ofEntries(Map.entry(0, "amsterdam"),
             Map.entry(1, "berlin"), Map.entry(2, "brussels"), Map.entry(3, "dublin"), Map.entry(4, "edinburgh"),
             Map.entry(5, "frankfurt"), Map.entry(6, "london"), Map.entry(7, "luxembourg"), Map.entry(8, "paris"),
@@ -223,7 +179,6 @@ public class AtagOneBindingConstants {
             Map.entry("frankfurt", 5), Map.entry("london", 6), Map.entry("luxembourg", 7), Map.entry("paris", 8),
             Map.entry("rome", 9));
 
-    /** Verified 2026-09-13: the app's language dropdown is 0-indexed; index 4 confirmed German on this device. */
     public static final Map<Integer, String> LANGUAGE_NAMES = Map.of(0, "english", 1, "dutch", 2, "french", 3,
             "italian", 4, "german");
     public static final Map<String, Integer> LANGUAGE_BY_NAME = Map.of("english", 0, "dutch", 1, "french", 2, "italian",

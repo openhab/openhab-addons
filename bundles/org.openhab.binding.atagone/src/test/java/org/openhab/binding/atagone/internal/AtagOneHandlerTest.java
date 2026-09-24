@@ -58,15 +58,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Unit tests for {@link AtagOneHandler#buildControlUpdate}, which turns a channel command into the
- * device DTOs to send. Exercised directly (bypassing {@code handleCommand}'s I/O) since it holds all
- * of the binding's write-path business rules: what preset-mode values are accepted, and how each
- * mode's activation/cancellation write is composed (see {@link ControlUpdateDTO} for the per-mode
- * field requirements).
- * <p>
- * Also covers the read path ({@code updateChannels}): {@code vacation-duration} must reflect a
- * freshly-written stored value even outside active holiday mode, since
- * {@code composeVacationActivation}'s stored-value fallback depends on reading it.
+ * Unit tests for the write-path composition and read-path channel update logic in {@link AtagOneHandler}.
  *
  * @author Florian Lettner - Initial contribution
  */
@@ -84,7 +76,6 @@ class AtagOneHandlerTest {
         handler = new AtagOneHandler(thing, httpClient, new AtagOneStateDescriptionProvider());
     }
 
-    /** Directly seeds the handler's private stateMap, simulating a previously-polled channel value. */
     @SuppressWarnings("unchecked")
     private void seedState(String channelId, State state) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("stateMap");
@@ -93,35 +84,30 @@ class AtagOneHandlerTest {
         ((Map<String, State>) fieldValue).put(channelId, state);
     }
 
-    /** Directly sets the device's persisted default vacation duration, simulating a prior poll. */
     private void seedDefaultVacationDurationSeconds(long seconds) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("defaultVacationDurationSeconds");
         field.setAccessible(true);
         field.set(handler, seconds);
     }
 
-    /** Directly sets the device's persisted default extend duration, simulating a prior poll. */
     private void seedDefaultExtendDurationSeconds(long seconds) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("defaultExtendDurationSeconds");
         field.setAccessible(true);
         field.set(handler, seconds);
     }
 
-    /** Directly sets the device's armed (possibly pending) vacation start, simulating a prior poll. */
     private void seedArmedStartVacation(long epochOffset) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("armedStartVacation");
         field.setAccessible(true);
         field.set(handler, epochOffset);
     }
 
-    /** Directly sets the last-polled configuration, simulating a prior poll. */
     private void seedLastConfiguration(DeviceConfigDTO config) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("lastConfiguration");
         field.setAccessible(true);
         field.set(handler, config);
     }
 
-    /** A representative configuration block, matching values from a real device capture. */
     private DeviceConfigDTO sampleConfiguration() {
         DeviceConfigDTO config = new DeviceConfigDTO();
         config.ch_heating_type = 5;
@@ -146,21 +132,18 @@ class AtagOneHandlerTest {
         return config;
     }
 
-    /** Directly sets the last-polled ch_schedule.entries, simulating a prior poll. */
     private void seedLastChScheduleEntries(double[][][] entries) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("lastChScheduleEntries");
         field.setAccessible(true);
         field.set(handler, entries);
     }
 
-    /** Directly sets the last-polled dhw_schedule.entries, simulating a prior poll. */
     private void seedLastDhwScheduleEntries(double[][][] entries) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("lastDhwScheduleEntries");
         field.setAccessible(true);
         field.set(handler, entries);
     }
 
-    /** Loads the captured full-device fixture used elsewhere for DTO-parsing tests. */
     private RetrieveReplyDTO loadRetrieveReply() throws IOException {
         try (@Nullable
         InputStream in = AtagOneHandlerTest.class
@@ -174,14 +157,12 @@ class AtagOneHandlerTest {
         }
     }
 
-    /** Invokes the private read-path method under test, bypassing the polling loop that calls it. */
     private void invokeUpdateChannels(RetrieveReplyDTO reply) throws ReflectiveOperationException {
         Method method = AtagOneHandler.class.getDeclaredMethod("updateChannels", RetrieveReplyDTO.class);
         method.setAccessible(true);
         method.invoke(handler, reply);
     }
 
-    /** Reads a channel's last-published state directly from the handler's private stateMap. */
     @SuppressWarnings("unchecked")
     private State readState(String channelId) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("stateMap");
@@ -203,10 +184,7 @@ class AtagOneHandlerTest {
     @Test
     void chAndDhwActiveDecodeDisjointBoilerStatusBits() throws IOException, ReflectiveOperationException {
         RetrieveReplyDTO reply = loadRetrieveReply();
-        // Fixture boiler_status = 268 = 0x10C: CH_SCHEMA (0x100) + FLAME (0x008) + DHW_ACTIVE (0x004),
-        // CH_ACTIVE (0x002) not set — a real DHW-heating value, corrected 2026-09-14 (see
-        // AtagOneBindingConstants.BOILER_STATUS_*'s field comment for why the old bit assignments were
-        // wrong and produced exactly this fixture's value misclassified as CH-active).
+        // Fixture: 268 = 0x10C = CH_SCHEMA(0x100)|FLAME(0x008)|DHW_ACTIVE(0x004); CH_ACTIVE(0x002) not set.
         assertEquals(268, reply.report.boiler_status);
 
         invokeUpdateChannels(reply);

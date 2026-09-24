@@ -23,16 +23,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Unit tests for {@link ScheduleJson}, the codec shared by the {@code heating#schedule} /
- * {@code hotwater#schedule} read channels and the {@code setChSchedule}/{@code setDhwSchedule} Thing
- * Actions.
+ * Unit tests for {@link ScheduleJson}.
  *
  * @author Florian Lettner - Initial contribution
  */
 @NonNullByDefault
 class ScheduleJsonTest {
 
-    // Matches the real device shape captured in dev-notes/DEVELOPERS.md and the test fixture.
     private static final double[][][] SAMPLE_ENTRIES = { { { 0, 240, 20.5 }, { 1230, 1440, 20.5 } } };
 
     @Test
@@ -68,9 +65,7 @@ class ScheduleJsonTest {
     void toJsonHandlesANullDayEntriesSlotWithoutThrowing() {
         double[][][] entries = new double[2][][];
         entries[0] = new double[][] { { 0, 1440, 18.0 } };
-        // entries[1] stays null — a defensively-possible shape mirrored from AtagOneHandler's own
-        // handling of a malformed device reply.
-
+        // entries[1] stays null — a defensively-possible shape.
         String json = ScheduleJson.toJson(22.5, entries);
 
         JsonObject days = JsonParser.parseString(json).getAsJsonObject().getAsJsonObject("days");
@@ -105,7 +100,6 @@ class ScheduleJsonTest {
         assertNotNull(parsed);
         assertEquals(1, parsed.entries[0].length);
         assertArrayEquals(new double[] { 300, 900, 21.0 }, parsed.entries[0][0], 0.001);
-        // Tuesday wasn't named -> resent byte-for-byte, same array reference even.
         assertSame(current[1], parsed.entries[1]);
     }
 
