@@ -67,6 +67,13 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_PORTAL_CONNECTED = "portal-connected";
     public static final String CHANNEL_PORTAL_URL = "portal-url";
     public static final String CHANNEL_PORTAL_HOST = "portal-host";
+    public static final String CHANNEL_WEATHER_BREAK = "weather-break";
+    public static final String CHANNEL_WEATHER_RAIN = "weather-rain";
+    public static final String CHANNEL_WEATHER_TEMPERATURE = "weather-temperature";
+    public static final String CHANNEL_WEATHER_HUMIDITY = "weather-humidity";
+    public static final String CHANNEL_WEATHER_DAY = "weather-day";
+    public static final String CHANNEL_WEATHER_CITY = "weather-city";
+    public static final String CHANNEL_WEATHER_REMAINING = "weather-remaining";
 
     public static final String CHANNEL_JOB = "job";
 

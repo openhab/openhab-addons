@@ -54,6 +54,8 @@ import org.openhab.binding.robonect.internal.model.TimerFull;
 import org.openhab.binding.robonect.internal.model.TimerInfo;
 import org.openhab.binding.robonect.internal.model.TimersInfo;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
+import org.openhab.binding.robonect.internal.model.Weather;
+import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.Weekdays;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
@@ -259,6 +261,38 @@ public class RobonectHandler extends BaseThingHandler {
         TimersInfo info = robonectClient.getTimersInfo();
         if (info.isSuccessful() && info.getTimers() != null)
             info.getTimers().forEach(this::updateTimerState);
+    }
+
+    /**
+     * Updates the weather measurements and current mowing restriction.
+     */
+    private void refreshWeatherInfo() {
+        WeatherInfo info = robonectClient.getWeatherInfo();
+        Weather weather = info.getWeather();
+        if (!info.isSuccessful() || weather == null) {
+            return;
+        }
+        updateWeatherSwitch(CHANNEL_WEATHER_BREAK, weather.getWeatherBreak());
+        updateWeatherNumber(CHANNEL_WEATHER_RAIN, weather.getRain());
+        if (weather.getTemperature() != null)
+            updateState(CHANNEL_WEATHER_TEMPERATURE, new QuantityType<>(weather.getTemperature(), SIUnits.CELSIUS));
+        if (weather.getHumidity() != null)
+            updateState(CHANNEL_WEATHER_HUMIDITY, new QuantityType<>(weather.getHumidity(), Units.PERCENT));
+        updateWeatherSwitch(CHANNEL_WEATHER_DAY, weather.getDay());
+        if (weather.getCity() != null)
+            updateState(CHANNEL_WEATHER_CITY, new StringType(weather.getCity()));
+        if (weather.getRemaining() != null)
+            updateState(CHANNEL_WEATHER_REMAINING, new QuantityType<>(weather.getRemaining(), Units.SECOND));
+    }
+
+    private void updateWeatherSwitch(String channel, @Nullable Boolean value) {
+        if (value != null)
+            updateState(channel, OnOffType.from(value));
+    }
+
+    private void updateWeatherNumber(String channel, @Nullable Integer value) {
+        if (value != null)
+            updateState(channel, new DecimalType(value));
     }
 
     private void handleJobCommand(ChannelUID channelUID, Command command) {
@@ -791,6 +825,7 @@ public class RobonectHandler extends BaseThingHandler {
                     refreshWireInfo();
                     refreshPortalInfo();
                     refreshTimersInfo();
+                    refreshWeatherInfo();
                 }
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;

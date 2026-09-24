@@ -233,6 +233,13 @@
 			<channel id="timer-14-friday" typeId="timerDayType"/>
 			<channel id="timer-14-saturday" typeId="timerDayType"/>
 			<channel id="timer-14-sunday" typeId="timerDayType"/>
+			<channel id="weather-break" typeId="weatherSwitchType"/>
+			<channel id="weather-rain" typeId="weatherRainType"/>
+			<channel id="weather-temperature" typeId="weatherTemperatureType"/>
+			<channel id="weather-humidity" typeId="weatherHumidityType"/>
+			<channel id="weather-day" typeId="weatherSwitchType"/>
+			<channel id="weather-city" typeId="weatherCityType"/>
+			<channel id="weather-remaining" typeId="weatherRemainingType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
@@ -514,6 +521,37 @@
 		<item-type>Switch</item-type>
 		<label>Timer Day</label>
 		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="weatherSwitchType">
+		<item-type>Switch</item-type>
+		<label>Weather Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="weatherRainType">
+		<item-type>Number</item-type>
+		<label>Rain</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="weatherTemperatureType">
+		<item-type>Number:Temperature</item-type>
+		<label>Weather Temperature</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="weatherHumidityType">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Weather Humidity</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="weatherCityType">
+		<item-type>String</item-type>
+		<label>Weather City</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="weatherRemainingType">
+		<item-type>Number:Time</item-type>
+		<label>Weather Remaining Time</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="idType">

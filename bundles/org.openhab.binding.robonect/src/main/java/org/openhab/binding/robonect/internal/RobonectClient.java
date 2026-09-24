@@ -40,6 +40,7 @@ import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.TimerInfo;
 import org.openhab.binding.robonect.internal.model.TimersInfo;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
+import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.cmd.BatteryCommand;
 import org.openhab.binding.robonect.internal.model.cmd.Command;
@@ -55,6 +56,7 @@ import org.openhab.binding.robonect.internal.model.cmd.StatusCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StopCommand;
 import org.openhab.binding.robonect.internal.model.cmd.TimerCommand;
 import org.openhab.binding.robonect.internal.model.cmd.VersionCommand;
+import org.openhab.binding.robonect.internal.model.cmd.WeatherCommand;
 import org.openhab.binding.robonect.internal.model.cmd.WireCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -373,6 +375,15 @@ public class RobonectClient {
     public TimerInfo updateTimer(int timer, String parameter, String value) {
         return parser.parse(sendCommand(new TimerCommand().withTimer(timer).withValue(parameter, value)),
                 TimerInfo.class);
+    }
+
+    /**
+     * Returns weather information calculated by the module.
+     *
+     * @return the weather information including its success status
+     */
+    public WeatherInfo getWeatherInfo() {
+        return parser.parse(sendCommand(new WeatherCommand()), WeatherInfo.class);
     }
 
     /**
