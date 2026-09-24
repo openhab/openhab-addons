@@ -32,9 +32,9 @@ public class Room {
     private final String id;
     private final String name;
     private final @Nullable Double currentTemp;
-    private final @Nullable Double comfortTemp;
-    private final @Nullable Double sleepTemp;
-    private final @Nullable Double awayTemp;
+    private @Nullable Double comfortTemp;
+    private @Nullable Double sleepTemp;
+    private @Nullable Double awayTemp;
     private final boolean heatingActive;
     private final boolean windowOpen;
     private final boolean online;
@@ -111,6 +111,20 @@ public class Room {
 
     public @Nullable Double getCurrentTemp() {
         return currentTemp;
+    }
+
+    /**
+     * Records a setpoint the binding has just written, so the channel reflects the command right
+     * away. The next poll replaces it with whatever the service reports.
+     */
+    public void applyWrittenSetpoint(final ModeType forMode, final double celsius) {
+        switch (forMode) {
+            case SLEEP -> sleepTemp = celsius;
+            case AWAY -> awayTemp = celsius;
+            case COMFORT, NORMAL -> comfortTemp = celsius;
+            default -> {
+            }
+        }
     }
 
     public @Nullable Double getComfortTemp() {

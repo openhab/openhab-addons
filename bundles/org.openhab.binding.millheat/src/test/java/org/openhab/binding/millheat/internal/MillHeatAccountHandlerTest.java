@@ -176,6 +176,26 @@ public class MillHeatAccountHandlerTest {
     }
 
     @Test
+    public void testRoomSetpointCommandDoesNotRefreshTheWholeAccount() throws Exception {
+        stubSignIn("/sign_in_ok.json");
+        stubModelEndpoints();
+        stubFor(post(urlEqualTo("/rooms/" + ROOM_ID + "/temperature")).willReturn(aResponse().withStatus(200)));
+
+        final MillheatAccountHandler subject = newHandler();
+        subject.signIn();
+        subject.updateModelFromServerWithRetry(true);
+        final int housesBefore = findAll(getRequestedFor(urlEqualTo("/houses"))).size();
+
+        subject.updateRoomTemperature(ROOM_ID, new QuantityType<>(21, SIUnits.CELSIUS), ModeType.COMFORT);
+
+        verify(postRequestedFor(urlEqualTo("/rooms/" + ROOM_ID + "/temperature")));
+        // The command must not drag a full account refresh along behind it.
+        verify(housesBefore, getRequestedFor(urlEqualTo("/houses")));
+        // It should still be visible immediately rather than waiting for the next poll.
+        assertEquals(21.0, subject.getModel().findRoomById(ROOM_ID).orElseThrow().getComfortTemp());
+    }
+
+    @Test
     public void testUnsupportedDeviceFamiliesAreNotModelled() throws Exception {
         stubSignIn("/sign_in_ok.json");
         stubModelEndpoints();

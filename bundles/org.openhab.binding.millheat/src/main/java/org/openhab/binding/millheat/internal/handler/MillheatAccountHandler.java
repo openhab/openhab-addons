@@ -350,7 +350,10 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
         }
         try {
             client.setRoomTemperatures(roomId, request);
-            updateModelFromServerWithRetry(true);
+            // Reflect the change locally and let the next poll reconcile. Refreshing the whole
+            // account here ran on the framework thread and cost a request per house and room for
+            // every command.
+            model.findRoomById(roomId).ifPresent(room -> room.applyWrittenSetpoint(mode, newTemp));
         } catch (final MillheatCommunicationException e) {
             logger.debug("Error updating temperature for room {}", roomId, e);
         }
