@@ -8,9 +8,9 @@
       status {
         summary
         online
-        lastContact {
-          timestamp
-        }
+      }
+      lastContactTime {
+        timestamp
       }
       hardware {
           version
