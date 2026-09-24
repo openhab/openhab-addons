@@ -1,661 +1,515 @@
-Tedee Binding for openHAB
+# Tedee Binding for openHAB
 
-The Tedee binding integrates Tedee Smart Locks with openHAB through the local Tedee Bridge API.
+The Tedee binding integrates Tedee Smart Locks with openHAB through either:
 
-The binding is currently developed and tested against openHAB 4.3.x / 4.3.5, a Tedee Bridge, and a Tedee PRO Lock. Communication with the lock is performed locally through the bridge; no Tedee Cloud API is required for normal operation.
+- the local Tedee Bridge API, or
+- the Tedee Cloud API.
 
-The binding currently supports:
+The binding is developed and tested against openHAB 4.3.x / 4.3.5.
 
-Tedee Bridge
+Local communication does not require the Tedee Cloud API for normal operation. Cloud access is available as an optional alternative and can be used without a local Tedee Bridge.
 
-Tedee Lock
+## Supported Features
 
-Lock, unlock and pull commands
+- Tedee local Bridge
+- Tedee Cloud
+- Tedee Lock
+- Automatic Lock discovery
+- Lock, unlock and pull commands
+- `UNLOCK_NO_PULL`
+- Lock status polling
+- Manual `REFRESH`
+- Battery, charging, jammed and connection state
+- Firmware/software version and Thing properties
+- Tedee device settings as read-only channels
+- Local Tedee Bridge webhooks for `lock-status-changed`
+- Automatic local webhook callback registration
+- Cloud polling without local webhooks
 
-Lock status polling
+## Supported Things
 
-Manual REFRESH
+### Tedee Local Bridge
 
-Battery, charging, jammed and connection state
+**Thing type:** `tedee:bridge`
 
-Firmware version and other Thing properties
+The Bridge represents the physical Tedee Bridge used for local API communication with Tedee locks.
 
-Tedee device settings as read-only channels
+#### Configuration
 
-Tedee Bridge webhooks for lock-status-changed
+| Parameter | Type | Required | Default | Description |
+|---|---|---:|---:|---|
+| `ip` | text | Yes | — | IP address of the Tedee Bridge |
+| `port` | integer | No | `80` | HTTP port of the Tedee Bridge |
+| `apiToken` | password | Yes | — | Tedee Bridge API token |
+| `pollInterval` | integer | No | `300` | Configured interval in seconds for bridge monitoring |
 
-Webhook registration
+The Bridge must be reachable from the openHAB server. The Tedee Bridge API is local to the LAN.
 
-Supported Things
+Tedee also requires the Bridge itself to have internet connectivity so that it can obtain and refresh access certificates for paired devices.
 
-Tedee Bridge
+### Tedee Cloud
 
-Thing type:
+**Thing type:** `tedee:cloud`
 
-tedee:bridge
+The Cloud Bridge provides direct communication with the Tedee Cloud API and does not require a local Tedee Bridge.
 
-The Bridge represents the physical Tedee Bridge used for local API communication with the locks.
+#### Configuration
 
-Configuration
+| Parameter | Type | Required | Default | Description |
+|---|---|---:|---:|---|
+| `personalAccessKey` | password | Yes | — | Tedee Personal Access Key used for Cloud API authentication |
+| `pollInterval` | integer | No | `300` | Cloud status and discovery polling interval in seconds |
 
-Parameter
+The Personal Access Key should be treated as a secret and must not be published in repositories, screenshots or logs.
 
-Type
+### Tedee Lock
 
-Required
+**Thing type:** `tedee:lock`
 
-Default
+A Lock represents an individual Tedee lock.
 
-Description
+A Lock can be configured below either a local `tedee:bridge` or a `tedee:cloud` Bridge.
 
-ip
+#### Configuration
 
-text
+| Parameter | Type | Required | Default | Description |
+|---|---|---:|---:|---|
+| `deviceId` | integer | Yes | — | Numeric Tedee device ID |
+| `pollInterval` | integer | No | `300` | Lock status polling interval in seconds |
 
-yes
+Example device ID:
 
-
-
-IP address of the Tedee Bridge
-
-port
-
-integer
-
-no
-
-80
-
-HTTP port of the Tedee Bridge
-
-apiToken
-
-text
-
-yes
-
-
-
-Tedee Bridge API token
-
-pollInterval
-
-integer
-
-no
-
-10
-
-Bridge status check interval in seconds
-
-The Bridge must be reachable from the openHAB server. The Tedee Bridge API is local to the LAN. Tedee notes that the bridge itself still needs internet connectivity to obtain and refresh access certificates for paired devices.
-
-Tedee Lock
-
-Thing type:
-
-tedee:lock
-
-The Lock represents an individual Tedee lock connected to a Tedee Bridge.
-
-A Lock Thing must be configured below a Tedee Bridge.
-
-Configuration
-
-Parameter
-
-Type
-
-Required
-
-Default
-
-Description
-
-deviceId
-
-integer
-
-yes
-
-
-
-Numeric Tedee device ID
-
-pollInterval
-
-integer
-
-no
-
-10
-
-Lock status polling interval in seconds
-
-Example:
-
+```text
 deviceId=14196
+```
 
-Channels
+Locks discovered from either Local or Cloud use the Tedee `deviceId` as their unique device representation.
+
+## Channels
 
 The Lock Thing exposes the following channels.
 
-Lock control
-
-Channel ID
-
-Item type
-
-Read
-
-Command
-
-Description
-
-lock
-
-Switch
-
-yes
-
-ON/OFF
-
-Lock or unlock the Tedee lock
-
-action
-
-String
-
-no
-
-LOCK, UNLOCK, UNLOCK_NO_PULL, PULL
-
-Execute a specific Tedee action
-
-The lock channel is the simple Switch interface:
-
-ON → LOCK
-
-OFF → normal UNLOCK
-
-The action channel provides explicit actions:
-
-LOCK
-
-UNLOCK
-
-UNLOCK_NO_PULL
-
-PULL
-
-When the Tedee lock has automatic pull spring enabled, normal UNLOCK can also perform the pull spring operation. Tedee documents UNLOCK_NO_PULL as the mode that unlocks without pulling the spring.
-
-Lock state
-
-Channel ID
-
-Item type
-
-Description
-
-state
-
-String
-
-Internal Tedee lock state
-
-doorState
-
-String
-
-Door sensor state, if supported by the lock/sensor setup
-
-battery
-
-Number
-
-Battery level in percent
-
-charging
-
-Switch
-
-Whether the lock is charging
-
-jammed
-
-Switch
-
-Whether the lock reports a jam
-
-connected
-
-Switch
-
-Whether the lock is connected to the Tedee Bridge
-
-Tedee documents these lock states:
-
-State
-
-Meaning
-
-0
-
-UNCALIBRATED
-
-1
-
-CALIBRATION
-
-2
-
-OPEN
-
-3
-
-PARTIALLY_OPEN
-
-4
-
-OPENING
-
-5
-
-CLOSING
-
-6
-
-CLOSED
-
-7
-
-PULL_SPRING
-
-8
-
-PULLING
-
-9
-
-UNKNOWN
-
-255
-
-UNPULLING
-
-Tedee documents these door states:
-
-Value
-
-Meaning
-
-0
-
-NOT_PAIRED
-
-1
-
-DISCONNECTED
-
-2
-
-OPENED
-
-3
-
-CLOSED
-
-4
-
-UNCALIBRATED
+### Lock Control
+
+| Channel ID | Item Type | Read | Command | Description |
+|---|---|---:|---|---|
+| `lock` | Switch | Yes | `ON` / `OFF` | Lock or unlock the Tedee lock |
+| `action` | String | No | `LOCK`, `UNLOCK`, `UNLOCK_NO_PULL`, `PULL` | Execute a specific Tedee action |
+
+The `lock` channel is the simple Switch interface:
+
+- `ON` → `LOCK`
+- `OFF` → normal `UNLOCK`
+
+The `action` channel provides explicit actions:
+
+- `LOCK`
+- `UNLOCK`
+- `UNLOCK_NO_PULL`
+- `PULL`
+
+When the Tedee lock has automatic pull spring enabled, normal `UNLOCK` can also perform the pull spring operation. `UNLOCK_NO_PULL` unlocks without pulling the spring.
+
+### Lock State
+
+| Channel ID | Item Type | Description |
+|---|---|---|
+| `state` | String | Internal Tedee lock state |
+| `doorState` | String | Door sensor state, if supported by the lock/sensor setup |
+| `battery` | Number | Battery level in percent |
+| `charging` | Switch | Whether the lock is charging |
+| `jammed` | Switch | Whether the lock reports a jam |
+| `connected` | Switch | Whether the lock is connected to its Tedee transport |
+
+### Tedee Lock States
+
+| State | Meaning |
+|---:|---|
+| `0` | `UNCALIBRATED` |
+| `1` | `CALIBRATION` |
+| `2` | `OPEN` |
+| `3` | `PARTIALLY_OPEN` |
+| `4` | `OPENING` |
+| `5` | `CLOSING` |
+| `6` | `CLOSED` |
+| `7` | `PULL_SPRING` |
+| `8` | `PULLING` |
+| `9` | `UNKNOWN` |
+| `255` | `UNPULLING` |
+
+### Tedee Door States
+
+| Value | Meaning |
+|---:|---|
+| `0` | `NOT_PAIRED` |
+| `1` | `DISCONNECTED` |
+| `2` | `OPENED` |
+| `3` | `CLOSED` |
+| `4` | `UNCALIBRATED` |
 
 A physical door sensor is required for meaningful door-state testing. The current test installation does not have such a sensor.
 
-Device settings
+### Device Settings
 
 The following Tedee device settings are exposed as read-only channels:
 
-Channel ID
+| Channel ID | Item Type | Description |
+|---|---|---|
+| `autoLockEnabled` | Switch | Automatic lock enabled |
+| `autoLockDelay` | Number | Automatic lock delay |
+| `autoLockImplicitEnabled` | Switch | Implicit automatic lock enabled |
+| `autoLockImplicitDelay` | Number | Implicit automatic lock delay |
+| `pullSpringEnabled` | Switch | Pull spring feature enabled |
+| `pullSpringDuration` | Number | Pull spring duration |
+| `autoPullSpringEnabled` | Switch | Automatic pull spring enabled |
+| `postponedLockEnabled` | Switch | Postponed lock enabled |
+| `postponedLockDelay` | Number | Postponed lock delay |
+| `buttonLockEnabled` | Switch | Physical button locking enabled |
+| `buttonUnlockEnabled` | Switch | Physical button unlocking enabled |
 
-Item type
+These settings are read from the Tedee lock response and refreshed by polling or `REFRESH`. Writing settings is not currently implemented.
 
-Description
+### Thing Properties
 
-autoLockEnabled
+The Lock Thing exposes these properties:
 
-Switch
+| Property | Description |
+|---|---|
+| `name` | Tedee lock name |
+| `serialNumber` | Tedee serial number |
+| `deviceType` | Tedee device type |
+| `firmwareVersion` | Firmware/software version reported by the Tedee API |
 
-Automatic lock enabled
-
-autoLockDelay
-
-Number
-
-Automatic lock delay
-
-autoLockImplicitEnabled
-
-Switch
-
-Implicit automatic lock enabled
-
-autoLockImplicitDelay
-
-Number
-
-Implicit automatic lock delay
-
-pullSpringEnabled
-
-Switch
-
-Pull spring feature enabled
-
-pullSpringDuration
-
-Number
-
-Pull spring duration
-
-autoPullSpringEnabled
-
-Switch
-
-Automatic pull spring enabled
-
-postponedLockEnabled
-
-Switch
-
-Postponed lock enabled
-
-postponedLockDelay
-
-Number
-
-Postponed lock delay
-
-buttonLockEnabled
-
-Switch
-
-Physical button locking enabled
-
-buttonUnlockEnabled
-
-Switch
-
-Physical button unlocking enabled
-
-These settings are currently read from the normal Tedee lock response and refreshed by polling or REFRESH. Writing settings is not currently implemented.
-
-Thing properties
-
-The Lock Thing currently exposes these properties:
-
-Property
-
-Description
-
-name
-
-Tedee lock name
-
-serialNumber
-
-Tedee serial number
-
-deviceType
-
-Tedee device type
-
-firmwareVersion
-
-Firmware/software version reported by the local Bridge API
-
-Configuration through MainUI
+## Configuration Through MainUI
 
 The binding can be configured through the openHAB UI.
 
-Install the Tedee binding.
+### Local Connection
 
-Add a Tedee Bridge .
+1. Install the Tedee binding.
+2. Add a **Tedee Bridge**.
+3. Enter the Bridge IP address and API token.
+4. Wait until the Bridge becomes `ONLINE`.
+5. Add a Tedee Lock below the Bridge or use autodiscovery.
 
-Enter the Bridge IP address and API token.
+### Cloud Connection
 
-After the Bridge becomes ONLINE, add a Tedee Lock below that Bridge or use autodiscovery.
+1. Install the Tedee binding.
+2. Add a **Tedee Cloud** Bridge.
+3. Enter the Tedee Personal Access Key.
+4. Wait until the Cloud Bridge becomes `ONLINE`.
+5. Add a Tedee Lock below the Cloud Bridge or use Cloud discovery.
 
+## Text `.things` Configuration
 
+The same Things can be defined in a `.things` file.
 
-Text .things configuration
+### Local Tedee Bridge
 
-The same Things can be defined in a .things file.
-
-Example:
-
-Bridge tedee:bridge:bridgename "Tedee Bridge" [
-    ip="<yourbridgeIP>",
+```text
+Bridge tedee:bridge:home "Tedee Bridge" [
+    ip="10.194.83.85",
     port=80,
-    apiToken="<YOUR_API_TOKEN>",
-    pollInterval=60
-] {
-    Thing tedee:lock:lockname "Lockname" [
-        deviceId=<your id>,
-        pollInterval=300
-    ]
-}
-Bridge tedee:cloud:bridgename "Tedee Cloud Bridge" [
-    personalAccessKey="<YOUR_PERSONAL_ACCESS_KEY>", 
+    apiToken="YOUR_API_TOKEN",
     pollInterval=300
 ] {
-    Thing tedee:lock:lockname "Lockname" [
-        deviceId=<your id>,
+    Thing lock:foxyhome "Foxy Home" [
+        deviceId=14196,
         pollInterval=300
     ]
 }
+```
 
-The binding is built to work in API Token encrypted mode.
+### Tedee Cloud
 
-Items
+```text
+Bridge tedee:cloud:cloud "Tedee Cloud" [
+    personalAccessKey="YOUR_PERSONAL_ACCESS_KEY",
+    pollInterval=300
+] {
+    Thing lock:foxyhomecloud "Foxy Home Cloud" [
+        deviceId=14196,
+        pollInterval=300
+    ]
+}
+```
+
+Do not publish a real API token or Personal Access Key.
+
+## Items
 
 Channels need to be linked to Items before their states are consumed by openHAB rules, UI pages or other automation.
 
-The following example links the main lock functions:
+### Main Lock Items
 
+| Item | Type | Channel | Description |
+|---|---|---|---|
+| `Tedee_Lock` | Switch | `lock` | Lock/unlock control |
+| `Tedee_State` | String | `state` | Lock state |
+| `Tedee_Door_State` | String | `doorState` | Door sensor state |
+| `Tedee_Battery` | Number | `battery` | Battery level |
+| `Tedee_Charging` | Switch | `charging` | Charging state |
+| `Tedee_Jammed` | Switch | `jammed` | Jam status |
+| `Tedee_Connected` | Switch | `connected` | Connection status |
+| `Tedee_Action` | String | `action` | Explicit Tedee actions |
+
+### Main Lock Items Example
+
+```text
 Switch Tedee_Lock "Lock" {
-    channel="tedee:lock:bridgename:lockname:lock"
+    channel="tedee:lock:home:foxyhome:lock"
 }
 
 String Tedee_State "Lock State [%s]" {
-    channel="tedee:lock:bridgename:lockname:state"
+    channel="tedee:lock:home:foxyhome:state"
 }
 
 String Tedee_Door_State "Door State [%s]" {
-    channel="tedee:lock:bridgename:lockname:doorState"
+    channel="tedee:lock:home:foxyhome:doorState"
 }
 
 Number Tedee_Battery "Battery [%.0f %%]" {
-    channel="tedee:lock:bridgename:lockname:battery"
+    channel="tedee:lock:home:foxyhome:battery"
 }
 
 Switch Tedee_Charging "Charging" {
-    channel="tedee:lock:bridgename:lockname:charging"
+    channel="tedee:lock:home:foxyhome:charging"
 }
 
 Switch Tedee_Jammed "Jammed" {
-    channel="tedee:lock:bridgename:lockname:jammed"
+    channel="tedee:lock:home:foxyhome:jammed"
 }
 
 Switch Tedee_Connected "Connected" {
-    channel="tedee:lock:bridgename:lockname:connected"
+    channel="tedee:lock:home:foxyhome:connected"
 }
 
 String Tedee_Action "Action" {
-    channel="tedee:lock:bridgename:lockname:action"
+    channel="tedee:lock:home:foxyhome:action"
 }
+```
 
-Device settings Items
+The same Item definitions can be used for a Cloud Lock by replacing the Thing UID:
 
-Example read-only Items for the device settings:
+```text
+tedee:lock:cloud:foxyhomecloud:<channel>
+```
 
+For example:
+
+```text
+Switch Tedee_Cloud_Connected "Cloud Lock Connected" {
+    channel="tedee:lock:cloud:foxyhomecloud:connected"
+}
+```
+
+### Device Settings Items
+
+| Item | Type | Channel | Description |
+|---|---|---|---|
+| `Tedee_AutoLockEnabled` | Switch | `autoLockEnabled` | Automatic lock |
+| `Tedee_AutoLockDelay` | Number | `autoLockDelay` | Automatic lock delay |
+| `Tedee_AutoLockImplicitEnabled` | Switch | `autoLockImplicitEnabled` | Implicit automatic lock |
+| `Tedee_AutoLockImplicitDelay` | Number | `autoLockImplicitDelay` | Implicit automatic lock delay |
+| `Tedee_PullSpringEnabled` | Switch | `pullSpringEnabled` | Pull spring enabled |
+| `Tedee_PullSpringDuration` | Number | `pullSpringDuration` | Pull spring duration |
+| `Tedee_AutoPullSpringEnabled` | Switch | `autoPullSpringEnabled` | Automatic pull spring |
+| `Tedee_PostponedLockEnabled` | Switch | `postponedLockEnabled` | Postponed locking |
+| `Tedee_PostponedLockDelay` | Number | `postponedLockDelay` | Postponed lock delay |
+| `Tedee_ButtonLockEnabled` | Switch | `buttonLockEnabled` | Button locking |
+| `Tedee_ButtonUnlockEnabled` | Switch | `buttonUnlockEnabled` | Button unlocking |
+
+### Device Settings Items Example
+
+```text
 Switch Tedee_AutoLockEnabled "Auto Lock Enabled" {
-    channel="tedee:lock:bridgename:lockname:autoLockEnabled"
+    channel="tedee:lock:home:foxyhome:autoLockEnabled"
 }
 
 Number Tedee_AutoLockDelay "Auto Lock Delay" {
-    channel="tedee:lock:bridgename:lockname:autoLockDelay"
+    channel="tedee:lock:home:foxyhome:autoLockDelay"
+}
+
+Switch Tedee_AutoLockImplicitEnabled "Auto Lock Implicit Enabled" {
+    channel="tedee:lock:home:foxyhome:autoLockImplicitEnabled"
+}
+
+Number Tedee_AutoLockImplicitDelay "Auto Lock Implicit Delay" {
+    channel="tedee:lock:home:foxyhome:autoLockImplicitDelay"
 }
 
 Switch Tedee_PullSpringEnabled "Pull Spring Enabled" {
-    channel="tedee:lock:bridgename:lockname:pullSpringEnabled"
+    channel="tedee:lock:home:foxyhome:pullSpringEnabled"
 }
 
 Number Tedee_PullSpringDuration "Pull Spring Duration" {
-    channel="tedee:lock:bridgename:lockname:pullSpringDuration"
+    channel="tedee:lock:home:foxyhome:pullSpringDuration"
 }
 
 Switch Tedee_AutoPullSpringEnabled "Auto Pull Spring Enabled" {
-    channel="tedee:lock:bridgename:lockname:autoPullSpringEnabled"
+    channel="tedee:lock:home:foxyhome:autoPullSpringEnabled"
 }
 
 Switch Tedee_PostponedLockEnabled "Postponed Lock Enabled" {
-    channel="tedee:lock:bridgename:lockname:postponedLockEnabled"
+    channel="tedee:lock:home:foxyhome:postponedLockEnabled"
 }
 
 Number Tedee_PostponedLockDelay "Postponed Lock Delay" {
-    channel="tedee:lock:bridgename:lockname:postponedLockDelay"
+    channel="tedee:lock:home:foxyhome:postponedLockDelay"
 }
 
 Switch Tedee_ButtonLockEnabled "Button Lock Enabled" {
-    channel="tedee:lock:bridgename:lockname:buttonLockEnabled"
+    channel="tedee:lock:home:foxyhome:buttonLockEnabled"
 }
 
 Switch Tedee_ButtonUnlockEnabled "Button Unlock Enabled" {
-    channel="tedee:lock:bridgename:lockname:buttonUnlockEnabled"
+    channel="tedee:lock:home:foxyhome:buttonUnlockEnabled"
 }
+```
 
-The current binding also exposes:
+## Commands
 
-autoLockImplicitEnabled
-
-and
-
-autoLockImplicitDelay
-
-in the same way.
-
-Commands
-
-Lock / unlock through the Switch channel
+### Lock / Unlock Through the Switch Channel
 
 With:
 
+```text
 Switch Tedee_Lock
+```
 
 send:
 
+```text
 ON
+```
 
 to lock the device.
 
 Send:
 
+```text
 OFF
+```
 
 to perform a normal unlock.
 
-Explicit actions through the Action channel
+### Explicit Actions Through the Action Channel
 
 The action Item accepts:
 
+```text
 LOCK
 UNLOCK
 UNLOCK_NO_PULL
 PULL
+```
 
+`UNLOCK_NO_PULL` is useful when automatic pull spring is enabled but the desired operation is to unlock without pulling the spring.
 
-UNLOCK_NO_PULL is useful when automatic pull spring is enabled but the desired operation is to unlock the lock without pulling the spring.
+The Tedee APIs return an acknowledgement as soon as the operation has started. The final state is reported later through polling and/or local callback events.
 
-The Tedee Bridge API returns HTTP 204 as soon as the action has started. The final state is reported later through polling and/or callbacks.
+## Rules Examples
 
-Rules examples
-
-Unlock without pull
+### Unlock Without Pull
 
 DSL-style rule:
 
+```text
 sendCommand(Tedee_Action, "UNLOCK_NO_PULL")
+```
 
 JS Scripting:
 
+```text
 items.getItem("Tedee_Action").sendCommand("UNLOCK_NO_PULL");
+```
 
-Lock
+### Lock
 
+```text
 sendCommand(Tedee_Action, "LOCK")
+```
 
-Pull spring
+### Pull Spring
 
+```text
 sendCommand(Tedee_Action, "PULL")
+```
 
-Refresh
+## Refresh
 
-The binding supports RefreshType.
+The binding supports `RefreshType`.
 
 A linked Item can receive:
 
+```text
 openhab:send Tedee_Battery REFRESH
+```
 
 or:
 
+```text
 openhab:send Tedee_Action REFRESH
+```
 
-A refresh triggers a complete lock refresh rather than updating only the requested channel. The Tedee Bridge response contains multiple values, so all lock channels and properties are updated together.
+A refresh triggers a complete lock refresh rather than updating only the requested channel. The API response contains multiple values, so all lock channels and properties are updated together.
 
-The normal polling interval is currently 300 seconds by default.
+The default lock polling interval is currently 300 seconds.
 
-Webhooks
+## Local Webhooks
+
+Webhooks apply to the local Tedee Bridge connection.
 
 The binding contains an HTTP webhook endpoint:
 
+```text
 /tedee/webhook
+```
 
 The Tedee Bridge can POST status events to this endpoint.
 
-The tested callback configuration is:
+### Callback Configuration
 
+```json
 {
   "url": "http://OPENHAB_IP:8080/tedee/webhook",
   "method": "POST",
   "headers": []
 }
+```
 
 For example:
 
+```json
 {
   "url": "http://10.194.82.111:8080/tedee/webhook",
   "method": "POST",
   "headers": []
 }
+```
 
-The callback must point to the LAN address of the openHAB server.
+The callback must point to the LAN address of the openHAB server, not `localhost` or `127.0.0.1`.
 
-Currently implemented webhook event
+The local Bridge Handler manages the callback automatically and removes stale or duplicate binding callbacks.
+
+### Implemented Webhook Event
 
 The current servlet processes:
 
+```text
 lock-status-changed
+```
 
 Example payload received from a real Tedee Bridge:
 
+```json
 {
   "event": "lock-status-changed",
   "timestamp": "2026-09-22T21:34:40.395Z",
   "data": {
     "deviceType": 2,
-    "deviceId": XXX,
-    "serialNumber": "XXXX",
+    "deviceId": 14196,
+    "serialNumber": "21180201-000004",
     "state": 4,
     "jammed": 0,
     "source": 18,
@@ -663,122 +517,148 @@ Example payload received from a real Tedee Bridge:
     "doorState": 0
   }
 }
+```
 
-The handler applies the following values immediately:
+The handler applies these values immediately:
 
-state
+- `state`
+- `doorState`
+- `jammed`
 
-doorState
+### Additional Tedee Webhook Events
 
-jammed
+Tedee documents additional events that are useful for the binding:
 
+- `device-connection-changed`
+- `device-settings-changed`
+- `device-battery-level-changed`
+- `device-battery-start-charging`
+- `device-battery-stop-charging`
+- `device-battery-fully-charged`
 
-Other Tedee webhook events
+These events are not yet processed individually by the current servlet implementation. The normal polling/refresh mechanism remains available as the fallback for the corresponding values.
 
-Tedee documents additional events that are useful for this binding:
+## Local API
 
-device-connection-changed
+The local binding communicates with the Tedee Bridge through:
 
-device-settings-changed
-
-device-battery-level-changed
-
-device-battery-start-charging
-
-device-battery-stop-charging
-
-device-battery-fully-charged
-
-These are not yet processed by the current servlet implementation.
-
-The planned implementation is:
-
-connection event → update connected
-
-battery-level event → update battery
-
-charging events → update charging
-
-settings-changed event → perform one lock GET and refresh all settings
-
-
-Callback management during development
-
-Tedee Bridge callback entries are managed through the local API:
-
-GET /v1.0/callback
-
-POST /v1.0/callback
-
-DELETE /v1.0/callback/{callbackId}
-
-
-A single callback for the openHAB endpoint is sufficient for the current binding.
-
-Local API
-
-The binding communicates with the Tedee Bridge through:
-
+```text
 http://<BRIDGE-IP>/v1.0
+```
 
-Authentication uses the api_token mechanism implemented by the binding.
+Authentication uses the `api_token` mechanism implemented by the binding.
 
-Main endpoints currently used:
+### Main Local Endpoints
 
-GET  /v1.0/bridge
-GET  /v1.0/lock/{id}
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `/v1.0/bridge` | Bridge status |
+| `GET` | `/v1.0/lock/{id}` | Read one lock |
+| `GET` | `/v1.0/lock` | Read available locks for discovery |
+| `POST` | `/v1.0/lock/{id}/lock` | Lock |
+| `POST` | `/v1.0/lock/{id}/unlock` | Unlock |
+| `POST` | `/v1.0/lock/{id}/pull` | Pull spring |
+| `POST` | `/v1.0/lock/{id}/unlock?mode=3` | Unlock without pull |
+| `GET` | `/v1.0/callback` | Read callbacks |
+| `POST` | `/v1.0/callback` | Register callback |
+| `DELETE` | `/v1.0/callback/{callbackId}` | Remove callback |
 
-POST /v1.0/lock/{id}/lock
-POST /v1.0/lock/{id}/unlock
-POST /v1.0/lock/{id}/pull
-POST /v1.0/lock/{id}/unlock?mode=3
+The `mode=3` unlock operation is used for `UNLOCK_NO_PULL`.
 
-The mode=3 unlock operation is used for UNLOCK_NO_PULL.
+Tedee documents lock, unlock and pull as asynchronous operations. The initial HTTP response confirms that the operation has started; the final state can be observed through a subsequent refresh, polling cycle or callback event.
 
-Tedee documents lock, unlock and pull as asynchronous operations. The initial HTTP response confirms that the operation has started; the final state can be observed through a subsequent sync or callback event.
+## Cloud API
 
-Development status
+The Cloud binding communicates directly with the Tedee Cloud API.
+
+### Cloud Authentication
+
+Cloud requests use the Personal Access Key configured on the `tedee:cloud` Bridge.
+
+The Access Key is stored as a password-type configuration parameter and must not be exposed in documentation or source control.
+
+### Cloud Operations
+
+The Cloud transport supports the same lock operations exposed by the local transport:
+
+- `LOCK`
+- `UNLOCK`
+- `UNLOCK_NO_PULL`
+- `PULL`
+
+Cloud lock status is retrieved by polling. No local webhook or callback registration is required for Cloud Things.
+
+### Cloud Discovery
+
+The Cloud Bridge provides automatic lock discovery from the Tedee account.
+
+Discovered locks use their Tedee `deviceId` as the representation property and are created below the Cloud Bridge.
+
+## Local and Cloud in Parallel
+
+Local and Cloud bridges can be configured at the same time.
+
+For example, the same physical lock can be represented through both transports:
+
+```text
+Bridge tedee:bridge:home "Tedee Bridge" [
+    ip="10.194.83.85",
+    port=80,
+    apiToken="YOUR_API_TOKEN",
+    pollInterval=300
+] {
+    Thing lock:foxyhome "Foxy Home Local" [
+        deviceId=14196,
+        pollInterval=300
+    ]
+}
+
+Bridge tedee:cloud:cloud "Tedee Cloud" [
+    personalAccessKey="YOUR_PERSONAL_ACCESS_KEY",
+    pollInterval=300
+] {
+    Thing lock:foxyhomecloud "Foxy Home Cloud" [
+        deviceId=14196,
+        pollInterval=300
+    ]
+}
+```
+
+The two Things are independent and use different transport paths to the same Tedee device.
+
+## Development Status
 
 The current implementation has been tested successfully with:
 
-openHAB 4.3.5
+- openHAB 4.3.5
+- Tedee Bridge
+- Tedee PRO Lock
+- local webhook events
+- local lock discovery
+- lock, unlock and pull commands
+- `UNLOCK_NO_PULL`
+- polling and `REFRESH`
+- device settings
+- Cloud API support and Cloud discovery
 
-Tedee Bridge
+## Known Limitations
 
-Tedee PRO Lock
+- Door state cannot be fully validated without a supported door sensor.
+- Additional device information such as RSSI and device revision is not currently exposed as channels or properties.
+- Device settings are currently read-only.
+- Local webhook processing is currently focused on `lock-status-changed`; other documented webhook events continue to be handled through polling/refresh.
 
+## References
 
-Known limitations / next steps
+### openHAB
 
+- [openHAB 4.3 binding development](https://v43.openhab.org/docs/developer/bindings/)
+- [openHAB 4.3 Thing and Channel definitions](https://v43.openhab.org/docs/developer/bindings/thing-xml)
+- [openHAB 4.3 Things configuration](https://v43.openhab.org/docs/configuration/things.html)
 
-Door state cannot be fully validated without a supported door sensor.
+### Tedee
 
-Additional device information such as RSSI and device revision not exposed yet.
-
-Cloud API not yet integrated
-
-References
-
-openHAB 4.3 binding development:
-
-https://v43.openhab.org/docs/developer/bindings/
-
-openHAB 4.3 Thing and Channel definitions:
-
-https://v43.openhab.org/docs/developer/bindings/thing-xml
-
-openHAB 4.3 Things configuration:
-
-https://v43.openhab.org/docs/configuration/things.html
-
-Tedee Bridge API getting started:
-
-https://github.com/tedee-com/tedee-documentation/blob/master/bridge-api/overview/getting_started.md
-
-Tedee Bridge API lock operations:
-
-https://github.com/tedee-com/tedee-documentation/blob/master/bridge-api/howtos/operate_locks.md
-
-Tedee Bridge API webhook events:
-
-https://github.com/tedee-com/tedee-documentation/blob/master/bridge-api/webhooks/events.md
+- [Tedee Bridge API](https://github.com/tedee-com/tedee-documentation)
+- [Tedee Bridge API – getting started](https://github.com/tedee-com/tedee-documentation/blob/master/bridge-api/overview/getting_started.md)
+- [Tedee Bridge API – lock operations](https://github.com/tedee-com/tedee-documentation/blob/master/bridge-api/howtos/operate_locks.md)
+- [Tedee Bridge API – webhook events](https://github.com/tedee-com/tedee-documentation/blob/master/bridge-api/webhooks/events.md)
