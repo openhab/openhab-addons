@@ -44,12 +44,14 @@ public class RobonectHandlerFactory extends BaseThingHandlerFactory {
 
     private HttpClientFactory httpClientFactory;
     private TimeZoneProvider timeZoneProvider;
+    private RobonectPushServlet pushServlet;
 
     @Activate
     public RobonectHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference TimeZoneProvider timeZoneProvider) {
+            @Reference TimeZoneProvider timeZoneProvider, @Reference RobonectPushServlet pushServlet) {
         this.httpClientFactory = httpClientFactory;
         this.timeZoneProvider = timeZoneProvider;
+        this.pushServlet = pushServlet;
     }
 
     @Override
@@ -62,7 +64,7 @@ public class RobonectHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_AUTOMOWER)) {
-            return new RobonectHandler(thing, httpClientFactory, timeZoneProvider);
+            return new RobonectHandler(thing, httpClientFactory, timeZoneProvider, pushServlet);
         }
 
         return null;

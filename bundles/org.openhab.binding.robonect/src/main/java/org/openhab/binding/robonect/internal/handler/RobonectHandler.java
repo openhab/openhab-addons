@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.robonect.internal.RobonectClient;
 import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectEndpoint;
+import org.openhab.binding.robonect.internal.RobonectPushServlet;
 import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.config.RobonectConfig;
 import org.openhab.binding.robonect.internal.model.AccessPoint;
@@ -124,12 +125,19 @@ public class RobonectHandler extends BaseThingHandler {
     private ZoneId timeZone;
 
     private RobonectClient robonectClient;
+    private final @Nullable RobonectPushServlet pushServlet;
 
     public RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
+        this(thing, httpClientFactory, timeZoneProvider, null);
+    }
+
+    public RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider,
+            @Nullable RobonectPushServlet pushServlet) {
         super(thing);
         httpClient = httpClientFactory
                 .createHttpClient(ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null));
         this.timeZoneProvider = timeZoneProvider;
+        this.pushServlet = pushServlet;
     }
 
     @Override
@@ -1074,6 +1082,9 @@ public class RobonectHandler extends BaseThingHandler {
         }
 
         robonectClient = new RobonectClient(httpClient, endpoint);
+        if (pushServlet != null) {
+            pushServlet.registerHandler(getThing().getUID(), this);
+        }
         Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()),
                 robonectConfig.isDetailedInfo(), robonectConfig.getDetailedInfoInterval());
         int pollInterval = robonectConfig.getPollInterval();
@@ -1082,6 +1093,9 @@ public class RobonectHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        if (pushServlet != null) {
+            pushServlet.unregisterHandler(getThing().getUID());
+        }
         ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
@@ -1093,6 +1107,17 @@ public class RobonectHandler extends BaseThingHandler {
         } catch (Exception e) {
             logger.warn("Exception while trying to stop HTTP client", e);
         }
+    }
+
+    /** Requests an immediate status refresh after a Robonect push notification. */
+    public void handlePushNotification() {
+        scheduler.execute(() -> {
+            try {
+                refreshMowerInfo();
+            } catch (RobonectCommunicationException e) {
+                logger.debug("Could not refresh mower state after push notification: {}", e.getMessage());
+            }
+        });
     }
 
     /**
