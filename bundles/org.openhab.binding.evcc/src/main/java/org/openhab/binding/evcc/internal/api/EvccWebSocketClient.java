@@ -81,8 +81,8 @@ public class EvccWebSocketClient {
         stopped = false;
         try {
             client.getPolicy().setIdleTimeout(0); // Jetty 9
-            client.getPolicy().setMaxTextMessageSize(512 * 1024);
-            client.getPolicy().setMaxTextMessageBufferSize(512 * 1024);
+            client.getPolicy().setMaxTextMessageSize(1024 * 1024);
+            client.getPolicy().setMaxTextMessageBufferSize(1024 * 1024);
             client.start();
             connect();
         } catch (Exception e) {
