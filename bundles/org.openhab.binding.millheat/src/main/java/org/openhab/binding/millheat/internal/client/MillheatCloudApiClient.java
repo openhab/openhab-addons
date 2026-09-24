@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -87,6 +88,15 @@ public class MillheatCloudApiClient {
     private final Gson gson;
     private final RequestLogger requestLogger;
 
+    /**
+     * Guards the token fields so that a check of the expiry and the refresh it triggers are one
+     * step. Mill documents refresh tokens as single use and locks a token for three seconds during
+     * a refresh, so two callers refreshing concurrently would spend the same token and one of them
+     * would fail. The lock covers the refresh request itself for that reason; waiters re-check the
+     * expiry afterwards and normally find a valid token without issuing a request of their own.
+     */
+    private final Object tokenLock = new Object();
+
     private @Nullable String accessToken;
     private @Nullable String refreshToken;
     private Instant accessTokenExpiry = Instant.MIN;
@@ -99,16 +109,18 @@ public class MillheatCloudApiClient {
     }
 
     public void signIn(final String username, final String password) throws MillheatCommunicationException {
-        accessToken = null;
-        refreshToken = null;
-        accessTokenExpiry = Instant.MIN;
+        synchronized (tokenLock) {
+            accessToken = null;
+            refreshToken = null;
+            accessTokenExpiry = Instant.MIN;
 
-        final SignInResponse response = send(HttpMethod.POST, "/customer/auth/sign-in",
-                new SignInRequest(username, password), false, SignInResponse.class);
-        if (response == null) {
-            throw new MillheatCommunicationException("Sign-in returned an empty response");
+            final SignInResponse response = send(HttpMethod.POST, "/customer/auth/sign-in",
+                    new SignInRequest(username, password), false, SignInResponse.class);
+            if (response == null) {
+                throw new MillheatCommunicationException("Sign-in returned an empty response");
+            }
+            storeTokens(response);
         }
-        storeTokens(response);
     }
 
     /**
@@ -116,6 +128,26 @@ public class MillheatCloudApiClient {
      * the access token in the Authorization header.
      */
     public void refreshAccessToken() throws MillheatCommunicationException {
+        synchronized (tokenLock) {
+            refreshAccessTokenLocked();
+        }
+    }
+
+    /**
+     * Renews the access token after the service rejected it, unless another caller has already
+     * replaced it in the meantime. Without that check two requests failing together would each
+     * spend a single-use refresh token, and the second refresh would fail.
+     */
+    private void renewRejectedToken(final @Nullable String rejectedToken) throws MillheatCommunicationException {
+        synchronized (tokenLock) {
+            if (!Objects.equals(accessToken, rejectedToken)) {
+                return;
+            }
+            refreshAccessTokenLocked();
+        }
+    }
+
+    private void refreshAccessTokenLocked() throws MillheatCommunicationException {
         final String token = refreshToken;
         if (token == null) {
             throw new MillheatCommunicationException("Cannot refresh without a refresh token");
@@ -200,6 +232,7 @@ public class MillheatCloudApiClient {
         if (authenticated) {
             ensureValidAccessToken();
         }
+        final String tokenUsed = accessToken;
         try {
             return execute(buildRequest(method, path, body, authenticated), responseType);
         } catch (final MillheatCommunicationException e) {
@@ -208,7 +241,7 @@ public class MillheatCloudApiClient {
             }
             // The token was rejected earlier than its expiry claimed. Renew once and retry.
             logger.debug("Access token rejected, refreshing and retrying {} {}", method, path);
-            refreshAccessToken();
+            renewRejectedToken(tokenUsed);
             return execute(buildRequest(method, path, body, true), responseType);
         }
     }
@@ -283,11 +316,15 @@ public class MillheatCloudApiClient {
     }
 
     private void ensureValidAccessToken() throws MillheatCommunicationException {
-        if (accessToken == null) {
-            throw new MillheatCommunicationException("Not signed in to the Mill cloud API");
-        }
-        if (Instant.now().isAfter(accessTokenExpiry.minusSeconds(TOKEN_RENEWAL_MARGIN_SECONDS))) {
-            refreshAccessToken();
+        synchronized (tokenLock) {
+            if (accessToken == null) {
+                throw new MillheatCommunicationException("Not signed in to the Mill cloud API");
+            }
+            // Re-checked inside the lock: a caller that waited here while another refreshed will
+            // now see the new expiry and skip spending a second refresh token.
+            if (Instant.now().isAfter(accessTokenExpiry.minusSeconds(TOKEN_RENEWAL_MARGIN_SECONDS))) {
+                refreshAccessTokenLocked();
+            }
         }
     }
 
@@ -297,10 +334,10 @@ public class MillheatCloudApiClient {
             throw new MillheatCommunicationException("Mill cloud API returned no access token");
         }
         accessToken = newAccessToken;
-        final String newRefreshToken = response.refreshToken();
-        if (newRefreshToken != null && !newRefreshToken.isBlank()) {
-            refreshToken = newRefreshToken;
-        }
+        // A refresh token is single use, so a response that carries none leaves nothing to refresh
+        // with next time. Drop the spent one rather than keeping it: the caller then signs in
+        // again, which is what the service expects of clients that do not refresh.
+        refreshToken = blankToNull(response.refreshToken());
         accessTokenExpiry = expiryOf(newAccessToken);
     }
 
@@ -326,6 +363,10 @@ public class MillheatCloudApiClient {
                     DEFAULT_TOKEN_LIFETIME_SECONDS);
             return fallback;
         }
+    }
+
+    private static @Nullable String blankToNull(final @Nullable String value) {
+        return value == null || value.isBlank() ? null : value;
     }
 
     private static String encode(final String pathSegment) {

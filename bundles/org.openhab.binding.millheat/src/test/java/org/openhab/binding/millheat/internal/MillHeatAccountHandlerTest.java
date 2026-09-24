@@ -20,7 +20,10 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.AfterEach;
@@ -293,6 +296,40 @@ public class MillHeatAccountHandlerTest {
 
         verify(postRequestedFor(urlEqualTo("/customer/auth/refresh")).withHeader("Authorization",
                 equalTo("Bearer test-refresh-token")));
+    }
+
+    @Test
+    public void testConcurrentCallersRefreshTheTokenOnlyOnce() throws Exception {
+        // Mill documents refresh tokens as single use, so two callers finding the token expired at
+        // the same moment must not each spend one; the second has to wait and reuse the result.
+        stubSignIn("/sign_in_expired.json");
+        stubFor(post(urlEqualTo("/customer/auth/refresh"))
+                .willReturn(okJson(fixture("/sign_in_ok.json")).withFixedDelay(250)));
+        stubModelEndpoints();
+
+        final MillheatAccountHandler subject = newHandler();
+        subject.signIn();
+
+        final CountDownLatch startTogether = new CountDownLatch(1);
+        final List<Throwable> failures = Collections.synchronizedList(new ArrayList<>());
+        final Runnable poll = () -> {
+            try {
+                startTogether.await();
+                subject.refreshModel();
+            } catch (Exception e) {
+                failures.add(e);
+            }
+        };
+        final Thread first = new Thread(poll);
+        final Thread second = new Thread(poll);
+        first.start();
+        second.start();
+        startTogether.countDown();
+        first.join(30_000);
+        second.join(30_000);
+
+        assertEquals(List.of(), failures, "neither caller should fail");
+        verify(1, postRequestedFor(urlEqualTo("/customer/auth/refresh")));
     }
 
     @Test
