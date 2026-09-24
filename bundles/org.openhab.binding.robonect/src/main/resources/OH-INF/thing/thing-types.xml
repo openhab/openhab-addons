@@ -257,6 +257,15 @@
 			<channel id="weather-day" typeId="weatherSwitchType"/>
 			<channel id="weather-city" typeId="weatherCityType"/>
 			<channel id="weather-remaining" typeId="weatherRemainingType"/>
+			<channel id="weather-enabled" typeId="weatherSwitchType"/>
+			<channel id="weather-interval" typeId="weatherIntervalType"/>
+			<channel id="weather-max-rain" typeId="weatherNumberType"/>
+			<channel id="weather-min-temperature" typeId="weatherTemperatureType"/>
+			<channel id="weather-max-temperature" typeId="weatherTemperatureType"/>
+			<channel id="weather-min-humidity" typeId="weatherNumberType"/>
+			<channel id="weather-max-humidity" typeId="weatherNumberType"/>
+			<channel id="weather-skip-day" typeId="weatherSwitchType"/>
+			<channel id="weather-skip-night" typeId="weatherSwitchType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
@@ -569,6 +578,16 @@
 		<item-type>Number:Time</item-type>
 		<label>Weather Remaining Time</label>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="weatherIntervalType">
+		<item-type>Number:Time</item-type>
+		<label>Weather Update Interval</label>
+		<state readOnly="false" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="weatherNumberType">
+		<item-type>Number</item-type>
+		<label>Weather Mowing Restriction</label>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="idType">

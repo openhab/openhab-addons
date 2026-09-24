@@ -12,8 +12,13 @@ import org.eclipse.jdt.annotation.*;
 @NonNullByDefault
 public class WeatherInfo extends RobonectAnswer {
     private @Nullable Weather weather;
+    private @Nullable WeatherService service;
 
     public @Nullable Weather getWeather() {
         return weather;
+    }
+
+    public @Nullable WeatherService getService() {
+        return service;
     }
 }

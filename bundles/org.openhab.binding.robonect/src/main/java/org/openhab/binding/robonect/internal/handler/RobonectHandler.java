@@ -60,7 +60,9 @@ import org.openhab.binding.robonect.internal.model.TimerInfo;
 import org.openhab.binding.robonect.internal.model.TimersInfo;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.Weather;
+import org.openhab.binding.robonect.internal.model.WeatherConfig;
 import org.openhab.binding.robonect.internal.model.WeatherInfo;
+import org.openhab.binding.robonect.internal.model.WeatherService;
 import org.openhab.binding.robonect.internal.model.Weekdays;
 import org.openhab.binding.robonect.internal.model.WifiStation;
 import org.openhab.binding.robonect.internal.model.WireInfo;
@@ -194,6 +196,17 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_DOOR_STATE:
                 handleDoorCommand(command);
                 break;
+            case CHANNEL_WEATHER_ENABLED:
+            case CHANNEL_WEATHER_INTERVAL:
+            case CHANNEL_WEATHER_MAX_RAIN:
+            case CHANNEL_WEATHER_MIN_TEMPERATURE:
+            case CHANNEL_WEATHER_MAX_TEMPERATURE:
+            case CHANNEL_WEATHER_MIN_HUMIDITY:
+            case CHANNEL_WEATHER_MAX_HUMIDITY:
+            case CHANNEL_WEATHER_SKIP_DAY:
+            case CHANNEL_WEATHER_SKIP_NIGHT:
+                updateWeather(channelUID.getId(), command);
+                break;
             default:
                 if (channelUID.getId().startsWith("timer-")) {
                     updateTimer(channelUID.getId(), command);
@@ -307,6 +320,62 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_WEATHER_CITY, new StringType(weather.getCity()));
         if (weather.getRemaining() != null)
             updateState(CHANNEL_WEATHER_REMAINING, new QuantityType<>(weather.getRemaining(), Units.SECOND));
+        WeatherService service = info.getService();
+        if (service != null) {
+            updateWeatherSwitch(CHANNEL_WEATHER_ENABLED, service.getEnable());
+            if (service.getInterval() != null)
+                updateState(CHANNEL_WEATHER_INTERVAL, new QuantityType<>(service.getInterval(), Units.MINUTE));
+            WeatherConfig config = service.getConfig();
+            if (config != null) {
+                updateWeatherNumber(CHANNEL_WEATHER_MAX_RAIN, config.getMaxrain());
+                updateWeatherTemperature(CHANNEL_WEATHER_MIN_TEMPERATURE, config.getMintemp());
+                updateWeatherTemperature(CHANNEL_WEATHER_MAX_TEMPERATURE, config.getMaxtemp());
+                updateWeatherNumber(CHANNEL_WEATHER_MIN_HUMIDITY, config.getMinhumidity());
+                updateWeatherNumber(CHANNEL_WEATHER_MAX_HUMIDITY, config.getMaxhumidity());
+                updateWeatherSwitch(CHANNEL_WEATHER_SKIP_DAY, config.getDontmowduringday());
+                updateWeatherSwitch(CHANNEL_WEATHER_SKIP_NIGHT, config.getDontmowduringnight());
+            }
+        }
+    }
+
+    /** Sends a supported weather-service setting to the mower. */
+    private void updateWeather(String channelId, Command command) {
+        String parameter;
+        String value;
+        if (command instanceof OnOffType onOff) {
+            parameter = switch (channelId) {
+                case CHANNEL_WEATHER_ENABLED -> "service";
+                case CHANNEL_WEATHER_SKIP_DAY -> "day";
+                case CHANNEL_WEATHER_SKIP_NIGHT -> "night";
+                default -> null;
+            };
+            value = onOff == OnOffType.ON ? "1" : "0";
+        } else if (command instanceof QuantityType<?> quantity) {
+            parameter = switch (channelId) {
+                case CHANNEL_WEATHER_INTERVAL -> "interval";
+                case CHANNEL_WEATHER_MAX_RAIN -> "rain";
+                case CHANNEL_WEATHER_MIN_TEMPERATURE -> "mintemp";
+                case CHANNEL_WEATHER_MAX_TEMPERATURE -> "maxtemp";
+                case CHANNEL_WEATHER_MIN_HUMIDITY -> "minhum";
+                case CHANNEL_WEATHER_MAX_HUMIDITY -> "maxhum";
+                default -> null;
+            };
+            value = quantity.toBigDecimal().toPlainString();
+        } else {
+            return;
+        }
+        if (parameter == null) {
+            return;
+        }
+        WeatherInfo result = robonectClient.updateWeather(parameter, value);
+        if (result.isSuccessful()) {
+            refreshWeatherInfo();
+        }
+    }
+
+    private void updateWeatherTemperature(String channel, @Nullable Integer value) {
+        if (value != null)
+            updateState(channel, new QuantityType<>(value, SIUnits.CELSIUS));
     }
 
     /** Updates non-sensitive WLAN and access-point state. */

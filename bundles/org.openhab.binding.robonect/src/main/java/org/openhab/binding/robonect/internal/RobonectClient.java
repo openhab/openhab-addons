@@ -437,6 +437,11 @@ public class RobonectClient {
         return parser.parse(sendCommand(new WeatherCommand()), WeatherInfo.class);
     }
 
+    /** Updates one weather-service property. */
+    public WeatherInfo updateWeather(String parameter, String value) {
+        return parser.parse(sendCommand(new WeatherCommand().withValue(parameter, value)), WeatherInfo.class);
+    }
+
     /**
      * Sets the mode of the mower. See {@link ModeCommand.Mode} for details about the available modes. Not allowed is
      * mode

@@ -85,6 +85,15 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_WEATHER_DAY = "weather-day";
     public static final String CHANNEL_WEATHER_CITY = "weather-city";
     public static final String CHANNEL_WEATHER_REMAINING = "weather-remaining";
+    public static final String CHANNEL_WEATHER_ENABLED = "weather-enabled";
+    public static final String CHANNEL_WEATHER_INTERVAL = "weather-interval";
+    public static final String CHANNEL_WEATHER_MAX_RAIN = "weather-max-rain";
+    public static final String CHANNEL_WEATHER_MIN_TEMPERATURE = "weather-min-temperature";
+    public static final String CHANNEL_WEATHER_MAX_TEMPERATURE = "weather-max-temperature";
+    public static final String CHANNEL_WEATHER_MIN_HUMIDITY = "weather-min-humidity";
+    public static final String CHANNEL_WEATHER_MAX_HUMIDITY = "weather-max-humidity";
+    public static final String CHANNEL_WEATHER_SKIP_DAY = "weather-skip-day";
+    public static final String CHANNEL_WEATHER_SKIP_NIGHT = "weather-skip-night";
 
     public static final String CHANNEL_JOB = "job";
 
