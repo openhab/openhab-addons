@@ -29,6 +29,12 @@
 			<channel id="blade-motor-average" typeId="bladeMotorAverageType"/>
 			<channel id="blade-motor-speed" typeId="bladeMotorSpeedType"/>
 			<channel id="blade-motor-current" typeId="bladeMotorCurrentType"/>
+			<channel id="statistics-running-hours" typeId="statisticsHoursType"/>
+			<channel id="statistics-mowing-hours" typeId="statisticsHoursType"/>
+			<channel id="statistics-searching-hours" typeId="statisticsHoursType"/>
+			<channel id="statistics-charging-hours" typeId="statisticsHoursType"/>
+			<channel id="statistics-charges" typeId="statisticsCountType"/>
+			<channel id="statistics-errors" typeId="statisticsCountType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
@@ -227,6 +233,18 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Blade Motor Current</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="statisticsHoursType">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Operating Hours</label>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="statisticsCountType">
+		<item-type>Number</item-type>
+		<label>Operating Count</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="idType">

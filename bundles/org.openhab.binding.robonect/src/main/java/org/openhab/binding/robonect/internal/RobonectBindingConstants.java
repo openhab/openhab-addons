@@ -57,6 +57,12 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_BLADE_MOTOR_AVERAGE = "blade-motor-average";
     public static final String CHANNEL_BLADE_MOTOR_SPEED = "blade-motor-speed";
     public static final String CHANNEL_BLADE_MOTOR_CURRENT = "blade-motor-current";
+    public static final String CHANNEL_STATISTICS_RUNNING_HOURS = "statistics-running-hours";
+    public static final String CHANNEL_STATISTICS_MOWING_HOURS = "statistics-mowing-hours";
+    public static final String CHANNEL_STATISTICS_SEARCHING_HOURS = "statistics-searching-hours";
+    public static final String CHANNEL_STATISTICS_CHARGING_HOURS = "statistics-charging-hours";
+    public static final String CHANNEL_STATISTICS_CHARGES = "statistics-charges";
+    public static final String CHANNEL_STATISTICS_ERRORS = "statistics-errors";
 
     public static final String CHANNEL_JOB = "job";
 

@@ -38,6 +38,8 @@ import org.openhab.binding.robonect.internal.model.DriveMotor;
 import org.openhab.binding.robonect.internal.model.DriveMotors;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
+import org.openhab.binding.robonect.internal.model.HourGeneral;
+import org.openhab.binding.robonect.internal.model.HourInfo;
 import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
@@ -361,6 +363,34 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     /**
+     * Updates aggregate operating statistics when the mower supports the hour endpoint.
+     */
+    private void refreshHourInfo() {
+        HourInfo info = robonectClient.getHourInfo();
+        HourGeneral general = info.getGeneral();
+        if (!info.isSuccessful() || general == null) {
+            logger.debug("Could not retrieve operating statistics: {}", info.getErrorMessage());
+            return;
+        }
+        updateHours(CHANNEL_STATISTICS_RUNNING_HOURS, general.getRun());
+        updateHours(CHANNEL_STATISTICS_MOWING_HOURS, general.getMow());
+        updateHours(CHANNEL_STATISTICS_SEARCHING_HOURS, general.getSearch());
+        updateHours(CHANNEL_STATISTICS_CHARGING_HOURS, general.getCharge());
+        if (general.getCharges() != null) {
+            updateState(CHANNEL_STATISTICS_CHARGES, new DecimalType(general.getCharges()));
+        }
+        if (general.getErrors() != null) {
+            updateState(CHANNEL_STATISTICS_ERRORS, new DecimalType(general.getErrors()));
+        }
+    }
+
+    private void updateHours(String channel, Integer value) {
+        if (value != null) {
+            updateState(channel, new QuantityType<>(value, Units.HOUR));
+        }
+    }
+
+    /**
      * Updates the channels for one drive motor.
      *
      * @param powerChannel the channel for motor power
@@ -566,6 +596,7 @@ public class RobonectHandler extends BaseThingHandler {
                 if (detailedInfo && detailedInfoPollCount++ % detailedInfoInterval == 0) {
                     refreshBatteryInfo();
                     refreshMotorInfo();
+                    refreshHourInfo();
                 }
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;
