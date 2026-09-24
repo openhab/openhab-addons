@@ -77,13 +77,7 @@ A Lock can be configured below either a local `tedee:bridge` or a `tedee:cloud` 
 | `deviceId` | integer | Yes | — | Numeric Tedee device ID |
 | `pollInterval` | integer | No | `300` | Lock status polling interval in seconds |
 
-Example device ID:
 
-```text
-deviceId=14196
-```
-
-Locks discovered from either Local or Cloud use the Tedee `deviceId` as their unique device representation.
 
 ## Channels
 
@@ -208,13 +202,13 @@ The same Things can be defined in a `.things` file.
 
 ```text
 Bridge tedee:bridge:home "Tedee Bridge" [
-    ip="10.194.83.85",
+    ip="BRIDGE_IP",
     port=80,
     apiToken="YOUR_API_TOKEN",
     pollInterval=300
 ] {
-    Thing lock:foxyhome "Foxy Home" [
-        deviceId=14196,
+    Thing lock:lockname "Foxy Home" [
+        deviceId=XXX,
         pollInterval=300
     ]
 }
@@ -227,14 +221,12 @@ Bridge tedee:cloud:cloud "Tedee Cloud" [
     personalAccessKey="YOUR_PERSONAL_ACCESS_KEY",
     pollInterval=300
 ] {
-    Thing lock:foxyhomecloud "Foxy Home Cloud" [
-        deviceId=14196,
+    Thing lock:foxyhomecloud "Lock Home Cloud" [
+        deviceId=XXXX,
         pollInterval=300
     ]
 }
 ```
-
-Do not publish a real API token or Personal Access Key.
 
 ## Items
 
@@ -257,49 +249,49 @@ Channels need to be linked to Items before their states are consumed by openHAB 
 
 ```text
 Switch Tedee_Lock "Lock" {
-    channel="tedee:lock:home:foxyhome:lock"
+    channel="tedee:lock:home:locknamehome:lock"
 }
 
 String Tedee_State "Lock State [%s]" {
-    channel="tedee:lock:home:foxyhome:state"
+    channel="tedee:lock:home:locknamehome:state"
 }
 
 String Tedee_Door_State "Door State [%s]" {
-    channel="tedee:lock:home:foxyhome:doorState"
+    channel="tedee:lock:home:locknamehome:doorState"
 }
 
 Number Tedee_Battery "Battery [%.0f %%]" {
-    channel="tedee:lock:home:foxyhome:battery"
+    channel="tedee:lock:home:locknamehome:battery"
 }
 
 Switch Tedee_Charging "Charging" {
-    channel="tedee:lock:home:foxyhome:charging"
+    channel="tedee:lock:home:locknamehome:charging"
 }
 
 Switch Tedee_Jammed "Jammed" {
-    channel="tedee:lock:home:foxyhome:jammed"
+    channel="tedee:lock:home:locknamehome:jammed"
 }
 
 Switch Tedee_Connected "Connected" {
-    channel="tedee:lock:home:foxyhome:connected"
+    channel="tedee:lock:home:locknamehome:connected"
 }
 
 String Tedee_Action "Action" {
-    channel="tedee:lock:home:foxyhome:action"
+    channel="tedee:lock:home:locknamehome:action"
 }
 ```
 
 The same Item definitions can be used for a Cloud Lock by replacing the Thing UID:
 
 ```text
-tedee:lock:cloud:foxyhomecloud:<channel>
+tedee:lock:cloud:locknamecloud:<channel>
 ```
 
 For example:
 
 ```text
 Switch Tedee_Cloud_Connected "Cloud Lock Connected" {
-    channel="tedee:lock:cloud:foxyhomecloud:connected"
+    channel="tedee:lock:cloud:locknamecloud:connected"
 }
 ```
 
@@ -323,75 +315,52 @@ Switch Tedee_Cloud_Connected "Cloud Lock Connected" {
 
 ```text
 Switch Tedee_AutoLockEnabled "Auto Lock Enabled" {
-    channel="tedee:lock:home:foxyhome:autoLockEnabled"
+    channel="tedee:lock:home:locknamehome:autoLockEnabled"
 }
 
 Number Tedee_AutoLockDelay "Auto Lock Delay" {
-    channel="tedee:lock:home:foxyhome:autoLockDelay"
+    channel="tedee:lock:home:locknamehome:autoLockDelay"
 }
 
 Switch Tedee_AutoLockImplicitEnabled "Auto Lock Implicit Enabled" {
-    channel="tedee:lock:home:foxyhome:autoLockImplicitEnabled"
+    channel="tedee:lock:home:locknamehome:autoLockImplicitEnabled"
 }
 
 Number Tedee_AutoLockImplicitDelay "Auto Lock Implicit Delay" {
-    channel="tedee:lock:home:foxyhome:autoLockImplicitDelay"
+    channel="tedee:lock:home:locknamehome:autoLockImplicitDelay"
 }
 
 Switch Tedee_PullSpringEnabled "Pull Spring Enabled" {
-    channel="tedee:lock:home:foxyhome:pullSpringEnabled"
+    channel="tedee:lock:home:locknamehome:pullSpringEnabled"
 }
 
 Number Tedee_PullSpringDuration "Pull Spring Duration" {
-    channel="tedee:lock:home:foxyhome:pullSpringDuration"
+    channel="tedee:lock:home:locknamehome:pullSpringDuration"
 }
 
 Switch Tedee_AutoPullSpringEnabled "Auto Pull Spring Enabled" {
-    channel="tedee:lock:home:foxyhome:autoPullSpringEnabled"
+    channel="tedee:lock:home:locknamehome:autoPullSpringEnabled"
 }
 
 Switch Tedee_PostponedLockEnabled "Postponed Lock Enabled" {
-    channel="tedee:lock:home:foxyhome:postponedLockEnabled"
+    channel="tedee:lock:home:locknamehome:postponedLockEnabled"
 }
 
 Number Tedee_PostponedLockDelay "Postponed Lock Delay" {
-    channel="tedee:lock:home:foxyhome:postponedLockDelay"
+    channel="tedee:lock:home:locknamehome:postponedLockDelay"
 }
 
 Switch Tedee_ButtonLockEnabled "Button Lock Enabled" {
-    channel="tedee:lock:home:foxyhome:buttonLockEnabled"
+    channel="tedee:lock:home:locknamehome:buttonLockEnabled"
 }
 
 Switch Tedee_ButtonUnlockEnabled "Button Unlock Enabled" {
-    channel="tedee:lock:home:foxyhome:buttonUnlockEnabled"
+    channel="tedee:lock:home:locknamehome:buttonUnlockEnabled"
 }
 ```
 
 ## Commands
 
-### Lock / Unlock Through the Switch Channel
-
-With:
-
-```text
-Switch Tedee_Lock
-```
-
-send:
-
-```text
-ON
-```
-
-to lock the device.
-
-Send:
-
-```text
-OFF
-```
-
-to perform a normal unlock.
 
 ### Explicit Actions Through the Action Channel
 
@@ -478,15 +447,6 @@ The Tedee Bridge can POST status events to this endpoint.
 }
 ```
 
-For example:
-
-```json
-{
-  "url": "http://10.194.82.111:8080/tedee/webhook",
-  "method": "POST",
-  "headers": []
-}
-```
 
 The callback must point to the LAN address of the openHAB server, not `localhost` or `127.0.0.1`.
 
@@ -508,7 +468,7 @@ Example payload received from a real Tedee Bridge:
   "timestamp": "2026-09-22T21:34:40.395Z",
   "data": {
     "deviceType": 2,
-    "deviceId": 14196,
+    "deviceId": XXX,
     "serialNumber": "21180201-000004",
     "state": 4,
     "jammed": 0,
