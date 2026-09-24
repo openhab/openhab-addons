@@ -5,6 +5,15 @@
 
 	<thing-type uid="robonect:mower">
 		<instruction-set targetVersion="1">
+			<add-channel id="door-enabled">
+				<type>robonect:doorSwitchType</type>
+			</add-channel>
+			<add-channel id="door-state">
+				<type>robonect:doorStateType</type>
+			</add-channel>
+			<add-channel id="door-arrested">
+				<type>robonect:doorSwitchType</type>
+			</add-channel>
 			<add-channel id="blades-quality">
 				<type>robonect:blades-quality</type>
 			</add-channel>

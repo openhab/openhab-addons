@@ -34,6 +34,7 @@ import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
+import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
 
 /**
@@ -118,6 +119,20 @@ public class RobonectClientTest {
         subject.performServiceOperation(Operation.SLEEP);
 
         verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=service&sleep");
+    }
+
+    @Test
+    public void shouldOpenDoor() throws InterruptedException, ExecutionException, TimeoutException {
+        when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=door&open=1")).thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenReturn(responseMock);
+        when(responseMock.getEncoding()).thenReturn("utf8");
+        when(responseMock.getContentAsString()).thenReturn("{\"successful\": true}");
+
+        subject.setDoorDirection(Direction.OPEN);
+
+        verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=door&open=1");
     }
 
     @Test

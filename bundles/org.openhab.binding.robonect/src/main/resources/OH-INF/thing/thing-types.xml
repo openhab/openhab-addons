@@ -21,6 +21,9 @@
 			<channel id="service-sleep" typeId="serviceOperationType">
 				<label>Put Robonect to Sleep</label>
 			</channel>
+			<channel id="door-enabled" typeId="doorSwitchType"/>
+			<channel id="door-state" typeId="doorStateType"/>
+			<channel id="door-arrested" typeId="doorSwitchType"/>
 			<channel id="battery" typeId="system.battery-level"/>
 			<channel id="wlan-signal" typeId="system.signal-strength"/>
 			<channel id="wlan-signal-strength" typeId="wlanStrengthType"/>
@@ -652,6 +655,19 @@
 		<item-type>Switch</item-type>
 		<label>Robonect Service Operation</label>
 		<description>Executes the selected Robonect service operation when switched on.</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="doorSwitchType">
+		<item-type>Switch</item-type>
+		<label>Door Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="doorStateType">
+		<item-type>Rollershutter</item-type>
+		<label>Door State</label>
+		<description>Use Up, Down, or Stop to open, close, or release the optional door system.</description>
 		<state readOnly="false"/>
 	</channel-type>
 

@@ -37,6 +37,9 @@ import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.BladeMotor;
 import org.openhab.binding.robonect.internal.model.DriveMotor;
 import org.openhab.binding.robonect.internal.model.DriveMotors;
+import org.openhab.binding.robonect.internal.model.Door;
+import org.openhab.binding.robonect.internal.model.DoorInfo;
+import org.openhab.binding.robonect.internal.model.DoorState;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.Host;
@@ -59,14 +62,18 @@ import org.openhab.binding.robonect.internal.model.WeatherInfo;
 import org.openhab.binding.robonect.internal.model.Weekdays;
 import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
+import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -179,6 +186,9 @@ public class RobonectHandler extends BaseThingHandler {
                 break;
             case CHANNEL_SERVICE_SLEEP:
                 performServiceOperation(command, Operation.SLEEP);
+                break;
+            case CHANNEL_DOOR_STATE:
+                handleDoorCommand(command);
                 break;
             default:
                 if (channelUID.getId().startsWith("timer-")) {
@@ -305,6 +315,36 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(channel, new DecimalType(value));
     }
 
+    /** Updates door channels from the optional door-system response. */
+    private void refreshDoorInfo() {
+        DoorInfo info = robonectClient.getDoorInfo();
+        Door door = info.getDoor();
+        if (!info.isSuccessful() || door == null) {
+            return;
+        }
+        if (door.getEnabled() != null) {
+            updateState(CHANNEL_DOOR_ENABLED, OnOffType.from(door.getEnabled()));
+        }
+        if (door.getArrested() != null) {
+            updateState(CHANNEL_DOOR_ARRESTED, OnOffType.from(door.getArrested()));
+        }
+        updateDoorState(door.getState(), door.getPending());
+    }
+
+    private void updateDoorState(@Nullable DoorState state, @Nullable DoorState pending) {
+        if (pending != null && Boolean.TRUE.equals(pending.getOpen()) && !Boolean.TRUE.equals(pending.getClose())) {
+            updateState(CHANNEL_DOOR_STATE, new PercentType(75));
+        } else if (pending != null && !Boolean.TRUE.equals(pending.getOpen()) && Boolean.TRUE.equals(pending.getClose())) {
+            updateState(CHANNEL_DOOR_STATE, new PercentType(25));
+        } else if (state != null && Boolean.TRUE.equals(state.getOpen()) && !Boolean.TRUE.equals(state.getClose())) {
+            updateState(CHANNEL_DOOR_STATE, PercentType.ZERO);
+        } else if (state != null && !Boolean.TRUE.equals(state.getOpen()) && Boolean.TRUE.equals(state.getClose())) {
+            updateState(CHANNEL_DOOR_STATE, PercentType.HUNDRED);
+        } else {
+            updateState(CHANNEL_DOOR_STATE, UnDefType.UNDEF);
+        }
+    }
+
     private void handleJobCommand(ChannelUID channelUID, Command command) {
         JobChannelConfig jobConfig = getThing().getChannel(channelUID.getId()).getConfiguration()
                 .as(JobChannelConfig.class);
@@ -333,6 +373,11 @@ public class RobonectHandler extends BaseThingHandler {
             case CHANNEL_WLAN_SIGNAL:
             case CHANNEL_JOB:
                 refreshMowerInfo();
+                break;
+            case CHANNEL_DOOR_ENABLED:
+            case CHANNEL_DOOR_STATE:
+            case CHANNEL_DOOR_ARRESTED:
+                refreshDoorInfo();
                 break;
             default:
             case CHANNEL_LAST_ERROR_CODE:
@@ -378,6 +423,26 @@ public class RobonectHandler extends BaseThingHandler {
         if (!answer.isSuccessful()) {
             logger.debug("Could not perform service operation {}. Robonect error message: {}", operation,
                     answer.getErrorMessage());
+        }
+    }
+
+    /** Controls the optional door system. */
+    private void handleDoorCommand(Command command) {
+        DoorInfo answer;
+        if (command == UpDownType.UP) {
+            answer = robonectClient.setDoorDirection(Direction.OPEN);
+        } else if (command == UpDownType.DOWN) {
+            answer = robonectClient.setDoorDirection(Direction.CLOSE);
+        } else if (command == StopMoveType.STOP) {
+            answer = robonectClient.releaseDoor();
+        } else {
+            logger.debug("Got door command of type {} but Up, Down, or Stop is expected.", command.getClass().getName());
+            return;
+        }
+        if (answer.isSuccessful()) {
+            refreshDoorInfo();
+        } else {
+            logger.debug("Could not control the door. Robonect error message: {}", answer.getErrorMessage());
         }
     }
 
@@ -863,6 +928,7 @@ public class RobonectHandler extends BaseThingHandler {
                     refreshPortalInfo();
                     refreshTimersInfo();
                     refreshWeatherInfo();
+                    refreshDoorInfo();
                 }
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;

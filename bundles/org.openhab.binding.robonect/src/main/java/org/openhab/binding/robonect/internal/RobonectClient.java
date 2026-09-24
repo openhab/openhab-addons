@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
+import org.openhab.binding.robonect.internal.model.DoorInfo;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.HourInfo;
 import org.openhab.binding.robonect.internal.model.ModelParser;
@@ -45,6 +46,8 @@ import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.cmd.BatteryCommand;
 import org.openhab.binding.robonect.internal.model.cmd.Command;
 import org.openhab.binding.robonect.internal.model.cmd.ErrorCommand;
+import org.openhab.binding.robonect.internal.model.cmd.DoorCommand;
+import org.openhab.binding.robonect.internal.model.cmd.DoorCommand.Direction;
 import org.openhab.binding.robonect.internal.model.cmd.HourCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.MotorCommand;
@@ -301,6 +304,34 @@ public class RobonectClient {
      */
     public RobonectAnswer performServiceOperation(Operation operation) {
         return parser.parse(sendCommand(new ServiceCommand(operation)), RobonectAnswer.class);
+    }
+
+    /**
+     * Returns the state of the optional door system.
+     *
+     * @return the door information including its success status
+     */
+    public DoorInfo getDoorInfo() {
+        return parser.parse(sendCommand(new DoorCommand()), DoorInfo.class);
+    }
+
+    /**
+     * Opens or closes the optional door system.
+     *
+     * @param direction the requested movement direction
+     * @return the door information including its success status
+     */
+    public DoorInfo setDoorDirection(Direction direction) {
+        return parser.parse(sendCommand(new DoorCommand().withDirection(direction)), DoorInfo.class);
+    }
+
+    /**
+     * Releases an arrested optional door system.
+     *
+     * @return the door information including its success status
+     */
+    public DoorInfo releaseDoor() {
+        return parser.parse(sendCommand(new DoorCommand().withRelease()), DoorInfo.class);
     }
 
     /**
