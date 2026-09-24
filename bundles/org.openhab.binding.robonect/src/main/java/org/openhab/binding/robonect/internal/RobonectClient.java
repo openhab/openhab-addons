@@ -34,6 +34,7 @@ import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.Name;
+import org.openhab.binding.robonect.internal.model.PortalInfo;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.VersionInfo;
@@ -45,6 +46,7 @@ import org.openhab.binding.robonect.internal.model.cmd.HourCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ModeCommand;
 import org.openhab.binding.robonect.internal.model.cmd.MotorCommand;
 import org.openhab.binding.robonect.internal.model.cmd.NameCommand;
+import org.openhab.binding.robonect.internal.model.cmd.PortalCommand;
 import org.openhab.binding.robonect.internal.model.cmd.RemoteCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StartCommand;
 import org.openhab.binding.robonect.internal.model.cmd.StatusCommand;
@@ -337,6 +339,15 @@ public class RobonectClient {
      */
     public WireInfo getWireInfo() {
         return parser.parse(sendCommand(new WireCommand()), WireInfo.class);
+    }
+
+    /**
+     * Returns the remote portal connection status.
+     *
+     * @return the portal information including its success status
+     */
+    public PortalInfo getPortalInfo() {
+        return parser.parse(sendCommand(new PortalCommand()), PortalInfo.class);
     }
 
     /**

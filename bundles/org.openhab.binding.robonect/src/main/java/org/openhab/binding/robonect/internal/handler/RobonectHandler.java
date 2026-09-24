@@ -30,6 +30,7 @@ import org.openhab.binding.robonect.internal.RobonectCommunicationException;
 import org.openhab.binding.robonect.internal.RobonectEndpoint;
 import org.openhab.binding.robonect.internal.config.JobChannelConfig;
 import org.openhab.binding.robonect.internal.config.RobonectConfig;
+import org.openhab.binding.robonect.internal.model.Address;
 import org.openhab.binding.robonect.internal.model.Battery;
 import org.openhab.binding.robonect.internal.model.BatteryCapacity;
 import org.openhab.binding.robonect.internal.model.BatteryInfo;
@@ -38,11 +39,13 @@ import org.openhab.binding.robonect.internal.model.DriveMotor;
 import org.openhab.binding.robonect.internal.model.DriveMotors;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
+import org.openhab.binding.robonect.internal.model.Host;
 import org.openhab.binding.robonect.internal.model.HourGeneral;
 import org.openhab.binding.robonect.internal.model.HourInfo;
 import org.openhab.binding.robonect.internal.model.MotorInfo;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
+import org.openhab.binding.robonect.internal.model.PortalInfo;
 import org.openhab.binding.robonect.internal.model.Remote;
 import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
@@ -419,6 +422,29 @@ public class RobonectHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Updates remote portal status when supported by the module.
+     */
+    private void refreshPortalInfo() {
+        PortalInfo info = robonectClient.getPortalInfo();
+        if (!info.isSuccessful()) {
+            logger.debug("Could not retrieve portal information: {}", info.getErrorMessage());
+            return;
+        }
+        if (info.getEnabled() != null)
+            updateState(CHANNEL_PORTAL_ENABLED, OnOffType.from(info.getEnabled()));
+        if (info.getConnected() != null)
+            updateState(CHANNEL_PORTAL_CONNECTED, OnOffType.from(info.getConnected()));
+        Address address = info.getAddress();
+        if (address != null) {
+            if (address.getUrl() != null)
+                updateState(CHANNEL_PORTAL_URL, new StringType(address.getUrl()));
+            Host host = address.getHost();
+            if (host != null && host.getFriendly() != null)
+                updateState(CHANNEL_PORTAL_HOST, new StringType(host.getFriendly()));
+        }
+    }
+
     private void updateWireSensor(int number, Sensor sensor) {
         String prefix = "wire-sensor-" + number + "-";
         if (sensor.getDescription() != null)
@@ -669,6 +695,7 @@ public class RobonectHandler extends BaseThingHandler {
                     refreshHourInfo();
                     refreshRemoteInfo();
                     refreshWireInfo();
+                    refreshPortalInfo();
                 }
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;

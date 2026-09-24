@@ -89,6 +89,10 @@
 			<channel id="wire-sensor-4-n" typeId="wireSensorValueType"/>
 			<channel id="wire-sensor-4-f" typeId="wireSensorValueType"/>
 			<channel id="wire-sensor-4-g1" typeId="wireSensorValueType"/>
+			<channel id="portal-enabled" typeId="portalSwitchType"/>
+			<channel id="portal-connected" typeId="portalSwitchType"/>
+			<channel id="portal-url" typeId="portalStringType"/>
+			<channel id="portal-host" typeId="portalStringType"/>
 			<channel id="mowing-hours" typeId="hoursType"/>
 
 			<channel id="mode" typeId="modeType"/>
@@ -341,6 +345,17 @@
 		<item-type>Number</item-type>
 		<label>Boundary Wire Sensor Value</label>
 		<description>The unscaled diagnostic value reported by the mower.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="portalSwitchType">
+		<item-type>Switch</item-type>
+		<label>Portal Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="portalStringType">
+		<item-type>String</item-type>
+		<label>Portal Address</label>
 		<state readOnly="true"/>
 	</channel-type>
 
