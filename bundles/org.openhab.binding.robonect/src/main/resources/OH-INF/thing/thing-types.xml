@@ -110,6 +110,16 @@
 				<default>Europe/Berlin</default>
 				<description>The timezone configured on the robot (e.g. Europe/Berlin).</description>
 			</parameter>
+			<parameter name="detailedInfo" type="boolean" required="false">
+				<label>Detailed Information</label>
+				<default>false</default>
+				<description>Periodically request additional information that may wake a sleeping mower.</description>
+			</parameter>
+			<parameter name="detailedInfoInterval" type="integer" required="false" min="1">
+				<label>Detailed Information Interval</label>
+				<default>10</default>
+				<description>The number of normal polling cycles between detailed information requests.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

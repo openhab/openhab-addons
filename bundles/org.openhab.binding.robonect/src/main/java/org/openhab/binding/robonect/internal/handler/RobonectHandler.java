@@ -507,7 +507,8 @@ public class RobonectHandler extends BaseThingHandler {
         }
 
         robonectClient = new RobonectClient(httpClient, endpoint);
-        Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
+        Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()),
+                robonectConfig.isDetailedInfo(), robonectConfig.getDetailedInfoInterval());
         int pollInterval = robonectConfig.getPollInterval();
         pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
     }
@@ -542,11 +543,16 @@ public class RobonectHandler extends BaseThingHandler {
         private long offlineTriggerDelay;
         private boolean offlineTimeoutTriggered;
         private boolean loadVersionInfo = true;
+        private final boolean detailedInfo;
+        private final int detailedInfoInterval;
+        private int detailedInfoPollCount;
 
-        public MowerChannelPoller(long offlineTriggerDelay) {
+        public MowerChannelPoller(long offlineTriggerDelay, boolean detailedInfo, int detailedInfoInterval) {
             offlineSince = -1;
             this.offlineTriggerDelay = offlineTriggerDelay;
             offlineTimeoutTriggered = false;
+            this.detailedInfo = detailedInfo;
+            this.detailedInfoInterval = Math.max(1, detailedInfoInterval);
         }
 
         @Override
@@ -557,8 +563,10 @@ public class RobonectHandler extends BaseThingHandler {
                     loadVersionInfo = false;
                 }
                 refreshMowerInfo();
-                refreshBatteryInfo();
-                refreshMotorInfo();
+                if (detailedInfo && detailedInfoPollCount++ % detailedInfoInterval == 0) {
+                    refreshBatteryInfo();
+                    refreshMotorInfo();
+                }
                 updateStatus(ThingStatus.ONLINE);
                 offlineSince = -1;
                 offlineTimeoutTriggered = false;

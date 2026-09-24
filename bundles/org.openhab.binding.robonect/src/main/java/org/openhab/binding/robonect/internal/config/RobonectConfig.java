@@ -32,6 +32,10 @@ public class RobonectConfig {
 
     private String timezone;
 
+    private boolean detailedInfo;
+
+    private int detailedInfoInterval = 10;
+
     public String getHost() {
         return host;
     }
@@ -54,5 +58,13 @@ public class RobonectConfig {
 
     public String getTimezone() {
         return timezone;
+    }
+
+    public boolean isDetailedInfo() {
+        return detailedInfo;
+    }
+
+    public int getDetailedInfoInterval() {
+        return detailedInfoInterval;
     }
 }
