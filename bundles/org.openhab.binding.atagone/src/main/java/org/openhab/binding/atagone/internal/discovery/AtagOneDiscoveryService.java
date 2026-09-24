@@ -153,7 +153,8 @@ public class AtagOneDiscoveryService extends AbstractDiscoveryService {
             }
         }
 
-        // Payload: "<device_id> (ST)" — device ID is the first space-delimited token; suffix is a status indicator; null bytes pad to 37 bytes.
+        // Payload: "<device_id> (ST)" — device ID is the first space-delimited token; suffix is a status indicator;
+        // null bytes pad to 37 bytes.
         String rest = new String(data, BROADCAST_PREFIX.length, length - BROADCAST_PREFIX.length,
                 StandardCharsets.US_ASCII).replace("\0", "").trim();
         String deviceId = rest.contains(" ") ? rest.substring(0, rest.indexOf(' ')) : rest;

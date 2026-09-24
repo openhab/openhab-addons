@@ -216,7 +216,8 @@ public class AtagOneApiClient {
         logger.debug("updateSchedule({}) succeeded", key);
     }
 
-    // Device requires integer start/end in entries ([0,240,20.5]); Gson's float serialization silently wipes the schedule.
+    // Device requires integer start/end in entries ([0,240,20.5]); Gson's float serialization silently wipes the
+    // schedule.
     static JsonObject scheduleToJson(ScheduleDTO schedule) {
         JsonObject obj = new JsonObject();
         obj.addProperty("base_temp", schedule.base_temp);
