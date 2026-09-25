@@ -51,10 +51,12 @@ import org.openhab.binding.mqtt.generic.values.ImageValue;
 import org.openhab.binding.mqtt.generic.values.LocationValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.OpenCloseValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StopMoveType;
@@ -217,6 +219,23 @@ public class ChannelStateTests {
         verify(channelStateUpdateListenerMock).triggerChannel(channelUIDMock, "ON");
         verify(channelStateUpdateListenerMock, times(1)).triggerChannel(any(), any());
         verify(channelStateUpdateListenerMock, never()).updateChannelState(any(), any());
+    }
+
+    @Test
+    public void contactChannelOnlyUpdatesState() throws Exception {
+        config.postCommand = true;
+        OpenCloseValue value = new OpenCloseValue("fancyON", "fancyOff");
+        ChannelState channelState = new ChannelState(config, channelUIDMock, value, channelStateUpdateListenerMock);
+        assertTrue(channelState.isReadOnly());
+        channelState.start(connectionMock, scheduler, 0).get(10, TimeUnit.SECONDS);
+
+        channelState.processMessage("state", "fancyON".getBytes(StandardCharsets.UTF_8));
+
+        assertThat(value.getChannelState(), is(OpenClosedType.OPEN));
+        verify(channelStateUpdateListenerMock).updateChannelState(channelUIDMock, OpenClosedType.OPEN);
+        verify(channelStateUpdateListenerMock, never()).postChannelCommand(any(), any());
+        assertThat(channelState.publishValue(new StringType("CLOSED")).get(10, TimeUnit.SECONDS), is(false));
+        verify(connectionMock, never()).publish(any(), any(), anyInt(), anyBoolean());
     }
 
     @Test

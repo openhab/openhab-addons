@@ -229,12 +229,10 @@ You can connect this channel to a Rollershutter or Dimmer item.
 - **on**: An optional number (like 1, 10) or a string (like "ON"/"Open") that is recognized as on/open state.
 - **off**: An optional number (like 0, -10) or a string (like "OFF"/"Close") that is recognized as off/closed state.
 
-The contact channel by default recognizes `"OPEN"` and `"CLOSED"`. You can connect this channel to a Contact item.
+The contact channel by default recognizes `"OPEN"` and `"CLOSED"`. You can connect this channel to a Contact item. It only reports states; `commandTopic` and `postCommand` have no effect.
 The switch channel by default recognizes `"ON"` and `"OFF"`. You can connect this channel to a Switch item.
 
-If **on** and **off** are not configured it publishes the strings mentioned before respectively.
-
-You can connect this channel to a Contact or Switch item.
+If **on** and **off** are not configured, the switch channel publishes `"ON"` and `"OFF"` by default.
 
 ### Channel Type "color"
 

@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -155,26 +156,16 @@ public class ValueTests {
     }
 
     @Test
-    public void openCloseUpdate() {
-        OpenCloseValue v = new OpenCloseValue("fancyON", "fancyOff");
+    public void openCloseState() {
+        OpenCloseValue value = new OpenCloseValue("fancyON", "fancyOff");
 
-        // Test with command
-        assertThat(v.parseCommand(OpenClosedType.CLOSED), is(OpenClosedType.CLOSED));
-        assertThat(v.parseCommand(OpenClosedType.OPEN), is(OpenClosedType.OPEN));
-
-        // Test with string, representing the command
-        assertThat(v.parseCommand(new StringType("CLOSED")), is(OpenClosedType.CLOSED));
-        assertThat(v.parseCommand(new StringType("OPEN")), is(OpenClosedType.OPEN));
-
-        // Test with custom string, setup in the constructor
-        assertThat(v.parseCommand(new StringType("fancyOff")), is(OpenClosedType.CLOSED));
-        assertThat(v.parseCommand(new StringType("fancyON")), is(OpenClosedType.OPEN));
-
-        // Test basic formatting
-        assertThat(v.getMQTTpublishValue(OpenClosedType.CLOSED, null), is("fancyOff"));
-        assertThat(v.getMQTTpublishValue(OpenClosedType.OPEN, null), is("fancyON"));
-
-        assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
+        assertThat(value.getSupportedCommandTypes(), is(List.of(StringType.class)));
+        assertThat(value.parseMessage(new StringType("CLOSED")), is(OpenClosedType.CLOSED));
+        assertThat(value.parseMessage(new StringType("OPEN")), is(OpenClosedType.OPEN));
+        assertThat(value.parseMessage(new StringType("fancyOff")), is(OpenClosedType.CLOSED));
+        assertThat(value.parseMessage(new StringType("fancyON")), is(OpenClosedType.OPEN));
+        assertThat(value.parseMessage(new StringType("")), is(UnDefType.NULL));
+        assertThrows(IllegalArgumentException.class, () -> value.parseCommand(new StringType("OPEN")));
     }
 
     @Test

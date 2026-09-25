@@ -26,6 +26,7 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
@@ -102,7 +103,7 @@ public class ChannelState implements MqttMessageSubscriber {
         this.channelStateUpdateListener = channelStateUpdateListener;
         this.channelUID = channelUID;
         this.cachedValue = cachedValue;
-        this.readOnly = config.commandTopic.isBlank();
+        this.readOnly = config.commandTopic.isBlank() || CoreItemFactory.CONTACT.equals(cachedValue.getItemType());
         this.incomingTransformation = incomingTransformation == null ? new ChannelTransformation((String) null)
                 : incomingTransformation;
         this.outgoingTransformation = outgoingTransformation == null ? new ChannelTransformation((String) null)
@@ -221,7 +222,8 @@ public class ChannelState implements MqttMessageSubscriber {
         // If the user explicitly wants a command sent, not an update, do that. But
         // we have to check that the state is even possible to send as a command
         // (i.e. not UNDEF)
-        if (config.postCommand && newState instanceof Command newCommand) {
+        if (config.postCommand && !CoreItemFactory.CONTACT.equals(cachedValue.getItemType())
+                && newState instanceof Command newCommand) {
             channelStateUpdateListener.postChannelCommand(channelUID, newCommand);
         } else {
             channelStateUpdateListener.updateChannelState(channelUID, newState);
@@ -364,15 +366,13 @@ public class ChannelState implements MqttMessageSubscriber {
             return f;
         }
 
-        Command mqttCommandValue = cachedValue.parseCommand(command);
-        Value mqttFormatter = cachedValue;
-
         if (readOnly) {
-            logger.debug(
-                    "You have tried to publish {} to the mqtt topic '{}' that was marked read-only. You can't 'set' anything on a sensor state topic for example.",
-                    mqttCommandValue, config.commandTopic);
+            logger.debug("Ignoring command {} for read-only channel {}", command, channelUID);
             return CompletableFuture.completedFuture(false);
         }
+
+        Command mqttCommandValue = cachedValue.parseCommand(command);
+        Value mqttFormatter = cachedValue;
 
         // Outgoing transformations
         if (outgoingTransformation.isPresent()) {
