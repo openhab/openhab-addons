@@ -13,6 +13,7 @@
 package org.openhab.binding.homeassistant.internal.discovery;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -80,7 +81,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     static final String BASE_TOPIC = "homeassistant";
     static final String BIRTH_TOPIC = "homeassistant/status";
     static final String ONLINE_STATUS = "online";
-    private volatile long lastEventTime = 0;
+    private long lastEventTime = 0;
     private static final long DISCOVERY_TIMEOUT_MS = 2000;
 
     @NonNullByDefault({})
@@ -177,11 +178,16 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
                 properties.put(HandlerConfiguration.PROPERTY_DEVICE_CONFIG, payloadString);
             }
 
-            DiscoveryResult result = buildResult(thingID, thingUID, config.getThingName(), haID, properties, bridgeUID);
-
-            // Now only mutate shared state under the lock
             synchronized (discoveryStateLock) {
                 thingIDPerTopic.put(topic, thingUID);
+                Set<HaID> componentSet = componentsPerThingID.get(thingID);
+                if (componentSet == null) {
+                    componentSet = new TreeSet<>(Comparator.comparing(HaID::toString));
+                    componentsPerThingID.put(thingID, componentSet);
+                }
+                componentSet.add(haID);
+                DiscoveryResult result = buildResult(thingUID, config.getThingName(), haID, properties, bridgeUID,
+                        componentSet);
                 applyResult(thingID, haID, result);
             }
         } catch (ConfigurationException e) {
@@ -213,30 +219,35 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     }
 
     private void resetPublishTimer() {
-        lastEventTime = System.currentTimeMillis();
-        if (future == null || future.isDone()) {
-            future = scheduler.schedule(this::checkAndPublish, DISCOVERY_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        synchronized (discoveryStateLock) {
+            lastEventTime = System.currentTimeMillis();
+            ScheduledFuture<?> publishFuture = future;
+            if (publishFuture == null || publishFuture.isDone()) {
+                future = scheduler.schedule(this::checkAndPublish, DISCOVERY_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            }
         }
     }
 
     private void checkAndPublish() {
-        long now = System.currentTimeMillis();
-        long elapsed = now - lastEventTime;
-
-        if (elapsed >= DISCOVERY_TIMEOUT_MS) {
-            publishResults(); // process the accumulated results
-            future = null; // allow new scheduling
-        } else {
-            // reschedule only for the remaining time
-            future = scheduler.schedule(this::checkAndPublish, DISCOVERY_TIMEOUT_MS - elapsed, TimeUnit.MILLISECONDS);
+        boolean publish;
+        synchronized (discoveryStateLock) {
+            long elapsed = System.currentTimeMillis() - lastEventTime;
+            publish = elapsed >= DISCOVERY_TIMEOUT_MS;
+            if (publish) {
+                future = null;
+            } else {
+                future = scheduler.schedule(this::checkAndPublish, DISCOVERY_TIMEOUT_MS - elapsed,
+                        TimeUnit.MILLISECONDS);
+            }
+        }
+        if (publish) {
+            publishResults();
         }
     }
 
     /**
      * Builds a {@link DiscoveryResult} for a given Thing. Responsibilities of this method:
      * <ul>
-     * <li>Maintain a consistent, ordered set of components ({@link HaID}) per Thing ID.
-     * A {@link TreeSet} is used to guarantee stable ordering of components.</li>
      * <li>Convert components into a list of "short topics", which are passed into the
      * {@link HandlerConfiguration} for handler initialization.</li>
      * <li>Assemble a new {@link DiscoveryResult} with the given properties, label,
@@ -246,24 +257,18 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
      * and topics is constructed. Callers (such as {@code applyResult}) must treat the
      * returned {@link DiscoveryResult} as authoritative for ordering.
      *
-     * @param thingID the stable ID of the discovered Thing
      * @param thingUID the unique identifier for the Thing
      * @param thingName human-readable label for the Thing
      * @param haID the Home Assistant component identifier for this discovery event
      * @param properties current Thing properties, to be extended with handler configuration
      * @param bridgeUID UID of the bridge Thing (MQTT broker)
+     * @param components the complete set of components for the Thing
      * @return a complete and ordered {@link DiscoveryResult} representing the Thing
      */
-    private DiscoveryResult buildResult(String thingID, ThingUID thingUID, String thingName, HaID haID,
-            Map<String, Object> properties, ThingUID bridgeUID) {
-        // Use a TreeSet to keep components sorted automatically
-        Set<HaID> componentsSet = componentsPerThingID.computeIfAbsent(thingID,
-                key -> new TreeSet<>(Comparator.comparing(HaID::toString)));
-
-        componentsSet.add(haID);
-
+    private DiscoveryResult buildResult(ThingUID thingUID, String thingName, HaID haID, Map<String, Object> properties,
+            ThingUID bridgeUID, Set<HaID> components) {
         // Convert components to short topics
-        List<String> topics = componentsSet.stream().map(HaID::toShortTopic).toList();
+        List<String> topics = components.stream().map(HaID::toShortTopic).toList();
 
         // Append handler configuration
         Object deviceConfig = properties.get(HandlerConfiguration.PROPERTY_DEVICE_CONFIG);
@@ -284,16 +289,19 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     }
 
     protected void publishResults() {
-        Set<ThingUID> toPublish;
+        List<DiscoveryResult> toPublish;
         synchronized (discoveryStateLock) {
-            toPublish = dirtyResults;
+            toPublish = new ArrayList<>();
+            for (ThingUID uid : dirtyResults) {
+                DiscoveryResult result = allResults.get(uid.toString());
+                if (result != null) {
+                    toPublish.add(result);
+                }
+            }
             dirtyResults = new HashSet<>();
         }
-        for (ThingUID uid : toPublish) {
-            DiscoveryResult result = allResults.get(uid.toString());
-            if (result != null) {
-                thingDiscovered(result);
-            }
+        for (DiscoveryResult result : toPublish) {
+            thingDiscovered(result);
         }
     }
 
@@ -316,8 +324,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
         thingID = thingUID.getId();
 
-        // Step 2: decide what to do about components (under lock)
         boolean removedLastComponent;
+        @Nullable
         DiscoveryResult existingThing;
         synchronized (discoveryStateLock) {
             Set<HaID> components = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
@@ -329,27 +337,24 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
                 componentsPerThingID.remove(thingID);
                 allResults.remove(thingUID.toString());
                 dirtyResults.remove(thingUID);
-                thingRemoved(thingUID);
+            } else if (existingThing != null) {
+                Map<String, Object> properties = new HashMap<>(existingThing.getProperties());
+                DiscoveryResult updatedThing = buildResult(thingUID, existingThing.getLabel(), haID, properties,
+                        bridgeUID, components);
+                applyResult(thingID, haID, updatedThing);
             }
         }
 
         if (removedLastComponent) {
+            thingRemoved(thingUID);
             return;
         }
 
-        // Step 3: heavy work outside lock
         if (existingThing == null) {
             logger.warn("Could not find discovery result for removed component {}; this is a bug", thingUID);
             return;
         }
 
         resetPublishTimer();
-        Map<String, Object> properties = new HashMap<>(existingThing.getProperties());
-        DiscoveryResult result = buildResult(thingID, thingUID, existingThing.getLabel(), haID, properties, bridgeUID);
-
-        // Step 4: commit new result under lock
-        synchronized (discoveryStateLock) {
-            applyResult(thingID, haID, result);
-        }
     }
 }
