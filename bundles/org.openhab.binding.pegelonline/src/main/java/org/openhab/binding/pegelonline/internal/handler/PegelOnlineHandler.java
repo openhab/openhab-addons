@@ -14,7 +14,7 @@ package org.openhab.binding.pegelonline.internal.handler;
 
 import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.*;
 
-import java.util.Optional;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -54,12 +54,11 @@ import org.slf4j.LoggerFactory;
 public class PegelOnlineHandler extends BaseThingHandler {
     private static final String STATIONS_URI = "https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations";
     private final Logger logger = LoggerFactory.getLogger(PegelOnlineHandler.class);
-    private Optional<PegelOnlineConfiguration> configuration = Optional.empty();
-    private Optional<ScheduledFuture<?>> schedule = Optional.empty();
-    private Optional<Measure> cache = Optional.empty();
+    private final HttpClient httpClient;
+    private @Nullable ScheduledFuture<?> schedule;
+    private @Nullable Measure cache;
     private TreeMap<Integer, Integer> warnMap = new TreeMap<>();
     private String stationUUID = UNKNOWN;
-    private HttpClient httpClient;
 
     public PegelOnlineHandler(Thing thing, HttpClient hc) {
         super(thing);
@@ -68,19 +67,18 @@ public class PegelOnlineHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof RefreshType) {
-            if (cache.isPresent()) {
-                Measure m = cache.get();
-                if (LEVEL_CHANNEL.equals(channelUID.getId())) {
-                    updateChannelState(LEVEL_CHANNEL, QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE)));
-                } else if (TREND_CHANNEL.equals(channelUID.getId())) {
-                    updateChannelState(TREND_CHANNEL, DecimalType.valueOf(Integer.toString(m.trend)));
-                } else if (TIMESTAMP_CHANNEL.equals(channelUID.getId())) {
-                    updateChannelState(TIMESTAMP_CHANNEL, DateTimeType.valueOf(m.timestamp));
-                } else if (WARNING_CHANNEL.equals(channelUID.getId())) {
-                    updateChannelState(WARNING_CHANNEL,
-                            DecimalType.valueOf(Integer.toString(warnMap.floorEntry((int) m.value).getValue())));
-                }
+        Measure measure = cache;
+        if (command instanceof RefreshType && measure != null) {
+            String channelId = channelUID.getId();
+            if (LEVEL_CHANNEL.equals(channelId)) {
+                updateChannelState(LEVEL_CHANNEL,
+                        QuantityType.valueOf(measure.value, MetricPrefix.CENTI(SIUnits.METRE)));
+            } else if (TREND_CHANNEL.equals(channelId)) {
+                updateChannelState(TREND_CHANNEL, DecimalType.valueOf(Integer.toString(measure.trend)));
+            } else if (TIMESTAMP_CHANNEL.equals(channelId)) {
+                updateChannelState(TIMESTAMP_CHANNEL, DateTimeType.valueOf(measure.timestamp));
+            } else if (WARNING_CHANNEL.equals(channelId)) {
+                updateWarningChannel(measure.value);
             }
         }
     }
@@ -100,20 +98,20 @@ public class PegelOnlineHandler extends BaseThingHandler {
             return;
         }
         warnMap = config.getWarnings();
-        configuration = Optional.of(config);
         String description = "@text/pegelonline.handler.status.wait-feedback";
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, description);
-        schedule = Optional.of(scheduler.scheduleWithFixedDelay(this::performMeasurement, 0,
-                configuration.get().refreshInterval, TimeUnit.MINUTES));
+        schedule = scheduler.scheduleWithFixedDelay(this::performMeasurement, 0, config.refreshInterval,
+                TimeUnit.MINUTES);
     }
 
     @Override
     public void dispose() {
         warnMap.clear();
-        if (schedule.isPresent()) {
-            schedule.get().cancel(true);
+        ScheduledFuture<?> schedule = this.schedule;
+        if (schedule != null) {
+            schedule.cancel(true);
         }
-        schedule = Optional.empty();
+        this.schedule = null;
     }
 
     @Override
@@ -164,12 +162,18 @@ public class PegelOnlineHandler extends BaseThingHandler {
     }
 
     private void updateChannels(Measure measureDto) {
-        cache = Optional.of(measureDto);
+        cache = measureDto;
         updateChannelState(TIMESTAMP_CHANNEL, DateTimeType.valueOf(measureDto.timestamp));
         updateChannelState(LEVEL_CHANNEL, QuantityType.valueOf(measureDto.value, MetricPrefix.CENTI(SIUnits.METRE)));
         updateChannelState(TREND_CHANNEL, DecimalType.valueOf(Integer.toString(measureDto.trend)));
-        updateChannelState(WARNING_CHANNEL,
-                DecimalType.valueOf(Integer.toString(warnMap.floorEntry((int) measureDto.value).getValue())));
+        updateWarningChannel(measureDto.value);
+    }
+
+    private void updateWarningChannel(double level) {
+        Entry<Integer, Integer> warnLevelEntry = warnMap.floorEntry((int) level);
+        if (warnLevelEntry != null) {
+            updateChannelState(WARNING_CHANNEL, new DecimalType(warnLevelEntry.getValue()));
+        }
     }
 
     private void updateChannelState(String channel, State st) {
