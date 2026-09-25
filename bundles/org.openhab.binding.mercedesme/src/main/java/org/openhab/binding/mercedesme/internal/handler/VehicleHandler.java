@@ -738,9 +738,7 @@ public class VehicleHandler extends BaseThingHandler {
                     case OH_CHANNEL_FUEL_LEVEL:
                         if (!Constants.BEV.equals(vehicleType)) {
                             if (config.fuelCapacity > 0) {
-                                // fuel level percentage can be UNDEF (attribute currently unavailable per
-                                // Utils.isNil()) instead of a QuantityType - leave tank-remain/tank-open at
-                                // their last known value rather than crash with a ClassCastException
+                                // fuel level may be UNDEF (see Utils.isNil()) - keep the last known tank values
                                 if (csm.getState() instanceof QuantityType<?> fuelLevelQuantity) {
                                     float fuelLevelValue = fuelLevelQuantity.floatValue();
                                     float fuelCapacity = config.fuelCapacity;
@@ -1083,9 +1081,7 @@ public class VehicleHandler extends BaseThingHandler {
     private void energyUpdate() {
         ChannelStateMap socMap = eventStorage.get(GROUP_RANGE + "#" + OH_CHANNEL_SOC);
         ChannelStateMap socMaxMap = eventStorage.get(GROUP_CHARGE + "#" + OH_CHANNEL_MAX_SOC);
-        // socMap/socMaxMap can hold UNDEF (attribute currently unavailable per Utils.isNil()) instead of a
-        // QuantityType - fall through to the "no data" branch below rather than crash with a
-        // ClassCastException
+        // socMap/socMaxMap may hold UNDEF instead of a QuantityType - fall through to the "no data" branch
         if (config.batteryCapacity > 0 && socMap != null && socMap.getState() instanceof QuantityType<?> socQuantity) {
             float socValue = socQuantity.floatValue();
             float batteryCapacity = config.batteryCapacity;

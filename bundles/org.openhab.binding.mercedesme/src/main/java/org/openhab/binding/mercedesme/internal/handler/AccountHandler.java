@@ -71,9 +71,8 @@ import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsResponse;
 public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
     private static final int VARIANCE_PERCENT = 15; // 15% variance for refresh interval
 
-    // Placeholder logged instead of the real VIN in TRACE output - see anonymizeForTrace().
+    // placeholders replacing personal data in TRACE output - see anonymizeForTrace()
     private static final String TRACE_VIN_PLACEHOLDER = "ANONYMIZED";
-    // Dummy coordinates logged instead of the real GPS position in TRACE output - see anonymizeForTrace().
     private static final double TRACE_POSITION_LAT_PLACEHOLDER = 1.23;
     private static final double TRACE_POSITION_LONG_PLACEHOLDER = 4.56;
 
@@ -134,17 +133,9 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             return;
         }
         if (api.authTokenIsValid()) {
-            /**
-             * Pattern of the update strategy
-             * - every refresh briefly opens (or keeps open) the WebSocket to get a real vehicle status
-             * - the REST "vehicleattributes" endpoint is NOT used here: it only ever returns the small
-             * Widget-tile attribute set (SOC, ranges, tank levels, lock status, sunroof, park brake, hood,
-             * decklid, charging error, timestamp - no ignition/charging state), so it can never trigger
-             * keepAlive() and would leave every other channel stale forever
-             * - each vehicle still decides on the new attributes if it needs to be kept alive (driving or
-             * charging); without that, the socket self-closes again after its randomized 1-3 minute
-             * runtime (see Websocket.WS_RUNTIME_MIN/MAX_MS)
-             */
+            // The REST "vehicleattributes" endpoint only returns the small widget-tile attribute set and can
+            // never trigger keepAlive(), so every refresh goes through the WebSocket; each vehicle then decides
+            // whether it needs to stay alive (driving or charging).
             api.websocketUpdate();
         } else {
             // token is not valid - try to resume login
@@ -168,10 +159,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     /**
-     * @return {@code true} if login actually succeeded, {@code false} otherwise. PR #21343 review (wborn):
-     *         callers must not infer success from {@code Websocket.authTokenIsValid()} afterward - that only
-     *         checks that some access/refresh token values are present, which can still be the previous
-     *         (stale) token values after a failed login attempt.
+     * @return {@code true} if the login actually succeeded. Callers must not use
+     *         {@code Websocket.authTokenIsValid()} instead - stale token values survive a failed login.
      */
     public boolean authorize() {
         try {
@@ -302,30 +291,16 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     private void handleMessage(PushMessage pm) {
-        // DEBUG (not trace) on purpose - if trace logging isn't enabled for this component this is the one
-        // line that still tells us which message types are actually reaching AccountHandler vs. only being
-        // seen at the Websocket layer.
+        // debug on purpose - this is the one line telling us which message types actually arrive
         logger.debug("AccountHandler handling message type {}", pm.getMsgCase());
         if (pm.hasVehicleStatusUpdates()) {
-            // vehicle-events.proto: PushMessage field 24 / ClientMessage field 28. This is now the sole
-            // supported push format - the legacy VEPUpdate ingress branch (and everything downstream of it)
-            // was removed entirely; see ADR-002, docs/ADR/002-unified-vehicle-status-update-carrier.md, and
-            // its addendum for the full-removal decision and the residual risk (a server that still emits
-            // VEPUpdate would now be silently ignored - unverifiable from this environment).
-            // Mapper.fromVehicleStatusUpdate() builds the subset of MB_KEY_* attributes that has a 1:1
-            // counterpart in the old VehicleAttributeStatus format, so it can be distributed through the
-            // existing pipeline unchanged.
+            // Mapper.fromVehicleStatusUpdate() builds the subset of MB_KEY_* attributes that maps 1:1 onto the
+            // existing VehicleAttributeStatus pipeline.
             VehicleStatusUpdates vsu = pm.getVehicleStatusUpdates();
             logger.debug("Received VehicleStatusUpdates seq {} for {} VIN(s)", vsu.getSequenceNumber(),
                     vsu.getVehicleStatusUpdatesMap().size());
-            // TRACE-only, deliberately verbose: dumps the raw per-VIN VehicleStatusUpdate in protobuf TextFormat
-            // (via toString(), no extra dependency - protobuf-java-util/JsonFormat is test-scope only in pom.xml
-            // and must stay that way without $Architect + human approval). Meant to be captured from a running
-            // instance and hand-converted into a JsonFormat test fixture under
-            // src/test/resources/proto-json/ - see MapperTest.java for the existing pattern.
-            // VIN and GPS position are personal data (fin_or_vin, position_lat, position_long), so the dump is
-            // anonymized before logging - see anonymizeForTrace() - to make captures safe to paste into a PR
-            // without a manual redaction step.
+            // TRACE-only dump of the raw update in protobuf TextFormat, meant to be turned into a test fixture;
+            // VIN and GPS position are anonymized first (see anonymizeForTrace()).
             if (logger.isTraceEnabled()) {
                 vsu.getVehicleStatusUpdatesMap()
                         .forEach((vin, update) -> logger.trace("Raw VehicleStatusUpdate for {}:\n{}",
@@ -334,11 +309,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             Map<String, VehicleStatusAttributes> converted = new HashMap<>();
             vsu.getVehicleStatusUpdatesMap().forEach((vin, update) -> converted.put(vin,
                     new VehicleStatusAttributes(update.getFullUpdate(), Mapper.fromVehicleStatusUpdate(update))));
-            // PR #21343 review (wborn): this path used to acknowledge unconditionally.
-            // distributeVehicleUpdates() only caches full updates for VINs with no active handler yet, so an
-            // undelivered partial update was silently dropped but still acknowledged - the server never
-            // resends an acknowledged sequence. Only acknowledge once the update was actually delivered or
-            // cached.
+            // acknowledge only after delivery: the server never resends an acknowledged sequence, so an
+            // undelivered partial update must not be acknowledged
             boolean distributed = distributeVehicleUpdates(converted);
             if (distributed) {
                 AcknowledgeVehicleStatusUpdates ack = AcknowledgeVehicleStatusUpdates.newBuilder()
@@ -366,10 +338,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (!pending.getAllFields().isEmpty()) {
                 logger.trace("Pending Command {}", pending.getAllFields());
             }
-            // vehicleapi.proto: "This request MUST eventually be answered with AppTwinPendingCommandsResponse."
-            // We don't track commands across restarts, so we always report an empty pending list. Without
-            // this reply the AppTwin actor on the server side appears to never proceed past this handshake
-            // step to start pushing regular vehicle status updates.
+            // vehicleapi.proto requires an answer to this request; without it the server never proceeds to
+            // pushing regular vehicle status updates. Commands aren't tracked across restarts, so reply empty.
             AppTwinPendingCommandsResponse response = AppTwinPendingCommandsResponse.newBuilder().build();
             ClientMessage cm = ClientMessage.newBuilder().setApptwinPendingCommandsResponse(response).build();
             api.sendAcknowledgeMessage(cm);
@@ -382,11 +352,8 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     /**
-     * Returns a copy of the given {@link VehicleStatusUpdate} with personal data replaced by fixed placeholder
-     * values, so it is safe to log at TRACE level and paste into a test fixture without a manual redaction step.
-     * Only {@code fin_or_vin} and the GPS position ({@code position_lat}/{@code position_long}) are replaced -
-     * every other attribute is operational vehicle status, not personal data. Uses the same dummy coordinates as
-     * {@link org.openhab.binding.mercedesme.internal.utils.Utils#proto2Json} for consistency.
+     * Returns a copy of the given {@link VehicleStatusUpdate} with the personal data ({@code fin_or_vin} and the
+     * GPS position) replaced by fixed placeholders, so it is safe to log at TRACE level.
      *
      * @param update the raw update as received from the backend
      * @return an anonymized copy of update, safe for logging

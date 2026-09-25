@@ -97,9 +97,7 @@ class UtilsTest {
 
     @Test
     public void testIsNilForNonValidStatusWithDefaultValue() {
-        // Arrange - backend reports status without setting nil_value; int_value stays at the
-        // protobuf default of 0 and must not be mistaken for a real reading (e.g. State of Charge
-        // briefly reported as 0% during charging)
+        // Arrange - no value set: int_value stays at the protobuf default 0 and must not read as a real 0
         VehicleAttributeStatus notReceived = VehicleAttributeStatus.newBuilder()
                 .setStatus(AttributeStatus.VALUE_NOT_RECEIVED_VALUE).setIntValue(0).build();
         VehicleAttributeStatus invalid = VehicleAttributeStatus.newBuilder()

@@ -49,18 +49,13 @@ public class FileReader {
     }
 
     /**
-     * Reads a file into a String while preserving its original line breaks. Unlike
-     * {@link #readFileInString(String)} - which concatenates lines with no separator, harmless for JSON since
-     * every token is delimited by braces/quotes/commas - this is required for protobuf TextFormat fixtures
-     * ({@code .raw} files under {@code src/test/resources/vehiclestatusupdates}), where two adjacent lines
-     * concatenated without a newline (e.g. {@code full_update: true} + {@code auxheatwarnings {}) would merge
-     * into a single bogus token and fail to parse.
+     * Reads a file into a String preserving its original line breaks, unlike {@link #readFileInString(String)},
+     * whose line concatenation would merge adjacent protobuf TextFormat fields into one bogus token.
      */
     public static String readRawFileInString(String filename) {
         try {
             return Files.readString(Path.of(filename), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            // fail if file cannot be read
             fail();
         }
         return "ERR";

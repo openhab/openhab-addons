@@ -183,9 +183,8 @@ public class ProtoConverter {
     }
 
     /**
-     * Parses a real {@code VehicleStatusUpdate} capture in protobuf TextFormat (the {@code .raw} fixtures under
-     * {@code src/test/resources/vehiclestatusupdates}) and converts it via {@link Mapper#fromVehicleStatusUpdate}
-     * into the same internal carrier type produced by the live typed-push code path.
+     * Parses a {@code VehicleStatusUpdate} capture in protobuf TextFormat ({@code .raw} fixtures under
+     * {@code src/test/resources/vehiclestatusupdates}) into the internal carrier type used by the live push path.
      *
      * @param rawText the TextFormat dump of a single {@code VehicleStatusUpdate} message
      * @param fullUpdate the full/partial flag to attach, since a raw capture itself carries none
@@ -203,10 +202,8 @@ public class ProtoConverter {
     }
 
     /**
-     * Some {@code .raw} fixtures were captured by pasting directly out of the openHAB log and still carry the
-     * leading TRACE line (timestamp, logger name, "Raw VehicleStatusUpdate for &lt;vin&gt;:") before the actual
-     * protobuf TextFormat content, which starts on the next line. Strip it if present; a fixture already trimmed
-     * to just the proto content (first line starting directly with a field name) is left untouched.
+     * Some {@code .raw} fixtures still carry the leading TRACE line pasted from the openHAB log; strip it so
+     * only the protobuf TextFormat content is parsed.
      */
     private static String stripLogPrefix(String rawText) {
         int firstNewline = rawText.indexOf('\n');
@@ -240,9 +237,7 @@ public class ProtoConverter {
             cc.put("max_soc", soc.getValue());
             return cc;
         }
-        // DoorsLock/DoorsUnlock carry almost no fields of their own (DoorsLock has none set in
-        // practice, DoorsUnlock only "pin") - getAllFields() alone can't tell a test which of the two
-        // fired, so trace which oneof case was actually set.
+        // DoorsLock/DoorsUnlock carry no distinguishing fields, so expose which oneof case was set
         if (cr.hasDoorsLock()) {
             JSONObject dl = Utils.getJsonObject(cr.getDoorsLock().getAllFields());
             dl.put("commandType", "doorsLock");

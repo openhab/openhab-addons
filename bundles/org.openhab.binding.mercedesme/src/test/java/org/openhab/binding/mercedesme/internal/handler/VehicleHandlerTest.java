@@ -137,10 +137,8 @@ class VehicleHandlerTest {
     }
 
     /**
-     * Two-zone temperature update (frontLeft@22degC, frontRight@19degC) built directly - none of the 5 real
-     * {@code .raw} captures have more than one temperature zone, and the exact zone layout/values here matter
-     * for the zone-switch command tests below, so a real capture can't stand in for the deleted
-     * {@code MB-Unknown.json} fixture this replaces.
+     * Two-zone temperature update (frontLeft 22 °C, frontRight 19 °C) built directly: no real capture has
+     * more than one temperature zone, and the exact zone layout matters for the zone-switch command tests.
      */
     private static VehicleStatusAttributes buildTwoZoneTemperatureUpdate() {
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
@@ -204,9 +202,7 @@ class VehicleHandlerTest {
         assertNotNull(commandOptionMock);
         assertNotNull(patternMock);
 
-        // None of the 5 real captures report imperial units (the backend sends whichever unit family the
-        // vehicle's home region uses, and all available captures are EU/metric) - built directly with one
-        // representative field per UOM-observed category instead.
+        // no real capture with imperial units - one representative field per UOM category
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
         Int64DistanceAttribute rangeElectricMiles = Int64DistanceAttribute.newBuilder().setValue(190)
                 .setUnit(VehicleAttributeStatus.DistanceUnit.MILES).setDisplayValue("190").setMetadata(metadata)
@@ -277,11 +273,7 @@ class VehicleHandlerTest {
         vehicleConfig.batteryCapacity = (float) 66.5;
         vHandler.config = vehicleConfig;
 
-        // None of the 5 real captures show an active charging session (all report the cable unplugged), so
-        // this is built directly. Soc/maxSoc are chosen so the energy-to-max-soc arithmetic is exact
-        // ((80-70)*66.5/100 = 6.65, no float rounding surprises), and the end-of-charge time is verified
-        // against Utils.getEndOfChargeTime() itself (the function under test) instead of a hardcoded,
-        // timezone-dependent date string.
+        // no real capture with an active charging session - soc/maxSoc chosen for exact arithmetic
         long timestampMs = 1700000000000L;
         int minutesAfterMidnight = 835; // 13:55
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID)
@@ -325,11 +317,7 @@ class VehicleHandlerTest {
         assertNotNull(updateListener);
         assertNotNull(vHandler);
 
-        // No real capture exercises the weekday-adjustment path (see VehicleHandler's "handle day of charge
-        // end" block), so this is built directly. Rather than hardcode a timezone-dependent expected date,
-        // the reported weekday is chosen 2 days after whatever weekday the first update's own timestamp
-        // resolves to (in whichever zone this JVM runs in) - VehicleHandler must then shift the date forward
-        // by exactly 2 days without touching the time-of-day.
+        // no real capture for the weekday path - reported weekday is 2 days after the first update's timestamp
         long timestampMs = 1700000000000L;
         int minutesAfterMidnight = 835; // 13:55
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID)
@@ -374,7 +362,7 @@ class VehicleHandlerTest {
         assertNotNull(updateListener);
         assertNotNull(vHandler);
 
-        // No real capture isolates just these two fields as a delta - built directly.
+        // no real capture is a pure two-field delta - built directly
         long timestampMs = 1700000000000L;
         int minutesAfterMidnight = 1245; // 20:45
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID)
@@ -405,9 +393,7 @@ class VehicleHandlerTest {
         assertNotNull(updateListener);
         assertNotNull(vHandler);
 
-        // No real capture isolates just a GPS delta - built directly, reusing the same dummy coordinates
-        // (1.23/4.56) already used throughout this binding's anonymization convention (see
-        // AccountHandler.anonymizeForTrace()/Utils.proto2Json()).
+        // no real capture for a GPS delta - built with the binding's usual anonymized coordinates
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
         DoubleAttribute lat = DoubleAttribute.newBuilder().setValue(1.23).setMetadata(metadata).build();
         DoubleAttribute lon = DoubleAttribute.newBuilder().setValue(4.56).setMetadata(metadata).build();
@@ -438,11 +424,8 @@ class VehicleHandlerTest {
         vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
-        // vsu-partial-eqa.raw carries 3 raw proto fields (maxrange, rangeelectric, overall_range), but
-        // maxrange has no MB_KEY_*/channel mapping at all (Mapper.fromVehicleStatusUpdate() never converts
-        // it) and overall_range maps to range-hybrid, which VehicleHandler blocks for a BEV thing - so only
-        // rangeelectric actually produces channel updates: range-electric itself, plus the derived
-        // radius-electric (rangeelectric * 0.8, rounded - see VehicleHandler.guessRangeRadius()).
+        // The capture carries 3 raw fields (maxrange, rangeelectric, overall_range), but maxrange has no
+        // channel mapping and overall_range is blocked for a BEV thing, so only rangeelectric yields updates
         assertEquals(2, updateListener.updatesReceived.size(), "Update Count");
         assertEquals("345 km", updateListener.getResponse("test::bev:range#range-electric").toFullString(),
                 "Range Electric Update");
@@ -463,12 +446,8 @@ class VehicleHandlerTest {
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
 
-        // No real capture exists for a hybrid vehicle (proposal.md explicitly accepts this as residual risk:
-        // the two available typed-push captures, vsu-eqa-1.raw/vsu-eqa-2.raw, are both BEV). This focuses on
-        // the hybrid-specific blocking regressions this test exists to guard, rather than reproducing a full
-        // 12-group fixture by hand: range-hybrid and fuel-level are blocked for a BEV thing but must be
-        // populated for HYBRID, and without a configured fuelCapacity, tank-remain/tank-open fall back to a
-        // fixed "0 l" rather than crashing.
+        // No real hybrid capture exists, so this focuses on the hybrid-specific blocking regressions:
+        // range-hybrid/fuel-level are blocked for a BEV but must be populated for HYBRID
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
         DoubleDistanceAttribute overallRange = DoubleDistanceAttribute.newBuilder().setValue(520.0)
                 .setUnit(VehicleAttributeStatus.DistanceUnit.KILOMETERS).setDisplayValue("520").setMetadata(metadata)
@@ -506,11 +485,8 @@ class VehicleHandlerTest {
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
 
-        // Same reasoning as testHybridFullUpdateNoCapacities - no real hybrid capture exists. Soc/fuel level
-        // are both set to a clean, symmetric 50 % so the charged/uncharged/tank-remain/tank-open arithmetic
-        // (see VehicleHandler.energyUpdate() and the fuel-level branch) is exact and easy to verify by hand;
-        // maxSoc is deliberately left unset, matching the original test's expectation that energy-to-max-soc
-        // stays UNDEF/NULL without it.
+        // No real hybrid capture exists; soc and tank level are both 50 % so the charged/uncharged/tank
+        // arithmetic is exact, and maxSoc stays unset so energy-to-max-soc remains UNDEF
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
         Int64RatioAttribute soc = Int64RatioAttribute.newBuilder().setValue(50)
                 .setUnit(VehicleAttributeStatus.RatioUnit.PERCENT).setDisplayValue("50").setMetadata(metadata).build();
@@ -691,12 +667,8 @@ class VehicleHandlerTest {
         ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_CHARGE, "max-soc");
         vh.handleCommand(cuid, QuantityType.valueOf("90 %"));
         int selectedChargeProgram = ((DecimalType) updateListener.getResponse("test::bev:charge#program")).intValue();
-        // vsu-eqa-2.raw's real capture leaves "selected_charge_program" without an explicit
-        // "value" (only metadata), which resolves to the proto3 enum default (ordinal 0, program
-        // "0" here). Protobuf's getAllFields() omits a scalar/enum field left at its default
-        // value, so the outgoing ChargeProgramConfigure genuinely carries no "charge_program" key
-        // while program 0 is the active one - assert that real behavior instead of assuming the
-        // key is always present.
+        // The capture leaves selected_charge_program at its proto3 default (program 0) and protobuf omits
+        // default scalar fields, so the outgoing command genuinely carries no "charge_program" key
         assertEquals(0, selectedChargeProgram, "Charge Program initially selected by vehicle");
         assertFalse(ahm.getCommand().has("charge_program"), "Charge Program Command omitted for default (0) program");
         assertEquals(90, ahm.getCommand().getInt("max_soc"), "Charge Program SOC Setting");
@@ -726,16 +698,16 @@ class VehicleHandlerTest {
 
         ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_VEHICLE, "lock");
 
-        // Lock (2) requires no PIN - see DoorsLock in vehicle-commands.proto
+        // Lock (2) requires no PIN
         vh.handleCommand(cuid, new DecimalType(2));
         assertEquals("doorsLock", ahm.getCommand().get("commandType"), "Lock Command Type");
 
-        // Unlock (0) requires the account's PIN - see DoorsUnlock in vehicle-commands.proto
+        // Unlock (0) requires the account's PIN
         vh.handleCommand(cuid, new DecimalType(0));
         assertEquals("doorsUnlock", ahm.getCommand().get("commandType"), "Unlock Command Type");
         assertEquals("1234", ahm.getCommand().get("pin"), "Unlock PIN");
 
-        // Missing PIN must block the unlock command - previous doorsUnlock trace must remain untouched
+        // Missing PIN must block the unlock command and leave the previous trace untouched
         ahm.config.pin = Constants.NOT_SET;
         vh.handleCommand(cuid, new DecimalType(0));
         assertEquals("doorsUnlock", ahm.getCommand().get("commandType"), "Unlock blocked without PIN");
@@ -777,8 +749,7 @@ class VehicleHandlerTest {
         updateListener.waitForUpdates();
 
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
-        // position_lat/position_long are anonymized in the fixture (1.23/4.56), matching the binding's own
-        // anonymization convention (see AccountHandler.anonymizeForTrace())
+        // position_lat/position_long are anonymized in the fixture (1.23/4.56)
         assertEquals("1.23,4.56", updateListener.getResponse("test::bev:position#gps").toFullString(),
                 "Positioning GPS");
         QuantityType<?> heading = (QuantityType<?>) updateListener.getResponse("test::bev:position#heading");
@@ -824,9 +795,7 @@ class VehicleHandlerTest {
         assertEquals("2 %", updateListener.getResponse("test::bev:eco#accel").toFullString(), "Eco Acceleration");
         assertEquals("3 %", updateListener.getResponse("test::bev:eco#coasting").toFullString(), "Eco Coasting");
         assertEquals("6 %", updateListener.getResponse("test::bev:eco#constant").toFullString(), "Eco Constant");
-        // ecoscorebonusrange carries no explicit value in the real capture (proto3 default 0.0) - compare the
-        // numeric value rather than a hand-formatted string, since the exact display precision isn't the
-        // property under test.
+        // ecoscorebonusrange is the proto3 default 0.0 in the capture, so compare numerically
         QuantityType<?> bonus = (QuantityType<?>) updateListener.getResponse("test::bev:eco#bonus");
         assertEquals(0.0, bonus.doubleValue(), 0.0001, "Eco Bonus");
         assertEquals(ECOSCORE_UPDATE_COUNT, updateListener.getUpdatesForGroup("eco"), "ECO Update Count");
@@ -841,9 +810,7 @@ class VehicleHandlerTest {
         assertNotNull(updateListener);
         assertNotNull(vHandler);
 
-        // No real capture exists for a combustion vehicle (both CLA 250.raw/GLB 250.raw report AdBlue-related
-        // fields as VALUE_NOT_AVAILABLE - they're newer-generation vehicles without a combustion engine) -
-        // built directly.
+        // no real capture reports AdBlue (CLA 250.raw/GLB 250.raw report VALUE_NOT_AVAILABLE)
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
         Int64RatioAttribute adBlueLevel = Int64RatioAttribute.newBuilder().setValue(29)
                 .setUnit(VehicleAttributeStatus.RatioUnit.PERCENT).setDisplayValue("29").setMetadata(metadata).build();
@@ -870,10 +837,8 @@ class VehicleHandlerTest {
         vehicleConfig.batteryCapacity = (float) 66.5;
         vHandler.config = vehicleConfig;
 
-        // Exercises the ADR-001 flat-maxSoc fallback path (no chargePrograms list) rather than the indexed
-        // chargePrograms selection - simpler to build directly, and already covered from the chargePrograms
-        // side by testChargeProgramSelection (vsu-eqa-2.raw). Soc/maxSoc chosen so the energy-to-max-soc
-        // arithmetic is exact: (80-70)*66.5/100 = 6.65, then (90-70)*66.5/100 = 13.3.
+        // Exercises the flat-maxSoc fallback (no chargePrograms list), with exact arithmetic:
+        // (80-70)*66.5/100 = 6.65, then (90-70)*66.5/100 = 13.3
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
         Int64RatioAttribute soc = Int64RatioAttribute.newBuilder().setValue(70)
                 .setUnit(VehicleAttributeStatus.RatioUnit.PERCENT).setDisplayValue("70").setMetadata(metadata).build();
@@ -904,9 +869,8 @@ class VehicleHandlerTest {
     }
 
     /**
-     * ADR-001: MB-BEV-CLA reports maxSoc/maxSocLowerLimit/maxSocUpperLimit as flat attributes with no
-     * chargePrograms list at all. charge#max-soc must still be populated on update, and commanding it must
-     * send ChargingConfigure instead of ChargeProgramConfigure.
+     * MB-BEV-CLA reports flat maxSoc attributes with no chargePrograms list: charge#max-soc must still be
+     * populated, and commanding it must send ChargingConfigure instead of ChargeProgramConfigure.
      */
     @Test
     public void testMaxSocFallbackWithoutChargePrograms() {
@@ -923,9 +887,7 @@ class VehicleHandlerTest {
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vHandler.setCallback(updateListener);
 
-        // CLA 250.raw is a real capture of exactly this scenario: no chargePrograms list, but a flat maxSoc
-        // (100 %) with maxSocLowerLimit/UpperLimit - already anonymized (fin_or_vin/position_lat/
-        // position_long).
+        // CLA 250.raw is a real capture of this scenario: no chargePrograms list, flat maxSoc (100 %)
         String raw = loadRaw("src/test/resources/vehiclestatusupdates/CLA 250.raw");
         VehicleStatusAttributes update = ProtoConverter.raw2Proto(raw, true);
         vHandler.enqueueUpdate(update);

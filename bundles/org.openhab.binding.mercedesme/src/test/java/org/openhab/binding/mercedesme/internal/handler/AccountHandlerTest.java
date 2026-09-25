@@ -44,11 +44,8 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdate;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdates;
 
 /**
- * {@link AccountHandlerTest} regression tests for the typed-push acknowledgment semantics fixed per PR
- * #21343 review (wborn): {@code handleMessage()} must only acknowledge a {@code VehicleStatusUpdates}
- * sequence once {@link AccountHandler#distributeVehicleUpdates(Map)} confirms the update was actually
- * delivered to a live handler (or safely cached) - an unconditional acknowledgment would let the server
- * drop an undelivered partial update for good, since it never resends an acknowledged sequence.
+ * {@link AccountHandlerTest} regression tests for the typed-push acknowledgment semantics: an update must only
+ * be acknowledged once {@link AccountHandler#distributeVehicleUpdates(Map)} reports it was delivered.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -56,12 +53,8 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdates;
 public class AccountHandlerTest {
 
     /**
-     * Counts every {@link Websocket#sendAcknowledgeMessage(ClientMessage)} call instead of actually sending
-     * anything - {@code Websocket.session} stays {@code null} in these tests anyway, so the real
-     * implementation would just log and no-op, but overriding it here keeps the assertion explicit. Also
-     * counts down the shared "processed" latch: when a message IS acknowledged, that call is the last thing
-     * {@code handleMessage()} does, so it's the correct completion signal to wait on (see
-     * {@link LatchedAccountHandler} for the complementary "not acknowledged" signal).
+     * Counts {@link Websocket#sendAcknowledgeMessage(ClientMessage)} calls and counts down the shared latch,
+     * which signals the "acknowledged" outcome (see {@link LatchedAccountHandler} for the other).
      */
     private static class TrackingWebsocketMock extends WebsocketMock {
         volatile int ackCount = 0;
@@ -81,16 +74,9 @@ public class AccountHandlerTest {
     }
 
     /**
-     * Signals when the async message-processing thread (AccountHandler.scheduleMessage() -> handleMessage())
-     * has finished deciding whether to distribute/acknowledge a message, so tests don't need an arbitrary
-     * sleep to wait for it.
-     * <p>
-     * {@code distributeVehicleUpdates()} returning is NOT by itself a safe "done" signal: when delivery
-     * succeeds, {@code handleMessage()} (running on the same worker thread) still has to build and send the
-     * acknowledgment afterward, and a test thread that wakes up right as this override returns can race
-     * ahead of that. So this only counts down on the "not distributed" outcome, where handleMessage() has
-     * nothing left to do; the "distributed" / acknowledged outcome is instead signalled from
-     * {@link TrackingWebsocketMock#sendAcknowledgeMessage} - the actual last step of that path.
+     * Signals when the async message-processing thread has finished deciding whether to distribute and
+     * acknowledge, so tests need no arbitrary sleep. It counts down only on the "not distributed" outcome;
+     * on success the acknowledgment from {@link TrackingWebsocketMock} is the last step.
      */
     private static class LatchedAccountHandler extends AccountHandler {
         final CountDownLatch processed = new CountDownLatch(1);
@@ -110,8 +96,7 @@ public class AccountHandlerTest {
 
         @Override
         public void discovery(String vin) {
-            // no-op in tests - the real implementation calls out to RestApi.restGetCapabilities(), which
-            // needs a live HTTP response and isn't what these acknowledgment-semantics tests are about.
+            // no-op in tests - the real implementation needs a live HTTP response
         }
     }
 
@@ -130,13 +115,12 @@ public class AccountHandlerTest {
                 mock(LocaleProvider.class), ah.processed);
         ah.api = ws;
 
-        // no registerVin() call for this VIN - activeVehicleHandlerMap stays empty, so
-        // distributeVehicleUpdates() must return false and handleMessage() must not acknowledge
+        // no registerVin() call - activeVehicleHandlerMap stays empty, so no acknowledgment
         ah.enqueueMessage(buildTypedPush(1L, "WDB1230011ANONYMIZ", false));
 
         assertTrue(ah.processed.await(2, TimeUnit.SECONDS), "message was not processed in time");
         assertEquals(0, ws.ackCount,
-                "a VehicleStatusUpdates for a VIN with no active handler must not be acknowledged (PR #21343 review, wborn) - "
+                "a VehicleStatusUpdates for a VIN with no active handler must not be acknowledged - "
                         + "the server never resends an acknowledged sequence, so this would silently lose the update");
     }
 

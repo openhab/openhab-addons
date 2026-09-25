@@ -41,12 +41,9 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdate;
 
 /**
- * {@link MapperTest} checks {@link Mapper#fromVehicleStatusUpdate(VehicleStatusUpdate)} against a real captured
- * {@code VehicleStatusUpdate} fixture ({@code vehiclestatusupdates/vsu-eqa-2.raw}, a full-update TextFormat dump
- * from a BEV, GPS position anonymized). The fixture covers one representative field per attribute-type category
- * (bool/int64/double/distance/ratio/consumption) plus the three complex array-typed fields (temperature points,
- * charge programs, auxiliary warnings). The enum-conversion regression guard is built directly, since this real
- * capture's ignitionstate happens to sit at its proto3 default.
+ * {@link MapperTest} checks {@link Mapper#fromVehicleStatusUpdate(VehicleStatusUpdate)} against real captured
+ * {@code .raw} fixtures from a BEV. The enum-conversion regression guard is built directly, since the capture's
+ * ignitionstate sits at its proto3 default.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -60,9 +57,7 @@ class MapperTest {
 
     @Test
     void whenBoolAttributeConvertedThenBoolValueIsSet() {
-        // Arrange - vsu-eqa-2.raw reports chargingactive with no explicit "value:" line (proto3 default,
-        // matching the real vehicle's state: not charging), so the meaningful check here is that the
-        // bool_value oneof is the one actually populated, not a fabricated int/double default.
+        // Arrange - chargingactive sits at its proto3 default (not charging), so only bool_value is populated
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act
@@ -88,8 +83,7 @@ class MapperTest {
 
     @Test
     void whenDoubleAttributeConvertedThenDoubleValueIsSet() {
-        // Arrange - positionHeading is a plain double_value attribute (no unit), real value from
-        // vsu-eqa-2.raw
+        // Arrange
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act
@@ -102,11 +96,8 @@ class MapperTest {
 
     @Test
     void whenEnumAttributeConvertedThenProtoDeclaredNumberIsUsed() {
-        // Arrange - Ignitionstate.IGNITIONSTATE_ON is explicitly declared as 4 in vehicle-events.proto (value 3
-        // is intentionally unused), so this also guards against a regression back to ordinal/positional
-        // guessing instead of getValueValue(). vsu-eqa-2.raw's real ignitionstate sits at its proto3 default
-        // (IGNITIONSTATE_LOCK = 0), which can't discriminate ordinal-vs-declared-number bugs, so this one
-        // attribute is built directly instead of read from the fixture.
+        // Arrange - IGNITIONSTATE_ON is declared as 4 (value 3 is unused), guarding against a regression to
+        // ordinal-based conversion
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
         IgnitionstateEnumAttribute ignition = IgnitionstateEnumAttribute.newBuilder()
                 .setValue(Ignitionstate.IGNITIONSTATE_ON).setMetadata(metadata).build();
@@ -153,9 +144,7 @@ class MapperTest {
 
     @Test
     void whenSocStatusNotReceivedThenChannelStateIsUndefNotZeroPercent() {
-        // Arrange - backend sends the default int_value = 0 together with a non-VALID status
-        // instead of setting nil_value; this must not surface as "0 %" on the State of Charge
-        // channel
+        // Arrange - int_value = 0 with a non-VALID status instead of nil_value must not surface as "0 %"
         VehicleAttributeStatus soc = VehicleAttributeStatus.newBuilder()
                 .setStatus(AttributeStatus.VALUE_NOT_RECEIVED_VALUE).setIntValue(0).build();
 
@@ -182,9 +171,7 @@ class MapperTest {
 
     @Test
     void whenChargingPowerStatusNotReceivedThenChannelStateIsUndefNotZeroKw() {
-        // Arrange - Math.max(0, -1) would otherwise mask an unavailable reading as "0 kW", which
-        // looks identical to "not charging" (community.openhab.org/t/mercedes-me/136866/199 reported
-        // several attributes reading zero right after a command)
+        // Arrange - Math.max(0, -1) would mask an unavailable reading as "0 kW" (= not charging)
         VehicleAttributeStatus chargingPower = VehicleAttributeStatus.newBuilder()
                 .setStatus(AttributeStatus.VALUE_NOT_RECEIVED_VALUE).setDoubleValue(0).build();
 
@@ -210,12 +197,7 @@ class MapperTest {
 
     @Test
     void whenNilValueAttributeStillCarriesUnitThenObserverIsNotDropped() {
-        // Arrange - a BEV reports liquidconsumptionstart/reset with a non-VALID status (no combustion engine)
-        // while still carrying combustion_consumption_unit (real fixture data, see
-        // src/test/resources/vehiclestatusupdates/vsu-eqa-2.raw). The observer/unit lookup must not be nested
-        // inside the Utils.isNil() branch, or VehicleHandler.updateChannel() never calls
-        // handleComplexTripPattern() for this update - the exact regression that made
-        // VehicleHandlerTest's "Trip Update Count" assertions fail after this change was first written.
+        // Arrange - value is nil but the unit is present; the observer lookup must not sit inside Utils.isNil()
         VehicleAttributeStatus liquidConsumption = VehicleAttributeStatus.newBuilder().setNilValue(true)
                 .setCombustionConsumptionUnit(VehicleAttributeStatus.CombustionConsumptionUnit.LITER_PER_100KM).build();
 
@@ -242,9 +224,7 @@ class MapperTest {
 
     @Test
     void whenParkBrakeReportedViaIntValueThenChannelStateIsOn() {
-        // Arrange - parkbrakestatus is delivered as an enum (int_value oneof), not a bool - confirmed
-        // against real captured data in src/test/resources/vehiclestatusupdates/vsu-eqa-1.raw and
-        // vsu-eqa-2.raw (both show "parkbrakestatus { value: PARKBRAKESTATUS_ENGAGED ... }")
+        // Arrange - parkbrakestatus is delivered as an enum (int_value oneof), not a bool
         VehicleAttributeStatus parkBrake = VehicleAttributeStatus.newBuilder().setIntValue(1).build();
 
         // Act
@@ -256,8 +236,7 @@ class MapperTest {
 
     @Test
     void whenWashWaterReportedViaIntValueThenChannelStateIsOffNotUndef() {
-        // Arrange - WARNINGWASHWATER_INACTIVE = 0 is the proto3 default, so the raw dumps omit an
-        // explicit "value:" line, but the oneof case is still int_value - must not surface as UNDEF
+        // Arrange - WARNINGWASHWATER_INACTIVE = 0 is the proto3 default, but the oneof case is still int_value
         VehicleAttributeStatus washWater = VehicleAttributeStatus.newBuilder().setIntValue(0).build();
 
         // Act
@@ -269,8 +248,7 @@ class MapperTest {
 
     @Test
     void whenChargingActiveReportedViaBoolValueThenChannelStateIsOn() {
-        // Arrange - regression guard: genuine bool_value keys sharing the same "Switches" case must
-        // keep working unchanged
+        // Arrange - regression guard: genuine bool_value keys sharing the same "Switches" case
         VehicleAttributeStatus chargingActive = VehicleAttributeStatus.newBuilder().setBoolValue(true).build();
 
         // Act
@@ -283,8 +261,6 @@ class MapperTest {
     @Test
     void whenDoorOpenReportedViaIntValueThenChannelStateIsOpen() {
         // Arrange - Doorstatus is delivered as an enum (int_value oneof), not a bool: CLOSED=0, OPEN=1
-        // (MBMobileSDK 1.68 Doorstatus). getChannelStateMap() must not read this via getBoolValue(),
-        // which would always see the oneof default false (= CLOSED) and hide an open door.
         VehicleAttributeStatus doorOpen = VehicleAttributeStatus.newBuilder().setIntValue(1).build();
 
         // Act
@@ -308,16 +284,13 @@ class MapperTest {
 
     @Test
     void whenLockUnlockedReportedViaIntValueThenChannelStateIsOff() {
-        // Arrange - Doorlockstatus is delivered as an enum (int_value oneof), not a bool: LOCKED=0,
-        // UNLOCKED=1 (MBMobileSDK 1.68 Doorlockstatus). getChannelStateMap() must not read this via
-        // getBoolValue(), which would always see the oneof default false and report an unlocked
-        // individual lock as still locked.
+        // Arrange - Doorlockstatus is delivered as an enum (int_value oneof), not a bool: LOCKED=0, UNLOCKED=1
         VehicleAttributeStatus unlocked = VehicleAttributeStatus.newBuilder().setIntValue(1).build();
 
         // Act
         ChannelStateMap csm = Mapper.getChannelStateMap(MB_KEY_DOORLOCKSTATUSFRONTRIGHT, unlocked);
 
-        // Assert - ON means locked for this channel (see Mapper.getChannelStateMap "sad but true" note)
+        // Assert - ON means locked for this channel
         assertEquals(OnOffType.OFF, csm.getState());
     }
 
@@ -335,10 +308,7 @@ class MapperTest {
 
     @Test
     void whenDoorOpenReportedViaBoolValueThenChannelStateIsOpen() {
-        // Arrange - regression guard for PR #21343 review (wborn): getChannelStateMap() keeps a defensive
-        // bool_value fallback (true = open) for Doorstatus/Decklidstatus/EngineHoodStatus, even though the
-        // only currently active push path (Mapper.fromVehicleStatusUpdate()) always emits int_value - the
-        // legacy VEPUpdate ingress that used to send bool_value is gone entirely.
+        // Arrange - regression guard: defensive bool_value fallback (true = open); the active path emits int_value
         VehicleAttributeStatus doorOpen = VehicleAttributeStatus.newBuilder().setBoolValue(true).build();
 
         // Act
@@ -362,10 +332,7 @@ class MapperTest {
 
     @Test
     void whenLockLockedReportedViaBoolValueThenChannelStateIsOn() {
-        // Arrange - regression guard for PR #21343 review (wborn): getChannelStateMap() keeps a defensive
-        // bool_value fallback for Doorlockstatus, reversed (false = locked) - see the "sad but true" note in
-        // Mapper.getChannelStateMap(). The only currently active push path always emits int_value; the
-        // legacy VEPUpdate ingress that used to send bool_value is gone entirely.
+        // Arrange - regression guard: defensive bool_value fallback for Doorlockstatus, reversed (false = locked)
         VehicleAttributeStatus locked = VehicleAttributeStatus.newBuilder().setBoolValue(false).build();
 
         // Act
@@ -389,9 +356,7 @@ class MapperTest {
 
     @Test
     void whenTemperaturePointsConvertedThenZoneNameMatchesLegacyLookup() {
-        // Arrange - VehicleHandler resolves the zone via Utils.getZoneNumber(String), whose lookup table is
-        // built from TemperatureConfigure.TemperaturePoint.Zone.values()[i].name() (vehicle-commands.proto) -
-        // the canonical (first-declared) name for the FRONT_CENTER/frontCenter alias pair is the lowercase one.
+        // Arrange - the canonical (first-declared) FRONT_CENTER alias is the lowercase "frontCenter"
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act
@@ -408,9 +373,7 @@ class MapperTest {
 
     @Test
     void whenTemperaturePointsConvertedThenOuterUnitIsPropagatedFromFirstPoint() {
-        // Arrange - regression test for the bug found while reviewing VehicleHandler line 904ff: the outer
-        // VehicleAttributeStatus.temperature_unit must be set for VehicleHandler's UOM observer to pick up
-        // anything other than the binding's default unit.
+        // Arrange - the outer temperature_unit must be set for the UOM observer to see a non-default unit
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act
@@ -424,8 +387,7 @@ class MapperTest {
 
     @Test
     void whenChargeProgramsConvertedThenChargeProgramParametersArePassedThrough() {
-        // Arrange - ChargeProgramsArrayAttribute reuses the very same ChargeProgramParameters message the old
-        // ChargeProgramsValue wraps, so this must be a lossless passthrough (no field-by-field conversion).
+        // Arrange - ChargeProgramsArrayAttribute reuses the same message, so this is a lossless passthrough
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act
@@ -442,7 +404,7 @@ class MapperTest {
 
     @Test
     void whenAuxheatwarningsEmptyThenIntValueIsNone() {
-        // Arrange - not yet verified against a live vehicle with an actual warning.
+        // Arrange - not yet verified against a live vehicle with an actual warning
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act
@@ -455,12 +417,8 @@ class MapperTest {
 
     @Test
     void whenFullUpdateConvertedThenOnlyMappedFieldsAppearInMap() {
-        // Arrange - vsu-eqa-2.raw is a real full_update capture that happens to set every one of the
-        // currently mapped attributes (95 of them), plus roughly 68 further raw fields that have no
-        // MB_KEY_*/channel mapping at all (battery_health, min_soc, weekly_profile, vehicle_health_status,
-        // etc. - see docs/changes/remove-vepupdate/proposal.md, "Out of scope"). The meaningful regression
-        // guard with a comprehensive real capture like this one is therefore an exact map size: it catches
-        // both a fabricated entry sneaking in for an unmapped field and a mapped field silently dropping out.
+        // Arrange - the capture sets every currently mapped attribute (95) plus roughly 68 further raw fields
+        // with no MB_KEY_*/channel mapping, so the exact map size is the regression guard
         Map<String, VehicleAttributeStatus> attributes = loadFixture();
 
         // Act / Assert
@@ -471,9 +429,7 @@ class MapperTest {
 
     @Test
     void whenPartialUpdateOnlyTouchesPrecondThenOtherAttributesAreAbsent() {
-        // Arrange - mirrors a real captured trace: a delta VehicleStatusUpdate (full_update = false) whose
-        // raw proto text dump only shows precond_now/precond_state/vtime as populated, yet the previous,
-        // unguarded implementation still emitted map entries for all mapped fields.
+        // Arrange - delta update (full_update = false) with only precond_now; absent fields must not appear
         VSUMetadata metadata = VSUMetadata.newBuilder().setStatus(AttributeStatus.VALUE_VALID).build();
         PrecondNowEnumAttribute precondNow = PrecondNowEnumAttribute.newBuilder()
                 .setValue(PrecondNow.PRECOND_NOW_ACTIVE).setMetadata(metadata).build();
@@ -483,7 +439,7 @@ class MapperTest {
         // Act
         Map<String, VehicleAttributeStatus> attributes = Mapper.fromVehicleStatusUpdate(update);
 
-        // Assert - only the one field the update actually carried is present
+        // Assert
         assertEquals(1, attributes.size(), "only precondNow was set on this partial update");
         assertNotNull(attributes.get(MB_KEY_PRECOND_NOW));
         assertNull(attributes.get(MB_KEY_SOC), "soc was absent from this update, must not appear as 0");

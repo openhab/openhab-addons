@@ -20,15 +20,6 @@ import org.openhab.binding.mercedesme.internal.utils.Utils;
 
 /**
  * {@link ProtoTest} checks small conversion helpers used by the binding.
- * <p>
- * This class used to also decode raw {@code .blob} captures of the legacy {@code VEPUpdate} wire format
- * (via {@code src/test/resources/proto-blob/}) to test {@code Utils.proto2Json} and end-of-charge-time
- * formatting against real server data. That code path was removed entirely (see
- * {@code docs/changes/remove-vepupdate/proposal.md} and its addendum) - the legacy WebSocket ingress branch
- * in {@code AccountHandler} no longer exists, so decoding {@code VEPUpdate} wire bytes is no longer
- * something the binding does. The {@code proto-blob/*.blob} fixtures are now orphaned and were left in
- * place only because this sandbox cannot delete files on the mounted project folder; a human should
- * {@code git rm} the {@code src/test/resources/proto-blob/} directory.
  *
  * @author Bernd Weymann - Initial contribution
  */

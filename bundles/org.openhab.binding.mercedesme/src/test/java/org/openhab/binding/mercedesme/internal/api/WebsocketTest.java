@@ -34,12 +34,9 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.test.storage.VolatileStorageService;
 
 /**
- * {@link WebsocketTest} regression tests for the missed-pong watchdog fixed per PR #21343 review (wborn):
- * a ping that is still outstanding must not have its timestamp silently reset by the next scheduled
- * {@code doRefresh()} tick, and the {@code PONG_TIMEOUT_MS} boundary itself must count as overdue.
- * {@code sendPing()}/{@code isPongOverdue()}/{@code pingSentAt} are exercised directly (package-private)
- * rather than through the real {@code PING_INTERVAL_MS}/{@code PONG_TIMEOUT_MS} scheduler timing, so these
- * tests stay fast and deterministic.
+ * {@link WebsocketTest} regression tests for the missed-pong watchdog: a still-outstanding ping must not have
+ * its timestamp reset by a later {@code doRefresh()} tick, and the {@code PONG_TIMEOUT_MS} boundary itself
+ * counts as overdue.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -64,8 +61,7 @@ public class WebsocketTest {
         Instant firstPingSentAt = ws.pingSentAt;
         assertNotNull(firstPingSentAt, "sendPing() must record a timestamp for the outstanding ping");
 
-        // simulate a later doRefresh() tick firing again before any pong arrived - must not restart the
-        // watchdog clock (PR #21343 review, wborn)
+        // a later doRefresh() tick before any pong arrived must not restart the watchdog clock
         ws.sendPing();
         assertEquals(firstPingSentAt, ws.pingSentAt,
                 "sendPing() must not overwrite the timestamp of a still-outstanding ping");
@@ -89,8 +85,7 @@ public class WebsocketTest {
     @Test
     void isPongOverdueUsesInclusiveTimeoutBoundary() {
         Websocket ws = newConnectedWebsocket();
-        // land exactly on the PONG_TIMEOUT_MS boundary - Duration.toMillis() truncates fractional
-        // milliseconds, so ">" would miss this and only ">=" (PR #21343 review, wborn) catches it
+        // exactly on the boundary: Duration.toMillis() truncates, so only ">=" catches it
         ws.pingSentAt = Instant.now().minusMillis(Websocket.PONG_TIMEOUT_MS);
         assertTrue(ws.isPongOverdue(), "a ping outstanding for exactly PONG_TIMEOUT_MS must count as overdue");
     }

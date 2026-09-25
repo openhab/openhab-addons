@@ -106,8 +106,7 @@ public class Mapper {
         if (ch != null) {
             State state;
             UOMObserver observer = null;
-            // declared here (not inside the Kilometer-values case below) so it stays in scope for the
-            // Average-speed case further down, which reuses this variable - see the comment there
+            // in scope for the Average-speed case below, which reuses it
             Unit<?> lengthUnit = defaultLengthUnit;
             switch (key) {
                 // Kilometer values
@@ -118,10 +117,7 @@ public class Mapper {
                 case MB_KEY_DISTANCE_START:
                 case MB_KEY_DISTANCE_RESET:
                 case MB_KEY_ECOSCORE_BONUS:
-                    // unit lookup runs unconditionally - the vehicle can report a distance unit for an
-                    // attribute even while the reading itself is currently unavailable (e.g. a BEV's
-                    // liquid-consumption-style attributes still carry their unit while nil) - only the
-                    // numeric value below is gated on Utils.isNil()
+                    // unit lookup runs unconditionally - a unit may be present while the value is nil
                     lengthUnit = defaultLengthUnit;
                     if (value.hasDistanceUnit()) {
                         observer = new UOMObserver(value.getDistanceUnit().toString());
@@ -153,8 +149,7 @@ public class Mapper {
                 // KiloWatt values
                 case MB_KEY_CHARGING_POWER:
                     if (Utils.isNil(value)) {
-                        // don't let Math.max(0, -1) below mask an unavailable reading as "0 kW"
-                        // (looks identical to "not charging")
+                        // Math.max(0, -1) below would mask an unavailable reading as "0 kW"
                         state = UnDefType.UNDEF;
                     } else {
                         double power = Utils.getDouble(value);
@@ -164,7 +159,7 @@ public class Mapper {
 
                 case MB_KEY_AVERAGE_SPEED_START:
                 case MB_KEY_AVERAGE_SPEED_RESET:
-                    // unit lookup runs unconditionally, see comment on the Kilometer-values case above
+                    // unit lookup runs unconditionally - see Kilometer-values above
                     Unit<?> speedUnit = defaultSpeedUnit;
                     if (value.hasSpeedUnit()) {
                         observer = new UOMObserver(value.getSpeedUnit().toString());
@@ -186,7 +181,7 @@ public class Mapper {
                 // KiloWatt/Hour values
                 case MB_KEY_ELECTRICCONSUMPTIONSTART:
                 case MB_KEY_ELECTRICCONSUMPTIONRESET:
-                    // unit lookup runs unconditionally, see comment on the Kilometer-values case above
+                    // unit lookup runs unconditionally - see Kilometer-values above
                     if (value.hasElectricityConsumptionUnit()) {
                         observer = new UOMObserver(value.getElectricityConsumptionUnit().toString());
                     } else {
@@ -203,10 +198,7 @@ public class Mapper {
                 // Litre values
                 case MB_KEY_LIQUIDCONSUMPTIONSTART:
                 case MB_KEY_LIQUIDCONSUMPTIONRESET:
-                    // unit lookup runs unconditionally, see comment on the Kilometer-values case above -
-                    // this is also the case that originally surfaced the bug: a BEV reports
-                    // liquidconsumptionstart/reset as nil_value=true (no combustion engine) while still
-                    // carrying combustion_consumption_unit, so the observer must not depend on isNil()
+                    // unit lookup runs unconditionally - a BEV reports this as nil while still carrying a unit
                     if (value.hasCombustionConsumptionUnit()) {
                         observer = new UOMObserver(value.getCombustionConsumptionUnit().toString());
                     }
@@ -258,9 +250,7 @@ public class Mapper {
                 case MB_KEY_ECOSCORE_CONSTANT:
                 case MB_KEY_ECOSCORE_COASTING:
                     if (Utils.isNil(value)) {
-                        // status may report NOT_RECEIVED/INVALID/NOT_AVAILABLE with a default
-                        // int_value of 0 - don't forward that as a real percentage (e.g. State of
-                        // Charge briefly showing 0% during charging)
+                        // status NOT_RECEIVED/INVALID with default int_value 0 must not become a real 0%
                         state = UnDefType.UNDEF;
                     } else {
                         double level = Utils.getDouble(value);
@@ -278,16 +268,10 @@ public class Mapper {
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
                     } else if (value.hasBoolValue()) {
-                        // Defensive fallback (true = open), kept from PR #21343 review (wborn) even though
-                        // no currently active push path produces bool_value for these keys anymore - the
-                        // legacy VEPUpdate ingress that used to is gone entirely (see
-                        // docs/changes/remove-vepupdate/proposal.md addendum). Mapper.fromVehicleStatusUpdate()
-                        // always emits the int_value enum below.
+                        // defensive bool_value fallback (true = open) - the active push path emits the enum below
                         state = getContact(value.getBoolValue());
                     } else if (value.hasIntValue()) {
-                        // Doorstatus / Decklidstatus / EngineHoodStatus are int_value enums
-                        // (CLOSED=0, OPEN=1) in the typed VehicleStatusUpdate push, delivered via
-                        // Mapper.putEnum().
+                        // Doorstatus/Decklidstatus/EngineHoodStatus enum: CLOSED=0, OPEN=1
                         state = getContact(Utils.getInt(value) != 0);
                     } else {
                         state = UnDefType.UNDEF;
@@ -354,10 +338,7 @@ public class Mapper {
                     } else if (value.hasBoolValue()) {
                         state = OnOffType.from(value.getBoolValue());
                     } else if (value.hasIntValue()) {
-                        // Parkbrakestatus, PrecondNow, PrecondSeat and Warningwashwater are binary 0/1
-                        // enums delivered via Mapper.putEnum() (int_value oneof, not bool_value) - proto
-                        // declares 0 as the "off"/inactive/not-engaged member in all four, see
-                        // vehicle-events.proto
+                        // binary enum: 0 = off/inactive/not engaged, delivered as int_value, not bool_value
                         state = OnOffType.from(value.getIntValue() != 0);
                     } else {
                         state = UnDefType.UNDEF;
@@ -374,15 +355,10 @@ public class Mapper {
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
                     } else if (value.hasBoolValue()) {
-                        // Defensive fallback, reversed: false means locked. Kept from PR #21343 review
-                        // (wborn) even though no currently active push path produces bool_value for these
-                        // keys anymore - the legacy VEPUpdate ingress that used to is gone entirely (see
-                        // docs/changes/remove-vepupdate/proposal.md addendum). Mapper.fromVehicleStatusUpdate()
-                        // always emits the int_value enum below.
+                        // defensive bool fallback, reversed: false means locked - the active path emits the enum below
                         state = OnOffType.from(!value.getBoolValue());
                     } else if (value.hasIntValue()) {
-                        // Doorlockstatus is an int_value enum (LOCKED=0, UNLOCKED=1) in the typed
-                        // VehicleStatusUpdate push, delivered via Mapper.putEnum().
+                        // Doorlockstatus enum: LOCKED=0, UNLOCKED=1
                         state = OnOffType.from(Utils.getInt(value) == 0);
                     } else {
                         state = UnDefType.UNDEF;
@@ -404,7 +380,7 @@ public class Mapper {
                 case MB_KEY_TIREPRESSURE_FRONT_RIGHT:
                 case MB_KEY_TIREPRESSURE_REAR_LEFT:
                 case MB_KEY_TIREPRESSURE_REAR_RIGHT:
-                    // unit lookup runs unconditionally, see comment on the Kilometer-values case above
+                    // unit lookup runs unconditionally - see Kilometer-values above
                     Unit<?> pressureUnit = defaultPressureUnit;
                     if (value.hasPressureUnit()) {
                         observer = new UOMObserver(value.getPressureUnit().toString());
@@ -430,24 +406,11 @@ public class Mapper {
     }
 
     /**
-     * Converts a {@link VehicleStatusUpdate} (the typed push format, added in app version 165-1) into a
-     * {@code Map<String, VehicleAttributeStatus>} keyed by the same {@code MB_KEY_*} constants the old
-     * {@code VEPUpdate} format used, so it feeds directly into
-     * {@link #getChannelStateMap(String, VehicleAttributeStatus)}
-     * without any behavior change there.
+     * Converts a {@link VehicleStatusUpdate} (typed push format) into a {@code Map<String, VehicleAttributeStatus>}
+     * keyed by the {@code MB_KEY_*} constants used by {@link #getChannelStateMap(String, VehicleAttributeStatus)}.
      * <p>
-     * Only the fields with a direct equivalent in the old attribute set are converted; fields with no old channel
-     * are left out. This does include the complex array-typed fields with an existing channel - temperature
-     * points, charge programs, and auxiliary warnings are all converted below (see
-     * {@code putTemperaturePoints}/{@code putChargePrograms}/{@code putAuxheatwarnings}). Verified field-by-field
-     * against two real {@code VehicleStatusUpdate} captures of a BEV (see
-     * {@code docs/changes/remove-vepupdate/proposal.md}): none of the currently-unconverted fields correspond to
-     * an existing channel for that vehicle type.
-     * <p>
-     * Enum-typed fields are converted via {@code getValueValue()}, the raw number declared for that value in the
-     * {@code .proto} source (e.g. {@code IGNITIONSTATE_ON = 4;}) - not a positional/ordinal guess. Since these
-     * are the same numeric codes the server always sent for {@code int_value} in the old format (verified against
-     * {@code vehicle-events.proto} directly), no extra name-to-code lookup table is needed here.
+     * Enum-typed fields are converted via {@code getValueValue()}, the numeric code declared in the {@code .proto}
+     * source - the same codes the server sent as {@code int_value} before.
      *
      * @param vsu the typed status update for a single VIN
      * @return a key-to-attribute map ready for {@link #getChannelStateMap(String, VehicleAttributeStatus)}
@@ -455,11 +418,8 @@ public class Mapper {
     public static Map<String, VehicleAttributeStatus> fromVehicleStatusUpdate(VehicleStatusUpdate vsu) {
         Map<String, VehicleAttributeStatus> attributes = new HashMap<>();
 
-        // Every put*() call below is gated on vsu.hasXxx() - a partial (delta) update only ever sets the
-        // handful of fields that actually changed, and every field here is a singular message type, so
-        // proto3 gives each one a real hasXxx() presence check. Without this gate, an absent field's
-        // getter returns its default instance (value 0, unset metadata -> status defaults to
-        // AttributeStatus.VALUE_VALID), which Utils.isNil() cannot distinguish from genuine data.
+        // Each put*() below is gated on hasXxx(): without it an absent field's getter returns the default
+        // instance (value 0), which Utils.isNil() cannot distinguish from genuine data.
 
         // bool
         if (vsu.hasWarningbrakefluid()) {
@@ -810,7 +770,7 @@ public class Mapper {
             putElectricityConsumption(attributes, MB_KEY_ELECTRICCONSUMPTIONSTART, vsu.getElectricconsumptionstart());
         }
 
-        // complex array-typed fields - analyzed from live debug logs
+        // complex array-typed fields
         if (vsu.hasTemperaturePoints()) {
             putTemperaturePoints(attributes, MB_KEY_TEMPERATURE_POINTS, vsu.getTemperaturePoints());
         }
@@ -899,14 +859,9 @@ public class Mapper {
     }
 
     /**
-     * temperature_points: VehicleHandler reads {@code MB_KEY_TEMPERATURE_POINTS} directly via
-     * {@code value.getTemperaturePointsValue()} (not through
-     * {@link #getChannelStateMap(String, VehicleAttributeStatus)}),
-     * so this builds the old {@link TemperaturePointsValue} oneof case. The new
-     * {@code TemperaturePointsArrayAttribute.TemperaturePoint} entries carry the same information as the old
-     * {@link com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePoint} (zone, temperature, active) but with a
-     * 0-based {@code Zone} enum instead of a string and the temperature wrapped in a
-     * {@code DoubleTemperatureAttribute} instead of a raw double - both confirmed against a live debug dump.
+     * temperature_points: VehicleHandler reads {@code MB_KEY_TEMPERATURE_POINTS} directly, so this builds the old
+     * {@link TemperaturePointsValue} oneof case - the new entries carry the same information with a 0-based
+     * {@code Zone} enum and a wrapped temperature.
      */
     private static void putTemperaturePoints(Map<String, VehicleAttributeStatus> map, String key,
             TemperaturePointsArrayAttribute a) {
@@ -919,9 +874,7 @@ public class Mapper {
         });
         VehicleAttributeStatus.Builder statusBuilder = baseBuilder(a.getMetadata())
                 .setTemperaturePointsValue(valueBuilder.build());
-        // VehicleHandler reads the unit from the outer VehicleAttributeStatus.temperature_unit (one shared unit
-        // for all zones), while the new format carries a unit per point (DoubleTemperatureAttribute.unit) - take
-        // the first point's unit as the shared one, which is what the old format assumed anyway.
+        // the new format carries a unit per point - take the first as the shared unit VehicleHandler reads
         if (!a.getValueList().isEmpty()) {
             statusBuilder.setTemperatureUnit(a.getValueList().get(0).getTemperature().getUnit());
         }
@@ -955,11 +908,8 @@ public class Mapper {
     }
 
     /**
-     * charge_programs: VehicleHandler reads {@code MB_KEY_CHARGE_PROGRAMS} directly via
-     * {@code value.getChargeProgramsValue()}. The new {@code ChargeProgramsArrayAttribute} reuses the very same
-     * {@code ChargeProgramParameters} message the old {@link ChargeProgramsValue} wraps (confirmed in
-     * vehicle-events.proto: both declare {@code repeated ChargeProgramParameters}), so this is a direct
-     * passthrough, no field-by-field conversion needed.
+     * charge_programs: pass-through - the new attribute reuses the same {@code ChargeProgramParameters} message
+     * the old {@link ChargeProgramsValue} wraps, so no field-by-field conversion is needed.
      */
     private static void putChargePrograms(Map<String, VehicleAttributeStatus> map, String key,
             ChargeProgramsArrayAttribute a) {
@@ -969,13 +919,9 @@ public class Mapper {
     }
 
     /**
-     * auxheatwarnings: the old format delivered a single warning code as {@code int_value} (Mapper's
-     * "Number Status" case group). The new {@code Auxheatwarnings} enum (NONE=0, CONFIRMATION=1,
-     * CONFIRMATION_2=2, higher = more severe) is now a repeated field, so several warnings can be active at
-     * once - this takes the most severe (highest) one, or 0 (= NONE) if the list is empty, to keep the single
-     * Number channel meaningful. Not yet confirmed against a live vehicle with an actual warning active (the
-     * live debug dump only showed an empty list with status VALUE_NOT_AVAILABLE) - worth rechecking once a
-     * real auxiliary heater warning occurs.
+     * auxheatwarnings: the new enum is a repeated field, so several warnings can be active at once - take the most
+     * severe (highest) code, or 0 (= NONE) for an empty list, to keep the single Number channel meaningful.
+     * Not yet observed with an active warning on a real vehicle.
      */
     private static void putAuxheatwarnings(Map<String, VehicleAttributeStatus> map, String key,
             AuxheatwarningsArrayAttribute a) {

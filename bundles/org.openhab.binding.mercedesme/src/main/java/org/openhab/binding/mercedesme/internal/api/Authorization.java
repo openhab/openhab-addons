@@ -71,12 +71,10 @@ public class Authorization {
     private static final int EXPIRATION_BUFFER = 5;
     /**
      * Number of attempts for login-flow steps that may fail transiently with a gateway error (502/503/504).
-     * Mirrors mbapi2020's {@code Oauth.LOGIN_MAX_ATTEMPTS}.
      */
     private static final int LOGIN_MAX_ATTEMPTS = 3;
     /**
-     * Backoff base in seconds between login retries, multiplied by the attempt number. Mirrors mbapi2020's
-     * {@code Oauth.LOGIN_RETRY_BACKOFF_SECONDS}.
+     * Backoff base in seconds between login retries, multiplied by the attempt number.
      */
     private static final int LOGIN_RETRY_BACKOFF_SECONDS = 5;
     private static final String DEVICE_GUID_STORAGE_SUFFIX = "-device-guid";
@@ -132,9 +130,8 @@ public class Authorization {
     }
 
     /**
-     * Load a persisted device GUID for this account, or generate and persist a new one. Sent as a
-     * {@code CIAM.DEVICE} cookie on every login-flow request so the CIAM backend sees a stable device identity
-     * across logins and restarts - mirrors mbapi2020's {@code Oauth._device_guid}.
+     * Load a persisted device GUID for this account, or generate and persist a new one, so the backend sees
+     * a stable device identity across logins and restarts.
      */
     private String loadOrCreateDeviceGuid() {
         String key = identifier + DEVICE_GUID_STORAGE_SUFFIX;
@@ -282,15 +279,11 @@ public class Authorization {
         try {
             loginHttpClient.start();
             loginHttpClient.getProtocolHandlers().remove(WWWAuthenticationProtocolHandler.NAME);
-            // Attach a stable CIAM.DEVICE cookie to every request this client sends, mirroring mbapi2020's
-            // device_guid cookie jar
             loginHttpClient.getCookieStore().add(URI.create(baseUrl), new HttpCookie("CIAM.DEVICE", deviceGuid));
 
             String codeVerifier = generateCodeVerifier(32);
             String codeChallenge = generateCodeChallenge(codeVerifier);
             String resumeUrl = getResumeUrl(loginHttpClient, codeChallenge);
-            // The user-agent step is best-effort in the reference implementation - a failure here must not
-            // abort the login
             sendUserAgent(loginHttpClient);
             sendUsername(loginHttpClient);
 
@@ -384,9 +377,7 @@ public class Authorization {
     }
 
     /**
-     * Send user agent info. This step is best-effort in the reference flow: a failure here does not abort the
-     * login, it is only logged - mirrors mbapi2020's {@code Oauth._send_user_agent_info()}, which only warns on
-     * failure.
+     * Send user agent info. This is a best-effort step: a failure is only logged and does not abort the login.
      *
      * @throws MercedesMeApiException if an error occurs during API call
      */
@@ -440,9 +431,8 @@ public class Authorization {
     }
 
     /**
-     * Perform login with user name and password to get the pre-login response. Contains the pre-login
-     * {@code token}, as well as {@code result}, {@code passkeyDemoEnabled}, {@code homeCountry} and
-     * {@code consentCountry} fields that the calling {@link #login()} flow branches on.
+     * Perform login with user name and password to get the pre-login response, whose {@code result} field
+     * decides how the calling {@link #login()} flow continues.
      *
      * @throws MercedesMeAuthException if response status isn't correct
      * @throws MercedesMeApiException if an error occurs during API call
@@ -478,8 +468,7 @@ public class Authorization {
 
     /**
      * Decline the passkey setup prompt so the password-based login flow can continue. Triggered when the
-     * pre-login response has {@code passkeyDemoEnabled=true} - mirrors mbapi2020's
-     * {@code Oauth._disable_passkey_demo()}.
+     * pre-login response has {@code passkeyDemoEnabled=true}.
      *
      * @throws MercedesMeAuthException if response status isn't correct
      * @throws MercedesMeApiException if an error occurs during API call
@@ -515,10 +504,8 @@ public class Authorization {
     }
 
     /**
-     * Accept the legal consent texts on behalf of the user. Triggered when the pre-login (or passkey-decline)
-     * response has {@code result=GOTO_LOGIN_LEGAL_TEXTS} - mirrors mbapi2020's
-     * {@code Oauth._submit_legal_consent()}. Not retried on gateway errors, matching the reference
-     * implementation.
+     * Accept the legal consent texts on behalf of the user. Triggered when the response has
+     * {@code result=GOTO_LOGIN_LEGAL_TEXTS}. Not retried on gateway errors.
      *
      * @throws MercedesMeAuthException if response status isn't correct
      * @throws MercedesMeApiException if an error occurs during API call
@@ -550,9 +537,7 @@ public class Authorization {
 
     /**
      * Perform a login-flow HTTP request, retrying up to {@link #LOGIN_MAX_ATTEMPTS} times on transient gateway
-     * errors (502/503/504) with a backoff of {@link #LOGIN_RETRY_BACKOFF_SECONDS} * attempt seconds - mirrors
-     * mbapi2020's {@code Oauth._login_request()}. {@link Request} instances can only be sent once, so a fresh
-     * request is built on every attempt via {@code requestSupplier}.
+     * errors (502/503/504). A fresh request is built per attempt because a {@link Request} can only be sent once.
      *
      * @param requestSupplier builds a fresh, unsent request for each attempt
      * @param step label used for log messages
@@ -668,8 +653,7 @@ public class Authorization {
     }
 
     public void addBasicHeaders(Request req) {
-        // User-Agent is the full app/OS identifier string, X-Applicationname the short app id - matches
-        // mbapi2020's AppVersionManager.apply_oauth_headers() (was swapped before, checked 2026-07-31)
+        // User-Agent carries the full app/OS identifier, X-Applicationname the short app id
         req.agent(Utils.getUserAgent(config.region));
         req.header("Ris-Os-Name", Constants.RIS_OS_NAME);
         req.header("Ris-Os-Version", Constants.RIS_OS_VERSION);
