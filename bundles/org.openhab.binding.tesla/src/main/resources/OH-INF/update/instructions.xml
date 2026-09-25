@@ -39,6 +39,42 @@
 				<type>tesla:share</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<add-channel id="driverfrontwindow">
+				<type>tesla:driverfrontwindow</type>
+			</add-channel>
+			<add-channel id="driverrearwindow">
+				<type>tesla:driverrearwindow</type>
+			</add-channel>
+			<add-channel id="passengerfrontwindow">
+				<type>tesla:passengerfrontwindow</type>
+			</add-channel>
+			<add-channel id="passengerrearwindow">
+				<type>tesla:passengerrearwindow</type>
+			</add-channel>
+			<add-channel id="minutestofullcharge">
+				<type>tesla:minutestofullcharge</type>
+			</add-channel>
+			<add-channel id="tirepressurefrontleft">
+				<type>tesla:tirepressurefrontleft</type>
+			</add-channel>
+			<add-channel id="tirepressurefrontright">
+				<type>tesla:tirepressurefrontright</type>
+			</add-channel>
+			<add-channel id="tirepressurerearleft">
+				<type>tesla:tirepressurerearleft</type>
+			</add-channel>
+			<add-channel id="tirepressurerearright">
+				<type>tesla:tirepressurerearright</type>
+			</add-channel>
+			<add-channel id="tirepressurewarning">
+				<type>tesla:tirepressurewarning</type>
+			</add-channel>
+			<add-channel id="userpresent">
+				<type>tesla:userpresent</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="tesla:models">
@@ -75,6 +111,42 @@
 		<instruction-set targetVersion="3">
 			<add-channel id="share" typeId="share">
 				<type>tesla:share</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<add-channel id="driverfrontwindow">
+				<type>tesla:driverfrontwindow</type>
+			</add-channel>
+			<add-channel id="driverrearwindow">
+				<type>tesla:driverrearwindow</type>
+			</add-channel>
+			<add-channel id="passengerfrontwindow">
+				<type>tesla:passengerfrontwindow</type>
+			</add-channel>
+			<add-channel id="passengerrearwindow">
+				<type>tesla:passengerrearwindow</type>
+			</add-channel>
+			<add-channel id="minutestofullcharge">
+				<type>tesla:minutestofullcharge</type>
+			</add-channel>
+			<add-channel id="tirepressurefrontleft">
+				<type>tesla:tirepressurefrontleft</type>
+			</add-channel>
+			<add-channel id="tirepressurefrontright">
+				<type>tesla:tirepressurefrontright</type>
+			</add-channel>
+			<add-channel id="tirepressurerearleft">
+				<type>tesla:tirepressurerearleft</type>
+			</add-channel>
+			<add-channel id="tirepressurerearright">
+				<type>tesla:tirepressurerearright</type>
+			</add-channel>
+			<add-channel id="tirepressurewarning">
+				<type>tesla:tirepressurewarning</type>
+			</add-channel>
+			<add-channel id="userpresent">
+				<type>tesla:userpresent</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -115,6 +187,42 @@
 				<type>tesla:share</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<add-channel id="driverfrontwindow">
+				<type>tesla:driverfrontwindow</type>
+			</add-channel>
+			<add-channel id="driverrearwindow">
+				<type>tesla:driverrearwindow</type>
+			</add-channel>
+			<add-channel id="passengerfrontwindow">
+				<type>tesla:passengerfrontwindow</type>
+			</add-channel>
+			<add-channel id="passengerrearwindow">
+				<type>tesla:passengerrearwindow</type>
+			</add-channel>
+			<add-channel id="minutestofullcharge">
+				<type>tesla:minutestofullcharge</type>
+			</add-channel>
+			<add-channel id="tirepressurefrontleft">
+				<type>tesla:tirepressurefrontleft</type>
+			</add-channel>
+			<add-channel id="tirepressurefrontright">
+				<type>tesla:tirepressurefrontright</type>
+			</add-channel>
+			<add-channel id="tirepressurerearleft">
+				<type>tesla:tirepressurerearleft</type>
+			</add-channel>
+			<add-channel id="tirepressurerearright">
+				<type>tesla:tirepressurerearright</type>
+			</add-channel>
+			<add-channel id="tirepressurewarning">
+				<type>tesla:tirepressurewarning</type>
+			</add-channel>
+			<add-channel id="userpresent">
+				<type>tesla:userpresent</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="tesla:modely">
@@ -151,6 +259,42 @@
 		<instruction-set targetVersion="3">
 			<add-channel id="share" typeId="share">
 				<type>tesla:share</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<add-channel id="driverfrontwindow">
+				<type>tesla:driverfrontwindow</type>
+			</add-channel>
+			<add-channel id="driverrearwindow">
+				<type>tesla:driverrearwindow</type>
+			</add-channel>
+			<add-channel id="passengerfrontwindow">
+				<type>tesla:passengerfrontwindow</type>
+			</add-channel>
+			<add-channel id="passengerrearwindow">
+				<type>tesla:passengerrearwindow</type>
+			</add-channel>
+			<add-channel id="minutestofullcharge">
+				<type>tesla:minutestofullcharge</type>
+			</add-channel>
+			<add-channel id="tirepressurefrontleft">
+				<type>tesla:tirepressurefrontleft</type>
+			</add-channel>
+			<add-channel id="tirepressurefrontright">
+				<type>tesla:tirepressurefrontright</type>
+			</add-channel>
+			<add-channel id="tirepressurerearleft">
+				<type>tesla:tirepressurerearleft</type>
+			</add-channel>
+			<add-channel id="tirepressurerearright">
+				<type>tesla:tirepressurerearright</type>
+			</add-channel>
+			<add-channel id="tirepressurewarning">
+				<type>tesla:tirepressurewarning</type>
+			</add-channel>
+			<add-channel id="userpresent">
+				<type>tesla:userpresent</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
