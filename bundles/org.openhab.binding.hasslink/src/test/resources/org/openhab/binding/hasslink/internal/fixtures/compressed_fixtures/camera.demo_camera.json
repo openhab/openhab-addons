@@ -1,0 +1,20 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "camera.demo_camera": {
+        "s": "streaming",
+        "a": {
+          "access_token": "69f39e89433c919a28b29a1b8cf14df784ac44b5953eb44938cf30176b217327",
+          "entity_picture": "/api/camera_proxy/camera.demo_camera?token=69f39e89433c919a28b29a1b8cf14df784ac44b5953eb44938cf30176b217327",
+          "friendly_name": "Demo camera",
+          "supported_features": 3
+        },
+        "c": "01M320AX2ZDZJKXAHK4PSG06EA",
+        "lc": 1789994787.329231,
+        "lu": 1789995086.9434438
+      }
+    }
+  }
+}

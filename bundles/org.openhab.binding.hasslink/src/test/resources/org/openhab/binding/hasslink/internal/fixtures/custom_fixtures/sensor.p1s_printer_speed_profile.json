@@ -1,0 +1,24 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.p1s_printer_speed_profile": {
+        "s": "standard",
+        "a": {
+          "options": [
+            "silent",
+            "standard",
+            "sport",
+            "ludicrous"
+          ],
+          "modifier": 100,
+          "device_class": "enum",
+          "friendly_name": "P2S Printer Speed profile"
+        },
+        "c": "01M34MKHS7YTS0V4E9Z6CD63G1",
+        "lc": 1789994787.3534987
+      }
+    }
+  }
+}

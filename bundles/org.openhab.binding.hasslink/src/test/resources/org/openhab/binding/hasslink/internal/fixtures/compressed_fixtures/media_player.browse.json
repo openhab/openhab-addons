@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "media_player.browse": {
+        "s": "playing",
+        "a": {
+          "volume_level": 1.0,
+          "is_volume_muted": false,
+          "sound_mode": "Music",
+          "shuffle": false,
+          "friendly_name": "Browse",
+          "supported_features": 4325376
+        },
+        "c": "01M3201RGDQFF4Q784E9QMH3KT",
+        "lc": 1789994787.341163
+      }
+    }
+  }
+}

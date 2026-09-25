@@ -1,0 +1,28 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "update.demo_no_update": {
+        "s": "off",
+        "a": {
+          "auto_update": false,
+          "display_precision": 0,
+          "installed_version": "1.0.0",
+          "in_progress": false,
+          "latest_version": "1.0.0",
+          "release_summary": null,
+          "release_url": null,
+          "skipped_version": null,
+          "title": "AdGuard Home",
+          "update_percentage": null,
+          "entity_picture": "/api/brands/integration/demo/icon.png",
+          "friendly_name": "Demo No Update",
+          "supported_features": 11
+        },
+        "c": "01M3201RGXVFMXT9AJDXJG2JED",
+        "lc": 1789994787.3575985
+      }
+    }
+  }
+}

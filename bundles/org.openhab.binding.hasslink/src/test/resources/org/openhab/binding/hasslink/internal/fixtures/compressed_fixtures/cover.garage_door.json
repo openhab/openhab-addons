@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "cover.garage_door": {
+        "s": "closed",
+        "a": {
+          "is_closed": true,
+          "device_class": "garage",
+          "friendly_name": "Garage Door",
+          "supported_features": 3
+        },
+        "c": "01M3201RG50NJ7M83ENF37HJRT",
+        "lc": 1789994787.3336349
+      }
+    }
+  }
+}

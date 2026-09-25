@@ -1,0 +1,24 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "humidifier.humidifier": {
+        "s": "on",
+        "a": {
+          "min_humidity": 0,
+          "max_humidity": 100,
+          "target_humidity_step": 5,
+          "action": "humidifying",
+          "current_humidity": 45,
+          "humidity": 65,
+          "device_class": "humidifier",
+          "friendly_name": "Humidifier",
+          "supported_features": 0
+        },
+        "c": "01M3201RG8WMNCS5P94569440V",
+        "lc": 1789994787.3367116
+      }
+    }
+  }
+}

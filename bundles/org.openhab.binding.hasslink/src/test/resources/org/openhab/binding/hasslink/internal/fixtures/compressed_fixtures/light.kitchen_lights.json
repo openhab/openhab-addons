@@ -1,0 +1,39 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "light.kitchen_lights": {
+        "s": "on",
+        "a": {
+          "min_color_temp_kelvin": 2000,
+          "max_color_temp_kelvin": 6535,
+          "supported_color_modes": [
+            "color_temp",
+            "hs"
+          ],
+          "color_mode": "hs",
+          "brightness": 180,
+          "color_temp_kelvin": null,
+          "hs_color": [
+            345,
+            75
+          ],
+          "rgb_color": [
+            255,
+            64,
+            112
+          ],
+          "xy_color": [
+            0.588,
+            0.274
+          ],
+          "friendly_name": "Kitchen Lights",
+          "supported_features": 0
+        },
+        "c": "01M3201RGAMHQZEGYJHZQAP59H",
+        "lc": 1789994787.3380249
+      }
+    }
+  }
+}

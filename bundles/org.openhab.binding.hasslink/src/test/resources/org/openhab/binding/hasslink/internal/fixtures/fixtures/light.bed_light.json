@@ -1,0 +1,51 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "light.bed_light",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "light.bed_light",
+        "state": "off",
+        "attributes": {
+          "min_color_temp_kelvin": 2000,
+          "max_color_temp_kelvin": 6535,
+          "effect_list": [
+            "rainbow",
+            "off"
+          ],
+          "supported_color_modes": [
+            "color_temp",
+            "hs"
+          ],
+          "effect": null,
+          "color_mode": null,
+          "brightness": null,
+          "color_temp_kelvin": null,
+          "hs_color": null,
+          "rgb_color": null,
+          "xy_color": null,
+          "friendly_name": "Bed Light",
+          "supported_features": 4
+        },
+        "last_changed": "2026-09-21T12:46:27.337404+00:00",
+        "last_reported": "2026-09-21T12:46:27.373041+00:00",
+        "last_updated": "2026-09-21T12:46:27.337404+00:00",
+        "context": {
+          "id": "01M3201RG9AW6TB0SAE3HMYVQZ",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

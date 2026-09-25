@@ -1,0 +1,52 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "climate.ecobee": {
+        "s": "heat_cool",
+        "a": {
+          "hvac_modes": [
+            "off",
+            "cool",
+            "heat_cool",
+            "auto",
+            "dry",
+            "fan_only"
+          ],
+          "min_temp": 7,
+          "max_temp": 35,
+          "fan_modes": [
+            "on_low",
+            "on_high",
+            "auto_low",
+            "auto_high",
+            "off"
+          ],
+          "preset_modes": [
+            "home",
+            "eco",
+            "away"
+          ],
+          "swing_modes": [
+            "auto",
+            "1",
+            "2",
+            "3",
+            "off"
+          ],
+          "current_temperature": 23,
+          "target_temp_high": 24,
+          "target_temp_low": 21,
+          "fan_mode": "auto_low",
+          "preset_mode": "home",
+          "swing_mode": "auto",
+          "friendly_name": "Ecobee",
+          "supported_features": 442
+        },
+        "c": "01M3201RG4NE6AE8Q83R989RRE",
+        "lc": 1789994787.3322785
+      }
+    }
+  }
+}

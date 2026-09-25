@@ -1,0 +1,76 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "climate.hvac",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "climate.hvac",
+        "state": "cool",
+        "attributes": {
+          "hvac_modes": [
+            "off",
+            "heat",
+            "cool",
+            "auto",
+            "dry",
+            "fan_only"
+          ],
+          "min_temp": 7,
+          "max_temp": 35,
+          "min_humidity": 30,
+          "max_humidity": 99,
+          "target_humidity_step": 5,
+          "fan_modes": [
+            "on_low",
+            "on_high",
+            "auto_low",
+            "auto_high",
+            "off"
+          ],
+          "swing_modes": [
+            "auto",
+            "1",
+            "2",
+            "3",
+            "off"
+          ],
+          "swing_horizontal_modes": [
+            "auto",
+            "rangefull",
+            "off"
+          ],
+          "current_temperature": 22,
+          "temperature": 21,
+          "target_temp_high": null,
+          "target_temp_low": null,
+          "current_humidity": 54.2,
+          "humidity": 67.4,
+          "fan_mode": "on_high",
+          "hvac_action": "cooling",
+          "swing_mode": "off",
+          "swing_horizontal_mode": "auto",
+          "friendly_name": "Hvac",
+          "supported_features": 943
+        },
+        "last_changed": "2026-09-21T12:46:27.331977+00:00",
+        "last_reported": "2026-09-21T12:46:27.372439+00:00",
+        "last_updated": "2026-09-21T12:46:27.331977+00:00",
+        "context": {
+          "id": "01M3201RG3G81JX9BBJH83ZXD9",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

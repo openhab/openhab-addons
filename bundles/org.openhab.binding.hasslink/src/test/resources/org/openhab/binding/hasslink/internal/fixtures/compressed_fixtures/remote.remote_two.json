@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "remote.remote_two": {
+        "s": "on",
+        "a": {
+          "friendly_name": "Remote Two",
+          "supported_features": 0
+        },
+        "c": "01M3201RGGZ6PVPG7HKJX3XPAT",
+        "lc": 1789994787.3447316
+      }
+    }
+  }
+}
