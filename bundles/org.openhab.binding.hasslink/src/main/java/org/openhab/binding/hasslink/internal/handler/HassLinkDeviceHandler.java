@@ -89,6 +89,8 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
     private @Nullable HassLinkBridgeHandler registeredBridgeHandler;
     private final Set<String> requiredEntityIds = new HashSet<>();
 
+    private Set<String> lastLoggedMissingEntities = Set.of();
+
     private final AtomicBoolean isBuildingChannels = new AtomicBoolean(false);
     private volatile boolean channelsInitialized = false;
     private volatile boolean disposed = false;
@@ -363,15 +365,16 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
                         .collect(Collectors.toSet());
 
                 if (!missingEntities.isEmpty()) {
-                    logger.warn("Thing {} initialized with missing/invalid entities: {}", getThing().getUID(),
-                            missingEntities);
-                    // Mark ONLINE but surface a descriptive warning detail
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                            "Online (Missing Home Assistant entities: " + String.join(", ", missingEntities) + ")");
+                    if (!missingEntities.equals(lastLoggedMissingEntities)) {
+                        logger.warn("Thing {} initialized with missing entity states: {}", getThing().getUID(),
+                                missingEntities);
+                        lastLoggedMissingEntities = missingEntities;
+                    }
                 } else {
-                    updateStatus(ThingStatus.ONLINE);
+                    lastLoggedMissingEntities = Set.of();
                 }
 
+                updateStatus(ThingStatus.ONLINE);
                 syncEntityStates(bridgeHandler);
             }
         } finally {
@@ -494,7 +497,6 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
                 applyStateUpdates(state);
             }
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private void applyStateUpdates(EntityState entityState) {
