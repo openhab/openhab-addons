@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.millheat.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link MillheatAccountConfiguration} class contains account thing configuration parameters.
  *
  * @author Arne Seime - Initial contribution
  */
+@NonNullByDefault
 public class MillheatAccountConfiguration {
-    /**
-     * Username/email address used in app
-     */
-    public String username;
-    public String password;
+    public String username = "";
+    public String password = "";
     public int refreshInterval = 120;
 }
