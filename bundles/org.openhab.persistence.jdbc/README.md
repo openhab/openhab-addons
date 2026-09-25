@@ -291,15 +291,15 @@ Not necessarily representative of the performance you may experience.
 Used a script like this:
 
 ```java
-var count = 0;
+var count = 0
 rule "DB STRESS TEST"
 when
     Time cron "30 * * * * ?"
 then
-    if( count = 24) count = 0
-    count = count+1
+    if( count == 24) count = 0
+    count++
     if( count > 3 && count < 23){
-        for( var i=500; i>1; i=i-1){
+        for( var i=500; i>1; i--){
             postUpdate( NUMBERITEM, i)
             SWITCHITEM.previousState().state
             postUpdate( DIMMERITEM, OFF)
