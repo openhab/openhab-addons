@@ -11,13 +11,13 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
-			<parameter name="username" type="text" required="false">
+			<parameter name="username" type="text" required="true">
 				<label>Username</label>
-				<description>Your Bluelink/Connect account email address (not required for EU region)</description>
+				<description>Your Bluelink/Connect account email address</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>Your Bluelink/Connect account password (for EU: refresh token)</description>
+				<description>Your Bluelink/Connect account password</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="pin" type="text" required="false">

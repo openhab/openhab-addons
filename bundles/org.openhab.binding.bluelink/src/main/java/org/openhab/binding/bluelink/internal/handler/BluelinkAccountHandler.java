@@ -19,6 +19,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Pattern;
 
 import javax.measure.quantity.Temperature;
 
@@ -30,6 +32,7 @@ import org.openhab.binding.bluelink.internal.api.BluelinkApiCA;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiEU;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiUS;
+import org.openhab.binding.bluelink.internal.api.LoginRejectedException;
 import org.openhab.binding.bluelink.internal.api.Region;
 import org.openhab.binding.bluelink.internal.api.RetryableRequestException;
 import org.openhab.binding.bluelink.internal.api.VehicleStatusCallback;
@@ -56,9 +59,15 @@ import org.slf4j.LoggerFactory;
  * It manages authentication and provides API access to vehicle handlers.
  *
  * @author Marcus Better - Initial contribution
+ * @author Carlo Dischler - Login retry and username validation for EU
  */
 @NonNullByDefault
 public class BluelinkAccountHandler extends BaseBridgeHandler {
+
+    private static final Duration LOGIN_RETRY_DELAY = Duration.ofMinutes(5);
+    // EU refresh tokens (valid for 180 days) cannot be obtained since August 2026,
+    // so this hint can be removed once the last ones have expired in early 2027
+    private static final Pattern LEGACY_REFRESH_TOKEN = Pattern.compile("[A-Z0-9]{48}");
 
     private final Logger logger = LoggerFactory.getLogger(BluelinkAccountHandler.class);
 
@@ -66,8 +75,12 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
     private final TimeZoneProvider timeZoneProvider;
     private final LocaleProvider localeProvider;
 
+    // guards api, loginTask and loginGeneration; status updates of a login or request are made under this lock
+    // together with the generation check, so an outdated result cannot overwrite a newer status
+    private final Object loginLock = new Object();
     private volatile @Nullable AbstractBluelinkApi<?> api;
     private volatile @Nullable ScheduledFuture<?> loginTask;
+    private final AtomicLong loginGeneration = new AtomicLong();
 
     public BluelinkAccountHandler(final Bridge bridge, final HttpClient httpClient,
             final TimeZoneProvider timeZoneProvider, final LocaleProvider localeProvider) {
@@ -108,18 +121,10 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         // Validate credentials
         final String username = config.username;
         final String password = config.password;
-        if (region == Region.EU) {
-            if (password == null || password.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/account-handler.initialize.missing-token");
-                return;
-            }
-        } else {
-            if (username == null || username.isBlank() || password == null || password.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/account-handler.initialize.missing-credentials");
-                return;
-            }
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/account-handler.initialize.missing-credentials");
+            return;
         }
 
         // Determine brand
@@ -143,57 +148,143 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
 
         // baseUrl override for tests
         final String baseUrl = config.apiBaseUrl;
-        // After validation, we know password is non-null for all regions, and username is non-null for US/CA
-        final String user = username != null ? username : "";
-        this.api = switch (region) {
-            case US -> new BluelinkApiUS(httpClient, baseUrl, timeZoneProvider, user, password, config.pin);
-            case CA -> new BluelinkApiCA(httpClient, brand, baseUrl, timeZoneProvider, user, password, config.pin);
-            case EU ->
-                new BluelinkApiEU(httpClient, scheduler, brand, editProperties(), baseUrl, timeZoneProvider, password);
+        final AbstractBluelinkApi<?> newApi = switch (region) {
+            case US -> new BluelinkApiUS(httpClient, baseUrl, timeZoneProvider, username, password, config.pin);
+            case CA -> new BluelinkApiCA(httpClient, brand, baseUrl, timeZoneProvider, username, password, config.pin);
+            case EU -> new BluelinkApiEU(httpClient, scheduler, brand, editProperties(), baseUrl, timeZoneProvider,
+                    username, password);
         };
         logger.debug("Created API for region {} brand {}", region, brand);
         updateStatus(ThingStatus.UNKNOWN);
-        loginTask = scheduler.schedule(this::login, 0, TimeUnit.MILLISECONDS);
+        synchronized (loginLock) {
+            api = newApi;
+            loginGeneration.incrementAndGet();
+            loginTask = scheduler.schedule(this::login, 0, TimeUnit.MILLISECONDS);
+        }
     }
 
     private void login() {
-        final AbstractBluelinkApi<?> bluelinkApi = api;
+        final AbstractBluelinkApi<?> bluelinkApi;
+        final long generation;
+        synchronized (loginLock) {
+            bluelinkApi = api;
+            generation = loginGeneration.get();
+        }
         if (bluelinkApi == null) {
             return;
         }
 
         try {
-            if (bluelinkApi.login()) {
-                logger.debug("Bluelink login successful");
-                final Map<String, String> apiProps = bluelinkApi.getProperties();
-                if (!apiProps.isEmpty()) {
-                    final Map<String, String> thingProps = editProperties();
-                    thingProps.putAll(apiProps);
-                    updateProperties(thingProps);
+            final boolean loggedIn = bluelinkApi.login();
+            updateIfCurrent(generation, () -> {
+                if (loggedIn) {
+                    logger.debug("Bluelink login successful");
+                    setOnline(bluelinkApi);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/account-handler.login.login-failed");
                 }
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/account-handler.login.login-failed");
-            }
+            });
+        } catch (final RetryableRequestException e) {
+            updateIfCurrent(generation, () -> {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
+                loginTask = scheduler.schedule(this::login, LOGIN_RETRY_DELAY.toSeconds(), TimeUnit.SECONDS);
+            });
+        } catch (final LoginRejectedException e) {
+            updateIfCurrent(generation, () -> {
+                final ThingStatusDetail detail = e.getReason() == LoginRejectedException.Reason.BLOCKED
+                        ? ThingStatusDetail.COMMUNICATION_ERROR
+                        : ThingStatusDetail.CONFIGURATION_ERROR;
+                updateStatus(ThingStatus.OFFLINE, detail,
+                        isLegacyRefreshToken(e) ? "@text/account-handler.login.refresh-token"
+                                : e.getStatusDescription());
+            });
         } catch (final BluelinkApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateIfCurrent(generation, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    e.getStatusDescription()));
         }
+    }
+
+    private boolean isLegacyRefreshToken(final LoginRejectedException e) {
+        final String password = getConfigAs(BluelinkAccountConfiguration.class).password;
+        return (e.getReason() == LoginRejectedException.Reason.INVALID_CREDENTIALS
+                || e.getReason() == LoginRejectedException.Reason.REJECTED) && password != null
+                && LEGACY_REFRESH_TOKEN.matcher(password).matches();
+    }
+
+    // drops the update if the handler was disposed, re-initialized or recovered since the login or request started;
+    // status and property updates from the handler do not take the thing lock, so this cannot deadlock with dispose()
+    private void updateIfCurrent(final long generation, final Runnable update) {
+        synchronized (loginLock) {
+            if (generation == loginGeneration.get()) {
+                update.run();
+            }
+        }
+    }
+
+    private void setOnline(final AbstractBluelinkApi<?> bluelinkApi) {
+        final Map<String, String> apiProps = bluelinkApi.getProperties();
+        if (!apiProps.isEmpty()) {
+            final Map<String, String> thingProps = editProperties();
+            thingProps.putAll(apiProps);
+            updateProperties(thingProps);
+        }
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    // vehicle handlers authenticate on their own, so a working API also brings the bridge back online
+    private void markOnline(final AbstractBluelinkApi<?> bluelinkApi, final long generation) {
+        updateIfCurrent(generation, () -> {
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                return;
+            }
+            // already authenticated again: cancel a pending retry and make a running one outdated
+            final ScheduledFuture<?> task = loginTask;
+            if (task != null && task.cancel(false)) {
+                loginTask = null;
+            }
+            loginGeneration.incrementAndGet();
+            setOnline(bluelinkApi);
+        });
+    }
+
+    private boolean call(final ApiCall call) throws BluelinkApiException {
+        final AbstractBluelinkApi<?> bluelinkApi;
+        final long generation;
+        synchronized (loginLock) {
+            bluelinkApi = api;
+            generation = loginGeneration.get();
+        }
+        if (bluelinkApi == null) {
+            return false;
+        }
+        final boolean result = call.run(bluelinkApi);
+        markOnline(bluelinkApi, generation);
+        return result;
+    }
+
+    @FunctionalInterface
+    private interface ApiCall {
+        boolean run(AbstractBluelinkApi<?> api) throws BluelinkApiException;
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing Bluelink account handler");
-        final ScheduledFuture<?> task = loginTask;
-        if (task != null) {
-            task.cancel(true);
-            loginTask = null;
+        final AbstractBluelinkApi<?> oldApi;
+        synchronized (loginLock) {
+            final ScheduledFuture<?> task = loginTask;
+            if (task != null) {
+                task.cancel(true);
+                loginTask = null;
+            }
+            oldApi = api;
+            api = null;
+            loginGeneration.incrementAndGet();
         }
-        final var api = this.api;
-        if (api != null) {
-            api.dispose();
+        if (oldApi != null) {
+            oldApi.dispose();
         }
-        this.api = null;
     }
 
     @Override
@@ -208,13 +299,20 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
 
     public List<? extends IVehicle> getVehicles() throws BluelinkApiException {
         final Backoff backoff = new Backoff(Duration.ofSeconds(1), Duration.ofMillis(300), 3);
-        final AbstractBluelinkApi<?> bluelinkApi = api;
+        final AbstractBluelinkApi<?> bluelinkApi;
+        final long generation;
+        synchronized (loginLock) {
+            bluelinkApi = api;
+            generation = loginGeneration.get();
+        }
         if (bluelinkApi == null) {
             return List.of();
         }
         while (true) {
             try {
-                return bluelinkApi.getVehicles();
+                final List<? extends IVehicle> vehicles = bluelinkApi.getVehicles();
+                markOnline(bluelinkApi, generation);
+                return vehicles;
             } catch (final RetryableRequestException e) {
                 if (backoff.hasMoreAttempts()) {
                     try {
@@ -231,49 +329,40 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
     }
 
     public boolean lockVehicle(final IVehicle vehicle) throws BluelinkApiException {
-        final var api = this.api;
-        return api != null && api.lockVehicle(vehicle);
+        return call(api -> api.lockVehicle(vehicle));
     }
 
     public boolean unlockVehicle(final IVehicle vehicle) throws BluelinkApiException {
-        final var api = this.api;
-        return api != null && api.unlockVehicle(vehicle);
+        return call(api -> api.unlockVehicle(vehicle));
     }
 
     public boolean startCharging(final IVehicle vehicle) throws BluelinkApiException {
-        final var api = this.api;
-        return api != null && api.startCharging(vehicle);
+        return call(api -> api.startCharging(vehicle));
     }
 
     public boolean stopCharging(final IVehicle vehicle) throws BluelinkApiException {
-        final var api = this.api;
-        return api != null && api.stopCharging(vehicle);
+        return call(api -> api.stopCharging(vehicle));
     }
 
     public boolean climateStart(final IVehicle vehicle, final QuantityType<Temperature> temperature, final boolean heat,
             final boolean defrost, final @Nullable Integer igniOnDuration) throws BluelinkApiException {
-        final var api = this.api;
-        return api != null && api.climateStart(vehicle, temperature, heat, defrost, igniOnDuration);
+        return call(api -> api.climateStart(vehicle, temperature, heat, defrost, igniOnDuration));
     }
 
     public boolean climateStop(final IVehicle vehicle) throws BluelinkApiException {
-        final var api = this.api;
-        return api != null && api.climateStop(vehicle);
+        return call(api -> api.climateStop(vehicle));
     }
 
     public boolean getVehicleStatus(final IVehicle vehicle, final boolean forceRefresh, final VehicleStatusCallback cb)
             throws BluelinkApiException {
-        final var api = this.api;
-        return api != null && api.getVehicleStatus(vehicle, forceRefresh, cb);
+        return call(api -> api.getVehicleStatus(vehicle, forceRefresh, cb));
     }
 
     public boolean setChargeLimitDC(final IVehicle vehicle, final int limit) throws BluelinkApiException {
-        final var api = this.api;
-        return api != null && api.setChargeLimitDC(vehicle, limit);
+        return call(api -> api.setChargeLimitDC(vehicle, limit));
     }
 
     public boolean setChargeLimitAC(final IVehicle vehicle, final int limit) throws BluelinkApiException {
-        final var api = this.api;
-        return api != null && api.setChargeLimitAC(vehicle, limit);
+        return call(api -> api.setChargeLimitAC(vehicle, limit));
     }
 }
