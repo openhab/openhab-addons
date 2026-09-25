@@ -37,19 +37,13 @@ public class StateTypeAdapter extends TypeAdapter<State> {
 
     @Override
     public State read(JsonReader reader) throws IOException {
-        if (reader.peek() == JsonToken.NULL) {
-            reader.nextNull();
-            logger.debug("Couldn't deserialize state: 'null'");
+        JsonToken token = reader.peek();
+        if (token != JsonToken.STRING) {
+            logger.debug("Couldn't deserialize state: expected a string but was '{}'", token);
+            reader.skipValue();
             return null;
         }
-        String value;
-        try {
-            value = reader.nextString();
-        } catch (IllegalStateException e) {
-            logger.debug("Couldn't deserialize state: not a string");
-            return null;
-        }
-
+        String value = reader.nextString();
         String valueTypeName = null;
         try {
             int index = value.indexOf(TYPE_SEPARATOR);
