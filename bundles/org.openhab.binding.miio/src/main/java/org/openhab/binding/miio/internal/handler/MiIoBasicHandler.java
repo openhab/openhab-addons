@@ -180,28 +180,16 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         }
                     }
                     if (paramType == CommandParameterType.OPENCLOSE) {
-                        if (command instanceof OpenClosedType) {
-                            value = new JsonPrimitive(command == OpenClosedType.OPEN ? "open" : "close");
-                        } else {
-                            value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
-                                    || "1".contentEquals(command.toString())) ? "open" : "close");
-                        }
+                        value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
+                                || "1".contentEquals(command.toString())) ? "open" : "close");
                     }
                     if (paramType == CommandParameterType.OPENCLOSENUMBER) {
-                        if (command instanceof OpenClosedType) {
-                            value = new JsonPrimitive(command == OpenClosedType.OPEN ? 1 : 0);
-                        } else {
-                            value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
-                                    || "1".contentEquals(command.toString())) ? 1 : 0);
-                        }
+                        value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
+                                || "1".contentEquals(command.toString())) ? 1 : 0);
                     }
                     if (paramType == CommandParameterType.OPENCLOSESWITCH) {
-                        if (command instanceof OpenClosedType) {
-                            value = new JsonPrimitive(command == OpenClosedType.OPEN ? "on" : "off");
-                        } else {
-                            value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
-                                    || "1".contentEquals(command.toString())) ? "on" : "off");
-                        }
+                        value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
+                                || "1".contentEquals(command.toString())) ? "on" : "off");
                     }
                     if (paramType == CommandParameterType.COLOR) {
                         if (command instanceof HSBType) {
