@@ -19,7 +19,12 @@ import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
 import java.io.EOFException;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BooleanSupplier;
 
 import javax.ws.rs.client.Client;
 
@@ -115,6 +120,62 @@ public class TeslaAccountHandlerTest {
         verify(callback).statusUpdated(eq(bridge),
                 argThat(status -> hasStatus(status, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR)));
         assertNull(handler.getAuthHeader());
+    }
+
+    @Test
+    public void overlappingRenewalsKeepTokenAndStatusConsistent() throws Exception {
+        TeslaAccountHandler account = spy(handler);
+        AtomicInteger tokenRequests = new AtomicInteger();
+        AtomicReference<Thread> second = new AtomicReference<>();
+        CountDownLatch secondRequestSent = new CountDownLatch(1);
+        CountDownLatch firstTokenStored = new CountDownLatch(1);
+        when(response.getStatus()).thenReturn(200);
+        when(response.getContentAsString()).thenReturn(TOKEN_RESPONSE);
+        when(request.send()).thenAnswer(invocation -> {
+            if (tokenRequests.incrementAndGet() == 1) {
+                // start a second renewal while the first token request is still running
+                Thread thread = new Thread(account::reauthenticate);
+                second.set(thread);
+                thread.start();
+                waitUntil(() -> secondRequestSent.getCount() == 0 || thread.getState() == Thread.State.WAITING);
+                return response;
+            }
+            // the second token request fails, but only after the first renewal has stored its token
+            secondRequestSent.countDown();
+            firstTokenStored.await(10, TimeUnit.SECONDS);
+            throw new ExecutionException(new EOFException("connection closed"));
+        });
+        // pause the first renewal between storing its token and updating the status
+        doAnswer(invocation -> {
+            Object result = invocation.callRealMethod();
+            Thread thread = second.get();
+            if (thread != null && !Thread.currentThread().equals(thread)) {
+                firstTokenStored.countDown();
+                waitUntil(() -> thread.getState() == Thread.State.WAITING
+                        || thread.getState() == Thread.State.TERMINATED);
+            }
+            return result;
+        }).when(account).authenticate();
+
+        account.reauthenticate();
+        Thread thread = second.get();
+        assertNotNull(thread);
+        thread.join(TimeUnit.SECONDS.toMillis(10));
+        assertFalse(thread.isAlive());
+
+        // the second renewal found the fresh token, so no failed request could clear it
+        assertEquals(1, tokenRequests.get());
+        assertEquals("Bearer new-access-token", account.getAuthHeader());
+        verify(callback, never()).statusUpdated(eq(bridge),
+                argThat(status -> hasStatus(status, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR)));
+    }
+
+    private static void waitUntil(BooleanSupplier condition) throws InterruptedException {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        while (!condition.getAsBoolean()) {
+            assertTrue(System.nanoTime() < deadline, "condition not reached within 10 seconds");
+            Thread.sleep(10);
+        }
     }
 
     private static boolean hasStatus(ThingStatusInfo info, ThingStatus status, ThingStatusDetail detail) {

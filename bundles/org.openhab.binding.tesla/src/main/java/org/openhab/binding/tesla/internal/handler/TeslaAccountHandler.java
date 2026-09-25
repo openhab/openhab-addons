@@ -104,8 +104,9 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     private final Gson gson = new Gson();
 
+    // written while holding lock, read by the vehicle handlers without it
     @Nullable
-    private TokenResponse logonToken;
+    private volatile TokenResponse logonToken;
     private final Set<VehicleListener> vehicleListeners = new HashSet<>();
 
     public TeslaAccountHandler(Bridge bridge, Client teslaClient, HttpClientFactory httpClientFactory,
@@ -277,6 +278,9 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         return this.getThing().getUID().getId();
     }
 
+    /**
+     * Callers must hold {@link #lock}, so that the token and the status that results from it stay consistent.
+     */
     ThingStatusInfo authenticate() {
         TokenResponse token = logonToken;
 
@@ -327,11 +331,19 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
      * Obtains a new access token and applies the result to the account status. Without an access token no request
      * is sent, so the status is the only way back: the connect job retries after a communication error, whereas a
      * rejected refresh token needs to be fixed by the user.
+     * <p>
+     * Several vehicles or requests can get a 401 at the same time. The lock makes the renewal and the status update a
+     * single step, so that a failed renewal cannot clear the token between a successful renewal and its ONLINE status.
      */
     void reauthenticate() {
-        ThingStatusInfo authenticationResult = authenticate();
-        updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
-                authenticationResult.getDescription());
+        lock.lock();
+        try {
+            ThingStatusInfo authenticationResult = authenticate();
+            updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
+                    authenticationResult.getDescription());
+        } finally {
+            lock.unlock();
+        }
     }
 
     protected @Nullable String invokeAndParse(@Nullable String vehicleId, @Nullable String command,
