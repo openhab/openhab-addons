@@ -450,13 +450,16 @@ class OcppBootConfigTest {
         // The give-up counter is for a burst the charger refuses, not for one it never got the chance to refuse.
         serverConfig.extraConfig = List.of("DynamicCircuitCurrent=16");
         readGoesUnanswered();
+        OcppConnectorHandler connector = mock(OcppConnectorHandler.class);
+        handler.registerConnector(1, connector);
 
-        for (int boot = 0; boot < 5; boot++) {
+        for (int boot = 1; boot <= 5; boot++) {
             handler.onBootNotification(new BootNotificationRequest("vendor", "model"));
+            verify(transport, timeout(3000).times(boot)).send(any(),
+                    eq(new ChangeConfigurationRequest("DynamicCircuitCurrent", "16")));
+            // a burst ends by refreshing the connector statuses; the next boot must not take it over mid-flight
+            verify(connector, timeout(3000).times(boot)).requestStatus();
         }
-
-        verify(transport, timeout(5000).times(5)).send(any(),
-                eq(new ChangeConfigurationRequest("DynamicCircuitCurrent", "16")));
     }
 
     /** The charger stays silent on GetConfiguration but answers everything else. */
