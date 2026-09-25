@@ -46,6 +46,7 @@
 
 		<label>EyeOnWater Water Meter</label>
 		<description>Represents a physical water meter registered with EyeOnWater</description>
+		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 
 		<channels>
 			<channel id="reading" typeId="reading"/>
@@ -73,14 +74,22 @@
 		<item-type>Number:Volume</item-type>
 		<label>Water Reading</label>
 		<description>The latest total volume consumption reading reported by the meter</description>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="leak-flow-rate">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Leak Flow Rate</label>
 		<description>The rate of active water leak, if any, detected by the meter</description>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="leak-alert">
@@ -88,7 +97,11 @@
 		<label>Leak Alert</label>
 		<description>Indicates whether an active leak alert has been raised by the meter</description>
 		<category>Alarm</category>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="low-battery">
@@ -96,7 +109,11 @@
 		<label>Low Battery Alert</label>
 		<description>Indicates whether the meter battery is low</description>
 		<category>Battery</category>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>LowBattery</tag>
+		</tags>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="reverse-flow">
@@ -104,13 +121,21 @@
 		<label>Reverse Flow Alert</label>
 		<description>Indicates whether reverse water flow is detected</description>
 		<category>Alarm</category>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="last-read-time">
 		<item-type>DateTime</item-type>
 		<label>Last Read Time</label>
 		<description>The exact timestamp of the latest water meter reading</description>
-		<state readOnly="true"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 </thing:thing-descriptions>

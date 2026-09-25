@@ -12,14 +12,9 @@
  */
 package org.openhab.binding.eyeonwater.internal.api;
 
-import static org.eclipse.jetty.http.HttpHeader.CONTENT_TYPE;
-import static org.eclipse.jetty.http.HttpHeader.USER_AGENT;
-import static org.eclipse.jetty.http.HttpMethod.GET;
-import static org.eclipse.jetty.http.HttpMethod.POST;
-import static org.eclipse.jetty.http.HttpStatus.FOUND_302;
-import static org.eclipse.jetty.http.HttpStatus.OK_200;
-import static org.eclipse.jetty.http.HttpStatus.SEE_OTHER_303;
-import static org.eclipse.jetty.http.HttpStatus.UNAUTHORIZED_401;
+import static org.eclipse.jetty.http.HttpHeader.*;
+import static org.eclipse.jetty.http.HttpMethod.*;
+import static org.eclipse.jetty.http.HttpStatus.*;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -214,32 +209,39 @@ public class EyeOnWaterClient {
                 throw new IOException("Missing expected 'elastic_results' element.");
             }
             ElasticResultsDTO elasticResults = response.elasticResults;
-            if (elasticResults.hits == null) {
+            if (elasticResults == null || elasticResults.hits == null) {
                 throw new IOException("Missing expected 'hits' element.");
             }
             HitsWrapperDTO hitsWrapper = elasticResults.hits;
-            if (hitsWrapper.hits == null) {
+            if (hitsWrapper == null || hitsWrapper.hits == null) {
                 throw new IOException("Missing expected 'hits' array.");
             }
             List<HitDTO> hits = hitsWrapper.hits;
-            for (HitDTO hit : hits) {
-                if (hit != null && hit.source != null) {
-                    SourceDTO source = hit.source;
-                    String meterUuid = null;
-                    String meterId = null;
-                    if (source.meter != null) {
-                        meterUuid = source.meter.meterUuid;
-                        meterId = source.meter.meterId;
-                    }
-                    if (meterUuid == null) {
-                        meterUuid = source.meterUuid;
-                    }
-                    if (meterId == null) {
-                        meterId = source.meterId;
-                    }
+            if (hits != null) {
+                for (HitDTO hit : hits) {
+                    if (hit != null && hit.source != null) {
+                        SourceDTO source = hit.source;
+                        if (source != null) {
+                            String meterUuid = null;
+                            String meterId = null;
+                            if (source.meter != null) {
+                                MeterDTO meter = source.meter;
+                                if (meter != null) {
+                                    meterUuid = meter.meterUuid;
+                                    meterId = meter.meterId;
+                                }
+                            }
+                            if (meterUuid == null) {
+                                meterUuid = source.meterUuid;
+                            }
+                            if (meterId == null) {
+                                meterId = source.meterId;
+                            }
 
-                    if (meterUuid != null && meterId != null) {
-                        meters.add(new EyeOnWaterMeterData(meterUuid, meterId));
+                            if (meterUuid != null && meterId != null) {
+                                meters.add(new EyeOnWaterMeterData(meterUuid, meterId));
+                            }
+                        }
                     }
                 }
             }
@@ -269,6 +271,9 @@ public class EyeOnWaterClient {
 
         try {
             String jsonPart = matcher.group(1);
+            if (jsonPart == null) {
+                throw new IOException("Matched JSON content was null.");
+            }
             JsonElement parsedElement = JsonParser.parseString(jsonPart);
             if (parsedElement == null || !parsedElement.isJsonArray()) {
                 throw new IOException("Invalid or non-array JSON for MeterPicker.meters.");
@@ -315,15 +320,15 @@ public class EyeOnWaterClient {
             throw new IOException("Search response did not contain 'elastic_results'");
         }
         ElasticResultsDTO elasticResults = response.elasticResults;
-        if (elasticResults.hits == null) {
+        if (elasticResults == null || elasticResults.hits == null) {
             throw new IOException("Search response did not contain hits wrapper");
         }
         HitsWrapperDTO hitsWrapper = elasticResults.hits;
-        if (hitsWrapper.hits == null) {
+        if (hitsWrapper == null || hitsWrapper.hits == null) {
             throw new IOException("Search response did not contain hits array");
         }
         List<HitDTO> hits = hitsWrapper.hits;
-        if (hits.isEmpty()) {
+        if (hits == null || hits.isEmpty()) {
             throw new IOException("Meter UUID " + meterUuid + " not found on account.");
         }
 
@@ -333,15 +338,19 @@ public class EyeOnWaterClient {
         }
         SourceDTO source = firstHit.source;
 
-        if (source.register == null) {
+        if (source == null || source.register == null) {
             throw new IOException("Meter source is missing register_0 data");
         }
         RegisterDTO register = source.register;
 
-        if (register.latestRead == null) {
+        if (register == null || register.latestRead == null) {
             throw new IOException("Meter register_0 is missing latest_read");
         }
         LatestReadDTO latestRead = register.latestRead;
+
+        if (latestRead == null) {
+            throw new IOException("Meter register_0 is missing latest_read");
+        }
 
         @Nullable
         Double fullRead = latestRead.fullRead;
@@ -364,23 +373,25 @@ public class EyeOnWaterClient {
         meterData.setReadTime(readTime);
 
         // Fetch Alert Flags
-        if (register.flags != null) {
+        if (register != null && register.flags != null) {
             FlagsDTO flags = register.flags;
-            if (flags.leak != null) {
-                meterData.setLeakAlert(flags.leak);
-            }
-            if (flags.lowBattery != null) {
-                meterData.setLowBatteryAlert(flags.lowBattery);
-            }
-            if (flags.reverseFlow != null) {
-                meterData.setReverseFlowAlert(flags.reverseFlow);
+            if (flags != null) {
+                if (flags.leak != null) {
+                    meterData.setLeakAlert(flags.leak);
+                }
+                if (flags.lowBattery != null) {
+                    meterData.setLowBatteryAlert(flags.lowBattery);
+                }
+                if (flags.reverseFlow != null) {
+                    meterData.setReverseFlowAlert(flags.reverseFlow);
+                }
             }
         }
 
         // Fetch Leak Flow rate
-        if (register.leak != null) {
+        if (register != null && register.leak != null) {
             LeakDTO leak = register.leak;
-            if (leak.rate != null) {
+            if (leak != null && leak.rate != null) {
                 meterData.setLeakRate(leak.rate);
             }
         }

@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.eyeonwater.internal.discovery;
 
-import static org.openhab.binding.eyeonwater.internal.EyeOnWaterBindingConstants.CONFIG_METER_ID;
-import static org.openhab.binding.eyeonwater.internal.EyeOnWaterBindingConstants.CONFIG_METER_UUID;
-import static org.openhab.binding.eyeonwater.internal.EyeOnWaterBindingConstants.THING_TYPE_METER;
+import static org.openhab.binding.eyeonwater.internal.EyeOnWaterBindingConstants.*;
 
 import java.io.IOException;
 import java.util.HashMap;
