@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -81,6 +82,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -96,6 +98,9 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
     private static final int SLOW_STATUS_REFRESH_INTERVAL = 60000;
     private static final int API_SLEEP_INTERVAL_MINUTES = 20;
+    private static final List<String> ACTIVE_ROUTE_FIELDS = List.of("active_route_destination", "active_route_latitude",
+            "active_route_longitude", "active_route_miles_to_arrival", "active_route_minutes_to_arrival",
+            "active_route_traffic_minutes_delay");
     private static final int MOVE_THRESHOLD_INTERVAL_MINUTES_DEFAULT = 5;
     private static final int THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES = 60;
     private static final int EVENT_MAXIMUM_ERRORS_IN_INTERVAL = 10;
@@ -971,7 +976,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                         Set<Map.Entry<String, JsonElement>> entrySet = new HashSet<>();
 
                         if (driveState != null) {
-                            entrySet.addAll(gson.toJsonTree(driveState, DriveState.class).getAsJsonObject().entrySet());
+                            entrySet.addAll(toJsonWithRouteCleared(gson, driveState).entrySet());
                         }
                         entrySet.addAll(gson.toJsonTree(guiState, GUIState.class).getAsJsonObject().entrySet());
                         entrySet.addAll(gson.toJsonTree(vehicleState, VehicleState.class).getAsJsonObject().entrySet());
@@ -1047,6 +1052,20 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
     protected float quanityToRoundedFloat(QuantityType<Temperature> quantity) {
         return roundBigDecimal(quantity.toBigDecimal()).floatValue();
+    }
+
+    /**
+     * The vehicle only reports the active_route fields while a route is active. Missing fields are added as null, so
+     * the navigation channels become UNDEF when the route has ended instead of keeping its last values.
+     */
+    static JsonObject toJsonWithRouteCleared(Gson gson, DriveState driveState) {
+        JsonObject json = gson.toJsonTree(driveState, DriveState.class).getAsJsonObject();
+        for (String field : ACTIVE_ROUTE_FIELDS) {
+            if (!json.has(field)) {
+                json.add(field, JsonNull.INSTANCE);
+            }
+        }
+        return json;
     }
 
     protected BigDecimal roundBigDecimal(BigDecimal value) {
