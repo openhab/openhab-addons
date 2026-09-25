@@ -953,7 +953,7 @@ public class TeslaChannelSelectorProxy {
             }
         },
         STATE("state", "state", StringType.class, false),
-        STEERINGWHEEL_HEATER("steering_wheel_heater", "steeringwheelheater", OnOffType.class, true) {
+        STEERINGWHEEL_HEATER("steering_wheel_heater", "steeringwheelheater", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
                 if ("true".equals(s) || "1".equals(s)) {
