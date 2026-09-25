@@ -217,9 +217,10 @@ class RachioWebhookApiTest {
                 }
                 """;
 
-        List<String> eventTypes = RachioApi.parseWebhookEventTypeList(json);
+        Map<RachioWebhookResourceType, Set<String>> eventTypes = RachioApi.parseWebhookEventTypeMap(json);
+        List<String> flattenedEventTypes = eventTypes.values().stream().flatMap(Set::stream).toList();
 
-        assertThat(eventTypes, contains(EVENT_DEVICE_ZONE_RUN_STARTED, EVENT_SCHEDULE_STARTED));
+        assertThat(flattenedEventTypes, contains(EVENT_DEVICE_ZONE_RUN_STARTED, EVENT_SCHEDULE_STARTED));
     }
 
     @Test
@@ -405,7 +406,7 @@ class RachioWebhookApiTest {
 
         JsonObject payload = JsonParser.parseString(http.postBodies.getFirst()).getAsJsonObject();
         String payloadUrl = payload.get("url").getAsString();
-        String sanitizedUrl = RachioApi.sanitizeWebhookUrlForDiagnostic(payloadUrl);
+        String sanitizedUrl = RachioApi.callbackUrlLogReference(payloadUrl);
 
         assertThat(payloadUrl, is("https://rachio-test:test-secret-123@webhook.site/57b-example"));
         assertThat(new URI(payloadUrl).getRawUserInfo(), is("rachio-test:test-secret-123"));
@@ -456,7 +457,7 @@ class RachioWebhookApiTest {
         String payloadUrl = payload.get("url").getAsString();
 
         assertThat(payloadUrl, is("https://rachio%20test:test-secret-123%3A%2F%3F%40@webhook.site/57b-example"));
-        assertThat(RachioApi.sanitizeWebhookUrlForDiagnostic(payloadUrl).startsWith("callbackUrlHash="), is(true));
+        assertThat(RachioApi.callbackUrlLogReference(payloadUrl).startsWith("callbackUrlHash="), is(true));
     }
 
     @Test
@@ -471,7 +472,7 @@ class RachioWebhookApiTest {
 
         JsonObject payload = JsonParser.parseString(http.postBodies.getFirst()).getAsJsonObject();
         String payloadUrl = payload.get("url").getAsString();
-        String sanitizedUrl = RachioApi.sanitizeWebhookUrlForDiagnostic(payloadUrl);
+        String sanitizedUrl = RachioApi.callbackUrlLogReference(payloadUrl);
 
         assertThat(http.getUrls.getFirst(), containsString(APIURL_DEV_QUERY_WEBHOOK + "/device-id/webhook"));
         assertThat(http.postUrls.getFirst(), containsString(APIURL_DEV_POST_WEBHOOK));

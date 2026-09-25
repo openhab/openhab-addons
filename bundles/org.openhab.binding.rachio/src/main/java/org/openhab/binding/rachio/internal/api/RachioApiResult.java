@@ -75,17 +75,6 @@ public class RachioApiResult {
             return;
         }
 
-        if (isRateLimitCritical()) {
-            logger.warn("Remaining number of API calls is getting critical: limit={}, remaining={}, reset at {}",
-                    this.rateLimit, this.rateRemaining, this.rateReset);
-            return;
-        }
-        if (isRateLimitWarning()) {
-            logger.warn("Remaining number of API calls is low: limit={}, remaining={}, reset at {}", this.rateLimit,
-                    this.rateRemaining, this.rateReset);
-            return;
-        }
-
         logger.trace("API rate limit: remaining={}, limit={}, reset at {}", this.rateRemaining, this.rateLimit,
                 this.rateReset);
     }

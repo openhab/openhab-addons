@@ -30,16 +30,12 @@ public class RachioApiThrottledException extends RachioApiException {
 
     private final Priority priority;
     private final RequestPurpose requestPurpose;
-    private final double budgetRate;
-    private final double currentRate;
     private final Duration suggestedRetryDelay;
 
     public RachioApiThrottledException(RateLimitThrottleException throttle, RachioApiResult result) {
         super("RachioApi: " + throttle.toString(), result);
         this.priority = throttle.priority;
         this.requestPurpose = throttle.requestPurpose;
-        this.budgetRate = throttle.budgetRate;
-        this.currentRate = throttle.currentRate;
         this.suggestedRetryDelay = throttle.suggestedRetryDelay;
     }
 
@@ -49,14 +45,6 @@ public class RachioApiThrottledException extends RachioApiException {
 
     public RequestPurpose getRequestPurpose() {
         return requestPurpose;
-    }
-
-    public double getBudgetRate() {
-        return budgetRate;
-    }
-
-    public double getCurrentRate() {
-        return currentRate;
     }
 
     public Duration getSuggestedRetryDelay() {

@@ -196,10 +196,6 @@ public class RachioZone extends RachioCloudZone {
         return startRunTime;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
     public synchronized void setEvent(String event, DateTimeType ts) {
         lastEvent = event;
         lastEventTime = ts;

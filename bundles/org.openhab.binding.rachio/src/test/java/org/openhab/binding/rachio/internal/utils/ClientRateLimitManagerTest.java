@@ -13,6 +13,9 @@
 package org.openhab.binding.rachio.internal.utils;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitNotification.CRITICAL;
+import static org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitNotification.NONE;
+import static org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitNotification.WARNING;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -28,6 +31,20 @@ import org.junit.jupiter.api.Test;
  */
 @NonNullByDefault
 public class ClientRateLimitManagerTest {
+
+    @Test
+    public void rateLimitWarningsAreEmittedOnlyForBandOrResetTransitions() {
+        ClientRateLimitManager manager = manager();
+        String firstReset = Instant.now().plusSeconds(3600).toString();
+        String secondReset = Instant.now().plusSeconds(7200).toString();
+
+        assertEquals(WARNING, manager.updateRateLimit(1700, 190, firstReset));
+        assertEquals(NONE, manager.updateRateLimit(1700, 150, firstReset));
+        assertEquals(CRITICAL, manager.updateRateLimit(1700, 100, firstReset));
+        assertEquals(NONE, manager.updateRateLimit(1700, 50, firstReset));
+        assertEquals(NONE, manager.updateRateLimit(1700, 1400, secondReset));
+        assertEquals(WARNING, manager.updateRateLimit(1700, 190, secondReset));
+    }
 
     @Test
     public void outOfOrderResponsesCannotIncreaseRemainingBudget() {

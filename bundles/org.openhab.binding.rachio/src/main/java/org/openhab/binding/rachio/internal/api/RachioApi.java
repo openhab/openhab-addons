@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -79,6 +78,7 @@ import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookResourceType
 import org.openhab.binding.rachio.internal.api.webhook.RachioWebhookTarget;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.Priority;
+import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitNotification;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RateLimitThrottleException;
 import org.openhab.binding.rachio.internal.utils.ClientRateLimitManager.RequestPurpose;
 import org.openhab.core.thing.Thing;
@@ -132,10 +132,6 @@ public class RachioApi {
         return lastApiResult;
     }
 
-    protected void setApiResult(RachioApiResult result) {
-        lastApiResult = result;
-    }
-
     private void throttleIfNeeded(Priority priority, RequestPurpose requestPurpose) throws RachioApiException {
         try {
             rateLimitManager.tryThrottle(priority, requestPurpose);
@@ -149,7 +145,20 @@ public class RachioApi {
             return;
         }
         int rateRemaining = result.hasKnownRateRemaining() ? result.rateRemaining : -1;
-        rateLimitManager.updateRateLimit(result.rateLimit, rateRemaining, result.rateReset);
+        RateLimitNotification notification = rateLimitManager.updateRateLimit(result.rateLimit, rateRemaining,
+                result.rateReset);
+        switch (notification) {
+            case CRITICAL:
+                logger.warn("Remaining number of API calls is getting critical: limit={}, remaining={}, reset at {}",
+                        result.rateLimit, result.rateRemaining, result.rateReset);
+                break;
+            case WARNING:
+                logger.warn("Remaining number of API calls is low: limit={}, remaining={}, reset at {}",
+                        result.rateLimit, result.rateRemaining, result.rateReset);
+                break;
+            case NONE:
+                break;
+        }
     }
 
     private RachioApiResult recordApiResult(RachioApiResult result) {
@@ -206,11 +215,6 @@ public class RachioApi {
             recordApiException(e);
             throw e;
         }
-    }
-
-    private RachioApiResult httpDelete(String url, @Nullable String params, Priority priority)
-            throws RachioApiException {
-        return httpDelete(url, params, priority, RequestPurpose.USER_COMMAND);
     }
 
     private RachioApiResult httpDelete(String url, @Nullable String params, Priority priority,
@@ -273,8 +277,7 @@ public class RachioApi {
         this.rateLimitManager = Objects.requireNonNull(RATE_LIMIT_MANAGERS.computeIfAbsent(getMD5Hash(apikey),
                 key -> new ClientRateLimitManager(10, Duration.ofSeconds(30))));
         httpApi = new RachioHttp(httpClient, this.apikey);
-        if (!initializePersonId(priority, requestPurpose) || !initializeDevices(priority, requestPurpose)
-                || !initializeZones()) {
+        if (!initializePersonId(priority, requestPurpose) || !initializeDevices(priority, requestPurpose)) {
             throw new RachioApiException("API initialization failed!");
         }
     }
@@ -598,10 +601,6 @@ public class RachioApi {
         return true;
     }
 
-    public String getUserInfo() {
-        return !userName.isEmpty() ? fullName + "(" + userName + ", " + email + ")" : "";
-    }
-
     public void stopWatering(String deviceId) throws RachioApiException {
         logger.debug("Stop watering for device '{}'", deviceId);
         httpPut(APIURL_BASE + APIURL_DEV_PUT_STOP, "{ \"id\" : \"" + deviceId + "\" }", Priority.HIGH);
@@ -862,25 +861,6 @@ public class RachioApi {
         return RachioValveProgram.fromJson(json);
     }
 
-    public RachioValveProgram createValveProgramV2(RachioValveProgram program) throws RachioApiException {
-        logger.debug("Create Smart Hose Timer Program V2 '{}'.", program.getThingName());
-        String json = httpPost(APIURL_CLOUD_REST_BASE + PROGRAM_CREATE_PROGRAM_V2, GSON.toJson(program),
-                Priority.HIGH).resultString;
-        return RachioValveProgram.fromJson(json);
-    }
-
-    public RachioValveProgram updateValveProgramV2(RachioValveProgram program) throws RachioApiException {
-        logger.debug("Update Smart Hose Timer Program V2 '{}'.", program.id);
-        String json = httpPut(APIURL_CLOUD_REST_BASE + PROGRAM_UPDATE_PROGRAM_V2, GSON.toJson(program),
-                Priority.HIGH).resultString;
-        return RachioValveProgram.fromJson(json);
-    }
-
-    public void deleteValveProgram(String programId) throws RachioApiException {
-        logger.debug("Delete Smart Hose Timer Program '{}'.", programId);
-        httpDelete(APIURL_CLOUD_REST_BASE + PROGRAM_DELETE_PROGRAM + urlEncode(programId), null, Priority.HIGH);
-    }
-
     public RachioValveDayViewsResponse getValveDayViews(String valveId, LocalDate start, LocalDate end)
             throws RachioApiException {
         logger.debug("Load Smart Hose Timer summary for valve '{}' from {} to {}.", valveId, start, end);
@@ -1048,10 +1028,6 @@ public class RachioApi {
                 throw new RachioApiException(
                         "Unsupported PropertyService entity type. Expected locationId, baseStationId, or lightingAreaId.");
         }
-    }
-
-    public void getDeviceInfo(String deviceId) throws RachioApiException {
-        httpGet(APIURL_BASE + APIURL_GET_DEVICE + "/" + deviceId, null, Priority.MEDIUM);
     }
 
     public List<RachioApiLegacyWebHookEventType> listLegacyNotificationEventTypes() throws RachioApiException {
@@ -1330,10 +1306,6 @@ public class RachioApi {
         }
     }
 
-    static String sanitizeWebhookUrlForDiagnostic(@Nullable String url) {
-        return callbackUrlLogReference(url);
-    }
-
     private URI parseWebhookCallbackUri(String callbackUrl, boolean requireValidHost) throws RachioApiException {
         try {
             URI uri = new URI(callbackUrl);
@@ -1480,23 +1452,6 @@ public class RachioApi {
         }
     }
 
-    public List<String> listWebhookEventTypes() throws RachioApiException {
-        return listWebhookEventTypes(RequestPurpose.BACKGROUND_REFRESH);
-    }
-
-    public List<String> listWebhookEventTypes(RequestPurpose requestPurpose) throws RachioApiException {
-        Map<RachioWebhookResourceType, Set<String>> eventTypesByResourceType = listWebhookEventTypeMap(requestPurpose);
-        Set<String> eventTypes = new LinkedHashSet<>();
-        for (Set<String> resourceEventTypes : eventTypesByResourceType.values()) {
-            eventTypes.addAll(resourceEventTypes);
-        }
-        return new ArrayList<>(eventTypes);
-    }
-
-    public Map<RachioWebhookResourceType, Set<String>> listWebhookEventTypeMap() throws RachioApiException {
-        return listWebhookEventTypeMap(RequestPurpose.BACKGROUND_REFRESH);
-    }
-
     public Map<RachioWebhookResourceType, Set<String>> listWebhookEventTypeMap(RequestPurpose requestPurpose)
             throws RachioApiException {
         String json = httpGet(APIURL_CLOUD_REST_BASE + WEBHOOK_LIST_EVENT_TYPES, null, Priority.MEDIUM,
@@ -1504,14 +1459,6 @@ public class RachioApi {
         Map<RachioWebhookResourceType, Set<String>> eventTypesByResourceType = parseWebhookEventTypeMap(json);
         logger.debug("Loaded Rachio webhook event types: {}", formatWebhookEventTypeCounts(eventTypesByResourceType));
         return eventTypesByResourceType;
-    }
-
-    static List<String> parseWebhookEventTypeList(String json) {
-        Set<String> eventTypes = new LinkedHashSet<>();
-        for (Set<String> resourceEventTypes : parseWebhookEventTypeMap(json).values()) {
-            eventTypes.addAll(resourceEventTypes);
-        }
-        return new ArrayList<>(eventTypes);
     }
 
     static Map<RachioWebhookResourceType, Set<String>> parseWebhookEventTypeMap(String json) {
@@ -1769,10 +1716,6 @@ public class RachioApi {
             Map<String, RachioDevice> deviceSnapshot = Map.copyOf(devices);
             return new DeviceCatalog(deviceSnapshot, RachioDiscoverySnapshot.fromDevices(deviceSnapshot));
         }
-    }
-
-    public boolean initializeZones() {
-        return true;
     }
 
     public Map<String, String> fillProperties() {

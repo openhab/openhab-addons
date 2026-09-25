@@ -339,10 +339,6 @@ public class RachioEventGsonDTO {
         return !isBlank(resourceId) || !isBlank(timestamp) || !isBlank(eventType) || !isBlank(resourceType);
     }
 
-    public boolean hasModernWebhookMarkers() {
-        return hasStrongModernWebhookMarkers() || hasWeakModernWebhookHints();
-    }
-
     public void normalizeLegacyNotificationEvent() {
         String normalizedType = getLegacyNotificationType(type);
         if (normalizedType != null) {

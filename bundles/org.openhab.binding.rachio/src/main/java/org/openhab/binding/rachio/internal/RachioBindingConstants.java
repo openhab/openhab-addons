@@ -308,14 +308,11 @@ public class RachioBindingConstants {
     public static final String VALVE_STOP_WATERING = "/valve/stopWatering";
 
     public static final String PROGRAM_CREATE_SKIP_OVERRIDES = "/program/createSkipOverrides";
-    public static final String PROGRAM_DELETE_PROGRAM = "/program/deleteProgram/";
     public static final String PROGRAM_DELETE_SKIP_OVERRIDES = "/program/deleteSkipOverrides";
     public static final String PROGRAM_GET_PROGRAM = "/program/getProgram/";
     public static final String PROGRAM_LIST_PROGRAMS = "/program/listPrograms/";
-    public static final String PROGRAM_CREATE_PROGRAM_V2 = "/program/createProgramV2";
     public static final String PROGRAM_GET_PROGRAM_V2 = "/program/getProgramV2/";
     public static final String PROGRAM_LIST_PROGRAMS_V2 = "/program/listProgramsV2";
-    public static final String PROGRAM_UPDATE_PROGRAM_V2 = "/program/updateProgramV2";
     public static final String PROGRAM_CREATE_PLANNED_RUN_SKIP_OVERRIDES = "/program/createPlannedRunSkipOverrides";
     public static final String PROGRAM_DELETE_PLANNED_RUN_SKIP_OVERRIDES = "/program/deletePlannedRunSkipOverrides";
     public static final String PROGRAM_QUERY_BASE_STATION_ID = "resourceId.baseStationId";

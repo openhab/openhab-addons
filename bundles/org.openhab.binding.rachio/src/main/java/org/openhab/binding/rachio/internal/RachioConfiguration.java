@@ -15,11 +15,9 @@ package org.openhab.binding.rachio.internal;
 import static org.openhab.binding.rachio.internal.RachioBindingConstants.*;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,7 +40,6 @@ public class RachioConfiguration {
             PARAM_HOSE_SUMMARY_LOOKBACK_DAYS, PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS);
 
     private final Logger logger = LoggerFactory.getLogger(RachioConfiguration.class);
-    private final Set<String> configuredParameters = new HashSet<>();
 
     public String apikey = "";
     public int pollingInterval = DEFAULT_POLLING_INTERVAL_SEC;
@@ -150,7 +147,6 @@ public class RachioConfiguration {
                 continue;
             }
 
-            configuredParameters.add(parameterName);
             if (parameterName.equals(PARAM_APIKEY)) {
                 apikey = value;
             } else if (parameterName.equals(PARAM_POLLING_INTERVAL)) {
@@ -186,11 +182,6 @@ public class RachioConfiguration {
                         PARAM_HOSE_SUMMARY_LOOKAHEAD_DAYS);
             }
         }
-    }
-
-    public boolean hasConfiguredValue(String parameterName) {
-        String canonicalParameterName = canonicalParameterName(parameterName);
-        return canonicalParameterName != null && configuredParameters.contains(canonicalParameterName);
     }
 
     private static @Nullable String canonicalParameterName(String key) {

@@ -29,8 +29,11 @@ import com.google.gson.Gson;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class RachioUtils {
+public final class RachioUtils {
     private static final Gson GSON = new Gson();
+
+    private RachioUtils() {
+    }
 
     public static String getString(@Nullable String value) {
         return value != null ? value : "";
@@ -72,70 +75,11 @@ public class RachioUtils {
         return first == second; // NOPMD - lifecycle guards intentionally require reference identity
     }
 
-    public static String substringBefore(@Nullable String string, String pattern) {
-        if (string != null) {
-            int pos = string.indexOf(pattern);
-            if (pos > 0) {
-                return string.substring(0, pos);
-            }
-        }
-        return "";
-    }
-
-    public static String substringBeforeLast(@Nullable String string, String pattern) {
-        if (string != null) {
-            int pos = string.lastIndexOf(pattern);
-            if (pos > 0) {
-                return string.substring(0, pos);
-            }
-        }
-        return "";
-    }
-
-    public static String substringAfter(@Nullable String string, String pattern) {
-        if (string != null) {
-            int pos = string.indexOf(pattern);
-            if (pos != -1) {
-                return string.substring(pos + pattern.length());
-            }
-        }
-        return "";
-    }
-
-    public static String substringAfterLast(@Nullable String string, String pattern) {
-        if (string == null) {
-            return "";
-        }
-        int pos = string.lastIndexOf(pattern);
-        if (pos != -1) {
-            return string.substring(pos + pattern.length());
-        }
-        return string;
-    }
-
-    public static String substringBetween(@Nullable String string, String begin, String end) {
-        if (string != null) {
-            int s = string.indexOf(begin);
-            if (s != -1) {
-                // The end tag might be included before the start tag, e.g.
-                // when using "http://" and ":" to get the IP from http://192.168.1.1:8081/xxx
-                // therefore make it 2 steps
-                String result = string.substring(s + begin.length());
-                return substringBefore(result, end);
-            }
-        }
-        return "";
-    }
-
     public static String urlEncode(String input) {
         return URLEncoder.encode(input, StandardCharsets.UTF_8);
     }
 
-    public static long now() {
-        return System.currentTimeMillis() / 1000L;
-    }
-
     public static DateTimeType getTimestamp() {
-        return new DateTimeType(Instant.ofEpochSecond(now()));
+        return new DateTimeType(Instant.now());
     }
 }

@@ -422,7 +422,8 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         return zoneNumber > 0 ? Integer.toString(zoneNumber) : "unknown";
     }
 
-    private String getZoneLogSubject(String zoneName) {
+    /** Returns a concise zone label for log messages. */
+    String getZoneLogSubject(String zoneName) {
         if (zoneName.toLowerCase(Locale.ROOT).startsWith("zone ")) {
             return zoneName;
         }

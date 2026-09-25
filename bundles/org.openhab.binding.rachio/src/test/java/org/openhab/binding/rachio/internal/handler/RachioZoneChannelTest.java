@@ -35,8 +35,10 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -50,6 +52,13 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 @SuppressWarnings("null")
 class RachioZoneChannelTest {
+    @Test
+    void zoneLogSubjectDoesNotDuplicateZonePrefix() {
+        RachioZoneHandler zoneHandler = new RachioZoneHandler(Mockito.mock(Thing.class));
+
+        assertThat(zoneHandler.getZoneLogSubject("Zone 7"), is("Zone 7"));
+    }
+
     @Test
     void thingXmlFilesAreWellFormed()
             throws IOException, ParserConfigurationException, SAXException, URISyntaxException {

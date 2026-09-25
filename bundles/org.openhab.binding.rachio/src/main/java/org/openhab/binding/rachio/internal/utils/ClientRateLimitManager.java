@@ -37,6 +37,13 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ClientRateLimitManager {
 
+    /** Notification emitted when a response enters a new low-quota band or reset window. */
+    public enum RateLimitNotification {
+        NONE,
+        WARNING,
+        CRITICAL;
+    }
+
     public enum Priority {
         VERY_LOW,
         LOW,
@@ -67,6 +74,8 @@ public class ClientRateLimitManager {
     private long bucket0EndMillis = 0;
     private long total = 0;
     private boolean rateLimitKnown = false;
+    private RateLimitNotification lastRateLimitNotification = RateLimitNotification.NONE;
+    private Instant lastNotificationResetTime = Instant.MAX;
 
     public ClientRateLimitManager(int numBuckets, Duration bucketSize) {
         this(numBuckets, bucketSize, System::currentTimeMillis);
@@ -86,7 +95,14 @@ public class ClientRateLimitManager {
         this.buckets = new int[numBuckets];
     }
 
-    public synchronized void updateRateLimit(int rateLimitCap, int rateRemaining, @Nullable String rateReset) {
+    /**
+     * Updates the shared quota state and reports only transitions that merit a warning log entry.
+     *
+     * @return the newly entered warning band, or {@link RateLimitNotification#NONE} when no log is needed
+     */
+    public synchronized RateLimitNotification updateRateLimit(int rateLimitCap, int rateRemaining,
+            @Nullable String rateReset) {
+        RateLimitNotification notification = RateLimitNotification.NONE;
         if (rateLimitCap > 0 && rateRemaining >= 0) {
             Instant updatedResetTime = rateResetTime;
             if (rateReset != null && !rateReset.isBlank()) {
@@ -112,18 +128,20 @@ public class ClientRateLimitManager {
                 if (firstKnownLimit || newerResetWindow) {
                     initializationBootstrapRemaining = calculateInitializationBootstrapAllowance();
                 }
+                RateLimitNotification currentNotification = rateLimitNotification(this.rateRemaining);
+                if (currentNotification == RateLimitNotification.NONE) {
+                    lastRateLimitNotification = RateLimitNotification.NONE;
+                    lastNotificationResetTime = Instant.MAX;
+                } else if (currentNotification != lastRateLimitNotification
+                        || !this.rateResetTime.equals(lastNotificationResetTime)) {
+                    notification = currentNotification;
+                    lastRateLimitNotification = currentNotification;
+                    lastNotificationResetTime = this.rateResetTime;
+                }
             }
         }
         logRequest();
-    }
-
-    public synchronized boolean shouldThrottle(Priority priority) {
-        try {
-            tryThrottle(priority);
-        } catch (RateLimitThrottleException e) {
-            return true;
-        }
-        return false;
+        return notification;
     }
 
     public synchronized void tryThrottle(Priority priority) throws RateLimitThrottleException {
@@ -185,10 +203,6 @@ public class ClientRateLimitManager {
         }
     }
 
-    public synchronized int getRateLimitCap() {
-        return rateLimitCap;
-    }
-
     public synchronized int getRateRemaining() {
         return rateRemaining;
     }
@@ -197,8 +211,14 @@ public class ClientRateLimitManager {
         return isKnownResetTime(rateResetTime) ? rateResetTime.toString() : "";
     }
 
-    public synchronized int getInitializationBootstrapRemaining() {
-        return initializationBootstrapRemaining;
+    private RateLimitNotification rateLimitNotification(int remaining) {
+        if (remaining > 0 && remaining <= RACHIO_RATE_LIMIT_CRITICAL) {
+            return RateLimitNotification.CRITICAL;
+        }
+        if (remaining > 0 && remaining < RACHIO_RATE_LIMIT_WARNING) {
+            return RateLimitNotification.WARNING;
+        }
+        return RateLimitNotification.NONE;
     }
 
     private int calculateInitializationBootstrapAllowance() {
