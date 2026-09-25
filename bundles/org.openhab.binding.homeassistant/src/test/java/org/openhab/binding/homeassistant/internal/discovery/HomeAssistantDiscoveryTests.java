@@ -15,6 +15,7 @@ package org.openhab.binding.homeassistant.internal.discovery;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -25,7 +26,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -188,6 +192,39 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
     }
 
     @Test
+    public void testRemovedThingIsNotRepublished() throws Exception {
+        var blockingDiscovery = new BlockingHomeAssistantDiscovery(channelTypeProvider, PYTHON);
+        discovery = blockingDiscovery;
+        String topic = "homeassistant/climate/0x847127fffe11dd6a_climate_zigbee2mqtt/config";
+        discovery.receivedMessage(HA_UID, bridgeConnection, topic,
+                getResourceAsByteArray("component/configTS0601ClimateThermostat.json"));
+
+        try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+            var publication = executor.submit(discovery::publishResults);
+            assertTrue(blockingDiscovery.publicationStarted.await(DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS));
+
+            CountDownLatch removalStarted = new CountDownLatch(1);
+            var removal = executor.submit(() -> {
+                removalStarted.countDown();
+                discovery.topicVanished(HA_UID, bridgeConnection, topic);
+            });
+            try {
+                assertTrue(removalStarted.await(DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS));
+                assertThrows(TimeoutException.class, () -> removal.get(500, TimeUnit.MILLISECONDS));
+            } finally {
+                blockingDiscovery.continuePublication.countDown();
+            }
+            publication.get(DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            removal.get(DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        }
+
+        assertThat(blockingDiscovery.notificationOrder, contains("discovered", "removed"));
+        var discoveryListener = new LatchDiscoveryListener();
+        discovery.addDiscoveryListener(discoveryListener);
+        assertTrue(discoveryListener.getDiscoveryResults().isEmpty());
+    }
+
+    @Test
     public void testDeviceDiscoveryAddsFullPayloadToDeviceConfigProperty() throws Exception {
         var discoveryListener = new LatchDiscoveryListener();
         var latch = discoveryListener.createWaitForThingsDiscoveredLatch(1);
@@ -254,6 +291,37 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         public TestHomeAssistantDiscovery(MqttChannelTypeProvider typeProvider, HomeAssistantPythonBridge python) {
             super(null, python);
             this.typeProvider = typeProvider;
+        }
+    }
+
+    private static class BlockingHomeAssistantDiscovery extends TestHomeAssistantDiscovery {
+        private final CountDownLatch publicationStarted = new CountDownLatch(1);
+        private final CountDownLatch continuePublication = new CountDownLatch(1);
+        private final CopyOnWriteArrayList<String> notificationOrder = new CopyOnWriteArrayList<>();
+
+        public BlockingHomeAssistantDiscovery(MqttChannelTypeProvider typeProvider, HomeAssistantPythonBridge python) {
+            super(typeProvider, python);
+        }
+
+        @Override
+        protected void thingDiscovered(DiscoveryResult result) {
+            publicationStarted.countDown();
+            try {
+                if (!continuePublication.await(DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                    throw new AssertionError("Publication was not released");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new AssertionError(e);
+            }
+            super.thingDiscovered(result);
+            notificationOrder.add("discovered");
+        }
+
+        @Override
+        protected void thingRemoved(ThingUID thingUID) {
+            super.thingRemoved(thingUID);
+            notificationOrder.add("removed");
         }
     }
 
