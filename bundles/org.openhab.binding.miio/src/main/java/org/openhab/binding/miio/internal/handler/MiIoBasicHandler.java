@@ -69,6 +69,7 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,6 +137,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             } else {
                 logger.debug("Refresh {} skipped. Already refreshing", channelUID);
             }
+            return;
+        }
+        if (command instanceof State state && state instanceof OpenClosedType) {
             return;
         }
         if (handleCommandsChannels(channelUID, command)) {
