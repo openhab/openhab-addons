@@ -14,6 +14,7 @@ package org.openhab.binding.millheat.internal;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -49,6 +51,8 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.osgi.framework.BundleContext;
@@ -334,6 +338,29 @@ public class MillHeatAccountHandlerTest {
 
         verify(postRequestedFor(urlEqualTo("/customer/auth/refresh")).withHeader("Authorization",
                 equalTo("Bearer test-refresh-token")));
+    }
+
+    @Test
+    public void testDisposeDuringSignInPublishesNoStatus() throws Exception {
+        // Sign-in is held open long enough to dispose the handler while it is in flight. Whatever
+        // the call then returns, nothing may be published and no token may survive.
+        stubFor(post(urlEqualTo("/customer/auth/sign-in"))
+                .willReturn(okJson(fixture("/sign_in_ok.json")).withFixedDelay(1500)));
+        stubModelEndpoints();
+
+        final MillheatAccountHandler subject = newHandler();
+        subject.initialize();
+        Thread.sleep(400);
+        subject.dispose();
+
+        // Well past the point where the delayed sign-in has returned and connect() has resumed.
+        Thread.sleep(3000);
+
+        final ArgumentCaptor<ThingStatusInfo> status = ArgumentCaptor.forClass(ThingStatusInfo.class);
+        org.mockito.Mockito.verify(callbackMock, org.mockito.Mockito.atLeast(0)).statusUpdated(any(), status.capture());
+        assertTrue(status.getAllValues().stream().noneMatch(s -> s.getStatus() == ThingStatus.ONLINE),
+                "a disposed handler must not come ONLINE, saw " + status.getAllValues());
+        assertFalse(subject.getModel().getHomes().size() > 0, "a disposed handler must not install a model");
     }
 
     @Test

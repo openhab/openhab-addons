@@ -138,12 +138,15 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
     }
 
     private void connect() {
-        if (disposed) {
+        if (abandonIfDisposed()) {
             return;
         }
         try {
             signIn();
         } catch (final MillheatCommunicationException e) {
+            if (abandonIfDisposed()) {
+                return;
+            }
             // Bad credentials are a configuration problem; anything else is worth retrying.
             if (e.getHttpStatus() == HttpStatus.UNAUTHORIZED_401 || e.getHttpStatus() == HttpStatus.BAD_REQUEST_400) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -154,13 +157,15 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
             }
             return;
         }
+        // Signing in repopulates the client, so a dispose that ran during it has already cleared
+        // tokens that now exist again.
+        if (abandonIfDisposed()) {
+            return;
+        }
 
         try {
             final MillheatModel refreshed = refreshModel();
-            // Sign-in and the initial refresh are network calls, so the handler may have been
-            // disposed while they ran. Discard the result rather than starting polling and
-            // discovery on a handler that is going away.
-            if (disposed) {
+            if (abandonIfDisposed()) {
                 return;
             }
             model = refreshed;
@@ -174,12 +179,27 @@ public class MillheatAccountHandler extends BaseBridgeHandler {
                 scheduler.execute(localDiscoveryService::scanNow);
             }
         } catch (final MillheatCommunicationException e) {
+            if (abandonIfDisposed()) {
+                return;
+            }
             model = new MillheatModel(0);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error fetching initial data: " + e.getMessage());
             logger.debug("Error initializing Mill data", e);
             scheduleReinitialize();
         }
+    }
+
+    /**
+     * Whether the handler was disposed while a network call was in flight. Every exit taken because
+     * of it drops any tokens the call may have installed, so nothing outlives the handler.
+     */
+    private boolean abandonIfDisposed() {
+        if (!disposed) {
+            return false;
+        }
+        client.clearTokens();
+        return true;
     }
 
     private void scheduleReinitialize() {
