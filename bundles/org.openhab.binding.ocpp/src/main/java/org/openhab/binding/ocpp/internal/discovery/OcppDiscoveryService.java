@@ -79,7 +79,7 @@ public class OcppDiscoveryService extends AbstractThingHandlerDiscoveryService<O
 
     /** Non-segment ids are Base64-encoded so distinct ids never collide on one ThingUID. */
     static String sanitize(String id) {
-        if (VALID_SEGMENT.matcher(id).matches()) {
+        if (VALID_SEGMENT.matcher(id).matches() && !id.startsWith("b64-")) {
             return id;
         }
         return "b64-" + Base64.getUrlEncoder().withoutPadding().encodeToString(id.getBytes(StandardCharsets.UTF_8));

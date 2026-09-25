@@ -45,6 +45,12 @@ class OcppDiscoveryServiceTest {
     }
 
     @Test
+    void anIdThatLooksEncodedDoesNotTakeAnotherChargersUid() {
+        assertNotEquals(OcppDiscoveryService.sanitize("site/charger"),
+                OcppDiscoveryService.sanitize(OcppDiscoveryService.sanitize("site/charger")));
+    }
+
+    @Test
     void anEncodedIdIsAValidSegmentAndDecodesBackToTheOriginal() {
         String id = "CP/x:1 ÿ";
         String segment = OcppDiscoveryService.sanitize(id);
