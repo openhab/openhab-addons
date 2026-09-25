@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "lock.openable_lock": {
+        "s": "locked",
+        "a": {
+          "friendly_name": "Openable Lock",
+          "supported_features": 1
+        },
+        "c": "01M3201RGBH51TCJNFMC7XJHYC",
+        "lc": 1789994787.339654
+      }
+    }
+  }
+}

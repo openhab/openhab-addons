@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.sun_next_dusk": {
+        "s": "2026-09-21T18:15:47+00:00",
+        "a": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dusk"
+        },
+        "c": "01M3202YVSFWKPTZX6BNKQ6VGR",
+        "lc": 1789994826.6174808
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "valve.front_garden",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "valve.front_garden",
+        "state": "open",
+        "attributes": {
+          "is_closed": false,
+          "friendly_name": "Front Garden",
+          "supported_features": 3
+        },
+        "last_changed": "2026-09-21T12:46:27.360699+00:00",
+        "last_reported": "2026-09-21T12:46:27.374810+00:00",
+        "last_updated": "2026-09-21T12:46:27.360699+00:00",
+        "context": {
+          "id": "01M3201RH08P1MRBMZD5DWAAM3",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

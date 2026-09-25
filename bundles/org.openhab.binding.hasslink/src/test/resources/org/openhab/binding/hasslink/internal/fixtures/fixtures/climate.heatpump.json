@@ -1,0 +1,43 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "climate.heatpump",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "climate.heatpump",
+        "state": "heat",
+        "attributes": {
+          "hvac_modes": [
+            "heat",
+            "off"
+          ],
+          "min_temp": 7.0,
+          "max_temp": 35.0,
+          "current_temperature": 25.0,
+          "temperature": 20.0,
+          "hvac_action": "heating",
+          "friendly_name": "HeatPump",
+          "supported_features": 385
+        },
+        "last_changed": "2026-09-21T12:46:27.331656+00:00",
+        "last_reported": "2026-09-21T12:46:27.372375+00:00",
+        "last_updated": "2026-09-21T12:46:27.331656+00:00",
+        "context": {
+          "id": "01M3201RG3N0HTZFA6C7W5HQMB",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

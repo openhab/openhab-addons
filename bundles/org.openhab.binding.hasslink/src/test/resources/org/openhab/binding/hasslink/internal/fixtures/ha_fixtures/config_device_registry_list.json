@@ -1,0 +1,2363 @@
+{
+  "id": 3,
+  "type": "result",
+  "success": true,
+  "result": [
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404DPX6KFJM3VGKREHFXW"
+      ],
+      "config_entries_subentries": {
+        "01M34404DPX6KFJM3VGKREHFXW": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404DPX6KFJM3VGKREHFXW",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.176881,
+      "disabled_by": null,
+      "entry_type": "service",
+      "hw_version": null,
+      "id": "49bf12077f0d8d4173b1aff69dfd58f8",
+      "identifiers": [
+        [
+          "sun",
+          "01M34404DPX6KFJM3VGKREHFXW"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.176947,
+      "name_by_user": null,
+      "name": "Sun",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404DPX6KFJM3VGKREHFXW",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.365559,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "940ce2dd3d638b7abf3937371d2566f1",
+      "identifiers": [
+        [
+          "demo",
+          "binary_1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.365955,
+      "name_by_user": null,
+      "name": "Basement Floor Wet",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.366328,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "40f6c0eab3c2c66ad0c3c01849131355",
+      "identifiers": [
+        [
+          "demo",
+          "binary_2"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.366366,
+      "name_by_user": null,
+      "name": "Movement Backyard",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.366684,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "37dae3520a2466f37d39522234c74179",
+      "identifiers": [
+        [
+          "demo",
+          "sensor_1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.366723,
+      "name_by_user": null,
+      "name": "Outside Temperature",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.367219,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "40fa6f0f193f30135768506c13593006",
+      "identifiers": [
+        [
+          "demo",
+          "push"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.36726,
+      "name_by_user": null,
+      "name": "Push",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.370537,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "70af7dbf80faa855d1d26bab95536c5c",
+      "identifiers": [
+        [
+          "demo",
+          "climate_1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.370573,
+      "name_by_user": null,
+      "name": "HeatPump",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.370937,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "461cb36f41b2532a36642fdc733ffa0e",
+      "identifiers": [
+        [
+          "demo",
+          "climate_2"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.370962,
+      "name_by_user": null,
+      "name": "Hvac",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.371268,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "217e4ce601f1cd7eb66bb2d761f0678f",
+      "identifiers": [
+        [
+          "demo",
+          "climate_3"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.371305,
+      "name_by_user": null,
+      "name": "Ecobee",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.37195,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "eacaf74b8e0c2bc85e9640572c49f22d",
+      "identifiers": [
+        [
+          "demo",
+          "cover_1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.371992,
+      "name_by_user": null,
+      "name": "Kitchen Window",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.372289,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "c83d367b53b7225de152057e66dd2990",
+      "identifiers": [
+        [
+          "demo",
+          "cover_2"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.372319,
+      "name_by_user": null,
+      "name": "Hall Window",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.372572,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "22f596d6da7582aca6c265948b2b20a1",
+      "identifiers": [
+        [
+          "demo",
+          "cover_3"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.372596,
+      "name_by_user": null,
+      "name": "Living Room Window",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.372903,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "ec066c7e290bb378f9d8b1abb7737b89",
+      "identifiers": [
+        [
+          "demo",
+          "cover_4"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.372941,
+      "name_by_user": null,
+      "name": "Garage Door",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.373244,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "bab6563bebe7fbc40930cc67d2b81d9d",
+      "identifiers": [
+        [
+          "demo",
+          "cover_5"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.37328,
+      "name_by_user": null,
+      "name": "Pergola Roof",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.373773,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "e755200dfa5e01ceb466be52afd05842",
+      "identifiers": [
+        [
+          "demo",
+          "date"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.373812,
+      "name_by_user": null,
+      "name": "Date",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.374365,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "005a5a60bc2312e6f09f3d31f57b7fa1",
+      "identifiers": [
+        [
+          "demo",
+          "datetime"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.374394,
+      "name_by_user": null,
+      "name": "Date and Time",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.376705,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "8e12389c98e1a7d7e36979031d69873b",
+      "identifiers": [
+        [
+          "demo",
+          "light_1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.376734,
+      "name_by_user": null,
+      "name": "Bed Light",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.377294,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "bd4f8fa3aefaf813f0ecab4421dc9a6a",
+      "identifiers": [
+        [
+          "demo",
+          "light_2"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.37732,
+      "name_by_user": null,
+      "name": "Ceiling Lights",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.377633,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "cac1b0434808b8a47b9668ed20fb7e47",
+      "identifiers": [
+        [
+          "demo",
+          "light_3"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.377673,
+      "name_by_user": null,
+      "name": "Kitchen Lights",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.377994,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "c9bf89cb4cddeee572a8cce3366aeef9",
+      "identifiers": [
+        [
+          "demo",
+          "light_4"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.37803,
+      "name_by_user": null,
+      "name": "Office RGBW Lights",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.378405,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "451c899d3c57cc3074c279f0e6f7379b",
+      "identifiers": [
+        [
+          "demo",
+          "light_5"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.378456,
+      "name_by_user": null,
+      "name": "Living Room RGBWW Lights",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.378846,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "2cb83aed00344a3d6b7272fd4a156420",
+      "identifiers": [
+        [
+          "demo",
+          "light_6"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.378884,
+      "name_by_user": null,
+      "name": "Entrance Color + White Lights",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.381696,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "037ca55f3b4e3d4fa87a92543be30bee",
+      "identifiers": [
+        [
+          "notify",
+          "notify"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.381741,
+      "name_by_user": null,
+      "name": "Notifier",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.382338,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "5bec907489b1295ba96b6ebb8abcd1e3",
+      "identifiers": [
+        [
+          "demo",
+          "volume1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.382376,
+      "name_by_user": null,
+      "name": "volume",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.382742,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "f15c1c1a05af91ff2a2c6410397ff047",
+      "identifiers": [
+        [
+          "demo",
+          "pwm1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.382778,
+      "name_by_user": null,
+      "name": "PWM 1",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.383095,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "9fa7655919fb07aefcb5b9aae9f04611",
+      "identifiers": [
+        [
+          "demo",
+          "large_range"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.383132,
+      "name_by_user": null,
+      "name": "Large Range",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.383444,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "46d0be97507de869a5b71a63e683104b",
+      "identifiers": [
+        [
+          "demo",
+          "small_range"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.383481,
+      "name_by_user": null,
+      "name": "Small Range",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.383822,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "3c3283325f759c813b62d0cc31b6a2ed",
+      "identifiers": [
+        [
+          "demo",
+          "temp1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.38386,
+      "name_by_user": null,
+      "name": "Temperature setting",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.384773,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "1a8008d863f7d4064775da70efe17762",
+      "identifiers": [
+        [
+          "demo",
+          "speed"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.384815,
+      "name_by_user": null,
+      "name": "Speed",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.386339,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "ae45bbf1f66357c9911fa9ae0b2347cf",
+      "identifiers": [
+        [
+          "demo",
+          "sensor_2"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.386375,
+      "name_by_user": null,
+      "name": "Outside Humidity",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.386736,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "f4b096712080b2b2e83b8c62653fcb34",
+      "identifiers": [
+        [
+          "demo",
+          "sensor_3"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.386774,
+      "name_by_user": null,
+      "name": "Carbon monoxide",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.387126,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "2bb074b6cfc9f87bc4ebe1496af8d9a0",
+      "identifiers": [
+        [
+          "demo",
+          "sensor_4"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.387163,
+      "name_by_user": null,
+      "name": "Carbon dioxide",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.387819,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "a06c49312fbba15b2e78eb86096c10cd",
+      "identifiers": [
+        [
+          "demo",
+          "sensor_5"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.387864,
+      "name_by_user": null,
+      "name": "Power consumption",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.388366,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "f2828a080226d39b90adb727ff720e7b",
+      "identifiers": [
+        [
+          "demo",
+          "sensor_6"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.388403,
+      "name_by_user": null,
+      "name": "Total energy 1",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.388949,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "0bf2fa11b34e7586265ab6113cac0e5e",
+      "identifiers": [
+        [
+          "demo",
+          "sensor_7"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.388987,
+      "name_by_user": null,
+      "name": "Total energy 2",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.38946,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "d8993ba46f60efe4351129d9fea13be0",
+      "identifiers": [
+        [
+          "demo",
+          "sensor_8"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.389496,
+      "name_by_user": null,
+      "name": "Total gas 1",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.389961,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "315715ea1abe55b2c74cd72cf68f1e00",
+      "identifiers": [
+        [
+          "demo",
+          "sensor_9"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.390314,
+      "name_by_user": null,
+      "name": "Total gas 2",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.390712,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "d6d6353b1a861380ea80213502a993c4",
+      "identifiers": [
+        [
+          "demo",
+          "sensor_10"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.390737,
+      "name_by_user": null,
+      "name": "Thermostat",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.39179,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "d7a2b7384f86c547ace19000b2f66d9d",
+      "identifiers": [
+        [
+          "demo",
+          "switch1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.391818,
+      "name_by_user": null,
+      "name": "Decorative Lights",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.392061,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "5637900c29a7751c67ca0647872fc304",
+      "identifiers": [
+        [
+          "demo",
+          "switch2"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.392085,
+      "name_by_user": null,
+      "name": "AC",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.392465,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "f48c6351392da34d9df5b937a36b1746",
+      "identifiers": [
+        [
+          "demo",
+          "text"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.392489,
+      "name_by_user": null,
+      "name": "Text",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.39275,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "0b854f56dd29948a6d5c8813294fe917",
+      "identifiers": [
+        [
+          "demo",
+          "password"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.392774,
+      "name_by_user": null,
+      "name": "Password",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.393007,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "6be1f42124598bd1dd8d20c6a0626799",
+      "identifiers": [
+        [
+          "demo",
+          "text_1_to_5_char"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.393032,
+      "name_by_user": null,
+      "name": "Text with 1 to 5 characters",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.393271,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "55b80f7dca8b9db0d9ff456810804bfa",
+      "identifiers": [
+        [
+          "demo",
+          "text_lowercase"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.393308,
+      "name_by_user": null,
+      "name": "Text with only lower case characters",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.393915,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "ab5ccfca436f2cc38c495d5e2577797c",
+      "identifiers": [
+        [
+          "demo",
+          "time"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.393954,
+      "name_by_user": null,
+      "name": "Time",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.394622,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "b2067bbbfb7a2c14e33d89882a7949c9",
+      "identifiers": [
+        [
+          "demo",
+          "update_no_install"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.394666,
+      "name_by_user": null,
+      "name": "Demo Update No Install",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.395112,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "ec971978602492ee055db0cbe1cfdc5e",
+      "identifiers": [
+        [
+          "demo",
+          "update_2_date"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.395151,
+      "name_by_user": null,
+      "name": "Demo No Update",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.395487,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "65795562b2a3cbe4dfe91ab21ebf88a3",
+      "identifiers": [
+        [
+          "demo",
+          "update_addon"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.395522,
+      "name_by_user": null,
+      "name": "Demo add-on",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.395873,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "356c6fa70803e43ce98cf535129cd2aa",
+      "identifiers": [
+        [
+          "demo",
+          "update_light_bulb"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.395909,
+      "name_by_user": null,
+      "name": "Demo Living Room Bulb Update",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.396282,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "072b1b5c767f59110313c4d0242d8d01",
+      "identifiers": [
+        [
+          "demo",
+          "update_support_progress"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.396328,
+      "name_by_user": null,
+      "name": "Demo Update with Progress",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.396577,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "2b8ca0a46de10c5e1839af6df2bc58d6",
+      "identifiers": [
+        [
+          "demo",
+          "update_support_decimal_progress"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.3966,
+      "name_by_user": null,
+      "name": "Demo Update with Decimal Progress",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.397053,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "21cad6dc6983cdaa035d0bbd41b09c53",
+      "identifiers": [
+        [
+          "demo",
+          "vacuum_1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.397078,
+      "name_by_user": null,
+      "name": "Demo vacuum 0 ground floor",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.39741,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "1382b13b6233ce474fdc4535368bf627",
+      "identifiers": [
+        [
+          "demo",
+          "vacuum_2"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.397435,
+      "name_by_user": null,
+      "name": "Demo vacuum 1 first floor",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.397763,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "e2148cefbf13d5a980c32d2fd2f91802",
+      "identifiers": [
+        [
+          "demo",
+          "vacuum_3"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.397799,
+      "name_by_user": null,
+      "name": "Demo vacuum 2 second floor",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.39815,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "a5b9f2b9035c5aa37d6bdb27b6e428bb",
+      "identifiers": [
+        [
+          "demo",
+          "vacuum_4"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.398198,
+      "name_by_user": null,
+      "name": "Demo vacuum 3 third floor",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.398558,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "3952a4c8260d7ebcd28937ad16f919f9",
+      "identifiers": [
+        [
+          "demo",
+          "vacuum_5"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.398604,
+      "name_by_user": null,
+      "name": "Demo vacuum 4 fourth floor",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.399398,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "71d0ddaf6233c109e641ee6222ba076f",
+      "identifiers": [
+        [
+          "demo",
+          "valve_1"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.399444,
+      "name_by_user": null,
+      "name": "Front Garden",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.399787,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "4f9f6a84e4276858c26a39c446005ae4",
+      "identifiers": [
+        [
+          "demo",
+          "valve_2"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.399813,
+      "name_by_user": null,
+      "name": "Orchard",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.400138,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "f045aad4ac590adfdfad07446b58cef1",
+      "identifiers": [
+        [
+          "demo",
+          "valve_3"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.400178,
+      "name_by_user": null,
+      "name": "Back Garden",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M34404HBBAG6YDZSPNTZB884"
+      ],
+      "config_entries_subentries": {
+        "01M34404HBBAG6YDZSPNTZB884": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404HBBAG6YDZSPNTZB884",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.400494,
+      "disabled_by": null,
+      "entry_type": null,
+      "hw_version": null,
+      "id": "396338a630b1f50413d52fd1a03e9682",
+      "identifiers": [
+        [
+          "demo",
+          "valve_4"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": null,
+      "model": null,
+      "model_id": null,
+      "modified_at": 1790066037.400537,
+      "name_by_user": null,
+      "name": "Trees",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404HBBAG6YDZSPNTZB884",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": "homeassistant://config/backup",
+      "config_entries": [
+        "01M34404NKWJGMT25DKJ9JSWTG"
+      ],
+      "config_entries_subentries": {
+        "01M34404NKWJGMT25DKJ9JSWTG": [
+          null
+        ]
+      },
+      "config_entry_id": "01M34404NKWJGMT25DKJ9JSWTG",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066037.45338,
+      "disabled_by": null,
+      "entry_type": "service",
+      "hw_version": null,
+      "id": "3c0ea0298abf40cd00ff2314cd34c01b",
+      "identifiers": [
+        [
+          "backup",
+          "backup_manager"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": "Home Assistant",
+      "model": "Home Assistant Backup",
+      "model_id": null,
+      "modified_at": 1790066037.45344,
+      "name_by_user": null,
+      "name": "Backup",
+      "parent_device_id": null,
+      "primary_config_entry": "01M34404NKWJGMT25DKJ9JSWTG",
+      "serial_number": null,
+      "sw_version": "2026.9.3",
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": null,
+      "config_entries": [
+        "01M344B2S1B4DHQYR8NYCN8TMP"
+      ],
+      "config_entries_subentries": {
+        "01M344B2S1B4DHQYR8NYCN8TMP": [
+          null
+        ]
+      },
+      "config_entry_id": "01M344B2S1B4DHQYR8NYCN8TMP",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066396.227691,
+      "disabled_by": null,
+      "entry_type": "service",
+      "hw_version": null,
+      "id": "ddcf0ae8e95a3f77366d068d627de884",
+      "identifiers": [
+        [
+          "google_translate",
+          "01M344B2S1B4DHQYR8NYCN8TMP"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": "Google",
+      "model": "Google Translate TTS",
+      "model_id": null,
+      "modified_at": 1790066396.227766,
+      "name_by_user": null,
+      "name": "Google Translate en com",
+      "parent_device_id": null,
+      "primary_config_entry": "01M344B2S1B4DHQYR8NYCN8TMP",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    },
+    {
+      "area_id": null,
+      "configuration_url": "https://www.met.no/en",
+      "config_entries": [
+        "01M344B2RZEXGHVED9QAP13XQD"
+      ],
+      "config_entries_subentries": {
+        "01M344B2RZEXGHVED9QAP13XQD": [
+          null
+        ]
+      },
+      "config_entry_id": "01M344B2RZEXGHVED9QAP13XQD",
+      "config_subentry_id": null,
+      "connections": [],
+      "created_at": 1790066396.955355,
+      "disabled_by": null,
+      "entry_type": "service",
+      "hw_version": null,
+      "id": "71be552bf5414f7252ac4f32a6d82a2f",
+      "identifiers": [
+        [
+          "met",
+          "01M344B2RZEXGHVED9QAP13XQD"
+        ]
+      ],
+      "labels": [],
+      "manufacturer": "Met.no",
+      "model": "Forecast",
+      "model_id": null,
+      "modified_at": 1790066396.955414,
+      "name_by_user": null,
+      "name": "Forecast",
+      "parent_device_id": null,
+      "primary_config_entry": "01M344B2RZEXGHVED9QAP13XQD",
+      "serial_number": null,
+      "sw_version": null,
+      "via_device_id": null
+    }
+  ]
+}

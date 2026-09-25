@@ -1,0 +1,34 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "light.bed_light": {
+        "s": "off",
+        "a": {
+          "min_color_temp_kelvin": 2000,
+          "max_color_temp_kelvin": 6535,
+          "effect_list": [
+            "rainbow",
+            "off"
+          ],
+          "supported_color_modes": [
+            "color_temp",
+            "hs"
+          ],
+          "effect": null,
+          "color_mode": null,
+          "brightness": null,
+          "color_temp_kelvin": null,
+          "hs_color": null,
+          "rgb_color": null,
+          "xy_color": null,
+          "friendly_name": "Bed Light",
+          "supported_features": 4
+        },
+        "c": "01M3201RG9AW6TB0SAE3HMYVQZ",
+        "lc": 1789994787.3374035
+      }
+    }
+  }
+}

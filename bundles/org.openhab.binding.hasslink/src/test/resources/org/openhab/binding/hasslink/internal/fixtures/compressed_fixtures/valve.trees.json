@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "valve.trees": {
+        "s": "open",
+        "a": {
+          "is_closed": false,
+          "current_position": 30,
+          "friendly_name": "Trees",
+          "supported_features": 15
+        },
+        "c": "01M3201RH1PTF8VBWA36551ZYF",
+        "lc": 1789994787.3616552
+      }
+    }
+  }
+}

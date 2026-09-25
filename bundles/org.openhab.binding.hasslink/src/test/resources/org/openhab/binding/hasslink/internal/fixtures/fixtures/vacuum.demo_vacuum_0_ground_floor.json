@@ -1,0 +1,42 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "vacuum.demo_vacuum_0_ground_floor",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "vacuum.demo_vacuum_0_ground_floor",
+        "state": "docked",
+        "attributes": {
+          "fan_speed_list": [
+            "min",
+            "medium",
+            "high",
+            "max"
+          ],
+          "fan_speed": "medium",
+          "cleaned_area": 0,
+          "friendly_name": "Demo vacuum 0 ground floor",
+          "supported_features": 32700
+        },
+        "last_changed": "2026-09-21T12:46:27.359147+00:00",
+        "last_reported": "2026-09-21T12:46:27.374563+00:00",
+        "last_updated": "2026-09-21T12:46:27.359147+00:00",
+        "context": {
+          "id": "01M3201RGZTPMQWGF6C9MVWWND",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

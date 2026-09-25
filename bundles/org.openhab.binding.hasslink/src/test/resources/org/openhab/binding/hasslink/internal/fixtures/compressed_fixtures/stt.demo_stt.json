@@ -1,0 +1,16 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "stt.demo_stt": {
+        "s": "unknown",
+        "a": {
+          "friendly_name": "Demo STT"
+        },
+        "c": "01M3201RGTSKQPZ6MYXVP0KQ9C",
+        "lc": 1789994787.3541021
+      }
+    }
+  }
+}

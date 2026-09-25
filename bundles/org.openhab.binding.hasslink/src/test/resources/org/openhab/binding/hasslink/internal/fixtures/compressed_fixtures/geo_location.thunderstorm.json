@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "geo_location.thunderstorm": {
+        "s": "44.1",
+        "a": {
+          "source": "demo",
+          "latitude": 52.51019,
+          "longitude": 5.50138,
+          "unit_of_measurement": "km",
+          "icon": "mdi:weather-lightning-rainy",
+          "friendly_name": "Thunderstorm"
+        },
+        "c": "01M32092TVR0ANY6JEZA0PC247",
+        "lc": 1789995027.2914765
+      }
+    }
+  }
+}

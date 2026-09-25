@@ -1,0 +1,44 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "weather.demo_weather_south",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "weather.demo_weather_south",
+        "state": "sunny",
+        "attributes": {
+          "temperature": 21.6,
+          "temperature_unit": "\u00b0C",
+          "humidity": 92,
+          "pressure": 1099.0,
+          "pressure_unit": "hPa",
+          "wind_speed": 1.8,
+          "wind_speed_unit": "km/h",
+          "visibility_unit": "km",
+          "precipitation_unit": "mm",
+          "attribution": "Powered by Home Assistant",
+          "friendly_name": "Demo Weather South",
+          "supported_features": 1
+        },
+        "last_changed": "2026-09-21T12:46:27.362758+00:00",
+        "last_reported": "2026-09-21T12:46:27.375199+00:00",
+        "last_updated": "2026-09-21T12:46:27.362758+00:00",
+        "context": {
+          "id": "01M3201RH2FSGXJBV1812WGF2S",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

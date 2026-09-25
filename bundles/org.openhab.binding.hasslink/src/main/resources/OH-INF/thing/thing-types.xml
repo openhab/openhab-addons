@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hasslink"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="server">
+		<label>Home Assistant Server</label>
+		<description>Persistent native WebSocket connection to Home Assistant Core</description>
+
+		<representation-property>serverEndpoint</representation-property>
+
+		<config-description>
+			<parameter-group name="filtering">
+				<label>Entity &amp; Device Filtering</label>
+				<description>Filter which Home Assistant entities and devices are discovered and imported as Things.</description>
+			</parameter-group>
+
+			<!-- Connection Parameters -->
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname / IP</label>
+				<description>Plain hostname or IP address, without http:// or https://</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>Port</label>
+				<default>8123</default>
+			</parameter>
+			<parameter name="token" type="text" required="true">
+				<context>password</context>
+				<label>Long-Lived Access Token</label>
+				<description>A Home Assistant Long-Lived Access Token, created under your Home Assistant user profile.</description>
+			</parameter>
+			<parameter name="secure" type="boolean" required="false">
+				<label>Secure Connection</label>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<!-- Filtering Behavior -->
+			<parameter name="ignoreIndependentEntities" type="boolean" groupName="filtering">
+				<label>Ignore Independent Entities</label>
+				<default>true</default>
+				<description>Exclude entities without a parent device (helpers, automations, person tracking) from Inbox discovery.</description>
+			</parameter>
+
+			<!-- Spatial Filters (Areas) -->
+			<parameter name="includedAreas" type="text" multiple="true" groupName="filtering">
+				<label>Included Areas</label>
+				<description>Only discover devices assigned to these Home Assistant Area IDs. Supports glob patterns (e.g.,
+					*bedroom*). Leave empty for all.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="excludedAreas" type="text" multiple="true" groupName="filtering">
+				<label>Excluded Areas</label>
+				<description>Home Assistant Area IDs or glob patterns to exclude from discovery.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<!-- Functional Filters (Domains) -->
+			<parameter name="includedDomains" type="text" multiple="true" groupName="filtering">
+				<label>Included Domains</label>
+				<description>Only discover entities belonging to these domains (e.g., light, switch, climate). Supports glob
+					patterns. Leave empty for all.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="excludedDomains" type="text" multiple="true" groupName="filtering">
+				<label>Excluded Domains</label>
+				<description>Home Assistant domains or glob patterns to exclude from discovery.</description>
+				<default>automation,conversation,counter,media_source,persistent_notification,stt,sun,timer,tts,zone</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<!-- Metadata Filters (Labels) -->
+			<parameter name="includedLabels" type="text" multiple="true" groupName="filtering">
+				<label>Included Labels</label>
+				<description>Only discover devices or entities matching these Home Assistant Labels/Tags or glob patterns (e.g.,
+					openhab*). Leave empty for all.</description>
+			</parameter>
+			<parameter name="excludedLabels" type="text" multiple="true" groupName="filtering">
+				<label>Excluded Labels</label>
+				<description>Home Assistant Labels/Tags or glob patterns to ignore on entities or parent devices during discovery.</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="device" extensible="string,number,switch,dimmer,contact,color,rollershutter,image,event">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+
+		<label>Home Assistant Device / Entity</label>
+		<description>Mapped Home Assistant device, standalone entity, or custom entity container</description>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter-group name="filtering">
+				<label>Channel Filtering</label>
+				<description>Filter which Home Assistant child entities are created as channels on this Thing.</description>
+			</parameter-group>
+
+			<!-- Primary Parameters -->
+			<parameter name="deviceId" type="text" required="false">
+				<label>Device ID</label>
+				<description>The Home Assistant device identifier. All entities belonging to this device will be added as channels.</description>
+			</parameter>
+			<parameter name="entityIds" type="text" multiple="true" required="false">
+				<label>Entity IDs</label>
+				<description>Home Assistant custom standalone entity identifiers or glob patterns. Use this to add entities that do
+					not belong to any device.</description>
+			</parameter>
+
+			<!-- Advanced Domain Filters -->
+			<parameter name="includedDomains" type="text" multiple="true" groupName="filtering">
+				<label>Included Domains (Whitelist)</label>
+				<description>Restrict created channels on this Thing to specific domains or glob patterns (e.g., switch, sensor*).</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="excludedDomains" type="text" multiple="true" groupName="filtering">
+				<label>Excluded Domains (Blacklist)</label>
+				<description>Domains or glob patterns to exclude from creating channels on this Thing (e.g., update*, button*).</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<!-- Advanced Label Filters -->
+			<parameter name="includedLabels" type="text" multiple="true" groupName="filtering">
+				<label>Included Labels (Whitelist)</label>
+				<description>Only create channels for child entities matching these Home Assistant Labels/Tags or glob patterns.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="excludedLabels" type="text" multiple="true" groupName="filtering">
+				<label>Excluded Labels (Blacklist)</label>
+				<description>Exclude child entities matching these Home Assistant Labels/Tags or glob patterns from becoming
+					channels.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<!-- Advanced Pinpoint Entity ID Filters & Overrides -->
+			<parameter name="includedEntities" type="text" multiple="true" groupName="filtering">
+				<label>Included Entities / Patterns (Pinpoint Override)</label>
+				<description>Specific Entity IDs or glob patterns (e.g., sensor.*bed*, *_temperature) to explicitly allow as
+					channels. Overrides domain and label rules above.</description>
+			</parameter>
+			<parameter name="excludedEntities" type="text" multiple="true" groupName="filtering">
+				<label>Excluded Entities / Patterns (Blacklist)</label>
+				<description>Specific Entity IDs or glob patterns (e.g., *battery*, *_rssi) to exclude from creating channels on
+					this Thing.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

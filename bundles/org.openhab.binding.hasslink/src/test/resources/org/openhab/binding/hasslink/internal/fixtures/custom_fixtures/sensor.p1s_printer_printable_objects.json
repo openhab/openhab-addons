@@ -1,0 +1,20 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.p1s_printer_printable_objects": {
+        "s": "2",
+        "a": {
+          "state_class": "measurement",
+          "objects": {
+            "358": "PrintedMainSpring-RingGear.stl",
+            "392": "CageTop.stl"
+          },
+          "friendly_name": "P1S Printer Printable objects"
+        }
+      }
+    }
+  }
+}
+

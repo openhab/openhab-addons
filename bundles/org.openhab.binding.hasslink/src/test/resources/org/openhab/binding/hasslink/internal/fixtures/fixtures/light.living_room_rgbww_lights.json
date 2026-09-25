@@ -1,0 +1,59 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "light.living_room_rgbww_lights",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "light.living_room_rgbww_lights",
+        "state": "on",
+        "attributes": {
+          "supported_color_modes": [
+            "rgbww"
+          ],
+          "color_mode": "rgbww",
+          "brightness": 180,
+          "hs_color": [
+            0.923,
+            50.98
+          ],
+          "rgb_color": [
+            255,
+            127,
+            125
+          ],
+          "xy_color": [
+            0.528,
+            0.315
+          ],
+          "rgbww_color": [
+            255,
+            0,
+            0,
+            255,
+            0
+          ],
+          "friendly_name": "Living Room RGBWW Lights",
+          "supported_features": 0
+        },
+        "last_changed": "2026-09-21T12:46:27.338649+00:00",
+        "last_reported": "2026-09-21T12:46:27.373296+00:00",
+        "last_updated": "2026-09-21T12:46:27.338649+00:00",
+        "context": {
+          "id": "01M3201RGAJXPEK7D4M4ZVSSFB",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

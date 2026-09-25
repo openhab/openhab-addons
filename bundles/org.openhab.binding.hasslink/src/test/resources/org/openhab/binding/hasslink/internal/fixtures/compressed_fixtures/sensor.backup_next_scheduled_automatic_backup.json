@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.backup_next_scheduled_automatic_backup": {
+        "s": "unknown",
+        "a": {
+          "device_class": "timestamp",
+          "friendly_name": "Backup Next scheduled automatic backup"
+        },
+        "c": "01M3201QZ0TTVVB30VRMS426CS",
+        "lc": 1789994786.7841282
+      }
+    }
+  }
+}

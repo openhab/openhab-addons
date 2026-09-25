@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "remote.remote_one": {
+        "s": "off",
+        "a": {
+          "friendly_name": "Remote One",
+          "supported_features": 0
+        },
+        "c": "01M3201RGG0BJG77MQQTHJMC1A",
+        "lc": 1789994787.34464
+      }
+    }
+  }
+}

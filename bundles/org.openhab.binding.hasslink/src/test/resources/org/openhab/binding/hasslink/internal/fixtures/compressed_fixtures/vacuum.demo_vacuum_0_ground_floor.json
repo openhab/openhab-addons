@@ -1,0 +1,25 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "vacuum.demo_vacuum_0_ground_floor": {
+        "s": "docked",
+        "a": {
+          "fan_speed_list": [
+            "min",
+            "medium",
+            "high",
+            "max"
+          ],
+          "fan_speed": "medium",
+          "cleaned_area": 0,
+          "friendly_name": "Demo vacuum 0 ground floor",
+          "supported_features": 32700
+        },
+        "c": "01M3201RGZTPMQWGF6C9MVWWND",
+        "lc": 1789994787.3591468
+      }
+    }
+  }
+}

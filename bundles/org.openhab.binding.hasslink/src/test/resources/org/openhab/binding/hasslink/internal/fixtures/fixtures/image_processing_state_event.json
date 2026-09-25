@@ -1,0 +1,54 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "image_processing.demo_face",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "image_processing.demo_face",
+        "state": "Hans",
+        "attributes": {
+          "faces": [
+            {
+              "confidence": 98.34,
+              "name": "Hans",
+              "age": 16.0,
+              "gender": "male",
+              "entity_id": "image_processing.demo_face"
+            },
+            {
+              "name": "Helena",
+              "age": 28.0,
+              "gender": "female",
+              "entity_id": "image_processing.demo_face"
+            },
+            {
+              "confidence": 62.53,
+              "name": "Luna"
+            }
+          ],
+          "total_faces": 4,
+          "device_class": "face",
+          "friendly_name": "Demo Face"
+        },
+        "last_changed": "2026-09-21T12:46:37.290943+00:00",
+        "last_reported": "2026-09-21T12:58:47.376298+00:00",
+        "last_updated": "2026-09-21T12:46:37.290943+00:00",
+        "context": {
+          "id": "01M320227ATQ904HKCRN57T149",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

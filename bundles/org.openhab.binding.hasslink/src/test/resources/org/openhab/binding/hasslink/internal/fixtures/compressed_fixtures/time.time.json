@@ -1,0 +1,16 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "time.time": {
+        "s": "12:00:00",
+        "a": {
+          "friendly_name": "Time"
+        },
+        "c": "01M3201RGW6PDZ1E67GRKF8ZDA",
+        "lc": 1789994787.3566022
+      }
+    }
+  }
+}

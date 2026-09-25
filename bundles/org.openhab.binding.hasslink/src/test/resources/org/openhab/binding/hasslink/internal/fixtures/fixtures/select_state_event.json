@@ -1,0 +1,38 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "select.speed",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "select.speed",
+        "state": "ridiculous_speed",
+        "attributes": {
+          "options": [
+            "light_speed",
+            "ridiculous_speed",
+            "ludicrous_speed"
+          ],
+          "friendly_name": "Speed"
+        },
+        "last_changed": "2026-09-21T12:46:27.345259+00:00",
+        "last_reported": "2026-09-21T12:46:27.373624+00:00",
+        "last_updated": "2026-09-21T12:46:27.345259+00:00",
+        "context": {
+          "id": "01M3201RGH5XWSRM47CFV25C87",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.total_energy_mwh": {
+        "s": "0.00025",
+        "a": {
+          "state_class": "total",
+          "unit_of_measurement": "MWh",
+          "device_class": "energy",
+          "friendly_name": "Total energy 2"
+        },
+        "c": "01M320AXFR44Q6Y951H3N85DJ5",
+        "lc": 1789995087.3526616
+      }
+    }
+  }
+}
