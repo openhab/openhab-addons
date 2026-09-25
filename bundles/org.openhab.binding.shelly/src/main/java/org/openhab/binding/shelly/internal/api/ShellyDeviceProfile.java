@@ -133,6 +133,8 @@ public class ShellyDeviceProfile {
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
 
+    public static final int MAX_WAKEUP_PERIOD_SECONDS = 24 * 3600; // longest configurable sleep period of a device
+    public int learnedWakeupPeriod = 0; // longest wakeup period observed to exceed the configured one, in seconds
     public int updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
 
     public String coiotEndpoint = "";
@@ -322,6 +324,61 @@ public class ShellyDeviceProfile {
             // RGBW2
             numInputs = 1;
         }
+    }
+
+    /**
+     * (Re-)derive the watchdog timeout ({@link #updatePeriod}) whenever the device's settings or a status report
+     * provide
+     * a fresh wakeup period. It replaces a learned period (see {@link #learnWakeupInterval(double)}), which might have
+     * been inflated by an outage. The wakeup period of a sleeping device can't be read on demand and Gen1 doesn't
+     * report it in status updates, so if unknown the longest period a device can be configured to is assumed.
+     */
+    public void updateWatchdogPeriod() {
+        learnedWakeupPeriod = 0;
+        computeWatchdogPeriod();
+    }
+
+    private void computeWatchdogPeriod() {
+        if (settings.sleepMode != null && !isTRV) {
+            // Sensor, usually 12h, H&T in USB mode 10min
+            applyWakeupPeriod("m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
+                    ? settings.sleepMode.period * 60 // minutes
+                    : settings.sleepMode.period * 3600); // hours
+        } else if (!alwaysOn && !isTRV) {
+            // Sleeping device with unknown wakeup period
+            applyWakeupPeriod(MAX_WAKEUP_PERIOD_SECONDS);
+        } else if (settings.coiot != null && settings.coiot.updatePeriod != null) {
+            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
+            updatePeriod = 2 * Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, getInteger(settings.coiot.updatePeriod)) + 10;
+        } else {
+            updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
+        }
+    }
+
+    private void applyWakeupPeriod(int wakeupPeriod) {
+        // Proportional margin absorbs wakeup jitter that grows with the sleep interval, plus a fixed
+        // margin for the report round-trip itself
+        updatePeriod = (int) Math.round(Math.max(wakeupPeriod, learnedWakeupPeriod) * 1.1) + 60;
+        if (isSmoke) {
+            // Smoke sensors wake up far less predictably than other sensors, grant an extra 30min
+            updatePeriod += 1800;
+        }
+    }
+
+    /**
+     * A sleeping device reported after a longer silence than the watchdog allows, so its real wakeup period is longer
+     * than assumed (e.g. changed on the device after the thing was initialized). Extend the watchdog accordingly.
+     *
+     * @param silenceSeconds time since the previous report of the device
+     * @return true if the watchdog period was extended
+     */
+    public boolean learnWakeupInterval(double silenceSeconds) {
+        if (alwaysOn || isTRV || silenceSeconds <= updatePeriod || silenceSeconds > MAX_WAKEUP_PERIOD_SECONDS) {
+            return false;
+        }
+        learnedWakeupPeriod = (int) Math.ceil(silenceSeconds);
+        computeWatchdogPeriod();
+        return true;
     }
 
     public String getControlGroup(int i) {
@@ -638,6 +695,15 @@ public class ShellyDeviceProfile {
                 || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX) || GROUP_MINI_THING_TYPES.contains(thingTypeUID)
                 || GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID) || isBluSeries(thingTypeUID)
                 || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
+    }
+
+    /**
+     * Buttons and remotes only report on button events and don't wake up periodically, so the watchdog can't police a
+     * "missed wakeup" for them. The BLU Distance sensor is excluded, it broadcasts periodically.
+     */
+    public static boolean isEventDriven(ThingTypeUID thingTypeUID) {
+        return (GROUP_BUTTON_THING_TYPES.contains(thingTypeUID) || GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID))
+                && !THING_TYPE_SHELLYBLUDISTANCE.equals(thingTypeUID);
     }
 
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {

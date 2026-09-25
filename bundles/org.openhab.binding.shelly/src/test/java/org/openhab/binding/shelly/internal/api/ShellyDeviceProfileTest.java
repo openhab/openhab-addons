@@ -37,6 +37,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
@@ -892,5 +893,143 @@ public class ShellyDeviceProfileTest {
 
         assertThat(profile.getButtonType(0), is(equalTo(SHELLY_BTNT_MOMENTARY)));
         assertThat(profile.getButtonType(1), is(equalTo(SHELLY_BTNT_EDGE)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForWatchdogPeriod")
+    void updateWatchdogPeriodDerivesTimeoutFromSleepMode(ThingTypeUID thingTypeUID, int period, String unit,
+            int expected) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.period = period;
+        sleepMode.unit = unit;
+        profile.settings.sleepMode = sleepMode;
+
+        profile.updateWatchdogPeriod();
+
+        assertThat(profile.updatePeriod, is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForWatchdogPeriod() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, 12, "h", (int) Math.round(12 * 3600 * 1.1) + 60 + 1800), //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, 12, "h", (int) Math.round(12 * 3600 * 1.1) + 60), //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, 10, "m", (int) Math.round(10 * 60 * 1.1) + 60), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, 730, "m", (int) Math.round(730 * 60 * 1.1) + 60));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideSleepingDevicesWithoutKnownWakeupPeriod")
+    void updateWatchdogPeriodAssumesLongestWakeupPeriodWhenUnknown(ThingTypeUID thingTypeUID, int expected) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+
+        profile.updateWatchdogPeriod();
+
+        assertThat(profile.updatePeriod, is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideSleepingDevicesWithoutKnownWakeupPeriod() {
+        int base = (int) Math.round(ShellyDeviceProfile.MAX_WAKEUP_PERIOD_SECONDS * 1.1) + 60;
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYHT, base), //
+                Arguments.of(THING_TYPE_SHELLYFLOOD, base), //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, base), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, base), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, base + 1800));
+    }
+
+    @Test
+    void updateWatchdogPeriodKeepsShortPeriodForAlwaysOnAndTrv() {
+        ShellyDeviceProfile relay = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
+        ShellyDeviceProfile trv = new ShellyDeviceProfile(THING_TYPE_SHELLYTRV);
+
+        relay.updateWatchdogPeriod();
+        trv.updateWatchdogPeriod();
+
+        assertThat(relay.updatePeriod, is(equalTo(2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10)));
+        assertThat(trv.updatePeriod, is(equalTo(2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideEventDrivenDevices")
+    void isEventDrivenCoversButtonsAndRemotesButNotPeriodicDevices(ThingTypeUID thingTypeUID, boolean expected) {
+        assertThat(ShellyDeviceProfile.isEventDriven(thingTypeUID), is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideEventDrivenDevices() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYBUTTON1, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUWALLSWITCH4, true), //
+                Arguments.of(THING_TYPE_SHELLYBLURCBUTTON4, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUREMOTE, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, false), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, false), //
+                Arguments.of(THING_TYPE_SHELLYHT, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, false));
+    }
+
+    @Test
+    void learnWakeupIntervalExtendsWatchdogWhenDeviceReportsLaterThanConfigured() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYHT);
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.period = 1;
+        sleepMode.unit = "h";
+        profile.settings.sleepMode = sleepMode;
+        profile.updateWatchdogPeriod();
+
+        boolean extended = profile.learnWakeupInterval(6 * 3600);
+
+        assertThat(extended, is(true));
+        assertThat(profile.learnedWakeupPeriod, is(equalTo(6 * 3600)));
+        assertThat(profile.updatePeriod, is(equalTo((int) Math.round(6 * 3600 * 1.1) + 60)));
+    }
+
+    @Test
+    void updateWatchdogPeriodReplacesLearnedWakeupPeriod() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYHT);
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.period = 1;
+        sleepMode.unit = "h";
+        profile.settings.sleepMode = sleepMode;
+        profile.updateWatchdogPeriod();
+        profile.learnWakeupInterval(20 * 3600);
+
+        profile.updateWatchdogPeriod();
+
+        assertThat(profile.learnedWakeupPeriod, is(equalTo(0)));
+        assertThat(profile.updatePeriod, is(equalTo((int) Math.round(3600 * 1.1) + 60)));
+    }
+
+    @Test
+    void learnWakeupIntervalKeepsSmokeMargin() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSSMOKE);
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.period = 1;
+        sleepMode.unit = "h";
+        profile.settings.sleepMode = sleepMode;
+        profile.updateWatchdogPeriod();
+
+        profile.learnWakeupInterval(5 * 3600);
+
+        assertThat(profile.updatePeriod, is(equalTo((int) Math.round(5 * 3600 * 1.1) + 60 + 1800)));
+    }
+
+    @Test
+    void learnWakeupIntervalIgnoresReportsWithinWatchdogPeriodAndImplausibleSilence() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYHT);
+        profile.updateWatchdogPeriod();
+        int period = profile.updatePeriod;
+
+        assertThat(profile.learnWakeupInterval(600), is(false));
+        assertThat(profile.learnWakeupInterval(ShellyDeviceProfile.MAX_WAKEUP_PERIOD_SECONDS + 1), is(false));
+        assertThat(profile.updatePeriod, is(equalTo(period)));
+    }
+
+    @Test
+    void learnWakeupIntervalIsIgnoredForAlwaysOnDevicesAndTrv() {
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM).learnWakeupInterval(3 * 3600), is(false));
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYTRV).learnWakeupInterval(3 * 3600), is(false));
     }
 }
