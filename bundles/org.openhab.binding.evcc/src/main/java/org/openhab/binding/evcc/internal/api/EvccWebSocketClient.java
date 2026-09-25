@@ -60,6 +60,11 @@ public class EvccWebSocketClient {
     // Guards against reconnecting after stop() has been called, e.g. when closeSession() triggers
     // an asynchronous handleClosed() callback after the client was already told to shut down.
     private volatile boolean stopped;
+    // Set on every (re)connect. The EVCC websocket sends a full state as its first ("welcome")
+    // message after connecting, followed only by partial delta updates. This flag identifies that
+    // welcome message so later multi-key delta messages are never mistaken for a full state and
+    // used to replace the complete cache.
+    private volatile boolean awaitingInitialState;
 
     public EvccWebSocketClient(String wsUrl, ScheduledExecutorService scheduler,
             java.util.function.Consumer<JsonObject> onFullState,
@@ -182,6 +187,7 @@ public class EvccWebSocketClient {
             return;
         }
         session = sess;
+        awaitingInitialState = true;
         startWatchdog();
         onConnected.run();
     }
@@ -218,19 +224,11 @@ public class EvccWebSocketClient {
             return;
         }
 
-        if (isFullState(obj)) {
+        if (awaitingInitialState) {
+            awaitingInitialState = false;
             onFullState.accept(obj);
         } else {
             obj.entrySet().forEach(e -> onPartialUpdate.accept(e.getKey(), e.getValue()));
         }
-    }
-
-    // --------------------------------------------------------------------
-    // State Detection (Bridge takes care of merging)
-    // --------------------------------------------------------------------
-
-    private boolean isFullState(JsonObject obj) {
-        return obj.entrySet().size() > 1
-                && obj.entrySet().stream().anyMatch(e -> e.getValue().isJsonObject() || e.getValue().isJsonArray());
     }
 }
