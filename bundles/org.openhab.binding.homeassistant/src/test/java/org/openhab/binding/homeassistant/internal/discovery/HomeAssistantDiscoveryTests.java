@@ -15,9 +15,10 @@ package org.openhab.binding.homeassistant.internal.discovery;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -200,17 +201,29 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
                 getResourceAsByteArray("component/configTS0601ClimateThermostat.json"));
 
         try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
-            var publication = executor.submit(discovery::publishResults);
+            AtomicReference<Thread> publishingThread = new AtomicReference<>();
+            var publication = executor.submit(() -> {
+                publishingThread.set(Thread.currentThread());
+                discovery.publishResults();
+            });
             assertTrue(blockingDiscovery.publicationStarted.await(DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS));
 
             CountDownLatch removalStarted = new CountDownLatch(1);
+            AtomicReference<Thread> removingThread = new AtomicReference<>();
             var removal = executor.submit(() -> {
+                removingThread.set(Thread.currentThread());
                 removalStarted.countDown();
                 discovery.topicVanished(HA_UID, bridgeConnection, topic);
             });
             try {
                 assertTrue(removalStarted.await(DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS));
-                assertThrows(TimeoutException.class, () -> removal.get(500, TimeUnit.MILLISECONDS));
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(DISCOVERY_TIMEOUT_SECONDS);
+                while (!removal.isDone() && !isBlockedBy(removingThread.get(), publishingThread.get())
+                        && System.nanoTime() < deadline) {
+                    Thread.sleep(10);
+                }
+                assertTrue(isBlockedBy(removingThread.get(), publishingThread.get()),
+                        "Removal did not wait for the in-flight publication");
             } finally {
                 blockingDiscovery.continuePublication.countDown();
             }
@@ -222,6 +235,12 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         var discoveryListener = new LatchDiscoveryListener();
         discovery.addDiscoveryListener(discoveryListener);
         assertTrue(discoveryListener.getDiscoveryResults().isEmpty());
+    }
+
+    private static boolean isBlockedBy(Thread blockedThread, Thread lockOwner) {
+        ThreadInfo threadInfo = ManagementFactory.getThreadMXBean().getThreadInfo(blockedThread.threadId());
+        return threadInfo != null && threadInfo.getThreadState() == Thread.State.BLOCKED
+                && threadInfo.getLockOwnerId() == lockOwner.threadId();
     }
 
     @Test
