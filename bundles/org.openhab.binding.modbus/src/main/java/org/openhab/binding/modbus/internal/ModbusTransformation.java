@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -45,7 +44,6 @@ public class ModbusTransformation {
      */
     private static final List<Class<? extends Command>> DEFAULT_TYPES = List.of( //
             DecimalType.class, //
-            OpenClosedType.class, //
             OnOffType.class //
     );
 
