@@ -158,13 +158,19 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
 
     static void addMacAddresses(List<DeviceTO> devices, Connection connection) {
         devices.forEach(device -> {
-            if (device.macAddress == null && getThingTypeId(device.deviceFamily) != null) {
+            if (device.macAddress == null && getThingTypeId(device.deviceFamily) != null
+                    && !isSonosEntry(device.deviceFamily)) {
                 device.macAddress = connection.getDeviceMacAddress(device);
             }
         });
     }
 
-    private static @Nullable ThingTypeUID getThingTypeId(@Nullable String deviceFamily) {
+    private static boolean isSonosEntry(@Nullable String deviceFamily) {
+        return DEVICE_FAMILY_THIRD_PARTY_AVS_SONOS_BOOTLEG.equals(deviceFamily)
+                || DEVICE_FAMILY_THIRD_PARTY_AVS_MEDIA_DISPLAY.equals(deviceFamily);
+    }
+
+    static @Nullable ThingTypeUID getThingTypeId(@Nullable String deviceFamily) {
         if (deviceFamily == null) {
             return null;
         }
@@ -174,6 +180,8 @@ public class AmazonEchoDiscovery extends AbstractThingHandlerDiscoveryService<Ac
             case "ROOK" -> THING_TYPE_ECHO_SPOT;
             case "KNIGHT" -> THING_TYPE_ECHO_SHOW;
             case "WHA" -> THING_TYPE_ECHO_WHA;
+            case DEVICE_FAMILY_THIRD_PARTY_AVS_SONOS_BOOTLEG, DEVICE_FAMILY_THIRD_PARTY_AVS_MEDIA_DISPLAY ->
+                THING_TYPE_ECHO;
             default -> null;
         };
     }

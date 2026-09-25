@@ -116,7 +116,8 @@ But you can define any device listed in your Alexa app with the best matching ex
 You will find the required serial number in settings of the device in the Alexa app.
 Sonos speakers with built-in Alexa appear twice in the account: once as family `THIRD_PARTY_AVS_SONOS_BOOTLEG` for voice and text and once as family `THIRD_PARTY_AVS_MEDIA_DISPLAY` for playback state and player control.
 Sonos speakers without built-in Alexa have only the `THIRD_PARTY_AVS_MEDIA_DISPLAY` entry.
-The available serial numbers are listed on the account page of the binding at `http://<openhab>:8080/amazonechocontrol`; create one `echo` thing per entry you need.
+Both entries are discovered as `echo` things.
+The `deviceFamily` property tells them apart.
 
 ### Discover Smart Home Devices
 
