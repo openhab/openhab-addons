@@ -1,0 +1,26 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "climate.heatpump": {
+        "s": "heat",
+        "a": {
+          "hvac_modes": [
+            "heat",
+            "off"
+          ],
+          "min_temp": 7.0,
+          "max_temp": 35.0,
+          "current_temperature": 25.0,
+          "temperature": 20.0,
+          "hvac_action": "heating",
+          "friendly_name": "HeatPump",
+          "supported_features": 385
+        },
+        "c": "01M3201RG3N0HTZFA6C7W5HQMB",
+        "lc": 1789994787.3316555
+      }
+    }
+  }
+}

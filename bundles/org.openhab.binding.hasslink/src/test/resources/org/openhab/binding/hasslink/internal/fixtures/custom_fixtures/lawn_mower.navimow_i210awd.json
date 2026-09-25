@@ -1,0 +1,20 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "lawn_mower.navimow_i210awd": {
+        "s": "docked",
+        "a": {
+          "state_code": "0101",
+          "state": "Docked",
+          "current_zone": "Side + Grace",
+          "friendly_name": "Navimow i210AWD",
+          "supported_features": 7
+        },
+        "c": "01M34MKFC1BQ6ZRCCPZDC1787H",
+        "lc": 1789997048.193515
+      }
+    }
+  }
+}

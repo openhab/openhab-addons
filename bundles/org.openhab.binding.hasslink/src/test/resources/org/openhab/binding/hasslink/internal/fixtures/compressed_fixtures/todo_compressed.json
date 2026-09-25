@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "todo.shopping_list": {
+        "s": "0",
+        "a": {
+          "friendly_name": "Shopping list",
+          "supported_features": 15
+        },
+        "c": "01M3202Z0609X2NHNP7KHPTSH8",
+        "lc": 1789994826.7582703
+      }
+    }
+  }
+}

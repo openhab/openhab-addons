@@ -1,0 +1,34 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "sensor.sun_next_dusk",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "sensor.sun_next_dusk",
+        "state": "2026-09-22T18:13:23+00:00",
+        "attributes": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next dusk"
+        },
+        "last_changed": "2026-09-21T18:15:47.480942+00:00",
+        "last_reported": "2026-09-22T05:26:32.173339+00:00",
+        "last_updated": "2026-09-21T18:15:47.480942+00:00",
+        "context": {
+          "id": "01M32JWSGRPB0R3JD305JKD409",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

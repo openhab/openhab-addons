@@ -1,0 +1,36 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "cover.garage_door",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "cover.garage_door",
+        "state": "closed",
+        "attributes": {
+          "is_closed": true,
+          "device_class": "garage",
+          "friendly_name": "Garage Door",
+          "supported_features": 3
+        },
+        "last_changed": "2026-09-21T12:46:27.333635+00:00",
+        "last_reported": "2026-09-21T12:46:27.372669+00:00",
+        "last_updated": "2026-09-21T12:46:27.333635+00:00",
+        "context": {
+          "id": "01M3201RG50NJ7M83ENF37HJRT",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

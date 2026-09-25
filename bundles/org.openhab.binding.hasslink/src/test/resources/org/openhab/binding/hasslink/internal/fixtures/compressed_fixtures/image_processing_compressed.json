@@ -1,0 +1,37 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "image_processing.demo_face": {
+        "s": "Hans",
+        "a": {
+          "faces": [
+            {
+              "confidence": 98.34,
+              "name": "Hans",
+              "age": 16.0,
+              "gender": "male",
+              "entity_id": "image_processing.demo_face"
+            },
+            {
+              "name": "Helena",
+              "age": 28.0,
+              "gender": "female",
+              "entity_id": "image_processing.demo_face"
+            },
+            {
+              "confidence": 62.53,
+              "name": "Luna"
+            }
+          ],
+          "total_faces": 4,
+          "device_class": "face",
+          "friendly_name": "Demo Face"
+        },
+        "c": "01M320227ATQ904HKCRN57T149",
+        "lc": 1789994797.2909427
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.carbon_dioxide_battery": {
+        "s": "99",
+        "a": {
+          "state_class": "measurement",
+          "unit_of_measurement": "%",
+          "device_class": "battery",
+          "friendly_name": "Carbon dioxide Battery"
+        },
+        "c": "01M3201RGKCVS0RC9K9EDVAA2A",
+        "lc": 1789994787.347598
+      }
+    }
+  }
+}

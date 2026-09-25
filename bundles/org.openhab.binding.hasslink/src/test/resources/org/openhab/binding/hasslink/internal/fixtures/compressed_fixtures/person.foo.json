@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "person.foo": {
+        "s": "unknown",
+        "a": {
+          "editable": true,
+          "id": "foo",
+          "device_trackers": [],
+          "in_zones": [],
+          "user_id": "ced96f04a83d478abed7625a9bcab766",
+          "friendly_name": "foo"
+        },
+        "c": "01M3202Q631RWGV6B34TJJYQGB",
+        "lc": 1789994818.755252
+      }
+    }
+  }
+}
