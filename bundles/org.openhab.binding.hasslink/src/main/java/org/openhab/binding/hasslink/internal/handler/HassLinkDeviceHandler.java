@@ -410,6 +410,14 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
         Set<String> filteredEntityIds = new HashSet<>();
         for (String entityId : candidateEntityIds) {
             EntityRegistryEntry entityEntry = bridgeHandler.getRegistry().getEntity(entityId).orElse(null);
+
+            // Skip entities that are explicitly disabled in Home Assistant
+            if (entityEntry != null && entityEntry.isDisabled()) {
+                logger.debug("Entity {} is disabled in Home Assistant, skipping for Thing {}", entityId,
+                        getThing().getUID());
+                continue;
+            }
+
             if (HassLinkEntityFilter.isEntityAllowedForDevice(entityId, entityEntry, config)) {
                 filteredEntityIds.add(entityId);
             } else {
