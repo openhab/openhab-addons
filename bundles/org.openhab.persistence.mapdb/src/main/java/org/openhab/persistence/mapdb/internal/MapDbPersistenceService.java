@@ -263,10 +263,17 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         return mapper.toJson(item);
     }
 
+    @SuppressWarnings("null")
     private Optional<MapDbItem> deserialize(String json) {
         MapDbItem item = mapper.fromJson(json, MapDbItem.class);
+        State state = item != null ? item.getState() : null;
         if (item == null) {
-            logger.warn("Deserialized invalid item: {}", item);
+            logger.warn("Unable to deserialize item: {}", json);
+            return Optional.empty();
+        } else if (state == null) {
+            // fromJson can return null state field if invalid (see StateTypeAdapter), contradicting @NonNull annotation
+            // for field.
+            logger.warn("Unable to deserialize item '{}' with null state from '{}'", item.getName(), json);
             return Optional.empty();
         } else if (logger.isDebugEnabled()) {
             logger.debug("Deserialized '{}' with state '{}' from '{}'", item.getName(), item.getState(), json);

@@ -37,28 +37,35 @@ public class StateTypeAdapter extends TypeAdapter<State> {
 
     @Override
     public State read(JsonReader reader) throws IOException {
-        if (reader.peek() == JsonToken.NULL) {
-            reader.nextNull();
+        JsonToken token = reader.peek();
+        if (token != JsonToken.STRING) {
+            logger.debug("Couldn't deserialize state: expected a string but was '{}'", token);
+            reader.skipValue();
             return null;
         }
         String value = reader.nextString();
-
+        String valueTypeName = null;
         try {
             int index = value.indexOf(TYPE_SEPARATOR);
             if (index == -1) {
-                logger.warn("Couldn't deserialize state '{}': type separator '{}' not found", value, TYPE_SEPARATOR);
+                logger.debug("Couldn't deserialize state '{}': type separator '{}' not found", value, TYPE_SEPARATOR);
                 return null;
             }
-            String valueTypeName = value.substring(0, index);
+            valueTypeName = value.substring(0, index);
             String valueAsString = value.substring(index + TYPE_SEPARATOR.length());
 
             @SuppressWarnings("unchecked")
             Class<? extends State> valueType = (Class<? extends State>) Class.forName(valueTypeName);
-            return TypeParser.parseState(List.of(valueType), valueAsString);
-        } catch (Exception e) {
-            logger.warn("Couldn't deserialize state '{}': {}", value, e.getMessage());
+            State state = TypeParser.parseState(List.of(valueType), valueAsString);
+            if (state == null) {
+                logger.debug("Couldn't deserialize state '{}': persisted type '{}' not a State", value, valueTypeName);
+                return null;
+            }
+            return state;
+        } catch (ClassNotFoundException e) {
+            logger.debug("Couldn't deserialize state '{}': persisted type '{}' not a class", value, valueTypeName);
+            return null;
         }
-        return null;
     }
 
     @Override
