@@ -45,7 +45,7 @@ rule "WS90 Gust Warning"
 when
     Item WS90_GustSpeed changed
 then
-    if ((WS90_GustSpeed.state as QuantityType<?>).doubleValue > 15.0) {
+    if (WS90_GustSpeed.state > (15 | "m/s")) {
         logInfo("WS90", "Gust speed high: " + WS90_GustSpeed.state)
         sendBroadcastNotification("Storm warning: gusts over 15 m/s")
     }
@@ -62,10 +62,14 @@ Because `rainStatus` can stay latched ON long after the rain has actually stoppe
 - If `precipitation` has been flat for a full check window, rain has stopped, even if `rainStatus` is still stuck ON.
 - If `rainStatus` itself reports OFF, that also ends it immediately — whichever condition is met first wins.
 
-This needs a persisted `WS90_IsRaining` Switch item (`restoreOnStartup`) to hold the computed result, and a periodic check via a cron trigger rather than a rule-local `createTimer` — a cron trigger reschedules itself automatically after an openHAB restart, while an in-memory timer does not, and `WS90_IsRaining` recovers its last value from persistence either way:
+This needs a persisted `WS90_IsRaining` Switch item, with `restoreOnStartup` configured as a persistence strategy, to hold the computed result, and a periodic check via a cron trigger rather than a rule-local `createTimer` — a cron trigger reschedules itself automatically after an openHAB restart, while an in-memory timer does not, and `WS90_IsRaining` recovers its last value from persistence either way:
 
 ```java
-Switch WS90_IsRaining "It's raining [%s]" { restoreOnStartup }
+Switch WS90_IsRaining "It's raining [%s]"
+```
+
+```text
+WS90_IsRaining: strategy = everyChange, restoreOnStartup
 ```
 
 ```java
@@ -91,7 +95,7 @@ when
 then
     if (WS90_IsRaining.state == ON) {
         val delta = WS90_Precipitation.deltaSince(now.minusMinutes(10))
-        if (delta === null || delta <= 0) {
+        if (delta !== null && delta <= 0) {
             WS90_IsRaining.postUpdate(OFF)
             logInfo("WS90", "No precipitation increase in the last 10 min — rain stopped (device still reports wet sensor)")
         }
@@ -160,23 +164,23 @@ rule "WS90 Daily Temperature Min/Max"
 when
     Item WS90_Temperature received update
 then
-    val dayStart = now.toLocalDate().atStartOfDay(now.getZone())
+    val dayStart = now.toLocalDate.atStartOfDay(now.zone)
+    val current = WS90_Temperature.state as QuantityType<?>
 
-    val minimum = WS90_Temperature.minimumSince(dayStart)
-    val maximum = WS90_Temperature.maximumSince(dayStart)
+    // minimumSince/maximumSince return null if nothing has been persisted since midnight yet;
+    // including the just-received current value covers the sample that triggered this rule,
+    // which may not be queryable from persistence yet due to asynchronous backend writes.
+    val persistedMin = WS90_Temperature.minimumSince(dayStart)
+    val minimum = if (persistedMin !== null && persistedMin.state < current) persistedMin.state else current
+    WS90_TemperatureMin.postUpdate(minimum)
 
-    // minimumSince/maximumSince return null if nothing has been persisted since midnight yet
-    if (minimum !== null) {
-        WS90_TemperatureMin.postUpdate(minimum.state)
-    }
-
-    if (maximum !== null) {
-        WS90_TemperatureMax.postUpdate(maximum.state)
-    }
+    val persistedMax = WS90_Temperature.maximumSince(dayStart)
+    val maximum = if (persistedMax !== null && persistedMax.state > current) persistedMax.state else current
+    WS90_TemperatureMax.postUpdate(maximum)
 end
 ```
 
-`now.toLocalDate().atStartOfDay(now.getZone())` yields midnight in your local time zone, so the values reset automatically with the first temperature update after midnight.
+`now.toLocalDate.atStartOfDay(now.zone)` yields midnight in your local time zone, so the values reset automatically with the first temperature update after midnight.
 As in Example 3, pass a service ID as a second argument (e.g. `.minimumSince(dayStart, "influxdb")`) if `temperature` isn't stored in your default persistence service.
 
 ## 5. How Apparent Temperature Is Calculated
