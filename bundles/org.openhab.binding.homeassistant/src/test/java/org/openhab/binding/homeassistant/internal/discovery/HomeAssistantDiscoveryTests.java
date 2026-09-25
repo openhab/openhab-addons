@@ -14,6 +14,7 @@ package org.openhab.binding.homeassistant.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -114,7 +115,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         assertThat(result.getProperties().get(HandlerConfiguration.PROPERTY_BASETOPIC), is("homeassistant"));
         assertThat(result.getLabel(), is("th1"));
         assertThat((List<String>) result.getProperties().get(HandlerConfiguration.PROPERTY_TOPICS),
-                hasItems("climate/0x847127fffe11dd6a_climate_zigbee2mqtt"));
+                contains("climate/0x847127fffe11dd6a_climate_zigbee2mqtt"));
 
         // Now another component added to the same thing
         latch = discoveryListener.createWaitForThingsDiscoveredLatch(1);
@@ -183,7 +184,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         assertThat(result.getProperties().get(HandlerConfiguration.PROPERTY_BASETOPIC), is("homeassistant"));
         assertThat(result.getLabel(), is("th1"));
         assertThat((List<String>) result.getProperties().get(HandlerConfiguration.PROPERTY_TOPICS),
-                hasItems("climate/0x847127fffe11dd6a_climate_zigbee2mqtt"));
+                contains("climate/0x847127fffe11dd6a_climate_zigbee2mqtt"));
     }
 
     @Test
