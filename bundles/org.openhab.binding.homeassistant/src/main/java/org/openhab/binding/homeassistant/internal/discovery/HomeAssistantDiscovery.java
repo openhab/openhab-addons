@@ -74,6 +74,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     protected final Map<String, DiscoveryResult> allResults = new HashMap<>();
     private Set<ThingUID> dirtyResults = new HashSet<>();
     private final Object discoveryStateLock = new Object();
+    // Keep framework publication and removal in order without holding the discovery state lock during callbacks.
+    private final Object publicationLock = new Object();
 
     private @Nullable ScheduledFuture<?> future;
     private final HomeAssistantPythonBridge python;
@@ -289,19 +291,21 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     }
 
     protected void publishResults() {
-        List<DiscoveryResult> toPublish;
-        synchronized (discoveryStateLock) {
-            toPublish = new ArrayList<>();
-            for (ThingUID uid : dirtyResults) {
-                DiscoveryResult result = allResults.get(uid.toString());
-                if (result != null) {
-                    toPublish.add(result);
+        synchronized (publicationLock) {
+            List<DiscoveryResult> toPublish;
+            synchronized (discoveryStateLock) {
+                toPublish = new ArrayList<>();
+                for (ThingUID uid : dirtyResults) {
+                    DiscoveryResult result = allResults.get(uid.toString());
+                    if (result != null) {
+                        toPublish.add(result);
+                    }
                 }
+                dirtyResults = new HashSet<>();
             }
-            dirtyResults = new HashSet<>();
-        }
-        for (DiscoveryResult result : toPublish) {
-            thingDiscovered(result);
+            for (DiscoveryResult result : toPublish) {
+                thingDiscovered(result);
+            }
         }
     }
 
@@ -310,51 +314,47 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         if (!topic.endsWith("/config")) {
             return;
         }
-        ThingUID thingUID;
-        HaID haID = new HaID(topic);
-        String thingID;
+        synchronized (publicationLock) {
+            HaID haID = new HaID(topic);
+            ThingUID thingUID;
+            boolean removedLastComponent;
+            @Nullable
+            DiscoveryResult existingThing;
+            synchronized (discoveryStateLock) {
+                thingUID = thingIDPerTopic.remove(topic);
+                if (thingUID == null) {
+                    return;
+                }
 
-        // Step 1: remove the topic mapping (under lock)
-        synchronized (discoveryStateLock) {
-            thingUID = thingIDPerTopic.remove(topic);
-        }
-        if (thingUID == null) {
-            return;
-        }
+                String thingID = thingUID.getId();
+                Set<HaID> components = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
+                components.remove(haID);
+                removedLastComponent = components.isEmpty();
+                existingThing = allResults.get(thingUID.toString());
 
-        thingID = thingUID.getId();
-
-        boolean removedLastComponent;
-        @Nullable
-        DiscoveryResult existingThing;
-        synchronized (discoveryStateLock) {
-            Set<HaID> components = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
-            components.remove(haID);
-            removedLastComponent = components.isEmpty();
-            existingThing = allResults.get(thingUID.toString());
+                if (removedLastComponent) {
+                    componentsPerThingID.remove(thingID);
+                    allResults.remove(thingUID.toString());
+                    dirtyResults.remove(thingUID);
+                } else if (existingThing != null) {
+                    Map<String, Object> properties = new HashMap<>(existingThing.getProperties());
+                    DiscoveryResult updatedThing = buildResult(thingUID, existingThing.getLabel(), haID, properties,
+                            bridgeUID, components);
+                    applyResult(thingID, haID, updatedThing);
+                }
+            }
 
             if (removedLastComponent) {
-                componentsPerThingID.remove(thingID);
-                allResults.remove(thingUID.toString());
-                dirtyResults.remove(thingUID);
-            } else if (existingThing != null) {
-                Map<String, Object> properties = new HashMap<>(existingThing.getProperties());
-                DiscoveryResult updatedThing = buildResult(thingUID, existingThing.getLabel(), haID, properties,
-                        bridgeUID, components);
-                applyResult(thingID, haID, updatedThing);
+                thingRemoved(thingUID);
+                return;
             }
-        }
 
-        if (removedLastComponent) {
-            thingRemoved(thingUID);
-            return;
-        }
+            if (existingThing == null) {
+                logger.warn("Could not find discovery result for removed component {}; this is a bug", thingUID);
+                return;
+            }
 
-        if (existingThing == null) {
-            logger.warn("Could not find discovery result for removed component {}; this is a bug", thingUID);
-            return;
+            resetPublishTimer();
         }
-
-        resetPublishTimer();
     }
 }
