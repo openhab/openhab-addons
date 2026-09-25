@@ -376,6 +376,12 @@ public class OcppServerBridgeHandler extends BaseBridgeHandler implements OcppSe
         return store != null ? store.nextTransactionId() : 0;
     }
 
+    /** Whether a list has ever been sent to this charge point, which makes an empty one a deliberate clear. */
+    public boolean hasProvisionedLocalAuthList(String chargePointId) {
+        Storage<String> store = bridgeStore;
+        return store != null && store.get(AUTH_LIST_VERSION_PREFIX + chargePointId) != null;
+    }
+
     /** The SendLocalList version for {@code tags}: OCPP requires it to rise whenever the list content does. */
     public int localAuthListVersion(String chargePointId, List<String> tags) {
         Storage<String> store = bridgeStore;
