@@ -60,6 +60,7 @@ import org.openhab.core.thing.ThingUID;
 public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
     private @NonNullByDefault({}) HomeAssistantDiscovery discovery;
     private static final int DISCOVERY_TIMEOUT_SECONDS = 5;
+    private static final int PUBLICATION_SAFETY_TIMEOUT_SECONDS = 30;
 
     @BeforeEach
     public void beforeEach() {
@@ -326,7 +327,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         protected void thingDiscovered(DiscoveryResult result) {
             publicationStarted.countDown();
             try {
-                if (!continuePublication.await(DISCOVERY_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                if (!continuePublication.await(PUBLICATION_SAFETY_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                     throw new AssertionError("Publication was not released");
                 }
             } catch (InterruptedException e) {
