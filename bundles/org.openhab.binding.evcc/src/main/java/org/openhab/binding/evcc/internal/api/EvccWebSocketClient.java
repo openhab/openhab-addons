@@ -174,12 +174,22 @@ public class EvccWebSocketClient {
     // --------------------------------------------------------------------
 
     void handleConnected(Session sess) {
+        if (stopped) {
+            try {
+                sess.close();
+            } catch (Exception ignored) {
+            }
+            return;
+        }
         session = sess;
         startWatchdog();
         onConnected.run();
     }
 
     void handleClosed(int code, String reason) {
+        if (stopped) {
+            return;
+        }
         stopWatchdog();
         session = null;
         onDisconnected.run();
@@ -187,11 +197,17 @@ public class EvccWebSocketClient {
     }
 
     void handleError(Throwable cause) {
+        if (stopped) {
+            return;
+        }
         logger.warn("EVCC WebSocket error: {}", cause.getMessage());
         scheduleReconnect();
     }
 
     void handleMessage(@Nullable JsonObject obj) {
+        if (stopped) {
+            return;
+        }
         logger.trace("Message received: {}", obj);
         startWatchdog();
         if (obj == null) {
@@ -210,7 +226,7 @@ public class EvccWebSocketClient {
     }
 
     // --------------------------------------------------------------------
-    // State Detection (Bridge übernimmt das Merging)
+    // State Detection (Bridge takes care of merging)
     // --------------------------------------------------------------------
 
     private boolean isFullState(JsonObject obj) {
