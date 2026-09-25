@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -72,6 +73,17 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             router.registerRoute(new HandlerRoute(JSON_KEY_FORECAST, new JsonPathExtraction("$." + subType), this,
                     JSON_KEY_FORECAST));
         });
+    }
+
+    /**
+     * The "forecast-&lt;subType&gt;" and "forecast-scaled" channels are populated from the forecast
+     * {@link TimeSeries} via {@link #propagate}, not from a matching top-level key in the JSON object
+     * passed to {@link #createChannelsAndSetStatesFromApiResponse}. Excluding them here prevents
+     * {@link EvccBaseThingHandler#updateChannelStates} from resetting them to UNDEF on every update.
+     */
+    @Override
+    protected Set<String> getChannelIdsExcludedFromReset() {
+        return Set.of(getThingKey(subType), getThingKey("scaled"));
     }
 
     @Override

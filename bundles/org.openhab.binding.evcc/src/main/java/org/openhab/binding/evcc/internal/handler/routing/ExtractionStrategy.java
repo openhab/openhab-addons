@@ -34,6 +34,23 @@ public interface ExtractionStrategy {
     JsonElement extract(JsonElement source);
 
     /**
+     * The immediate top-level property name this strategy extracts, if it can be determined
+     * statically (e.g. {@code "solar"} for a {@code "$.solar"} JsonPath).
+     * <p>
+     * Used by {@link MessageRouter} to avoid redispatching sibling routes registered under
+     * the same route key when an incoming delta is known to only affect one specific segment
+     * (e.g. a {@code "forecast.solar"} update should not re-trigger the co2/feedin/grid
+     * forecast routes with their unchanged, merged-cache data).
+     *
+     * @return the extracted property name, or {@code null} when it cannot be determined
+     *         (in which case the route is always considered a candidate match)
+     */
+    @Nullable
+    default String getTargetKey() {
+        return null;
+    }
+
+    /**
      * Get a human-readable description of this extraction strategy.
      */
     String describe();

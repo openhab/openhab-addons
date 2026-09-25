@@ -369,6 +369,12 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
      * {@link CachedJsonState#updatePartial(String, JsonElement)} keeps assembled from dot
      * notation), rather than the raw single-field value.
      *
+     * When the dotted key identifies a single, non-indexed sub-property (e.g. "forecast.solar",
+     * as opposed to an indexed array element like "loadpoints.0.power"), that property is the
+     * only one that actually changed. It is passed to the router as the "changed segment" so
+     * sibling routes registered under the same root key (e.g. the co2/feedin/grid forecast
+     * routes) are not redundantly redispatched with their own, unchanged, merged-cache data.
+     *
      * If a route matches the key, it is dispatched through the router.
      * Otherwise, if the key is a top-level key (no dots) and a site handler exists,
      * route it to the site handler as a fallback. This provides a safety net for
@@ -382,7 +388,17 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
         int dotIndex = key.indexOf('.');
         String routeKey = dotIndex < 0 ? key : key.substring(0, dotIndex);
         JsonElement routeValue = dotIndex < 0 ? value : cachedState.get(routeKey);
-        if (routeValue != null && messageRouter.route(routeKey, routeValue)) {
+        @Nullable
+        String changedSegment = null;
+        if (dotIndex >= 0) {
+            String remainder = key.substring(dotIndex + 1);
+            int nextDotIndex = remainder.indexOf('.');
+            boolean indexedElement = nextDotIndex >= 0 && remainder.substring(0, nextDotIndex).matches("\\d+");
+            if (!indexedElement) {
+                changedSegment = remainder;
+            }
+        }
+        if (routeValue != null && messageRouter.route(routeKey, routeValue, changedSegment)) {
             logger.trace("Update for key '{}' was routed successfully via root key '{}'", key, routeKey);
             return;
         }

@@ -53,6 +53,18 @@ public class JsonPathExtraction implements ExtractionStrategy {
 
     @Override
     @Nullable
+    public String getTargetKey() {
+        // Only a plain, single-level property access from the root (e.g. "$.solar") has an
+        // unambiguous target key; anything more complex (array indexing, chained/nested
+        // properties) is left undetermined so the route remains a candidate match.
+        if (jsonPath.startsWith("$.") && jsonPath.indexOf('.', 2) < 0 && jsonPath.indexOf('[') < 0) {
+            return jsonPath.substring(2);
+        }
+        return null;
+    }
+
+    @Override
+    @Nullable
     public JsonElement extract(JsonElement root) {
         try {
             logger.trace("Extracting with path: {}", jsonPath);

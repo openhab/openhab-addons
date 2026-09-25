@@ -386,6 +386,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     private void updateChannelStates(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {
+        Set<String> excludedFromReset = getChannelIdsExcludedFromReset();
         for (Channel channel : channels) {
             ChannelUID uid = channel.getUID();
             String id = uid.getId();
@@ -397,13 +398,26 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 if (value != null) {
                     resolveAndUpdateState(uid, id, value);
                 }
-            } else {
+            } else if (!excludedFromReset.contains(id)) {
                 // else set channel state to UNDEF if channel is linked
                 if (isLinked(uid)) {
                     updateState(uid, UnDefType.UNDEF);
                 }
             }
         }
+    }
+
+    /**
+     * Channel IDs that must not be reset to {@link UnDefType#UNDEF} by {@link #updateChannelStates}
+     * even though they are absent from the JSON object passed to {@link #updateStatesFromApiResponse}.
+     * <p>
+     * This is needed for channels whose state is derived and published separately (e.g. from a
+     * {@link org.openhab.core.types.TimeSeries}) rather than resolved directly from a matching JSON key.
+     *
+     * @return the set of channel IDs to exclude from the UNDEF reset, empty by default
+     */
+    protected Set<String> getChannelIdsExcludedFromReset() {
+        return Set.of();
     }
 
     protected void resolveAndUpdateState(ChannelUID channelUID, String key, JsonElement value) {

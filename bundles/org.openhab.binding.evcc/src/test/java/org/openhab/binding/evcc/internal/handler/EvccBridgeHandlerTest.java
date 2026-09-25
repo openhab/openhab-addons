@@ -146,6 +146,38 @@ class EvccBridgeHandlerTest {
     }
 
     @Test
+    void nestedDotNotationKeyDoesNotRedispatchSiblingRoutesUnderSameKey() {
+        // The forecast handler registers separate routes for co2/feedin/grid/solar, all under
+        // the shared route key "forecast". A "forecast.solar" delta must only dispatch to the
+        // solar route; the sibling routes must not be redundantly redispatched with their own,
+        // unchanged, merged-cache data.
+        RecordingHandler co2Handler = new RecordingHandler(EvccBindingConstants.JSON_KEY_FORECAST, "co2");
+        RecordingHandler solarHandler = new RecordingHandler(EvccBindingConstants.JSON_KEY_FORECAST, "solar");
+        bridgeHandler.getMessageRouter().registerRoute(new HandlerRoute(EvccBindingConstants.JSON_KEY_FORECAST,
+                new JsonPathExtraction("$.co2"), co2Handler, EvccBindingConstants.JSON_KEY_FORECAST));
+        bridgeHandler.getMessageRouter().registerRoute(new HandlerRoute(EvccBindingConstants.JSON_KEY_FORECAST,
+                new JsonPathExtraction("$.solar"), solarHandler, EvccBindingConstants.JSON_KEY_FORECAST));
+
+        // Populate the co2 sub-object in the cache first, as if it arrived earlier.
+        JsonObject co2 = new JsonObject();
+        co2.addProperty("today", 100);
+        bridgeHandler.onPartialUpdate("forecast.co2", co2);
+        assertEquals(EvccBindingConstants.JSON_KEY_FORECAST, co2Handler.lastKey);
+        co2Handler.lastKey = null;
+        co2Handler.lastValue = null;
+
+        // A later, unrelated "forecast.solar" delta must not re-trigger the co2 route, even
+        // though the merged cache value for "forecast" still contains the earlier co2 data.
+        JsonObject solar = new JsonObject();
+        solar.addProperty("scale", 1.0);
+        bridgeHandler.onPartialUpdate("forecast.solar", solar);
+
+        assertEquals(EvccBindingConstants.JSON_KEY_FORECAST, solarHandler.lastKey);
+        assertNull(co2Handler.lastKey);
+        assertNull(co2Handler.lastValue);
+    }
+
+    @Test
     void nonDottedKeyStillFallsBackToSiteHandlerWhenUnrouted() {
         RecordingHandler siteHandler = new RecordingHandler(EvccBindingConstants.PROPERTY_TYPE_SITE, "");
         bridgeHandler.register(siteHandler);

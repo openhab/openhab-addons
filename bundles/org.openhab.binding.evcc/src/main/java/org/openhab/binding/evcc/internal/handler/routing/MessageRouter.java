@@ -71,9 +71,36 @@ public class MessageRouter {
      * @param value The message value
      */
     public boolean route(String key, JsonElement value) {
+        return route(key, value, null);
+    }
+
+    /**
+     * Route an incoming message, optionally scoped to a single changed segment.
+     * <p>
+     * Several routes can share the same {@code key} (e.g. the co2/feedin/grid/solar forecast
+     * routes all match "forecast"), each extracting its own sub-property from the same merged
+     * cache value. When the caller knows that only one specific top-level property actually
+     * changed (e.g. a "forecast.solar" delta), passing it as {@code changedSegment} lets sibling
+     * routes whose statically known {@link HandlerRoute#getTargetKey()} differs be skipped,
+     * instead of redundantly redispatching their unchanged, merged-cache data.
+     *
+     * @param key The message key (e.g., "battery", "pv", "grid")
+     * @param value The message value
+     * @param changedSegment The single top-level property known to have changed, or {@code null}
+     *            when this is not determinable (all matching routes are then considered)
+     */
+    public boolean route(String key, JsonElement value, @Nullable String changedSegment) {
         boolean matched = false;
         for (HandlerRoute route : routes) {
             if (route.matches(key)) {
+                if (changedSegment != null) {
+                    String targetKey = route.getTargetKey();
+                    if (targetKey != null && !targetKey.equals(changedSegment)) {
+                        logger.trace("Skipping route {} - update only affects segment '{}'", route.describe(),
+                                changedSegment);
+                        continue;
+                    }
+                }
                 logger.trace("Route matched for key '{}': {}", key, route.describe());
                 matched = true;
                 JsonElement processed = route.process(value);

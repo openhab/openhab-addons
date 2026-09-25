@@ -88,6 +88,18 @@ public class HandlerRoute {
     }
 
     /**
+     * Get the immediate top-level property name this route's extraction targets, if statically
+     * determinable.
+     *
+     * @return the target key, or {@code null} when it cannot be determined
+     * @see ExtractionStrategy#getTargetKey()
+     */
+    @Nullable
+    public String getTargetKey() {
+        return extraction.getTargetKey();
+    }
+
+    /**
      * Get the incoming message key that this route matches.
      *
      * @return The route key (e.g., "battery", "grid")
