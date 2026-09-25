@@ -88,8 +88,6 @@ public abstract class SmartthingsConverter {
             value = surroundWithQuotes(command.toString().toLowerCase());
         } else if (command instanceof OnOffType) { // Need to surround with double quotes
             value = surroundWithQuotes(command.toString().toLowerCase());
-        } else if (command instanceof OpenClosedType) { // Need to surround with double quotes
-            value = surroundWithQuotes(command.toString().toLowerCase());
         } else if (command instanceof PercentType) {
             value = command.toString();
         } else if (command instanceof PointType) { // There is not a comparable type in Smartthings, log and send value
