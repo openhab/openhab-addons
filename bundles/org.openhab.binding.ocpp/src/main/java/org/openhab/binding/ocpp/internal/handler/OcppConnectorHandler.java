@@ -159,6 +159,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile double powerLimitWatts;
     private volatile int numberPhasesRequested;
     private volatile boolean paused;
+    // A TxProfile lapses with its transaction (OCPP 1.6 errata 7.10), so what it carried moves to the default.
+    private volatile boolean limitHeldByTxProfile;
     private volatile boolean limitDeferred;
     private volatile boolean smartChargingUnsupportedLogged;
     private volatile boolean phaseSwitchWarningLogged;
@@ -488,6 +490,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     }
 
     private void sendProfile(ProfileClaim claim) {
+        if (transactionId != null && !forceTxDefaultProfile) {
+            limitHeldByTxProfile = true;
+        }
         // A 0 A profile suspends the EVSE, so 'no cap' must clear the profile.
         if (!claim.paused() && claim.wireValue() <= 0.0) {
             clearProfile(claim);
@@ -756,6 +761,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                     if (cp != null) {
                         cp.transactionCompleted(stale);
                     }
+                    carryLimitPastTransaction();
                 }
             }
             armStuckWatchdog(status);
@@ -849,6 +855,15 @@ public class OcppConnectorHandler extends BaseThingHandler {
         }
         this.transactionId = null;
         updateState(CHANNEL_TRANSACTION_ID, UnDefType.UNDEF);
+        carryLimitPastTransaction();
+    }
+
+    /** With the transaction gone, a re-send lands as the TxDefaultProfile the next transaction starts under. */
+    private void carryLimitPastTransaction() {
+        if (limitHeldByTxProfile) {
+            limitHeldByTxProfile = false;
+            applyLimit();
+        }
     }
 
     private void armStuckWatchdog(ChargePointStatus status) {
