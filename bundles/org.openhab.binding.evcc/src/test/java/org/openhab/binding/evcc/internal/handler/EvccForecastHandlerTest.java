@@ -125,7 +125,7 @@ public class EvccForecastHandlerTest {
         solar.addProperty("scale", 2.5);
         solar.add("timeseries", timeseries);
 
-        handler.handleUpdate("solar", solar);
+        Objects.requireNonNull(handler).handleUpdate("solar", solar);
 
         assertTrue(sentTimeSeries.containsKey("forecast-solar"));
         assertTrue(sentTimeSeries.containsKey("forecast-scaled"));
