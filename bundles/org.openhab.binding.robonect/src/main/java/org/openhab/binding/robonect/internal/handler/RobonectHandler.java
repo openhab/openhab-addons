@@ -452,12 +452,14 @@ public class RobonectHandler extends BaseThingHandler {
                 updateState(CHANNEL_WLAN_AP_HIDDEN, OnOffType.from(ap.getHidden()));
             if (ap.getSsid() != null)
                 updateState(CHANNEL_WLAN_AP_SSID, new StringType(ap.getSsid()));
-            if (ap.getChannel() != null)
-                updateState(CHANNEL_WLAN_AP_CHANNEL, new DecimalType(ap.getChannel()));
+            Integer channel = ap.getChannel();
+            if (channel != null)
+                updateState(CHANNEL_WLAN_AP_CHANNEL, new DecimalType(channel));
             if (ap.getEncryption() != null)
                 updateState(CHANNEL_WLAN_AP_ENCRYPTION, new StringType(ap.getEncryption()));
-            if (ap.getMaxconn() != null)
-                updateState(CHANNEL_WLAN_AP_MAX_CONNECTIONS, new DecimalType(ap.getMaxconn()));
+            Integer maxConnections = ap.getMaxconn();
+            if (maxConnections != null)
+                updateState(CHANNEL_WLAN_AP_MAX_CONNECTIONS, new DecimalType(maxConnections));
             if (ap.getIp() != null)
                 updateState(CHANNEL_WLAN_AP_IP, new StringType(ap.getIp()));
             if (ap.getNetmask() != null)
@@ -878,11 +880,13 @@ public class RobonectHandler extends BaseThingHandler {
             return;
         }
         Battery battery = batteries.getFirst();
-        if (battery.getId() != null) {
-            updateState(CHANNEL_BATTERY_ID, new DecimalType(battery.getId()));
+        Integer id = battery.getId();
+        if (id != null) {
+            updateState(CHANNEL_BATTERY_ID, new DecimalType(id));
         }
-        if (battery.getCharge() != null) {
-            updateState(CHANNEL_BATTERY_CHARGE, new QuantityType<>(battery.getCharge(), Units.PERCENT));
+        Integer charge = battery.getCharge();
+        if (charge != null) {
+            updateState(CHANNEL_BATTERY_CHARGE, new QuantityType<>(charge, Units.PERCENT));
         }
         Integer voltage = battery.getVoltage();
         if (voltage != null) {
