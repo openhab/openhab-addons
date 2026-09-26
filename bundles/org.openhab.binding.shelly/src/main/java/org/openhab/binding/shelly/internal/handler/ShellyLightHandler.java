@@ -388,33 +388,41 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
             logger.trace("{}: updateLightModelFromStatus() with {}", thingName, new Gson().toJson(light));
         }
 
-        // COLOR: this may change model's mode
-        if (light.red != null && light.green != null && light.blue != null) {
-            if (light.white != null) {
-                model.setRGBX(new int[] { light.red, light.green, light.blue, light.white });
-            } else {
-                model.setRGBX(new int[] { light.red, light.green, light.blue });
+        // fix Gen 1 issue where status DTO contains fields for inactive mode; i.e. only apply active mode fields
+        if (!SHELLY_MODE_WHITE.equals(light.mode)) {
+
+            // COLOR: this may change model's mode
+            if (light.red != null && light.green != null && light.blue != null) {
+                if (light.white != null) {
+                    model.setRGBX(new int[] { light.red, light.green, light.blue, light.white });
+                } else {
+                    model.setRGBX(new int[] { light.red, light.green, light.blue });
+                }
+            }
+
+            // GAIN: this may change model's mode and on-off state
+            if (light.gain != null) {
+                model.setGain(getInteger(light.gain));
+            }
+
+            // EFFECT:
+            if (light.effect != null) {
+                model.setEffect(getInteger(light.effect));
+            }
+
+            // BRIGHTNESS: this may change model's mode and on-off state
+            if (light.brightness != null) {
+                model.setBrightness(getInteger(light.brightness));
             }
         }
 
-        // GAIN: this may change model's mode and on-off state
-        if (light.gain != null) {
-            model.setGain(getInteger(light.gain));
-        }
+        // fix Gen 1 issue where status DTO contains fields for inactive mode; i.e. only apply active mode fields
+        if (!SHELLY_MODE_COLOR.equals(light.mode)) {
 
-        // EFFECT:
-        if (light.effect != null) {
-            model.setEffect(getInteger(light.effect));
-        }
-
-        // BRIGHTNESS: this may change model's mode and on-off state
-        if (light.brightness != null) {
-            model.setBrightness(getInteger(light.brightness));
-        }
-
-        // COLOR TEMP: this may change model's mode
-        if (light.temp != null) {
-            model.setColorTemp(getInteger(light.temp));
+            // COLOR TEMP: this may change model's mode
+            if (light.temp != null) {
+                model.setColorTemp(getInteger(light.temp));
+            }
         }
 
         // MODE: setters auto- update the light model's mode

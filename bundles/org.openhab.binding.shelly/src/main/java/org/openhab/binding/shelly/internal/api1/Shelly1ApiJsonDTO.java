@@ -1344,6 +1344,8 @@ public class Shelly1ApiJsonDTO {
         public Integer brightness; // brightness, 0..100, applies in mode="white"
         public Integer effect; // Currently applied effect, description: 0: Off, 1: Meteor Shower, 2: Gradual
                                // Change, 3: Breath,
+
+        public String mode;
     }
 
     public static class ShellyStatusLight {
