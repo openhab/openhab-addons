@@ -213,7 +213,7 @@ public class NetworkHandlerTest extends JavaTest {
         when(reachable.isReachable()).thenReturn(true);
         when(reachable.getHttpStatusCode()).thenReturn(200);
 
-        handler.partialDetectionResult(reachable);
+        handler.finalDetectionResult(reachable);
         verify(callback).stateUpdated(eq(new ChannelUID(thingUID, NetworkBindingConstants.CHANNEL_HTTP_STATUS)),
                 eq(new DecimalType(200)));
 
@@ -246,7 +246,35 @@ public class NetworkHandlerTest extends JavaTest {
                 eq(UnDefType.UNDEF));
     }
 
+    @Test
+    public void httpDeviceStatusCodeChannelWithRetriesTests() {
+        NetworkHandler handler = createHttpHandler("http://example.com/status", 2);
+        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), resolver));
+
+        PresenceDetectionValue reachable = mock(PresenceDetectionValue.class);
+        when(reachable.getLowestLatency()).thenReturn(Duration.ofMillis(10));
+        when(reachable.isReachable()).thenReturn(true);
+        when(reachable.getHttpStatusCode()).thenReturn(200);
+        handler.finalDetectionResult(reachable);
+
+        PresenceDetectionValue unreachable = mock(PresenceDetectionValue.class);
+        when(unreachable.getLowestLatency()).thenReturn(PresenceDetectionValue.UNREACHABLE);
+        when(unreachable.isReachable()).thenReturn(false);
+        when(unreachable.getHttpStatusCode()).thenReturn(503);
+        handler.finalDetectionResult(unreachable);
+
+        // The first failed request stays below the retry threshold, but its status code is reported anyway
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(thingUID, NetworkBindingConstants.CHANNEL_ONLINE)),
+                eq(OnOffType.OFF));
+        verify(callback).stateUpdated(eq(new ChannelUID(thingUID, NetworkBindingConstants.CHANNEL_HTTP_STATUS)),
+                eq(new DecimalType(503)));
+    }
+
     private NetworkHandler createHttpHandler(String url) {
+        return createHttpHandler(url, 1);
+    }
+
+    private NetworkHandler createHttpHandler(String url, int retry) {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
         NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, resolver,
                 NetworkDeviceType.HTTP, config, httpClient));
@@ -255,6 +283,7 @@ public class NetworkHandlerTest extends JavaTest {
         when(thing.getConfiguration()).thenAnswer(a -> {
             Configuration conf = new Configuration();
             conf.put(NetworkBindingConstants.PARAMETER_URL, url);
+            conf.put(NetworkBindingConstants.PARAMETER_RETRY, retry);
             conf.put(NetworkBindingConstants.PARAMETER_REFRESH_INTERVAL, 0); // disable auto refresh
             return conf;
         });

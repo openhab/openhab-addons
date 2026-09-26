@@ -161,9 +161,6 @@ public class NetworkHandler extends BaseThingHandler
         double latencyMs = durationToMillis(value.getLowestLatency());
         updateState(CHANNEL_ONLINE, OnOffType.ON);
         updateState(CHANNEL_LATENCY, new QuantityType<>(latencyMs, MetricPrefix.MILLI(Units.SECOND)));
-        if (deviceType == NetworkDeviceType.HTTP) {
-            updateHttpStatus(value);
-        }
     }
 
     @Override
@@ -179,11 +176,12 @@ public class NetworkHandler extends BaseThingHandler
         if (retryCounter >= retries) {
             updateState(CHANNEL_ONLINE, OnOffType.OFF);
             updateState(CHANNEL_LATENCY, UnDefType.UNDEF);
-            if (deviceType == NetworkDeviceType.HTTP) {
-                // A status code is reported even if it is the reason for the device being considered offline
-                updateHttpStatus(value);
-            }
             retryCounter = 0;
+        }
+
+        if (deviceType == NetworkDeviceType.HTTP) {
+            // The status code of every request is reported, retries only apply to the online state
+            updateHttpStatus(value);
         }
 
         PresenceDetection pd;
