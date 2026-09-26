@@ -397,6 +397,7 @@ Currently the miio binding supports more than 370 different models.
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1pro](#mrbond-airer-m1pro) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1s](#mrbond-airer-m1s) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| WIDETECH WDH330EFW1 Internet Dehumidifier | miio:basic       | [nwt.derh.330ef](#nwt-derh-330ef) | Yes          | Reported to work only when the thing is configured to communicate via the cloud. |
 | WIDETECH WDH318EFW1 Internet Dehumidifier | miio:basic       | [nwt.derh.wdh318efw1](#nwt-derh-wdh318efw1) | Yes          |            |
 | Philips Zhirui Ceiling Lamp Bedroom 40W | miio:basic       | [philips.light.bceiling1](#philips-light-bceiling1) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Philips Zhirui Ceiling Lamp Bedroom 28W | miio:basic       | [philips.light.bceiling2](#philips-light-bceiling2) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -2794,6 +2795,29 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | airer_location             | Number               | Airer Location                           |            |
 | disinfect                  | Switch               | disinfect                                |            |
 | distime                    | Number               | Disinfect Time                           |            |
+
+### WIDETECH WDH330EFW1 Internet Dehumidifier (<a name="nwt-derh-330ef">nwt.derh.330ef</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| on                         | Switch               | Dehumidifier - Power                     |            |
+| fault                      | Number               | Dehumidifier - Device Fault              | Value mapping `["0"="No Faults"]` |
+| mode                       | Number               | Dehumidifier - Mode                      | Value mapping `["1"="Auto","2"="Smart","3"="Clothes Drying"]` |
+| target_humidity            | Number:Dimensionless | Dehumidifier - Target Humidity           | Value mapping `["30"="30%","40"="40%","50"="50%","60"="60%","70"="70%"]` |
+| relative_humidity          | Number:Dimensionless | Environment - Relative Humidity          |            |
+| temperature                | Number:Temperature   | Environment - Temperature                |            |
+| alarm                      | Switch               | Alarm - Beep Sound                       |            |
+| on1                        | Switch               | Indicator Light - Power                  |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| coil_temp                  | Number:Temperature   | Status - Coil Temperature                |            |
+| compressor_status          | Switch               | Status - Compressor                      |            |
+| water_tank_status          | Switch               | Status - Water Tank                      |            |
+| defrost_status             | Switch               | Status - Defrosting                      |            |
+| fall_down_status           | Switch               | Status - Fallen Over                     |            |
+| pump                       | Switch               | Pump - Power                             |            |
+| pump_pipe_installed        | Switch               | Pump - Pump Pipe Installed               |            |
+| timer                      | Number               | Timer - Remaining Time                   |            |
+| timer_setting              | Number               | Timer - Timer Setting                    | Value mapping `["0"="Off","1"="1 Hour","2"="2 Hours","4"="4 Hours","8"="8 Hours","12"="12 Hours"]` |
 
 ### WIDETECH WDH318EFW1 Internet Dehumidifier (<a name="nwt-derh-wdh318efw1">nwt.derh.wdh318efw1</a>) Channels
 
@@ -9290,6 +9314,32 @@ Number drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
 Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
 Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
 Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
+```
+
+### WIDETECH WDH330EFW1 Internet Dehumidifier (nwt.derh.330ef) item file lines
+
+note: Autogenerated example. Replace the id (derh) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_derh "WIDETECH WDH330EFW1 Internet Dehumidifier" <status>
+Switch on "Dehumidifier - Power" (G_derh) {channel="miio:basic:derh:on"}
+Number fault "Dehumidifier - Device Fault" (G_derh) {channel="miio:basic:derh:fault"}
+Number mode "Dehumidifier - Mode" (G_derh) {channel="miio:basic:derh:mode"}
+Number:Dimensionless target_humidity "Dehumidifier - Target Humidity" (G_derh) {channel="miio:basic:derh:target_humidity"}
+Number:Dimensionless relative_humidity "Environment - Relative Humidity" (G_derh) {channel="miio:basic:derh:relative_humidity"}
+Number:Temperature temperature "Environment - Temperature" (G_derh) {channel="miio:basic:derh:temperature"}
+Switch alarm "Alarm - Beep Sound" (G_derh) {channel="miio:basic:derh:alarm"}
+Switch on1 "Indicator Light - Power" (G_derh) {channel="miio:basic:derh:on1"}
+Switch physical_controls_locked "Child Lock" (G_derh) {channel="miio:basic:derh:physical_controls_locked"}
+Number:Temperature coil_temp "Status - Coil Temperature" (G_derh) {channel="miio:basic:derh:coil_temp"}
+Switch compressor_status "Status - Compressor" (G_derh) {channel="miio:basic:derh:compressor_status"}
+Switch water_tank_status "Status - Water Tank" (G_derh) {channel="miio:basic:derh:water_tank_status"}
+Switch defrost_status "Status - Defrosting" (G_derh) {channel="miio:basic:derh:defrost_status"}
+Switch fall_down_status "Status - Fallen Over" (G_derh) {channel="miio:basic:derh:fall_down_status"}
+Switch pump "Pump - Power" (G_derh) {channel="miio:basic:derh:pump"}
+Switch pump_pipe_installed "Pump - Pump Pipe Installed" (G_derh) {channel="miio:basic:derh:pump_pipe_installed"}
+Number timer "Timer - Remaining Time" (G_derh) {channel="miio:basic:derh:timer"}
+Number timer_setting "Timer - Timer Setting" (G_derh) {channel="miio:basic:derh:timer_setting"}
 ```
 
 ### WIDETECH WDH318EFW1 Internet Dehumidifier (nwt.derh.wdh318efw1) item file lines
