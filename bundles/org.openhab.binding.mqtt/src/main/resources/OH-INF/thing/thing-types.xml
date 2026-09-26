@@ -47,6 +47,13 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="webSocketPath" type="text">
+				<label>WebSocket Path</label>
+				<description>WebSocket path for the broker e.g. /mqtt, defaults to root. This only applies when protocol is
+					WEBSOCKETS.</description>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="mqttVersion" type="text">
 				<label>MQTT Version</label>
 				<description>The MQTT version used for communicating with the broker.</description>
@@ -73,6 +80,13 @@
 				<label>Client ID</label>
 				<description>Use a fixed client ID. Defaults to empty which means a
 					client ID is generated for this connection.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="cleanSessionStart" type="boolean">
+				<label>Clean Session Start</label>
+				<description>Clear the old session at connection start. False only makes sense with a fixed client ID.</description>
+				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
 

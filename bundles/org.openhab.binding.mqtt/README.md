@@ -64,10 +64,12 @@ Required configuration parameters are:
 Additionally the following parameters can be set:
 
 - **hostnameValidated**: Validate hostname from certificate against server hostname for secure connection. Defaults to true.
-- **protocol**:  The protocol used for communicating with the broker (TCP, WEBSOCKETS). Defaults to TCP.
+- **protocol**: The protocol used for communicating with the broker (TCP, WEBSOCKETS). Defaults to TCP.
+- **webSocketPath**: WebSocket path for the broker, e.g. /mqtt. Defaults to root. This only applies when protocol is WEBSOCKETS.
 - **mqttVersion**: The MQTT version used for communicating with the broker (V3, V5). Defaults to V3.
 - **qos**: Quality of Service. Can be 0, 1 or 2. Please read the MQTT specification for details. Defaults to 0.
 - **clientID**: Use a fixed client ID. Defaults to empty which means a client ID is generated for this connection.
+- **cleanSessionStart**: Clear the old session at connection start. Defaults to true. False only makes sense with a fixed client ID.
 
 Reconnect parameters are:
 
