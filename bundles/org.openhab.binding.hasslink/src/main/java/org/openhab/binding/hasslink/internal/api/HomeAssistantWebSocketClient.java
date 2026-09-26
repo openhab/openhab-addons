@@ -313,10 +313,10 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
             session = null;
             sessionFuture = null;
         }
-        listener.onConnectionClosed(reason);
         if (statusCode == StatusCode.NORMAL && expectedShutdown) {
             return;
         }
+        listener.onConnectionClosed(reason);
         scheduleReconnect();
     }
 
