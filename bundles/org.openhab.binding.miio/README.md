@@ -394,6 +394,7 @@ Currently the miio binding supports more than 370 different models.
 | Mijia Smart Pet Water Dispenser    | miio:basic       | [mmgg.pet_waterer.s2](#mmgg-pet_waterer-s2) | Experimental | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"filter-cotton-reset-cotton-life","siid":5,"aiid":1,"in":[]}`<br />`action{"did":"remain-clean-time-reset-clean-time","siid":6,"aiid":1,"in":[]}`<br />Please test and feedback if they are working so they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mijia Smart Pet Water Dispenser    | miio:basic       | [mmgg.pet_waterer.s3](#mmgg-pet_waterer-s3) | Experimental | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"filter-cotton-reset-cotton-life","siid":5,"aiid":1,"in":[]}`<br />`action{"did":"remain-clean-time-reset-clean-time","siid":6,"aiid":1,"in":[]}`<br />Please test and feedback if they are working so they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | XIAOWAN Smart Pet Water Dispenser  | miio:basic       | [mmgg.pet_waterer.s4](#mmgg-pet_waterer-s4) | Experimental | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"filter-cotton-reset-cotton-life","siid":5,"aiid":1,"in":[]}`<br />`action{"did":"remain-clean-time-reset-clean-time","siid":6,"aiid":1,"in":[]}`<br />Please test and feedback if they are working so they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Xiaomi Smart Pet Fountain          | miio:basic       | [mmgg.pet_waterer.wi11](#mmgg-pet_waterer-wi11) | Yes          |            |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1pro](#mrbond-airer-m1pro) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1s](#mrbond-airer-m1s) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -2758,6 +2759,23 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | resetConsumable            | String               | Consumables Reset                        | Value mapping `["remain-clean-time-reset-clean-time"="Reset Clean Time","filter-cotton-reset-cotton-life"="Reset Cotton Time","filter-reset-filter-life"="Reset Filter Life"]` |
 | no-water-time              | Number:Time          | No Water Flag - No Water Time            |            |
 | pump-block-flag            | Switch               | No Water Flag - Pump Block Flag          |            |
+
+### Xiaomi Smart Pet Fountain (<a name="mmgg-pet_waterer-wi11">mmgg.pet_waterer.wi11</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["filter-reset-filter-life"="Reset Filter Life","filter-cotton-reset-cotton-life"="Reset Filter Cotton Life","remain-clean-time-reset-clean-time"="Reset Cleaning Reminder"]` |
+| on                         | Switch               | Pet Drinking Fountain - Power            |            |
+| fault                      | Number               | Pet Drinking Fountain - Device Fault     | Value mapping `["0"="No Faults"]` |
+| mode                       | Number               | Pet Drinking Fountain - Mode             | Value mapping `["1"="Common","2"="Smart"]` |
+| filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
+| on1                        | Switch               | Indicator Light - Power                  |            |
+| cotton_left_time           | Number:Time          | Filter Cotton - Cotton Left Time         |            |
+| remain_clean_time          | Number:Time          | Cleaning Reminder - Days Until Cleaning  |            |
+| no_water_flag              | Switch               | Status - Water Present                   |            |
+| no_water_time              | Number:Time          | Status - No Water Duration               |            |
+| pump_block_flag            | Switch               | Status - Pump Blocked                    |            |
+| lid_up_flag                | Switch               | Status - Lid Open                        |            |
 
 ### MR.BOND (<a name="mrbond-airer-m1pro">mrbond.airer.m1pro</a>) Channels
 
@@ -9245,6 +9263,26 @@ Switch no_water_flag "No Water Flag - No Water Flag" (G_pet_waterer) {channel="m
 String resetConsumable "Consumables Reset" (G_pet_waterer) {channel="miio:basic:pet_waterer:resetConsumable"}
 Number:Time no_water_time "No Water Flag - No Water Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:no-water-time"}
 Switch pump_block_flag "No Water Flag - Pump Block Flag" (G_pet_waterer) {channel="miio:basic:pet_waterer:pump-block-flag"}
+```
+
+### Xiaomi Smart Pet Fountain (mmgg.pet_waterer.wi11) item file lines
+
+note: Autogenerated example. Replace the id (pet_waterer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_pet_waterer "Xiaomi Smart Pet Fountain" <status>
+String actions "Actions" (G_pet_waterer) {channel="miio:basic:pet_waterer:actions"}
+Switch on "Pet Drinking Fountain - Power" (G_pet_waterer) {channel="miio:basic:pet_waterer:on"}
+Number fault "Pet Drinking Fountain - Device Fault" (G_pet_waterer) {channel="miio:basic:pet_waterer:fault"}
+Number mode "Pet Drinking Fountain - Mode" (G_pet_waterer) {channel="miio:basic:pet_waterer:mode"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:filter_left_time"}
+Switch on1 "Indicator Light - Power" (G_pet_waterer) {channel="miio:basic:pet_waterer:on1"}
+Number:Time cotton_left_time "Filter Cotton - Cotton Left Time" (G_pet_waterer) {channel="miio:basic:pet_waterer:cotton_left_time"}
+Number:Time remain_clean_time "Cleaning Reminder - Days Until Cleaning" (G_pet_waterer) {channel="miio:basic:pet_waterer:remain_clean_time"}
+Switch no_water_flag "Status - Water Present" (G_pet_waterer) {channel="miio:basic:pet_waterer:no_water_flag"}
+Number:Time no_water_time "Status - No Water Duration" (G_pet_waterer) {channel="miio:basic:pet_waterer:no_water_time"}
+Switch pump_block_flag "Status - Pump Blocked" (G_pet_waterer) {channel="miio:basic:pet_waterer:pump_block_flag"}
+Switch lid_up_flag "Status - Lid Open" (G_pet_waterer) {channel="miio:basic:pet_waterer:lid_up_flag"}
 ```
 
 ### MR.BOND (mrbond.airer.m1pro) item file lines
