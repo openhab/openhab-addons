@@ -60,13 +60,15 @@ public class Shelly1ApiJsonDTOTest {
     }
 
     @Test
-    void statusLightAppliesReportedModeToResult() {
+    void statusLightAppliesOuterModeToFirstLightOnly() {
         ShellyStatusLight result = new Gson().fromJson(
-                "{\"lights\":[{\"mode\":\"color\",\"brightness\":50},{\"mode\":\"color\"}]}",
+                "{\"mode\":\"color\",\"lights\":[{\"brightness\":50},{\"brightness\":25}]}",
                 ShellyStatusLight.class);
         result.applyReportedMode();
 
         assertThat(result.mode, is(equalTo("color")));
+        assertThat(result.lights.get(0).mode, is(equalTo("color")));
+        assertThat(result.lights.get(1).mode, is(nullValue()));
         assertThat(result.lights.get(0).brightness, is(equalTo(50)));
     }
 }

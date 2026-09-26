@@ -1323,7 +1323,7 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellyStatusLightChannel {
         public Boolean ison;
-        public String mode; // color or white
+        public String mode; // inherited from the outer status for light 0
         public Double power;
         public Boolean overpower;
         @SerializedName("has_timer")
@@ -1355,13 +1355,8 @@ public class Shelly1ApiJsonDTO {
         public ArrayList<ShellySettingsMeter> meters;
 
         public void applyReportedMode() {
-            if (lights != null) {
-                for (ShellyStatusLightChannel light : lights) {
-                    if (light.mode != null) {
-                        mode = light.mode;
-                        return;
-                    }
-                }
+            if (mode != null && lights != null && !lights.isEmpty()) {
+                lights.get(0).mode = mode;
             }
         }
     }
