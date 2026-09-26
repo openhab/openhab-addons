@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.tedee.internal.handler;
 
 import java.io.IOException;
@@ -139,14 +140,14 @@ public class TedeeWebhookServlet extends HttpServlet {
             }
 
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        } catch (JsonParseException | IllegalStateException | NullPointerException e) {
+        } catch (JsonParseException | IllegalStateException e) {
             logger.warn("Invalid Tedee webhook payload");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JSON payload");
         }
     }
 
     private static boolean isSupportedEvent(String event) {
-        return switch (event) {
+        return event != null && switch (event) {
             case "lock-status-changed", "device-connection-changed", "device-battery-level-changed",
                     "device-battery-start-charging", "device-battery-stop-charging", "device-battery-fully-charged",
                     "device-settings-changed" ->
