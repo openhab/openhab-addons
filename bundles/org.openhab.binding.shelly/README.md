@@ -2121,6 +2121,8 @@ The Plug PM Gen3 measures power only, it has no relay to switch.
 |       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
 |       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
 |       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+|       | voltage           | Number   | yes       | Voltage in Volt (V)                                                                                |
+|       | current           | Number   | yes       | Current in Ampere (A)                                                                              |
 |       | frequency         | Number   | yes       | Grid frequency in Hertz (Hz)                                                                       |
 
 `Note`:

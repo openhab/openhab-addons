@@ -85,6 +85,8 @@ public class ShellyThingCreatorTest {
                 Arguments.of("shellyplugusg4-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUGUSG4), //
                 Arguments.of("shellyplusplugcpm-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGCPM), //
                 Arguments.of("shellyplugpmg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGPM), //
+                Arguments.of("shellyplugpmgen3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGPM), //
+                Arguments.of("shellyoutdoorsg3-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSPLUGS), //
                 Arguments.of("shellydimmer-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER), //
                 Arguments.of("shellydimmer2-" + DEVICE_ID, "", THING_TYPE_SHELLYDIMMER2), //
                 Arguments.of("shellydimmerg4us-" + DEVICE_ID, "", THING_TYPE_SHELLYPLUSDIMMERUS), //
