@@ -56,6 +56,15 @@ public class Poller2ChannelTest {
                 Arguments.of("101", ValueType.UINT16, registers(0x0603, 0x0405), new DecimalType("1029")));
     }
 
+    static Stream<Arguments> invalidReadRanges() {
+        return Stream.of(Arguments.of("99", ValueType.UINT16, "Address 99 is before poll window 100..103"),
+                Arguments.of("104", ValueType.UINT16, "Address 104 is outside poll window 100..103"),
+                Arguments.of("103", ValueType.INT32, "Address 103 with value type int32 exceeds poll window 100..103"),
+                Arguments.of("100.16", ValueType.BIT, "Sub-address 16 is invalid for value type bit"),
+                Arguments.of("100.2", ValueType.UINT8, "Sub-address 2 is invalid for value type uint8"),
+                Arguments.of("100.1", ValueType.UINT16, "Sub-address 1 is invalid for value type uint16"));
+    }
+
     @ParameterizedTest
     @MethodSource("decodedValues")
     public void decodesTheConfiguredPointFromThePollerWindow(ValueType valueType, int address,
@@ -82,5 +91,14 @@ public class Poller2ChannelTest {
         Poller2Channel channel = new Poller2Channel(address, valueType, PollerReadFailurePolicy.UNDEF);
 
         assertEquals(expectedState, channel.acceptRegisters(registers, 100));
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidReadRanges")
+    public void reportsAConfigurationErrorForInvalidAddressRanges(String address, ValueType valueType,
+            String expectedMessage) {
+        Poller2Channel channel = new Poller2Channel(address, valueType, PollerReadFailurePolicy.UNDEF);
+
+        assertEquals(expectedMessage, channel.validateReadRange(100, 4).orElseThrow());
     }
 }

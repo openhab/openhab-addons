@@ -31,12 +31,14 @@ final class Poller2Channel {
 
     private final int address;
     private final int subAddress;
+    private final boolean hasSubAddress;
     private final ValueType valueType;
     private final PollerChannelState state;
 
     public Poller2Channel(int address, ValueType valueType, PollerReadFailurePolicy failurePolicy) {
         this.address = address;
         this.subAddress = 0;
+        this.hasSubAddress = false;
         this.valueType = valueType;
         this.state = new PollerChannelState(failurePolicy);
     }
@@ -48,6 +50,7 @@ final class Poller2Channel {
         }
         this.address = Integer.parseInt(parts[0]);
         this.subAddress = parts.length == 2 ? Integer.parseInt(parts[1]) : 0;
+        this.hasSubAddress = parts.length == 2;
         this.valueType = valueType;
         this.state = new PollerChannelState(failurePolicy);
     }
@@ -76,5 +79,30 @@ final class Poller2Channel {
     public synchronized State acceptReadFailure() {
         state.acceptReadFailure();
         return state.currentState();
+    }
+
+    public Optional<String> validateReadRange(int pollStart, int pollLength) {
+        if (valueType.getBits() < Short.SIZE) {
+            int valuesPerRegister = Short.SIZE / valueType.getBits();
+            if (subAddress < 0 || subAddress >= valuesPerRegister) {
+                return Optional.of("Sub-address %d is invalid for value type %s".formatted(subAddress, valueType));
+            }
+        } else if (hasSubAddress) {
+            return Optional.of("Sub-address %d is invalid for value type %s".formatted(subAddress, valueType));
+        }
+
+        int pollEnd = pollStart + pollLength - 1;
+        if (address < pollStart) {
+            return Optional.of("Address %d is before poll window %d..%d".formatted(address, pollStart, pollEnd));
+        }
+        if (address > pollEnd) {
+            return Optional.of("Address %d is outside poll window %d..%d".formatted(address, pollStart, pollEnd));
+        }
+        int registersRequired = Math.max(1, valueType.getBits() / Short.SIZE);
+        if (address + registersRequired - 1 > pollEnd) {
+            return Optional.of("Address %d with value type %s exceeds poll window %d..%d".formatted(address, valueType,
+                    pollStart, pollEnd));
+        }
+        return Optional.empty();
     }
 }
