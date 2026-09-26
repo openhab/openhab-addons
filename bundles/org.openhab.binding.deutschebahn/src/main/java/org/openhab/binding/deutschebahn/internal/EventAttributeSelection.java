@@ -18,6 +18,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 import org.openhab.core.types.State;
@@ -34,13 +35,16 @@ public final class EventAttributeSelection implements AttributeSelection {
 
     private final EventType eventType;
     private final EventAttribute<?, ?> eventAttribute;
+    private final TimetableTimeConverter timeConverter;
 
     /**
      * Creates a new {@link EventAttributeSelection}.
      */
-    public EventAttributeSelection(EventType eventType, EventAttribute<?, ?> eventAttribute) {
+    public EventAttributeSelection(EventType eventType, EventAttribute<?, ?> eventAttribute,
+            TimetableTimeConverter timeConverter) {
         this.eventType = eventType;
         this.eventAttribute = eventAttribute;
+        this.timeConverter = timeConverter;
     }
 
     @Nullable
@@ -50,7 +54,7 @@ public final class EventAttributeSelection implements AttributeSelection {
         if (event == null) {
             return UnDefType.UNDEF;
         } else {
-            return this.eventAttribute.getState(event);
+            return this.eventAttribute.getState(event, timeConverter);
         }
     }
 
@@ -60,7 +64,7 @@ public final class EventAttributeSelection implements AttributeSelection {
         if (event == null) {
             return UnDefType.UNDEF;
         } else {
-            return this.eventAttribute.getValue(event);
+            return this.eventAttribute.getValue(event, timeConverter);
         }
     }
 
@@ -70,7 +74,7 @@ public final class EventAttributeSelection implements AttributeSelection {
         if (event == null) {
             return Collections.emptyList();
         } else {
-            return this.eventAttribute.getStringValues(event);
+            return this.eventAttribute.getStringValues(event, timeConverter);
         }
     }
 
