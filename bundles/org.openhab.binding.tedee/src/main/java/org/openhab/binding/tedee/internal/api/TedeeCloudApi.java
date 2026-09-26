@@ -134,6 +134,12 @@ public class TedeeCloudApi implements TedeeClient {
         operation("/my/lock/" + id + "/operation/pull");
     }
 
+    @Override
+    public void unlockOrPull(int id) throws TedeeApiException {
+        operation("/my/lock/" + id + "/operation/unlock?mode=4");
+    }
+    
+
     private void operation(String path) throws TedeeApiException {
         Request request = client.newRequest(BASE + path).method(HttpMethod.POST);
         request.header("Content-Type", "application/json-patch+json");

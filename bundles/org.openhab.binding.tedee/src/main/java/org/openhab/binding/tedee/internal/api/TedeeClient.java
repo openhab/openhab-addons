@@ -38,4 +38,6 @@ public interface TedeeClient {
     void unlockWithoutPull(int id) throws TedeeApiException;
 
     void pull(int id) throws TedeeApiException;
+
+    void unlockOrPull(int id) throws TedeeApiException;
 }

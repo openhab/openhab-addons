@@ -136,6 +136,10 @@ public class TedeeApi implements TedeeClient {
         post("/lock/" + id + "/pull");
     }
 
+    public void unlockOrPull(int id) throws TedeeApiException {
+        post("/lock/" + id + "/unlock?mode=4");
+    }
+    
     public String getCallbacks() throws TedeeApiException {
         ContentResponse r = execute(client.newRequest(base + "/callback").method(HttpMethod.GET));
         if (r.getStatus() != 200) {
