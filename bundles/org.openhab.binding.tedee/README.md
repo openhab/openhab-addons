@@ -77,8 +77,6 @@ A Lock can be configured below either a local `tedee:bridge` or a `tedee:cloud` 
 | `deviceId` | integer | Yes | — | Numeric Tedee device ID |
 | `pollInterval` | integer | No | `300` | Lock status polling interval in seconds |
 
-
-
 ## Channels
 
 The Lock Thing exposes the following channels.
@@ -181,18 +179,18 @@ The binding can be configured through the openHAB UI.
 ### Local Connection
 
 1. Install the Tedee binding.
-2. Add a **Tedee Bridge**.
-3. Enter the Bridge IP address and API token.
-4. Wait until the Bridge becomes `ONLINE`.
-5. Add a Tedee Lock below the Bridge or use autodiscovery.
+1. Add a **Tedee Bridge**.
+1. Enter the Bridge IP address and API token.
+1. Wait until the Bridge becomes `ONLINE`.
+1. Add a Tedee Lock below the Bridge or use autodiscovery.
 
 ### Cloud Connection
 
 1. Install the Tedee binding.
-2. Add a **Tedee Cloud** Bridge.
-3. Enter the Tedee Personal Access Key.
-4. Wait until the Cloud Bridge becomes `ONLINE`.
-5. Add a Tedee Lock below the Cloud Bridge or use Cloud discovery.
+1. Add a **Tedee Cloud** Bridge.
+1. Enter the Tedee Personal Access Key.
+1. Wait until the Cloud Bridge becomes `ONLINE`.
+1. Add a Tedee Lock below the Cloud Bridge or use Cloud discovery.
 
 ## Text `.things` Configuration
 
@@ -361,7 +359,6 @@ Switch Tedee_ButtonUnlockEnabled "Button Unlock Enabled" {
 
 ## Commands
 
-
 ### Explicit Actions Through the Action Channel
 
 The action Item accepts:
@@ -446,7 +443,6 @@ The Tedee Bridge can POST status events to this endpoint.
   "headers": []
 }
 ```
-
 
 The callback must point to the LAN address of the openHAB server, not `localhost` or `127.0.0.1`.
 
