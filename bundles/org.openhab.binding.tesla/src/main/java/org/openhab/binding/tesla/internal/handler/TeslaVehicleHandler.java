@@ -964,9 +964,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     }
 
                     ClimateState climateState = this.climateState = vehicleData.climateState;
-                    BigDecimal avgtemp = roundBigDecimal(new BigDecimal(
-                            (climateState.passengerTempSetting + climateState.passengerTempSetting) / 2.0f));
-                    updateState(CHANNEL_COMBINED_TEMP, new QuantityType<>(avgtemp, SIUnits.CELSIUS));
+                    updateState(CHANNEL_COMBINED_TEMP,
+                            new QuantityType<>(combinedTemperature(climateState), SIUnits.CELSIUS));
 
                     SoftwareUpdate softwareUpdate = this.softwareUpdate = vehicleState.softwareUpdate;
 
@@ -1068,7 +1067,15 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         return json;
     }
 
-    protected BigDecimal roundBigDecimal(BigDecimal value) {
+    /**
+     * The average of the driver and passenger temperature settings, as described for the combinedtemp channel.
+     */
+    static BigDecimal combinedTemperature(ClimateState climateState) {
+        return roundBigDecimal(
+                new BigDecimal((climateState.driverTempSetting + climateState.passengerTempSetting) / 2.0f));
+    }
+
+    protected static BigDecimal roundBigDecimal(BigDecimal value) {
         return value.setScale(1, RoundingMode.HALF_EVEN);
     }
 
