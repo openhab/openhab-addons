@@ -118,7 +118,9 @@ public class LGHorizonReconnectStrategy extends AbstractReconnectStrategy {
         } finally {
             if (!started) {
                 synchronized (this) {
-                    attemptInProgress = false;
+                    if (!Thread.currentThread().isInterrupted()) {
+                        lostConnection();
+                    }
                 }
             }
         }

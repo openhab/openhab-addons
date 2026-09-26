@@ -212,7 +212,6 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
                 discoveryService.discoverDevices();
             }
 
-            tokenRefreshFuture = scheduler.scheduleWithFixedDelay(this::checkTokenRefresh, 1, 1, TimeUnit.HOURS);
         } catch (LGHorizonApiException | IllegalArgumentException e) {
             if (mqtt != null) {
                 mqtt.disconnect();
@@ -502,7 +501,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
 
         this.languageByProfileId = profiles.stream().filter(p -> p.profileId != null)
-                .collect(Collectors.<CustomerDto.ProfileDto, String, String> toMap(p -> p.profileId,
+                .collect(Collectors.<CustomerDto.ProfileDto, String, String>toMap(p -> p.profileId,
                         p -> p.options != null && p.options.lang != null ? p.options.lang : DEFAULT_LANGUAGE));
 
         EntitlementsDto entitlementsDto = auth.get(auth.getServiceConfig().getServiceUrl(PURCHASE_SERVICE_URL_FIELD),
