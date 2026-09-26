@@ -204,6 +204,29 @@ public class ZwaveJSBridgeHandlerTest {
     }
 
     @Test
+    public void testOnEventWithWakeUpEvent() {
+        final Bridge thing = ZwaveJSBridgeHandlerMock.mockBridge("localhost");
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final ZwaveJSBridgeHandlerMock handler = ZwaveJSBridgeHandlerMock.createAndInitHandler(callback, thing);
+        ZwaveNodeListener nodeListener = mock(ZwaveNodeListener.class);
+        when(nodeListener.getId()).thenReturn(3);
+        handler.registerNodeListener(nodeListener);
+
+        EventMessage eventMessage = new EventMessage();
+        eventMessage.event = new Event();
+        eventMessage.event.event = "wake up";
+        eventMessage.event.nodeId = 3;
+
+        handler.onEvent(eventMessage);
+
+        try {
+            verify(nodeListener).onNodeAwake(eventMessage.event);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
     public void testOnEventWithEventMessageValueNotification() throws IOException {
         final Bridge thing = ZwaveJSBridgeHandlerMock.mockBridge("localhost");
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
