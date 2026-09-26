@@ -61,8 +61,8 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
     }
 
     @Override
-    protected void retrieveData() {
-        super.retrieveData();
+    protected void retrieveData(long generation) {
+        super.retrieveData(generation);
 
         try {
             if (config.isUsingApiVersion2()) {
@@ -79,7 +79,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            retrieveData();
+            retrieveData(lifecycleGeneration.get());
             return;
         }
 

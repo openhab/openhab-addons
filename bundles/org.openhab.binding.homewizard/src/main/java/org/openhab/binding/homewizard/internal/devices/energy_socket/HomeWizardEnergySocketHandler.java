@@ -54,8 +54,8 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
     }
 
     @Override
-    protected void retrieveData() {
-        super.retrieveData();
+    protected void retrieveData(long generation) {
+        super.retrieveData(generation);
 
         try {
             handleStateData(getStateData());
