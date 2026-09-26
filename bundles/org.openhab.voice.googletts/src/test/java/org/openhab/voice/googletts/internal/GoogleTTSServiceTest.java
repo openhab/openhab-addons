@@ -44,6 +44,6 @@ class GoogleTTSServiceTest {
         service.updateConfig(Map.of());
         verify(oAuthFactory).deleteServiceAndAccessToken(GoogleTTSService.SERVICE_PID);
         service.dispose();
-        verify(oAuthFactory).deleteServiceAndAccessToken(GoogleTTSService.SERVICE_PID);
+        verify(oAuthFactory, times(1)).deleteServiceAndAccessToken(GoogleTTSService.SERVICE_PID);
     }
 }
