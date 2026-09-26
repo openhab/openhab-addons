@@ -146,6 +146,11 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                     handler.handleReadError(failure);
                 }
             });
+            if (result != null) {
+                onPollResult(result);
+            } else if (failure != null) {
+                onPollFailure(failure);
+            }
         }
 
         /**
@@ -154,6 +159,24 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         public void resetCache() {
             lastResult = null;
         }
+    }
+
+    /**
+     * Receives a successful poll result after it has been delivered to legacy child handlers.
+     *
+     * @param result successful Modbus read result
+     */
+    protected void onPollResult(AsyncModbusReadResult result) {
+        // Subclasses may consume poller-owned channels.
+    }
+
+    /**
+     * Receives a failed poll result after it has been delivered to legacy child handlers.
+     *
+     * @param failure failed Modbus read result
+     */
+    protected void onPollFailure(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+        // Subclasses may update poller-owned channels.
     }
 
     /**

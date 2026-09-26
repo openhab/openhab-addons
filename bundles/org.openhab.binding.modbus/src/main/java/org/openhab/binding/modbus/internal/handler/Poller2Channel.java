@@ -27,7 +27,7 @@ import org.openhab.core.types.UnDefType;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-final class Poller2Channel {
+public final class Poller2Channel {
 
     private final int address;
     private final int subAddress;
