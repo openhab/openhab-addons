@@ -25,6 +25,7 @@ import java.net.PortUnreachableException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -45,6 +46,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.util.InputStreamResponseListener;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.io.net.exec.ExecUtil;
 import org.openhab.core.net.CidrAddress;
 import org.openhab.core.net.NetUtil;
@@ -55,6 +60,7 @@ import org.slf4j.LoggerFactory;
  * Network utility functions for pinging and for determining all interfaces and assigned IP addresses.
  *
  * @author David Graeff - Initial contribution
+ * @author Alexander Friese - Add HTTP presence detection
  */
 @NonNullByDefault
 public class NetworkUtils {
@@ -275,6 +281,40 @@ public class NetworkUtils {
             logger.trace("Could not connect to {}:{} {}", host, port, e.getMessage());
         }
         return new PingResult(success, Duration.between(execStartTime, Instant.now()));
+    }
+
+    /**
+     * Sends an HTTP(S) GET request to the given URI and returns the status code of the response.
+     * <p>
+     * Redirects are not followed, so that the caller can decide how to interpret a redirection status code.
+     *
+     * @param httpClient the {@link HttpClient} to send the request with
+     * @param uri the URI to request
+     * @param timeout the maximum time to wait for the response status
+     * @return the {@link HttpPingResult} or <code>null</code> if no response was received
+     * @throws InterruptedException if the calling thread was interrupted while waiting for the response
+     */
+    public @Nullable HttpPingResult httpPing(HttpClient httpClient, URI uri, Duration timeout)
+            throws InterruptedException {
+        Instant execStartTime = Instant.now();
+        InputStreamResponseListener listener = new InputStreamResponseListener();
+        httpClient.newRequest(uri).method(HttpMethod.GET).followRedirects(false)
+                .timeout(timeout.toNanos(), TimeUnit.NANOSECONDS).send(listener);
+        try {
+            Response response = listener.get(timeout.toNanos(), TimeUnit.NANOSECONDS);
+            HttpPingResult result = new HttpPingResult(response.getStatus(),
+                    Duration.between(execStartTime, Instant.now()));
+            // Only the status code is of interest. Closing the stream aborts the transfer of the response body.
+            try {
+                listener.getInputStream().close();
+            } catch (IOException e) {
+                logger.trace("Could not discard the response body of {}: {}", uri, e.getMessage());
+            }
+            return result;
+        } catch (ExecutionException | TimeoutException e) {
+            logger.trace("Could not request {}: {}", uri, e.getMessage());
+            return null;
+        }
     }
 
     /**

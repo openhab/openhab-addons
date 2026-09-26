@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
@@ -35,9 +36,11 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.network.internal.dhcp.DHCPListenService;
 import org.openhab.binding.network.internal.dhcp.DHCPPacketListenerServer;
 import org.openhab.binding.network.internal.dhcp.IPRequestReceivedCallback;
+import org.openhab.binding.network.internal.utils.HttpPingResult;
 import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
@@ -54,6 +57,7 @@ import org.slf4j.LoggerFactory;
  * @author David Gräff, 2017 - Rewritten
  * @author Jan N. Klug - refactored host name resolution
  * @author Wouter Born - Reuse ExpiringCacheAsync from Core
+ * @author Alexander Friese - Add HTTP presence detection
  */
 @NonNullByDefault
 public class PresenceDetection implements IPRequestReceivedCallback {
@@ -73,6 +77,10 @@ public class PresenceDetection implements IPRequestReceivedCallback {
     private boolean useArpPing;
     private boolean useIcmpPing;
     private Set<Integer> tcpPorts = new HashSet<>();
+    private @Nullable HttpClient httpClient;
+    private @Nullable URI httpUri;
+    private boolean treatRedirectAsError;
+    private boolean treatClientErrorAsError;
 
     private Duration timeout = Duration.ofSeconds(5);
 
@@ -153,6 +161,26 @@ public class PresenceDetection implements IPRequestReceivedCallback {
 
     public void setServicePorts(Set<Integer> ports) {
         this.tcpPorts = ports;
+    }
+
+    public @Nullable URI getHttpUri() {
+        return httpUri;
+    }
+
+    /**
+     * Enables presence detection by sending an HTTP(S) request to the given URI.
+     *
+     * @param httpClient the {@link HttpClient} to send the requests with
+     * @param uri the URI to request
+     * @param treatRedirectAsError set to <code>true</code> if a 3xx status code shall be treated as an error
+     * @param treatClientErrorAsError set to <code>true</code> if a 4xx status code shall be treated as an error
+     */
+    public void setUseHttpRequest(HttpClient httpClient, URI uri, boolean treatRedirectAsError,
+            boolean treatClientErrorAsError) {
+        this.httpClient = httpClient;
+        this.httpUri = uri;
+        this.treatRedirectAsError = treatRedirectAsError;
+        this.treatClientErrorAsError = treatClientErrorAsError;
     }
 
     public void setUseDhcpSniffing(boolean enable) {
@@ -357,6 +385,9 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         if (pingMethod != IpPingMethodEnum.DISABLED) {
             detectionChecks += 1;
         }
+        if (httpUri != null) {
+            detectionChecks += 1;
+        }
         if (arpPingMethod.canProceed) {
             if (!lastReachableNetworkInterfaceName.isEmpty()) {
                 interfaceNames = Set.of(lastReachableNetworkInterfaceName);
@@ -381,6 +412,12 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         for (Integer tcpPort : tcpPorts) {
             addAsyncDetection(completableFutures, () -> {
                 performServicePing(pdv, tcpPort);
+            });
+        }
+
+        if (httpUri != null) {
+            addAsyncDetection(completableFutures, () -> {
+                performHttpRequest(pdv);
             });
         }
 
@@ -498,6 +535,50 @@ public class PresenceDetection implements IPRequestReceivedCallback {
                 logger.warn("Could not create a socket connection", e);
             }
         });
+    }
+
+    /**
+     * Performs an HTTP(S) request and evaluates the returned status code. The status code is stored in the given
+     * {@link PresenceDetectionValue} even if it makes the target being considered unreachable.
+     *
+     * @param pdv the {@link PresenceDetectionValue} to update
+     */
+    protected void performHttpRequest(PresenceDetectionValue pdv) {
+        URI uri = httpUri;
+        HttpClient client = httpClient;
+        if (uri == null || client == null) {
+            return;
+        }
+        logger.trace("Perform HTTP presence detection for {}", uri);
+
+        try {
+            HttpPingResult pingResult = networkUtils.httpPing(client, uri, timeout);
+            if (pingResult != null) {
+                pdv.setHttpStatusCode(pingResult.statusCode());
+                if (isReachableStatusCode(pingResult.statusCode())) {
+                    updateReachable(pdv, HTTP_REQUEST, pingResult.executionTime());
+                }
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+        }
+    }
+
+    /**
+     * Returns <code>true</code> if the given HTTP status code means that the target is reachable. Informational (1xx)
+     * and server error (5xx) status codes are always considered an error, redirection (3xx) and client error (4xx)
+     * status codes are evaluated according to the configuration.
+     *
+     * @param statusCode the HTTP status code to evaluate
+     */
+    boolean isReachableStatusCode(int statusCode) {
+        return switch (statusCode / 100) {
+            case 2 -> true;
+            case 3 -> !treatRedirectAsError;
+            case 4 -> !treatClientErrorAsError;
+            default -> false;
+        };
     }
 
     /**

@@ -15,6 +15,8 @@ package org.openhab.binding.network.internal.handler;
 import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 import static org.openhab.binding.network.internal.utils.NetworkUtils.durationToMillis;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
@@ -28,9 +30,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.network.internal.NetworkBindingConfiguration;
 import org.openhab.binding.network.internal.NetworkBindingConfigurationListener;
 import org.openhab.binding.network.internal.NetworkBindingConstants;
+import org.openhab.binding.network.internal.NetworkDeviceType;
 import org.openhab.binding.network.internal.NetworkHandlerConfiguration;
 import org.openhab.binding.network.internal.PresenceDetection;
 import org.openhab.binding.network.internal.PresenceDetectionListener;
@@ -38,6 +42,7 @@ import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.binding.network.internal.WakeOnLanPacketSender;
 import org.openhab.binding.network.internal.action.NetworkActions;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -62,6 +67,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Rewritten
  * @author Wouter Born - Add Wake-on-LAN thing action support
  * @author Ravi Nadahar - Made class thread-safe
+ * @author Alexander Friese - Add HTTP presence detection
  */
 @NonNullByDefault
 public class NetworkHandler extends BaseThingHandler
@@ -77,8 +83,9 @@ public class NetworkHandler extends BaseThingHandler
     /* All access must be guarded by "this" */
     private @Nullable WakeOnLanPacketSender wakeOnLanPacketSender;
 
-    private final boolean isTCPServiceDevice;
+    private final NetworkDeviceType deviceType;
     private final NetworkBindingConfiguration configuration;
+    private final HttpClient httpClient;
 
     // How many retries before a device is deemed offline
     volatile int retries;
@@ -91,12 +98,13 @@ public class NetworkHandler extends BaseThingHandler
      * Creates a new instance using the specified parameters.
      */
     public NetworkHandler(Thing thing, ScheduledExecutorService executor, ExecutorService resolver,
-            boolean isTCPServiceDevice, NetworkBindingConfiguration configuration) {
+            NetworkDeviceType deviceType, NetworkBindingConfiguration configuration, HttpClient httpClient) {
         super(thing);
         this.executor = executor;
         this.resolver = resolver;
-        this.isTCPServiceDevice = isTCPServiceDevice;
+        this.deviceType = deviceType;
         this.configuration = configuration;
+        this.httpClient = httpClient;
         this.configuration.addNetworkBindingConfigurationListener(this);
     }
 
@@ -121,6 +129,9 @@ public class NetworkHandler extends BaseThingHandler
                     double latencyMs = durationToMillis(value.getLowestLatency());
                     updateState(CHANNEL_LATENCY, new QuantityType<>(latencyMs, MetricPrefix.MILLI(Units.SECOND)));
                 });
+                break;
+            case CHANNEL_HTTP_STATUS:
+                pd.getValue(this::updateHttpStatus);
                 break;
             case CHANNEL_LASTSEEN:
                 // We should not set the last seen state to UNDEF, it prevents restoreOnStartup from working
@@ -168,6 +179,11 @@ public class NetworkHandler extends BaseThingHandler
             retryCounter = 0;
         }
 
+        if (deviceType == NetworkDeviceType.HTTP) {
+            // The status code of every request is reported, retries only apply to the online state
+            updateHttpStatus(value);
+        }
+
         PresenceDetection pd;
         synchronized (this) {
             pd = presenceDetection;
@@ -179,7 +195,15 @@ public class NetworkHandler extends BaseThingHandler
         // We should not set the last seen state to UNDEF, it prevents restoreOnStartup from working
         // For reference: https://github.com/openhab/openhab-addons/issues/17404
 
-        updateNetworkProperties();
+        if (deviceType != NetworkDeviceType.HTTP) {
+            // The reported properties are specific to ARP/ICMP ping and DHCP sniffing, none of which apply to HTTP
+            updateNetworkProperties();
+        }
+    }
+
+    private void updateHttpStatus(PresenceDetectionValue value) {
+        Integer statusCode = value.getHttpStatusCode();
+        updateState(CHANNEL_HTTP_STATUS, statusCode == null ? UnDefType.UNDEF : new DecimalType(statusCode));
     }
 
     @Override
@@ -201,24 +225,50 @@ public class NetworkHandler extends BaseThingHandler
     void initialize(PresenceDetection presenceDetection) {
         NetworkHandlerConfiguration config = getConfigAs(NetworkHandlerConfiguration.class);
 
-        presenceDetection.setHostname(config.hostname);
         presenceDetection.setNetworkInterfaceNames(config.networkInterfaceNames);
         presenceDetection.setPreferResponseTimeAsLatency(configuration.preferResponseTimeAsLatency);
 
-        if (isTCPServiceDevice) {
-            Integer port = config.port;
-            if (port == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No port configured!");
-                return;
-            }
-            presenceDetection.setServicePorts(Set.of(port));
-        } else {
-            presenceDetection.setIOSDevice(config.useIOSWakeUp);
-            // Hand over binding configurations to the network service
-            presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
-            presenceDetection.setUseIcmpPing(config.useIcmpPing ? configuration.allowSystemPings : null);
-            presenceDetection.setUseArpPing(config.useArpPing, configuration.arpPingToolPath,
-                    configuration.arpPingUtilMethod);
+        switch (deviceType) {
+            case TCP_SERVICE:
+                Integer port = config.port;
+                if (port == null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No port configured!");
+                    return;
+                }
+                presenceDetection.setHostname(config.hostname);
+                presenceDetection.setServicePorts(Set.of(port));
+                break;
+            case HTTP:
+                URI uri;
+                try {
+                    uri = new URI(config.url);
+                } catch (URISyntaxException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Configured URL is not valid: " + e.getMessage());
+                    return;
+                }
+                String host = uri.getHost();
+                String scheme = uri.getScheme();
+                // URI schemes are case-insensitive
+                if (host == null || !("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme))) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Configured URL must be an absolute http:// or https:// URL!");
+                    return;
+                }
+                // The hostname is only used to identify the target in the detection result, the request uses the URL
+                presenceDetection.setHostname(host);
+                presenceDetection.setUseHttpRequest(httpClient, uri, config.treatRedirectAsError,
+                        config.treatClientErrorAsError);
+                break;
+            case PING:
+                presenceDetection.setHostname(config.hostname);
+                presenceDetection.setIOSDevice(config.useIOSWakeUp);
+                // Hand over binding configurations to the network service
+                presenceDetection.setUseDhcpSniffing(configuration.allowDHCPlisten);
+                presenceDetection.setUseIcmpPing(config.useIcmpPing ? configuration.allowSystemPings : null);
+                presenceDetection.setUseArpPing(config.useArpPing, configuration.arpPingToolPath,
+                        configuration.arpPingUtilMethod);
+                break;
         }
 
         this.retries = config.retry.intValue();
@@ -264,10 +314,10 @@ public class NetworkHandler extends BaseThingHandler
     }
 
     /**
-     * Returns true if this handler is for a TCP service device.
+     * Returns the {@link NetworkDeviceType} this handler monitors.
      */
-    public boolean isTCPServiceDevice() {
-        return isTCPServiceDevice;
+    public NetworkDeviceType getDeviceType() {
+        return deviceType;
     }
 
     @Override
@@ -283,7 +333,8 @@ public class NetworkHandler extends BaseThingHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(NetworkActions.class);
+        // Wake-on-LAN requires a MAC address or a hostname, which an HTTP device is not configured with
+        return deviceType == NetworkDeviceType.HTTP ? List.of() : List.of(NetworkActions.class);
     }
 
     public void sendWakeOnLanPacketViaIp() {
