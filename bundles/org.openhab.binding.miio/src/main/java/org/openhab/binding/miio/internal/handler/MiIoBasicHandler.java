@@ -69,7 +69,6 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,9 +138,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
             return;
         }
-        if (command instanceof State state && state instanceof OpenClosedType) {
-            return;
-        }
         if (handleCommandsChannels(channelUID, command)) {
             forceStatusUpdate();
             return;
@@ -182,18 +178,6 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             logger.debug("Could not convert QuantityType to '{}'", miIoBasicChannel.getUnit());
                             command = new DecimalType(((QuantityType<?>) command).toBigDecimal());
                         }
-                    }
-                    if (paramType == CommandParameterType.OPENCLOSE) {
-                        value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
-                                || "1".contentEquals(command.toString())) ? "open" : "close");
-                    }
-                    if (paramType == CommandParameterType.OPENCLOSENUMBER) {
-                        value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
-                                || "1".contentEquals(command.toString())) ? 1 : 0);
-                    }
-                    if (paramType == CommandParameterType.OPENCLOSESWITCH) {
-                        value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
-                                || "1".contentEquals(command.toString())) ? "on" : "off");
                     }
                     if (paramType == CommandParameterType.COLOR) {
                         if (command instanceof HSBType) {
