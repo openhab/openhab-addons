@@ -14,4 +14,16 @@
 
   <name>openHAB Add-ons :: Bundles :: Home Assistant Link Binding</name>
 
+  <properties>
+    <bnd.importpackage>com.google.errorprone.annotations.*;resolution:=optional</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gson.version}</version>
+    </dependency>
+  </dependencies>
+
 </project>
