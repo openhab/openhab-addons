@@ -341,13 +341,12 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
 
         URI uri;
         boolean requiresAuth = false;
+        String baseUri = restBaseUri;
         if (pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://")) {
             uri = URI.create(pathOrUrl);
-            if (!restBaseUri.isBlank() && uri.toString().startsWith(restBaseUri)) {
-                requiresAuth = true;
-            }
+            requiresAuth = !baseUri.isBlank() && hasSameOrigin(uri, URI.create(baseUri));
         } else if (pathOrUrl.startsWith("/")) {
-            uri = URI.create(restBaseUri + pathOrUrl);
+            uri = URI.create(baseUri + pathOrUrl);
             requiresAuth = true;
         } else {
             return;
@@ -390,6 +389,18 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
                 logger.debug("Failed to fetch Home Assistant image from {}: {}", pathOrUrl, error.getMessage());
             }
         });
+    }
+
+    private static boolean hasSameOrigin(URI uri, URI baseUri) {
+        return uri.getScheme() != null && uri.getScheme().equalsIgnoreCase(baseUri.getScheme()) && uri.getHost() != null
+                && uri.getHost().equalsIgnoreCase(baseUri.getHost()) && effectivePort(uri) == effectivePort(baseUri);
+    }
+
+    private static int effectivePort(URI uri) {
+        if (uri.getPort() >= 0) {
+            return uri.getPort();
+        }
+        return "https".equalsIgnoreCase(uri.getScheme()) ? 443 : 80;
     }
 
     public void fetchImage(String pathOrUrl, Consumer<RawType> consumer) {
