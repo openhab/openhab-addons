@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,9 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -60,11 +62,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michal Boronski - Initial contribution
  * @author Marcel Verpaalen - OH3 migration
+ * @author Marcel Verpaalen - Add optional channels reported by the device
  *
  */
 @NonNullByDefault
 public class PhilipsAirHandler extends BaseThingHandler {
     private static final long INITIAL_DELAY_IN_SECONDS = 10;
+    /**
+     * Channels only supported by some models (e.g. humidifiers), mapped to their channel group. They are added to the
+     * thing once the device reports the corresponding value.
+     */
+    private static final Map<String, String> OPTIONAL_CHANNELS = Map.of(HUMIDITY_SETPOINT, CONTROLS, FUNCTION, CONTROLS,
+            HUMIDITY, SENSORS, TEMPERATURE, SENSORS, WATER_LEVEL, SENSORS, WICKS_FILTER, FILTERS);
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable PhilipsAirAPIConnection connection;
@@ -236,6 +245,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         logger.trace("Update data for {}", thing.getUID());
         try {
             if (requestData(connection)) {
+                addOptionalChannels();
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -284,6 +294,53 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
 
         return data != null || deviceInfo != null || filters != null;
+    }
+
+    /**
+     * Adds the optional channels the device reports but the thing does not have yet. Channels are never removed, as a
+     * value missing from a single response does not prove the device lacks the feature.
+     */
+    private void addOptionalChannels() {
+        ThingHandlerCallback callback = getCallback();
+        if (callback == null) {
+            return;
+        }
+        PhilipsAirPurifierDataDTO data = currentData;
+        PhilipsAirPurifierFiltersDTO filters = this.filters;
+        ThingBuilder thingBuilder = null;
+        for (Map.Entry<String, String> optionalChannel : OPTIONAL_CHANNELS.entrySet()) {
+            String channelId = optionalChannel.getKey();
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), optionalChannel.getValue(), channelId);
+            if (getThing().getChannel(channelUID) == null && isReported(channelId, data, filters)) {
+                if (thingBuilder == null) {
+                    thingBuilder = editThing();
+                }
+                logger.debug("Adding channel {} reported by {}", channelUID, getThing().getUID());
+                thingBuilder.withChannel(
+                        callback.createChannelBuilder(channelUID, new ChannelTypeUID(BINDING_ID, channelId)).build());
+            }
+        }
+        if (thingBuilder != null) {
+            updateThing(thingBuilder.build());
+        }
+    }
+
+    private static boolean isReported(String channelId, @Nullable PhilipsAirPurifierDataDTO data,
+            @Nullable PhilipsAirPurifierFiltersDTO filters) {
+        if (WICKS_FILTER.equals(channelId)) {
+            return filters != null && filters.getWickFilter() != null;
+        }
+        if (data == null) {
+            return false;
+        }
+        return switch (channelId) {
+            case HUMIDITY_SETPOINT -> data.getHumiditySetpoint() != null;
+            case FUNCTION -> data.getFunction() != null;
+            case HUMIDITY -> data.getHumidity() != null;
+            case TEMPERATURE -> data.getTemperature() != null;
+            case WATER_LEVEL -> data.getWaterLevel() != null;
+            default -> false;
+        };
     }
 
     private void updateChannels() {
@@ -366,13 +423,19 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case ERROR_CODE:
                     return String.valueOf(data.getErrorCode());
                 case HUMIDITY:
-                    return new QuantityType<Dimensionless>(
-                            data.getHumidity() + getAirPurifierConfig().getHumidityOffset(), HUMIDITY_UNIT);
+                    Float humidity = data.getHumidity();
+                    return humidity != null
+                            ? new QuantityType<Dimensionless>(humidity + getAirPurifierConfig().getHumidityOffset(),
+                                    HUMIDITY_UNIT)
+                            : null;
                 case HUMIDITY_SETPOINT:
                     return data.getHumiditySetpoint();
                 case TEMPERATURE:
-                    return new QuantityType<>(data.getTemperature() + getAirPurifierConfig().getTemperatureOffset(),
-                            TEMPERATURE_UNIT);
+                    Float temperature = data.getTemperature();
+                    return temperature != null
+                            ? new QuantityType<>(temperature + getAirPurifierConfig().getTemperatureOffset(),
+                                    TEMPERATURE_UNIT)
+                            : null;
                 case FUNCTION:
                     return data.getFunction();
                 case WATER_LEVEL:

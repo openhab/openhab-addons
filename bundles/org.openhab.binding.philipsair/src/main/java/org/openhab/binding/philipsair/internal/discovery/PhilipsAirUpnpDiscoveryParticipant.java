@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * new Philips Air Purifier things
  *
  * @author Michał Boroński - Initial contribution
+ * @author Marcel Verpaalen - Match model numbers with region suffix
  */
 @NonNullByDefault
 @Component(service = UpnpDiscoveryParticipant.class, immediate = true)
@@ -127,31 +129,35 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
         DeviceDetails details = device.getDetails();
         ModelDetails modelDetails = details != null ? details.getModelDetails() : null;
-        String modelName = modelDetails != null ? modelDetails.getModelName().toLowerCase() : null;
+        String modelName = modelDetails != null ? modelDetails.getModelName() : null;
 
-        if (details == null || modelDetails == null
-                || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL.equalsIgnoreCase(modelName)) {
-
+        if (modelDetails == null || !PhilipsAirBindingConstants.DISCOVERY_UPNP_MODEL.equalsIgnoreCase(modelName)) {
             logger.trace("Device not recognized {}", device.toString());
             return null;
         }
 
-        String modelNumber = modelDetails.getModelNumber().toLowerCase();
-        ThingTypeUID thingType = THING_TYPE_UNIVERSAL;
-        if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2889_10.startsWith(modelNumber)) {
-            thingType = THING_TYPE_AC2889_10;
-        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC1214_10.startsWith(modelNumber)) {
-            thingType = THING_TYPE_AC1214_10;
-        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC2729.startsWith(modelNumber)) {
-            thingType = THING_TYPE_AC2729;
-        } else if (PhilipsAirBindingConstants.SUPPORTED_MODEL_NUMBER_AC3829_10.startsWith(modelNumber)) {
-            thingType = THING_TYPE_AC3829_10;
-        } else {
-            thingType = THING_TYPE_UNIVERSAL;
-        }
-
-        logger.debug("Attempt to create Philips Air things {} {}", modelName, modelDetails.getModelNumber());
+        String modelNumber = modelDetails.getModelNumber();
+        ThingTypeUID thingType = getThingType(modelNumber);
+        logger.debug("Attempt to create Philips Air things {} {}", modelName, modelNumber);
         return new ThingUID(thingType, device.getIdentity().getUdn().getIdentifierString());
+    }
+
+    /**
+     * Maps the UPnP model number to a thing type. Devices report the model number with or without the region suffix
+     * (e.g. 'AC2889' or 'AC2889/10'), so both are matched against the thing type id (e.g. 'ac2889_10').
+     */
+    static ThingTypeUID getThingType(@Nullable String modelNumber) {
+        String model = modelNumber != null ? modelNumber.toLowerCase().replace('/', '_') : "";
+        if (!model.isEmpty()) {
+            for (ThingTypeUID thingType : List.of(THING_TYPE_AC2889_10, THING_TYPE_AC1214_10, THING_TYPE_AC2729,
+                    THING_TYPE_AC3829_10)) {
+                String thingTypeId = thingType.getId();
+                if (thingTypeId.startsWith(model) || model.startsWith(thingTypeId)) {
+                    return thingType;
+                }
+            }
+        }
+        return THING_TYPE_UNIVERSAL;
     }
 
     private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {

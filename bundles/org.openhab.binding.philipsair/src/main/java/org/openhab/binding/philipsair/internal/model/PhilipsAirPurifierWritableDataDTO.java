@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public class PhilipsAirPurifierWritableDataDTO {
     private String displayIndex;
     @SerializedName(PhilipsAirBindingConstants.HUMIDITY_SETPOINT)
     @Expose
-    private Integer humiditySetpoint;
+    private @Nullable Integer humiditySetpoint;
     @SerializedName(PhilipsAirBindingConstants.FUNCTION)
     @Expose
     @Nullable
@@ -134,7 +134,7 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.displayIndex = displayIndex;
     }
 
-    public int getHumiditySetpoint() {
+    public @Nullable Integer getHumiditySetpoint() {
         return humiditySetpoint;
     }
 
@@ -142,7 +142,7 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.humiditySetpoint = humiditySetpoint;
     }
 
-    public String getFunction() {
+    public @Nullable String getFunction() {
         return function;
     }
 

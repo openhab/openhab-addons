@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.philipsair.internal.model;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -38,13 +40,13 @@ public class PhilipsAirPurifierDataDTO extends PhilipsAirPurifierWritableDataDTO
     private int errorCode;
     @SerializedName("rh")
     @Expose
-    private float humidity;
+    private @Nullable Float humidity;
     @SerializedName("temp")
     @Expose
-    private float temperature;
+    private @Nullable Float temperature;
     @SerializedName("wl")
     @Expose
-    private int waterLevel;
+    private @Nullable Integer waterLevel;
 
     public int getTimerLeft() {
         return timerLeft;
@@ -78,27 +80,27 @@ public class PhilipsAirPurifierDataDTO extends PhilipsAirPurifierWritableDataDTO
         this.errorCode = errorCode;
     }
 
-    public float getHumidity() {
+    public @Nullable Float getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(float humidity) {
+    public void setHumidity(@Nullable Float humidity) {
         this.humidity = humidity;
     }
 
-    public float getTemperature() {
+    public @Nullable Float getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(int temperature) {
+    public void setTemperature(@Nullable Float temperature) {
         this.temperature = temperature;
     }
 
-    public int getWaterLevel() {
+    public @Nullable Integer getWaterLevel() {
         return waterLevel;
     }
 
-    public void setWaterLevel(int waterLevel) {
+    public void setWaterLevel(@Nullable Integer waterLevel) {
         this.waterLevel = waterLevel;
     }
 }

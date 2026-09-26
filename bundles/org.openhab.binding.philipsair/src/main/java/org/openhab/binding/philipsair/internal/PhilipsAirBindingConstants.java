@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class PhilipsAirBindingConstants {
 
-    private static final String BINDING_ID = "philipsair";
+    public static final String BINDING_ID = "philipsair";
     public static final String VENDOR = "Philips";
 
     public static final String SUPPORTED_MODEL_UNIVERSAL = "universal";
@@ -84,6 +84,8 @@ public class PhilipsAirBindingConstants {
     public static final String PROPERTY_NAME = "name";
 
     // List of all Channel groups
+    public static final String CONTROLS = "controls";
+    public static final String SENSORS = "sensors";
     public static final String FILTERS = "filters";
 
     // List of all Channel id's

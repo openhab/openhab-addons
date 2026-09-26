@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.philipsair.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -40,7 +41,8 @@ public class PhilipsAirPurifierFiltersDTO {
 
     @SerializedName("wicksts")
     @Expose
-    int wickFilter;
+    @Nullable
+    Integer wickFilter;
 
     public int getPreFilter() {
         return preFilter;
@@ -66,11 +68,11 @@ public class PhilipsAirPurifierFiltersDTO {
         this.hepaFilter = hepaFilter;
     }
 
-    public int getWickFilter() {
+    public @Nullable Integer getWickFilter() {
         return wickFilter;
     }
 
-    public void setWickFilter(int wickFilter) {
+    public void setWickFilter(@Nullable Integer wickFilter) {
         this.wickFilter = wickFilter;
     }
 }
