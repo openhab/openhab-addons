@@ -10,20 +10,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evcc.internal.handler;
-
-import java.util.function.Consumer;
+package org.openhab.binding.evcc.internal.handler.routing;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.JsonElement;
 
 /**
- * The {@link QueuedRequest} wraps a Jetty {@link Request} together with its success and error handlers.
- * Used by the evcc request queue to process API calls in a controlled manner.
+ * Returns the input as-is so a specific websocket key can be mapped to a fixed dispatch key.
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public record QueuedRequest(Request request, Consumer<ContentResponse> onSuccess, Consumer<Exception> onError) {
+public class FixedValueExtraction implements ExtractionStrategy {
+
+    @Override
+    public @Nullable JsonElement extract(JsonElement source) {
+        return source;
+    }
+
+    @Override
+    public String describe() {
+        return "FixedValue";
+    }
 }

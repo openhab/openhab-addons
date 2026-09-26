@@ -19,11 +19,13 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
+import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +39,7 @@ import com.google.gson.JsonObject;
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccStatisticsHandler extends EvccBaseThingHandler {
+public class EvccStatisticsHandler extends EvccBaseThingHandler implements EvccPeriodicRefreshable {
 
     private final Logger logger = LoggerFactory.getLogger(EvccStatisticsHandler.class);
 
@@ -51,12 +53,9 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             handler.register(this);
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-            commonInitialize(new JsonObject());
+            MessageRouter router = handler.getMessageRouter();
+            router.registerRoute(
+                    new HandlerRoute(JSON_KEY_STATISTICS, new JsonPathExtraction("$"), this, JSON_KEY_STATISTICS));
         });
     }
 
@@ -66,16 +65,55 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.has(JSON_KEY_STATISTICS) ? state.getAsJsonObject(JSON_KEY_STATISTICS) : new JsonObject();
-        if (!isInitialized || state.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+    public void handleUpdate(String key, JsonElement value) {
+        if (JSON_KEY_STATISTICS.equals(key) && value.isJsonObject()) {
+            JsonObject statisticsUpdate = value.getAsJsonObject();
+            for (String statisticsKey : statisticsUpdate.keySet()) {
+                JsonObject statistic = statisticsUpdate.getAsJsonObject(statisticsKey);
+                logger.trace("Updating statistics for {}", statisticsKey);
+                for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : statistic.entrySet()) {
+                    String entryKey = entry.getKey();
+                    JsonElement entryValue = entry.getValue();
+                    if (null != entryKey && null != entryValue) {
+                        ChannelGroupUID channelGroupUID = new ChannelGroupUID(thing.getUID(),
+                                Utils.sanitizeChannelID(statisticsKey));
+                        if ("chargedKWh".equals(entryKey)) {
+                            entryKey = "chargedEnergy";
+                        }
+                        ChannelUID channelUID = new ChannelUID(channelGroupUID, Utils.sanitizeChannelID(entryKey));
+                        resolveAndUpdateState(channelUID, channelUID.getIdWithoutGroup(), entryValue);
+                    }
+                }
+            }
+            updateStatus(ThingStatus.ONLINE);
             return;
         }
-        updateStatus(ThingStatus.ONLINE);
+        super.handleUpdate(key, value);
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "";
+    }
+
+    @Override
+    public void refreshFromState(JsonObject state) {
+        if (state.has(JSON_KEY_STATISTICS)) {
+            handleUpdate(JSON_KEY_STATISTICS, state.get(JSON_KEY_STATISTICS));
+        }
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        logger.trace("Statistics handler initializing from state");
+        state = state.has(JSON_KEY_STATISTICS) ? state.getAsJsonObject(JSON_KEY_STATISTICS) : new JsonObject();
+        if (state.isEmpty()) {
+            logger.debug("No statistics state available");
+            return;
+        }
         for (String statisticsKey : state.keySet()) {
             JsonObject statistic = state.getAsJsonObject(statisticsKey);
-            logger.debug("Extracting statistics for {}", statisticsKey);
+            logger.trace("Extracting statistics for {}", statisticsKey);
             for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : statistic.entrySet()) {
                 String key = entry.getKey();
                 JsonElement value = entry.getValue();
@@ -90,5 +128,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
                 }
             }
         }
+        logger.trace("Statistics handler initialized successfully");
+        updateStatus(ThingStatus.ONLINE);
     }
 }

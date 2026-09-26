@@ -6,6 +6,7 @@
 	<bridge-type id="server">
 		<label>Server</label>
 		<description>Connection to evcc instance</description>
+		<representation-property>host</representation-property>
 		<config-description>
 			<parameter name="scheme" type="text">
 				<label>Protocol Scheme</label>
@@ -25,12 +26,6 @@
 				<label>Port</label>
 				<default>7070</default>
 				<description>HTTP-Port of your instance (Default: 7070)</description>
-			</parameter>
-			<parameter name="pollInterval" type="integer" required="false">
-				<advanced>true</advanced>
-				<label>Polling Interval</label>
-				<default>30</default>
-				<description>How often should the state be polled? (in seconds, default is 30s)</description>
 			</parameter>
 		</config-description>
 	</bridge-type>

@@ -33,13 +33,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.evcc.internal.handler.routing.PlanExtraction;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 import com.google.gson.JsonArray;
@@ -54,7 +55,7 @@ import com.google.gson.JsonPrimitive;
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccPlanHandler extends EvccBaseThingHandler {
+public class EvccPlanHandler extends EvccBaseThingHandler implements EvccPeriodicRefreshable {
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
@@ -87,11 +88,6 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
             buildLocalizedMaps(handler);
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES, vehicleID);
             if (index == 0) {
@@ -100,19 +96,35 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 endpoint = String.join("/", endpoint, API_PATH_PLAN_REPEATING);
             }
             handler.register(this);
-            commonInitialize(new JsonObject());
         });
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+    public String getIdentifier() {
+        return String.join(".", vehicleID, String.valueOf(index));
+    }
+
+    @Override
+    public void refreshFromState(JsonObject state) {
+        JsonElement plan = new PlanExtraction(vehicleID, index).extract(state);
+        if (plan != null && plan.isJsonObject()) {
+            handleUpdate(JSON_KEY_PLAN, plan);
+        }
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        applyPlanState(state);
+    }
+
+    private void applyPlanState(JsonObject state) {
+        logger.trace("Plan handler vehicle {} index {} initializing from state", vehicleID, index);
         if (state.has(JSON_KEY_VEHICLES)) {
             state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleID);
-            if (!isInitialized || state.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (state.isEmpty()) {
+                logger.debug("No vehicle state found for {}", vehicleID);
                 return;
             }
-            updateStatus(ThingStatus.ONLINE);
             if (index == 0) {
                 if (state.has(JSON_KEY_PLAN)) {
                     state = state.getAsJsonObject(JSON_KEY_PLAN);
@@ -131,23 +143,28 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
                 cachedRepeatingPlans.addAll(state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).deepCopy());
                 // Check the bounds
                 if (cachedRepeatingPlans.size() < index) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                    logger.debug("Plan index {} out of bounds for repeating plans (size {})", index,
+                            cachedRepeatingPlans.size());
                     return;
                 }
                 // Get the corresponding repeating plan
-                state = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).get(index - 1).getAsJsonObject();
+                state = state.getAsJsonArray(JSON_KEY_REPEATING_PLANS).get(index - 1).getAsJsonObject().deepCopy();
                 if (state.has(JSON_KEY_TIME) && state.has(JSON_KEY_TZ)) {
                     String time = state.get(JSON_KEY_TIME).getAsString();
                     String tz = state.get(JSON_KEY_TZ).getAsString();
-                    ZonedDateTime zdt = convertEvccTimeToLocal(time, tz);
-                    state.addProperty(JSON_KEY_TIME, zdt.toString());
+                    if (!TimeFormatValidator.isNotExactTimeFormat(time)) {
+                        ZonedDateTime zdt = convertEvccTimeToLocal(time, tz);
+                        state.addProperty(JSON_KEY_TIME, zdt.toString());
+                    }
                 }
                 if (state.has(JSON_KEY_WEEKDAYS)) {
                     parseWeekdaysResponse(state);
                 }
-                cachedRepeatingPlans.set(index - 1, state);
+                cachedRepeatingPlans.set(index - 1, state.deepCopy());
             }
-            updateStatesFromApiResponse(state);
+            createChannelsAndSetStatesFromApiResponse(state);
+            logger.trace("Plan handler vehicle {} index {} initialized successfully", vehicleID, index);
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -180,7 +197,48 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
     }
 
     @Override
+    public void handleUpdate(String key, JsonElement value) {
+        if (JSON_KEY_PLAN.equals(key) && value.isJsonObject()) {
+            JsonObject plan = value.getAsJsonObject();
+            if (index == 0) {
+                cachedOneTimePlan = plan.deepCopy();
+                updateOnlyPresentChannels(plan);
+                updateStatus(ThingStatus.ONLINE);
+                return;
+            } else if (index > 0) {
+                if ((index - 1) < cachedRepeatingPlans.size()) {
+                    cachedRepeatingPlans.set(index - 1, plan.deepCopy());
+                } else {
+                    while (cachedRepeatingPlans.size() < index - 1) {
+                        cachedRepeatingPlans.add(new JsonObject());
+                    }
+                    cachedRepeatingPlans.add(plan.deepCopy());
+                }
+                if (plan.has(JSON_KEY_TIME) && plan.has(JSON_KEY_TZ)) {
+                    String time = plan.get(JSON_KEY_TIME).getAsString();
+                    String tz = plan.get(JSON_KEY_TZ).getAsString();
+                    if (!TimeFormatValidator.isNotExactTimeFormat(time)) {
+                        ZonedDateTime zdt = convertEvccTimeToLocal(time, tz);
+                        plan.addProperty(JSON_KEY_TIME, zdt.toString());
+                    }
+                }
+                if (plan.has(JSON_KEY_WEEKDAYS)) {
+                    parseWeekdaysResponse(plan);
+                }
+                updateOnlyPresentChannels(plan);
+                updateStatus(ThingStatus.ONLINE);
+                return;
+            }
+        }
+        super.handleUpdate(key, value);
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            Optional.ofNullable(bridgeHandler).ifPresent(handler -> refreshFromState(handler.getCachedEvccState()));
+            return;
+        }
         if (command instanceof State state) {
             String stateString = state.toString();
             if (CHANNEL_PLAN_SOC.equals(channelUID.getId()) || CHANNEL_PLAN_PRECONDITION.equals(channelUID.getId())) {
@@ -265,7 +323,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         ZonedDateTime zdt = ZonedDateTime.now(localZone).plusHours(1).withSecond(0).withNano(0);
         String time = zdt.toInstant().toString(); // Default time
         if (JSON_KEY_TIME.equals(channelKey)) {
-            if (!TimeFormatValidator.isExactTimeFormat(value)) {
+            if (!TimeFormatValidator.isNotExactTimeFormat(value)) {
                 try {
                     OffsetDateTime odt = OffsetDateTime.parse(value, DateTimeFormatter.ofPattern(DATE_TIME_FORMAT));
                     time = odt.toZonedDateTime().toInstant().toString();
@@ -318,7 +376,7 @@ public class EvccPlanHandler extends EvccBaseThingHandler {
         /**
          * true, if input is exact yyyy-MM-dd'T'HH:mm:ss'Z'
          */
-        public static boolean isExactTimeFormat(String input) {
+        public static boolean isNotExactTimeFormat(String input) {
             try {
                 EXACT_TIME_FMT.parse(input);
                 return true;
