@@ -889,8 +889,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     /**
-     * Pro RGBWW PM reports power/energy directly on its RGB/Light/CCT components (no dedicated PM/EM
-     * component) - extract those fields into the numbered meter slot the same way updateRelayStatus() does.
+     * Plus RGBW PM and Pro RGBWW PM report power/energy directly on their RGB/Light/CCT components (no
+     * dedicated PM/EM component) - extract those fields into the numbered meter slot the same way
+     * updateRelayStatus() does.
      */
     private void updateComponentMeter(ShellySettingsStatus status, int meterIdx, @Nullable Double apower,
             @Nullable Shelly2Energy aenergy, @Nullable Double voltage, @Nullable Double current, boolean channelUpdate)
@@ -1435,8 +1436,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         Integer rawId = value.id;
         boolean updated = applyLightStatus(status, rawId != null ? rawId : id, value.output, value.brightness,
                 value.rgb, value.white, null, channelUpdate, true);
-        if (profile.isProRgbwwPm) {
-            // the color component always sits at settings.lights[0]
+        if (profile.isRGBW2) {
+            // the color component always sits at settings.lights[0]; both Plus RGBW PM and Pro RGBWW PM
+            // report power metering data on this component (Gen1 RGBW2 never reaches this Gen2 client)
             updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
         return updated;
@@ -1540,8 +1542,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.temp = ct;
         }
         lights.set(lightId, ds);
-        if (profile.isProRgbwwPm) {
-            // Plus RGBW PM's white-mode light0..3 channels also reach this point but must not be metered here
+        if (profile.isRGBW2) {
+            // both Plus RGBW PM's and Pro RGBWW PM's light0..3 (white-mode) channels report power metering data
             updateComponentMeter(status, lightId, value.apower, value.aenergy, value.voltage, value.current,
                     channelUpdate);
         }

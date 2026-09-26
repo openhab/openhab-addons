@@ -189,4 +189,28 @@ public class ShellyChannelDefinitionsLightTest {
         assertDoesNotThrow(
                 () -> ShellyChannelDefinitions.getDefinition(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP));
     }
+
+    @Test
+    void plusRgbwPmLightProfileWithMultipleMetersGetsDeviceLevelAccumulatedChannels() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
+        profile.numMeters = 4;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createDeviceChannels(mockThing("shellyplusrgbwpm"),
+                profile, profile.status);
+
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUMULATEDPOWER)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALENERGY)));
+    }
+
+    @Test
+    void plusRgbwPmColorProfileWithSingleMeterHasNoDeviceLevelAccumulatedChannels() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
+        profile.numMeters = 1;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createDeviceChannels(mockThing("shellyplusrgbwpm"),
+                profile, profile.status);
+
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUMULATEDPOWER)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALENERGY)));
+    }
 }
