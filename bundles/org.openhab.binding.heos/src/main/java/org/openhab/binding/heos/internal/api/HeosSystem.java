@@ -95,18 +95,24 @@ public class HeosSystem {
     public HeosFacade establishConnection(String connectionIP, int connectionPort, int heartbeat)
             throws IOException, ReadException {
         singleThreadExecutor = Executors.newSingleThreadExecutor();
-        if (commandLine.connect(connectionIP, connectionPort)) {
-            logger.debug("HEOS command line connected at IP {} @ port {}", connectionIP, connectionPort);
-            send(HeosCommands.registerChangeEventOff());
-        }
+        try {
+            if (commandLine.connect(connectionIP, connectionPort)) {
+                logger.debug("HEOS command line connected at IP {} @ port {}", connectionIP, connectionPort);
+                send(HeosCommands.registerChangeEventOff());
+            }
 
-        if (eventLine.connect(connectionIP, connectionPort)) {
-            logger.debug("HEOS event line connected at IP {} @ port {}", connectionIP, connectionPort);
-            eventSendCommand.send(HeosCommands.registerChangeEventOff(), Void.class);
-        }
+            if (eventLine.connect(connectionIP, connectionPort)) {
+                logger.debug("HEOS event line connected at IP {} @ port {}", connectionIP, connectionPort);
+                eventSendCommand.send(HeosCommands.registerChangeEventOff(), Void.class);
+            }
 
-        startHeartBeat(heartbeat);
-        startEventListener();
+            startHeartBeat(heartbeat);
+            startEventListener();
+        } catch (IOException | ReadException | RuntimeException e) {
+            logger.debug("Failed to establish the HEOS connection, cleaning up: {}", e.getMessage());
+            closeConnection();
+            throw e;
+        }
 
         return new HeosFacade(this, eventController);
     }
@@ -145,7 +151,7 @@ public class HeosSystem {
         eventSendCommand.disconnect();
         sendCommand.disconnect();
         ExecutorService executor = this.singleThreadExecutor;
-        if (executor != null && executor.isShutdown()) {
+        if (executor != null && !executor.isShutdown()) {
             executor.shutdownNow();
         }
     }
