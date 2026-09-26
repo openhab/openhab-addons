@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.gemini.internal.action.GeminiActions;
 import org.openhab.binding.gemini.internal.api.GeminiApiClient;
 import org.openhab.binding.gemini.internal.api.GeminiApiException;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingLevel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiModel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
 import org.openhab.binding.gemini.internal.hli.GeminiHLIService;
@@ -93,6 +94,8 @@ public class GeminiHandler extends BaseThingHandler {
                 double temp = config != null ? config.temperature : DEFAULT_TEMPERATURE;
                 double topP = config != null ? config.topP : DEFAULT_TOP_P;
                 int maxTokens = config != null ? config.maxOutputTokens : DEFAULT_MAX_OUTPUT_TOKENS;
+                GeminiThinkingLevel thinkingLevel = config != null ? parseThinkingLevel(config.thinkingLevel)
+                        : DEFAULT_THINKING_LEVEL;
                 String systemMessage = DEFAULT_SYSTEM_MESSAGE;
 
                 GeminiChannelConfiguration channelConfig = channel.getConfiguration()
@@ -118,6 +121,11 @@ public class GeminiHandler extends BaseThingHandler {
                     maxTokens = channelMaxTokens;
                 }
 
+                String channelThinkingLevel = channelConfig.thinkingLevel;
+                if (channelThinkingLevel != null && !channelThinkingLevel.isBlank()) {
+                    thinkingLevel = parseThinkingLevel(channelThinkingLevel);
+                }
+
                 String channelSystemMessage = channelConfig.systemMessage;
                 if (channelSystemMessage != null && !channelSystemMessage.isBlank()) {
                     systemMessage = channelSystemMessage;
@@ -125,7 +133,7 @@ public class GeminiHandler extends BaseThingHandler {
 
                 try {
                     GeminiResponse response = client.sendPrompt(model, lastPrompt, systemMessage, temp, topP, maxTokens,
-                            timeout);
+                            thinkingLevel, timeout);
                     processChatResponse(channelUID, response);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (GeminiApiException e) {
@@ -135,6 +143,16 @@ public class GeminiHandler extends BaseThingHandler {
                 }
             }
         }
+    }
+
+    private GeminiThinkingLevel parseThinkingLevel(String thinkingLevel) {
+        GeminiThinkingLevel level = GeminiThinkingLevel.fromString(thinkingLevel);
+        if (level == null) {
+            logger.warn("Invalid thinking level configured: {} (falling back to default {})", thinkingLevel,
+                    DEFAULT_THINKING_LEVEL);
+            return DEFAULT_THINKING_LEVEL;
+        }
+        return level;
     }
 
     private void processChatResponse(ChannelUID channelUID, GeminiResponse response) {

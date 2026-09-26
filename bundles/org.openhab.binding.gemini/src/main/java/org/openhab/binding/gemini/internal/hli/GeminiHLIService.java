@@ -16,6 +16,7 @@ import static org.openhab.binding.gemini.internal.GeminiBindingConstants.BINDING
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MAX_MODEL_TURNS;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_MODEL;
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_SYSTEM_MESSAGE;
+import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_THINKING_LEVEL;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import org.openhab.binding.gemini.internal.api.GeminiLLMToolCall;
 import org.openhab.binding.gemini.internal.api.dto.GeminiContent;
 import org.openhab.binding.gemini.internal.api.dto.GeminiFunctionCall;
 import org.openhab.binding.gemini.internal.api.dto.GeminiPart;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingLevel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiCandidate;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
 import org.openhab.core.i18n.TranslationProvider;
@@ -149,7 +151,8 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         String model = config.model.isBlank() ? DEFAULT_MODEL : config.model;
         try {
             GeminiResponse geminiResponse = apiClient.sendPrompt(model, text, DEFAULT_SYSTEM_MESSAGE,
-                    config.temperature, config.topP, config.maxOutputTokens, config.requestTimeout);
+                    config.temperature, config.topP, config.maxOutputTokens, getThinkingLevel(config),
+                    config.requestTimeout);
             String response = geminiResponse.getFirstText();
             if (response != null) {
                 return response;
@@ -212,6 +215,8 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
             systemMessage = systemMessage.trim() + "\n\n" + toolGuidance;
         }
 
+        GeminiThinkingLevel thinkingLevel = getThinkingLevel(config);
+
         int loopCount = 0;
         final int maxLoops = config.maxModelTurns <= 0 ? DEFAULT_MAX_MODEL_TURNS : config.maxModelTurns;
         while (true) {
@@ -224,7 +229,8 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
             String model = config.model.isBlank() ? DEFAULT_MODEL : config.model;
             try {
                 GeminiResponse geminiResponse = apiClient.sendPrompt(model, conversation.getMessages(), tools,
-                        systemMessage, config.temperature, config.topP, config.maxOutputTokens, config.requestTimeout);
+                        systemMessage, config.temperature, config.topP, config.maxOutputTokens, thinkingLevel,
+                        config.requestTimeout);
 
                 List<GeminiCandidate> candidates = geminiResponse.candidates();
                 if (candidates == null || candidates.isEmpty()) {
@@ -331,5 +337,15 @@ public class GeminiHLIService implements ThingHandlerService, HumanLanguageInter
         } catch (LLMToolException e) {
             return "Error: " + e.getMessage();
         }
+    }
+
+    private GeminiThinkingLevel getThinkingLevel(GeminiConfiguration config) {
+        GeminiThinkingLevel thinkingLevel = GeminiThinkingLevel.fromString(config.thinkingLevel);
+        if (thinkingLevel == null) {
+            logger.warn("Invalid thinking level configured: {} (falling back to default {})", config.thinkingLevel,
+                    DEFAULT_THINKING_LEVEL);
+            return DEFAULT_THINKING_LEVEL;
+        }
+        return thinkingLevel;
     }
 }

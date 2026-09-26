@@ -72,6 +72,21 @@
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="thinkingLevel" type="text" groupName="hli">
+				<label>Thinking Level</label>
+				<description>Controls effort on thinking for models that support it (e.g., Gemini 3+). Higher levels increase
+					thinking depth.</description>
+				<default>minimal</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="unspecified">Unspecified</option>
+					<option value="minimal">Minimal</option>
+					<option value="low">Low</option>
+					<option value="medium">Medium</option>
+					<option value="high">High</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
 			<!-- Connection Settings -->
 			<parameter name="requestTimeout" type="integer" min="1" unit="s" groupName="connection">
 				<label>Request Timeout</label>
@@ -106,6 +121,20 @@
 				<label>Max Output Tokens</label>
 				<description>The maximum number of tokens to generate in the response.</description>
 				<advanced>true</advanced>
+			</parameter>
+			<parameter name="thinkingLevel" type="text">
+				<label>Thinking Level</label>
+				<description>Controls effort on thinking for models that support it (e.g., Gemini 3+). Higher levels increase
+					thinking depth.</description>
+				<advanced>true</advanced>
+				<options>
+					<option value="unspecified">Unspecified</option>
+					<option value="minimal">Minimal</option>
+					<option value="low">Low</option>
+					<option value="medium">Medium</option>
+					<option value="high">High</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
 			</parameter>
 			<parameter name="systemMessage" type="text">
 				<label>System Message</label>
