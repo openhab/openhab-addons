@@ -45,6 +45,17 @@ public class Poller2ChannelTest {
                 Arguments.of(ValueType.FLOAT32, 100, registers(0x7FC0, 0x0000), UnDefType.UNDEF));
     }
 
+    static Stream<Arguments> indexedValues() {
+        return Stream.of(Arguments.of("100.0", ValueType.BIT, registers(0x0001, 0x8000), new DecimalType("1")),
+                Arguments.of("100.15", ValueType.BIT, registers(0x0001, 0x8000), DecimalType.ZERO),
+                Arguments.of("101.15", ValueType.BIT, registers(0x0001, 0x8000), new DecimalType("1")),
+                Arguments.of("100.0", ValueType.UINT8, registers(0x0603, 0x0405), new DecimalType("3")),
+                Arguments.of("100.1", ValueType.UINT8, registers(0x0603, 0x0405), new DecimalType("6")),
+                Arguments.of("101.0", ValueType.UINT8, registers(0x0603, 0x0405), new DecimalType("5")),
+                Arguments.of("101.1", ValueType.UINT8, registers(0x0603, 0x0405), new DecimalType("4")),
+                Arguments.of("101", ValueType.UINT16, registers(0x0603, 0x0405), new DecimalType("1029")));
+    }
+
     @ParameterizedTest
     @MethodSource("decodedValues")
     public void decodesTheConfiguredPointFromThePollerWindow(ValueType valueType, int address,
@@ -62,5 +73,14 @@ public class Poller2ChannelTest {
                 PollerReadFailurePolicy.UNDEF);
 
         assertEquals(UnDefType.UNDEF, channel.acceptRegisters(registers, 100));
+    }
+
+    @ParameterizedTest
+    @MethodSource("indexedValues")
+    public void honorsLowHighBitAndByteIndexesAcrossRegisters(String address, ValueType valueType,
+            ModbusRegisterArray registers, Object expectedState) {
+        Poller2Channel channel = new Poller2Channel(address, valueType, PollerReadFailurePolicy.UNDEF);
+
+        assertEquals(expectedState, channel.acceptRegisters(registers, 100));
     }
 }

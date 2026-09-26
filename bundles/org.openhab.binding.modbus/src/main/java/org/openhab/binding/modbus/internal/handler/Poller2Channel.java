@@ -30,17 +30,32 @@ import org.openhab.core.types.UnDefType;
 final class Poller2Channel {
 
     private final int address;
+    private final int subAddress;
     private final ValueType valueType;
     private final PollerChannelState state;
 
     public Poller2Channel(int address, ValueType valueType, PollerReadFailurePolicy failurePolicy) {
         this.address = address;
+        this.subAddress = 0;
+        this.valueType = valueType;
+        this.state = new PollerChannelState(failurePolicy);
+    }
+
+    public Poller2Channel(String address, ValueType valueType, PollerReadFailurePolicy failurePolicy) {
+        String[] parts = address.split("\\.", -1);
+        if (parts.length > 2) {
+            throw new IllegalArgumentException("Invalid Modbus address " + address);
+        }
+        this.address = Integer.parseInt(parts[0]);
+        this.subAddress = parts.length == 2 ? Integer.parseInt(parts[1]) : 0;
         this.valueType = valueType;
         this.state = new PollerChannelState(failurePolicy);
     }
 
     public synchronized State acceptRegisters(ModbusRegisterArray registers, int pollStart) {
-        long index = (long) address - pollStart;
+        long registerOffset = (long) address - pollStart;
+        long index = valueType.getBits() < Short.SIZE ? registerOffset * (Short.SIZE / valueType.getBits()) + subAddress
+                : registerOffset;
         if (index < 0 || index > Integer.MAX_VALUE) {
             state.acceptSuccessfulState(UnDefType.UNDEF);
             return state.currentState();
