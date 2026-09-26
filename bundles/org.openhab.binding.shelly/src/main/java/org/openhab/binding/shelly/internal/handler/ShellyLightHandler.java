@@ -377,6 +377,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         for (ShellyStatusLightChannel light : status.lights) {
             String controlGroup = profile.getControlGroup(lightId);
             createLightChannels(light, lightId);
+            if (light.mode != null) {
+                profile.inColor = SHELLY_MODE_COLOR.equalsIgnoreCase(light.mode);
+                profile.device.mode = light.mode;
+            }
             // The bulb has a combined channel set for color or white mode
             // The RGBW2 uses 2 different thing types: color=1 channel, white=4 channel
             if (profile.isBulb) {
@@ -449,6 +453,9 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     // the shared LEDs are in RGB mode, the last reported color temperature no longer applies
                     updated |= updateChannel(whiteGroup, CHANNEL_COLOR_TEMP, UnDefType.UNDEF);
                 }
+            }
+            if (light.mode != null) {
+                col.setMode(light.mode);
             }
 
             // continue with next light

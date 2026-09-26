@@ -18,6 +18,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.Gson;
+
 /**
  * Tests for {@link Shelly1ApiJsonDTO#fixDimmerJson(String)}.
  *
@@ -54,5 +56,14 @@ public class Shelly1ApiJsonDTOTest {
         String result = Shelly1ApiJsonDTO.fixDimmerJson(input);
         assertThat(result, containsString("\"dimmers\":["));
         assertThat(result, containsString("\"lights\":[{\"brightness\":80}]"));
+    }
+
+    @Test
+    void statusLightChannelDeserializesMode() {
+        Shelly1ApiJsonDTO.ShellyStatusLightChannel result = new Gson()
+                .fromJson("{\"mode\":\"color\",\"brightness\":50}", Shelly1ApiJsonDTO.ShellyStatusLightChannel.class);
+
+        assertThat(result.mode, is(equalTo("color")));
+        assertThat(result.brightness, is(equalTo(50)));
     }
 }

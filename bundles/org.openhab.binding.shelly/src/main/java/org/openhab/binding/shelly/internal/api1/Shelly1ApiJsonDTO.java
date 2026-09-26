@@ -1323,6 +1323,7 @@ public class Shelly1ApiJsonDTO {
 
     public static class ShellyStatusLightChannel {
         public Boolean ison;
+        public String mode; // color or white
         public Double power;
         public Boolean overpower;
         @SerializedName("has_timer")
