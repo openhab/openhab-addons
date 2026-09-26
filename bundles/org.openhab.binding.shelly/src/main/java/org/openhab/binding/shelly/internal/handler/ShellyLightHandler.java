@@ -420,8 +420,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         if (!SHELLY_MODE_COLOR.equals(light.mode)) {
 
             // COLOR TEMP: this may change model's mode
-            if (light.temp != null) {
-                model.setColorTemp(getInteger(light.temp));
+            if (light.temp instanceof Integer colorTemp && colorTemp > 0) {
+                model.setColorTemp(colorTemp);
             }
         }
 
