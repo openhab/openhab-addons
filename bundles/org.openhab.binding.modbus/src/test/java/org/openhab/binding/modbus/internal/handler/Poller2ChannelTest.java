@@ -60,6 +60,7 @@ public class Poller2ChannelTest {
         return Stream.of(Arguments.of("99", ValueType.UINT16, "Address 99 is before poll window 100..103"),
                 Arguments.of("104", ValueType.UINT16, "Address 104 is outside poll window 100..103"),
                 Arguments.of("103", ValueType.INT32, "Address 103 with value type int32 exceeds poll window 100..103"),
+                Arguments.of("100", ValueType.BIT, "Address X.Y must be used with value type bit"),
                 Arguments.of("100.16", ValueType.BIT, "Sub-address 16 is invalid for value type bit"),
                 Arguments.of("100.2", ValueType.UINT8, "Sub-address 2 is invalid for value type uint8"),
                 Arguments.of("100.1", ValueType.UINT16, "Sub-address 1 is invalid for value type uint16"));
@@ -100,5 +101,20 @@ public class Poller2ChannelTest {
         Poller2Channel channel = new Poller2Channel(address, valueType, PollerReadFailurePolicy.UNDEF);
 
         assertEquals(expectedMessage, channel.validateReadRange(100, 4).orElseThrow());
+    }
+
+    @ParameterizedTest
+    @MethodSource("crossRegisterValues")
+    public void decodesValuesThatSpanWholeRegisterBoundaries(String address, ValueType valueType,
+            ModbusRegisterArray registers, Object expectedState) {
+        Poller2Channel channel = new Poller2Channel(address, valueType, PollerReadFailurePolicy.UNDEF);
+
+        assertEquals(expectedState, channel.acceptRegisters(registers, 100));
+    }
+
+    static Stream<Arguments> crossRegisterValues() {
+        return Stream.of(
+                Arguments.of("101", ValueType.INT32, registers(0xFFFF, 0x0001, 0x0002), new DecimalType("65538")),
+                Arguments.of("101", ValueType.UINT32, registers(0xFFFF, 0x0001, 0x0002), new DecimalType("65538")));
     }
 }

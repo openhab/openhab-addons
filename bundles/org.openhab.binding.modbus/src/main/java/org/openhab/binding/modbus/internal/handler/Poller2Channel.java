@@ -83,6 +83,9 @@ final class Poller2Channel {
 
     public Optional<String> validateReadRange(int pollStart, int pollLength) {
         if (valueType.getBits() < Short.SIZE) {
+            if (!hasSubAddress) {
+                return Optional.of("Address X.Y must be used with value type %s".formatted(valueType));
+            }
             int valuesPerRegister = Short.SIZE / valueType.getBits();
             if (subAddress < 0 || subAddress >= valuesPerRegister) {
                 return Optional.of("Sub-address %d is invalid for value type %s".formatted(subAddress, valueType));
