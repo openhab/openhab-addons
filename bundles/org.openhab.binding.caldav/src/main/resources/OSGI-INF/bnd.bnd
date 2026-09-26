@@ -1,0 +1,5 @@
+Bundle-Name: openHAB CalDAV Binding
+Bundle-SymbolicName: org.openhab.binding.caldav
+Bundle-Vendor: openHAB
+Export-Package: org.openhab.binding.caldav
+-private: true

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="caldav"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>@text/thing-type.caldav.account.label</label>
+		<description>@text/thing-type.caldav.account.description</description>
+
+		<config-description>
+			<parameter-group name="connection">
+				<label>@text/config.group.connection.label</label>
+				<description>@text/config.group.connection.description</description>
+			</parameter-group>
+			<parameter-group name="discovery">
+				<label>@text/config.group.discovery.label</label>
+				<description>@text/config.group.discovery.description</description>
+			</parameter-group>
+			<parameter-group name="synchronization">
+				<label>@text/config.group.synchronization.label</label>
+				<description>@text/config.group.synchronization.description</description>
+			</parameter-group>
+			<parameter-group name="advanced">
+				<label>@text/config.group.advanced.label</label>
+				<description>@text/config.group.advanced.description</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="url" type="text" required="true" groupName="connection">
+				<label>@text/config.account.url.label</label>
+				<description>@text/config.account.url.description</description>
+			</parameter>
+			<parameter name="username" type="text" required="false" groupName="connection">
+				<label>@text/config.account.username.label</label>
+				<description>@text/config.account.username.description</description>
+			</parameter>
+			<parameter name="password" type="text" required="false" groupName="connection">
+				<context>password</context>
+				<label>@text/config.account.password.label</label>
+				<description>@text/config.account.password.description</description>
+			</parameter>
+			<parameter name="authType" type="text" required="true" groupName="connection">
+				<label>@text/config.account.authType.label</label>
+				<description>@text/config.account.authType.description</description>
+				<default>AUTO</default>
+				<options>
+					<option value="AUTO">@text/config.account.authType.option.AUTO</option>
+					<option value="BASIC">@text/config.account.authType.option.BASIC</option>
+					<option value="DIGEST">@text/config.account.authType.option.DIGEST</option>
+				</options>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" min="1" max="300" required="true" groupName="connection">
+				<label>@text/config.account.requestTimeout.label</label>
+				<description>@text/config.account.requestTimeout.description</description>
+				<default>30</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="verifyCertificate" type="boolean" required="true" groupName="connection">
+				<label>@text/config.account.verifyCertificate.label</label>
+				<description>@text/config.account.verifyCertificate.description</description>
+				<default>true</default>
+			</parameter>
+
+			<parameter name="discoveryMode" type="text" required="true" groupName="discovery">
+				<label>@text/config.account.discoveryMode.label</label>
+				<description>@text/config.account.discoveryMode.description</description>
+				<default>AUTO</default>
+				<options>
+					<option value="AUTO">@text/config.account.discoveryMode.option.AUTO</option>
+					<option value="DIRECT">@text/config.account.discoveryMode.option.DIRECT</option>
+				</options>
+			</parameter>
+			<parameter name="calendarHome" type="text" required="false" groupName="discovery">
+				<label>@text/config.account.calendarHome.label</label>
+				<description>@text/config.account.calendarHome.description</description>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer" min="30" required="true" groupName="synchronization">
+				<label>@text/config.account.refreshInterval.label</label>
+				<description>@text/config.account.refreshInterval.description</description>
+				<default>300</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+			<parameter name="syncMode" type="text" required="true" groupName="synchronization">
+				<label>@text/config.account.syncMode.label</label>
+				<description>@text/config.account.syncMode.description</description>
+				<default>AUTO</default>
+				<options>
+					<option value="AUTO">@text/config.account.syncMode.option.AUTO</option>
+					<option value="SYNC_TOKEN">@text/config.account.syncMode.option.SYNC_TOKEN</option>
+					<option value="ETAG">@text/config.account.syncMode.option.ETAG</option>
+					<option value="FULL">@text/config.account.syncMode.option.FULL</option>
+				</options>
+			</parameter>
+			<parameter name="maxPastDays" type="integer" min="0" max="36500" required="true"
+				groupName="synchronization">
+				<label>@text/config.account.maxPastDays.label</label>
+				<description>@text/config.account.maxPastDays.description</description>
+				<default>30</default>
+				<unitLabel>d</unitLabel>
+			</parameter>
+			<parameter name="maxFutureDays" type="integer" min="1" max="36500" required="true"
+				groupName="synchronization">
+				<label>@text/config.account.maxFutureDays.label</label>
+				<description>@text/config.account.maxFutureDays.description</description>
+				<default>365</default>
+				<unitLabel>d</unitLabel>
+			</parameter>
+			<parameter name="readOnly" type="boolean" required="true" groupName="advanced">
+				<label>@text/config.account.readOnly.label</label>
+				<description>@text/config.account.readOnly.description</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="calendar">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.caldav.calendar.label</label>
+		<description>@text/thing-type.caldav.calendar.description</description>
+
+		<channel-groups>
+			<channel-group id="events" typeId="events"/>
+			<channel-group id="current" typeId="current"/>
+			<channel-group id="next" typeId="next"/>
+			<channel-group id="sync" typeId="sync"/>
+		</channel-groups>
+
+		<representation-property>calendarUid</representation-property>
+
+		<config-description>
+			<parameter-group name="calendar">
+				<label>@text/config.group.calendar.label</label>
+				<description>@text/config.group.calendar.description</description>
+			</parameter-group>
+			<parameter-group name="range">
+				<label>@text/config.group.range.label</label>
+				<description>@text/config.group.range.description</description>
+			</parameter-group>
+			<parameter-group name="advanced">
+				<label>@text/config.group.advanced.label</label>
+				<description>@text/config.group.advanced.description</description>
+				<advanced>true</advanced>
+			</parameter-group>
+
+			<parameter name="path" type="text" required="true" groupName="calendar">
+				<label>@text/config.calendar.path.label</label>
+				<description>@text/config.calendar.path.description</description>
+			</parameter>
+			<parameter name="calendarId" type="text" required="true" groupName="calendar">
+				<label>@text/config.calendar.calendarId.label</label>
+				<description>@text/config.calendar.calendarId.description</description>
+			</parameter>
+			<parameter name="enabled" type="boolean" required="true" groupName="calendar">
+				<label>@text/config.calendar.enabled.label</label>
+				<description>@text/config.calendar.enabled.description</description>
+				<default>true</default>
+			</parameter>
+
+			<parameter name="rangeAnchor" type="text" required="true" groupName="range">
+				<label>@text/config.calendar.rangeAnchor.label</label>
+				<description>@text/config.calendar.rangeAnchor.description</description>
+				<default>TODAY</default>
+				<options>
+					<option value="TODAY">@text/config.calendar.rangeAnchor.option.TODAY</option>
+					<option value="NOW">@text/config.calendar.rangeAnchor.option.NOW</option>
+				</options>
+			</parameter>
+			<parameter name="rangeStartOffset" type="integer" required="true" groupName="range">
+				<label>@text/config.calendar.rangeStartOffset.label</label>
+				<description>@text/config.calendar.rangeStartOffset.description</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="rangeEndOffset" type="integer" required="true" groupName="range">
+				<label>@text/config.calendar.rangeEndOffset.label</label>
+				<description>@text/config.calendar.rangeEndOffset.description</description>
+				<default>6</default>
+			</parameter>
+			<parameter name="maxEvents" type="integer" min="1" max="50000" required="true" groupName="range">
+				<label>@text/config.calendar.maxEvents.label</label>
+				<description>@text/config.calendar.maxEvents.description</description>
+				<default>500</default>
+			</parameter>
+
+			<parameter name="includeCancelled" type="boolean" required="true" groupName="advanced">
+				<label>@text/config.calendar.includeCancelled.label</label>
+				<description>@text/config.calendar.includeCancelled.description</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="caldav"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="events">
+		<label>@text/channel-group.events.label</label>
+		<description>@text/channel-group.events.description</description>
+		<channels>
+			<channel id="json" typeId="events-json"/>
+			<channel id="count" typeId="event-count"/>
+			<channel id="range-start" typeId="range-start"/>
+			<channel id="range-end" typeId="range-end"/>
+			<channel id="truncated" typeId="events-truncated"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="current">
+		<label>@text/channel-group.current.label</label>
+		<description>@text/channel-group.current.description</description>
+		<channels>
+			<channel id="active" typeId="current-active"/>
+			<channel id="uid" typeId="current-uid"/>
+			<channel id="title" typeId="current-title"/>
+			<channel id="description" typeId="current-description"/>
+			<channel id="location" typeId="current-location"/>
+			<channel id="start" typeId="current-start"/>
+			<channel id="end" typeId="current-end"/>
+			<channel id="all-day" typeId="current-all-day"/>
+			<channel id="organizer" typeId="current-organizer"/>
+			<channel id="categories" typeId="current-categories"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="next">
+		<label>@text/channel-group.next.label</label>
+		<description>@text/channel-group.next.description</description>
+		<channels>
+			<channel id="uid" typeId="next-uid"/>
+			<channel id="title" typeId="next-title"/>
+			<channel id="description" typeId="next-description"/>
+			<channel id="location" typeId="next-location"/>
+			<channel id="start" typeId="next-start"/>
+			<channel id="end" typeId="next-end"/>
+			<channel id="all-day" typeId="next-all-day"/>
+			<channel id="organizer" typeId="next-organizer"/>
+			<channel id="categories" typeId="next-categories"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sync">
+		<label>@text/channel-group.sync.label</label>
+		<description>@text/channel-group.sync.description</description>
+		<channels>
+			<channel id="last" typeId="last-sync"/>
+			<channel id="status" typeId="sync-status"/>
+			<channel id="error" typeId="connection-error"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="events-json">
+		<item-type>String</item-type>
+		<label>@text/channel.events-json.label</label>
+		<description>@text/channel.events-json.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event-count">
+		<item-type>Number</item-type>
+		<label>@text/channel.event-count.label</label>
+		<description>@text/channel.event-count.description</description>
+		<state min="0" step="1" readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-start">
+		<item-type>DateTime</item-type>
+		<label>@text/channel.range-start.label</label>
+		<description>@text/channel.range-start.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-end">
+		<item-type>DateTime</item-type>
+		<label>@text/channel.range-end.label</label>
+		<description>@text/channel.range-end.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="events-truncated">
+		<item-type>Switch</item-type>
+		<label>@text/channel.events-truncated.label</label>
+		<description>@text/channel.events-truncated.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-active">
+		<item-type>Switch</item-type>
+		<label>@text/channel.current-active.label</label>
+		<description>@text/channel.current-active.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-uid">
+		<item-type>String</item-type>
+		<label>@text/channel.current-uid.label</label>
+		<description>@text/channel.current-uid.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-title">
+		<item-type>String</item-type>
+		<label>@text/channel.current-title.label</label>
+		<description>@text/channel.current-title.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-description">
+		<item-type>String</item-type>
+		<label>@text/channel.current-description.label</label>
+		<description>@text/channel.current-description.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-location">
+		<item-type>String</item-type>
+		<label>@text/channel.current-location.label</label>
+		<description>@text/channel.current-location.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-start">
+		<item-type>DateTime</item-type>
+		<label>@text/channel.current-start.label</label>
+		<description>@text/channel.current-start.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-end">
+		<item-type>DateTime</item-type>
+		<label>@text/channel.current-end.label</label>
+		<description>@text/channel.current-end.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-all-day">
+		<item-type>Switch</item-type>
+		<label>@text/channel.current-all-day.label</label>
+		<description>@text/channel.current-all-day.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-organizer">
+		<item-type>String</item-type>
+		<label>@text/channel.current-organizer.label</label>
+		<description>@text/channel.current-organizer.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-categories">
+		<item-type>String</item-type>
+		<label>@text/channel.current-categories.label</label>
+		<description>@text/channel.current-categories.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="next-uid">
+		<item-type>String</item-type>
+		<label>@text/channel.next-uid.label</label>
+		<description>@text/channel.next-uid.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-title">
+		<item-type>String</item-type>
+		<label>@text/channel.next-title.label</label>
+		<description>@text/channel.next-title.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-description">
+		<item-type>String</item-type>
+		<label>@text/channel.next-description.label</label>
+		<description>@text/channel.next-description.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-location">
+		<item-type>String</item-type>
+		<label>@text/channel.next-location.label</label>
+		<description>@text/channel.next-location.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-start">
+		<item-type>DateTime</item-type>
+		<label>@text/channel.next-start.label</label>
+		<description>@text/channel.next-start.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-end">
+		<item-type>DateTime</item-type>
+		<label>@text/channel.next-end.label</label>
+		<description>@text/channel.next-end.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-all-day">
+		<item-type>Switch</item-type>
+		<label>@text/channel.next-all-day.label</label>
+		<description>@text/channel.next-all-day.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-organizer">
+		<item-type>String</item-type>
+		<label>@text/channel.next-organizer.label</label>
+		<description>@text/channel.next-organizer.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-categories">
+		<item-type>String</item-type>
+		<label>@text/channel.next-categories.label</label>
+		<description>@text/channel.next-categories.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-sync">
+		<item-type>DateTime</item-type>
+		<label>@text/channel.last-sync.label</label>
+		<description>@text/channel.last-sync.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sync-status">
+		<item-type>String</item-type>
+		<label>@text/channel.sync-status.label</label>
+		<description>@text/channel.sync-status.description</description>
+		<state readOnly="true">
+			<options>
+				<option value="SYNCING">@text/sync.status.SYNCING</option>
+				<option value="OK">@text/sync.status.OK</option>
+				<option value="PARTIAL">@text/sync.status.PARTIAL</option>
+				<option value="ERROR">@text/sync.status.ERROR</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="connection-error">
+		<item-type>String</item-type>
+		<label>@text/channel.connection-error.label</label>
+		<description>@text/channel.connection-error.description</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
