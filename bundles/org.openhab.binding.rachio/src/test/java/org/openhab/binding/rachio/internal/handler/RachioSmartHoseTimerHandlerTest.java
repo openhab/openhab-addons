@@ -35,6 +35,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.RachioConfiguration;
 import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
@@ -78,6 +80,69 @@ class RachioSmartHoseTimerHandlerTest {
     private static final String BASE_STATION_ID = "base-station-id";
     private static final String VALVE_ID = "valve-id";
     private static final String PROGRAM_ID = "program-id";
+
+    @ParameterizedTest
+    @ValueSource(strings = { "base-station", "valve", "valve-program", "all" })
+    void missingSnapshotResourcesGoOfflineAndRecoverWithUnchangedData(String missingType) throws Exception {
+        RachioBridgeHandler bridgeHandler = Mockito.mock(RachioBridgeHandler.class);
+        ThingHandlerCallback callback = Mockito.mock(ThingHandlerCallback.class);
+        when(bridgeHandler.getBaseStationForInitialization(BASE_STATION_ID))
+                .thenReturn(baseStation(BASE_STATION_ID, "Base station", true));
+        when(bridgeHandler.getValveForInitialization(VALVE_ID)).thenReturn(valve(VALVE_ID, "Valve", 300));
+        when(bridgeHandler.getValveProgramForInitialization(PROGRAM_ID))
+                .thenReturn(program(PROGRAM_ID, "Program", VALVE_ID, 300));
+        when(bridgeHandler.getValveDayViews(VALVE_ID)).thenReturn(new RachioValveDayViewsResponse());
+        TestBaseStationHandler baseStationHandler = new TestBaseStationHandler(
+                thing(THING_TYPE_BASE_STATION, "base-station", Map.of(PROPERTY_BASE_STATION_ID, BASE_STATION_ID)),
+                bridgeHandler, ThingStatus.ONLINE);
+        TestValveHandler valveHandler = new TestValveHandler(
+                thing(THING_TYPE_VALVE, "valve", Map.of(PROPERTY_VALVE_ID, VALVE_ID)), bridgeHandler,
+                ThingStatus.ONLINE);
+        TestValveProgramHandler programHandler = new TestValveProgramHandler(
+                thing(THING_TYPE_VALVE_PROGRAM, "program", Map.of(PROPERTY_VALVE_PROGRAM_ID, PROGRAM_ID)),
+                bridgeHandler, ThingStatus.ONLINE);
+        Map<String, AbstractRachioThingHandler> handlers = Map.of("base-station", baseStationHandler, "valve",
+                valveHandler, "valve-program", programHandler);
+        handlers.values().forEach(handler -> {
+            handler.setCallback(callback);
+            handler.initialize();
+        });
+        clearInvocations(callback, bridgeHandler);
+
+        RachioSmartHoseSnapshot missing = new RachioSmartHoseSnapshot(
+                "all".equals(missingType) || "base-station".equals(missingType) ? Map.of()
+                        : Map.of(BASE_STATION_ID, baseStation(BASE_STATION_ID, "Base station", true)),
+                "all".equals(missingType) || "valve".equals(missingType) ? Map.of()
+                        : Map.of(VALVE_ID, valve(VALVE_ID, "Valve", 300)),
+                "all".equals(missingType) || "valve-program".equals(missingType) ? Map.of()
+                        : Map.of(PROGRAM_ID, program(PROGRAM_ID, "Program", VALVE_ID, 300)),
+                Instant.now());
+        for (Map.Entry<String, AbstractRachioThingHandler> entry : handlers.entrySet()) {
+            ((RachioSmartHoseStatusListener) entry.getValue()).onSmartHoseStateChanged(missing);
+            Thing thing = entry.getValue().getThing();
+            if ("all".equals(missingType) || missingType.equals(entry.getKey())) {
+                verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.OFFLINE
+                        && status.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR));
+            } else {
+                verify(callback, never()).statusUpdated(eq(thing),
+                        argThat(status -> status.getStatus() == ThingStatus.OFFLINE));
+            }
+        }
+        clearInvocations(callback);
+
+        RachioSmartHoseSnapshot returned = new RachioSmartHoseSnapshot(
+                Map.of(BASE_STATION_ID, baseStation(BASE_STATION_ID, "Base station", true)),
+                Map.of(VALVE_ID, valve(VALVE_ID, "Valve", 300)),
+                Map.of(PROGRAM_ID, program(PROGRAM_ID, "Program", VALVE_ID, 300)), Instant.now());
+        for (AbstractRachioThingHandler handler : handlers.values()) {
+            ((RachioSmartHoseStatusListener) handler).onSmartHoseStateChanged(returned);
+            Thing thing = handler.getThing();
+            verify(callback).statusUpdated(eq(thing), argThat(status -> status.getStatus() == ThingStatus.ONLINE));
+        }
+        verify(bridgeHandler, never()).getBaseStation(BASE_STATION_ID);
+        verify(bridgeHandler, never()).getValve(VALVE_ID);
+        verify(bridgeHandler, never()).getValveProgram(PROGRAM_ID);
+    }
 
     @Test
     void baseStationRefreshUsesPollingDataAndKeepsThingOnline() throws Exception {

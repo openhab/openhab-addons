@@ -35,6 +35,13 @@ public interface RachioStatusListener {
     boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone);
 
     /**
+     * Reconciles the Thing's model and availability after a successful poll has replaced the bridge's
+     * complete controller and zone catalogue, including resources that disappeared or returned.
+     */
+    default void onDeviceCatalogChanged() {
+    }
+
+    /**
      * Handles a binding configuration update.
      */
     void onConfigurationUpdated();

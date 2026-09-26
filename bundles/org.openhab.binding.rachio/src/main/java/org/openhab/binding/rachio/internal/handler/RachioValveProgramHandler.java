@@ -455,12 +455,19 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
 
     @Override
     public void onSmartHoseStateChanged(RachioSmartHoseSnapshot snapshot) {
-        String programId = getThingConfigurationOrPropertyString(PROPERTY_VALVE_PROGRAM_ID);
-        RachioValveProgram updatedProgram = snapshot.programs().get(programId);
-        if (updatedProgram == null || getHandlerLifecycleGeneration() < 0) {
+        if (getHandlerLifecycleGeneration() < 0) {
             return;
         }
+        String programId = getThingConfigurationOrPropertyString(PROPERTY_VALVE_PROGRAM_ID);
+        RachioValveProgram updatedProgram = snapshot.programs().get(programId);
         program = updatedProgram;
+        if (updatedProgram == null) {
+            nextProgramRun = null;
+            nextSkippedProgramRun = null;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nText("thing-status.rachio.valve-program.not-in-poll"));
+            return;
+        }
         thingId = updatedProgram.getThingName();
         goOnline();
     }

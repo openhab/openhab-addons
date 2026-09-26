@@ -15,6 +15,8 @@ package org.openhab.binding.rachio.internal.handler;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,6 +33,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.rachio.internal.api.RachioApi;
+import org.openhab.binding.rachio.internal.api.RachioApiException;
 import org.openhab.binding.rachio.internal.api.RachioApiResult;
 import org.openhab.binding.rachio.internal.api.RachioApiThrottledException;
 import org.openhab.binding.rachio.internal.api.RachioSmartHoseSnapshot;
@@ -46,6 +49,72 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 @NonNullByDefault
 @SuppressWarnings("null")
 class RachioSmartHoseSnapshotRefreshTest {
+    @Test
+    void firstSuccessfulEmptySnapshotIsPublished() throws Exception {
+        RachioApi api = Mockito.mock(RachioApi.class);
+        RachioBridgeHandler handler = handler(api);
+        RachioSmartHoseStatusListener listener = Mockito.mock(RachioSmartHoseStatusListener.class);
+        handler.smartHoseStatusListeners.add(listener);
+        when(api.listBaseStations("")).thenReturn(List.of());
+
+        handler.refreshSmartHoseSnapshot(true);
+
+        RachioSmartHoseSnapshot snapshot = getField(handler, "smartHoseSnapshot");
+        verify(listener).onSmartHoseStateChanged(snapshot);
+        assertThat(snapshot.baseStations().isEmpty(), is(true));
+    }
+
+    @Test
+    void emptySuccessfulPollIsPublishedAndResourcesCanReturn() throws Exception {
+        RachioApi api = Mockito.mock(RachioApi.class);
+        RachioBridgeHandler handler = handler(api);
+        RachioSmartHoseStatusListener listener = Mockito.mock(RachioSmartHoseStatusListener.class);
+        handler.smartHoseStatusListeners.add(listener);
+        RachioSmartHoseSnapshot previous = new RachioSmartHoseSnapshot(
+                Map.of("base-station", baseStation("base-station")), Map.of("valve", valve("valve")),
+                Map.of("program", program("program")), Instant.now().minusSeconds(3600));
+        setField(handler, "smartHoseSnapshot", previous);
+        when(api.listBaseStations("")).thenReturn(List.of());
+
+        handler.refreshSmartHoseSnapshot(true);
+
+        RachioSmartHoseSnapshot empty = handler.getSmartHoseSnapshot();
+        assertThat(empty.baseStations().isEmpty(), is(true));
+        assertThat(empty.valves().isEmpty(), is(true));
+        assertThat(empty.programs().isEmpty(), is(true));
+        verify(listener).onSmartHoseStateChanged(empty);
+        clearInvocations(listener);
+        setField(handler, "smartHoseSnapshot", RachioSmartHoseSnapshot.EMPTY);
+        when(api.listBaseStations("")).thenReturn(List.of(baseStation("base-station")));
+        when(api.listValves("base-station")).thenReturn(List.of(valve("valve")));
+        when(api.listValveProgramsV2ByBaseStation("base-station")).thenReturn(List.of(program("program")));
+
+        handler.refreshSmartHoseSnapshot(true);
+
+        RachioSmartHoseSnapshot returned = handler.getSmartHoseSnapshot();
+        verify(listener).onSmartHoseStateChanged(returned);
+        assertThat(returned.valves().containsKey("valve"), is(true));
+        assertThat(returned.programs().containsKey("program"), is(true));
+    }
+
+    @Test
+    void failurePartwayThroughRefreshKeepsPreviousSnapshotWithoutRemovalNotifications() throws Exception {
+        RachioApi api = Mockito.mock(RachioApi.class);
+        RachioBridgeHandler handler = handler(api);
+        RachioSmartHoseStatusListener listener = Mockito.mock(RachioSmartHoseStatusListener.class);
+        handler.smartHoseStatusListeners.add(listener);
+        RachioSmartHoseSnapshot previous = new RachioSmartHoseSnapshot(
+                Map.of("base-station", baseStation("base-station")), Map.of("valve", valve("valve")),
+                Map.of("program", program("program")), Instant.now().minusSeconds(3600));
+        setField(handler, "smartHoseSnapshot", previous);
+        when(api.listBaseStations("")).thenReturn(List.of(baseStation("base-station")));
+        when(api.listValves("base-station")).thenThrow(new RachioApiException("request failed"));
+
+        assertThat(handler.getSmartHoseSnapshot(), sameInstance(previous));
+
+        verify(listener, never()).onSmartHoseStateChanged(any());
+    }
+
     @Test
     void refreshLoadsOneConsistentSnapshotAndUsesCacheUntilItExpires() throws Exception {
         RachioApi api = Mockito.mock(RachioApi.class);
@@ -85,7 +154,7 @@ class RachioSmartHoseSnapshotRefreshTest {
         previousProgram.baseStationId = "base-station";
         RachioSmartHoseSnapshot previous = new RachioSmartHoseSnapshot(
                 Map.of("base-station", baseStation("base-station")), Map.of("valve", previousValve),
-                Map.of("program", previousProgram), Instant.EPOCH);
+                Map.of("program", previousProgram), Instant.now().minusSeconds(3600));
         setField(handler, "smartHoseSnapshot", previous);
 
         when(api.listBaseStations("")).thenReturn(List.of(baseStation("base-station")));

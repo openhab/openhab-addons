@@ -560,13 +560,20 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
 
     @Override
     public void onSmartHoseStateChanged(RachioSmartHoseSnapshot snapshot) {
-        String valveId = getThingConfigurationOrPropertyString(PROPERTY_VALVE_ID);
-        RachioValve updatedValve = snapshot.valves().get(valveId);
-        if (updatedValve == null || getHandlerLifecycleGeneration() < 0) {
+        if (getHandlerLifecycleGeneration() < 0) {
             return;
         }
-        pendingDefaultRuntimeSeconds = 0;
+        String valveId = getThingConfigurationOrPropertyString(PROPERTY_VALVE_ID);
+        RachioValve updatedValve = snapshot.valves().get(valveId);
         valve = updatedValve;
+        pendingDefaultRuntimeSeconds = 0;
+        if (updatedValve == null) {
+            nextPlannedRun = null;
+            nextSkippedRun = null;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nText("thing-status.rachio.valve.not-in-poll"));
+            return;
+        }
         thingId = updatedValve.getThingName();
         goOnline();
     }

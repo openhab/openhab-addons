@@ -205,12 +205,17 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler impleme
 
     @Override
     public void onSmartHoseStateChanged(RachioSmartHoseSnapshot snapshot) {
-        String baseStationId = getThingConfigurationOrPropertyString(PROPERTY_BASE_STATION_ID);
-        RachioBaseStation updatedBaseStation = snapshot.baseStations().get(baseStationId);
-        if (updatedBaseStation == null || getHandlerLifecycleGeneration() < 0) {
+        if (getHandlerLifecycleGeneration() < 0) {
             return;
         }
+        String baseStationId = getThingConfigurationOrPropertyString(PROPERTY_BASE_STATION_ID);
+        RachioBaseStation updatedBaseStation = snapshot.baseStations().get(baseStationId);
         baseStation = updatedBaseStation;
+        if (updatedBaseStation == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nText("thing-status.rachio.base-station.not-in-poll"));
+            return;
+        }
         thingId = updatedBaseStation.getThingName();
         goOnline();
     }

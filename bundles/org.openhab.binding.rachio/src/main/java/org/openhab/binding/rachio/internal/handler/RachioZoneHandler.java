@@ -310,6 +310,24 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     }
 
     @Override
+    public void onDeviceCatalogChanged() {
+        if (getHandlerLifecycleGeneration() < 0) {
+            return;
+        }
+        RachioZone previousZone = zone;
+        RachioDevice previousDevice = dev;
+        if (!rebindToCurrentBridgeModel("cloud catalogue refresh")) {
+            zone = null;
+            dev = null;
+            cancelImageDownload();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nText("thing-status.rachio.zone.not-in-poll"));
+        } else if (!isSameInstance(previousZone, zone) || !isSameInstance(previousDevice, dev)) {
+            goOnline();
+        }
+    }
+
+    @Override
     public boolean onThingStateChanged(@Nullable RachioDevice updatedDev, @Nullable RachioZone updatedZone) {
         RachioZone z = zone;
         if (updatedZone != null && !isSameInstance(z, updatedZone) && handlesZone(updatedZone)) {
@@ -337,7 +355,9 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
     }
 
     void refreshThingStatusAfterSuccessfulCommunication() {
-        rebindToCurrentBridgeModel("successful cloud poll");
+        if (!rebindToCurrentBridgeModel("successful cloud poll")) {
+            return;
+        }
         RachioDevice d = dev;
         RachioZone z = zone;
         if (!isBridgeOnline() || d == null || z == null) {

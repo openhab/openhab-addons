@@ -368,11 +368,6 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                                 checkApi.getLastApiResult().rateReset)); // shutdown bridge+devices+zones
                 return;
             }
-            if (this.getThing().getStatus() != ThingStatus.ONLINE) {
-                logger.debug("RachioCloud: Bridge is ONLINE");
-                updateStatus(ThingStatus.ONLINE);
-            }
-
             Map<String, RachioDevice> checkDevList = checkApi.getDevices();
             Map<String, RachioDevice> reconciledDevices = new HashMap<>();
             for (Map.Entry<String, RachioDevice> de : checkDevList.entrySet()) {
@@ -396,6 +391,21 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                     return;
                 }
                 activeApi.replaceDevices(reconciledDevices);
+            }
+            if (this.getThing().getStatus() != ThingStatus.ONLINE) {
+                logger.debug("RachioCloud: Bridge is ONLINE");
+                updateStatus(ThingStatus.ONLINE);
+            }
+            for (RachioStatusListener listener : rachioStatusListeners) {
+                if (!isLifecycleCurrent(lifecycle.generation(), activeApi)) {
+                    return;
+                }
+                try {
+                    listener.onDeviceCatalogChanged();
+                } catch (RuntimeException e) {
+                    logger.debug("RachioCloud: Catalogue listener update failed (listener={})",
+                            listener.getClass().getSimpleName(), e);
+                }
             }
         } catch (RachioApiThrottledException e) {
             logger.debug("RachioCloud: {} refresh deferred by the local API budget guard at priority {}: {}",
@@ -794,7 +804,8 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
-            if (!updatedSnapshot.hasSameContent(currentSnapshot)) {
+            if (currentSnapshot.retrievedAt().equals(Instant.EPOCH)
+                    || !updatedSnapshot.hasSameContent(currentSnapshot)) {
                 logger.debug("RachioCloud: Smart Hose snapshot updated (baseStations={}, valves={}, programs={})",
                         updatedSnapshot.baseStations().size(), updatedSnapshot.valves().size(),
                         updatedSnapshot.programs().size());
