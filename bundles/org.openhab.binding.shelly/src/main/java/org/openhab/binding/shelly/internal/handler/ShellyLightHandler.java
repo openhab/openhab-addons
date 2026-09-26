@@ -368,6 +368,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
 
         ShellyStatusLight status = api.getLightStatus();
+        if (status.mode != null) {
+            profile.inColor = SHELLY_MODE_COLOR.equalsIgnoreCase(status.mode);
+            profile.device.mode = status.mode;
+        }
         logger.trace("{}: Updating light status in {} mode, {} channel(s)", thingName, profile.device.mode,
                 status.lights.size());
 
@@ -377,10 +381,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         for (ShellyStatusLightChannel light : status.lights) {
             String controlGroup = profile.getControlGroup(lightId);
             createLightChannels(light, lightId);
-            if (light.mode != null) {
-                profile.inColor = SHELLY_MODE_COLOR.equalsIgnoreCase(light.mode);
-                profile.device.mode = light.mode;
-            }
             // The bulb has a combined channel set for color or white mode
             // The RGBW2 uses 2 different thing types: color=1 channel, white=4 channel
             if (profile.isBulb) {
@@ -454,9 +454,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                     updated |= updateChannel(whiteGroup, CHANNEL_COLOR_TEMP, UnDefType.UNDEF);
                 }
             }
-            if (light.mode != null) {
-                col.setMode(light.mode);
-            }
+            col.setMode(status.mode != null ? status.mode : profile.device.mode);
 
             // continue with next light
             lightId++;

@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 
 import com.google.gson.Gson;
 
@@ -59,11 +60,13 @@ public class Shelly1ApiJsonDTOTest {
     }
 
     @Test
-    void statusLightChannelDeserializesMode() {
-        Shelly1ApiJsonDTO.ShellyStatusLightChannel result = new Gson()
-                .fromJson("{\"mode\":\"color\",\"brightness\":50}", Shelly1ApiJsonDTO.ShellyStatusLightChannel.class);
+    void statusLightAppliesReportedModeToResult() {
+        ShellyStatusLight result = new Gson().fromJson(
+                "{\"lights\":[{\"mode\":\"color\",\"brightness\":50},{\"mode\":\"color\"}]}",
+                ShellyStatusLight.class);
+        result.applyReportedMode();
 
         assertThat(result.mode, is(equalTo("color")));
-        assertThat(result.brightness, is(equalTo(50)));
+        assertThat(result.lights.get(0).brightness, is(equalTo(50)));
     }
 }

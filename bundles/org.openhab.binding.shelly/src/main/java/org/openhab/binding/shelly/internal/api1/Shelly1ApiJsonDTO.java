@@ -1349,9 +1349,21 @@ public class Shelly1ApiJsonDTO {
     public static class ShellyStatusLight {
         public Boolean ison; // Whether output channel is on or off
         public Integer input;
+        public String mode; // Actual mode reported by the device
 
         public ArrayList<ShellyStatusLightChannel> lights;
         public ArrayList<ShellySettingsMeter> meters;
+
+        public void applyReportedMode() {
+            if (lights != null) {
+                for (ShellyStatusLightChannel light : lights) {
+                    if (light.mode != null) {
+                        mode = light.mode;
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     public static class ShellySenseKeyCode {

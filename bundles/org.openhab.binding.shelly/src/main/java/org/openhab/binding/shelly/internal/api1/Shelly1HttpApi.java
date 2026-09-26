@@ -326,7 +326,9 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public ShellyStatusLight getLightStatus() throws ShellyApiException {
-        return callApi(SHELLY_URL_STATUS, ShellyStatusLight.class);
+        ShellyStatusLight status = callApi(SHELLY_URL_STATUS, ShellyStatusLight.class);
+        status.applyReportedMode();
+        return status;
     }
 
     public void setLightSetting(String parm, String value) throws ShellyApiException {
