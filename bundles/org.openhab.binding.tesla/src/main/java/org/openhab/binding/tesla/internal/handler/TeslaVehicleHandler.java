@@ -584,7 +584,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         int computedInactivityPeriod = inactivity;
         VehicleState vehicleState = this.vehicleState;
         if (useAdvancedStates) {
-            if (vehicleState != null && vehicleState.isUserPresent && !isInMotion()) {
+            if (vehicleState != null && Boolean.TRUE.equals(vehicleState.isUserPresent) && !isInMotion()) {
                 logger.debug("Car is occupied but stationary.");
                 if (lastAdvModesTimestamp < (System.currentTimeMillis()
                         - (THRESHOLD_INTERVAL_FOR_ADVANCED_MINUTES * 60 * 1000))) {

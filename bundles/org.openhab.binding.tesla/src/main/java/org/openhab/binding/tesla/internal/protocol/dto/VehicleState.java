@@ -28,8 +28,9 @@ public class VehicleState {
     public boolean hasSpoiler;
     @SerializedName("homelink_nearby")
     public boolean homelinkNearby;
+    // null if the vehicle does not report it, so the userpresent channel is not set to OFF without a value
     @SerializedName("is_user_present")
-    public boolean isUserPresent;
+    public Boolean isUserPresent;
     public boolean locked;
     @SerializedName("notifications_supported")
     public boolean notificationsSupported;
