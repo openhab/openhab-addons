@@ -528,6 +528,7 @@ Currently the miio binding supports more than 370 different models.
 | Mi Smart Ultra Electricity Saving Air Conditioner (1HP/Inverter/New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt7](#xiaomi-aircondition-mt7) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1) | miio:basic       | [xiaomi.aircondition.mt8](#xiaomi-aircondition-mt8) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi Wi-Fi Repeater 2                | miio:unsupported | xiaomi.repeater.v2     | No           |            |
+| Xiaomi Robot Vacuum S20+           | miio:basic       | [xiaomi.vacuum.b108gl](#xiaomi-vacuum-b108gl) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Robot Vacuum X20+           | miio:basic       | [xiaomi.vacuum.c102gl](#xiaomi-vacuum-c102gl) | Yes          |            |
 | Mi Network Speaker                 | miio:unsupported | xiaomi.wifispeaker.v1  | No           |            |
 | Uclean Smart Toilet Seat           | miio:basic       | [xjx.toilet.pro](#xjx-toilet-pro) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -3976,6 +3977,55 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | running-duration           | Number:Time          | Maintenance - Running Duration           |            |
 | fan-percent                | Number:Dimensionless | Fan Speed %                              |            |
 | timer                      | String               | Enhance - Timer                          |            |
+
+### Xiaomi Robot Vacuum S20+ (<a name="xiaomi-vacuum-b108gl">xiaomi.vacuum.b108gl</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Start Cleaning","vacuum-stop-sweeping"="Stop Cleaning","vacuum-start-only-sweep"="Start Vacuuming Only","vacuum-start-mop"="Start Mopping Only","vacuum-start-sweep-mop"="Start Vacuuming And Mopping","vacuum-pause-sweeping"="Pause","vacuum-start-build-map"="Start Mapping","battery-start-charge"="Go Charging","main-brush-reset-brush-life"="Reset Main Brush Life","side-brush-reset-brush-life"="Reset Side Brush Life","filter-reset-filter-life"="Reset Filter Life","mop-reset-mop-life"="Reset Mop Life","vacuum-extend-continue-sweep"="Resume Cleaning","vacuum-extend-remote-control"="Start Remote Control","vacuum-extend-find-vacuum"="Find Robot","vacuum-extend-start-custom-sweep"="Start Custom Cleaning","vacuum-extend-try-listen"="Test Voice","vacuum-extend-start-remote-up"="Remote Control Forward","vacuum-extend-start-remote-left"="Remote Control Left","vacuum-extend-start-remote-right"="Remote Control Right","vacuum-extend-start-remote-down"="Remote Control Backward","vacuum-extend-stop-remote"="Remote Control Stop","vacuum-extend-exit-remote"="Exit Remote Control","vacuum-extend-stop-and-gocharge"="Stop And Go Charging","vacuum-map-save-permanent-map"="Save Map","vacuum-map-auto-room-partition"="Auto Room Partition"]` |
+| status                     | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Idle","2"="Charging","3"="Charging (Cleaning Paused)","4"="Sweeping","5"="Paused","6"="Go Charging","7"="Remote","8"="Charged","9"="Mapping","10"="Updating"]` |
+| fault                      | Number               | Robot Cleaner - Device Fault             |            |
+| sweep_mop_type             | Number               | Robot Cleaner - Sweep Mop Type           | Value mapping `["1"="Sweep","2"="Mop","3"="Sweep Mop","4"="Sweep Before Mopping"]` |
+| sweep_type                 | Number               | Robot Cleaner - Sweep Type               | Value mapping `["1"="Global","5"="Mapping","6"="Go Charging","7"="Remote Control","8"="Room Cleaning","9"="Custom Cleaning","4"="Zone Cleaning"]` |
+| cleaning_area              | Number:Area          | Robot Cleaner - Cleaning Area            |            |
+| cleaning_time              | Number:Time          | Robot Cleaner - Cleaning Time            |            |
+| clean_times                | Number               | Robot Cleaner - Clean Times              | Value mapping `["1"="Once","2"="Twice"]` |
+| suction_level              | Number               | Robot Cleaner - Suction Level            | Value mapping `["1"="Silent","2"="Basic","3"="Strong","4"="Full Speed"]` |
+| mop_water_output_level     | Number               | Robot Cleaner - Mop Water Output Level   | Value mapping `["0"="Off","1"="Level 1","2"="Level 2","3"="Level 3"]` |
+| zone_ids                   | String               | Robot Cleaner - Zone IDs                 |            |
+| mode                       | Number               | Robot Cleaner - Mode                     | Value mapping `["1"="Silent","2"="Basic","3"="Strong"]` |
+| edge_swing_tail_sweep      | Switch               | Robot Cleaner - Edge Swing Tail Sweep    |            |
+| edge_sweep_frequency       | Number               | Robot Cleaner - Edge Sweep Frequency     | Value mapping `["1"="Every 7 Cleanings","2"="Every Cleaning"]` |
+| notice                     | String               | Robot Cleaner - Notice                   |            |
+| carpet_cleaning_method     | Number               | Robot Cleaner - Carpet Cleaning Method   | Value mapping `["0"="Adaptive","1"="Avoid","2"="Ignore"]` |
+| carpet_discriminate        | Switch               | Robot Cleaner - Carpet Detection         |            |
+| battery_level              | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state             | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not Charging","3"="Not Chargeable"]` |
+| voltage                    | Number               | Battery - Voltage                        |            |
+| alarm                      | Switch               | Alarm - Enabled                          |            |
+| volume                     | Number:Dimensionless | Alarm - Volume                           |            |
+| physical_controls_locked   | Switch               | Child Lock                               |            |
+| current_physical_control_lock | Switch               | Child Lock - Current State               |            |
+| brush_left_time            | Number:Time          | Main Brush - Brush Left Time             |            |
+| brush_life_level           | Number:Dimensionless | Main Brush - Brush Life Level            |            |
+| brush_left_time1           | Number:Time          | Side Brush - Brush Left Time             |            |
+| brush_life_level1          | Number:Dimensionless | Side Brush - Brush Life Level            |            |
+| filter_left_time           | Number:Time          | Filter - Filter Left Time                |            |
+| filter_life_level          | Number:Dimensionless | Filter - Filter Life Level               |            |
+| mop_left_time              | Number:Time          | Mop - Mop Left Time                      |            |
+| mop_life_level             | Number:Dimensionless | Mop - Mop Life Level                     |            |
+| mop_status                 | Switch               | Vacuum Extend - Mop Attached             |            |
+| firmware_version           | String               | Vacuum Extend - Firmware Version         |            |
+| dnd_switch                 | Switch               | Vacuum Extend - Do Not Disturb           |            |
+| carpet_boost               | Switch               | Vacuum Extend - Carpet Boost             |            |
+| carpet_avoidance           | Switch               | Vacuum Extend - Carpet Avoidance         |            |
+| carpet_display             | Switch               | Vacuum Extend - Carpet Display           |            |
+| status_extend              | Number               | Vacuum Extend - Status Extend            | Value mapping `["0"="None","1"="Sleep","2"="Relocation"]` |
+| room_info                  | String               | Vacuum Extend - Room Info                |            |
+| sweep_break_switch         | Switch               | Vacuum Extend - Resume After Charging    |            |
+| vacuum_position            | String               | Vacuum Map - Vacuum Position             |            |
+| permanent_map_id           | Number               | Vacuum Map - Permanent Map Id            |            |
+| map_control_switch         | Switch               | Vacuum Map - Map Control Switch          |            |
 
 ### Xiaomi Robot Vacuum X20+ (<a name="xiaomi-vacuum-c102gl">xiaomi.vacuum.c102gl</a>) Channels
 
@@ -10376,6 +10426,58 @@ String examine "Maintenance - Examine" (G_aircondition) {channel="miio:basic:air
 Number:Time running_duration "Maintenance - Running Duration" (G_aircondition) {channel="miio:basic:aircondition:running-duration"}
 Number:Dimensionless fan_percent "Fan Speed %" (G_aircondition) {channel="miio:basic:aircondition:fan-percent"}
 String timer "Enhance - Timer" (G_aircondition) {channel="miio:basic:aircondition:timer"}
+```
+
+### Xiaomi Robot Vacuum S20+ (xiaomi.vacuum.b108gl) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Robot Vacuum S20+" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number sweep_mop_type "Robot Cleaner - Sweep Mop Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_mop_type"}
+Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+Number:Area cleaning_area "Robot Cleaner - Cleaning Area" (G_vacuum) {channel="miio:basic:vacuum:cleaning_area"}
+Number:Time cleaning_time "Robot Cleaner - Cleaning Time" (G_vacuum) {channel="miio:basic:vacuum:cleaning_time"}
+Number clean_times "Robot Cleaner - Clean Times" (G_vacuum) {channel="miio:basic:vacuum:clean_times"}
+Number suction_level "Robot Cleaner - Suction Level" (G_vacuum) {channel="miio:basic:vacuum:suction_level"}
+Number mop_water_output_level "Robot Cleaner - Mop Water Output Level" (G_vacuum) {channel="miio:basic:vacuum:mop_water_output_level"}
+String zone_ids "Robot Cleaner - Zone IDs" (G_vacuum) {channel="miio:basic:vacuum:zone_ids"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Switch edge_swing_tail_sweep "Robot Cleaner - Edge Swing Tail Sweep" (G_vacuum) {channel="miio:basic:vacuum:edge_swing_tail_sweep"}
+Number edge_sweep_frequency "Robot Cleaner - Edge Sweep Frequency" (G_vacuum) {channel="miio:basic:vacuum:edge_sweep_frequency"}
+String notice "Robot Cleaner - Notice" (G_vacuum) {channel="miio:basic:vacuum:notice"}
+Number carpet_cleaning_method "Robot Cleaner - Carpet Cleaning Method" (G_vacuum) {channel="miio:basic:vacuum:carpet_cleaning_method"}
+Switch carpet_discriminate "Robot Cleaner - Carpet Detection" (G_vacuum) {channel="miio:basic:vacuum:carpet_discriminate"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging_state"}
+Number voltage "Battery - Voltage" (G_vacuum) {channel="miio:basic:vacuum:voltage"}
+Switch alarm "Alarm - Enabled" (G_vacuum) {channel="miio:basic:vacuum:alarm"}
+Number:Dimensionless volume "Alarm - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch physical_controls_locked "Child Lock" (G_vacuum) {channel="miio:basic:vacuum:physical_controls_locked"}
+Switch current_physical_control_lock "Child Lock - Current State" (G_vacuum) {channel="miio:basic:vacuum:current_physical_control_lock"}
+Number:Time brush_left_time "Main Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time"}
+Number:Dimensionless brush_life_level "Main Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level"}
+Number:Time brush_left_time1 "Side Brush - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time1"}
+Number:Dimensionless brush_life_level1 "Side Brush - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level1"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
+Number:Time mop_left_time "Mop - Mop Left Time" (G_vacuum) {channel="miio:basic:vacuum:mop_left_time"}
+Number:Dimensionless mop_life_level "Mop - Mop Life Level" (G_vacuum) {channel="miio:basic:vacuum:mop_life_level"}
+Switch mop_status "Vacuum Extend - Mop Attached" (G_vacuum) {channel="miio:basic:vacuum:mop_status"}
+String firmware_version "Vacuum Extend - Firmware Version" (G_vacuum) {channel="miio:basic:vacuum:firmware_version"}
+Switch dnd_switch "Vacuum Extend - Do Not Disturb" (G_vacuum) {channel="miio:basic:vacuum:dnd_switch"}
+Switch carpet_boost "Vacuum Extend - Carpet Boost" (G_vacuum) {channel="miio:basic:vacuum:carpet_boost"}
+Switch carpet_avoidance "Vacuum Extend - Carpet Avoidance" (G_vacuum) {channel="miio:basic:vacuum:carpet_avoidance"}
+Switch carpet_display "Vacuum Extend - Carpet Display" (G_vacuum) {channel="miio:basic:vacuum:carpet_display"}
+Number status_extend "Vacuum Extend - Status Extend" (G_vacuum) {channel="miio:basic:vacuum:status_extend"}
+String room_info "Vacuum Extend - Room Info" (G_vacuum) {channel="miio:basic:vacuum:room_info"}
+Switch sweep_break_switch "Vacuum Extend - Resume After Charging" (G_vacuum) {channel="miio:basic:vacuum:sweep_break_switch"}
+String vacuum_position "Vacuum Map - Vacuum Position" (G_vacuum) {channel="miio:basic:vacuum:vacuum_position"}
+Number permanent_map_id "Vacuum Map - Permanent Map Id" (G_vacuum) {channel="miio:basic:vacuum:permanent_map_id"}
+Switch map_control_switch "Vacuum Map - Map Control Switch" (G_vacuum) {channel="miio:basic:vacuum:map_control_switch"}
 ```
 
 ### Xiaomi Robot Vacuum X20+ (xiaomi.vacuum.c102gl) item file lines
