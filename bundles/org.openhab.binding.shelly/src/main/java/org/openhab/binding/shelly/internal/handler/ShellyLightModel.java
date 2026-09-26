@@ -462,8 +462,10 @@ public class ShellyLightModel extends LightModel {
     public void setColorTemp(double kelvin) {
         LOGGER.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => setColorTemp({})", handler.thingName,
                 apiLightIndex, channelGroupSuffix, kelvin);
-        super.setMirek(reciprocal(kelvin));
-        setMode(Mode.WHITE);
+        if (kelvin > 0) {
+            super.setMirek(reciprocal(kelvin));
+            setMode(Mode.WHITE);
+        }
     }
 
     public void setColorTempRange(int minKelvin, int maxKelvin) {
