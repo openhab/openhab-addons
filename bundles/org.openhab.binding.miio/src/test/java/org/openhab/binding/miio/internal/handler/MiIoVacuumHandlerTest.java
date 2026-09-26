@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.miio.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,6 +36,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
+import org.openhab.binding.miio.internal.MiIoStateDescriptionProvider;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.cloud.MiCloudException;
@@ -43,6 +45,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -54,6 +57,8 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonParser;
 
@@ -74,6 +79,7 @@ public class MiIoVacuumHandlerTest {
     private @Mock @NonNullByDefault({}) CloudConnector cloudConnector;
     private @Mock @NonNullByDefault({}) MiIoDatabaseWatchService miIoDatabaseWatchService;
     private @Mock @NonNullByDefault({}) ChannelTypeRegistry channelTypeRegistry;
+    private @Mock @NonNullByDefault({}) MiIoStateDescriptionProvider stateDescriptionProvider;
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) MiIoAsyncCommunication connection;
     private @Mock @NonNullByDefault({}) TranslationProvider translationProvider;
@@ -97,7 +103,7 @@ public class MiIoVacuumHandlerTest {
         lenient().when(callback.isChannelLinked(any())).thenReturn(true);
 
         miIoHandler = new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
-                translationProvider, localeProvider);
+                stateDescriptionProvider, translationProvider, localeProvider);
 
         miIoHandler.setCallback(callback);
     }
@@ -166,5 +172,37 @@ public class MiIoVacuumHandlerTest {
         verify(callback, description("Test the area parsing")).stateUpdated(
                 eq(new ChannelUID(thingUID, MiIoBindingConstants.CHANNEL_HISTORY_TOTALAREA)),
                 eq(new QuantityType<>(1694.875, SIUnits.SQUARE_METRE)));
+    }
+
+    @Test
+    public void testCurrentMapState() {
+        assertEquals(new DecimalType(0), MiIoVacuumHandler.currentMapState(3, 0));
+        assertEquals(new DecimalType(1), MiIoVacuumHandler.currentMapState(7, 0));
+        assertEquals(new DecimalType(2), MiIoVacuumHandler.currentMapState(11, null));
+        assertEquals(UnDefType.UNDEF, MiIoVacuumHandler.currentMapState(7, 1), "Map unknown while locating");
+        assertEquals(UnDefType.UNDEF, MiIoVacuumHandler.currentMapState(252, 0), "No map");
+    }
+
+    @Test
+    public void testIsMultiFloorEnabled() {
+        assertTrue(MiIoVacuumHandler.isMultiFloorEnabled(
+                JsonParser.parseString("{\"state\":8,\"lab_status\":3,\"map_status\":7}").getAsJsonObject()));
+        assertFalse(
+                MiIoVacuumHandler.isMultiFloorEnabled(
+                        JsonParser.parseString("{\"state\":8,\"lab_status\":1,\"map_status\":3}").getAsJsonObject()),
+                "Map saving only");
+        assertFalse(MiIoVacuumHandler.isMultiFloorEnabled(
+                JsonParser.parseString("{\"state\":8,\"map_present\":1}").getAsJsonObject()), "Legacy status");
+    }
+
+    @Test
+    public void testMultiMapOptions() {
+        String result = "[{\"max_multi_map\":4,\"max_bak_map\":0,\"multi_map_count\":2,\"map_info\":["
+                + "{\"mapFlag\":0,\"add_time\":1662654746,\"length\":3,\"name\":\"1NP\",\"bak_maps\":[]},"
+                + "{\"mapFlag\":1,\"add_time\":1661415223,\"length\":0,\"name\":\"\",\"bak_maps\":[]}]}]";
+        List<StateOption> options = MiIoVacuumHandler.multiMapOptions(JsonParser.parseString(result));
+        assertEquals(List.of(new StateOption("0", "1NP"), new StateOption("1", "Map 1")), options);
+
+        assertEquals(List.of(), MiIoVacuumHandler.multiMapOptions(JsonParser.parseString("[\"unknown_method\"]")));
     }
 }

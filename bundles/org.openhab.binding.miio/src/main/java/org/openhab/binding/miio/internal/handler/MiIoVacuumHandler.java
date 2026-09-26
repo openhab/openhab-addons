@@ -25,7 +25,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +42,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoSendCommand;
+import org.openhab.binding.miio.internal.MiIoStateDescriptionProvider;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.cloud.CloudUtil;
@@ -78,6 +81,7 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +91,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * The {@link MiIoVacuumHandler} is responsible for handling commands, which are
@@ -100,6 +105,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
     private static final DateTimeFormatter PARSER_TZ = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
+    private static final int NO_MAP_ID = 63;
+    private static final int MULTI_FLOOR_LAB_STATUS = 3;
     private final ChannelUID mapChannelUid;
 
     private static final Set<RobotCababilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
@@ -120,13 +127,16 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCababilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
+    private final MiIoStateDescriptionProvider stateDescriptionProvider;
     private RRMapDrawOptions mapDrawOptions = new RRMapDrawOptions();
 
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
-            CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry, TranslationProvider i18nProvider,
+            CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
+            MiIoStateDescriptionProvider stateDescriptionProvider, TranslationProvider i18nProvider,
             LocaleProvider localeProvider) {
         super(thing, miIoDatabaseWatchService, cloudConnector, i18nProvider, localeProvider);
         this.channelTypeRegistry = channelTypeRegistry;
+        this.stateDescriptionProvider = stateDescriptionProvider;
         mapChannelUid = new ChannelUID(thing.getUID(), CHANNEL_VACUUM_MAP);
         status = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
@@ -260,6 +270,14 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 && !command.toString().contentEquals("-")) {
             sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
             updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
+            forceStatusUpdate();
+            return;
+        }
+        if (channelUID.getId().equals(RobotCababilities.CURRENT_MAP.getChannel())
+                && command instanceof DecimalType mapId) {
+            sendCommand(MiIoCommand.LOAD_MULTI_MAP, "[" + mapId.intValue() + "]");
+            lastMap = "";
+            map.invalidateValue();
             forceStatusUpdate();
             return;
         }
@@ -406,6 +424,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (deviceCapabilities.containsKey(RobotCababilities.LOCATING)) {
             safeUpdateState(RobotCababilities.LOCATING.getChannel(), statusInfo.getIsLocating());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.CURRENT_MAP) && statusInfo.getMapStatus() != null) {
+            updateState(RobotCababilities.CURRENT_MAP.getChannel(),
+                    currentMapState(statusInfo.getMapStatus(), statusInfo.getIsLocating()));
         }
         if (deviceCapabilities.containsKey(RobotCababilities.CLEAN_MOP_START)) {
             safeUpdateState(RobotCababilities.CLEAN_MOP_START.getChannel(), 0);
@@ -656,6 +678,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     sendCommand(cmd.getCommand());
                 }
             }
+            if (isLinked(RobotCababilities.CURRENT_MAP.getChannel())
+                    && !isLinked(RobotCababilities.MULTI_MAP_LIST.getChannel())) {
+                sendCommand(MiIoCommand.GET_MULTI_MAP_LIST);
+            }
         } catch (Exception e) {
             logger.debug("Error while updating '{}': '{}", getThing().getUID().toString(), e.getLocalizedMessage());
         }
@@ -687,7 +713,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             case GET_STATUS:
                 if (response.getResult().isJsonArray()) {
                     JsonObject statusResponse = response.getResult().getAsJsonArray().get(0).getAsJsonObject();
-                    if (!hasChannelStructure) {
+                    if (!hasChannelStructure || (isMultiFloorEnabled(statusResponse)
+                            && !deviceCapabilities.containsKey(RobotCababilities.CURRENT_MAP))) {
                         setCapabilities(statusResponse);
                         createCapabilityChannels();
                     }
@@ -749,10 +776,16 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             case GET_ROOM_MAPPING:
                 updateRoomMapping(response);
                 break;
+            case GET_MULTI_MAP_LIST:
+                updateState(RobotCababilities.MULTI_MAP_LIST.getChannel(),
+                        new StringType(response.getResult().toString()));
+                stateDescriptionProvider.setStateOptions(
+                        new ChannelUID(getThing().getUID(), RobotCababilities.CURRENT_MAP.getChannel()),
+                        multiMapOptions(response.getResult()));
+                break;
             case GET_CARPET_MODE:
             case GET_FW_FEATURES:
             case GET_CUSTOMIZED_CLEAN_MODE:
-            case GET_MULTI_MAP_LIST:
             case SET_COLLECT_DUST:
             case SET_CLEAN_MOP_START:
             case SET_CLEAN_MOP_STOP:
@@ -766,6 +799,39 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             default:
                 break;
         }
+    }
+
+    /**
+     * The map_status holds the map state in the lowest 2 bits and the id of the active map in the remaining bits, where
+     * 63 means no map. While the vacuum is locating itself the active map is not known.
+     */
+    static State currentMapState(int mapStatus, @Nullable Integer isLocating) {
+        int mapId = mapStatus >> 2;
+        if ((isLocating != null && isLocating != 0) || mapId == NO_MAP_ID) {
+            return UnDefType.UNDEF;
+        }
+        return new DecimalType(mapId);
+    }
+
+    /**
+     * Creates the map selection options from the get_multi_maps_list response, using the map names defined in the app.
+     */
+    static List<StateOption> multiMapOptions(JsonElement result) {
+        JsonElement mapList = result.isJsonArray() && !result.getAsJsonArray().isEmpty()
+                ? result.getAsJsonArray().get(0)
+                : result;
+        List<StateOption> options = new ArrayList<>();
+        if (mapList.isJsonObject() && mapList.getAsJsonObject().get("map_info") instanceof JsonArray maps) {
+            for (JsonElement mapElement : maps) {
+                if (mapElement.isJsonObject()
+                        && mapElement.getAsJsonObject().get("mapFlag") instanceof JsonPrimitive id) {
+                    String name = mapElement.getAsJsonObject().get("name") instanceof JsonPrimitive n
+                            && !n.getAsString().isBlank() ? n.getAsString() : "Map " + id.getAsString();
+                    options.add(new StateOption(id.getAsString(), name));
+                }
+            }
+        }
+        return options;
     }
 
     private void updateNumericChannel(MiIoSendCommand response) {
@@ -801,6 +867,19 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 logger.debug("Setting additional vacuum {}", capability);
             }
         }
+        if (isMultiFloorEnabled(statusResponse)) {
+            deviceCapabilities.putIfAbsent(RobotCababilities.CURRENT_MAP, false);
+            logger.debug("Setting additional vacuum {}", RobotCababilities.CURRENT_MAP);
+        }
+    }
+
+    /**
+     * Multi-floor maps are enabled in the app when lab_status is 3 (1 is map saving only). Older models also report a
+     * map_status, but without the active map id.
+     */
+    static boolean isMultiFloorEnabled(JsonObject statusResponse) {
+        return statusResponse.get("lab_status") instanceof JsonPrimitive labStatus && labStatus.isNumber()
+                && labStatus.getAsInt() == MULTI_FLOOR_LAB_STATUS;
     }
 
     private void createCapabilityChannels() {
@@ -846,7 +925,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         final MiIoBindingConfiguration configuration = this.configuration;
         if (configuration != null && cloudConnector.isConnected()) {
             try {
-                final @Nullable RawType mapDl = cloudConnector.getMap(map, configuration.cloudServer);
+                final @Nullable RawType mapDl = cloudConnector.getMap(map, configuration.model,
+                        configuration.cloudServer);
                 if (mapDl != null) {
                     byte[] mapData = mapDl.getBytes();
                     RRMapDraw rrMap = RRMapDraw.loadImage(new ByteArrayInputStream(mapData));

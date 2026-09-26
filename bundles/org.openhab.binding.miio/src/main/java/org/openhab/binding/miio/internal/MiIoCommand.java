@@ -96,6 +96,7 @@ public enum MiIoCommand {
     GET_FW_FEATURES("get_fw_features"),
     GET_CUSTOMIZED_CLEAN_MODE("get_customize_clean_mode"),
     GET_MULTI_MAP_LIST("get_multi_maps_list"),
+    LOAD_MULTI_MAP("load_multi_map"),
     GET_ROOM_MAPPING("get_room_mapping"),
     SET_COLLECT_DUST("app_start_collect_dust"),
     SET_CLEAN_MOP_START("app_start_wash"),

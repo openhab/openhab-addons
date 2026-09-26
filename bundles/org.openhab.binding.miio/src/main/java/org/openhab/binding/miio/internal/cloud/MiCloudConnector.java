@@ -202,10 +202,10 @@ public class MiCloudConnector {
         return clientId;
     }
 
-    public Optional<String> getMapUrl(String vacuumMap, String country) throws MiCloudException {
+    public Optional<String> getMapUrl(String vacuumMap, String model, String country) throws MiCloudException {
         String url = getApiUrl(country) + "/home/getmapfileurl";
         Map<String, String> map = new HashMap<>();
-        map.put("data", "{\"obj_name\":\"" + vacuumMap + "\"}");
+        map.put("data", buildMapUrlRequestData(vacuumMap, model));
         try {
             String mapResponse = request(url, map);
             logger.trace("Response: {}", mapResponse);
@@ -230,6 +230,19 @@ public class MiCloudConnector {
             logger.debug("Error parsing map URL response: {}", e.getMessage());
             throw new MiCloudException("Received message could not be parsed", e);
         }
+    }
+
+    /**
+     * Builds the request data for the map file url request the same way as the Mi Home vacuum plugin does: the device
+     * model is included and the map name returned by the vacuum is used with its '%2F' separators decoded.
+     */
+    static String buildMapUrlRequestData(String vacuumMap, String model) {
+        JsonObject data = new JsonObject();
+        if (!model.isBlank()) {
+            data.addProperty("model", model);
+        }
+        data.addProperty("obj_name", vacuumMap.replace("%2F", "/"));
+        return data.toString();
     }
 
     public String getDeviceStatus(String device, String country) throws MiCloudException {
