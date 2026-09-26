@@ -28,6 +28,7 @@ public enum MiIoDevices {
     CARELI_FRYER_MAF01("careli.fryer.maf01", "Mi Air Frying Pan", THING_TYPE_BASIC),
     CARELI_FRYER_MAF02("careli.fryer.maf02", "Mi Smart Air Fryer (3.5L)", THING_TYPE_BASIC),
     CARELI_FRYER_MAF03("careli.fryer.maf03", "Mi Air Frying Pan", THING_TYPE_BASIC),
+    CARELI_FRYER_MAF10A("careli.fryer.maf10a", "Xiaomi Smart Air Fryer 6.5L", THING_TYPE_BASIC),
     CGLLC_AIRM_CGDN1("cgllc.airm.cgdn1", "Qingping Air Monitor Lite", THING_TYPE_BASIC),
     CGLLC_AIRMONITOR_B1("cgllc.airmonitor.b1", "Mi Multifunction Air Monitor", THING_TYPE_BASIC),
     CGLLC_AIRMONITOR_S1("cgllc.airmonitor.s1", "Qingping Air Monitor", THING_TYPE_BASIC),
