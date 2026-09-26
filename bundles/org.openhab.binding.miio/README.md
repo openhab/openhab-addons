@@ -369,6 +369,7 @@ Currently the miio binding supports more than 370 different models.
 | Aqara Wall Switch(No Neutral, Single Rocker) | miio:unsupported | lumi.ctrl_neutral1.v1  | No           |            |
 | Aqara Wall Switch (No Neutral, Double Rocker) | miio:unsupported | lumi.ctrl_neutral2.v1  | No           |            |
 | Xiaomiyoupin Curtain Controller (Wi-Fi) | miio:basic       | [lumi.curtain.hagl05](#lumi-curtain-hagl05) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Aqara Curtain Controller A1        | miio:basic       | [lumi.curtain.hagl08](#lumi-curtain-hagl08) | Yes          |            |
 | Mi Air Purifier virtual            | miio:gateway     | [lumi.gateway.mgl03](#lumi-gateway-mgl03) | Experimental | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway if you have the developer key. Otherwise this binding provides experimental support for lumi subdevices<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Mi smart Home Gateway Hub          | miio:gateway     | [lumi.gateway.mieu01](#lumi-gateway-mieu01) | Yes          | Used to control the gateway itself. Experimental support for controlling lumi subdevices |
 | Mi smart Home Gateway Hub v1       | miio:gateway     | [lumi.gateway.v1](#lumi-gateway-v1) | Experimental | Used to control the gateway itself. Use the mihome binding to control devices connected to the Xiaomi gateway if you have the developer key. Otherwise this binding provides experimental support for lumi subdevices<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -2521,6 +2522,24 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | en_night_tip_light         | Number               | Curtain_cfg - En_night_tip_light         | Value mapping `["0"="Disable","1"="Enable"]` |
 | run-time                   | Number               | Curtain_cfg - Run-time                   |            |
 | adjust_value               | Number               | Motor_controller - Adjust_value          |            |
+
+### Aqara Curtain Controller A1 (<a name="lumi-curtain-hagl08">lumi.curtain.hagl08</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| fault                      | Number               | Curtain - Device Fault                   | Value mapping `["0"="No Faults"]` |
+| motor_control              | Number               | Curtain - Motor Control                  | Value mapping `["0"="Pause","1"="Open","2"="Close","3"="Toggle"]` |
+| current_position           | Number:Dimensionless | Curtain - Current Position               |            |
+| status                     | Number               | Curtain - Status                         | Value mapping `["0"="Stopped","1"="Opening","2"="Closing"]` |
+| target_position            | Number:Dimensionless | Curtain - Target Position                |            |
+| manual_enabled             | Number               | Curtain Config - Manual Pull To Start    | Value mapping `["0"="Disable","1"="Enable"]` |
+| polarity                   | Number               | Curtain Config - Motor Direction         | Value mapping `["0"="Normal","1"="Reversed"]` |
+| pos_limit                  | Number               | Curtain Config - Position Limit          | Value mapping `["0"="Unlimited","1"="Limit"]` |
+| en_night_tip_light         | Number               | Curtain Config - Night Indicator Light   | Value mapping `["0"="Disable","1"="Enable"]` |
+| run_time                   | Number               | Curtain Config - Run Time                |            |
+| f_one_position             | Number:Dimensionless | Remote Button - F1 Preset Position       |            |
+| f_two_position             | Number:Dimensionless | Remote Button - F2 Preset Position       |            |
+| f_three_position           | Number:Dimensionless | Remote Button - F3 Preset Position       |            |
 
 ### Mi Air Purifier virtual (<a name="lumi-gateway-mgl03">lumi.gateway.mgl03</a>) Channels
 
@@ -8959,6 +8978,27 @@ Number pos_limit "curtain_cfg - Position Limit" (G_curtain) {channel="miio:basic
 Number en_night_tip_light "Curtain_cfg - En_night_tip_light" (G_curtain) {channel="miio:basic:curtain:en_night_tip_light"}
 Number run_time "Curtain_cfg - Run-time" (G_curtain) {channel="miio:basic:curtain:run-time"}
 Number adjust_value "Motor_controller - Adjust_value" (G_curtain) {channel="miio:basic:curtain:adjust_value"}
+```
+
+### Aqara Curtain Controller A1 (lumi.curtain.hagl08) item file lines
+
+note: Autogenerated example. Replace the id (curtain) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_curtain "Aqara Curtain Controller A1" <status>
+Number fault "Curtain - Device Fault" (G_curtain) {channel="miio:basic:curtain:fault"}
+Number motor_control "Curtain - Motor Control" (G_curtain) {channel="miio:basic:curtain:motor_control"}
+Number:Dimensionless current_position "Curtain - Current Position" (G_curtain) {channel="miio:basic:curtain:current_position"}
+Number status "Curtain - Status" (G_curtain) {channel="miio:basic:curtain:status"}
+Number:Dimensionless target_position "Curtain - Target Position" (G_curtain) {channel="miio:basic:curtain:target_position"}
+Number manual_enabled "Curtain Config - Manual Pull To Start" (G_curtain) {channel="miio:basic:curtain:manual_enabled"}
+Number polarity "Curtain Config - Motor Direction" (G_curtain) {channel="miio:basic:curtain:polarity"}
+Number pos_limit "Curtain Config - Position Limit" (G_curtain) {channel="miio:basic:curtain:pos_limit"}
+Number en_night_tip_light "Curtain Config - Night Indicator Light" (G_curtain) {channel="miio:basic:curtain:en_night_tip_light"}
+Number run_time "Curtain Config - Run Time" (G_curtain) {channel="miio:basic:curtain:run_time"}
+Number:Dimensionless f_one_position "Remote Button - F1 Preset Position" (G_curtain) {channel="miio:basic:curtain:f_one_position"}
+Number:Dimensionless f_two_position "Remote Button - F2 Preset Position" (G_curtain) {channel="miio:basic:curtain:f_two_position"}
+Number:Dimensionless f_three_position "Remote Button - F3 Preset Position" (G_curtain) {channel="miio:basic:curtain:f_three_position"}
 ```
 
 ### Mi Air Purifier virtual (lumi.gateway.mgl03) item file lines

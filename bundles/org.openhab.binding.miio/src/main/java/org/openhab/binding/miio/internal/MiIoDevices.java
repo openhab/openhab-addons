@@ -119,6 +119,7 @@ public enum MiIoDevices {
     LUMI_CTRL_NEUTRAL2_V1("lumi.ctrl_neutral2.v1", "Aqara Wall Switch (No Neutral, Double Rocker)",
             THING_TYPE_UNSUPPORTED),
     LUMI_CURTAIN_HAGL05("lumi.curtain.hagl05", "Xiaomiyoupin Curtain Controller (Wi-Fi)", THING_TYPE_BASIC),
+    LUMI_CURTAIN_HAGL08("lumi.curtain.hagl08", "Aqara Curtain Controller A1", THING_TYPE_BASIC),
     LUMI_GATEWAY_MGL03("lumi.gateway.mgl03", "Mi Air Purifier virtual", THING_TYPE_GATEWAY),
     LUMI_GATEWAY_MIEU01("lumi.gateway.mieu01", "Mi smart Home Gateway Hub", THING_TYPE_GATEWAY),
     LUMI_GATEWAY_V1("lumi.gateway.v1", "Mi smart Home Gateway Hub v1", THING_TYPE_GATEWAY),
