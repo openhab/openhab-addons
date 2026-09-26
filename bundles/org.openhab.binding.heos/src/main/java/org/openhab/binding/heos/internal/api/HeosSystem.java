@@ -109,12 +109,6 @@ public class HeosSystem {
             startHeartBeat(heartbeat);
             startEventListener();
         } catch (IOException | ReadException | RuntimeException e) {
-            // A throw part-way through leaves whatever was already established behind: an open socket
-            // once commandLine.connect() has returned, the executor allocated above, and the heartbeat
-            // job if startEventListener() is what failed. The caller cannot clean any of it up, because
-            // HeosBridgeHandler only calls closeConnection() when it received a facade - and it did not.
-            // It then retries every 30 seconds, orphaning another set each time. closeConnection() is
-            // null-safe and idempotent, so it is safe to run against a half-built connection.
             logger.debug("Failed to establish the HEOS connection, cleaning up: {}", e.getMessage());
             closeConnection();
             throw e;
