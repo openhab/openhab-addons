@@ -578,6 +578,7 @@ Currently the miio binding supports more than 370 different models.
 | Yeelight Smart LED Bulb 1SE (color) | miio:basic       | [yeelink.light.colora](#yeelink-light-colora) | Yes          |            |
 | Yeelight Smart LED Bulb W3 (color) | miio:basic       | [yeelink.light.colorb](#yeelink-light-colorb) | Yes          |            |
 | Yeelight LED Bulb (Tunable)        | miio:basic       | [yeelink.light.ct2](#yeelink-light-ct2) | Yes          |            |
+| Yeelight Smart Ceiling Fan S2001   | miio:basic       | [yeelink.light.fancl2](#yeelink-light-fancl2) | Yes          |            |
 | Mi LED Desk Lamp                   | miio:basic       | [yeelink.light.lamp1](#yeelink-light-lamp1) | Yes          |            |
 | Mi Smart LED Desk Lamp Pro         | miio:basic       | [yeelink.light.lamp2](#yeelink-light-lamp2) | Yes          |            |
 | Yeelight LED Lamp                  | miio:basic       | [yeelink.light.lamp3](#yeelink-light-lamp3) | Yes          |            |
@@ -4632,6 +4633,33 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorTemperature           | Number               | Color Temperature                        |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | name                       | String               | Name                                     |            |
+
+### Yeelight Smart Ceiling Fan S2001 (<a name="yeelink-light-fancl2">yeelink.light.fancl2</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","fan-toggle"="Fan Toggle","yl-light-brightness-cycle"="Light Brightness Cycle","yl-light-ct-cycle"="Light Color Temperature Cycle","yl-light-fan-gears-cycle"="Fan Level Cycle (Light Service)","yl-light-birghtness-increase"="Light Brightness Increase","yl-light-brightness-decrease"="Light Brightness Decrease","yl-light-ct-increase"="Light Color Temperature Increase","yl-light-ct-decrease"="Light Color Temperature Decrease","yl-light-on-or-bright-cycle"="Light On Or Brightness Cycle","yl-light-on-or-ct-cycle"="Light On Or Color Temperature Cycle","yl-fan-fan-gears-cycle"="Fan Level Cycle"]` |
+| on                         | Switch               | Light - Power                            |            |
+| mode                       | Number               | Light - Mode                             | Value mapping `["0"="Day","1"="Night"]` |
+| brightness                 | Dimmer               | Light - Brightness                       |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| flow                       | Number               | Light - Flow                             | Value mapping `["0"="Auto"]` |
+| off_delay_time             | Number:Time          | Light - Power Off Delay Time             |            |
+| left_time                  | Number:Time          | Light - Left Time                        |            |
+| on1                        | Switch               | Fan - Power                              |            |
+| fan_level                  | Number               | Fan - Level                              | Value mapping `["0"="Level 1","1"="Level 2","2"="Level 3","3"="Level 4"]` |
+| mode1                      | Number               | Fan - Mode                               | Value mapping `["0"="Normal Wind","1"="Natural Wind","2"="Reverse Wind","3"="Strong Wind","4"="Gentle Wind","5"="Sleep Wind"]` |
+| status                     | Number               | Fan - Status                             | Value mapping `["0"="Idle","1"="Busy"]` |
+| fault                      | Number               | Fan - Device Fault                       | Value mapping `["0"="No faults"]` |
+| off_delay_time1            | Number:Time          | Fan - Power Off Delay Time               |            |
+| left_time1                 | Number:Time          | Fan - Left Time                          |            |
+| init_power_opt             | Number               | Light - Power-On State                   | Value mapping `["1"="On","2"="Off"]` |
+| smart_switch_en            | Switch               | Light - Wall Switch Control              |            |
+| miband_sleep_ctrl          | Number               | Light - Mi Band Sleep Control            | Value mapping `["0"="Mi Band Control Off","1"="Turn Off Light When Asleep","2"="Turn Off Fan When Asleep","3"="Turn Off Light And Fan When Asleep","4"="Sleep Wind Mode When Asleep","5"="Turn Off Light And Sleep Wind Mode When Asleep"]` |
+| fan_init_power_opt         | Number               | Fan - Power-On State                     | Value mapping `["0"="Off","1"="On"]` |
+| smart_switch_en1           | Switch               | Fan - Wall Switch Control                |            |
+| fan_speed                  | Number:Dimensionless | Fan - Speed                              |            |
+| sleep_delay_off            | Number:Time          | Fan - Sleep Delay Off                    |            |
 
 ### Mi LED Desk Lamp (<a name="yeelink-light-lamp1">yeelink.light.lamp1</a>) Channels
 
@@ -11149,6 +11177,36 @@ Number:Time delayoff "Shutdown Timer" (G_light) {channel="miio:basic:light:delay
 Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light:colorTemperature"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
+```
+
+### Yeelight Smart Ceiling Fan S2001 (yeelink.light.fancl2) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_light "Yeelight Smart Ceiling Fan S2001" <status>
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+Switch on "Light - Power" (G_light) {channel="miio:basic:light:on"}
+Number mode "Light - Mode" (G_light) {channel="miio:basic:light:mode"}
+Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
+Number flow "Light - Flow" (G_light) {channel="miio:basic:light:flow"}
+Number:Time off_delay_time "Light - Power Off Delay Time" (G_light) {channel="miio:basic:light:off_delay_time"}
+Number:Time left_time "Light - Left Time" (G_light) {channel="miio:basic:light:left_time"}
+Switch on1 "Fan - Power" (G_light) {channel="miio:basic:light:on1"}
+Number fan_level "Fan - Level" (G_light) {channel="miio:basic:light:fan_level"}
+Number mode1 "Fan - Mode" (G_light) {channel="miio:basic:light:mode1"}
+Number status "Fan - Status" (G_light) {channel="miio:basic:light:status"}
+Number fault "Fan - Device Fault" (G_light) {channel="miio:basic:light:fault"}
+Number:Time off_delay_time1 "Fan - Power Off Delay Time" (G_light) {channel="miio:basic:light:off_delay_time1"}
+Number:Time left_time1 "Fan - Left Time" (G_light) {channel="miio:basic:light:left_time1"}
+Number init_power_opt "Light - Power-On State" (G_light) {channel="miio:basic:light:init_power_opt"}
+Switch smart_switch_en "Light - Wall Switch Control" (G_light) {channel="miio:basic:light:smart_switch_en"}
+Number miband_sleep_ctrl "Light - Mi Band Sleep Control" (G_light) {channel="miio:basic:light:miband_sleep_ctrl"}
+Number fan_init_power_opt "Fan - Power-On State" (G_light) {channel="miio:basic:light:fan_init_power_opt"}
+Switch smart_switch_en1 "Fan - Wall Switch Control" (G_light) {channel="miio:basic:light:smart_switch_en1"}
+Number:Dimensionless fan_speed "Fan - Speed" (G_light) {channel="miio:basic:light:fan_speed"}
+Number:Time sleep_delay_off "Fan - Sleep Delay Off" (G_light) {channel="miio:basic:light:sleep_delay_off"}
 ```
 
 ### Mi LED Desk Lamp (yeelink.light.lamp1) item file lines
