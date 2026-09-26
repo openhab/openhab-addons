@@ -58,12 +58,12 @@ public class WebsocketTest {
     void sendPingDoesNotResetTimestampWhileAPingIsOutstanding() {
         Websocket ws = newConnectedWebsocket();
         ws.sendPing();
-        Instant firstPingSentAt = ws.pingSentAt;
+        Instant firstPingSentAt = ws.pingSentAt.get();
         assertNotNull(firstPingSentAt, "sendPing() must record a timestamp for the outstanding ping");
 
         // a later doRefresh() tick before any pong arrived must not restart the watchdog clock
         ws.sendPing();
-        assertEquals(firstPingSentAt, ws.pingSentAt,
+        assertEquals(firstPingSentAt, ws.pingSentAt.get(),
                 "sendPing() must not overwrite the timestamp of a still-outstanding ping");
     }
 
@@ -71,22 +71,23 @@ public class WebsocketTest {
     void handlePongClearsOutstandingPingSoTheNextSendPingStartsANewWatchdog() {
         Websocket ws = newConnectedWebsocket();
         ws.sendPing();
-        assertNotNull(ws.pingSentAt);
+        assertNotNull(ws.pingSentAt.get());
 
         Frame pongFrame = mock(Frame.class);
         when(pongFrame.getType()).thenReturn(Frame.Type.PONG);
         ws.onFrame(pongFrame);
-        assertNull(ws.pingSentAt, "handlePong() (via onFrame) must clear pingSentAt once a pong is received");
+        assertNull(ws.pingSentAt.get(), "handlePong() (via onFrame) must clear pingSentAt once a pong is received");
 
         ws.sendPing();
-        assertNotNull(ws.pingSentAt, "sendPing() must start tracking a new ping after the previous one was answered");
+        assertNotNull(ws.pingSentAt.get(),
+                "sendPing() must start tracking a new ping after the previous one was answered");
     }
 
     @Test
     void isPongOverdueUsesInclusiveTimeoutBoundary() {
         Websocket ws = newConnectedWebsocket();
         // exactly on the boundary: Duration.toMillis() truncates, so only ">=" catches it
-        ws.pingSentAt = Instant.now().minusMillis(Websocket.PONG_TIMEOUT_MS);
+        ws.pingSentAt.set(Instant.now().minusMillis(Websocket.PONG_TIMEOUT_MS));
         assertTrue(ws.isPongOverdue(), "a ping outstanding for exactly PONG_TIMEOUT_MS must count as overdue");
     }
 

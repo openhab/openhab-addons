@@ -171,7 +171,9 @@ public class Authorization {
             int tokenResponseStatus = cr.getStatus();
             String tokenResponse = cr.getContentAsString();
             if (tokenResponseStatus == HttpStatus.OK_200) {
-                storeToken(tokenResponse);
+                if (!storeToken(tokenResponse)) {
+                    logger.warn("Token refresh response contained no usable tokens");
+                }
             } else {
                 handleInvalidToken();
                 logger.warn("Failed to refresh token {} {}", tokenResponseStatus, tokenResponse);
@@ -190,13 +192,19 @@ public class Authorization {
         }
     }
 
-    private void storeToken(String tokenResponse) {
+    /**
+     * Stores the token response and updates the in-memory token.
+     *
+     * @return {@code true} if a usable access/refresh token pair was stored, {@code false} if the response
+     *         could not be used - in that case the token is invalidated
+     */
+    private boolean storeToken(String tokenResponse) {
         try {
             TokenResponse tokenResponseJson = Utils.GSON.fromJson(tokenResponse, TokenResponse.class);
             if (tokenResponseJson == null) {
                 handleInvalidToken();
                 logger.warn("Token response is null");
-                return;
+                return false;
             }
             // response doesn't contain creation date time so set it manually
             tokenResponseJson.createdOn = Instant.now().toString();
@@ -209,14 +217,16 @@ public class Authorization {
                 String tokenStore = Utils.GSON.toJson(tokenResponseJson);
                 logger.debug("Token result {}", token.toString());
                 storage.put(identifier, tokenStore);
+                return true;
             } else {
                 handleInvalidToken();
                 logger.warn("Refresh token delivered invalid result {}", tokenResponse);
+                return false;
             }
         } catch (JsonSyntaxException e) {
             logger.warn("Token response {} not parsable: {}", tokenResponse, e.getMessage());
             handleInvalidToken();
-            return;
+            return false;
         }
     }
 
@@ -288,34 +298,36 @@ public class Authorization {
             sendUsername(loginHttpClient);
 
             String rid = generateCodeVerifier(24);
-            JSONObject preLoginData = performPasswordLogin(loginHttpClient, rid);
+            LoginStepResponse preLogin = performPasswordLogin(loginHttpClient, rid);
 
-            if (preLoginData.optBoolean("passkeyDemoEnabled", false)) {
+            if (preLogin.data().optBoolean("passkeyDemoEnabled", false)) {
                 logger.trace("Step 4b: Passkey setup prompt detected, declining to continue password login");
-                preLoginData = disablePasskeyDemo(loginHttpClient, rid);
+                preLogin = disablePasskeyDemo(loginHttpClient, rid);
             }
 
-            String result = preLoginData.optString("result", "");
+            String result = preLogin.data().optString("result", "");
             if (!RESULT_RESUME_TO_OIDCP.equals(result)) {
                 if (RESULT_GOTO_OTP.equals(result)) {
                     throw new MercedesMeAuthException(
                             "Two-factor authentication (2FA) is enabled for this account and is not supported by this binding");
                 } else if (RESULT_GOTO_LEGAL_TEXTS.equals(result)) {
                     logger.trace("Step 4c: Legal consent prompt detected, accepting automatically");
-                    String homeCountry = preLoginData.optString("homeCountry", "");
-                    String consentCountry = preLoginData.optString("consentCountry", "");
-                    preLoginData = submitLegalConsent(loginHttpClient, homeCountry, consentCountry);
-                    if (!RESULT_RESUME_TO_OIDCP.equals(preLoginData.optString("result", ""))) {
-                        throw new MercedesMeAuthException("Failed to accept legal terms during login: " + preLoginData);
+                    String homeCountry = preLogin.data().optString("homeCountry", "");
+                    String consentCountry = preLogin.data().optString("consentCountry", "");
+                    LoginStepResponse consent = submitLegalConsent(loginHttpClient, homeCountry, consentCountry);
+                    if (!RESULT_RESUME_TO_OIDCP.equals(consent.data().optString("result", ""))) {
+                        throw new MercedesMeAuthException(
+                                "Failed to accept legal terms during login. HTTP " + consent.status());
                     }
+                    preLogin = consent;
                 } else {
                     throw new MercedesMeAuthException("Unexpected login result: " + result);
                 }
             }
 
-            String preLoginToken = preLoginData.optString("token", "");
+            String preLoginToken = preLogin.data().optString("token", "");
             if (preLoginToken.isBlank()) {
-                throw new MercedesMeAuthException("No login token delivered: " + preLoginData);
+                throw new MercedesMeAuthException("No login token delivered. HTTP " + preLogin.status());
             }
 
             String authCode = resumeAuthentication(loginHttpClient, resumeUrl, preLoginToken);
@@ -378,10 +390,8 @@ public class Authorization {
 
     /**
      * Send user agent info. This is a best-effort step: a failure is only logged and does not abort the login.
-     *
-     * @throws MercedesMeApiException if an error occurs during API call
      */
-    private void sendUserAgent(HttpClient loginHttpClient) throws MercedesMeApiException {
+    private void sendUserAgent(HttpClient loginHttpClient) {
         Request agentRequest = loginHttpClient.POST(baseUrl + "/ciam/auth/ua");
         agentRequest.agent(Constants.AUTH_USER_AGENT);
         agentRequest.header(HttpHeader.ACCEPT_LANGUAGE, Constants.AUTH_LANGUAGE);
@@ -394,7 +404,13 @@ public class Authorization {
         agentContent.put("osName", "iOS");
         agentRequest.content(new StringContentProvider(agentContent.toString(), "utf-8"), CONTENT_TYPE_JSON);
 
-        ContentResponse agentResponse = send(agentRequest);
+        ContentResponse agentResponse;
+        try {
+            agentResponse = send(agentRequest);
+        } catch (MercedesMeApiException e) {
+            logger.warn("Failed to post user agent info, continuing login anyway: {}", e.getMessage());
+            return;
+        }
         logger.trace("Step 2: Post Agent {} - {}", agentResponse.getStatus(), agentResponse.getContentAsString());
         if (agentResponse.getStatus() != HttpStatus.OK_200) {
             logger.warn("Failed to post user agent info, continuing login anyway. HTTP {}", agentResponse.getStatus());
@@ -431,13 +447,20 @@ public class Authorization {
     }
 
     /**
+     * HTTP status plus parsed JSON body of a login-flow step. Lets failure messages report the status
+     * instead of the response payload, which may carry tokens or other personal data.
+     */
+    private record LoginStepResponse(int status, JSONObject data) {
+    }
+
+    /**
      * Perform login with user name and password to get the pre-login response, whose {@code result} field
      * decides how the calling {@link #login()} flow continues.
      *
      * @throws MercedesMeAuthException if response status isn't correct
      * @throws MercedesMeApiException if an error occurs during API call
      */
-    private JSONObject performPasswordLogin(HttpClient loginHttpClient, String rid)
+    private LoginStepResponse performPasswordLogin(HttpClient loginHttpClient, String rid)
             throws MercedesMeAuthException, MercedesMeApiException {
         String url = baseUrl + "/ciam/auth/login/pass";
         JSONObject loginContent = new JSONObject();
@@ -461,9 +484,9 @@ public class Authorization {
         String loginResponseString = loginResponse.getContentAsString();
         logger.trace("Step 4: Login {} - {}", status, loginResponseString);
         if (status != HttpStatus.OK_200) {
-            throw new MercedesMeAuthException("Failed to login. HTTP " + status + " " + loginResponseString);
+            throw new MercedesMeAuthException("Failed to login. HTTP " + status);
         }
-        return new JSONObject(loginResponseString);
+        return new LoginStepResponse(status, new JSONObject(loginResponseString));
     }
 
     /**
@@ -473,7 +496,7 @@ public class Authorization {
      * @throws MercedesMeAuthException if response status isn't correct
      * @throws MercedesMeApiException if an error occurs during API call
      */
-    private JSONObject disablePasskeyDemo(HttpClient loginHttpClient, String rid)
+    private LoginStepResponse disablePasskeyDemo(HttpClient loginHttpClient, String rid)
             throws MercedesMeAuthException, MercedesMeApiException {
         String url = baseUrl + "/ciam/auth/disablePasskeyDemo";
         JSONObject content = new JSONObject();
@@ -498,9 +521,9 @@ public class Authorization {
         String body = response.getContentAsString();
         logger.trace("Step 4b: Decline passkey prompt {} - {}", status, body);
         if (status != HttpStatus.OK_200) {
-            throw new MercedesMeAuthException("Failed to decline passkey prompt. HTTP " + status + " " + body);
+            throw new MercedesMeAuthException("Failed to decline passkey prompt. HTTP " + status);
         }
-        return new JSONObject(body);
+        return new LoginStepResponse(status, new JSONObject(body));
     }
 
     /**
@@ -510,7 +533,7 @@ public class Authorization {
      * @throws MercedesMeAuthException if response status isn't correct
      * @throws MercedesMeApiException if an error occurs during API call
      */
-    private JSONObject submitLegalConsent(HttpClient loginHttpClient, String homeCountry, String consentCountry)
+    private LoginStepResponse submitLegalConsent(HttpClient loginHttpClient, String homeCountry, String consentCountry)
             throws MercedesMeAuthException, MercedesMeApiException {
         JSONObject content = new JSONObject();
         content.put("texts", new JSONObject());
@@ -530,9 +553,9 @@ public class Authorization {
         String body = response.getContentAsString();
         logger.trace("Step 4c: Submit legal consent {} - {}", status, body);
         if (status != HttpStatus.OK_200) {
-            throw new MercedesMeAuthException("Failed to submit legal consent. HTTP " + status + " " + body);
+            throw new MercedesMeAuthException("Failed to submit legal consent. HTTP " + status);
         }
-        return new JSONObject(body);
+        return new LoginStepResponse(status, new JSONObject(body));
     }
 
     /**
@@ -596,8 +619,7 @@ public class Authorization {
         if (code != null) {
             return code;
         } else {
-            throw new MercedesMeAuthException(
-                    "Failed to resume auth HTTP " + status + "  " + authResponse.getContentAsString());
+            throw new MercedesMeAuthException("Failed to resume auth HTTP " + status);
         }
     }
 
@@ -623,8 +645,7 @@ public class Authorization {
         ContentResponse tokenResponse = send(tokenRequest);
         int status = tokenResponse.getStatus();
         String tokenResponseString = tokenResponse.getContentAsString();
-        if (status == HttpStatus.OK_200) {
-            storeToken(tokenResponseString);
+        if (status == HttpStatus.OK_200 && storeToken(tokenResponseString)) {
             logger.debug("Successfully resumed login");
         } else {
             handleInvalidToken();
@@ -633,6 +654,7 @@ public class Authorization {
             } else {
                 logger.warn("Failed resume login {}", status);
             }
+            throw new MercedesMeAuthException("Failed token exchange. HTTP " + status);
         }
     }
 

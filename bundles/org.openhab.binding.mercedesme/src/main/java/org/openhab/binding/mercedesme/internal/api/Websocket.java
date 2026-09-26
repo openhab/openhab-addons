@@ -18,13 +18,14 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -95,22 +96,23 @@ public class Websocket extends RestApi {
 
     private @Nullable ScheduledFuture<?> refresher;
     private @Nullable WebSocketClient webSocketClient;
-    private @Nullable Session session;
-    // package-private for WebsocketTest, which reads/seeds the watchdog state directly
-    @Nullable
-    Instant pingSentAt;
-    private List<ClientMessage> commandQueue = new ArrayList<>();
-    private Instant runTill = Instant.now();
-    private WebsocketState state = WebsocketState.STOPPED;
-    private boolean keepAlive = false;
-    private boolean disposed = true;
+    // written by Jetty's session/frame callbacks, read by the scheduler thread
+    private volatile @Nullable Session session;
+    // package-private for WebsocketTest, which reads/seeds the watchdog state directly. Atomic because the
+    // check-then-set in sendPing() and the clear in handlePong() run on different threads.
+    final AtomicReference<@Nullable Instant> pingSentAt = new AtomicReference<>();
+    private final Queue<ClientMessage> commandQueue = new ConcurrentLinkedQueue<>();
+    private volatile Instant runTill = Instant.now();
+    private volatile WebsocketState state = WebsocketState.STOPPED;
+    private volatile boolean keepAlive = false;
+    private volatile boolean disposed = true;
     // set right before a deliberate (idle-timeout) close so onClosedSession doesn't try to reconnect
-    private boolean intentionalClose = false;
-    private int reconnectAttempts = 0;
+    private volatile boolean intentionalClose = false;
+    private volatile int reconnectAttempts = 0;
     // relogin attempts for the current 429 episode, reset on a successful connect
-    private int reloginAttempts = 0;
+    private volatile int reloginAttempts = 0;
     // consecutive 429 reconnect attempts, reset once vehicle data is received again
-    private int rateLimitRetryCounter = 0;
+    private volatile int rateLimitRetryCounter = 0;
 
     public enum WebsocketState {
         STOPPED,
@@ -210,8 +212,8 @@ public class Websocket extends RestApi {
      * @return true if command is successfully submitted, false otherwise
      */
     private boolean sendMessage() {
-        if (!commandQueue.isEmpty()) {
-            ClientMessage message = commandQueue.remove(0);
+        ClientMessage message = commandQueue.poll();
+        if (message != null) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Send Message {}", message.getAllFields());
             }
@@ -382,9 +384,7 @@ public class Websocket extends RestApi {
         if (localSession != null) {
             try {
                 // keep the timestamp of a still-outstanding ping - handlePong() clears it once answered
-                if (pingSentAt == null) {
-                    pingSentAt = Instant.now();
-                }
+                pingSentAt.compareAndSet(null, Instant.now());
                 localSession.getRemote().sendPing(ByteBuffer.allocate(0));
             } catch (IOException e) {
                 logger.warn("Websocket ping failed {}", e.getMessage());
@@ -393,11 +393,8 @@ public class Websocket extends RestApi {
     }
 
     private void handlePong(Frame frame) {
-        Instant sent = pingSentAt;
-        if (sent == null) {
+        if (pingSentAt.getAndSet(null) == null) {
             logger.trace("Websocket received pong without matching ping");
-        } else {
-            pingSentAt = null;
         }
     }
 
@@ -408,7 +405,7 @@ public class Websocket extends RestApi {
      * @return true if a ping was sent and no pong has been received within PONG_TIMEOUT_MS
      */
     boolean isPongOverdue() {
-        Instant sent = pingSentAt;
+        Instant sent = pingSentAt.get();
         // ">=" - Duration.toMillis() truncates, so the boundary itself must count as overdue
         return sent != null && Duration.between(sent, Instant.now()).toMillis() >= PONG_TIMEOUT_MS;
     }
@@ -495,7 +492,7 @@ public class Websocket extends RestApi {
     public void onConnect(Session session) {
         this.session = session;
         state = WebsocketState.CONNECTED;
-        pingSentAt = null;
+        pingSentAt.set(null);
         reconnectAttempts = 0;
         // a successful connect ends the current relogin episode
         reloginAttempts = 0;
@@ -529,7 +526,7 @@ public class Websocket extends RestApi {
         }
         session = null;
         state = WebsocketState.DISCONNECTED;
-        pingSentAt = null;
+        pingSentAt.set(null);
         // stop web socket client for closed session
         scheduler.execute(this::stop);
 

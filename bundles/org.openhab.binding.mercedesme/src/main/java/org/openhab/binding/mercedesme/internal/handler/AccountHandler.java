@@ -165,6 +165,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     public boolean authorize() {
         try {
             api.login();
+            // login() throws unless a usable token pair was stored, so reaching this line is the real outcome
             return true;
         } catch (MercedesMeAuthException e) {
             handleAuthError(e);
