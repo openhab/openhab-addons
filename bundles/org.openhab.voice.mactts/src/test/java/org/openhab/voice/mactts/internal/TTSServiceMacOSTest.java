@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.storage.StorageService;
-import org.openhab.core.voice.TTSException;
-import org.openhab.core.voice.Voice;
-import org.openhab.core.voice.internal.cache.TTSLRUCacheImpl;
+import org.openhab.core.voice.internal.tts.cache.TTSLRUCacheImpl;
+import org.openhab.core.voice.tts.TTSException;
+import org.openhab.core.voice.tts.Voice;
 
 /**
  * Test TTSServiceMacOS
