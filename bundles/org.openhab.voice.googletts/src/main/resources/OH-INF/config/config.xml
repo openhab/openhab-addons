@@ -15,11 +15,11 @@
 			<description>Parameters for Google Cloud TTS API.</description>
 		</parameter-group>
 
-		<parameter name="clientId" type="text" groupName="authentication">
+		<parameter name="clientId" type="text" required="true" groupName="authentication">
 			<label>Client Id</label>
 			<description>Google Cloud Platform OAuth 2.0-Client Id.</description>
 		</parameter>
-		<parameter name="clientSecret" type="text" groupName="authentication">
+		<parameter name="clientSecret" type="text" required="true" groupName="authentication">
 			<context>password</context>
 			<label>Client Secret</label>
 			<description>Google Cloud Platform OAuth 2.0-Client Secret.</description>

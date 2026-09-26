@@ -130,7 +130,7 @@ public class GoogleTTSService extends AbstractCachedTTSService {
     @Activate
     protected void activate(Map<String, Object> config) {
         apiImpl = new GoogleCloudAPI(configAdmin, oAuthFactory);
-        applyConfig(config);
+        updateConfig(config);
     }
 
     @Deactivate
@@ -192,17 +192,7 @@ public class GoogleTTSService extends AbstractCachedTTSService {
      * @param newConfig Updated configuration
      */
     @Modified
-    void updateConfig(Map<String, Object> newConfig) {
-        applyConfig(newConfig);
-        String clientId = config.clientId;
-        String clientSecret = config.clientSecret;
-        if (newConfig != null && (clientId == null || clientId.isBlank())
-                && (clientSecret == null || clientSecret.isBlank())) {
-            oAuthFactory.deleteServiceAndAccessToken(SERVICE_PID);
-        }
-    }
-
-    private void applyConfig(Map<String, Object> newConfig) {
+    private void updateConfig(Map<String, Object> newConfig) {
         logger.debug("Updating configuration");
         if (newConfig != null) {
             // client id
@@ -246,16 +236,9 @@ public class GoogleTTSService extends AbstractCachedTTSService {
                     allVoices = initVoices();
                     audioFormats = initAudioFormats();
                 }
-            } else {
-                apiImpl.dispose();
-                allVoices = Set.of();
-                audioFormats = Set.of();
             }
         } else {
             logger.warn("Missing Google Cloud TTS configuration.");
-            apiImpl.dispose();
-            allVoices = Set.of();
-            audioFormats = Set.of();
         }
     }
 
