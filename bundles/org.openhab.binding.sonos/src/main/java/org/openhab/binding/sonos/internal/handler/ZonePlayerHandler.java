@@ -685,6 +685,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                     break;
                 case "CurrentURI":
                     updateChannel(CURRENTTRANSPORTURI);
+                    takeGroupStateFromFollowedCoordinator(value);
                     break;
                 case "CurrentTrackURI":
                     updateChannel(CURRENTTRACKURI);
@@ -753,12 +754,50 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 try {
                     ZonePlayerHandler memberHandler = getHandlerByName(member);
                     if (ThingStatus.ONLINE.equals(memberHandler.getThing().getStatus())) {
-                        memberHandler.onValueReceived(variable, value, service);
+                        if (memberHandler.followsCoordinator(getUDN())) {
+                            memberHandler.onValueReceived(variable, value, service);
+                        } else {
+                            logger.debug("{} does not follow {}, {} not passed on", member, getUDN(), variable);
+                        }
                     }
                 } catch (IllegalStateException e) {
                     logger.debug("Cannot update channel for group member ({})", e.getMessage());
                 }
             }
+        }
+    }
+
+    /**
+     * Each player receives the group topology on its own, so a coordinator can still list a player
+     * that has already left. A player whose transport URI is not known yet counts as following.
+     */
+    private boolean followsCoordinator(String coordinatorUDN) {
+        String currentURI = getCurrentURI();
+        return currentURI == null || getUDN().equals(coordinatorUDN) || (GROUP_URI + coordinatorUDN).equals(currentURI);
+    }
+
+    private void takeGroupStateFromFollowedCoordinator(String currentURI) {
+        if (!currentURI.startsWith(GROUP_URI)) {
+            return;
+        }
+        try {
+            ZonePlayerHandler coordinator = getHandlerByName(currentURI.substring(GROUP_URI.length()));
+            if (!ThingStatus.ONLINE.equals(coordinator.getThing().getStatus())) {
+                return;
+            }
+            String transportState = coordinator.getTransportState();
+            if (transportState != null) {
+                onValueReceived("TransportState", transportState, SERVICE_AV_TRANSPORT);
+            }
+            String playMode = coordinator.getPlayMode();
+            if (playMode != null) {
+                onValueReceived("CurrentPlayMode", playMode, SERVICE_AV_TRANSPORT);
+            }
+            if (coordinator.getZoneGroupMembers().contains(getUDN())) {
+                coordinator.updateMediaInformation();
+            }
+        } catch (IllegalStateException e) {
+            logger.debug("Cannot take the group state from the coordinator ({})", e.getMessage());
         }
     }
 
@@ -1076,7 +1115,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 try {
                     ZonePlayerHandler memberHandler = getHandlerByName(member);
                     if (ThingStatus.ONLINE.equals(memberHandler.getThing().getStatus())
-                            && memberHandler.isLinked(channeldD)) {
+                            && memberHandler.followsCoordinator(getUDN()) && memberHandler.isLinked(channeldD)) {
                         memberHandler.updateState(channeldD, state);
                     }
                 } catch (IllegalStateException e) {
@@ -1315,14 +1354,15 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 ? currentTrack.getAlbumArtUri()
                 : "";
 
-        ZonePlayerHandler handlerForImageUpdate = null;
+        boolean albumArtChanged = false;
         for (String member : getZoneGroupMembers()) {
             try {
                 ZonePlayerHandler memberHandler = getHandlerByName(member);
-                if (ThingStatus.ONLINE.equals(memberHandler.getThing().getStatus())) {
+                if (ThingStatus.ONLINE.equals(memberHandler.getThing().getStatus())
+                        && memberHandler.followsCoordinator(getUDN())) {
                     if (memberHandler.isLinked(CURRENTALBUMART)
                             && hasValueChanged(albumArtURI, memberHandler.stateMap.get("CurrentAlbumArtURI"))) {
-                        handlerForImageUpdate = memberHandler;
+                        albumArtChanged = true;
                     }
                     memberHandler.onValueReceived("CurrentTuneInStationId", (stationID != null) ? stationID : "",
                             SERVICE_AV_TRANSPORT);
@@ -1346,8 +1386,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 logger.debug("Cannot update media data for group member ({})", e.getMessage());
             }
         }
-        if (mediaInfo.needsUpdate() && handlerForImageUpdate != null) {
-            handlerForImageUpdate.updateAlbumArtChannel(true);
+        if (mediaInfo.needsUpdate() && albumArtChanged) {
+            updateAlbumArtChannel(true);
         }
     }
 
