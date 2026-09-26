@@ -4153,6 +4153,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Mi Bedside Lamp 2 (<a name="yeelink-light-bslamp2">yeelink.light.bslamp2</a>) Channels
@@ -4166,6 +4167,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Yeelight Bedside Lamp II (<a name="yeelink-light-bslamp3">yeelink.light.bslamp3</a>) Channels
@@ -4179,6 +4181,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Yeelight LED Ceiling Light Pro (<a name="yeelink-light-ceila">yeelink.light.ceila</a>) Channels
@@ -4261,6 +4264,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | ambientPower               | Switch               | Ambient Power                            |            |
 | ambientColor               | Color                | Ambient Color                            |            |
 | ambientColorTemperature    | Number               | Ambient Color Temperature                |            |
+| ambientColorflow           | Switch               | Ambient Color Flow                       |            |
+| ambientColorflowScene      | String               | Ambient Color Flow Scene                 | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | customScene                | String               | Set Scene                                |            |
 | ambientColorMode           | Number               | Ambient Color Mode                       |            |
 | nightlightBrightness       | Dimmer               | Nightlight Brightness                    |            |
@@ -4357,6 +4362,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | ambientPower               | Switch               | Ambient Power                            |            |
 | ambientColor               | Color                | Ambient Color                            |            |
 | ambientColorTemperature    | Number               | Ambient Color Temperature                |            |
+| ambientColorflow           | Switch               | Ambient Color Flow                       |            |
+| ambientColorflowScene      | String               | Ambient Color Flow Scene                 | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | customScene                | String               | Set Scene                                |            |
 | ambientColorMode           | Number               | Ambient Color Mode                       |            |
 | nightlightBrightness       | Dimmer               | Nightlight Brightness                    |            |
@@ -4593,6 +4600,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Yeelight LED Bulb (Color) (<a name="yeelink-light-color2">yeelink.light.color2</a>) Channels
@@ -4606,6 +4614,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Mi LED Smart Bulb (White and Color) (<a name="yeelink-light-color3">yeelink.light.color3</a>) Channels
@@ -4619,6 +4628,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Yeelight LED Bulb 1S（Color） (<a name="yeelink-light-color4">yeelink.light.color4</a>) Channels
@@ -4632,6 +4642,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Mi Smart LED Bulb Essential (White and Color) (<a name="yeelink-light-color5">yeelink.light.color5</a>) Channels
@@ -4645,6 +4656,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Yeelight Smart LED Bulb 1SE (color) (<a name="yeelink-light-colora">yeelink.light.colora</a>) Channels
@@ -4658,6 +4670,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Yeelight Smart LED Bulb W3 (color) (<a name="yeelink-light-colorb">yeelink.light.colorb</a>) Channels
@@ -4671,6 +4684,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Yeelight LED Bulb (Tunable) (<a name="yeelink-light-ct2">yeelink.light.ct2</a>) Channels
@@ -4835,6 +4849,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | ambientPower               | Switch               | Ambient Power                            |            |
 | ambientColor               | Color                | Ambient Color                            |            |
 | ambientColorTemperature    | Number               | Ambient Color Temperature                |            |
+| ambientColorflow           | Switch               | Ambient Color Flow                       |            |
+| ambientColorflowScene      | String               | Ambient Color Flow Scene                 | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | ambientColorMode           | Number               | Ambient Color Mode                       |            |
 
 ### Yeelight Bulb (<a name="yeelink-light-mono1">yeelink.light.mono1</a>) Channels
@@ -4938,6 +4954,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Yeelight Lightstrip Plus (<a name="yeelink-light-strip2">yeelink.light.strip2</a>) Channels
@@ -4951,6 +4968,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | rgbColor                   | Color                | RGB Color                                |            |
 | colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
 | colorflow                  | Switch               | Color Flow                               |            |
+| colorflowScene             | String               | Color Flow Scene                         | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | name                       | String               | Name                                     |            |
 
 ### Yeelight Willow LED Lightstrip (<a name="yeelink-light-strip4">yeelink.light.strip4</a>) Channels
@@ -10629,6 +10647,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -10645,6 +10664,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -10661,6 +10681,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -10761,6 +10782,8 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
 Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
 Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+Switch ambientColorflow "Ambient Color Flow" (G_light) {channel="miio:basic:light:ambientColorflow"}
+String ambientColorflowScene "Ambient Color Flow Scene" (G_light) {channel="miio:basic:light:ambientColorflowScene"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
 Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
@@ -10878,6 +10901,8 @@ String name "Name" (G_light) {channel="miio:basic:light:name"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
 Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
 Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+Switch ambientColorflow "Ambient Color Flow" (G_light) {channel="miio:basic:light:ambientColorflow"}
+String ambientColorflowScene "Ambient Color Flow Scene" (G_light) {channel="miio:basic:light:ambientColorflowScene"}
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
 Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
@@ -11168,6 +11193,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -11184,6 +11210,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -11200,6 +11227,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -11216,6 +11244,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -11232,6 +11261,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -11248,6 +11278,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -11264,6 +11295,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -11467,6 +11499,8 @@ Dimmer ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:lig
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
 Color ambientColor "Ambient Color" (G_light) {channel="miio:basic:light:ambientColor"}
 Number ambientColorTemperature "Ambient Color Temperature" (G_light) {channel="miio:basic:light:ambientColorTemperature"}
+Switch ambientColorflow "Ambient Color Flow" (G_light) {channel="miio:basic:light:ambientColorflow"}
+String ambientColorflowScene "Ambient Color Flow Scene" (G_light) {channel="miio:basic:light:ambientColorflowScene"}
 Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 ```
 
@@ -11597,6 +11631,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
@@ -11613,6 +11648,7 @@ Number colorTemperature "Color Temperature" (G_light) {channel="miio:basic:light
 Color rgbColor "RGB Color" (G_light) {channel="miio:basic:light:rgbColor"}
 Number colorMode "Color Mode" (G_light) {channel="miio:basic:light:colorMode"}
 Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
+String colorflowScene "Color Flow Scene" (G_light) {channel="miio:basic:light:colorflowScene"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
