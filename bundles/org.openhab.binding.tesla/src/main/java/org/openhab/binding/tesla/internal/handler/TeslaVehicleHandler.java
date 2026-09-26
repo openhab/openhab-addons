@@ -662,7 +662,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
             return true;
         } else if (response != null && response.getStatus() == 401) {
             logger.debug("The access token has expired, trying to get a new one.");
-            account.authenticate();
+            account.reauthenticate();
         } else {
             apiIntervalErrors++;
             if (immediatelyFail || apiIntervalErrors >= TeslaAccountHandler.API_MAXIMUM_ERRORS_IN_INTERVAL) {
