@@ -455,6 +455,7 @@
     <module>org.openhab.binding.tankerkoenig</module>
     <module>org.openhab.binding.tapocontrol</module>
     <module>org.openhab.binding.tasmotaplug</module>
+    <module>org.openhab.binding.tedee</module>
     <module>org.openhab.binding.telegram</module>
     <module>org.openhab.binding.teleinfo</module>
     <module>org.openhab.binding.tellstick</module>
