@@ -408,50 +408,39 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
     }
 
     public void pressButton(String buttonIdOrEntityId) {
-        EntityId parsedEntityId = EntityUtils.parseEntityId(buttonIdOrEntityId, "button");
-        if (parsedEntityId == null) {
-            return;
+        EntityId parsed = parseAndValidateEntityId(buttonIdOrEntityId, "button", BUTTON_DOMAINS, "pressButton");
+        if (parsed != null) {
+            callService(parsed.domain(), "press", parsed.getFullId(), null);
         }
-
-        String domain = parsedEntityId.domain();
-
-        if (!BUTTON_DOMAINS.contains(domain)) {
-            logger.warn("pressButton called with unexpected domain '{}' for entity '{}'. Expected one of {}.", domain,
-                    buttonIdOrEntityId, BUTTON_DOMAINS);
-        }
-
-        callService(domain, "press", parsedEntityId.getFullId(), null);
     }
 
     public void runScript(String scriptIdOrEntityId, @Nullable Map<String, Object> variables) {
-        EntityId parsedEntityId = EntityUtils.parseEntityId(scriptIdOrEntityId, "script");
-        if (parsedEntityId == null) {
-            return;
+        EntityId parsed = parseAndValidateEntityId(scriptIdOrEntityId, "script", Set.of("script"), "runScript");
+        if (parsed != null) {
+            callService("script", parsed.objectId(), null, variables);
         }
-
-        if (!"script".equals(parsedEntityId.domain())) {
-            logger.warn(
-                    "runScript called with non-script entity ID '{}'. Expected domain 'script' or a simple script ID.",
-                    scriptIdOrEntityId);
-        }
-
-        String scriptId = parsedEntityId.objectId();
-        callService("script", scriptId, null, variables);
     }
 
     public void activateScene(String sceneIdOrEntityId) {
-        EntityId parsedEntityId = EntityUtils.parseEntityId(sceneIdOrEntityId, "scene");
+        EntityId parsed = parseAndValidateEntityId(sceneIdOrEntityId, "scene", Set.of("scene"), "activateScene");
+        if (parsed != null) {
+            callService("scene", "turn_on", parsed.getFullId(), null);
+        }
+    }
+
+    private @Nullable EntityId parseAndValidateEntityId(String idOrEntityId, String defaultDomain,
+            Set<String> expectedDomains, String methodName) {
+        EntityId parsedEntityId = EntityUtils.parseEntityId(idOrEntityId, defaultDomain);
         if (parsedEntityId == null) {
-            return;
+            return null;
         }
 
-        if (!"scene".equals(parsedEntityId.domain())) {
-            logger.warn(
-                    "activateScene called with non-scene entity ID '{}'. Expected domain 'scene' or a simple scene ID.",
-                    sceneIdOrEntityId);
+        if (!expectedDomains.contains(parsedEntityId.domain())) {
+            logger.warn("{} called with unexpected domain '{}' for entity '{}'. Expected one of {}.", methodName,
+                    parsedEntityId.domain(), idOrEntityId, expectedDomains);
         }
 
-        callService("scene", "turn_on", parsedEntityId.getFullId(), null);
+        return parsedEntityId;
     }
 
     public @Nullable EntityState getCachedEntityState(String entityId) {
