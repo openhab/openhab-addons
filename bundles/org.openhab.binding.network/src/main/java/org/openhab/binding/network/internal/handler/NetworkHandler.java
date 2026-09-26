@@ -36,13 +36,11 @@ import org.openhab.binding.network.internal.NetworkBindingConfigurationListener;
 import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.NetworkDeviceType;
 import org.openhab.binding.network.internal.NetworkHandlerConfiguration;
-import org.openhab.binding.network.internal.NetworkTlsTrustManagerProvider;
 import org.openhab.binding.network.internal.PresenceDetection;
 import org.openhab.binding.network.internal.PresenceDetectionListener;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.binding.network.internal.WakeOnLanPacketSender;
 import org.openhab.binding.network.internal.action.NetworkActions;
-import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -58,8 +56,6 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,8 +72,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class NetworkHandler extends BaseThingHandler
         implements PresenceDetectionListener, NetworkBindingConfigurationListener {
-    private static final int HTTPS_DEFAULT_PORT = 443;
-
     private final Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
 
     /* All access must be guarded by "this" */
@@ -89,19 +83,9 @@ public class NetworkHandler extends BaseThingHandler
     /* All access must be guarded by "this" */
     private @Nullable WakeOnLanPacketSender wakeOnLanPacketSender;
 
-    /* All access must be guarded by "this" */
-    private @Nullable ServiceRegistration<?> tlsTrustManagerRegistration;
-
-    /**
-     * Set while this handler is disposed, so that the asynchronous initialization can detect that its result has
-     * become obsolete. All access must be guarded by "this".
-     */
-    private boolean disposed;
-
     private final NetworkDeviceType deviceType;
     private final NetworkBindingConfiguration configuration;
     private final HttpClient httpClient;
-    private final BundleContext bundleContext;
 
     // How many retries before a device is deemed offline
     volatile int retries;
@@ -114,15 +98,13 @@ public class NetworkHandler extends BaseThingHandler
      * Creates a new instance using the specified parameters.
      */
     public NetworkHandler(Thing thing, ScheduledExecutorService executor, ExecutorService resolver,
-            NetworkDeviceType deviceType, NetworkBindingConfiguration configuration, HttpClient httpClient,
-            BundleContext bundleContext) {
+            NetworkDeviceType deviceType, NetworkBindingConfiguration configuration, HttpClient httpClient) {
         super(thing);
         this.executor = executor;
         this.resolver = resolver;
         this.deviceType = deviceType;
         this.configuration = configuration;
         this.httpClient = httpClient;
-        this.bundleContext = bundleContext;
         this.configuration.addNetworkBindingConfigurationListener(this);
     }
 
@@ -226,53 +208,9 @@ public class NetworkHandler extends BaseThingHandler
         updateState(CHANNEL_HTTP_STATUS, statusCode == null ? UnDefType.UNDEF : new DecimalType(statusCode));
     }
 
-    /**
-     * Accepts any certificate presented by the given host by registering a {@link TlsTrustManagerProvider} for it. The
-     * shared HTTP client performs no certificate validation for that host as long as the provider is registered, so it
-     * is unregistered again as soon as this handler is disposed.
-     *
-     * @param host the host of the configured URL
-     * @param port the port of the configured URL, -1 if the URL does not contain a port
-     */
-    private void registerTlsTrustManager(String host, int port) {
-        // The framework identifies the provider by the peer host and port of the TLS connection
-        String hostName = host + ":" + (port == -1 ? HTTPS_DEFAULT_PORT : port);
-        logger.debug("Ignoring certificate errors of {} for {}", hostName, thing.getUID());
-        ServiceRegistration<?> registration = bundleContext.registerService(TlsTrustManagerProvider.class.getName(),
-                new NetworkTlsTrustManagerProvider(hostName), null);
-
-        ServiceRegistration<?> obsoleteRegistration;
-        synchronized (this) {
-            if (disposed) {
-                // This handler was disposed while it was initializing, the new registration must not survive that
-                obsoleteRegistration = registration;
-            } else {
-                obsoleteRegistration = tlsTrustManagerRegistration;
-                tlsTrustManagerRegistration = registration;
-            }
-        }
-        unregister(obsoleteRegistration);
-    }
-
-    private void unregisterTlsTrustManager() {
-        ServiceRegistration<?> registration;
-        synchronized (this) {
-            registration = tlsTrustManagerRegistration;
-            tlsTrustManagerRegistration = null;
-        }
-        unregister(registration);
-    }
-
-    private void unregister(@Nullable ServiceRegistration<?> registration) {
-        if (registration != null) {
-            registration.unregister();
-        }
-    }
-
     @Override
     public void dispose() {
         synchronized (this) {
-            disposed = true;
             ScheduledFuture<?> refreshJob = this.refreshJob;
             if (refreshJob != null) {
                 refreshJob.cancel(true);
@@ -280,7 +218,6 @@ public class NetworkHandler extends BaseThingHandler
             }
             presenceDetection = null;
         }
-        unregisterTlsTrustManager();
     }
 
     /**
@@ -319,9 +256,6 @@ public class NetworkHandler extends BaseThingHandler
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Configured URL must be an absolute http:// or https:// URL!");
                     return;
-                }
-                if (config.ignoreCertificateErrors && "https".equalsIgnoreCase(scheme)) {
-                    registerTlsTrustManager(host, uri.getPort());
                 }
                 // The hostname is only used to identify the target in the detection result, the request uses the URL
                 presenceDetection.setHostname(host);
@@ -374,10 +308,6 @@ public class NetworkHandler extends BaseThingHandler
     // Create a new network service and apply all configurations.
     @Override
     public void initialize() {
-        synchronized (this) {
-            // This handler is re-initialized instead of being recreated when the thing configuration changes
-            disposed = false;
-        }
         updateStatus(ThingStatus.UNKNOWN);
         executor.submit(() -> {
             initialize(new PresenceDetection(this, Duration.ofMillis(configuration.cacheDeviceStateTimeInMS.intValue()),

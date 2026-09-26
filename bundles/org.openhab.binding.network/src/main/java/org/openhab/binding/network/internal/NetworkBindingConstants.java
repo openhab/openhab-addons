@@ -62,7 +62,6 @@ public class NetworkBindingConstants {
     public static final String PARAMETER_URL = "url";
     public static final String PARAMETER_TREAT_REDIRECT_AS_ERROR = "treatRedirectAsError";
     public static final String PARAMETER_TREAT_CLIENT_ERROR_AS_ERROR = "treatClientErrorAsError";
-    public static final String PARAMETER_IGNORE_CERTIFICATE_ERRORS = "ignoreCertificateErrors";
 
     public static final String PROPERTY_DHCP_STATE = "dhcp_state";
     public static final String PROPERTY_ARP_STATE = "arp_state";

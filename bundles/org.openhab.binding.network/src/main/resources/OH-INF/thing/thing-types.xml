@@ -190,14 +190,6 @@
 				<default>true</default>
 			</parameter>
 
-			<parameter name="ignoreCertificateErrors" type="boolean" required="true">
-				<label>Ignore Certificate Errors</label>
-				<description>Set to true if certificate errors of an https:// URL shall be ignored, for example for a self-signed
-					certificate. Be aware that no certificate is validated for the host and port of the configured URL as long as the
-					thing is initialized, which also applies to other add-ons communicating with it.</description>
-				<default>false</default>
-			</parameter>
-
 			<parameter name="retry" type="integer">
 				<label>Retry</label>
 				<description>Defines how many times a request shall occur before the device is stated as offline.</description>

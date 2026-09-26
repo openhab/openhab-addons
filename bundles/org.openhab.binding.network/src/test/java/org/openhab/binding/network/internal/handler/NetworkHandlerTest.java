@@ -16,7 +16,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -42,7 +41,6 @@ import org.openhab.binding.network.internal.NetworkDeviceType;
 import org.openhab.binding.network.internal.PresenceDetection;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -55,8 +53,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 
 /**
  * Tests cases for {@link NetworkHandler}.
@@ -75,20 +71,17 @@ public class NetworkHandlerTest extends JavaTest {
     private @Mock @NonNullByDefault({}) ExecutorService resolver;
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
-    private @Mock @NonNullByDefault({}) BundleContext bundleContext;
-    private @Mock @NonNullByDefault({}) ServiceRegistration<?> serviceRegistration;
 
     @BeforeEach
     public void setUp() {
         when(thing.getUID()).thenReturn(thingUID);
-        doReturn(serviceRegistration).when(bundleContext).registerService(anyString(), any(), any());
     }
 
     @Test
     public void checkAllConfigurations() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
         NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, resolver,
-                NetworkDeviceType.TCP_SERVICE, config, httpClient, bundleContext));
+                NetworkDeviceType.TCP_SERVICE, config, httpClient));
         handler.setCallback(callback);
         // Provide all possible configuration
         when(thing.getConfiguration()).thenAnswer(a -> {
@@ -112,7 +105,7 @@ public class NetworkHandlerTest extends JavaTest {
     public void tcpDeviceInitTests() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
         NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, resolver,
-                NetworkDeviceType.TCP_SERVICE, config, httpClient, bundleContext));
+                NetworkDeviceType.TCP_SERVICE, config, httpClient));
         assertThat(handler.getDeviceType(), is(NetworkDeviceType.TCP_SERVICE));
         handler.setCallback(callback);
         // Port is missing, should make the device OFFLINE
@@ -133,7 +126,7 @@ public class NetworkHandlerTest extends JavaTest {
     public void pingDeviceInitTests() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
         NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, resolver,
-                NetworkDeviceType.PING, config, httpClient, bundleContext));
+                NetworkDeviceType.PING, config, httpClient));
         handler.setCallback(callback);
         // Provide minimal configuration
         when(thing.getConfiguration()).thenAnswer(a -> {
@@ -253,74 +246,15 @@ public class NetworkHandlerTest extends JavaTest {
                 eq(UnDefType.UNDEF));
     }
 
-    @Test
-    public void httpDeviceIgnoreCertificateErrorsTests() {
-        NetworkHandler handler = createHttpHandler("https://example.com:8443/status", true);
-        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), resolver));
-
-        ArgumentCaptor<Object> serviceCaptor = ArgumentCaptor.forClass(Object.class);
-        verify(bundleContext).registerService(eq(TlsTrustManagerProvider.class.getName()), serviceCaptor.capture(),
-                any());
-        assertThat(((TlsTrustManagerProvider) serviceCaptor.getValue()).getHostName(), is("example.com:8443"));
-
-        handler.dispose();
-        verify(serviceRegistration).unregister();
-    }
-
-    @Test
-    public void httpDeviceIgnoreCertificateErrorsOfDisposedHandlerTests() {
-        NetworkHandler handler = createHttpHandler("https://example.com/status", true);
-        // The initialization runs asynchronously and may complete after the handler has been disposed
-        handler.dispose();
-
-        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), resolver));
-
-        verify(bundleContext).registerService(eq(TlsTrustManagerProvider.class.getName()), any(), any());
-        verify(serviceRegistration).unregister();
-    }
-
-    @Test
-    public void httpDeviceIgnoreCertificateErrorsUsesDefaultPortTests() {
-        NetworkHandler handler = createHttpHandler("https://example.com/status", true);
-        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), resolver));
-
-        ArgumentCaptor<Object> serviceCaptor = ArgumentCaptor.forClass(Object.class);
-        verify(bundleContext).registerService(eq(TlsTrustManagerProvider.class.getName()), serviceCaptor.capture(),
-                any());
-        assertThat(((TlsTrustManagerProvider) serviceCaptor.getValue()).getHostName(), is("example.com:443"));
-    }
-
-    @Test
-    public void httpDeviceWithoutIgnoredCertificateErrorsTests() {
-        NetworkHandler handler = createHttpHandler("https://example.com/status", false);
-        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), resolver));
-
-        verifyNoInteractions(bundleContext);
-    }
-
-    @Test
-    public void httpDeviceIgnoreCertificateErrorsWithoutTlsTests() {
-        // There is no certificate to ignore errors for when the URL is not using TLS
-        NetworkHandler handler = createHttpHandler("http://example.com/status", true);
-        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), resolver));
-
-        verifyNoInteractions(bundleContext);
-    }
-
     private NetworkHandler createHttpHandler(String url) {
-        return createHttpHandler(url, false);
-    }
-
-    private NetworkHandler createHttpHandler(String url, boolean ignoreCertificateErrors) {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
         NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, resolver,
-                NetworkDeviceType.HTTP, config, httpClient, bundleContext));
+                NetworkDeviceType.HTTP, config, httpClient));
         assertThat(handler.getDeviceType(), is(NetworkDeviceType.HTTP));
         handler.setCallback(callback);
         when(thing.getConfiguration()).thenAnswer(a -> {
             Configuration conf = new Configuration();
             conf.put(NetworkBindingConstants.PARAMETER_URL, url);
-            conf.put(NetworkBindingConstants.PARAMETER_IGNORE_CERTIFICATE_ERRORS, ignoreCertificateErrors);
             conf.put(NetworkBindingConstants.PARAMETER_REFRESH_INTERVAL, 0); // disable auto refresh
             return conf;
         });

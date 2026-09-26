@@ -110,14 +110,12 @@ public class NetworkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(PING_DEVICE) || thingTypeUID.equals(BACKWARDS_COMPATIBLE_DEVICE)) {
-            return new NetworkHandler(thing, executor, resolver, NetworkDeviceType.PING, configuration, httpClient,
-                    getBundleContext());
+            return new NetworkHandler(thing, executor, resolver, NetworkDeviceType.PING, configuration, httpClient);
         } else if (thingTypeUID.equals(SERVICE_DEVICE)) {
             return new NetworkHandler(thing, executor, resolver, NetworkDeviceType.TCP_SERVICE, configuration,
-                    httpClient, getBundleContext());
+                    httpClient);
         } else if (thingTypeUID.equals(HTTP_DEVICE)) {
-            return new NetworkHandler(thing, executor, resolver, NetworkDeviceType.HTTP, configuration, httpClient,
-                    getBundleContext());
+            return new NetworkHandler(thing, executor, resolver, NetworkDeviceType.HTTP, configuration, httpClient);
         } else if (thingTypeUID.equals(SPEEDTEST_DEVICE)) {
             return new SpeedTestHandler(thing);
         }

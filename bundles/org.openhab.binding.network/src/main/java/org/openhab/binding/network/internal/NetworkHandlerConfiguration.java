@@ -32,7 +32,6 @@ public class NetworkHandlerConfiguration {
     public String url = "";
     public boolean treatRedirectAsError = false;
     public boolean treatClientErrorAsError = true;
-    public boolean ignoreCertificateErrors = false;
     public Integer retry = 1;
     public Integer refreshInterval = 60000;
     public Integer timeout = 5000;

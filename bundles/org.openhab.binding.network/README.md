@@ -46,7 +46,7 @@ Please note: things discovered by the network binding will be provided with a ti
 network:pingdevice:one_device [ hostname="192.168.0.64" ]
 network:pingdevice:second_device [ hostname="192.168.0.65", macAddress="6f:70:65:6e:48:41", retry=1, timeout=5000, refreshInterval=60000, networkInterfaceNames="eth0","wlan0" ]
 network:servicedevice:important_server [ hostname="192.168.0.62", port=1234 ]
-network:httpdevice:important_webservice [ url="https://192.168.0.62/health", treatRedirectAsError=true, ignoreCertificateErrors=true ]
+network:httpdevice:important_webservice [ url="https://192.168.0.62/health", treatRedirectAsError=true ]
 network:speedtest:local "SpeedTest 50Mo" @ "Internet" [refreshInterval=20, uploadSize=1000000, url="https://bouygues.testdebit.info/", fileName="50M.iso"]
 ```
 
@@ -75,15 +75,11 @@ Use the following additional options for a **network:servicedevice**:
 Use the following options for a **network:httpdevice**:
 
 - **url:** The `http://` or `https://` URL which is requested.
-  The certificate of an `https://` URL must be trusted by the openHAB runtime unless certificate errors are ignored.
+  The certificate of an `https://` URL must be trusted by the openHAB runtime.
 - **treatRedirectAsError:** When set to true, a redirection status code (3xx) is treated as an error.
   Redirects are never followed, so the status code of the first response is evaluated. Default: `false`.
 - **treatClientErrorAsError:** When set to true, a client error status code (4xx) is treated as an error.
   Server error status codes (5xx) are always treated as an error. Default: `true`.
-- **ignoreCertificateErrors:** When set to true, certificate errors of an `https://` URL are ignored, which is needed
-  for a self-signed certificate for example.
-  Be aware that no certificate is validated for the host and port of the configured URL as long as the thing is
-  initialized, which also applies to other add-ons communicating with that host and port. Default: `false`.
 - **retry:** After how many refresh interval cycles the device will be assumed to be offline. Default: `1`.
 - **timeout:** How long the request will wait for a response, in milliseconds. Default: `5000` (5 seconds).
 - **refreshInterval:** How often the URL will be requested, in milliseconds. Default: `60000` (one minute).
