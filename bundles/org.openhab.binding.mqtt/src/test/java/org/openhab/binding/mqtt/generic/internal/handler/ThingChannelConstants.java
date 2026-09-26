@@ -43,6 +43,7 @@ public class ThingChannelConstants {
     public static final ChannelTypeUID TEXT_WITH_JSON_CHANNEL = new ChannelTypeUID(BINDING_ID,
             MqttBindingConstants.STRING);
     public static final ChannelTypeUID ON_OFF_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.SWITCH);
+    public static final ChannelTypeUID CONTACT_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.CONTACT);
     public static final ChannelTypeUID NUMBER_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.NUMBER);
     public static final ChannelTypeUID PERCENTAGE_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.DIMMER);
     public static final ChannelTypeUID IMAGE_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.IMAGE);

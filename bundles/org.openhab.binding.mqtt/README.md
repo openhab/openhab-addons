@@ -161,10 +161,10 @@ You can add the following channels:
 
 ## Channel Configuration
 
-- **stateTopic**: The MQTT topic that represents the state of the Thing. This can be empty, the Thing channel will be a state-less trigger then. You can use a wildcard topic like "sensors/+/event" to retrieve state from multiple MQTT topics.
+- **stateTopic**: The MQTT topic that represents the state of the Thing. This is required for Contact and trigger channels. Other channel types can omit it when a command topic is configured. You can use a wildcard topic like "sensors/+/event" to retrieve state from multiple MQTT topics.
 - **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to all incoming MQTT values.
 - **transformationPatternOut**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
-- **commandTopic**: The MQTT topic that commands are send to. This can be empty, the Thing channel will be read-only then. Transformations are not applied for sending data.
+- **commandTopic**: The MQTT topic that commands are sent to. If empty, the channel is read-only. Contact channels ignore this option.
 - **formatBeforePublish**: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported. Note that this format does not apply to the special on/off command values for dimmer channels, or up/down/stop command values for rollershutter channels.
 - **postCommand**: If `true`, the received MQTT value will not only update the state of linked items, but command it.
   The default is `false`.
@@ -450,7 +450,6 @@ Default pattern applied for each type:
 | **string**        | String                             | "%s"                                        |                                                                                                                        |
 | **number**        | BigDecimal                         | "%f"                                        | The default will remove trailing zeros after the decimal point.                                                        |
 | **dimmer**        | BigDecimal                         | "%f"                                        | The default will remove trailing zeros after the decimal point.                                                        |
-| **contact**       | String                             | --                                          | No pattern supported. Always **on** and **off** strings.                                                               |
 | **switch**        | String                             | --                                          | No pattern supported. Always **on** and **off** strings.                                                               |
 | **colorRGB**      | BigDecimal, BigDecimal, BigDecimal | "%1$d,%2$d,%3$d"                            | Parameters are **red**, **green** and **blue** components.                                                             |
 | **colorHSB**      | BigDecimal, BigDecimal, BigDecimal | "%1$d,%2$d,%3$d"                            | Parameters are **hue**, **saturation** and **brightness** components.                                                  |
