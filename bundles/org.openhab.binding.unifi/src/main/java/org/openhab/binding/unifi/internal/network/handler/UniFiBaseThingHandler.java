@@ -84,10 +84,9 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
     public void dispose() {
         NetworkRefreshCoordinator c = coordinator;
         if (c != null) {
-            Bridge bridge = getBridge();
-            if (bridge != null) {
-                NetworkRefreshCoordinator.detach(bridge.getUID(), this);
-            }
+            // Detach through the coordinator itself rather than a bridge lookup: when the bridge Thing is removed,
+            // its children are disposed after it has already left the Thing registry, so getBridge() returns null.
+            c.detach(this);
             coordinator = null;
         }
         super.dispose();
