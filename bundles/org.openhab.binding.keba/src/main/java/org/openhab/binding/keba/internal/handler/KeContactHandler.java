@@ -15,23 +15,28 @@ package org.openhab.binding.keba.internal.handler;
 import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
 
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.io.InterruptedIOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
 import org.openhab.core.cache.ExpiringCacheMap;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -62,6 +67,7 @@ import com.google.gson.JsonParser;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class KeContactHandler extends BaseThingHandler {
 
     public static final String IP_ADDRESS = "ipAddress";
@@ -76,20 +82,25 @@ public class KeContactHandler extends BaseThingHandler {
     private static final String CACHE_REPORT_100 = "REPORT_100";
     public static final int SOCKET_TIME_OUT_MS = 3000;
     public static final int SOCKET_CHECK_PORT_NUMBER = 80;
+    private static final int MAX_CONSECUTIVE_COMMUNICATION_FAILURES = 3;
 
     private final Logger logger = LoggerFactory.getLogger(KeContactHandler.class);
 
     private final KeContactTransceiver transceiver;
 
-    private ScheduledFuture<?> pollingJob;
-    private ExpiringCacheMap<String, ByteBuffer> cache;
+    private @Nullable ScheduledFuture<?> pollingJob;
+    private final List<ScheduledFuture<?>> reportTasks = Collections.synchronizedList(new ArrayList<>());
+    private @Nullable ExpiringCacheMap<String, ByteBuffer> cache;
 
-    private int maxPresetCurrent = 0;
-    private int maxSystemCurrent = 63000;
-    private KebaType type;
-    private KebaSeries series;
-    private int lastState = -1; // trigger a report100 at startup
-    private boolean isReport100needed = true;
+    private String ipAddress = "";
+    private int refreshInterval = POLLING_REFRESH_INTERVAL_DEFAULT;
+    private volatile int maxPresetCurrent = 0;
+    private volatile int maxSystemCurrent = 63000;
+    private @Nullable KebaType type;
+    private @Nullable KebaSeries series;
+    private volatile int lastState = -1; // trigger a report100 at startup
+    private final AtomicBoolean isReport100needed = new AtomicBoolean(true);
+    private final AtomicInteger consecutiveCommunicationFailures = new AtomicInteger();
 
     public KeContactHandler(Thing thing, KeContactTransceiver transceiver) {
         super(thing);
@@ -97,31 +108,49 @@ public class KeContactHandler extends BaseThingHandler {
     }
 
     @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        dispose();
+        initialize();
+    }
+
+    @Override
     public void initialize() {
-        try {
-            if (isKebaReachable()) {
-                transceiver.registerHandler(this);
+        KeContactConfiguration configuration = getConfigAs(KeContactConfiguration.class);
+        String configuredIpAddress = configuration.ipAddress;
+        ipAddress = configuredIpAddress != null ? configuredIpAddress : "";
+        refreshInterval = configuration.refreshInterval;
 
-                int refreshInterval = getRefreshInterval();
-                cache = new ExpiringCacheMap<>(Math.max(refreshInterval - 5, 0) * 1000);
+        // the reachability check and UDP registration involve blocking I/O, so run them in the background instead
+        // of blocking the calling thread
+        scheduler.execute(() -> {
+            try {
+                if (isKebaReachable()) {
+                    transceiver.registerHandler(this);
 
-                cache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
-                cache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
-                cache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
-                cache.put(CACHE_REPORT_100, () -> transceiver.send("report 100", getHandler()));
+                    ExpiringCacheMap<String, ByteBuffer> localCache = new ExpiringCacheMap<>(
+                            Math.max(refreshInterval - 5, 0) * 1000);
+                    cache = localCache;
 
-                if (pollingJob == null || pollingJob.isCancelled()) {
-                    pollingJob = scheduler.scheduleWithFixedDelay(this::pollingRunnable, 0, refreshInterval,
-                            TimeUnit.SECONDS);
+                    localCache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
+                    localCache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
+                    localCache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
+                    localCache.put(CACHE_REPORT_100, () -> transceiver.send("report 100", getHandler()));
+
+                    ScheduledFuture<?> localPollingJob = pollingJob;
+                    if (localPollingJob == null || localPollingJob.isCancelled()) {
+                        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingRunnable, 0, refreshInterval,
+                                TimeUnit.SECONDS);
+                    }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.config-error-address-port");
                 }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "IP address or port number not set");
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-init [\"" + e.getMessage() + "\"]");
             }
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Exception during initialization of binding: " + e.toString());
-        }
+        });
     }
 
     @Override
@@ -145,36 +174,33 @@ public class KeContactHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (pollingJob != null && !pollingJob.isCancelled()) {
-            pollingJob.cancel(true);
+        ScheduledFuture<?> localPollingJob = pollingJob;
+        if (localPollingJob != null && !localPollingJob.isCancelled()) {
+            localPollingJob.cancel(true);
             pollingJob = null;
+        }
+        synchronized (reportTasks) {
+            reportTasks.forEach(task -> task.cancel(true));
+            reportTasks.clear();
         }
 
         transceiver.unRegisterHandler(this);
     }
 
     public String getIPAddress() {
-        return getConfig().get(IP_ADDRESS) != null ? (String) getConfig().get(IP_ADDRESS) : "";
+        return ipAddress;
     }
 
     public int getRefreshInterval() {
-        return getConfig().get(POLLING_REFRESH_INTERVAL) != null
-                ? ((BigDecimal) getConfig().get(POLLING_REFRESH_INTERVAL)).intValue()
-                : POLLING_REFRESH_INTERVAL_DEFAULT;
+        return refreshInterval;
     }
 
     private KeContactHandler getHandler() {
         return this;
     }
 
-    @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, String description) {
-        super.updateStatus(status, statusDetail, description);
-    }
-
-    @Override
-    protected Configuration getConfig() {
-        return super.getConfig();
+    void updateStatusFromTransceiver(ThingStatus status, ThingStatusDetail statusDetail, String description) {
+        updateStatus(status, statusDetail, description);
     }
 
     private void pollingRunnable() {
@@ -183,60 +209,63 @@ public class KeContactHandler extends BaseThingHandler {
             long stamp = System.currentTimeMillis();
             if (!isKebaReachable()) {
                 logger.debug("isKebaReachable() timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "A timeout occurred while polling the charging station");
+                markCommunicationFailure(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-timeout");
             } else {
-                ByteBuffer response = cache.get(CACHE_REPORT_1);
-                if (response == null) {
-                    logger.debug("Missing response from Keba station for 'report 1'");
-                } else {
-                    onData(response);
+                ExpiringCacheMap<String, ByteBuffer> localCache = cache;
+                if (localCache == null) {
+                    return;
                 }
 
-                Thread.sleep(REPORT_INTERVAL);
-
-                response = cache.get(CACHE_REPORT_2);
-                if (response == null) {
-                    logger.debug("Missing response from Keba station for 'report 2'");
-                } else {
-                    onData(response);
-                }
-
-                Thread.sleep(REPORT_INTERVAL);
-
-                response = cache.get(CACHE_REPORT_3);
-                if (response == null) {
-                    logger.debug("Missing response from Keba station for 'report 3'");
-                } else {
-                    onData(response);
-                }
-
-                if (isReport100needed) {
-                    Thread.sleep(REPORT_INTERVAL);
-
-                    response = cache.get(CACHE_REPORT_100);
-                    if (response == null) {
-                        logger.debug("Missing response from Keba station for 'report 100'");
-                    } else {
-                        onData(response);
-                    }
-                    isReport100needed = false;
+                processReport(localCache, CACHE_REPORT_1);
+                scheduleReport(localCache, CACHE_REPORT_2, REPORT_INTERVAL);
+                scheduleReport(localCache, CACHE_REPORT_3, REPORT_INTERVAL * 2L);
+                if (isReport100needed.getAndSet(false)) {
+                    scheduleReport(localCache, CACHE_REPORT_100, REPORT_INTERVAL * 3L);
                 }
             }
+        } catch (InterruptedIOException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
         } catch (IOException e) {
             logger.debug("An error occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
                     e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "An error occurred while polling the charging station");
-        } catch (InterruptedException e) {
-            logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
+            markCommunicationFailure(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-polling");
+        }
+    }
+
+    private void markCommunicationFailure(ThingStatusDetail detail, String description) {
+        if (consecutiveCommunicationFailures.incrementAndGet() >= MAX_CONSECUTIVE_COMMUNICATION_FAILURES) {
+            updateStatus(ThingStatus.OFFLINE, detail, description);
+        }
+    }
+
+    private void markCommunicationSuccess() {
+        consecutiveCommunicationFailures.set(0);
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    private void scheduleReport(ExpiringCacheMap<String, ByteBuffer> localCache, String report, long delayMillis) {
+        ScheduledFuture<?> task = scheduler.schedule(() -> processReport(localCache, report), delayMillis,
+                TimeUnit.MILLISECONDS);
+        synchronized (reportTasks) {
+            reportTasks.removeIf(ScheduledFuture::isDone);
+            reportTasks.add(task);
+        }
+    }
+
+    private void processReport(ExpiringCacheMap<String, ByteBuffer> localCache, String report) {
+        ByteBuffer response = localCache.get(report);
+        if (response == null) {
+            logger.debug("Missing response from Keba station for '{}'", report);
+        } else {
+            onData(response);
         }
     }
 
     protected void onData(ByteBuffer byteBuffer) {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
+        markCommunicationSuccess();
 
         String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
         response = Objects.requireNonNull(StringUtils.chomp(response));
@@ -254,25 +283,33 @@ public class KeContactHandler extends BaseThingHandler {
                     case "Product": {
                         Map<String, String> properties = editProperties();
                         String product = entry.getValue().getAsString().trim();
-                        properties.put(CHANNEL_MODEL, product);
+                        properties.put(PROPERTY_MODEL, product);
                         updateProperties(properties);
                         if (product.contains("P20")) {
                             type = KebaType.P20;
                         } else if (product.contains("P30")) {
                             type = KebaType.P30;
                         }
-                        series = KebaSeries.getSeries(product.substring(13, 14).charAt(0));
+                        if (product.length() > 13) {
+                            try {
+                                series = KebaSeries.getSeries(product.charAt(13));
+                            } catch (IllegalArgumentException e) {
+                                logger.debug("Unknown KEBA product series in product '{}'.", product);
+                            }
+                        } else {
+                            logger.debug("KEBA product value is too short to determine its series: '{}'.", product);
+                        }
                         break;
                     }
                     case "Serial": {
                         Map<String, String> properties = editProperties();
-                        properties.put(CHANNEL_SERIAL, entry.getValue().getAsString());
+                        properties.put(PROPERTY_SERIAL, entry.getValue().getAsString());
                         updateProperties(properties);
                         break;
                     }
                     case "Firmware": {
                         Map<String, String> properties = editProperties();
-                        properties.put(CHANNEL_FIRMWARE, entry.getValue().getAsString());
+                        properties.put(PROPERTY_FIRMWARE, entry.getValue().getAsString());
                         updateProperties(properties);
                         break;
                     }
@@ -318,7 +355,7 @@ public class KeContactHandler extends BaseThingHandler {
                         updateState(CHANNEL_STATE, newState);
                         if (lastState != state) {
                             // the state is different from the last one, so we will trigger a report100
-                            isReport100needed = true;
+                            isReport100needed.set(true);
                             lastState = state;
                         }
                         break;
@@ -605,18 +642,18 @@ public class KeContactHandler extends BaseThingHandler {
         }
     }
 
-    public void setDisplay(String text, int durationMin, int durationMax) {
+    public void setDisplay(@Nullable String text, int durationMin, int durationMax) {
+        String displayText = text != null ? text : "";
         if (type == KebaType.P30 && (series == KebaSeries.C || series == KebaSeries.X)) {
-            int maxLength = (text.length() < 23) ? text.length() : 23;
+            int maxLength = (displayText.length() < 23) ? displayText.length() : 23;
             int a = 1;
-            if (durationMax < 0 || durationMax < 0) {
+            if (durationMin < 0 || durationMax < 0) {
                 a = 0;
                 durationMin = 0;
                 durationMax = 0;
             }
-            transceiver.send(
-                    "display " + a + " " + durationMin + " " + durationMax + " 0 " + text.substring(0, maxLength),
-                    this);
+            transceiver.send("display " + a + " " + durationMin + " " + durationMax + " 0 "
+                    + displayText.substring(0, maxLength), this);
         } else {
             logger.warn("'Display' is not supported on a KEBA KeContact {}:{}", type, series);
         }

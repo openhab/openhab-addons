@@ -31,6 +31,7 @@ public class KebaBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_KECONTACTP20 = new ThingTypeUID(BINDING_ID, "kecontact");
+    public static final ThingTypeUID THING_TYPE_KECONTACT_MODBUS = new ThingTypeUID(BINDING_ID, "kecontact-modbus");
 
     // List of all Channel ids
     public static final String CHANNEL_MODEL = "model";
@@ -52,6 +53,9 @@ public class KebaBindingConstants {
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_OUTPUT = "output";
     public static final String CHANNEL_SERIAL = "serial";
+    public static final String PROPERTY_MODEL = "model";
+    public static final String PROPERTY_FIRMWARE = "firmware";
+    public static final String PROPERTY_SERIAL = "serial";
     public static final String CHANNEL_UPTIME = "uptime";
     public static final String CHANNEL_I1 = "I1";
     public static final String CHANNEL_I2 = "I2";
@@ -71,6 +75,19 @@ public class KebaBindingConstants {
     public static final String CHANNEL_SESSION_SESSION_ID = "sessionid";
     public static final String CHANNEL_SETENERGY = "setenergylimit";
     public static final String CHANNEL_AUTHENTICATE = "authenticate";
+
+    // Additional channel ids used by the Modbus TCP Thing type
+    public static final String CHANNEL_CABLE_STATE = "cablestate";
+    public static final String CHANNEL_ERROR_CODE = "errorcode";
+    public static final String CHANNEL_MAX_CHARGING_CURRENT = "maxchargingcurrent";
+    public static final String CHANNEL_MAX_SUPPORTED_CURRENT = "maxsupportedcurrent";
+    public static final String CHANNEL_PHASE_SWITCH_SOURCE = "phaseswitchsource";
+    public static final String CHANNEL_PHASE_SWITCH_STATE = "phaseswitchstate";
+    public static final String CHANNEL_FAILSAFE_CURRENT_SETTING = "failsafecurrentsetting";
+    public static final String CHANNEL_FAILSAFE_TIMEOUT_SETTING = "failsafetimeoutsetting";
+    public static final String CHANNEL_SET_CHARGING_CURRENT = "setchargingcurrent";
+    public static final String CHANNEL_UNLOCK_PLUG = "unlockplug";
+    public static final String CHANNEL_TRIGGER_PHASE_SWITCH = "triggerphaseswitch";
 
     public enum KebaType {
         P20,

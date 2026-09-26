@@ -6,10 +6,34 @@ This binding integrates the [Keba KeContact EV Charging Stations](https://www.ke
 
 The Keba KeContact P20 and P30 stations which are providing the UDP interface (P20 LSA+ socket, P30 c-series and x-series or BMW wallbox) are supported by this binding, the Thing type id is `kecontact`.
 
+The Keba KeContact P30 and P40 stations which provide the Modbus TCP interface are supported by this binding as well, the Thing type id is `kecontact-modbus`. This is the only way to integrate a P40 station, since it does not support the UDP interface. Choose whichever protocol matches your station and is enabled on it; the UDP and Modbus TCP interfaces cannot be enabled on the same station at the same time.
+
 ## Thing Configuration
+
+### `kecontact` (UDP)
 
 The Keba KeContact P20/30 requires the IP address as the configuration parameter `ipAddress`.
 Optionally, a refresh interval (in seconds) can be defined as the parameter `refreshInterval` that defines the polling interval for values from the charging station.
+
+### `kecontact-modbus` (Modbus TCP)
+
+The `kecontact-modbus` Thing connects directly to the wallbox's Modbus TCP interface; it does not require a separate Modbus bridge Thing to be configured.
+The Modbus TCP interface must be enabled on the wallbox beforehand (via the KEBA eMobility App, OCPP or REST API); it cannot be used at the same time as the UDP interface.
+
+| Parameter          | Description                                                                                 | Default |
+| ------------------ | ------------------------------------------------------------------------------------------- | ------- |
+| ipAddress          | Network address of the wallbox                                                               | -       |
+| port               | TCP port of the Modbus TCP interface of the wallbox                                          | 502     |
+| unitId             | Modbus unit id (slave address) of the wallbox                                                | 255     |
+| refreshInterval    | Refresh interval in seconds for frequently changing registers                               | 12      |
+| refreshIntervalSlow| Refresh interval in seconds for registers that change infrequently                           | 60      |
+
+The Modbus interface requires at least five seconds between different write jobs. The binding queues writes
+separately at this interval while retaining a 500 ms delay between all Modbus transactions, including reads.
+The fast polling interval has a minimum of 10 seconds because the 12 frequently changing registers require at
+least 6 seconds at the configured 500 ms transaction delay; the additional margin allows for request processing.
+
+The KEBA Modbus TCP register set is smaller than what the UDP interface exposes; channels not backed by a documented register (e.g. pilot current/duty cycle, X1/X2 relay state, display text, RFID authentication) are not available on this Thing type. Registers that are only available on certain models (e.g. P30's persisted failsafe setting or P40's fast charging) are not yet supported.
 
 ## Channels
 
@@ -48,6 +72,34 @@ All devices support the following channels:
 | maxpilotcurrent         | Number:ElectricCurrent   | yes       | current offered to the vehicle via control pilot signalization          |
 | maxpilotcurrentdutycyle | Number:Dimensionless     | yes       | duty cycle of the control pilot signal                                  |
 
+The channels above belong to the `kecontact` (UDP) Thing type.
+The `kecontact-modbus` Thing type supports the following channels instead:
+
+| Channel ID              | Item Type                | Read-only | Description                                                             |
+| ----------------------- | ------------------------ | --------- | ------------------------------------------------------------------------ |
+| state                   | Number                   | yes       | current operational state of the wallbox                                |
+| cablestate              | Number                   | yes       | state of the charging cable                                             |
+| errorcode               | Number                   | yes       | error code, if in error                                                 |
+| I1/2/3                  | Number:ElectricCurrent   | yes       | current for the given phase                                             |
+| U1/2/3                  | Number:ElectricPotential | yes       | voltage for the given phase                                             |
+| serial                  | String                   | yes       | serial number of the wallbox                                            |
+| power                   | Number:Power             | yes       | active power delivered by the charging station                         |
+| powerfactor             | Number:Dimensionless     | yes       | power factor (cosphi)                                                   |
+| totalconsumption        | Number:Energy            | yes       | total energy delivered since the last reset of the wallbox              |
+| sessionconsumption      | Number:Energy            | yes       | energy delivered in current session                                     |
+| maxchargingcurrent      | Number:ElectricCurrent   | yes       | maximum charging current currently offered to the vehicle               |
+| maxsupportedcurrent     | Number:ElectricCurrent   | yes       | maximum current the wallbox hardware can support                        |
+| sessionrfidtag          | String                   | yes       | RFID tag used for the last charging session (needs to be enabled on the wallbox) |
+| phaseswitchsource       | Number                   | no        | source that is allowed to control the phase switching                   |
+| phaseswitchstate        | Number                   | yes       | number of phases currently used (1 or 3)                                 |
+| failsafecurrentsetting  | Number:ElectricCurrent   | no        | charging current to fall back to if the connection is lost              |
+| failsafetimeoutsetting  | Number:Time              | no        | timeout after which the failsafe current is applied                     |
+| setchargingcurrent      | Number:ElectricCurrent   | no        | sets the charging current the wallbox should offer to the vehicle       |
+| setenergylimit          | Number:Energy            | no        | set an energy limit for an already running or the next charging session |
+| unlockplug              | Switch                   | no        | send ON to unlock the plug (charging session must be stopped beforehand) |
+| enableduser             | Switch                   | no        | enable or disable the wallbox                                          |
+| triggerphaseswitch      | Number                   | no        | triggers the phase switch (0 = 1 phase, 1 = 3 phases)                    |
+
 ## Rule Actions
 
 Certain Keba models support setting the text on the built-in display.
@@ -78,6 +130,7 @@ demo.Things:
 
 ```java
 Thing keba:kecontact:1 [ipAddress="192.168.0.64", refreshInterval=30]
+Thing keba:kecontact-modbus:1 [ipAddress="192.168.0.65", refreshInterval=12, refreshIntervalSlow=60]
 ```
 
 demo.items:
@@ -106,6 +159,16 @@ Number:Energy             KebaTotalEnergy       "Energy during all sessions [%.1
 Switch                    KebaInputSwitch                                                 {channel="keba:kecontact:1:input"}
 Switch                    KebaOutputSwitch                                                {channel="keba:kecontact:1:output"}
 Number:Energy             KebaSetEnergyLimit    "Set charge energy limit [%.1f Wh]"       {channel="keba:kecontact:1:setenergylimit"}
+
+Number                    KebaModbusState       "Operating State [%s]"                    {channel="keba:kecontact-modbus:1:state"}
+Number:ElectricCurrent    KebaModbusI1                                                    {channel="keba:kecontact-modbus:1:I1"}
+Number:ElectricCurrent    KebaModbusI2                                                    {channel="keba:kecontact-modbus:1:I2"}
+Number:ElectricCurrent    KebaModbusI3                                                    {channel="keba:kecontact-modbus:1:I3"}
+Number:Power              KebaModbusPower       "Active power [%.3f W]"                   {channel="keba:kecontact-modbus:1:power"}
+Number:Energy             KebaModbusSessionEnergy                                        {channel="keba:kecontact-modbus:1:sessionconsumption"}
+Number:Energy             KebaModbusTotalEnergy "Energy during all sessions [%.1f Wh]"    {channel="keba:kecontact-modbus:1:totalconsumption"}
+Number:ElectricCurrent    KebaModbusSetCurrent  "Set charging current [%.3f A]"           {channel="keba:kecontact-modbus:1:setchargingcurrent"}
+Switch                    KebaModbusEnabled     "Wallbox enabled"                         {channel="keba:kecontact-modbus:1:enableduser"}
 ```
 
 demo.sitemap:
@@ -142,9 +205,20 @@ Enable `DEBUG` or `TRACE` (even more verbose) logging for the logger named:
 org.openhab.binding.keba
 ```
 
-If everything is working fine, you see the cyclic reception of `report 1`, `2` & `3` from the station. The frequency is according to the `refreshInterval` configuration.
+For Modbus TCP request and response diagnostics, also enable `DEBUG` or `TRACE` logging for the core Modbus
+transport logger:
 
-### UDP Ports used
+```text
+org.openhab.core.io.transport.modbus
+```
+
+For the `kecontact` (UDP) Thing type, if everything is working fine, you see the cyclic reception of `report 1`, `2` & `3` from the station. The frequency is according to the `refreshInterval` configuration.
+
+For the `kecontact-modbus` Thing type there is no equivalent `report` message; with the core Modbus logger enabled,
+you see the individual Modbus read/write requests and their responses (or, on failure, read/write errors), one
+register at a time, at the configured fast or slow refresh interval.
+
+### UDP Ports used (`kecontact` Thing type only)
 
 ```text
 Send port = UDP 7090
@@ -171,10 +245,24 @@ The right configuration can be validated as follows:
 - UDP response of `report 1`:
   - `DIP-Sw1` `0x20` Bit is set (enable at least `DEBUG` log-level for the binding)
 
+### Modbus TCP Port used (`kecontact-modbus` Thing type only)
+
+The default Modbus TCP port is `502` (configurable via the `port` parameter); the default Unit ID is `255` (configurable via the `unitId` parameter).
+Unlike the UDP interface, the Modbus TCP interface is disabled by default and must be enabled explicitly:
+
+- On the KeContact P30, set `DIP switch 1.3` to `ON` (the same DIP switch used for the UDP interface, since only one of the two network interfaces can be active at a time), then select the Modbus TCP protocol via the WebGUI or Installation Manual instructions.
+- On the KeContact P40, there are no DIP switches; enable the Modbus TCP interface and configure its port/Unit ID via the KEBA eMobility App, OCPP or REST API.
+
+After enabling or changing the interface, power-cycle the station; a WebGUI/App SW-reset alone may not be sufficient to apply the new configuration.
+
 ### Supported stations
 
 - KeContact P20 charging station with network connection (LSA+ socket)
   - Product code: `KC-P20-xxxxxx2x-xxx` or `KC-P20-xxxxxx3x-xxx`
   - Firmware version: 2.5 or higher
+  - UDP interface only
 - KeContact P30 charging station (c- or x-series) or BMW wallbox
-  - Firmware version 3.05 or higher
+  - UDP interface: firmware version 3.9.24 or higher
+  - Modbus TCP interface: firmware version 3.10.16 (c-series) or 1.11 (x-series) or higher
+- KeContact P40 / P40 Pro charging station
+  - Modbus TCP interface only; the UDP interface is not supported
