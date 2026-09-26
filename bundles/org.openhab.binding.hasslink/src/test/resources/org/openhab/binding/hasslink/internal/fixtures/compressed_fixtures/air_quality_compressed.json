@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "air_quality.demo_air_quality_home": {
+        "s": "14",
+        "a": {
+          "nitrogen_oxide": 100,
+          "particulate_matter_10": 23,
+          "particulate_matter_2_5": 14,
+          "unit_of_measurement": "\u03bcg/m\u00b3",
+          "attribution": "Powered by Home Assistant",
+          "friendly_name": "Demo Air Quality Home"
+        },
+        "c": "01M3201RFYV218RK02QDHATKS5",
+        "lc": 1789994787.3264189
+      }
+    }
+  }
+}

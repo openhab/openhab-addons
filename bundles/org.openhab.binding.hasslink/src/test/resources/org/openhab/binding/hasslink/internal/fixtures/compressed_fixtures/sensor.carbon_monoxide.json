@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.carbon_monoxide": {
+        "s": "54",
+        "a": {
+          "state_class": "measurement",
+          "unit_of_measurement": "ppm",
+          "device_class": "carbon_monoxide",
+          "friendly_name": "Carbon monoxide"
+        },
+        "c": "01M3201RGK4M0YA95D9G7440SB",
+        "lc": 1789994787.347092
+      }
+    }
+  }
+}

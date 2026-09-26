@@ -1,0 +1,27 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "weather.demo_weather_south": {
+        "s": "sunny",
+        "a": {
+          "temperature": 21.6,
+          "temperature_unit": "\u00b0C",
+          "humidity": 92,
+          "pressure": 1099.0,
+          "pressure_unit": "hPa",
+          "wind_speed": 1.8,
+          "wind_speed_unit": "km/h",
+          "visibility_unit": "km",
+          "precipitation_unit": "mm",
+          "attribution": "Powered by Home Assistant",
+          "friendly_name": "Demo Weather South",
+          "supported_features": 1
+        },
+        "c": "01M3201RH2FSGXJBV1812WGF2S",
+        "lc": 1789994787.362758
+      }
+    }
+  }
+}

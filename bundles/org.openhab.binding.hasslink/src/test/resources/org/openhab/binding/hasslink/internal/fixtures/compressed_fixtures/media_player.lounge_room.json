@@ -1,0 +1,40 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "media_player.lounge_room": {
+        "s": "playing",
+        "a": {
+          "source_list": [
+            "dvd",
+            "youtube"
+          ],
+          "sound_mode_list": [
+            "Music",
+            "Movie"
+          ],
+          "volume_level": 1.0,
+          "is_volume_muted": false,
+          "media_content_id": "house-of-cards-1",
+          "media_content_type": "tvshow",
+          "media_duration": 3600,
+          "media_title": "Chapter 1",
+          "media_series_title": "House of Cards",
+          "media_season": "1",
+          "media_episode": "1",
+          "app_name": "Netflix",
+          "source": "dvd",
+          "sound_mode": "Music",
+          "shuffle": false,
+          "device_class": "tv",
+          "entity_picture": "/api/media_player_proxy/media_player.lounge_room?token=5a65694e19b35d22aad0ebbb974c87474b976aafd9a512924c972bac4efa521a&cache=cb9d84451faf9351",
+          "friendly_name": "Lounge room",
+          "supported_features": 121265
+        },
+        "c": "01M3201RGDMQGGB8R0BZKVQB17",
+        "lc": 1789994787.3410127
+      }
+    }
+  }
+}

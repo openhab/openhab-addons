@@ -1,0 +1,22 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "number.temperature_setting": {
+        "s": "22",
+        "a": {
+          "min": 15.0,
+          "max": 35.0,
+          "step": 1,
+          "mode": "box",
+          "unit_of_measurement": "\u00b0C",
+          "device_class": "temperature",
+          "friendly_name": "Temperature setting"
+        },
+        "c": "01M3201RGG929C2J4KHKNJB4D1",
+        "lc": 1789994787.344373
+      }
+    }
+  }
+}

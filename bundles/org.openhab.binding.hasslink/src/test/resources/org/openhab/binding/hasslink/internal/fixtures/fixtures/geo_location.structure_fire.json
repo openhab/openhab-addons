@@ -1,0 +1,38 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "geo_location.structure_fire",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "geo_location.structure_fire",
+        "state": "14.3",
+        "attributes": {
+          "source": "demo",
+          "latitude": 52.45227,
+          "longitude": 4.72343,
+          "unit_of_measurement": "km",
+          "icon": "mdi:wall-fire",
+          "friendly_name": "Structure Fire"
+        },
+        "last_changed": "2026-09-22T05:40:28.800117+00:00",
+        "last_reported": "2026-09-22T05:40:28.800117+00:00",
+        "last_updated": "2026-09-22T05:40:28.800117+00:00",
+        "context": {
+          "id": "01M33T2G00ZHV1DHFPNBCNAF16",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

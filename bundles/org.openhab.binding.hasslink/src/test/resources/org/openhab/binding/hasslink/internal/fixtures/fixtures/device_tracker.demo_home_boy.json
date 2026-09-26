@@ -1,0 +1,38 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "device_tracker.demo_home_boy",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "device_tracker.demo_home_boy",
+        "state": "not_home",
+        "attributes": {
+          "source_type": "gps",
+          "latitude": 32.87334,
+          "longitude": 117.22745,
+          "gps_accuracy": 20,
+          "battery": 53,
+          "friendly_name": "Home Boy"
+        },
+        "last_changed": "2026-09-21T12:46:27.291121+00:00",
+        "last_reported": "2026-09-21T12:46:27.291121+00:00",
+        "last_updated": "2026-09-21T12:46:27.291121+00:00",
+        "context": {
+          "id": "01M3201REVD3KRW35ABGMZE5HC",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

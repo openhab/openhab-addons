@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.carbon_dioxide": {
+        "s": "54",
+        "a": {
+          "state_class": "measurement",
+          "unit_of_measurement": "ppm",
+          "device_class": "carbon_dioxide",
+          "friendly_name": "Carbon dioxide"
+        },
+        "c": "01M3201RGKB6J443RHQAG9B41Z",
+        "lc": 1789994787.3473768
+      }
+    }
+  }
+}

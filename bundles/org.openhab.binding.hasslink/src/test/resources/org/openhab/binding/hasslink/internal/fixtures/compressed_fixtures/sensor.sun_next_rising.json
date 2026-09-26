@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.sun_next_rising": {
+        "s": "2026-09-22T05:26:32+00:00",
+        "a": {
+          "device_class": "timestamp",
+          "friendly_name": "Sun Next rising"
+        },
+        "c": "01M3202YVSFYDBP60S27DMH8MG",
+        "lc": 1789994826.6175544
+      }
+    }
+  }
+}

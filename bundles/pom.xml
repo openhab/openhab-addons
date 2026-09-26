@@ -200,6 +200,7 @@
     <module>org.openhab.binding.guntamatic</module>
     <module>org.openhab.binding.haassohnpelletstove</module>
     <module>org.openhab.binding.harmonyhub</module>
+    <module>org.openhab.binding.hasslink</module>
     <module>org.openhab.binding.haywardomnilogic</module>
     <module>org.openhab.binding.hccrubbishcollection</module>
     <module>org.openhab.binding.hdanywhere</module>

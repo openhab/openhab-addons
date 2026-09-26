@@ -1,0 +1,33 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "media_player.bedroom": {
+        "s": "playing",
+        "a": {
+          "sound_mode_list": [
+            "Music",
+            "Movie"
+          ],
+          "volume_level": 1.0,
+          "is_volume_muted": false,
+          "media_content_id": "kxopViU98Xo",
+          "media_content_type": "movie",
+          "media_duration": 360000,
+          "media_position": 54000,
+          "media_position_updated_at": "2026-09-21T12:46:27.339937+00:00",
+          "media_title": "Epic sax guy 10 hours",
+          "app_name": "YouTube",
+          "sound_mode": "Music",
+          "shuffle": false,
+          "entity_picture": "/api/media_player_proxy/media_player.bedroom?token=6b77718d735e6b14b3b0139e7ba25afea6cd271c4b6ac6850f2b1ea9ce9a593b&cache=e4513ed94ec89151",
+          "friendly_name": "Bedroom",
+          "supported_features": 119695
+        },
+        "c": "01M3201RGCQD2PKRXVBA5RJ1J6",
+        "lc": 1789994787.3405125
+      }
+    }
+  }
+}

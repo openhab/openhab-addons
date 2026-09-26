@@ -1,0 +1,37 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "number.volume",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "number.volume",
+        "state": "42.0",
+        "attributes": {
+          "min": 0.0,
+          "max": 100.0,
+          "step": 1.0,
+          "mode": "slider",
+          "friendly_name": "volume"
+        },
+        "last_changed": "2026-09-21T12:46:27.343088+00:00",
+        "last_reported": "2026-09-21T12:46:27.373425+00:00",
+        "last_updated": "2026-09-21T12:46:27.343088+00:00",
+        "context": {
+          "id": "01M3201RGF6MRRN2W0QX914JWB",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

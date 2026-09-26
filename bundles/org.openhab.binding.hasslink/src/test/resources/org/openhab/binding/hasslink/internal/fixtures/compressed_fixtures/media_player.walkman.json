@@ -1,0 +1,35 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "media_player.walkman": {
+        "s": "playing",
+        "a": {
+          "sound_mode_list": [
+            "Music",
+            "Movie"
+          ],
+          "group_members": [],
+          "volume_level": 1.0,
+          "is_volume_muted": false,
+          "media_content_id": "bounzz-1",
+          "media_content_type": "music",
+          "media_duration": 213,
+          "media_title": "I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)",
+          "media_artist": "Technohead",
+          "media_album_name": "Bounzz",
+          "media_track": 1,
+          "sound_mode": "Music",
+          "shuffle": false,
+          "repeat": "off",
+          "entity_picture": "/api/media_player_proxy/media_player.walkman?token=0170421c83c349e6989e0a949ecd87725d9e14319b59e863ea566eebdc7dcb90&cache=62c0c516acbc53a9",
+          "friendly_name": "Walkman",
+          "supported_features": 914877
+        },
+        "c": "01M3201RGCZWXM4D7A97357Z58",
+        "lc": 1789994787.340686
+      }
+    }
+  }
+}

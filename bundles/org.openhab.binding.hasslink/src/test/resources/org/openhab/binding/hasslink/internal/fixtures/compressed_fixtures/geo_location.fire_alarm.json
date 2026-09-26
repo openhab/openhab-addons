@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "geo_location.fire_alarm": {
+        "s": "27.6",
+        "a": {
+          "source": "demo",
+          "latitude": 52.56568,
+          "longitude": 4.63216,
+          "unit_of_measurement": "km",
+          "icon": "mdi:fire-truck",
+          "friendly_name": "Fire Alarm"
+        },
+        "c": "01M320AXDW49R031H6NAS253Q8",
+        "lc": 1789995087.2927635
+      }
+    }
+  }
+}

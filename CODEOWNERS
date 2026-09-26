@@ -170,6 +170,7 @@
 /bundles/org.openhab.binding.heos/ @Wire82
 /bundles/org.openhab.binding.herzborg/ @Sonic-Amiga
 /bundles/org.openhab.binding.homeassistant/ @ccutrer
+/bundles/org.openhab.binding.hasslink/ @jimtng
 /bundles/org.openhab.binding.homeconnect/ @bruestel
 /bundles/org.openhab.binding.homeconnectdirect/ @bruestel
 /bundles/org.openhab.binding.homekit/ @andrewfg

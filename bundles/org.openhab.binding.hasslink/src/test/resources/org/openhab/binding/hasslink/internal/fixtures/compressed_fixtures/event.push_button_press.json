@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "event.push_button_press": {
+        "s": "unknown",
+        "a": {
+          "event_types": [
+            "pressed"
+          ],
+          "event_type": null,
+          "device_class": "button",
+          "friendly_name": "Push Button press"
+        },
+        "c": "01M3201RG73Q4NAAGWF6CVQ8A3",
+        "lc": 1789994787.3350542
+      }
+    }
+  }
+}

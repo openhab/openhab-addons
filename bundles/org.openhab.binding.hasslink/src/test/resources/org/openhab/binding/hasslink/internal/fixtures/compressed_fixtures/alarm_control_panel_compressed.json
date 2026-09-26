@@ -1,0 +1,22 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "alarm_control_panel.security": {
+        "s": "disarmed",
+        "a": {
+          "code_format": "number",
+          "changed_by": null,
+          "code_arm_required": true,
+          "previous_state": null,
+          "next_state": null,
+          "friendly_name": "Security",
+          "supported_features": 63
+        },
+        "c": "01M3201RFZ94ANN6KFG9DA7BSK",
+        "lc": 1789994787.3273447
+      }
+    }
+  }
+}

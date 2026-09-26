@@ -1,0 +1,43 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "media_player.group",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "media_player.group",
+        "state": "playing",
+        "attributes": {
+          "sound_mode_list": [
+            "Music",
+            "Movie"
+          ],
+          "group_members": null,
+          "volume_level": 1.0,
+          "is_volume_muted": false,
+          "sound_mode": "Music",
+          "shuffle": false,
+          "friendly_name": "Group",
+          "supported_features": 643983
+        },
+        "last_changed": "2026-09-21T12:46:27.341304+00:00",
+        "last_reported": "2026-09-21T12:46:27.341304+00:00",
+        "last_updated": "2026-09-21T12:46:27.341304+00:00",
+        "context": {
+          "id": "01M3201RGDHGMYCGMG2A6AZ4DA",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}
