@@ -1365,7 +1365,7 @@
 				"piid": 4,
 				"friendlyName": "Sweep - Cloth State",
 				"channel": "cloth_state",
-				"type": "Contact",
+				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
 				},
@@ -2297,7 +2297,7 @@
 				"piid": 1,
 				"friendlyName": "Disturb - Dnd Enable",
 				"channel": "dnd_enable",
-				"type": "Contact",
+				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
 				},

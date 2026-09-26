@@ -1418,7 +1418,7 @@
 				"piid": 4,
 				"friendlyName": "Sweep - Cloth State",
 				"channel": "cloth_state",
-				"type": "Contact",
+				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
 				},
@@ -1919,7 +1919,7 @@
 				"piid": 55,
 				"friendlyName": "Sweep - Map Encrypt",
 				"channel": "map_encrypt",
-				"type": "Contact",
+				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
 				},
@@ -2385,7 +2385,7 @@
 				"piid": 19,
 				"friendlyName": "Map - Has New Map",
 				"channel": "has_new_map",
-				"type": "Contact",
+				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
 				},
@@ -2398,7 +2398,7 @@
 				"piid": 1,
 				"friendlyName": "Disturb - Dnd Enable",
 				"channel": "dnd_enable",
-				"type": "Contact",
+				"type": "Switch",
 				"stateDescription": {
 					"readOnly": true
 				},
