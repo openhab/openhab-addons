@@ -389,6 +389,18 @@ public class TeslaChannelSelectorProxy {
         },
         FAST_CHARGER_TYPE("fast_charger_type", "fastchargertype", StringType.class, true),
         FAST_CHARGER_BRAND("fast_charger_brand", "fastchargerbrand", StringType.class, true),
+        FD_WINDOW("fd_window", "driverfrontwindow", OpenClosedType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                return windowState(s);
+            }
+        },
+        FP_WINDOW("fp_window", "passengerfrontwindow", OpenClosedType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                return windowState(s);
+            }
+        },
         FLASH(null, "flashlights", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -560,6 +572,12 @@ public class TeslaChannelSelectorProxy {
             }
         },
         MANAGED_CHARGING_START("managed_charging_start_time", "managedchargingstart", StringType.class, false),
+        MINUTES_TO_FULL_CHARGE("minutes_to_full_charge", "minutestofullcharge", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                return new QuantityType<>(new BigDecimal(s), Units.MINUTE);
+            }
+        },
         MOBILE_ENABLED("mobile_enabled", "mobileenabled", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -758,6 +776,12 @@ public class TeslaChannelSelectorProxy {
                 }
             }
         },
+        RD_WINDOW("rd_window", "driverrearwindow", OpenClosedType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                return windowState(s);
+            }
+        },
         REAR_DEFROSTER("is_rear_defroster_on", "reardefroster", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -844,6 +868,12 @@ public class TeslaChannelSelectorProxy {
         },
         RIGHT_TEMP_DIR("right_temp_direction", "righttempdirection", DecimalType.class, false),
         ROOF_COLOR("roof_color", "roof", StringType.class, true),
+        RP_WINDOW("rp_window", "passengerrearwindow", OpenClosedType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                return windowState(s);
+            }
+        },
         RT("rt", "reartrunk", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -996,6 +1026,32 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(dateFormatter.format(date));
             }
         },
+        TPMS_PRESSURE_FL("tpms_pressure_fl", "tirepressurefrontleft", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                return new QuantityType<>(new BigDecimal(s), Units.BAR);
+            }
+        },
+        TPMS_PRESSURE_FR("tpms_pressure_fr", "tirepressurefrontright", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                return new QuantityType<>(new BigDecimal(s), Units.BAR);
+            }
+        },
+        TPMS_PRESSURE_RL("tpms_pressure_rl", "tirepressurerearleft", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                return new QuantityType<>(new BigDecimal(s), Units.BAR);
+            }
+        },
+        TPMS_PRESSURE_RR("tpms_pressure_rr", "tirepressurerearright", DecimalType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                return new QuantityType<>(new BigDecimal(s), Units.BAR);
+            }
+        },
+        // updated by the vehicle handler from the warnings of all tires
+        TIRE_PRESSURE_WARNING(null, "tirepressurewarning", OnOffType.class, false),
         TRIP_CARGING("trip_charging", "tripcharging", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -1010,6 +1066,18 @@ public class TeslaChannelSelectorProxy {
         },
         USABLE_BATTERY_LEVEL("usable_battery_level", "usablebatterylevel", DecimalType.class, false),
         USER_CHARGE_ENABLE_REQUEST("user_charge_enable_request", "userchargeenablerequest", StringType.class, false),
+        USER_PRESENT("is_user_present", "userpresent", OnOffType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                if ("true".equals(s) || "1".equals(s)) {
+                    return super.getState("ON");
+                }
+                if ("false".equals(s) || "0".equals(s)) {
+                    return super.getState("OFF");
+                }
+                return super.getState(s);
+            }
+        },
         VEHICLE_NAME("vehicle_name", "name", StringType.class, true) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
@@ -1147,6 +1215,15 @@ public class TeslaChannelSelectorProxy {
     public String nativeLongitude = "0";
     public String arLatitude = "0";
     public String arLongitude = "0";
+
+    // The vehicle reports 0 for a closed window and a positive value if the window is vented or open
+    static State windowState(String value) {
+        try {
+            return Integer.parseInt(value) == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        } catch (NumberFormatException e) {
+            return UnDefType.UNDEF;
+        }
+    }
 
     public State getState(String s, TeslaChannelSelector selector, Map<String, String> properties) {
         return selector.getState(s, this, properties);

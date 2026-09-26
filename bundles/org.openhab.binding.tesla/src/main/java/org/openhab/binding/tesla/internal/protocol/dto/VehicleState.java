@@ -89,6 +89,40 @@ public class VehicleState {
     @SerializedName("software_update")
     public SoftwareUpdate softwareUpdate;
 
+    // Not reported by every vehicle; null values are left out when the channels are updated
+    @SerializedName("fd_window")
+    public Integer fdWindow;
+    @SerializedName("fp_window")
+    public Integer fpWindow;
+    @SerializedName("rd_window")
+    public Integer rdWindow;
+    @SerializedName("rp_window")
+    public Integer rpWindow;
+    @SerializedName("tpms_pressure_fl")
+    public Double tpmsPressureFl;
+    @SerializedName("tpms_pressure_fr")
+    public Double tpmsPressureFr;
+    @SerializedName("tpms_pressure_rl")
+    public Double tpmsPressureRl;
+    @SerializedName("tpms_pressure_rr")
+    public Double tpmsPressureRr;
+    @SerializedName("tpms_hard_warning_fl")
+    public Boolean tpmsHardWarningFl;
+    @SerializedName("tpms_hard_warning_fr")
+    public Boolean tpmsHardWarningFr;
+    @SerializedName("tpms_hard_warning_rl")
+    public Boolean tpmsHardWarningRl;
+    @SerializedName("tpms_hard_warning_rr")
+    public Boolean tpmsHardWarningRr;
+    @SerializedName("tpms_soft_warning_fl")
+    public Boolean tpmsSoftWarningFl;
+    @SerializedName("tpms_soft_warning_fr")
+    public Boolean tpmsSoftWarningFr;
+    @SerializedName("tpms_soft_warning_rl")
+    public Boolean tpmsSoftWarningRl;
+    @SerializedName("tpms_soft_warning_rr")
+    public Boolean tpmsSoftWarningRr;
+
     VehicleState() {
     }
 }

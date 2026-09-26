@@ -967,6 +967,11 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                     updateState(CHANNEL_COMBINED_TEMP,
                             new QuantityType<>(combinedTemperature(climateState), SIUnits.CELSIUS));
 
+                    OnOffType tirePressureWarning = tirePressureWarning(vehicleState);
+                    if (tirePressureWarning != null) {
+                        updateState(CHANNEL_TIRE_PRESSURE_WARNING, tirePressureWarning);
+                    }
+
                     SoftwareUpdate softwareUpdate = this.softwareUpdate = vehicleState.softwareUpdate;
 
                     try {
@@ -1073,6 +1078,25 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     static BigDecimal combinedTemperature(ClimateState climateState) {
         return roundBigDecimal(
                 new BigDecimal((climateState.driverTempSetting + climateState.passengerTempSetting) / 2.0f));
+    }
+
+    /**
+     * Combines the soft and hard pressure warnings of all tires. Returns null if the vehicle reports none of them.
+     */
+    static @Nullable OnOffType tirePressureWarning(VehicleState vehicleState) {
+        Boolean[] warnings = { vehicleState.tpmsSoftWarningFl, vehicleState.tpmsSoftWarningFr,
+                vehicleState.tpmsSoftWarningRl, vehicleState.tpmsSoftWarningRr, vehicleState.tpmsHardWarningFl,
+                vehicleState.tpmsHardWarningFr, vehicleState.tpmsHardWarningRl, vehicleState.tpmsHardWarningRr };
+        boolean reported = false;
+        for (Boolean warning : warnings) {
+            if (warning != null) {
+                if (warning) {
+                    return OnOffType.ON;
+                }
+                reported = true;
+            }
+        }
+        return reported ? OnOffType.OFF : null;
     }
 
     protected static BigDecimal roundBigDecimal(BigDecimal value) {

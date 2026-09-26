@@ -59,6 +59,17 @@
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="minutestofullcharge" advanced="true">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Minutes To Full Charge</label>
+		<description>Number of minutes to fully charge the battery</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="trafficminutesdelay">
 		<item-type>Number:Time</item-type>
 		<label>Traffic Delay</label>
@@ -327,6 +338,16 @@
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="driverfrontwindow" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Driver Front Window</label>
+		<description>Indicates if the front window at the driver's side is open</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="doorlock">
 		<item-type>Switch</item-type>
 		<label>Door Lock</label>
@@ -340,6 +361,16 @@
 		<item-type>Contact</item-type>
 		<label>Driver Rear Door</label>
 		<description>Indicates if the rear door at the driver's side is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="driverrearwindow" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Driver Rear Window</label>
+		<description>Indicates if the rear window at the driver's side is open</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
@@ -578,10 +609,30 @@
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="passengerfrontwindow" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Passenger Front Window</label>
+		<description>Indicates if the front window at the passenger's side is open</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="passengerreardoor" advanced="true">
 		<item-type>Contact</item-type>
 		<label>Passenger Rear Door</label>
 		<description>Indicates if the rear door at the passenger's side is opened</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="passengerrearwindow" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Passenger Rear Window</label>
+		<description>Indicates if the rear window at the passenger's side is open</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
@@ -771,6 +822,55 @@
 		<description>Number of hours to fully charge the battery</description>
 		<state pattern="%.1f h" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="tirepressurefrontleft" advanced="true">
+		<item-type unitHint="bar">Number:Pressure</item-type>
+		<label>Tire Pressure Front Left</label>
+		<description>Pressure of the front left tire</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="tirepressurefrontright" advanced="true">
+		<item-type unitHint="bar">Number:Pressure</item-type>
+		<label>Tire Pressure Front Right</label>
+		<description>Pressure of the front right tire</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="tirepressurerearleft" advanced="true">
+		<item-type unitHint="bar">Number:Pressure</item-type>
+		<label>Tire Pressure Rear Left</label>
+		<description>Pressure of the rear left tire</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="tirepressurerearright" advanced="true">
+		<item-type unitHint="bar">Number:Pressure</item-type>
+		<label>Tire Pressure Rear Right</label>
+		<description>Pressure of the rear right tire</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="tirepressurewarning" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Tire Pressure Warning</label>
+		<description>Indicates if the vehicle reports a pressure warning for any tire</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="tripcharging" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Trip Charging</label>
@@ -787,6 +887,16 @@
 		<item-type>String</item-type>
 		<label>User Charge Enable Request</label>
 		<description>Not documented / To be defined</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="userpresent" advanced="true">
+		<item-type>Switch</item-type>
+		<label>User Present</label>
+		<description>Indicates if a person is present in the vehicle</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="valetmode" advanced="true">
