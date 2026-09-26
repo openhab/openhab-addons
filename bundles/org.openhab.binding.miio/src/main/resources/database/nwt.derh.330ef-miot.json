@@ -1,0 +1,440 @@
+{
+	"deviceMapping": {
+		"id": [
+			"nwt.derh.330ef"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Dehumidifier - Power",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Dehumidifier - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Dehumidifier - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Auto"
+						},
+						{
+							"value": "2",
+							"label": "Smart"
+						},
+						{
+							"value": "3",
+							"label": "Clothes Drying"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Auto\",\"2\"\u003d\"Smart\",\"3\"\u003d\"Clothes Drying\"]`"
+			},
+			{
+				"property": "target-humidity",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Dehumidifier - Target Humidity",
+				"channel": "target_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "30",
+							"label": "30%"
+						},
+						{
+							"value": "40",
+							"label": "40%"
+						},
+						{
+							"value": "50",
+							"label": "50%"
+						},
+						{
+							"value": "60",
+							"label": "60%"
+						},
+						{
+							"value": "70",
+							"label": "70%"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "humidity",
+				"tags": [
+					"Setpoint",
+					"Humidity"
+				],
+				"readmeComment": "Value mapping `[\"30\"\u003d\"30%\",\"40\"\u003d\"40%\",\"50\"\u003d\"50%\",\"60\"\u003d\"60%\",\"70\"\u003d\"70%\"]`"
+			},
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Environment - Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "humidity",
+				"tags": [
+					"Measurement",
+					"Humidity"
+				]
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Environment - Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -30,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Alarm - Beep Sound",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "on1",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Indicator Light - Power",
+				"channel": "on1",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Switch",
+					"Light"
+				]
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Child Lock",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"category": "lock",
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "coil-temp",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Status - Coil Temperature",
+				"channel": "coil_temp",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -30,
+					"maximum": 200,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "temperature",
+				"tags": [
+					"Measurement",
+					"Temperature"
+				]
+			},
+			{
+				"property": "compressor-status",
+				"siid": 7,
+				"piid": 2,
+				"friendlyName": "Status - Compressor",
+				"channel": "compressor_status",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "water-tank-status",
+				"siid": 7,
+				"piid": 3,
+				"friendlyName": "Status - Water Tank",
+				"channel": "water_tank_status",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "water",
+				"tags": [
+					"Status",
+					"Water"
+				]
+			},
+			{
+				"property": "defrost-status",
+				"siid": 7,
+				"piid": 4,
+				"friendlyName": "Status - Defrosting",
+				"channel": "defrost_status",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "fall-down-status",
+				"siid": 7,
+				"piid": 5,
+				"friendlyName": "Status - Fallen Over",
+				"channel": "fall_down_status",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Alarm"
+				]
+			},
+			{
+				"property": "pump",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Pump - Power",
+				"channel": "pump",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Power"
+				]
+			},
+			{
+				"property": "pump-pipe-installed",
+				"siid": 8,
+				"piid": 2,
+				"friendlyName": "Pump - Pump Pipe Installed",
+				"channel": "pump_pipe_installed",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "timer",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Timer - Remaining Time",
+				"channel": "timer",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "timer-setting",
+				"siid": 9,
+				"piid": 2,
+				"friendlyName": "Timer - Timer Setting",
+				"channel": "timer_setting",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "1 Hour"
+						},
+						{
+							"value": "2",
+							"label": "2 Hours"
+						},
+						{
+							"value": "4",
+							"label": "4 Hours"
+						},
+						{
+							"value": "8",
+							"label": "8 Hours"
+						},
+						{
+							"value": "12",
+							"label": "12 Hours"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Control",
+					"Duration"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"1 Hour\",\"2\"\u003d\"2 Hours\",\"4\"\u003d\"4 Hours\",\"8\"\u003d\"8 Hours\",\"12\"\u003d\"12 Hours\"]`"
+			}
+		],
+		"readmeComment": "Reported to work only when the thing is configured to communicate via the cloud.",
+		"experimental": false
+	}
+}
