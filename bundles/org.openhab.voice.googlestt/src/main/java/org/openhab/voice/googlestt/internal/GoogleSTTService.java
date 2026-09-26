@@ -117,6 +117,9 @@ public class GoogleSTTService implements STTService {
     protected void modified(Map<String, Object> config) {
         this.config = new Configuration(config).as(GoogleSTTConfiguration.class);
         updateConfig();
+        if (this.config.clientId.isBlank() && this.config.clientSecret.isBlank()) {
+            oAuthFactory.deleteServiceAndAccessToken(SERVICE_PID);
+        }
     }
 
     @Deactivate
