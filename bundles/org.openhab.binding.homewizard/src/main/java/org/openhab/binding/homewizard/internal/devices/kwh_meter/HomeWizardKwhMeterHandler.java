@@ -36,6 +36,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link HomeWizardKwhMeterHandler} implements functionality to handle a HomeWizard kWh Meter.
  *
  * @author Gearrel Welvaart - Initial contribution
+ * @author Leo Siepel - Guard battery polling across lifecycle changes
  *
  */
 @NonNullByDefault
@@ -57,18 +58,27 @@ public class HomeWizardKwhMeterHandler extends HomeWizardDeviceHandler {
     }
 
     @Override
-    protected void retrieveData(long generation) {
-        super.retrieveData(generation);
+    protected boolean retrieveData(long generation) {
+        if (!super.retrieveData(generation)) {
+            return false;
+        }
 
         try {
             if (config.isUsingApiVersion2()) {
-                handleBatteriesData(getBatteriesData());
+                String batteriesData = getBatteriesData();
+                synchronized (this) {
+                    if (generation != lifecycleGeneration.get()) {
+                        return false;
+                    }
+                    handleBatteriesData(batteriesData);
+                }
             }
+            return true;
         } catch (JsonSyntaxException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get data from the API", ex);
-            return;
+            return false;
         }
     }
 

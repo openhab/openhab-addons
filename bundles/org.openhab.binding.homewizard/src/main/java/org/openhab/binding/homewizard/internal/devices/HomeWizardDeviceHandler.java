@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -71,6 +70,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Daniël van Os - Initial contribution
  * @author Gearrel Welvaart - changes to API calls and support for APi v2 (beta).
+ * @author Leo Siepel - Guard polling updates across lifecycle changes
  *
  */
 @NonNullByDefault
@@ -104,6 +104,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     protected List<String> supportedTypes = new ArrayList<String>();
     protected List<Integer> supportedApiVersions = Arrays.asList(API_V1);
     private String apiURL = "";
+    // Lifecycle changes and poll results use the handler monitor to keep generation checks and updates ordered.
     protected final AtomicLong lifecycleGeneration = new AtomicLong();
     private volatile long validatedGeneration = -1;
 
@@ -121,7 +122,10 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        long generation = lifecycleGeneration.incrementAndGet();
+        long generation;
+        synchronized (this) {
+            generation = lifecycleGeneration.incrementAndGet();
+        }
         config = getConfigAs(HomeWizardConfiguration.class);
 
         if (config.isUsingApiVersion2()) {
@@ -151,7 +155,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
             dataPollingJob = executorService.scheduleWithFixedDelay(() -> retrieveData(generation), 0,
                     config.refreshDelay, TimeUnit.SECONDS);
-            firmwarePollingJob = executorService.scheduleWithFixedDelay(this::retrieveFirmwareVersion, 1, 1,
+            firmwarePollingJob = executorService.scheduleWithFixedDelay(() -> retrieveFirmwareVersion(generation), 1, 1,
                     TimeUnit.DAYS);
         }
     }
@@ -229,53 +233,57 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     /**
      * The data polling loop
+     *
+     * @return true if data was retrieved and published for the current generation
      */
-    protected void retrieveData(long generation) {
+    protected boolean retrieveData(long generation) {
         if (generation != lifecycleGeneration.get()) {
-            return;
+            return false;
         }
-        if (validatedGeneration != generation) {
-            var properties = checkDeviceConfiguration();
-            if (generation != lifecycleGeneration.get()) {
-                return; // response belongs to an older initialization
-            }
-            if (properties == null) {
-                return; // the configuration is not valid, so we cannot continue
-            }
-            updateProperties(properties);
-            validatedGeneration = generation;
+        if (validatedGeneration != generation && !checkDeviceConfiguration(generation)) {
+            return false;
         }
 
         try {
-            handleSystemData(getSystemData());
-            handleMeasurementData(getMeasurementData());
-            updateStatus(ThingStatus.ONLINE);
+            String systemData = getSystemData();
+            synchronized (this) {
+                if (generation != lifecycleGeneration.get()) {
+                    return false;
+                }
+                handleSystemData(systemData);
+            }
+            String measurementData = getMeasurementData();
+            synchronized (this) {
+                if (generation != lifecycleGeneration.get()) {
+                    return false;
+                }
+                handleMeasurementData(measurementData);
+                updateStatus(ThingStatus.ONLINE);
+            }
+            return true;
         } catch (JsonSyntaxException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get data from the API", ex);
-            return;
+            return false;
         }
     }
 
     /**
-     * Checks if the device information can be retrieved and if the device is supported. If so, it updates the thing
-     * properties with the device information.
+     * Checks whether device information can be retrieved and the device is supported.
      *
-     * @return a map of thing properties if the device is supported, or null if the device is not supported or
-     *         if there was an error retrieving the device information.
+     * @return true if the current generation was validated
      */
-    @Nullable
-    private Map<String, String> checkDeviceConfiguration() {
+    private boolean checkDeviceConfiguration(long generation) {
         String deviceInformation = "";
 
         try {
             deviceInformation = getDeviceInformationData();
         } catch (SecurityException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get device information", ex);
-            return null;
+            return false;
         }
 
         HomeWizardDeviceInformationPayload payload = null;
@@ -286,33 +294,51 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         }
 
         if (payload == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-no-data");
-            return null;
+            return false;
         } else {
             if ("".equals(payload.getProductType())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.comm-error-no-data");
-                return null;
+                return false;
             }
 
             if (!supportedTypes.contains(payload.getProductType().toLowerCase(Locale.ROOT))) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "@text/offline.comm-error-device-not-compatible");
-                return null;
+                return false;
             }
 
-            var properties = editProperties();
-            properties.put(PRODUCT_NAME, payload.getProductName());
-            properties.put(PRODUCT_TYPE, payload.getProductType());
-            properties.put(FIRMWARE_VERSION, payload.getFirmwareVersion());
-            properties.put(API_VERSION, payload.getApiVersion());
-
-            return properties;
+            synchronized (this) {
+                if (generation != lifecycleGeneration.get()) {
+                    return false;
+                }
+                var properties = editProperties();
+                properties.put(PRODUCT_NAME, payload.getProductName());
+                properties.put(PRODUCT_TYPE, payload.getProductType());
+                properties.put(FIRMWARE_VERSION, payload.getFirmwareVersion());
+                properties.put(API_VERSION, payload.getApiVersion());
+                updateProperties(properties);
+                validatedGeneration = generation;
+            }
+            return true;
         }
     }
 
-    private void retrieveFirmwareVersion() {
+    protected final void updateStatusIfCurrent(long generation, ThingStatus status, ThingStatusDetail detail,
+            String description) {
+        synchronized (this) {
+            if (generation == lifecycleGeneration.get()) {
+                updateStatus(status, detail, description);
+            }
+        }
+    }
+
+    private void retrieveFirmwareVersion(long generation) {
+        if (generation != lifecycleGeneration.get()) {
+            return;
+        }
         String deviceInformation = "";
 
         try {
@@ -324,7 +350,11 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                 logger.warn("Unable to update the firmare version. No device information available.");
                 return;
             }
-            updateProperty(FIRMWARE_VERSION, payload.getFirmwareVersion());
+            synchronized (this) {
+                if (generation == lifecycleGeneration.get()) {
+                    updateProperty(FIRMWARE_VERSION, payload.getFirmwareVersion());
+                }
+            }
         } catch (SecurityException | JsonSyntaxException ex) {
             // Only log a warning here. Updating the firmware version will be attempted again when the device is polled
             // next time.
@@ -346,7 +376,9 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      */
     @Override
     public void dispose() {
-        lifecycleGeneration.incrementAndGet();
+        synchronized (this) {
+            lifecycleGeneration.incrementAndGet();
+        }
         var dataJob = dataPollingJob;
         if (dataJob != null) {
             dataJob.cancel(true);
