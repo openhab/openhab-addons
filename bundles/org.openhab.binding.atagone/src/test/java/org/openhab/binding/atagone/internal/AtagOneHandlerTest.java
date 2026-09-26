@@ -13,10 +13,12 @@
 package org.openhab.binding.atagone.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.atagone.internal.AtagOneBindingConstants.*;
 
@@ -26,17 +28,21 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.atagone.internal.api.AtagOneApiClient;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
@@ -49,7 +55,9 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 
@@ -66,14 +74,28 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 class AtagOneHandlerTest {
 
+    private static final long VERIFY_TIMEOUT_MS = 2000L;
+
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
+    private @Mock @NonNullByDefault({}) AtagOneApiClient apiClient;
     private @NonNullByDefault({}) AtagOneHandler handler;
 
     @BeforeEach
     void setUp() {
         lenient().when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE_THERMOSTAT, "test"));
         handler = new AtagOneHandler(thing, httpClient, new AtagOneStateDescriptionProvider());
+    }
+
+    @AfterEach
+    void tearDown() {
+        handler.dispose();
+    }
+
+    private void seedApiClient(AtagOneApiClient client) throws ReflectiveOperationException {
+        Field field = AtagOneHandler.class.getDeclaredField("apiClient");
+        field.setAccessible(true);
+        field.set(handler, client);
     }
 
     @SuppressWarnings("unchecked")
@@ -130,6 +152,27 @@ class AtagOneHandlerTest {
         config.dhw_legion_day = 7;
         config.dhw_legion_time = 420;
         return config;
+    }
+
+    @Test
+    void secondConfigBundleWriteDoesNotRevertTheFirst() throws Exception {
+        // Regression test for the live-verified 2026-09-26 finding: two config-bundle writes fired
+        // back-to-back must not have the second silently revert the first via a stale snapshot.
+        lenient().when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        seedApiClient(apiClient);
+        seedLastConfiguration(sampleConfiguration());
+
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_FROST_PROTECTION), new StringType("inside"));
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_SUMMER_ECO_MODE), OnOffType.ON);
+
+        ArgumentCaptor<DeviceConfigUpdateDTO> configUpdate = ArgumentCaptor.forClass(DeviceConfigUpdateDTO.class);
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS).times(2)).updateControl(any(), configUpdate.capture());
+        List<DeviceConfigUpdateDTO> sent = configUpdate.getAllValues();
+
+        assertEquals(FROST_PROTECTION_BY_NAME.get("inside"), sent.get(0).frost_prot_enabled);
+        assertEquals(FROST_PROTECTION_BY_NAME.get("inside"), sent.get(1).frost_prot_enabled,
+                "second write must carry the first write's frost-protection value, not the stale pre-write one");
+        assertEquals(1, sent.get(1).summer_eco_mode);
     }
 
     private void seedLastChScheduleEntries(double[][][] entries) throws ReflectiveOperationException {

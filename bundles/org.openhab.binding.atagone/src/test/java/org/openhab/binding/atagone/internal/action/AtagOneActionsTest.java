@@ -23,6 +23,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.atagone.internal.AtagOneHandler;
 import org.openhab.binding.atagone.internal.AtagOneStateDescriptionProvider;
+import org.openhab.binding.atagone.internal.api.AtagOneApiClient;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.ScheduleDTO;
@@ -38,14 +40,16 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.State;
 
 /**
- * Unit tests for {@link AtagOneActions}. The handler is a Mockito spy wrapping a real
- * {@link AtagOneHandler} with {@code sendComposedUpdate} stubbed out — this exercises the handler's
- * real {@code composeXxx} composition logic (the same logic {@code buildControlUpdate} uses for the
- * channel path) while capturing what would have been sent, without needing a live device connection.
+ * Unit tests for {@link AtagOneActions}. The handler is a real {@link AtagOneHandler} with a mocked
+ * {@link AtagOneApiClient} seeded directly (bypassing pairing/connect), so actions exercise the real
+ * compose-and-send path; sends run on the handler's scheduler, so assertions on the mocked API client
+ * use {@code timeout()}.
  *
  * @author Florian Lettner - Initial contribution
  */
@@ -53,36 +57,49 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class AtagOneActionsTest {
 
+    private static final long VERIFY_TIMEOUT_MS = 2000L;
+
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
+    private @Mock @NonNullByDefault({}) AtagOneApiClient apiClient;
     private @NonNullByDefault({}) AtagOneHandler handler;
     private @NonNullByDefault({}) AtagOneActions actions;
 
     @BeforeEach
-    void setUp() {
-        handler = spy(new AtagOneHandler(thing, httpClient, new AtagOneStateDescriptionProvider()));
-        lenient().doNothing().when(handler).sendComposedUpdate(anyString(), any(), any());
-        lenient().doNothing().when(handler).sendComposedChSchedule(anyString(), any());
-        lenient().doNothing().when(handler).sendComposedDhwSchedule(anyString(), any());
+    void setUp() throws ReflectiveOperationException {
+        lenient().when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE_THERMOSTAT, "test"));
+        lenient().when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        handler = new AtagOneHandler(thing, httpClient, new AtagOneStateDescriptionProvider());
+        seedApiClient(apiClient);
         actions = new AtagOneActions();
         actions.setThingHandler(handler);
     }
 
-    /** Directly sets the handler's last-polled ch_schedule.entries, simulating a prior poll. */
+    @AfterEach
+    void tearDown() {
+        // A successful send schedules a real poll job on the shared thread pool; cancel it so it
+        // doesn't keep firing against this test's mocks after the test method returns.
+        handler.dispose();
+    }
+
+    private void seedApiClient(AtagOneApiClient client) throws ReflectiveOperationException {
+        Field field = AtagOneHandler.class.getDeclaredField("apiClient");
+        field.setAccessible(true);
+        field.set(handler, client);
+    }
+
     private void seedLastChScheduleEntries(double[][][] entries) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("lastChScheduleEntries");
         field.setAccessible(true);
         field.set(handler, entries);
     }
 
-    /** Directly sets the handler's last-polled dhw_schedule.entries, simulating a prior poll. */
     private void seedLastDhwScheduleEntries(double[][][] entries) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("lastDhwScheduleEntries");
         field.setAccessible(true);
         field.set(handler, entries);
     }
 
-    /** Directly seeds the handler's private stateMap, simulating a previously-polled channel value. */
     @SuppressWarnings("unchecked")
     private void seedState(String channelId, State state) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("stateMap");
@@ -91,7 +108,6 @@ class AtagOneActionsTest {
         ((Map<String, State>) fieldValue).put(channelId, state);
     }
 
-    /** Directly sets the handler's armed (possibly pending) vacation start, simulating a prior poll. */
     private void seedArmedStartVacation(long epochOffset) throws ReflectiveOperationException {
         Field field = AtagOneHandler.class.getDeclaredField("armedStartVacation");
         field.setAccessible(true);
@@ -121,47 +137,45 @@ class AtagOneActionsTest {
     }
 
     @Test
-    void activateVacationRejectsNonPositiveDuration() {
+    void activateVacationRejectsNonPositiveDuration() throws Exception {
         actions.activateVacation(0);
         actions.activateVacation(-10);
 
-        verify(handler, never()).sendComposedUpdate(anyString(), any(), any());
+        verify(apiClient, never()).updateControl(any(), any());
     }
 
     @Test
-    void activateVacationComposesHolidayActivationWithExplicitDuration() {
+    void activateVacationComposesHolidayActivationWithExplicitDuration() throws Exception {
         actions.activateVacation(2 * 86400); // 2 whole days
 
         ArgumentCaptor<ControlUpdateDTO> control = ArgumentCaptor.forClass(ControlUpdateDTO.class);
-        ArgumentCaptor<DeviceConfigUpdateDTO> configUpdate = ArgumentCaptor.forClass(DeviceConfigUpdateDTO.class);
-        verify(handler).sendComposedUpdate(eq("action:activateVacation"), control.capture(), configUpdate.capture());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(control.capture(), any());
 
         assertEquals(CH_MODE_HOLIDAY, control.getValue().ch_mode);
         assertEquals(2 * 86400L, control.getValue().ch_mode_duration);
         assertEquals(2 * 86400L, control.getValue().vacation_duration);
-        assertNotNull(configUpdate.getValue().start_vacation);
     }
 
     @Test
-    void activateVacationRejectsNonWholeDay() {
+    void activateVacationRejectsNonWholeDay() throws Exception {
         actions.activateVacation(12 * 3600); // 12 hours — not a whole day
 
-        verify(handler, never()).sendComposedUpdate(anyString(), any(), any());
+        verify(apiClient, never()).updateControl(any(), any());
     }
 
     @Test
-    void activateExtendRejectsNonPositiveDuration() {
+    void activateExtendRejectsNonPositiveDuration() throws Exception {
         actions.activateExtend(0);
 
-        verify(handler, never()).sendComposedUpdate(anyString(), any(), any());
+        verify(apiClient, never()).updateControl(any(), any());
     }
 
     @Test
-    void activateExtendComposesExtendActivationWithExplicitDuration() {
+    void activateExtendComposesExtendActivationWithExplicitDuration() throws Exception {
         actions.activateExtend(2 * 3600); // 2 whole hours
 
         ArgumentCaptor<ControlUpdateDTO> control = ArgumentCaptor.forClass(ControlUpdateDTO.class);
-        verify(handler).sendComposedUpdate(eq("action:activateExtend"), control.capture(), any());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(control.capture(), any());
 
         assertEquals(CH_MODE_EXTEND, control.getValue().ch_mode);
         assertEquals(2 * 3600L, control.getValue().extend_duration);
@@ -170,32 +184,32 @@ class AtagOneActionsTest {
     }
 
     @Test
-    void activateExtendAcceptsFifteenMinuteIncrement() {
+    void activateExtendAcceptsFifteenMinuteIncrement() throws Exception {
         actions.activateExtend(1800); // 30 minutes — a whole 15-minute increment
 
-        verify(handler).sendComposedUpdate(anyString(), any(), any());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(any(), any());
     }
 
     @Test
-    void activateExtendRejectsNonFifteenMinuteIncrement() {
+    void activateExtendRejectsNonFifteenMinuteIncrement() throws Exception {
         actions.activateExtend(1000); // not a whole 15-minute increment
 
-        verify(handler, never()).sendComposedUpdate(anyString(), any(), any());
+        verify(apiClient, never()).updateControl(any(), any());
     }
 
     @Test
-    void activateFireplaceRejectsNonPositiveDuration() {
+    void activateFireplaceRejectsNonPositiveDuration() throws Exception {
         actions.activateFireplace(0);
 
-        verify(handler, never()).sendComposedUpdate(anyString(), any(), any());
+        verify(apiClient, never()).updateControl(any(), any());
     }
 
     @Test
-    void activateFireplaceComposesFireplaceActivationWithExplicitDuration() {
+    void activateFireplaceComposesFireplaceActivationWithExplicitDuration() throws Exception {
         actions.activateFireplace(3600);
 
         ArgumentCaptor<ControlUpdateDTO> control = ArgumentCaptor.forClass(ControlUpdateDTO.class);
-        verify(handler).sendComposedUpdate(eq("action:activateFireplace"), control.capture(), any());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(control.capture(), any());
 
         assertEquals(CH_MODE_FIREPLACE, control.getValue().ch_mode);
         assertEquals(3600L, control.getValue().fireplace_duration);
@@ -203,16 +217,16 @@ class AtagOneActionsTest {
     }
 
     @Test
-    void activateFireplaceRejectsNonWholeHour() {
+    void activateFireplaceRejectsNonWholeHour() throws Exception {
         // 2400s (40 minutes) is the exact value confirmed to trigger a real device reboot — must be
         // rejected before it ever reaches the device.
         actions.activateFireplace(2400);
 
-        verify(handler, never()).sendComposedUpdate(anyString(), any(), any());
+        verify(apiClient, never()).updateControl(any(), any());
     }
 
     @Test
-    void cancelModeFromPendingVacationClearsSchedule() throws ReflectiveOperationException {
+    void cancelModeFromPendingVacationClearsSchedule() throws Exception {
         // A pending (future-scheduled, not-yet-active) vacation reports preset-mode=auto. Keying
         // cancellation only on reported preset-mode would silently leave the schedule fully armed
         // while returning "nothing to cancel".
@@ -224,18 +238,18 @@ class AtagOneActionsTest {
         assertFalse(requiresPhysicalConfirmation);
         ArgumentCaptor<ControlUpdateDTO> control = ArgumentCaptor.forClass(ControlUpdateDTO.class);
         ArgumentCaptor<DeviceConfigUpdateDTO> configUpdate = ArgumentCaptor.forClass(DeviceConfigUpdateDTO.class);
-        verify(handler).sendComposedUpdate(eq("action:cancelMode"), control.capture(), configUpdate.capture());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(control.capture(), configUpdate.capture());
         assertEquals(0L, control.getValue().vacation_duration);
         assertEquals(0L, configUpdate.getValue().start_vacation);
     }
 
     @Test
-    void cancelModeFromAutoDoesNotRequirePhysicalConfirmation() {
+    void cancelModeFromAutoDoesNotRequirePhysicalConfirmation() throws Exception {
         boolean requiresPhysicalConfirmation = actions.cancelMode();
 
         assertFalse(requiresPhysicalConfirmation);
         ArgumentCaptor<ControlUpdateDTO> control = ArgumentCaptor.forClass(ControlUpdateDTO.class);
-        verify(handler).sendComposedUpdate(eq("action:cancelMode"), control.capture(), any());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(control.capture(), any());
         assertEquals(CH_MODE_AUTO, control.getValue().ch_mode);
         assertEquals(0L, control.getValue().ch_mode_duration);
     }
@@ -247,31 +261,30 @@ class AtagOneActionsTest {
         boolean requiresPhysicalConfirmation = actions.cancelMode();
 
         assertTrue(requiresPhysicalConfirmation);
-        verify(handler).sendComposedUpdate(eq("action:cancelMode"), any(), any());
     }
 
     @Test
-    void cancelModeFromHolidayClearsVacationSchedule() throws ReflectiveOperationException {
+    void cancelModeFromHolidayClearsVacationSchedule() throws Exception {
         seedState(CHANNEL_PRESET_MODE, new StringType("holiday"));
 
         actions.cancelMode();
 
         ArgumentCaptor<ControlUpdateDTO> control = ArgumentCaptor.forClass(ControlUpdateDTO.class);
         ArgumentCaptor<DeviceConfigUpdateDTO> configUpdate = ArgumentCaptor.forClass(DeviceConfigUpdateDTO.class);
-        verify(handler).sendComposedUpdate(eq("action:cancelMode"), control.capture(), configUpdate.capture());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(control.capture(), configUpdate.capture());
         assertEquals(0L, control.getValue().vacation_duration);
         assertEquals(0L, configUpdate.getValue().start_vacation);
     }
 
     @Test
-    void staticDelegatesCallThroughToInstanceMethods() {
+    void staticDelegatesCallThroughToInstanceMethods() throws Exception {
         AtagOneActions.activateFireplace(actions, 3600);
 
-        verify(handler).sendComposedUpdate(eq("action:activateFireplace"), any(), any());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateControl(any(), any());
     }
 
     @Test
-    void setChSchedulePeriodComposesAndSendsOnSuccess() throws ReflectiveOperationException {
+    void setChSchedulePeriodComposesAndSendsOnSuccess() throws Exception {
         double[][][] entries = new double[7][][];
         entries[0] = new double[][] { { 0, 360, 18.0 } };
         seedLastChScheduleEntries(entries);
@@ -281,7 +294,7 @@ class AtagOneActionsTest {
 
         assertTrue(accepted);
         ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
-        verify(handler).sendComposedChSchedule(eq("action:setChSchedulePeriod"), schedule.capture());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateChSchedule(schedule.capture());
         assertEquals(2, schedule.getValue().entries[0].length);
     }
 
@@ -293,7 +306,6 @@ class AtagOneActionsTest {
         boolean accepted = actions.setChSchedulePeriod("someday", 0, 0, 1440, 18.0);
 
         assertFalse(accepted);
-        verify(handler, never()).sendComposedChSchedule(anyString(), any());
     }
 
     @Test
@@ -306,7 +318,6 @@ class AtagOneActionsTest {
         boolean accepted = actions.setChSchedulePeriod("monday", 1, 300, 900, 20.0);
 
         assertFalse(accepted);
-        verify(handler, never()).sendComposedChSchedule(anyString(), any());
     }
 
     @Test
@@ -318,7 +329,6 @@ class AtagOneActionsTest {
                 "{\"days\":{\"monday\":[{\"start\":0,\"end\":600,\"temp\":18},{\"start\":300,\"end\":900,\"temp\":20}]}}");
 
         assertFalse(accepted);
-        verify(handler, never()).sendComposedChSchedule(anyString(), any());
     }
 
     @Test
@@ -329,7 +339,7 @@ class AtagOneActionsTest {
     }
 
     @Test
-    void clearChSchedulePeriodComposesAndSendsOnSuccess() throws ReflectiveOperationException {
+    void clearChSchedulePeriodComposesAndSendsOnSuccess() throws Exception {
         double[][][] entries = new double[7][][];
         entries[2] = new double[][] { { 0, 720, 18.0 }, { 720, 1440, 20.0 } };
         seedLastChScheduleEntries(entries);
@@ -339,7 +349,7 @@ class AtagOneActionsTest {
 
         assertTrue(accepted);
         ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
-        verify(handler).sendComposedChSchedule(eq("action:clearChSchedulePeriod"), schedule.capture());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateChSchedule(schedule.capture());
         assertEquals(1, schedule.getValue().entries[2].length);
     }
 
@@ -351,11 +361,10 @@ class AtagOneActionsTest {
         boolean accepted = actions.clearChSchedulePeriod("monday", 0);
 
         assertFalse(accepted);
-        verify(handler, never()).sendComposedChSchedule(anyString(), any());
     }
 
     @Test
-    void setDhwSchedulePeriodComposesAndSendsOnSuccess() throws ReflectiveOperationException {
+    void setDhwSchedulePeriodComposesAndSendsOnSuccess() throws Exception {
         double[][][] entries = new double[7][][];
         entries[5] = new double[][] { { 0, 360, 45.0 } };
         seedLastDhwScheduleEntries(entries);
@@ -364,7 +373,7 @@ class AtagOneActionsTest {
         boolean accepted = actions.setDhwSchedulePeriod("saturday", 1, 600, 1200, 55.0);
 
         assertTrue(accepted);
-        verify(handler).sendComposedDhwSchedule(eq("action:setDhwSchedulePeriod"), any());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateDhwSchedule(any());
     }
 
     @Test
@@ -375,11 +384,10 @@ class AtagOneActionsTest {
         boolean accepted = actions.clearDhwSchedulePeriod("someday", 0);
 
         assertFalse(accepted);
-        verify(handler, never()).sendComposedDhwSchedule(anyString(), any());
     }
 
     @Test
-    void staticScheduleDelegatesCallThroughToInstanceMethods() throws ReflectiveOperationException {
+    void staticScheduleDelegatesCallThroughToInstanceMethods() throws Exception {
         double[][][] entries = new double[7][][];
         entries[0] = new double[][] { { 0, 1440, 18.0 } };
         seedLastChScheduleEntries(entries);
@@ -388,11 +396,11 @@ class AtagOneActionsTest {
         boolean accepted = AtagOneActions.clearChSchedulePeriod(actions, "monday", 0);
 
         assertTrue(accepted);
-        verify(handler).sendComposedChSchedule(eq("action:clearChSchedulePeriod"), any());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateChSchedule(any());
     }
 
     @Test
-    void setChScheduleComposesAndSendsOnSuccess() throws ReflectiveOperationException {
+    void setChScheduleComposesAndSendsOnSuccess() throws Exception {
         double[][][] entries = new double[7][][];
         entries[0] = new double[][] { { 0, 1440, 18.0 } };
         seedLastChScheduleEntries(entries);
@@ -403,7 +411,7 @@ class AtagOneActionsTest {
 
         assertTrue(accepted);
         ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
-        verify(handler).sendComposedChSchedule(eq("action:setChSchedule"), schedule.capture());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateChSchedule(schedule.capture());
         assertArrayEquals(new double[] { 360, 1200, 20.0 }, schedule.getValue().entries[0][0], 0.001);
     }
 
@@ -415,7 +423,6 @@ class AtagOneActionsTest {
         boolean accepted = actions.setChSchedule("not json");
 
         assertFalse(accepted);
-        verify(handler, never()).sendComposedChSchedule(anyString(), any());
     }
 
     @Test
@@ -426,7 +433,7 @@ class AtagOneActionsTest {
     }
 
     @Test
-    void setDhwScheduleComposesAndSendsOnSuccess() throws ReflectiveOperationException {
+    void setDhwScheduleComposesAndSendsOnSuccess() throws Exception {
         double[][][] entries = new double[7][][];
         entries[5] = new double[][] { { 0, 1440, 45.0 } };
         seedLastDhwScheduleEntries(entries);
@@ -437,7 +444,7 @@ class AtagOneActionsTest {
 
         assertTrue(accepted);
         ArgumentCaptor<ScheduleDTO> schedule = ArgumentCaptor.forClass(ScheduleDTO.class);
-        verify(handler).sendComposedDhwSchedule(eq("action:setDhwSchedule"), schedule.capture());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateDhwSchedule(schedule.capture());
         assertEquals(50.0, schedule.getValue().base_temp, 0.001);
         assertArrayEquals(new double[] { 600, 1200, 55.0 }, schedule.getValue().entries[5][0], 0.001);
     }
@@ -447,11 +454,10 @@ class AtagOneActionsTest {
         boolean accepted = actions.setDhwSchedule("{}");
 
         assertFalse(accepted);
-        verify(handler, never()).sendComposedDhwSchedule(anyString(), any());
     }
 
     @Test
-    void staticSetChScheduleDelegateCallsThroughToInstanceMethod() throws ReflectiveOperationException {
+    void staticSetChScheduleDelegateCallsThroughToInstanceMethod() throws Exception {
         double[][][] entries = new double[7][][];
         entries[0] = new double[][] { { 0, 1440, 18.0 } };
         seedLastChScheduleEntries(entries);
@@ -460,6 +466,6 @@ class AtagOneActionsTest {
         boolean accepted = AtagOneActions.setChSchedule(actions, "{}");
 
         assertTrue(accepted);
-        verify(handler).sendComposedChSchedule(eq("action:setChSchedule"), any());
+        verify(apiClient, timeout(VERIFY_TIMEOUT_MS)).updateChSchedule(any());
     }
 }

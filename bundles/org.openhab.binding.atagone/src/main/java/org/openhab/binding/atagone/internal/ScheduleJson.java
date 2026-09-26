@@ -15,6 +15,7 @@ package org.openhab.binding.atagone.internal;
 import static org.openhab.binding.atagone.internal.AtagOneBindingConstants.WEEKDAY_BY_NAME;
 import static org.openhab.binding.atagone.internal.AtagOneBindingConstants.WEEKDAY_NAMES;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -102,7 +103,7 @@ public final class ScheduleJson {
                 return null;
             }
             for (Map.Entry<String, JsonElement> dayEntry : daysElement.getAsJsonObject().entrySet()) {
-                Integer weekdayNumber = WEEKDAY_BY_NAME.get(dayEntry.getKey().toLowerCase());
+                Integer weekdayNumber = WEEKDAY_BY_NAME.get(dayEntry.getKey().toLowerCase(Locale.ROOT));
                 if (weekdayNumber == null) {
                     return null;
                 }
@@ -170,7 +171,8 @@ public final class ScheduleJson {
     }
 
     public static boolean isValidPeriod(double startMinutes, double endMinutes) {
-        return startMinutes >= 0 && endMinutes <= 1440 && startMinutes < endMinutes;
+        return startMinutes >= 0 && endMinutes <= 1440 && startMinutes < endMinutes
+                && startMinutes == Math.rint(startMinutes) && endMinutes == Math.rint(endMinutes);
     }
 
     public static boolean periodsOverlap(double aStart, double aEnd, double bStart, double bEnd) {

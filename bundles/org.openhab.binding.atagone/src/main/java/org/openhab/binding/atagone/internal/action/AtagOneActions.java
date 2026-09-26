@@ -15,9 +15,6 @@ package org.openhab.binding.atagone.internal.action;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.atagone.internal.AtagOneHandler;
-import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
-import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
-import org.openhab.binding.atagone.internal.dto.ScheduleDTO;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -71,10 +68,7 @@ public class AtagOneActions implements ThingActions {
             logger.warn("activateVacation: duration must be a whole number of days, got {} s", durationSeconds);
             return;
         }
-        ControlUpdateDTO control = new ControlUpdateDTO();
-        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
-        theHandler.composeVacationActivation(control, configUpdate, durationSeconds);
-        theHandler.sendComposedUpdate("action:activateVacation", control, configUpdate);
+        theHandler.enqueueVacationActivation(durationSeconds);
     }
 
     @RuleAction(label = "@text/action.activate-extend.label", description = "@text/action.activate-extend.description")
@@ -94,10 +88,7 @@ public class AtagOneActions implements ThingActions {
                     durationSeconds);
             return;
         }
-        ControlUpdateDTO control = new ControlUpdateDTO();
-        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
-        theHandler.composeExtendActivation(control, durationSeconds);
-        theHandler.sendComposedUpdate("action:activateExtend", control, configUpdate);
+        theHandler.enqueueExtendActivation(durationSeconds);
     }
 
     @RuleAction(label = "@text/action.activate-fireplace.label", description = "@text/action.activate-fireplace.description")
@@ -116,10 +107,7 @@ public class AtagOneActions implements ThingActions {
             logger.warn("activateFireplace: duration must be a whole number of hours, got {} s", durationSeconds);
             return;
         }
-        ControlUpdateDTO control = new ControlUpdateDTO();
-        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
-        theHandler.composeFireplaceActivation(control, durationSeconds);
-        theHandler.sendComposedUpdate("action:activateFireplace", control, configUpdate);
+        theHandler.enqueueFireplaceActivation(durationSeconds);
     }
 
     @RuleAction(label = "@text/action.set-ch-schedule-period.label", description = "@text/action.set-ch-schedule-period.description")
@@ -134,14 +122,13 @@ public class AtagOneActions implements ThingActions {
             logger.warn("setChSchedulePeriod called with no handler bound");
             return false;
         }
-        ScheduleDTO schedule = theHandler.composeChSchedulePeriodSet(weekday, periodIndex, startMinutes, endMinutes,
+        boolean accepted = theHandler.enqueueChSchedulePeriodSet(weekday, periodIndex, startMinutes, endMinutes,
                 temperatureCelsius);
-        if (schedule == null) {
-            logger.warn("setChSchedulePeriod: invalid weekday or periodIndex, or no CH schedule polled yet");
-            return false;
+        if (!accepted) {
+            logger.warn(
+                    "setChSchedulePeriod: invalid weekday or periodIndex, no CH schedule polled yet, or Thing not ONLINE");
         }
-        theHandler.sendComposedChSchedule("action:setChSchedulePeriod", schedule);
-        return true;
+        return accepted;
     }
 
     @RuleAction(label = "@text/action.clear-ch-schedule-period.label", description = "@text/action.clear-ch-schedule-period.description")
@@ -153,13 +140,12 @@ public class AtagOneActions implements ThingActions {
             logger.warn("clearChSchedulePeriod called with no handler bound");
             return false;
         }
-        ScheduleDTO schedule = theHandler.composeChSchedulePeriodClear(weekday, periodIndex);
-        if (schedule == null) {
-            logger.warn("clearChSchedulePeriod: invalid weekday or periodIndex, or no CH schedule polled yet");
-            return false;
+        boolean accepted = theHandler.enqueueChSchedulePeriodClear(weekday, periodIndex);
+        if (!accepted) {
+            logger.warn(
+                    "clearChSchedulePeriod: invalid weekday or periodIndex, no CH schedule polled yet, or Thing not ONLINE");
         }
-        theHandler.sendComposedChSchedule("action:clearChSchedulePeriod", schedule);
-        return true;
+        return accepted;
     }
 
     @RuleAction(label = "@text/action.set-dhw-schedule-period.label", description = "@text/action.set-dhw-schedule-period.description")
@@ -174,14 +160,13 @@ public class AtagOneActions implements ThingActions {
             logger.warn("setDhwSchedulePeriod called with no handler bound");
             return false;
         }
-        ScheduleDTO schedule = theHandler.composeDhwSchedulePeriodSet(weekday, periodIndex, startMinutes, endMinutes,
+        boolean accepted = theHandler.enqueueDhwSchedulePeriodSet(weekday, periodIndex, startMinutes, endMinutes,
                 temperatureCelsius);
-        if (schedule == null) {
-            logger.warn("setDhwSchedulePeriod: invalid weekday or periodIndex, or no DHW schedule polled yet");
-            return false;
+        if (!accepted) {
+            logger.warn(
+                    "setDhwSchedulePeriod: invalid weekday or periodIndex, no DHW schedule polled yet, or Thing not ONLINE");
         }
-        theHandler.sendComposedDhwSchedule("action:setDhwSchedulePeriod", schedule);
-        return true;
+        return accepted;
     }
 
     @RuleAction(label = "@text/action.clear-dhw-schedule-period.label", description = "@text/action.clear-dhw-schedule-period.description")
@@ -193,13 +178,12 @@ public class AtagOneActions implements ThingActions {
             logger.warn("clearDhwSchedulePeriod called with no handler bound");
             return false;
         }
-        ScheduleDTO schedule = theHandler.composeDhwSchedulePeriodClear(weekday, periodIndex);
-        if (schedule == null) {
-            logger.warn("clearDhwSchedulePeriod: invalid weekday or periodIndex, or no DHW schedule polled yet");
-            return false;
+        boolean accepted = theHandler.enqueueDhwSchedulePeriodClear(weekday, periodIndex);
+        if (!accepted) {
+            logger.warn(
+                    "clearDhwSchedulePeriod: invalid weekday or periodIndex, no DHW schedule polled yet, or Thing not ONLINE");
         }
-        theHandler.sendComposedDhwSchedule("action:clearDhwSchedulePeriod", schedule);
-        return true;
+        return accepted;
     }
 
     @RuleAction(label = "@text/action.set-ch-schedule.label", description = "@text/action.set-ch-schedule.description")
@@ -210,13 +194,12 @@ public class AtagOneActions implements ThingActions {
             logger.warn("setChSchedule called with no handler bound");
             return false;
         }
-        ScheduleDTO schedule = theHandler.composeChScheduleFromJson(json);
-        if (schedule == null) {
-            logger.warn("setChSchedule: malformed JSON, unknown weekday, or no CH schedule polled yet");
-            return false;
+        boolean accepted = theHandler.enqueueChScheduleFromJson(json);
+        if (!accepted) {
+            logger.warn(
+                    "setChSchedule: malformed JSON, unknown weekday, no CH schedule polled yet, or Thing not ONLINE");
         }
-        theHandler.sendComposedChSchedule("action:setChSchedule", schedule);
-        return true;
+        return accepted;
     }
 
     @RuleAction(label = "@text/action.set-dhw-schedule.label", description = "@text/action.set-dhw-schedule.description")
@@ -227,13 +210,12 @@ public class AtagOneActions implements ThingActions {
             logger.warn("setDhwSchedule called with no handler bound");
             return false;
         }
-        ScheduleDTO schedule = theHandler.composeDhwScheduleFromJson(json);
-        if (schedule == null) {
-            logger.warn("setDhwSchedule: malformed JSON, unknown weekday, or no DHW schedule polled yet");
-            return false;
+        boolean accepted = theHandler.enqueueDhwScheduleFromJson(json);
+        if (!accepted) {
+            logger.warn(
+                    "setDhwSchedule: malformed JSON, unknown weekday, no DHW schedule polled yet, or Thing not ONLINE");
         }
-        theHandler.sendComposedDhwSchedule("action:setDhwSchedule", schedule);
-        return true;
+        return accepted;
     }
 
     @RuleAction(label = "@text/action.cancel-mode.label", description = "@text/action.cancel-mode.description")
@@ -243,11 +225,7 @@ public class AtagOneActions implements ThingActions {
             logger.warn("cancelMode called with no handler bound");
             return false;
         }
-        ControlUpdateDTO control = new ControlUpdateDTO();
-        DeviceConfigUpdateDTO configUpdate = new DeviceConfigUpdateDTO();
-        boolean requiresPhysicalConfirmation = theHandler.composeCancel(control, configUpdate);
-        theHandler.sendComposedUpdate("action:cancelMode", control, configUpdate);
-        return requiresPhysicalConfirmation;
+        return theHandler.enqueueCancel();
     }
 
     public static void activateVacation(ThingActions actions, long durationSeconds) {
