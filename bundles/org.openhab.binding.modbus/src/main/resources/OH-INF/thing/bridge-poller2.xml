@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="poller2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+
+		<label>Modbus Poller (modern channel model)</label>
+		<description>Regular poll that owns user-defined Modbus channels.</description>
+		<config-description>
+			<parameter name="refresh" type="integer" min="0" unit="ms">
+				<label>Poll Interval</label>
+				<description>Poll interval in milliseconds. Use zero to disable automatic polling.</description>
+				<default>500</default>
+			</parameter>
+			<parameter name="start" type="integer">
+				<label>Start</label>
+				<description>Zero-based address of the first register, coil, or discrete input to poll.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="length" type="integer" required="true">
+				<label>Length</label>
+				<description>Number of registers, coils, or discrete inputs to read.</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Modbus data type to poll.</description>
+				<options>
+					<option value="coil">Coil</option>
+					<option value="discrete">Discrete Input</option>
+					<option value="holding">Holding Register</option>
+					<option value="input">Input Register</option>
+				</options>
+			</parameter>
+			<parameter name="maxTries" type="integer" min="1">
+				<label>Maximum Tries When Reading</label>
+				<default>3</default>
+			</parameter>
+			<parameter name="cacheMillis" type="integer" min="0" unit="ms">
+				<label>Cache Duration</label>
+				<description>Duration for serving REFRESH commands from the poll response cache.</description>
+				<default>50</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

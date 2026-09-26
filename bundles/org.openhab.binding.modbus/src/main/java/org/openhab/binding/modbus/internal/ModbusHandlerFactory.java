@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.modbus.handler.ModbusPoller2ThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.binding.modbus.internal.handler.ModbusSerialThingHandler;
@@ -54,6 +55,7 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_MODBUS_TCP);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_MODBUS_SERIAL);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_MODBUS_POLLER);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_MODBUS_POLLER2);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_MODBUS_DATA);
     }
 
@@ -74,6 +76,9 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_MODBUS_POLLER)) {
             logger.debug("createHandler Modbus poller");
             return new ModbusPollerThingHandler((Bridge) thing);
+        } else if (thingTypeUID.equals(THING_TYPE_MODBUS_POLLER2)) {
+            logger.debug("createHandler Modbus poller2");
+            return new ModbusPoller2ThingHandler((Bridge) thing);
         } else if (thingTypeUID.equals(THING_TYPE_MODBUS_DATA)) {
             logger.debug("createHandler data");
             return new ModbusDataThingHandler(thing);
