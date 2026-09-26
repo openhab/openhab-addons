@@ -103,35 +103,35 @@ public class TedeeLockHandler extends BaseThingHandler {
     }
 
     private void send(TedeeClient client, String action) {
-    scheduler.execute(() -> {
-        try {
-            logger.debug("Sending Tedee action '{}' to lock {}", action, cfg.deviceId);
+        scheduler.execute(() -> {
+            try {
+                logger.debug("Sending Tedee action '{}' to lock {}", action, cfg.deviceId);
 
-            switch (action) {
-                case "LOCK" -> client.lock(cfg.deviceId);
-                case "UNLOCK" -> client.unlockOrPull(cfg.deviceId);
-                case "UNLOCK_NO_PULL" -> client.unlockWithoutPull(cfg.deviceId);
-                case "PULL" -> client.pull(cfg.deviceId);
-                default -> {
-                    logger.warn("Unsupported Tedee action '{}'", action);
-                    return;
+                switch (action) {
+                    case "LOCK" -> client.lock(cfg.deviceId);
+                    case "UNLOCK" -> client.unlockOrPull(cfg.deviceId);
+                    case "UNLOCK_NO_PULL" -> client.unlockWithoutPull(cfg.deviceId);
+                    case "PULL" -> client.pull(cfg.deviceId);
+                    default -> {
+                        logger.warn("Unsupported Tedee action '{}'", action);
+                        return;
+                    }
                 }
+
+                logger.debug("Tedee action '{}' accepted for lock {}", action, cfg.deviceId);
+
+                scheduler.schedule(this::refresh, 1, TimeUnit.SECONDS);
+                scheduler.schedule(this::refresh, 3, TimeUnit.SECONDS);
+            } catch (TedeeApiException e) {
+                logger.warn("Tedee action '{}' failed for lock {}: {}", action, cfg.deviceId, e.getMessage());
+
+                updateStatus(ThingStatus.OFFLINE,
+                        e.getStatus() == 401 || e.getStatus() == 403 ? ThingStatusDetail.CONFIGURATION_ERROR
+                                : ThingStatusDetail.COMMUNICATION_ERROR,
+                        e.getMessage());
             }
-
-            logger.debug("Tedee action '{}' accepted for lock {}", action, cfg.deviceId);
-
-            scheduler.schedule(this::refresh, 1, TimeUnit.SECONDS);
-            scheduler.schedule(this::refresh, 3, TimeUnit.SECONDS);
-        } catch (TedeeApiException e) {
-            logger.warn("Tedee action '{}' failed for lock {}: {}", action, cfg.deviceId, e.getMessage());
-
-            updateStatus(ThingStatus.OFFLINE,
-                    e.getStatus() == 401 || e.getStatus() == 403 ? ThingStatusDetail.CONFIGURATION_ERROR
-                            : ThingStatusDetail.COMMUNICATION_ERROR,
-                    e.getMessage());
-        }
-    });
-}
+        });
+    }
 
     private void refresh() {
         logger.info("Polling Tedee lock {}", cfg.deviceId);

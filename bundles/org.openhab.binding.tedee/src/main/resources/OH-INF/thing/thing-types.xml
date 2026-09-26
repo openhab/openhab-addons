@@ -180,6 +180,7 @@
 				<option value="LOCK">Lock</option>
 				<option value="UNLOCK">Unlock</option>
 				<option value="UNLOCK_NO_PULL">Unlock without Pull</option>
+				<option value="UNLOCK_OR_PULL">Decides how to unlock an open lock</option>
 				<option value="PULL">Pull</option>
 			</options>
 		</command>
