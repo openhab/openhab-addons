@@ -16,21 +16,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.UpgradeException;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
@@ -63,31 +64,55 @@ import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 @WebSocket
 @NonNullByDefault
 public class Websocket extends RestApi {
-    // timeout stays unlimited until binding decides to close
-    private static final int CONNECT_TIMEOUT_MS = 0;
-    // standard runtime of Websocket
-    private static final int WS_RUNTIME_MS = 60 * 1000;
+    // Jetty's idle timeout is bidirectional, so our own outgoing pings keep resetting it - it only acts as a
+    // coarse backstop. Dead connections are detected by the missed-pong watchdog (isPongOverdue()) instead.
+    private static final int WS_IDLE_TIMEOUT_MS = 5 * 60 * 1000;
+    // randomized 1-3 minutes per connect - anti-bot pattern, same idea as AccountHandler.nextRefreshSeconds()
+    private static final long WS_RUNTIME_MIN_MS = 60 * 1000L;
+    private static final long WS_RUNTIME_MAX_MS = 3 * 60 * 1000L;
     // addon time of 1 minute for a new send command
     private static final int ADDON_MESSAGE_TIME_MS = 60 * 1000;
-    // check Socket time elapsed each second
-    private static final int CHECK_INTERVAL_MS = 60 * 1000;
+    // ping cadence and check-loop interval
+    private static final int PING_INTERVAL_MS = 6 * 1000;
+    // missed-pong watchdog: no pong within this window after a ping means the connection is dead
+    static final long PONG_TIMEOUT_MS = 6 * 1000L;
     // additional 5 minutes after keep alive
     private static final int KEEP_ALIVE_ADDON = 5 * 60 * 1000;
+    // max reconnect attempts before falling back to full re-authorization
+    private static final int MAX_RECONNECT_RETRIES = 5;
+    // delay between reconnect attempts
+    private static final int RECONNECT_DELAY_MS = 5000;
+    // HTTP status returned by the handshake when we're rate limited
+    private static final int HTTP_TOO_MANY_REQUESTS = 429;
+    // max relogin attempts per 429 episode
+    private static final int MAX_RELOGIN_ATTEMPTS = 3;
+    // quadratic backoff base between 429 reconnect attempts: 10 * retryCounter^2 seconds
+    private static final int RATE_LIMIT_BACKOFF_BASE_SECONDS = 10;
 
     private final Logger logger = LoggerFactory.getLogger(Websocket.class);
     private final AccountHandler accountHandler;
-    private final Map<String, Instant> pingPongMap = new HashMap<>();
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getPoolBasedSequentialScheduledExecutorService("mercedesme-websocket", null);
 
     private @Nullable ScheduledFuture<?> refresher;
     private @Nullable WebSocketClient webSocketClient;
-    private @Nullable Session session;
-    private List<ClientMessage> commandQueue = new ArrayList<>();
-    private Instant runTill = Instant.now();
-    private WebsocketState state = WebsocketState.STOPPED;
-    private boolean keepAlive = false;
-    private boolean disposed = true;
+    // written by Jetty's session/frame callbacks, read by the scheduler thread
+    private volatile @Nullable Session session;
+    // package-private for WebsocketTest, which reads/seeds the watchdog state directly. Atomic because the
+    // check-then-set in sendPing() and the clear in handlePong() run on different threads.
+    final AtomicReference<@Nullable Instant> pingSentAt = new AtomicReference<>();
+    private final Queue<ClientMessage> commandQueue = new ConcurrentLinkedQueue<>();
+    private volatile Instant runTill = Instant.now();
+    private volatile WebsocketState state = WebsocketState.STOPPED;
+    private volatile boolean keepAlive = false;
+    private volatile boolean disposed = true;
+    // set right before a deliberate (idle-timeout) close so onClosedSession doesn't try to reconnect
+    private volatile boolean intentionalClose = false;
+    private volatile int reconnectAttempts = 0;
+    // relogin attempts for the current 429 episode, reset on a successful connect
+    private volatile int reloginAttempts = 0;
+    // consecutive 429 reconnect attempts, reset once vehicle data is received again
+    private volatile int rateLimitRetryCounter = 0;
 
     public enum WebsocketState {
         STOPPED,
@@ -120,9 +145,13 @@ public class Websocket extends RestApi {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);
                 localSession.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                logger.trace("Sent acknowledge {}", message.getMsgCase());
             } catch (IOException e) {
                 logger.warn("Error sending acknowledge {} : {}", message.getAllFields(), e.getMessage());
             }
+        } else {
+            // a dropped ack is otherwise indistinguishable from the server never receiving it
+            logger.debug("Cannot send acknowledge {} - no active session", message.getMsgCase());
         }
     }
 
@@ -183,8 +212,8 @@ public class Websocket extends RestApi {
      * @return true if command is successfully submitted, false otherwise
      */
     private boolean sendMessage() {
-        if (!commandQueue.isEmpty()) {
-            ClientMessage message = commandQueue.remove(0);
+        ClientMessage message = commandQueue.poll();
+        if (message != null) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Send Message {}", message.getAllFields());
             }
@@ -214,12 +243,12 @@ public class Websocket extends RestApi {
         if (!disposed && webSocketClient == null) {
             WebSocketClient localWebSocketClient = new WebSocketClient(httpClient);
             try {
-                localWebSocketClient.setMaxIdleTimeout(CONNECT_TIMEOUT_MS);
+                localWebSocketClient.setMaxIdleTimeout(WS_IDLE_TIMEOUT_MS);
                 ClientUpgradeRequest request = getClientUpgradeRequest();
                 String websocketURL = Utils.getWebsocketServer(config.region);
                 logger.trace("Websocket start {} max message size {}", websocketURL,
                         localWebSocketClient.getMaxBinaryMessageSize());
-                runTill = Instant.now().plusMillis(WS_RUNTIME_MS);
+                runTill = Instant.now().plusMillis(nextRuntimeMillis());
                 localWebSocketClient.start();
                 localWebSocketClient.connect(this, new URI(websocketURL), request);
                 webSocketClient = localWebSocketClient;
@@ -232,12 +261,38 @@ public class Websocket extends RestApi {
     }
 
     /**
-     * Performs an update of the web socket connection. If websocket is disposed refresh will not be executed. In case
-     * of CONNECTED it will check
-     * - if there are commands to be sent
-     * - send ping to the server
-     * - check if keep alive is set or run time is not over
-     * In case of other state it will start the web socket connection.
+     * Randomized WebSocket lifetime between WS_RUNTIME_MIN_MS and WS_RUNTIME_MAX_MS (1-3 minutes) - a fixed
+     * lifetime would be an easy anti-bot fingerprint.
+     *
+     * @return randomized runtime in milliseconds
+     */
+    private long nextRuntimeMillis() {
+        return WS_RUNTIME_MIN_MS + (long) (Math.random() * (WS_RUNTIME_MAX_MS - WS_RUNTIME_MIN_MS));
+    }
+
+    /**
+     * Backoff before the next reconnect attempt after an HTTP 429: grows quadratically with the number of
+     * consecutive 429s (10 * counter^2 seconds).
+     *
+     * @return backoff in milliseconds
+     */
+    private long nextRateLimitBackoffMillis() {
+        rateLimitRetryCounter++;
+        long seconds = (long) RATE_LIMIT_BACKOFF_BASE_SECONDS * rateLimitRetryCounter * rateLimitRetryCounter;
+        return seconds * 1000L;
+    }
+
+    /**
+     * @return true if the given error is an HTTP 429 returned by the WebSocket handshake
+     */
+    private boolean isTooManyRequests(@Nullable Throwable throwable) {
+        return throwable instanceof UpgradeException upgradeException
+                && upgradeException.getResponseStatusCode() == HTTP_TOO_MANY_REQUESTS;
+    }
+
+    /**
+     * Refreshes the WebSocket connection: when CONNECTED it sends queued commands and a ping and reschedules
+     * itself, otherwise it (re)starts the connection. Does nothing when disposed.
      */
     private void doRefresh() {
         if (disposed) {
@@ -258,21 +313,29 @@ public class Websocket extends RestApi {
 
     private void handleConnectedState() {
         logger.trace("Refresh: Websocket fine - state {}", state);
+        if (isPongOverdue()) {
+            // the idle timeout cannot detect this - our own outgoing pings reset it
+            logger.debug("Websocket missed pong within {} ms - connection considered dead", PONG_TIMEOUT_MS);
+            onClosedSession(new TimeoutException("No pong received within " + PONG_TIMEOUT_MS + " ms"));
+            return;
+        }
         if (sendMessage()) {
             // add additional runtime to execute and finish command
             runTill = runTill.plusMillis(ADDON_MESSAGE_TIME_MS);
         }
         sendPing();
         if (keepAlive || Instant.now().isBefore(runTill)) {
-            // doRefresh is called by AccountHandler, websocket endpoint onConnect and addCommand. To avoid
-            // multiple future calls cancel the current running or future schedule calls.
+            // reschedule unconditionally: with a conditional reschedule the first call after onConnect
+            // (refresher == null) would never schedule a follow-up and no further pings would be sent
             ScheduledFuture<?> localRefresher = refresher;
             if (localRefresher != null) {
                 localRefresher.cancel(false);
-                refresher = scheduler.schedule(this::doRefresh, CHECK_INTERVAL_MS, TimeUnit.MILLISECONDS);
             }
+            refresher = scheduler.schedule(this::doRefresh, PING_INTERVAL_MS, TimeUnit.MILLISECONDS);
         } else {
             logger.debug("Websocket run time is over - disconnect");
+            // this is a deliberate close (idle timeout reached) - don't let onClosedSession reconnect
+            intentionalClose = true;
             scheduler.execute(this::stop);
         }
     }
@@ -313,15 +376,16 @@ public class Websocket extends RestApi {
     }
 
     /**
-     * Ping the server to keep the connection alive and to check if the connection is still valid.
+     * Pings the server with an empty control frame - no payload, like the Mercedes-Me App's automatic
+     * pingInterval. Package-private for WebsocketTest.
      */
-    private void sendPing() {
+    void sendPing() {
         Session localSession = session;
         if (localSession != null) {
             try {
-                String pingId = UUID.randomUUID().toString();
-                pingPongMap.put(pingId, Instant.now());
-                localSession.getRemote().sendPing(ByteBuffer.wrap(pingId.getBytes(StandardCharsets.UTF_8)));
+                // keep the timestamp of a still-outstanding ping - handlePong() clears it once answered
+                pingSentAt.compareAndSet(null, Instant.now());
+                localSession.getRemote().sendPing(ByteBuffer.allocate(0));
             } catch (IOException e) {
                 logger.warn("Websocket ping failed {}", e.getMessage());
             }
@@ -329,16 +393,21 @@ public class Websocket extends RestApi {
     }
 
     private void handlePong(Frame frame) {
-        ByteBuffer buffer = frame.getPayload();
-        byte[] bytes = new byte[frame.getPayloadLength()];
-        for (int i = 0; i < frame.getPayloadLength(); i++) {
-            bytes[i] = buffer.get(i);
+        if (pingSentAt.getAndSet(null) == null) {
+            logger.trace("Websocket received pong without matching ping");
         }
-        String payloadString = new String(bytes, StandardCharsets.UTF_8);
-        Instant sent = pingPongMap.remove(payloadString);
-        if (sent == null) {
-            logger.debug("Websocket received pong without ping {}", payloadString);
-        }
+    }
+
+    /**
+     * Missed-pong watchdog - Jetty's idle timeout is reset by our own pings, so check directly whether a ping
+     * is still outstanding for >= PONG_TIMEOUT_MS. Package-private for WebsocketTest.
+     *
+     * @return true if a ping was sent and no pong has been received within PONG_TIMEOUT_MS
+     */
+    boolean isPongOverdue() {
+        Instant sent = pingSentAt.get();
+        // ">=" - Duration.toMillis() truncates, so the boundary itself must count as overdue
+        return sent != null && Duration.between(sent, Instant.now()).toMillis() >= PONG_TIMEOUT_MS;
     }
 
     private void handlePing(Frame frame) {
@@ -365,8 +434,9 @@ public class Websocket extends RestApi {
         request.setHeader("Ris-Sdk-Version", Utils.getRisSDKVersion(config.region));
         request.setHeader("X-Locale",
                 localeProvider.getLocale().getLanguage() + "-" + localeProvider.getLocale().getCountry()); // de-DE
-        request.setHeader("User-Agent", Utils.getApplication(config.region));
-        request.setHeader("X-Applicationname", Utils.getUserAgent(config.region));
+        // X-Applicationname is the short app id, User-Agent the full app/OS identifier string
+        request.setHeader("User-Agent", Utils.getUserAgent(config.region));
+        request.setHeader("X-Applicationname", Utils.getApplication(config.region));
         request.setHeader("Ris-Application-Version", Utils.getRisApplicationVersion(config.region));
         return request;
     }
@@ -385,6 +455,10 @@ public class Websocket extends RestApi {
                 System.arraycopy(blob, offset, message, 0, offsetLength);
             }
             PushMessage pm = VehicleEvents.PushMessage.parseFrom(message);
+            // real vehicle data flowing again means we're no longer blocked
+            if (rateLimitRetryCounter > 0) {
+                rateLimitRetryCounter = 0;
+            }
             accountHandler.enqueueMessage(pm);
             logger.trace("Websocket Message {} size {}", pm.getMsgCase(), pm.getAllFields().size());
             /**
@@ -418,7 +492,10 @@ public class Websocket extends RestApi {
     public void onConnect(Session session) {
         this.session = session;
         state = WebsocketState.CONNECTED;
-        pingPongMap.clear();
+        pingSentAt.set(null);
+        reconnectAttempts = 0;
+        // a successful connect ends the current relogin episode
+        reloginAttempts = 0;
         accountHandler.handleConnected();
         logger.trace("Websocket connected - state {}", state);
         // websocket client is started and connected - time to refresh
@@ -427,8 +504,8 @@ public class Websocket extends RestApi {
 
     @OnWebSocketClose
     public void onDisconnect(Session session, int statusCode, String reason) {
-        onClosedSession(null);
         logger.trace("Disconnected from server. Status {} Reason {}", statusCode, reason);
+        onClosedSession(null);
     }
 
     @OnWebSocketError
@@ -436,16 +513,68 @@ public class Websocket extends RestApi {
         onClosedSession(t);
     }
 
+    /**
+     * Handles a server-initiated close and transport errors alike: unless this was our own idle-timeout close
+     * or the binding is disposed, retry up to MAX_RECONNECT_RETRIES times before re-authorizing.
+     */
     private void onClosedSession(@Nullable Throwable throwable) {
+        if (state == WebsocketState.DISCONNECTED) {
+            // Jetty fires both onError and onClose for the same event - without this guard the second call
+            // would double count the attempts and schedule a second reconnect
+            logger.trace("Websocket onClosedSession - already handled, ignoring duplicate close/error callback");
+            return;
+        }
         session = null;
         state = WebsocketState.DISCONNECTED;
-        pingPongMap.clear();
-        if (throwable != null) {
-            logger.debug("Websocket onClosedSession exception: {} - try to resume login", throwable.getMessage());
-            accountHandler.handleWebsocketError(throwable);
-            accountHandler.authorize();
-        }
+        pingSentAt.set(null);
         // stop web socket client for closed session
         scheduler.execute(this::stop);
+
+        boolean skipReconnect = disposed || intentionalClose;
+        intentionalClose = false;
+        if (skipReconnect) {
+            return;
+        }
+
+        if (isTooManyRequests(throwable)) {
+            // rate limited: relogin with stored credentials, then back off before the next attempt
+            reconnectAttempts = 0;
+            if (reloginAttempts < MAX_RELOGIN_ATTEMPTS) {
+                reloginAttempts++;
+                logger.info("429 detected - trying relogin with stored credentials (attempt {}/{})", reloginAttempts,
+                        MAX_RELOGIN_ATTEMPTS);
+                // use the login result, not authTokenIsValid() - stale tokens would mask a failed relogin
+                if (accountHandler.authorize()) {
+                    logger.info("Relogin successful after 429");
+                    reloginAttempts = MAX_RELOGIN_ATTEMPTS;
+                } else {
+                    logger.warn("Relogin after 429 failed (attempt {}/{})", reloginAttempts, MAX_RELOGIN_ATTEMPTS);
+                }
+            } else {
+                logger.debug("429 detected - relogin attempts exhausted, waiting for backoff");
+            }
+            long backoffMillis = nextRateLimitBackoffMillis();
+            logger.debug("Websocket rate limited (HTTP {}) - retry {} in {} ms", HTTP_TOO_MANY_REQUESTS,
+                    rateLimitRetryCounter, backoffMillis);
+            scheduler.schedule(this::start, backoffMillis, TimeUnit.MILLISECONDS);
+            return;
+        }
+
+        if (throwable != null) {
+            logger.debug("Websocket onClosedSession exception: {}", throwable.getMessage());
+        }
+        if (reconnectAttempts < MAX_RECONNECT_RETRIES) {
+            reconnectAttempts++;
+            logger.trace("Websocket reconnect attempt {}/{} in {} ms", reconnectAttempts, MAX_RECONNECT_RETRIES,
+                    RECONNECT_DELAY_MS);
+            scheduler.schedule(this::start, RECONNECT_DELAY_MS, TimeUnit.MILLISECONDS);
+        } else {
+            logger.debug("Websocket max reconnect attempts exceeded - falling back to re-authorization");
+            reconnectAttempts = 0;
+            if (throwable != null) {
+                accountHandler.handleWebsocketError(throwable);
+            }
+            accountHandler.authorize();
+        }
     }
 }

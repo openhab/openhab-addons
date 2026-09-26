@@ -42,7 +42,28 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.daimler.mbcarkit.proto.VehicleEvents.Auxheatwarning;
+import com.daimler.mbcarkit.proto.VehicleEvents.AuxheatwarningsArrayAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.BoolAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsArrayAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleCombustionConsumptionAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleDistanceAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleElectricityConsumptionAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoublePressureAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleSpeedAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.Int64Attribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.Int64ClockHourAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.Int64DistanceAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.Int64RatioAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsArrayAttribute;
+import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
+import com.daimler.mbcarkit.proto.VehicleEvents.VSUMetadata;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdate;
+import com.google.protobuf.BoolValue;
+import com.google.protobuf.Timestamp;
 
 /**
  * {@link Mapper} converts Mercedes keys to channel name and group and converts delivered vehicle data
@@ -85,6 +106,8 @@ public class Mapper {
         if (ch != null) {
             State state;
             UOMObserver observer = null;
+            // in scope for the Average-speed case below, which reuses it
+            Unit<?> lengthUnit = defaultLengthUnit;
             switch (key) {
                 // Kilometer values
                 case MB_KEY_ODO:
@@ -94,7 +117,8 @@ public class Mapper {
                 case MB_KEY_DISTANCE_START:
                 case MB_KEY_DISTANCE_RESET:
                 case MB_KEY_ECOSCORE_BONUS:
-                    Unit<?> lengthUnit = defaultLengthUnit;
+                    // unit lookup runs unconditionally - a unit may be present while the value is nil
+                    lengthUnit = defaultLengthUnit;
                     if (value.hasDistanceUnit()) {
                         observer = new UOMObserver(value.getDistanceUnit().toString());
                         Unit<?> queryUnit = observer.getUnit();
@@ -104,7 +128,11 @@ public class Mapper {
                             LOGGER.trace("No Unit found for {} - take default ", key);
                         }
                     }
-                    state = QuantityType.valueOf(Utils.getDouble(value), lengthUnit);
+                    if (Utils.isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        state = QuantityType.valueOf(Utils.getDouble(value), lengthUnit);
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // special String Value
@@ -120,12 +148,18 @@ public class Mapper {
 
                 // KiloWatt values
                 case MB_KEY_CHARGING_POWER:
-                    double power = Utils.getDouble(value);
-                    state = QuantityType.valueOf(Math.max(0, power), KILOWATT_UNIT);
+                    if (Utils.isNil(value)) {
+                        // Math.max(0, -1) below would mask an unavailable reading as "0 kW"
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double power = Utils.getDouble(value);
+                        state = QuantityType.valueOf(Math.max(0, power), KILOWATT_UNIT);
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 case MB_KEY_AVERAGE_SPEED_START:
                 case MB_KEY_AVERAGE_SPEED_RESET:
+                    // unit lookup runs unconditionally - see Kilometer-values above
                     Unit<?> speedUnit = defaultSpeedUnit;
                     if (value.hasSpeedUnit()) {
                         observer = new UOMObserver(value.getSpeedUnit().toString());
@@ -136,29 +170,43 @@ public class Mapper {
                             LOGGER.trace("No Unit found for {} - take default ", key);
                         }
                     }
-                    double speed = Utils.getDouble(value);
-                    state = QuantityType.valueOf(Math.max(0, speed), speedUnit);
+                    if (Utils.isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double speed = Utils.getDouble(value);
+                        state = QuantityType.valueOf(Math.max(0, speed), speedUnit);
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // KiloWatt/Hour values
                 case MB_KEY_ELECTRICCONSUMPTIONSTART:
                 case MB_KEY_ELECTRICCONSUMPTIONRESET:
-                    double consumptionEv = Utils.getDouble(value);
-                    state = new DecimalType(consumptionEv);
+                    // unit lookup runs unconditionally - see Kilometer-values above
                     if (value.hasElectricityConsumptionUnit()) {
                         observer = new UOMObserver(value.getElectricityConsumptionUnit().toString());
                     } else {
                         LOGGER.trace("Don't have electric consumption unit for {}", key);
+                    }
+                    if (Utils.isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double consumptionEv = Utils.getDouble(value);
+                        state = new DecimalType(consumptionEv);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
                 // Litre values
                 case MB_KEY_LIQUIDCONSUMPTIONSTART:
                 case MB_KEY_LIQUIDCONSUMPTIONRESET:
-                    double consumptionComb = Utils.getDouble(value);
-                    state = new DecimalType(consumptionComb);
+                    // unit lookup runs unconditionally - a BEV reports this as nil while still carrying a unit
                     if (value.hasCombustionConsumptionUnit()) {
                         observer = new UOMObserver(value.getCombustionConsumptionUnit().toString());
+                    }
+                    if (Utils.isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double consumptionComb = Utils.getDouble(value);
+                        state = new DecimalType(consumptionComb);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
 
@@ -201,8 +249,13 @@ public class Mapper {
                 case MB_KEY_ECOSCORE_ACCEL:
                 case MB_KEY_ECOSCORE_CONSTANT:
                 case MB_KEY_ECOSCORE_COASTING:
-                    double level = Utils.getDouble(value);
-                    state = QuantityType.valueOf(level, Units.PERCENT);
+                    if (Utils.isNil(value)) {
+                        // status NOT_RECEIVED/INVALID with default int_value 0 must not become a real 0%
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double level = Utils.getDouble(value);
+                        state = QuantityType.valueOf(level, Units.PERCENT);
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
                 // Contacts
@@ -214,8 +267,14 @@ public class Mapper {
                 case MB_KEY_ENGINE_HOOD_STATUS:
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
-                    } else {
+                    } else if (value.hasBoolValue()) {
+                        // defensive bool_value fallback (true = open) - the active push path emits the enum below
                         state = getContact(value.getBoolValue());
+                    } else if (value.hasIntValue()) {
+                        // Doorstatus/Decklidstatus/EngineHoodStatus enum: CLOSED=0, OPEN=1
+                        state = getContact(Utils.getInt(value) != 0);
+                    } else {
+                        state = UnDefType.UNDEF;
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -276,12 +335,13 @@ public class Mapper {
                 case MB_KEY_CHARGINGACTIVE:
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
+                    } else if (value.hasBoolValue()) {
+                        state = OnOffType.from(value.getBoolValue());
+                    } else if (value.hasIntValue()) {
+                        // binary enum: 0 = off/inactive/not engaged, delivered as int_value, not bool_value
+                        state = OnOffType.from(value.getIntValue() != 0);
                     } else {
-                        if (value.hasBoolValue()) {
-                            state = OnOffType.from(value.getBoolValue());
-                        } else {
-                            state = UnDefType.UNDEF;
-                        }
+                        state = UnDefType.UNDEF;
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -294,9 +354,14 @@ public class Mapper {
                 case MB_KEY_DOORLOCKSTATUSGAS:
                     if (Utils.isNil(value)) {
                         state = UnDefType.UNDEF;
-                    } else {
-                        // sad but true - false means locked
+                    } else if (value.hasBoolValue()) {
+                        // defensive bool fallback, reversed: false means locked - the active path emits the enum below
                         state = OnOffType.from(!value.getBoolValue());
+                    } else if (value.hasIntValue()) {
+                        // Doorlockstatus enum: LOCKED=0, UNLOCKED=1
+                        state = OnOffType.from(Utils.getInt(value) == 0);
+                    } else {
+                        state = UnDefType.UNDEF;
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
@@ -315,6 +380,7 @@ public class Mapper {
                 case MB_KEY_TIREPRESSURE_FRONT_RIGHT:
                 case MB_KEY_TIREPRESSURE_REAR_LEFT:
                 case MB_KEY_TIREPRESSURE_REAR_RIGHT:
+                    // unit lookup runs unconditionally - see Kilometer-values above
                     Unit<?> pressureUnit = defaultPressureUnit;
                     if (value.hasPressureUnit()) {
                         observer = new UOMObserver(value.getPressureUnit().toString());
@@ -325,14 +391,542 @@ public class Mapper {
                             LOGGER.trace("No Unit found for {} - take default ", key);
                         }
                     }
-                    double pressure = Utils.getDouble(value);
-                    state = QuantityType.valueOf(pressure, pressureUnit);
+                    if (Utils.isNil(value)) {
+                        state = UnDefType.UNDEF;
+                    } else {
+                        double pressure = Utils.getDouble(value);
+                        state = QuantityType.valueOf(pressure, pressureUnit);
+                    }
                     return new ChannelStateMap(ch[0], ch[1], state, observer);
                 default:
                     break;
             }
         }
         return INVALID_MAP;
+    }
+
+    /**
+     * Converts a {@link VehicleStatusUpdate} (typed push format) into a {@code Map<String, VehicleAttributeStatus>}
+     * keyed by the {@code MB_KEY_*} constants used by {@link #getChannelStateMap(String, VehicleAttributeStatus)}.
+     * <p>
+     * Enum-typed fields are converted via {@code getValueValue()}, the numeric code declared in the {@code .proto}
+     * source - the same codes the server sent as {@code int_value} before.
+     *
+     * @param vsu the typed status update for a single VIN
+     * @return a key-to-attribute map ready for {@link #getChannelStateMap(String, VehicleAttributeStatus)}
+     */
+    public static Map<String, VehicleAttributeStatus> fromVehicleStatusUpdate(VehicleStatusUpdate vsu) {
+        Map<String, VehicleAttributeStatus> attributes = new HashMap<>();
+
+        // Each put*() below is gated on hasXxx(): without it an absent field's getter returns the default
+        // instance (value 0), which Utils.isNil() cannot distinguish from genuine data.
+
+        // bool
+        if (vsu.hasWarningbrakefluid()) {
+            putBool(attributes, MB_KEY_WARNINGBRAKEFLUID, vsu.getWarningbrakefluid());
+        }
+        if (vsu.hasWarningbrakeliningwear()) {
+            putBool(attributes, MB_KEY_WARNINGBRAKELININGWEAR, vsu.getWarningbrakeliningwear());
+        }
+        if (vsu.hasWarningcoolantlevellow()) {
+            putBool(attributes, MB_KEY_WARNINGCOOLANTLEVELLOW, vsu.getWarningcoolantlevellow());
+        }
+        if (vsu.hasWarningenginelight()) {
+            putBool(attributes, MB_KEY_WARNINGENGINELIGHT, vsu.getWarningenginelight());
+        }
+        if (vsu.hasChargingactive()) {
+            putBool(attributes, MB_KEY_CHARGINGACTIVE, vsu.getChargingactive());
+        }
+
+        // plain int64 / double (no unit)
+        if (vsu.hasServiceintervaldays()) {
+            putInt64(attributes, MB_KEY_SERVICEINTERVALDAYS, vsu.getServiceintervaldays());
+        }
+        if (vsu.hasTirePressMeasTimestamp()) {
+            putInt64(attributes, MB_KEY_TIRE_PRESS_MEAS_TIMESTAMP, vsu.getTirePressMeasTimestamp());
+        }
+        if (vsu.hasDrivenTimeReset()) {
+            putInt64(attributes, MB_KEY_DRIVEN_TIME_RESET, vsu.getDrivenTimeReset());
+        }
+        if (vsu.hasDrivenTimeStart()) {
+            putInt64(attributes, MB_KEY_DRIVEN_TIME_START, vsu.getDrivenTimeStart());
+        }
+        if (vsu.hasPositionHeading()) {
+            putDouble(attributes, MB_KEY_POSITION_HEADING, vsu.getPositionHeading());
+        }
+        if (vsu.hasChargingPower()) {
+            putDouble(attributes, MB_KEY_CHARGING_POWER, vsu.getChargingPower());
+        }
+        if (vsu.hasPositionLong()) {
+            putDouble(attributes, MB_KEY_POSITION_LONG, vsu.getPositionLong());
+        }
+        if (vsu.hasPositionLat()) {
+            putDouble(attributes, MB_KEY_POSITION_LAT, vsu.getPositionLat());
+        }
+
+        // enum-typed status attributes -> int_value = proto-declared enum number
+        if (vsu.hasTireSensorAvailable()) {
+            putEnum(attributes, MB_KEY_TIRE_SENSOR_AVAILABLE, vsu.getTireSensorAvailable().getValueValue(),
+                    vsu.getTireSensorAvailable().getMetadata());
+        }
+        if (vsu.hasChargeCouplerDCLockStatus()) {
+            putEnum(attributes, MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS,
+                    vsu.getChargeCouplerDCLockStatus().getValueValue(),
+                    vsu.getChargeCouplerDCLockStatus().getMetadata());
+        }
+        if (vsu.hasChargeCouplerDCStatus()) {
+            putEnum(attributes, MB_KEY_CHARGE_COUPLER_DC_STATUS, vsu.getChargeCouplerDCStatus().getValueValue(),
+                    vsu.getChargeCouplerDCStatus().getMetadata());
+        }
+        if (vsu.hasChargeCouplerACStatus()) {
+            putEnum(attributes, MB_KEY_CHARGE_COUPLER_AC_STATUS, vsu.getChargeCouplerACStatus().getValueValue(),
+                    vsu.getChargeCouplerACStatus().getMetadata());
+        }
+        if (vsu.hasChargeFlapDCStatus()) {
+            putEnum(attributes, MB_KEY_CHARGE_FLAP_DC_STATUS, vsu.getChargeFlapDCStatus().getValueValue(),
+                    vsu.getChargeFlapDCStatus().getMetadata());
+        }
+        if (vsu.hasChargingstatus()) {
+            putEnum(attributes, MB_KEY_CHARGE_STATUS, vsu.getChargingstatus().getValueValue(),
+                    vsu.getChargingstatus().getMetadata());
+        }
+        if (vsu.hasChargingErrorDetails()) {
+            putEnum(attributes, MB_KEY_CHARGE_ERROR, vsu.getChargingErrorDetails().getValueValue(),
+                    vsu.getChargingErrorDetails().getMetadata());
+        }
+        if (vsu.hasTirewarningsrdk()) {
+            putEnum(attributes, MB_KEY_TIREWARNINGSRDK, vsu.getTirewarningsrdk().getValueValue(),
+                    vsu.getTirewarningsrdk().getMetadata());
+        }
+        if (vsu.hasStarterBatteryState()) {
+            putEnum(attributes, MB_KEY_STARTER_BATTERY_STATE, vsu.getStarterBatteryState().getValueValue(),
+                    vsu.getStarterBatteryState().getMetadata());
+        }
+        if (vsu.hasFlipWindowStatus()) {
+            putEnum(attributes, MB_KEY_FLIP_WINDOW_STATUS, vsu.getFlipWindowStatus().getValueValue(),
+                    vsu.getFlipWindowStatus().getMetadata());
+        }
+        if (vsu.hasWindowStatusRearBlind()) {
+            putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_BLIND, vsu.getWindowStatusRearBlind().getValueValue(),
+                    vsu.getWindowStatusRearBlind().getMetadata());
+        }
+        if (vsu.hasWindowStatusRearLeftBlind()) {
+            putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_LEFT_BLIND,
+                    vsu.getWindowStatusRearLeftBlind().getValueValue(),
+                    vsu.getWindowStatusRearLeftBlind().getMetadata());
+        }
+        if (vsu.hasWindowStatusRearRightBlind()) {
+            putEnum(attributes, MB_KEY_WINDOW_STATUS_REAR_RIGHT_BLIND,
+                    vsu.getWindowStatusRearRightBlind().getValueValue(),
+                    vsu.getWindowStatusRearRightBlind().getMetadata());
+        }
+        if (vsu.hasWindowstatusrearright()) {
+            putEnum(attributes, MB_KEY_WINDOWSTATUSREARRIGHT, vsu.getWindowstatusrearright().getValueValue(),
+                    vsu.getWindowstatusrearright().getMetadata());
+        }
+        if (vsu.hasWindowstatusrearleft()) {
+            putEnum(attributes, MB_KEY_WINDOWSTATUSREARLEFT, vsu.getWindowstatusrearleft().getValueValue(),
+                    vsu.getWindowstatusrearleft().getMetadata());
+        }
+        if (vsu.hasWindowstatusfrontright()) {
+            putEnum(attributes, MB_KEY_WINDOWSTATUSFRONTRIGHT, vsu.getWindowstatusfrontright().getValueValue(),
+                    vsu.getWindowstatusfrontright().getMetadata());
+        }
+        if (vsu.hasWindowstatusfrontleft()) {
+            putEnum(attributes, MB_KEY_WINDOWSTATUSFRONTLEFT, vsu.getWindowstatusfrontleft().getValueValue(),
+                    vsu.getWindowstatusfrontleft().getMetadata());
+        }
+        if (vsu.hasRooftopstatus()) {
+            putEnum(attributes, MB_KEY_ROOFTOPSTATUS, vsu.getRooftopstatus().getValueValue(),
+                    vsu.getRooftopstatus().getMetadata());
+        }
+        if (vsu.hasSunroofStatusRearBlind()) {
+            putEnum(attributes, MB_KEY_SUNROOF_STATUS_REAR_BLIND, vsu.getSunroofStatusRearBlind().getValueValue(),
+                    vsu.getSunroofStatusRearBlind().getMetadata());
+        }
+        if (vsu.hasSunroofStatusFrontBlind()) {
+            putEnum(attributes, MB_KEY_SUNROOF_STATUS_FRONT_BLIND, vsu.getSunroofStatusFrontBlind().getValueValue(),
+                    vsu.getSunroofStatusFrontBlind().getMetadata());
+        }
+        if (vsu.hasSunroofstatus()) {
+            putEnum(attributes, MB_KEY_SUNROOFSTATUS, vsu.getSunroofstatus().getValueValue(),
+                    vsu.getSunroofstatus().getMetadata());
+        }
+        if (vsu.hasIgnitionstate()) {
+            putEnum(attributes, MB_KEY_IGNITIONSTATE, vsu.getIgnitionstate().getValueValue(),
+                    vsu.getIgnitionstate().getMetadata());
+        }
+        if (vsu.hasDoorStatusOverall()) {
+            putEnum(attributes, MB_KEY_DOOR_STATUS_OVERALL, vsu.getDoorStatusOverall().getValueValue(),
+                    vsu.getDoorStatusOverall().getMetadata());
+        }
+        if (vsu.hasWindowStatusOverall()) {
+            putEnum(attributes, MB_KEY_WINDOW_STATUS_OVERALL, vsu.getWindowStatusOverall().getValueValue(),
+                    vsu.getWindowStatusOverall().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusvehicle()) {
+            putEnum(attributes, MB_KEY_DOOR_LOCK_STATUS_OVERALL, vsu.getDoorlockstatusvehicle().getValueValue(),
+                    vsu.getDoorlockstatusvehicle().getMetadata());
+        }
+        if (vsu.hasTireMarkerFrontRight()) {
+            putEnum(attributes, MB_KEY_TIRE_MARKER_FRONT_RIGHT, vsu.getTireMarkerFrontRight().getValueValue(),
+                    vsu.getTireMarkerFrontRight().getMetadata());
+        }
+        if (vsu.hasTireMarkerFrontLeft()) {
+            putEnum(attributes, MB_KEY_TIRE_MARKER_FRONT_LEFT, vsu.getTireMarkerFrontLeft().getValueValue(),
+                    vsu.getTireMarkerFrontLeft().getMetadata());
+        }
+        if (vsu.hasTireMarkerRearRight()) {
+            putEnum(attributes, MB_KEY_TIRE_MARKER_REAR_RIGHT, vsu.getTireMarkerRearRight().getValueValue(),
+                    vsu.getTireMarkerRearRight().getMetadata());
+        }
+        if (vsu.hasTireMarkerRearLeft()) {
+            putEnum(attributes, MB_KEY_TIRE_MARKER_REAR_LEFT, vsu.getTireMarkerRearLeft().getValueValue(),
+                    vsu.getTireMarkerRearLeft().getMetadata());
+        }
+        if (vsu.hasParkbrakestatus()) {
+            putEnum(attributes, MB_KEY_PARKBRAKESTATUS, vsu.getParkbrakestatus().getValueValue(),
+                    vsu.getParkbrakestatus().getMetadata());
+        }
+        if (vsu.hasPrecondNow()) {
+            putEnum(attributes, MB_KEY_PRECOND_NOW, vsu.getPrecondNow().getValueValue(),
+                    vsu.getPrecondNow().getMetadata());
+        }
+        if (vsu.hasPrecondSeatFrontRight()) {
+            putEnum(attributes, MB_KEY_PRECOND_SEAT_FRONT_RIGHT, vsu.getPrecondSeatFrontRight().getValueValue(),
+                    vsu.getPrecondSeatFrontRight().getMetadata());
+        }
+        if (vsu.hasPrecondSeatFrontLeft()) {
+            putEnum(attributes, MB_KEY_PRECOND_SEAT_FRONT_LEFT, vsu.getPrecondSeatFrontLeft().getValueValue(),
+                    vsu.getPrecondSeatFrontLeft().getMetadata());
+        }
+        if (vsu.hasPrecondSeatRearRight()) {
+            putEnum(attributes, MB_KEY_PRECOND_SEAT_REAR_RIGHT, vsu.getPrecondSeatRearRight().getValueValue(),
+                    vsu.getPrecondSeatRearRight().getMetadata());
+        }
+        if (vsu.hasPrecondSeatRearLeft()) {
+            putEnum(attributes, MB_KEY_PRECOND_SEAT_REAR_LEFT, vsu.getPrecondSeatRearLeft().getValueValue(),
+                    vsu.getPrecondSeatRearLeft().getMetadata());
+        }
+        if (vsu.hasWarningwashwater()) {
+            putEnum(attributes, MB_KEY_WARNINGWASHWATER, vsu.getWarningwashwater().getValueValue(),
+                    vsu.getWarningwashwater().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusfrontright()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSFRONTRIGHT, vsu.getDoorlockstatusfrontright().getValueValue(),
+                    vsu.getDoorlockstatusfrontright().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusfrontleft()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSFRONTLEFT, vsu.getDoorlockstatusfrontleft().getValueValue(),
+                    vsu.getDoorlockstatusfrontleft().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusrearright()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSREARRIGHT, vsu.getDoorlockstatusrearright().getValueValue(),
+                    vsu.getDoorlockstatusrearright().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusrearleft()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSREARLEFT, vsu.getDoorlockstatusrearleft().getValueValue(),
+                    vsu.getDoorlockstatusrearleft().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusdecklid()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSDECKLID, vsu.getDoorlockstatusdecklid().getValueValue(),
+                    vsu.getDoorlockstatusdecklid().getMetadata());
+        }
+        if (vsu.hasDoorlockstatusgas()) {
+            putEnum(attributes, MB_KEY_DOORLOCKSTATUSGAS, vsu.getDoorlockstatusgas().getValueValue(),
+                    vsu.getDoorlockstatusgas().getMetadata());
+        }
+        if (vsu.hasEngineHoodStatus()) {
+            putEnum(attributes, MB_KEY_ENGINE_HOOD_STATUS, vsu.getEngineHoodStatus().getValueValue(),
+                    vsu.getEngineHoodStatus().getMetadata());
+        }
+        if (vsu.hasDecklidstatus()) {
+            putEnum(attributes, MB_KEY_DECKLIDSTATUS, vsu.getDecklidstatus().getValueValue(),
+                    vsu.getDecklidstatus().getMetadata());
+        }
+        if (vsu.hasDoorstatusrearleft()) {
+            putEnum(attributes, MB_KEY_DOORSTATUSREARLEFT, vsu.getDoorstatusrearleft().getValueValue(),
+                    vsu.getDoorstatusrearleft().getMetadata());
+        }
+        if (vsu.hasDoorstatusrearright()) {
+            putEnum(attributes, MB_KEY_DOORSTATUSREARRIGHT, vsu.getDoorstatusrearright().getValueValue(),
+                    vsu.getDoorstatusrearright().getMetadata());
+        }
+        if (vsu.hasDoorstatusfrontleft()) {
+            putEnum(attributes, MB_KEY_DOORSTATUSFRONTLEFT, vsu.getDoorstatusfrontleft().getValueValue(),
+                    vsu.getDoorstatusfrontleft().getMetadata());
+        }
+        if (vsu.hasDoorstatusfrontright()) {
+            putEnum(attributes, MB_KEY_DOORSTATUSFRONTRIGHT, vsu.getDoorstatusfrontright().getValueValue(),
+                    vsu.getDoorstatusfrontright().getMetadata());
+        }
+        if (vsu.hasEndofChargeTimeWeekday()) {
+            putEnum(attributes, MB_KEY_ENDOFCHARGEDAY, vsu.getEndofChargeTimeWeekday().getValueValue(),
+                    vsu.getEndofChargeTimeWeekday().getMetadata());
+        }
+        if (vsu.hasSelectedChargeProgram()) {
+            putEnum(attributes, MB_KEY_SELECTED_CHARGE_PROGRAM, vsu.getSelectedChargeProgram().getValueValue(),
+                    vsu.getSelectedChargeProgram().getMetadata());
+        }
+        if (vsu.hasVehiclePositionErrorCode()) {
+            putEnum(attributes, MB_KEY_POSITION_ERROR, vsu.getVehiclePositionErrorCode().getValueValue(),
+                    vsu.getVehiclePositionErrorCode().getMetadata());
+        }
+        if (vsu.hasPrecondNowError()) {
+            putEnum(attributes, MB_KEY_PRECOND_NOW_ERROR, vsu.getPrecondNowError().getValueValue(),
+                    vsu.getPrecondNowError().getMetadata());
+        }
+
+        // distance (int64 / double, with unit + display value)
+        if (vsu.hasRangeliquid()) {
+            putInt64Distance(attributes, MB_KEY_RANGELIQUID, vsu.getRangeliquid());
+        }
+        if (vsu.hasRangeelectric()) {
+            putInt64Distance(attributes, MB_KEY_RANGEELECTRIC, vsu.getRangeelectric());
+        }
+        if (vsu.hasOdo()) {
+            putInt64Distance(attributes, MB_KEY_ODO, vsu.getOdo());
+        }
+        if (vsu.hasDistanceReset()) {
+            putDoubleDistance(attributes, MB_KEY_DISTANCE_RESET, vsu.getDistanceReset());
+        }
+        if (vsu.hasDistanceStart()) {
+            putDoubleDistance(attributes, MB_KEY_DISTANCE_START, vsu.getDistanceStart());
+        }
+        if (vsu.hasOverallRange()) {
+            putDoubleDistance(attributes, MB_KEY_OVERALL_RANGE, vsu.getOverallRange());
+        }
+        if (vsu.hasEcoscorebonusrange()) {
+            putDoubleDistance(attributes, MB_KEY_ECOSCORE_BONUS, vsu.getEcoscorebonusrange());
+        }
+
+        // pressure
+        if (vsu.hasTirepressureFrontLeft()) {
+            putPressure(attributes, MB_KEY_TIREPRESSURE_FRONT_LEFT, vsu.getTirepressureFrontLeft());
+        }
+        if (vsu.hasTirepressureFrontRight()) {
+            putPressure(attributes, MB_KEY_TIREPRESSURE_FRONT_RIGHT, vsu.getTirepressureFrontRight());
+        }
+        if (vsu.hasTirepressureRearLeft()) {
+            putPressure(attributes, MB_KEY_TIREPRESSURE_REAR_LEFT, vsu.getTirepressureRearLeft());
+        }
+        if (vsu.hasTirepressureRearRight()) {
+            putPressure(attributes, MB_KEY_TIREPRESSURE_REAR_RIGHT, vsu.getTirepressureRearRight());
+        }
+
+        // speed
+        if (vsu.hasAverageSpeedReset()) {
+            putSpeed(attributes, MB_KEY_AVERAGE_SPEED_RESET, vsu.getAverageSpeedReset());
+        }
+        if (vsu.hasAverageSpeedStart()) {
+            putSpeed(attributes, MB_KEY_AVERAGE_SPEED_START, vsu.getAverageSpeedStart());
+        }
+
+        // ratio (percent)
+        if (vsu.hasTanklevelpercent()) {
+            putRatio(attributes, MB_KEY_TANKLEVELPERCENT, vsu.getTanklevelpercent());
+        }
+        if (vsu.hasTankLevelAdBlue()) {
+            putRatio(attributes, MB_KEY_ADBLUELEVELPERCENT, vsu.getTankLevelAdBlue());
+        }
+        if (vsu.hasSoc()) {
+            putRatio(attributes, MB_KEY_SOC, vsu.getSoc());
+        }
+        if (vsu.hasMaxSoc()) {
+            putRatio(attributes, MB_KEY_MAX_SOC, vsu.getMaxSoc());
+        }
+        if (vsu.hasMaxSocLowerLimit()) {
+            putRatio(attributes, MB_KEY_MAX_SOC_LOWER_LIMIT, vsu.getMaxSocLowerLimit());
+        }
+        if (vsu.hasMaxSocUpperLimit()) {
+            putRatio(attributes, MB_KEY_MAX_SOC_UPPER_LIMIT, vsu.getMaxSocUpperLimit());
+        }
+        if (vsu.hasEcoscoreaccel()) {
+            putRatio(attributes, MB_KEY_ECOSCORE_ACCEL, vsu.getEcoscoreaccel());
+        }
+        if (vsu.hasEcoscoreconst()) {
+            putRatio(attributes, MB_KEY_ECOSCORE_CONSTANT, vsu.getEcoscoreconst());
+        }
+        if (vsu.hasEcoscorefreewhl()) {
+            putRatio(attributes, MB_KEY_ECOSCORE_COASTING, vsu.getEcoscorefreewhl());
+        }
+
+        // clock hour
+        if (vsu.hasEndofchargetime()) {
+            putClockHour(attributes, MB_KEY_ENDOFCHARGETIME, vsu.getEndofchargetime());
+        }
+
+        // consumption
+        if (vsu.hasLiquidconsumptionreset()) {
+            putCombustionConsumption(attributes, MB_KEY_LIQUIDCONSUMPTIONRESET, vsu.getLiquidconsumptionreset());
+        }
+        if (vsu.hasLiquidconsumptionstart()) {
+            putCombustionConsumption(attributes, MB_KEY_LIQUIDCONSUMPTIONSTART, vsu.getLiquidconsumptionstart());
+        }
+        if (vsu.hasElectricconsumptionreset()) {
+            putElectricityConsumption(attributes, MB_KEY_ELECTRICCONSUMPTIONRESET, vsu.getElectricconsumptionreset());
+        }
+        if (vsu.hasElectricconsumptionstart()) {
+            putElectricityConsumption(attributes, MB_KEY_ELECTRICCONSUMPTIONSTART, vsu.getElectricconsumptionstart());
+        }
+
+        // complex array-typed fields
+        if (vsu.hasTemperaturePoints()) {
+            putTemperaturePoints(attributes, MB_KEY_TEMPERATURE_POINTS, vsu.getTemperaturePoints());
+        }
+        if (vsu.hasChargePrograms()) {
+            putChargePrograms(attributes, MB_KEY_CHARGE_PROGRAMS, vsu.getChargePrograms());
+        }
+        if (vsu.hasAuxheatwarnings()) {
+            putAuxheatwarnings(attributes, MB_KEY_AUXILIARY_WARNINGS, vsu.getAuxheatwarnings());
+        }
+
+        return attributes;
+    }
+
+    private static long toMillis(VSUMetadata metadata) {
+        if (!metadata.hasTimestamp()) {
+            return 0;
+        }
+        Timestamp ts = metadata.getTimestamp();
+        return ts.getSeconds() * 1000 + ts.getNanos() / 1_000_000;
+    }
+
+    private static VehicleAttributeStatus.Builder baseBuilder(VSUMetadata metadata) {
+        return VehicleAttributeStatus.newBuilder().setStatus(metadata.getStatusValue())
+                .setTimestampInMs(toMillis(metadata));
+    }
+
+    private static void putBool(Map<String, VehicleAttributeStatus> map, String key, BoolAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setBoolValue(a.getValue()).build());
+    }
+
+    private static void putInt64(Map<String, VehicleAttributeStatus> map, String key, Int64Attribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setIntValue(a.getValue()).build());
+    }
+
+    private static void putDouble(Map<String, VehicleAttributeStatus> map, String key, DoubleAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).build());
+    }
+
+    private static void putEnum(Map<String, VehicleAttributeStatus> map, String key, int enumValue,
+            VSUMetadata metadata) {
+        map.put(key, baseBuilder(metadata).setIntValue(enumValue).build());
+    }
+
+    private static void putInt64Distance(Map<String, VehicleAttributeStatus> map, String key,
+            Int64DistanceAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setIntValue(a.getValue()).setDistanceUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putDoubleDistance(Map<String, VehicleAttributeStatus> map, String key,
+            DoubleDistanceAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).setDistanceUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putPressure(Map<String, VehicleAttributeStatus> map, String key, DoublePressureAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).setPressureUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putSpeed(Map<String, VehicleAttributeStatus> map, String key, DoubleSpeedAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).setSpeedUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putRatio(Map<String, VehicleAttributeStatus> map, String key, Int64RatioAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setIntValue(a.getValue()).setRatioUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putClockHour(Map<String, VehicleAttributeStatus> map, String key, Int64ClockHourAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setIntValue(a.getValue()).setClockHourUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putCombustionConsumption(Map<String, VehicleAttributeStatus> map, String key,
+            DoubleCombustionConsumptionAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue()).setCombustionConsumptionUnit(a.getUnit())
+                .setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    private static void putElectricityConsumption(Map<String, VehicleAttributeStatus> map, String key,
+            DoubleElectricityConsumptionAttribute a) {
+        map.put(key, baseBuilder(a.getMetadata()).setDoubleValue(a.getValue())
+                .setElectricityConsumptionUnit(a.getUnit()).setDisplayValue(a.getDisplayValue()).build());
+    }
+
+    /**
+     * temperature_points: VehicleHandler reads {@code MB_KEY_TEMPERATURE_POINTS} directly, so this builds the old
+     * {@link TemperaturePointsValue} oneof case - the new entries carry the same information with a 0-based
+     * {@code Zone} enum and a wrapped temperature.
+     */
+    private static void putTemperaturePoints(Map<String, VehicleAttributeStatus> map, String key,
+            TemperaturePointsArrayAttribute a) {
+        TemperaturePointsValue.Builder valueBuilder = TemperaturePointsValue.newBuilder();
+        a.getValueList().forEach(point -> {
+            valueBuilder.addTemperaturePoints(com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePoint.newBuilder()
+                    .setZone(zoneToLegacyString(point.getZone())).setTemperature(point.getTemperature().getValue())
+                    .setTemperatureDisplayValue(point.getTemperature().getDisplayValue())
+                    .setActive(BoolValue.newBuilder().setValue(point.getActive()).build()).build());
+        });
+        VehicleAttributeStatus.Builder statusBuilder = baseBuilder(a.getMetadata())
+                .setTemperaturePointsValue(valueBuilder.build());
+        // the new format carries a unit per point - take the first as the shared unit VehicleHandler reads
+        if (!a.getValueList().isEmpty()) {
+            statusBuilder.setTemperatureUnit(a.getValueList().get(0).getTemperature().getUnit());
+        }
+        map.put(key, statusBuilder.build());
+    }
+
+    private static String zoneToLegacyString(TemperaturePointsArrayAttribute.TemperaturePoint.Zone zone) {
+        switch (zone) {
+            case FRONT_LEFT:
+                return "frontLeft";
+            case FRONT_CENTER:
+                return "frontCenter";
+            case FRONT_RIGHT:
+                return "frontRight";
+            case REAR_LEFT:
+                return "rearLeft";
+            case REAR_CENTER:
+                return "rearCenter";
+            case REAR_RIGHT:
+                return "rearRight";
+            case REAR_2_LEFT:
+                return "rear2Left";
+            case REAR_2_CENTER:
+                return "rear2Center";
+            case REAR_2_RIGHT:
+                return "rear2Right";
+            default:
+                LOGGER.trace("Unmapped temperature point zone {}", zone);
+                return zone.toString();
+        }
+    }
+
+    /**
+     * charge_programs: pass-through - the new attribute reuses the same {@code ChargeProgramParameters} message
+     * the old {@link ChargeProgramsValue} wraps, so no field-by-field conversion is needed.
+     */
+    private static void putChargePrograms(Map<String, VehicleAttributeStatus> map, String key,
+            ChargeProgramsArrayAttribute a) {
+        ChargeProgramsValue value = ChargeProgramsValue.newBuilder().addAllChargeProgramParameters(a.getValueList())
+                .build();
+        map.put(key, baseBuilder(a.getMetadata()).setChargeProgramsValue(value).build());
+    }
+
+    /**
+     * auxheatwarnings: the new enum is a repeated field, so several warnings can be active at once - take the most
+     * severe (highest) code, or 0 (= NONE) for an empty list, to keep the single Number channel meaningful.
+     * Not yet observed with an active warning on a real vehicle.
+     */
+    private static void putAuxheatwarnings(Map<String, VehicleAttributeStatus> map, String key,
+            AuxheatwarningsArrayAttribute a) {
+        int worst = a.getValueList().stream().mapToInt(Auxheatwarning::getNumber).max().orElse(0);
+        map.put(key, baseBuilder(a.getMetadata()).setIntValue(worst).build());
     }
 
     private static State getContact(boolean b) {

@@ -23,7 +23,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,10 +36,6 @@ import org.openhab.core.storage.Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.daimler.mbcarkit.proto.VehicleEvents;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
-import com.google.protobuf.InvalidProtocolBufferException;
-
 /**
  * {@link RestApi} for single calls towards Mercedes servers
  *
@@ -51,7 +46,6 @@ public class RestApi extends Authorization {
     private final Logger logger = LoggerFactory.getLogger(RestApi.class);
 
     private String commandCapabilitiesEndpoint = "/v1/vehicle/%s/capabilities/commands";
-    private String vehicleAttributesEndpoint = "/v1/vehicle/%s/vehicleattributes";
     private String capabilitiesEndpoint = "/v1/vehicle/%s/capabilities";
     private String poiEndpoint = "/v1/vehicle/%s/route";
 
@@ -73,23 +67,6 @@ public class RestApi extends Authorization {
         } catch (MercedesMeApiException e) {
             logger.warn("Error Sending POI {}", e.getMessage());
             // don't follow up exception because thing shall not go OFFLINE due to failed POI request
-        }
-    }
-
-    public VEPUpdate restGetVehicleAttributes(String vin) throws MercedesMeApiException {
-        String vehicleUrl = Utils.getWidgetServer(config.region) + String.format(vehicleAttributesEndpoint, vin);
-        Request vehicleRequest = httpClient.newRequest(vehicleUrl);
-        addBasicHeaders(vehicleRequest);
-        addAuthHeaders(vehicleRequest);
-        ContentResponse vehicleResponse = send(vehicleRequest);
-        if (vehicleResponse.getStatus() == HttpStatus.OK_200) {
-            try {
-                return VehicleEvents.VEPUpdate.parseFrom(vehicleResponse.getContent());
-            } catch (InvalidProtocolBufferException e) {
-                throw new MercedesMeApiException("Error parsing vehicle attributes: " + e.getMessage());
-            }
-        } else {
-            throw new MercedesMeApiException("Error retrieving vehicle attributes: " + vehicleResponse.getStatus());
         }
     }
 
