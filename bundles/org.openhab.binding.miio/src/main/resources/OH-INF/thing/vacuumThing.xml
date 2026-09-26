@@ -251,6 +251,15 @@
 		<label>Mop Drying Active</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="current_map">
+		<item-type>Number</item-type>
+		<label>Current Map</label>
+		<description>The active map (floor) of the vacuum. Select a map to load it on multi-floor enabled vacuums.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state pattern="%.0f"/>
+	</channel-type>
 	<channel-type id="collect_dust">
 		<item-type>Switch</item-type>
 		<label>Start Collecting Dust</label>
