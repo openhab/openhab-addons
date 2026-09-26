@@ -75,6 +75,7 @@ public class RRMapFileParser {
     public static final int FLDIREC = 32;
     public static final int MAP_DATE = 33;
     public static final int NONCE_DATA = 34;
+    public static final int EXT_ZONES = 36;
     public static final int DIGEST = 1024;
     public static final int HEADER = 0x7272;
 
@@ -202,6 +203,7 @@ public class RRMapFileParser {
                 case NO_GO_AREAS:
                 case MOB_FORBIDDEN_AREA:
                 case CARPET_FORBIDDEN_AREA:
+                case EXT_ZONES:
                     int areaPairs = getUInt16(header, 0x08);
                     ArrayList<float[]> area = new ArrayList<>();
                     for (int areaPair = 0; areaPair < areaPairs; areaPair++) {
@@ -385,6 +387,9 @@ public class RRMapFileParser {
                     break;
                 case CARPET_FORBIDDEN_AREA:
                     pw.print("Carpet No Go zones:\t");
+                    break;
+                case EXT_ZONES:
+                    pw.print("Extra clean zones:\t");
                     break;
                 default:
                     pw.print("Unknown type zones:\t");
