@@ -316,6 +316,7 @@ public enum MiIoDevices {
             "Mi Smart Ultra Electricity Saving Air Conditioner (1.5HP/Inverter/New China Energy Label Level 1)",
             THING_TYPE_BASIC),
     XIAOMI_REPEATER_V2("xiaomi.repeater.v2", "Mi Wi-Fi Repeater 2", THING_TYPE_UNSUPPORTED),
+    XIAOMI_VACUUM_B106BK("xiaomi.vacuum.b106bk", "Xiaomi Robot Vacuum T12", THING_TYPE_BASIC),
     XIAOMI_VACUUM_B108GL("xiaomi.vacuum.b108gl", "Xiaomi Robot Vacuum S20+", THING_TYPE_BASIC),
     XIAOMI_VACUUM_C102GL("xiaomi.vacuum.c102gl", "Xiaomi Robot Vacuum X20+", THING_TYPE_BASIC),
     XIAOMI_WIFISPEAKER_V1("xiaomi.wifispeaker.v1", "Mi Network Speaker", THING_TYPE_UNSUPPORTED),
