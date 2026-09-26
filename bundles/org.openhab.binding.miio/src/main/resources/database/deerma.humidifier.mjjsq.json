@@ -100,7 +100,7 @@
 				],
 				"category": "humidity",
 				"tags": [
-					"SetPoint",
+					"Setpoint",
 					"Humidity"
 				]
 			},
