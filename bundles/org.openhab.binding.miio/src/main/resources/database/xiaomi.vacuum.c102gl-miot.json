@@ -51,11 +51,11 @@
 						},
 						{
 							"value": "brush-cleaner-reset-brush-life",
-							"label": "Brush Cleaner Reset Brush Life"
+							"label": "Main Cleaning Brush Reset Brush Life"
 						},
 						{
-							"value": "brush-cleaner-reset-brush-life",
-							"label": "Brush Cleaner Reset Brush Life"
+							"value": "brush-cleaner-reset-brush-life1",
+							"label": "Side Cleaning Brush Reset Brush Life"
 						},
 						{
 							"value": "filter-reset-filter-life",
@@ -249,7 +249,7 @@
 							"name": "matchValue",
 							"parameters": [
 								{
-									"matchValue": "brush-cleaner-reset-brush-life"
+									"matchValue": "brush-cleaner-reset-brush-life1"
 								}
 							]
 						}
@@ -393,7 +393,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Vacuum Start Sweep\",\"vacuum-stop-sweeping\"\u003d\"Vacuum Stop Sweeping\",\"vacuum-start-room-sweep\"\u003d\"Vacuum Start Room Sweep\",\"vacuum-start-dust-arrest\"\u003d\"Vacuum Start Dust Arrest\",\"vacuum-start-mop-wash\"\u003d\"Vacuum Start Mop Wash\",\"vacuum-start-dry\"\u003d\"Vacuum Start Dry\",\"vacuum-stop-dry\"\u003d\"Vacuum Stop Dry\",\"vacuum-start-eject\"\u003d\"Vacuum Start Eject\",\"battery-start-charge\"\u003d\"Battery Start Charge\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"mop-reset-mop-life\"\u003d\"Mop Reset Mop Life\",\"vacuum-extend-start-clean\"\u003d\"Vacuum Extend Start Clean\",\"vacuum-extend-stop-clean\"\u003d\"Vacuum Extend Stop Clean\",\"map-map-req\"\u003d\"Map Map Req\",\"map-update-map\"\u003d\"Map Update Map\",\"audio-position\"\u003d\"Audio Position\",\"audio-play-sound\"\u003d\"Audio Play Sound\",\"time-delete-timer\"\u003d\"Time Delete Timer\"]`"
+				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Vacuum Start Sweep\",\"vacuum-stop-sweeping\"\u003d\"Vacuum Stop Sweeping\",\"vacuum-start-room-sweep\"\u003d\"Vacuum Start Room Sweep\",\"vacuum-start-dust-arrest\"\u003d\"Vacuum Start Dust Arrest\",\"vacuum-start-mop-wash\"\u003d\"Vacuum Start Mop Wash\",\"vacuum-start-dry\"\u003d\"Vacuum Start Dry\",\"vacuum-stop-dry\"\u003d\"Vacuum Stop Dry\",\"vacuum-start-eject\"\u003d\"Vacuum Start Eject\",\"battery-start-charge\"\u003d\"Battery Start Charge\",\"brush-cleaner-reset-brush-life\"\u003d\"Main Cleaning Brush Reset Brush Life\",\"brush-cleaner-reset-brush-life1\"\u003d\"Side Cleaning Brush Reset Brush Life\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"mop-reset-mop-life\"\u003d\"Mop Reset Mop Life\",\"vacuum-extend-start-clean\"\u003d\"Vacuum Extend Start Clean\",\"vacuum-extend-stop-clean\"\u003d\"Vacuum Extend Stop Clean\",\"map-map-req\"\u003d\"Map Map Req\",\"map-update-map\"\u003d\"Map Update Map\",\"audio-position\"\u003d\"Audio Position\",\"audio-play-sound\"\u003d\"Audio Play Sound\",\"time-delete-timer\"\u003d\"Time Delete Timer\"]`"
 			},
 			{
 				"property": "status",
@@ -1291,7 +1291,6 @@
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
-					"maximum": -1,
 					"step": 1,
 					"pattern": "%.0f",
 					"readOnly": true
@@ -1309,7 +1308,6 @@
 				"unit": "minutes",
 				"stateDescription": {
 					"minimum": 0,
-					"maximum": -1,
 					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
@@ -1326,7 +1324,6 @@
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
-					"maximum": -1,
 					"step": 1,
 					"pattern": "%.0f",
 					"readOnly": true
@@ -1343,7 +1340,6 @@
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
-					"maximum": -1,
 					"step": 1,
 					"pattern": "%.0f",
 					"readOnly": true

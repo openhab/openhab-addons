@@ -607,7 +607,6 @@
 				"unit": "square_metre",
 				"stateDescription": {
 					"minimum": 0,
-					"maximum": -1,
 					"step": 1,
 					"pattern": "%.0f",
 					"readOnly": true

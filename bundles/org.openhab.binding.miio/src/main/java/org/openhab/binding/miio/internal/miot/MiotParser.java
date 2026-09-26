@@ -208,15 +208,13 @@ public class MiotParser {
                                     }
                                 }
                                 if (property.valueRange != null && property.valueRange.size() == 3) {
-                                    stateDescription
-                                            .setMinimum(BigDecimal.valueOf(property.valueRange.get(0).doubleValue()));
-                                    stateDescription
-                                            .setMaximum(BigDecimal.valueOf(property.valueRange.get(1).doubleValue()));
+                                    stateDescription.setMinimum(property.valueRange.get(0));
+                                    stateDescription.setMaximum(property.valueRange.get(1));
 
-                                    double step = property.valueRange.get(2).doubleValue();
-                                    if (step != 0) {
-                                        stateDescription.setStep(BigDecimal.valueOf(step));
-                                        if (step >= 1) {
+                                    BigDecimal step = property.valueRange.get(2);
+                                    if (step.signum() != 0) {
+                                        stateDescription.setStep(step);
+                                        if (step.compareTo(BigDecimal.ONE) >= 0) {
                                             decimals = 0;
                                         }
                                     }
@@ -353,12 +351,26 @@ public class MiotParser {
             StateDescriptionDTO stateDescription = new StateDescriptionDTO();
             List<OptionsValueListDTO> options = new LinkedList<>();
             List<MiIoDeviceAction> miIoDeviceActions = new LinkedList<>();
+            Set<String> actionCheck = new HashSet<>();
             deviceActions.forEach((action, service) -> {
                 String actionId = action.type.substring(action.type.indexOf("action:")).split(":")[1];
                 String serviceId = service.type.substring(service.type.indexOf("service:")).split(":")[1];
                 String description = String.format("%s-%s", serviceId, actionId);
+                String label = captializedName(description);
+                // services of the same type (e.g. main and side brush) share action names, while the action value
+                // must be unique as every action matching the selected value is executed
+                int cnt = 0;
+                while (actionCheck.contains(description + cnt)) {
+                    cnt++;
+                }
+                actionCheck.add(description + cnt);
+                if (cnt > 0) {
+                    description = description + cnt;
+                    label = label + " " + cnt;
+                    logger.warn("duplicate for action:{} ({})", description, cnt);
+                }
                 OptionsValueListDTO option = new OptionsValueListDTO();
-                option.label = captializedName(description);
+                option.label = label;
                 option.value = description;
                 options.add(option);
                 MiIoDeviceAction miIoDeviceAction = new MiIoDeviceAction();
