@@ -109,6 +109,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         double kdTimeConstant = getDoubleFromConfig(config, CONFIG_KD_TIMECONSTANT);
         double iMinValue = getDoubleFromConfig(config, CONFIG_I_MIN);
         double iMaxValue = getDoubleFromConfig(config, CONFIG_I_MAX);
+        double integralDecayTime = getDoubleFromConfig(config, CONFIG_I_DECAY_TIME);
         pInspector = (String) config.get(P_INSPECTOR);
         iInspector = (String) config.get(I_INSPECTOR);
         dInspector = (String) config.get(D_INSPECTOR);
@@ -122,7 +123,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         double previousError = getItemNameValueAsNumberOrZero(itemRegistry, eInspector);
 
         controller = new PIDController(kpAdjuster, kiAdjuster, kdAdjuster, kdTimeConstant, iMinValue, iMaxValue,
-                previousIntegralPart, previousDerivativePart, previousError);
+                integralDecayTime, previousIntegralPart, previousDerivativePart, previousError);
 
         eventFilter = event -> {
             String topic = event.getTopic();
