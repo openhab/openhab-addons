@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_INPUT;
-import static org.openhab.binding.shelly.internal.ShellyDevices.SHELLYDT_PLUSDIMMER0110VG3;
-import static org.openhab.binding.shelly.internal.ShellyDevices.SHELLYDT_PLUSDIMMER0110VG4;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPRORGBWWPM;
-import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.hasColorComponent;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.*;
@@ -1469,7 +1467,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         lights.set(idx, ds);
 
-        if (profile.isProRgbwwPm) {
+        if (profile.isProRgbwwPm || profile.isPlusRgbwPm) {
             // the color component always sits at settings.lights[0]
             updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
