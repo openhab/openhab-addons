@@ -52,6 +52,9 @@ Using your favorite configuration UI to edit **Settings / Other Services - Googl
 1. After your browser has been redirected to <https://www.google.com>, the authorization code will be set in the browser URL as value of the "code" URL query parameter (e.g. `https://www.google.com/?code=XXXXXXXXXX&scope=https://www.googleapis.com/auth/cloud-platform` --> `XXXXXXXXXX`)
 1. After initial authorization, this code is not needed anymore. It is recommended to clear this configuration parameter afterwards.
 
+To remove the saved OAuth tokens, clear both **Client Id** and **Client Secret** in the service configuration.
+The service stops until credentials are entered and authorized again.
+
 - **Pitch** - The pitch of selected voice, up to 20 semitones.
 - **Volume Gain** - The volume of the output between 16dB and -96dB.
 - **Speaking Rate** - The speaking rate can be 4x faster or slower than the normal rate.

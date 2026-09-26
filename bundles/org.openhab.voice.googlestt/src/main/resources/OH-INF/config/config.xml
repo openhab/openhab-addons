@@ -18,11 +18,11 @@
 			<label>Info Messages</label>
 			<description>Configure service information messages.</description>
 		</parameter-group>
-		<parameter name="clientId" type="text" required="true" groupName="authentication">
+		<parameter name="clientId" type="text" groupName="authentication">
 			<label>Client Id</label>
 			<description>Google Cloud Platform OAuth 2.0-Client Id.</description>
 		</parameter>
-		<parameter name="clientSecret" type="text" required="true" groupName="authentication">
+		<parameter name="clientSecret" type="text" groupName="authentication">
 			<context>password</context>
 			<label>Client Secret</label>
 			<description>Google Cloud Platform OAuth 2.0-Client Secret.</description>
