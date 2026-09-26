@@ -75,6 +75,7 @@ import com.google.gson.annotations.SerializedName;
 public class Resource {
 
     public static final MathContext PERCENT_MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
+    private static final double MIN_BRIGHTNESS_WHEN_ON = 0.01;
     private static final Gson GSON = new Gson();
 
     /**
@@ -236,10 +237,14 @@ public class Resource {
     }
 
     /**
-     * Get the brightness as a PercentType. If off the brightness is 0, otherwise use dimming value.
+     * Returns the brightness as a percentage.
+     * If the light is explicitly off, the brightness is {@link PercentType#ZERO}.
+     * If the light is explicitly on, a zero brightness is represented as {@code 0.01%}
+     * so that the on state takes precedence.
      *
-     * @return UnDefType.NULL if the channel is not supported, or a PercentType if the value is good
-     * @throws CriticalFieldMissingException if a critical element is missing
+     * @return {@link UnDefType#NULL} if dimming is not supported, otherwise the brightness as a
+     *         {@link PercentType}
+     * @throws CriticalFieldMissingException if the brightness value is missing
      */
     public State getBrightnessState() throws CriticalFieldMissingException {
         Dimming dimming = this.dimming;
@@ -252,7 +257,7 @@ public class Resource {
             if (on != null && on.getOn() instanceof Boolean on2 && !on2) {
                 return PercentType.ZERO;
             }
-            brightness = Math.max(0.0, Math.min(100.0, brightness));
+            brightness = Math.max(on != null ? MIN_BRIGHTNESS_WHEN_ON : 0.0, Math.min(100.0, brightness));
             return new PercentType(new BigDecimal(brightness, PERCENT_MATH_CONTEXT));
         }
         return UnDefType.NULL;
@@ -310,13 +315,16 @@ public class Resource {
     }
 
     /**
-     * Get the color as an HSBType. This returns an HSB that is based on an amalgamation of the color xy, dimming, and
-     * on/off JSON elements. It takes its 'H' and 'S' parts from the 'ColorXy' JSON element, and its 'B' part from the
-     * on/off resp. dimming JSON elements. If off the B part is 0, otherwise it is the dimming element value. Note: this
-     * method is only to be used on cached state DTOs which already have a defined color gamut.
+     * Returns the color as an {@link HSBType}, combining the hue and saturation from the color XY value
+     * with the brightness from the dimming and on/off values. If the light is explicitly off, the
+     * brightness is {@link PercentType#ZERO}; otherwise, the dimming brightness is used, with a minimum
+     * of {@code 0.01%} when an on state is available.
+     * <p>
+     * This method is intended for cached state DTOs that already have a defined color gamut.
      *
-     * @return UnDefType.NULL if the channel is not supported, or an HSBType if the value is good
-     * @throws CriticalFieldMissingException if a critical element is missing
+     * @return {@link UnDefType#NULL} if the color is not supported, otherwise the color as an
+     *         {@link HSBType}
+     * @throws CriticalFieldMissingException if a required color, gamut, or brightness value is missing
      */
     public State getColorState() throws CriticalFieldMissingException {
         ColorXy color = this.color;
@@ -331,7 +339,7 @@ public class Resource {
             if (xy == null || gamut == null || brightness == null) {
                 throw new CriticalFieldMissingException("'xy', 'gamut', or 'brightness' missing");
             }
-            brightness = Math.max(0.0, Math.min(100.0, brightness));
+            brightness = Math.max(on != null ? MIN_BRIGHTNESS_WHEN_ON : 0.0, Math.min(100.0, brightness));
             HSBType hsb = ColorUtil.xyToHsb(xy.getXY(), gamut);
             PercentType percent = (on instanceof OnState on && on.getOn() instanceof Boolean on2 && !on2) //
                     ? PercentType.ZERO
@@ -625,10 +633,12 @@ public class Resource {
     }
 
     /**
-     * Return the state of the On/Off element treating "soft off" as off.
-     * 
-     * @return UnDefType.NULL if the channel is not supported, or an OnOffType if the value is good
-     * @throws CriticalFieldMissingException if a critical element is missing
+     * Returns the switch state, treating a zero brightness as off.
+     * For dimmable devices, the switch is on only when the device is explicitly on or has a
+     * brightness greater than zero.
+     *
+     * @return {@link UnDefType#NULL} if the channel is not supported, otherwise the switch state
+     * @throws CriticalFieldMissingException if the {@code on} or {@code brightness} value is missing
      */
     public State getSwitchState() throws CriticalFieldMissingException {
         OnState on = this.on;
@@ -652,7 +662,7 @@ public class Resource {
         if (brightness == null) {
             throw new CriticalFieldMissingException("'brightness' missing");
         }
-        return OnOffType.from(brightness > 0.0);
+        return OnOffType.from(onValue.booleanValue() || brightness > 0.0);
     }
 
     /**
