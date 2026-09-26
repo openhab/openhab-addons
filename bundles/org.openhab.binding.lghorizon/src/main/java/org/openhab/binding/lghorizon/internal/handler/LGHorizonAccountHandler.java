@@ -203,7 +203,9 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
                 mqtt.disconnect();
                 return;
             }
-
+            if (disposed) {
+                return;
+            }
             updateStatus(ThingStatus.ONLINE);
             initializeRetryAttempt.set(0);
 
@@ -501,7 +503,7 @@ public class LGHorizonAccountHandler extends BaseBridgeHandler implements LGHori
         }
 
         this.languageByProfileId = profiles.stream().filter(p -> p.profileId != null)
-                .collect(Collectors.<CustomerDto.ProfileDto, String, String> toMap(p -> p.profileId,
+                .collect(Collectors.<CustomerDto.ProfileDto, String, String>toMap(p -> p.profileId,
                         p -> p.options != null && p.options.lang != null ? p.options.lang : DEFAULT_LANGUAGE));
 
         EntitlementsDto entitlementsDto = auth.get(auth.getServiceConfig().getServiceUrl(PURCHASE_SERVICE_URL_FIELD),
