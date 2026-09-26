@@ -101,7 +101,7 @@ public class ShellyBluApiTest {
                 {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
                  "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 2,
                           "Moisture": 0.0, "Speed": [4.2, 8.1], "Direction": 135.0, "UVIndex": 3.7,
-                          "Precipitation": 0.5}}]}}
+                          "Precipitation": 0.5, "Voltage": 3.284}}]}}
                 """;
 
         api.onNotifyEvent(atmosphericPacket);
@@ -117,6 +117,7 @@ public class ShellyBluApiTest {
         assertThat("windDirection from second packet added", sensorData.windDirection, is(equalTo(135.0)));
         assertThat("uvIndex from second packet added", sensorData.uvIndex, is(equalTo(3.7)));
         assertThat("precipitation from second packet added", sensorData.precipitation, is(equalTo(0.5)));
+        assertThat("capacitorVoltage from second packet added", sensorData.capacitorVoltage, is(equalTo(3.284)));
         assertThat("rain from second packet added", sensorData.rain, is(equalTo(false)));
         assertThat("windDirectionStr derived from windDirection", sensorData.windDirectionStr, is(equalTo("SE")));
         assertThat("apparentTemp derived once temp/humidity/wind are all present", sensorData.apparentTemp,

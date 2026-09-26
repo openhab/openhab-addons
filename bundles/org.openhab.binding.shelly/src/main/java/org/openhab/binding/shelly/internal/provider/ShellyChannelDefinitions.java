@@ -374,6 +374,8 @@ public class ShellyChannelDefinitions {
                 // Battery
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_CAPACITOR_VOLTAGE, "sensorCapacitorVoltage",
+                        ITEMT_VOLT))
 
                 // TRV
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_POSITION, "sensorPosition", ITEMT_DIMMER))
@@ -932,6 +934,8 @@ public class ShellyChannelDefinitions {
         boolean hasBatteryValue = sdata.bat != null && sdata.bat.value != null;
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL);
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
+        addChannel(thing, newChannels, ws90 || sdata.capacitorVoltage != null, CHANNEL_GROUP_BATTERY,
+                CHANNEL_SENSOR_CAPACITOR_VOLTAGE);
 
         addChannel(thing, newChannels, sdata.sensorError != null || (profile.isFlood && profile.isGen2),
                 CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);
