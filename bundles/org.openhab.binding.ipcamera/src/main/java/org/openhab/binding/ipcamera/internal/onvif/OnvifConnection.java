@@ -834,6 +834,10 @@ public class OnvifConnection {
 
             Element sourceElement = (Element) notificationMessageElement.getElementsByTagName("tt:Source").item(0);
 
+            if (isEventForOtherNvrChannel(sourceElement, topic)) {
+                continue;
+            }
+
             Element dataElement = (Element) notificationMessageElement.getElementsByTagName("tt:Data").item(0);
 
             if (dataElement == null) {
@@ -1175,6 +1179,37 @@ public class OnvifConnection {
         } finally {
             connecting.unlock();
         }
+    }
+
+    /**
+     * NVRs and hubs (e.g. Reolink NVR / Home Hub) send the events of ALL connected cameras to every
+     * subscriber. The camera is identified by the first SimpleItem of tt:Source (e.g. Source=002 or
+     * VideoSourceConfigurationToken=002), which matches the 0-based nvrChannel of the Reolink thing.
+     * Stand-alone cameras send 000 and use nvrChannel 0, so they are not affected. Events without a
+     * numeric source are never filtered.
+     *
+     * @return true if the event belongs to a different NVR channel and must be ignored.
+     */
+    private boolean isEventForOtherNvrChannel(@Nullable Element sourceElement, String topic) {
+        if (sourceElement == null || !REOLINK_THING.equals(ipCameraHandler.getThing().getThingTypeUID().getId())) {
+            return false;
+        }
+        Element sourceItem = (Element) sourceElement.getElementsByTagName("tt:SimpleItem").item(0);
+        if (sourceItem == null) {
+            return false;
+        }
+        String sourceValue = sourceItem.getAttribute("Value").trim();
+        if (sourceValue.isEmpty() || sourceValue.length() > 3 || !sourceValue.chars().allMatch(Character::isDigit)) {
+            return false;
+        }
+        int sourceChannel = Integer.parseInt(sourceValue);
+        int nvrChannel = ipCameraHandler.cameraConfig.getNvrChannel();
+        if (sourceChannel != nvrChannel) {
+            logger.debug("Ignoring ONVIF event {} from NVR channel {}, thing {} uses nvrChannel {}", topic,
+                    sourceChannel, ipCameraHandler.getThing().getUID(), nvrChannel);
+            return true;
+        }
+        return false;
     }
 
     public boolean getEventsSupported() {
