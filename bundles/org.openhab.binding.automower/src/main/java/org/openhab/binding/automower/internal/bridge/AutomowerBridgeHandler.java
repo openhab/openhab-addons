@@ -241,6 +241,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         final String appKey = bridgeConfiguration.getAppKey();
         final String appSecret = bridgeConfiguration.getAppSecret();
         final Integer pollingIntervalS = bridgeConfiguration.getPollingInterval();
+        final Integer requestTimeoutS = bridgeConfiguration.getRequestTimeout();
 
         if (appKey == null || appKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-app-key");
@@ -249,13 +250,17 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         } else if (pollingIntervalS != null && pollingIntervalS < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error-invalid-polling-interval");
+        } else if (requestTimeoutS != null && requestTimeoutS < 1) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/conf-error-invalid-request-timeout");
         } else {
             OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
                     HUSQVARNA_API_TOKEN_URL, null, appKey, appSecret, null, null);
             this.oAuthService = oAuthService;
 
             if (this.bridge == null) {
-                AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler);
+                AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, httpClient, scheduler,
+                        requestTimeoutS);
                 this.bridge = currentBridge;
                 // connect WebSocket and poll automower state via REST API once after connection
                 connectWebSocket(new AutomowerWebSocketAdapter(this, currentBridge));

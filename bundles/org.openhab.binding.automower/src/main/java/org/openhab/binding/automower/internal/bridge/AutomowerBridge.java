@@ -62,11 +62,11 @@ public class AutomowerBridge {
     private final AutomowerConnectApi automowerApi;
 
     public AutomowerBridge(OAuthClientService authService, String appKey, HttpClient httpClient,
-            ScheduledExecutorService scheduler) {
+            ScheduledExecutorService scheduler, @Nullable Integer requestTimeoutS) {
         this.authService = authService;
         this.appKey = appKey;
 
-        this.automowerApi = new AutomowerConnectApi(httpClient);
+        this.automowerApi = new AutomowerConnectApi(httpClient, requestTimeoutS);
     }
 
     public synchronized AccessTokenResponse authenticate() throws AutomowerCommunicationException {
@@ -125,20 +125,26 @@ public class AutomowerBridge {
      *            "Park" commands
      * @param commandWorkAreaId The work area id to be used for the command. This is only evaluated for
      *            "StartInWorkArea" command
+     * @param commandExternalReason The external reason to be used for the command. This is only evaluated for the
+     *            "Park" command with a duration and must be in the range 200000-299999
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public void sendAutomowerCommand(String id, AutomowerCommand command, @Nullable Long commandWorkAreaId,
-            @Nullable Long commandDuration) throws AutomowerCommunicationException {
+            @Nullable Long commandDuration, @Nullable Long commandExternalReason)
+            throws AutomowerCommunicationException {
         MowerCommand mowerCommand = new MowerCommand();
         mowerCommand.setType(command.getCommand());
 
-        if (commandDuration != null || commandWorkAreaId != null) {
+        if (commandDuration != null || commandWorkAreaId != null || commandExternalReason != null) {
             MowerCommandAttributes attributes = new MowerCommandAttributes();
             if (commandDuration != null) {
                 attributes.setDuration(commandDuration);
             }
             if (commandWorkAreaId != null) {
                 attributes.setWorkAreaId(commandWorkAreaId);
+            }
+            if (commandExternalReason != null) {
+                attributes.setExternalReason(commandExternalReason);
             }
             mowerCommand.setAttributes(attributes);
         }

@@ -120,6 +120,38 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
                 } else {
                     logger.warn("Command {} not supported for channel {}", command, channelUID);
                 }
+            } else if (CHANNEL_WORKAREA_NAME.equals(channelUID.getId())) {
+                if (command instanceof StringType cmd) {
+                    mowerHandler.sendAutomowerWorkAreaName(areaId, cmd.toString());
+                } else {
+                    logger.warn("Command {} not supported for channel {}", command, channelUID);
+                }
+            } else if (CHANNEL_WORKAREA_ORIENTATION.equals(channelUID.getId())) {
+                if (command instanceof QuantityType cmd) {
+                    cmd = cmd.toUnit("°");
+                    if (cmd != null) {
+                        mowerHandler.sendAutomowerWorkAreaOrientation(areaId, cmd.intValue());
+                    } else {
+                        logger.warn("Command {} not supported for channel {}", command, channelUID);
+                    }
+                } else if (command instanceof DecimalType cmd) {
+                    mowerHandler.sendAutomowerWorkAreaOrientation(areaId, cmd.intValue());
+                } else {
+                    logger.warn("Command {} not supported for channel {}", command, channelUID);
+                }
+            } else if (CHANNEL_WORKAREA_ORIENTATION_SHIFT.equals(channelUID.getId())) {
+                if (command instanceof QuantityType cmd) {
+                    cmd = cmd.toUnit("°");
+                    if (cmd != null) {
+                        mowerHandler.sendAutomowerWorkAreaOrientationShift(areaId, cmd.intValue());
+                    } else {
+                        logger.warn("Command {} not supported for channel {}", command, channelUID);
+                    }
+                } else if (command instanceof DecimalType cmd) {
+                    mowerHandler.sendAutomowerWorkAreaOrientationShift(areaId, cmd.intValue());
+                } else {
+                    logger.warn("Command {} not supported for channel {}", command, channelUID);
+                }
             } else {
                 logger.warn("Command {} not supported for channel {}", command, channelUID);
             }
@@ -248,8 +280,12 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         } else {
             updateState(CHANNEL_WORKAREA_NAME, new StringType(workArea.getName()));
         }
+        updateState(CHANNEL_WORKAREA_TYPE,
+                workArea.getType() != null ? new StringType(workArea.getType()) : UnDefType.NULL);
         updateState(CHANNEL_WORKAREA_CUTTING_HEIGHT, new QuantityType<>(workArea.getCuttingHeight(), Units.PERCENT));
+        updateState(CHANNEL_WORKAREA_USE_GLOBAL_CUTTING_HEIGHT, OnOffType.from(workArea.isUseGlobalCuttingHeight()));
         updateState(CHANNEL_WORKAREA_ENABLED, OnOffType.from(workArea.isEnabled()));
+        updateState(CHANNEL_WORKAREA_SCHEDULABLE, OnOffType.from(workArea.isSchedulable()));
         if (workArea.getProgress() != null) {
             updateState(CHANNEL_WORKAREA_PROGRESS, new QuantityType<>(workArea.getProgress(), Units.PERCENT));
         } else {
@@ -264,6 +300,30 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
                     .toZonedDateTime(TimeUnit.SECONDS.toMillis(lastTimeCompleted), mowerHandler.getMowerZoneId())));
         } else {
             updateState(CHANNEL_WORKAREA_LAST_TIME_COMPLETED, UnDefType.NULL);
+        }
+
+        // lastTimeAbandoned is in seconds, convert it to milliseconds
+        long lastTimeAbandoned = workArea.getLastTimeAbandoned();
+        // If lastTimeAbandoned is 0 it means the work area has never been abandoned
+        if (lastTimeAbandoned != 0L) {
+            updateState(CHANNEL_WORKAREA_LAST_TIME_ABANDONED, new DateTimeType(mowerHandler
+                    .toZonedDateTime(TimeUnit.SECONDS.toMillis(lastTimeAbandoned), mowerHandler.getMowerZoneId())));
+        } else {
+            updateState(CHANNEL_WORKAREA_LAST_TIME_ABANDONED, UnDefType.NULL);
+        }
+
+        Integer orientation = workArea.getOrientation();
+        if (orientation != null) {
+            updateState(CHANNEL_WORKAREA_ORIENTATION, new QuantityType<>(orientation, Units.DEGREE_ANGLE));
+        } else {
+            updateState(CHANNEL_WORKAREA_ORIENTATION, UnDefType.NULL);
+        }
+
+        Integer orientationShift = workArea.getOrientationShift();
+        if (orientationShift != null) {
+            updateState(CHANNEL_WORKAREA_ORIENTATION_SHIFT, new QuantityType<>(orientationShift, Units.DEGREE_ANGLE));
+        } else {
+            updateState(CHANNEL_WORKAREA_ORIENTATION_SHIFT, UnDefType.NULL);
         }
     }
 
