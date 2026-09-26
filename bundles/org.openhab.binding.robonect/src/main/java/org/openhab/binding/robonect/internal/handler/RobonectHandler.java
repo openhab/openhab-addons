@@ -425,17 +425,53 @@ public class RobonectHandler extends BaseThingHandler {
         if (station != null) {
             if (station.getEnable() != null)
                 updateState(CHANNEL_WLAN_ENABLED, OnOffType.from(station.getEnable()));
+            if (station.getMac() != null)
+                updateState(CHANNEL_WLAN_MAC, new StringType(station.getMac()));
             if (station.getSsid() != null)
                 updateState(CHANNEL_WLAN_SSID, new StringType(station.getSsid()));
             if (station.getIp() != null)
                 updateState(CHANNEL_WLAN_IP, new StringType(station.getIp()));
+            if (station.getDhcp() != null)
+                updateState(CHANNEL_WLAN_DHCP, OnOffType.from(station.getDhcp()));
+            if (station.getPing() != null)
+                updateState(CHANNEL_WLAN_PING, OnOffType.from(station.getPing()));
+            if (station.getPingtime() != null)
+                updateState(CHANNEL_WLAN_PING_TIME, new StringType(station.getPingtime()));
+            if (station.getNetmask() != null)
+                updateState(CHANNEL_WLAN_NETMASK, new StringType(station.getNetmask()));
+            if (station.getGateway() != null)
+                updateState(CHANNEL_WLAN_GATEWAY, new StringType(station.getGateway()));
         }
         AccessPoint ap = info.getAp();
         if (ap != null) {
             if (ap.getEnable() != null)
                 updateState(CHANNEL_WLAN_AP_ENABLED, OnOffType.from(ap.getEnable()));
+            if (ap.getMac() != null)
+                updateState(CHANNEL_WLAN_AP_MAC, new StringType(ap.getMac()));
+            if (ap.getHidden() != null)
+                updateState(CHANNEL_WLAN_AP_HIDDEN, OnOffType.from(ap.getHidden()));
             if (ap.getSsid() != null)
                 updateState(CHANNEL_WLAN_AP_SSID, new StringType(ap.getSsid()));
+            if (ap.getChannel() != null)
+                updateState(CHANNEL_WLAN_AP_CHANNEL, new DecimalType(ap.getChannel()));
+            if (ap.getEncryption() != null)
+                updateState(CHANNEL_WLAN_AP_ENCRYPTION, new StringType(ap.getEncryption()));
+            if (ap.getMaxconn() != null)
+                updateState(CHANNEL_WLAN_AP_MAX_CONNECTIONS, new DecimalType(ap.getMaxconn()));
+            if (ap.getIp() != null)
+                updateState(CHANNEL_WLAN_AP_IP, new StringType(ap.getIp()));
+            if (ap.getNetmask() != null)
+                updateState(CHANNEL_WLAN_AP_NETMASK, new StringType(ap.getNetmask()));
+            if (ap.getGateway() != null)
+                updateState(CHANNEL_WLAN_AP_GATEWAY, new StringType(ap.getGateway()));
+            if (ap.getDhcp() != null) {
+                if (ap.getDhcp().getEnable() != null)
+                    updateState(CHANNEL_WLAN_AP_DHCP, OnOffType.from(ap.getDhcp().getEnable()));
+                if (ap.getDhcp().getStart() != null)
+                    updateState(CHANNEL_WLAN_AP_DHCP_START, new StringType(ap.getDhcp().getStart()));
+                if (ap.getDhcp().getEnd() != null)
+                    updateState(CHANNEL_WLAN_AP_DHCP_END, new StringType(ap.getDhcp().getEnd()));
+            }
         }
     }
 
@@ -842,6 +878,12 @@ public class RobonectHandler extends BaseThingHandler {
             return;
         }
         Battery battery = batteries.getFirst();
+        if (battery.getId() != null) {
+            updateState(CHANNEL_BATTERY_ID, new DecimalType(battery.getId()));
+        }
+        if (battery.getCharge() != null) {
+            updateState(CHANNEL_BATTERY_CHARGE, new QuantityType<>(battery.getCharge(), Units.PERCENT));
+        }
         Integer voltage = battery.getVoltage();
         if (voltage != null) {
             updateState(CHANNEL_BATTERY_VOLTAGE, new QuantityType<>(voltage / 1000.0, Units.VOLT));

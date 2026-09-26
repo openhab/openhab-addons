@@ -12,8 +12,12 @@
 			<default>STANDARD</default>
 			<options>
 				<option value="STANDARD">Standard</option>
+				<option value="DOCKING_STATION">Docking station</option>
 				<option value="REMOTE_1">Remote 1</option>
 				<option value="REMOTE_2">Remote 2</option>
+				<option value="REMOTE_3">Remote 3</option>
+				<option value="REMOTE_4">Remote 4</option>
+				<option value="REMOTE_5">Remote 5</option>
 			</options>
 
 		</parameter>

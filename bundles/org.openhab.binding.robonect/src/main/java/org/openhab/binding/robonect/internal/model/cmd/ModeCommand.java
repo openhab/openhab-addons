@@ -22,7 +22,7 @@ import org.openhab.binding.robonect.internal.RobonectClient;
  * EOD (End Of Day): The mower is set into HOME mode until midnight. After midnight the module sets the mower in AUTO
  * mode
  * JOB: The JOB mode triggers a JOB and supports following additional parameter:
- * * remoteStart: where to start the job (STANDARD, REMOTE_1 or REMOTE_2)
+ * * remoteStart: where to start the job (STANDARD, DOCKING_STATION or REMOTE_1 through REMOTE_5)
  * * after: The mode to be set after the JOB is done. Allowed are all except JOB.
  * * start: the start time in the form HH:MM (H=Hour,M=Minute)
  * * end: the end time in the form HH:MM (H=Hour,M=Minute)
@@ -61,15 +61,23 @@ public class ModeCommand implements Command {
          */
         STANDARD(0),
 
-        /**
-         * Start at the configured remote 1 location.
-         */
-        REMOTE_1(1),
+        /** Start at the docking station. */
+        DOCKING_STATION(1),
 
-        /**
-         * Start at the conifugred remote 2 location.
-         */
-        REMOTE_2(2);
+        /** Start at the configured remote 1 location. */
+        REMOTE_1(2),
+
+        /** Start at the configured remote 2 location. */
+        REMOTE_2(3),
+
+        /** Start at the configured remote 3 location. */
+        REMOTE_3(4),
+
+        /** Start at the configured remote 4 location. */
+        REMOTE_4(5),
+
+        /** Start at the configured remote 5 location. */
+        REMOTE_5(6);
 
         int code;
 

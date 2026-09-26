@@ -23,10 +23,20 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class Battery {
 
+    private @Nullable Integer id;
+    private @Nullable Integer charge;
     private @Nullable Integer voltage;
     private @Nullable Integer current;
     private @Nullable Integer temperature;
     private @Nullable BatteryCapacity capacity;
+
+    public @Nullable Integer getId() {
+        return id;
+    }
+
+    public @Nullable Integer getCharge() {
+        return charge;
+    }
 
     public @Nullable Integer getVoltage() {
         return voltage;

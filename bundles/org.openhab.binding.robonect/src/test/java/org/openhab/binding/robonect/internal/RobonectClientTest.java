@@ -186,6 +186,21 @@ public class RobonectClientTest {
     }
 
     @Test
+    public void shouldStartJobFromRemoteFive() throws InterruptedException, ExecutionException, TimeoutException {
+        when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=mode&mode=job&remotestart=6&duration=0"))
+                .thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenReturn(responseMock);
+        when(responseMock.getEncoding()).thenReturn("utf8");
+        when(responseMock.getContentAsString()).thenReturn("{\"successful\": true}");
+
+        subject.startJob(new RobonectClient.JobSettings().withRemoteStart(ModeCommand.RemoteStart.REMOTE_5));
+
+        verify(httpClientMock).newRequest("http://123.456.789.123/json?cmd=mode&mode=job&remotestart=6&duration=0");
+    }
+
+    @Test
     public void shouldRetrieveName() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=name")).thenReturn(requestMock);
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);

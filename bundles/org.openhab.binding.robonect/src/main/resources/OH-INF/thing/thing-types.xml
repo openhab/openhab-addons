@@ -30,8 +30,27 @@
 			<channel id="wlan-enabled" typeId="wlanSwitchType"/>
 			<channel id="wlan-ssid" typeId="wlanStringType"/>
 			<channel id="wlan-ip" typeId="wlanStringType"/>
+			<channel id="wlan-mac" typeId="wlanStringType"/>
+			<channel id="wlan-dhcp" typeId="wlanSwitchType"/>
+			<channel id="wlan-ping" typeId="wlanSwitchType"/>
+			<channel id="wlan-ping-time" typeId="wlanStringType"/>
+			<channel id="wlan-netmask" typeId="wlanStringType"/>
+			<channel id="wlan-gateway" typeId="wlanStringType"/>
 			<channel id="wlan-ap-enabled" typeId="wlanSwitchType"/>
 			<channel id="wlan-ap-ssid" typeId="wlanStringType"/>
+			<channel id="wlan-ap-mac" typeId="wlanStringType"/>
+			<channel id="wlan-ap-hidden" typeId="wlanSwitchType"/>
+			<channel id="wlan-ap-channel" typeId="wlanNumberType"/>
+			<channel id="wlan-ap-encryption" typeId="wlanStringType"/>
+			<channel id="wlan-ap-max-connections" typeId="wlanNumberType"/>
+			<channel id="wlan-ap-ip" typeId="wlanStringType"/>
+			<channel id="wlan-ap-netmask" typeId="wlanStringType"/>
+			<channel id="wlan-ap-gateway" typeId="wlanStringType"/>
+			<channel id="wlan-ap-dhcp" typeId="wlanSwitchType"/>
+			<channel id="wlan-ap-dhcp-start" typeId="wlanStringType"/>
+			<channel id="wlan-ap-dhcp-end" typeId="wlanStringType"/>
+			<channel id="battery-id" typeId="batteryIdType"/>
+			<channel id="battery-charge" typeId="batteryChargeType"/>
 			<channel id="battery-voltage" typeId="batteryVoltageType"/>
 			<channel id="battery-current" typeId="batteryCurrentType"/>
 			<channel id="battery-temperature" typeId="batteryTemperatureType"/>
@@ -734,6 +753,24 @@
 		<item-type>String</item-type>
 		<label>WLAN Information</label>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wlanNumberType">
+		<item-type>Number</item-type>
+		<label>WLAN Number</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="batteryIdType">
+		<item-type>Number</item-type>
+		<label>Battery ID</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="batteryChargeType">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Charge</label>
+		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="doorSwitchType">
