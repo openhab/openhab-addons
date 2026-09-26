@@ -190,6 +190,29 @@ public class Shelly2ApiClientLightStatusTest {
         return profile;
     }
 
+    private ShellyDeviceProfile plusRgbwPmProfile(String rawProfile, int numLights, int numMeters) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(new ThingTypeUID("shelly", "shellyplusrgbwpm"));
+        profile.isRGBW2 = true;
+        profile.inColor = SHELLY2_PROFILE_RGB.equals(rawProfile) || SHELLY2_PROFILE_RGBW.equals(rawProfile);
+        profile.device.profile = rawProfile;
+        profile.numMeters = numMeters;
+        ShellySettingsStatus status = profile.status;
+        ArrayList<ShellySettingsLight> lights = new ArrayList<>();
+        ArrayList<ShellySettingsRgbwLight> settingsLights = new ArrayList<>();
+        for (int i = 0; i < numLights; i++) {
+            lights.add(new ShellySettingsLight());
+            settingsLights.add(new ShellySettingsRgbwLight());
+        }
+        status.lights = lights;
+        profile.settings.lights = settingsLights;
+        ArrayList<ShellySettingsEMeter> emeters = new ArrayList<>();
+        for (int i = 0; i < numMeters; i++) {
+            emeters.add(new ShellySettingsEMeter());
+        }
+        status.emeters = emeters;
+        return profile;
+    }
+
     private Shelly2RGBWStatus rgbwStatusWithMeter(double apower, double totalWh, double voltage, double current) {
         Shelly2RGBWStatus rgbw = new Shelly2RGBWStatus();
         rgbw.id = 0;
@@ -505,6 +528,42 @@ public class Shelly2ApiClientLightStatusTest {
         List<ShellySettingsEMeter> emeters = profile.status.emeters;
         assertThat(emeters.get(0).power, is(20.0));
         assertThat(emeters.get(0).total, is(200.0));
+    }
+
+    @Test
+    void plusRgbwPmColorModePopulatesMeterSlotForRgbwComponent() throws ShellyApiException {
+        ShellyDeviceProfile profile = plusRgbwPmProfile(SHELLY2_PROFILE_RGBW, 1, 1);
+        Shelly2ApiClient client = newClient(profile);
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.rgbw0 = rgbwStatusWithMeter(18.0, 180.0, 230.0, 0.09);
+
+        client.fillDeviceStatus(profile.status, result, false);
+
+        List<ShellySettingsEMeter> emeters = profile.status.emeters;
+        assertThat(emeters.get(0).power, is(18.0));
+        assertThat(emeters.get(0).total, is(180.0));
+    }
+
+    @Test
+    void plusRgbwPmLightProfilePopulatesMeterSlotForEachChannel() throws ShellyApiException {
+        ShellyDeviceProfile profile = plusRgbwPmProfile(SHELLY2_PROFILE_LIGHT, 4, 4);
+        Shelly2ApiClient client = newClient(profile);
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.light0 = lightStatusWithMeter(0, 3.0, 30.0, 228.0, 0.01);
+        result.light1 = lightStatusWithMeter(1, 4.0, 40.0, 228.0, 0.02);
+        result.light2 = lightStatusWithMeter(2, 5.0, 50.0, 228.0, 0.03);
+        result.light3 = lightStatusWithMeter(3, 6.0, 60.0, 228.0, 0.04);
+
+        client.fillDeviceStatus(profile.status, result, false);
+
+        List<ShellySettingsEMeter> emeters = profile.status.emeters;
+        assertThat(emeters.get(0).power, is(3.0));
+        assertThat(emeters.get(1).power, is(4.0));
+        assertThat(emeters.get(2).power, is(5.0));
+        assertThat(emeters.get(3).power, is(6.0));
+        assertThat(emeters.get(3).total, is(60.0));
     }
 
     @Test
