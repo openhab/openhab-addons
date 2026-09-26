@@ -40,6 +40,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
@@ -114,9 +115,28 @@ public class WebthingChannelLinkTest {
                 mock(org.eclipse.jetty.websocket.client.WebSocketClient.class));
         var listener = mock(ChannelHandler.ItemChangedListener.class);
         handler.observeChannel(channelUID, listener);
-        handler.handleCommand(channelUID, new StringType("OPEN"));
+        handler.handleCommand(channelUID, OpenClosedType.OPEN);
 
         verifyNoInteractions(listener);
+    }
+
+    @Test
+    public void testPropertyUpdatesUseStateForContactAndCommandForSwitch() {
+        var thing = mock(Thing.class);
+        var thingUID = new ThingUID("webthing", "test");
+        var contactChannelUID = new ChannelUID(thingUID, "open");
+        var switchChannelUID = new ChannelUID(thingUID, "onoff");
+        var callback = mock(ThingHandlerCallback.class);
+        var handler = new WebThingHandler(thing, mock(org.eclipse.jetty.client.HttpClient.class),
+                mock(org.eclipse.jetty.websocket.client.WebSocketClient.class));
+        handler.setCallback(callback);
+
+        handler.updateItemState(contactChannelUID, OpenClosedType.OPEN);
+        handler.updateItemState(switchChannelUID, OnOffType.ON);
+
+        verify(callback).stateUpdated(contactChannelUID, OpenClosedType.OPEN);
+        verify(callback).postCommand(switchChannelUID, OnOffType.ON);
+        verifyNoMoreInteractions(callback);
     }
 
     @Test
