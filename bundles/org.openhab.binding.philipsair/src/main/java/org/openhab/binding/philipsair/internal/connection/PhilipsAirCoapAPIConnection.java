@@ -62,6 +62,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private static final String RESOURCE_PATH_CONTROL = "/sys/dev/control";
     private static final int COAP_PORT = 5683;
     private static final long TIMEOUT = 25000;
+    private static final long COMMAND_RESPONSE_TIMEOUT = 2000;
 
     private final Gson gson = new Gson();
     private final long EXPIRE_TIME = 60000L;
@@ -70,7 +71,11 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private String host = "";
     private final CoapClient client = new CoapClient();
     private final CoapEndpoint endpoint;
-    private long counter = 1;
+    private volatile long counter = 1;
+    // commands are only serialized with each other, so they never wait for a (possibly slow) status refresh
+    private final Object commandLock = new Object();
+    private final Object notificationLock = new Object();
+    private volatile long lastNotification = 0L;
     private boolean hasSync = false;
     private long syncCounter = 0;
     private int attempt = -1;
@@ -199,6 +204,10 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                     lastJson = resp;
                     lastUpdated = System.currentTimeMillis();
                     coapStatus.putValue(resp);
+                    synchronized (notificationLock) {
+                        lastNotification = lastUpdated;
+                        notificationLock.notifyAll();
+                    }
                     this.mid = response.advanced().getMID();
                     logger.debug("put :{}", resp);
                     return resp;
@@ -296,30 +305,17 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     }
 
     @Override
-    public synchronized @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter,
-            PhilipsAirPurifierWritableDataDTO value) {
+    public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value) {
         try {
-            long controlCounter = getSync(counter);
-            logger.debug("ControlCounter from sync={}", controlCounter);
-            JsonObject cmd = (JsonObject) gson.toJsonTree(value);
-            cmd.addProperty("CommandType", "app");
-            cmd.addProperty("DeviceId", "");
-            cmd.addProperty("EnduserId", "1");
-            PhilipsAirPurifierStateDTO state = new PhilipsAirPurifierStateDTO();
-            state.setDesired(cmd);
-            PhilipsAirPurifierStatusDTO fullCmd = new PhilipsAirPurifierStatusDTO();
-            fullCmd.setState(state);
-            String commandValue = gson.toJson(fullCmd);
-            controlCounter++;
-            logger.debug("Sending command {}", commandValue);
-            String encryped = PhilipsAirCoapCipher.encryptedMsg(commandValue, controlCounter, logger);
-            String response = encryped == null ? "Encryption failed"
-                    : post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encryped);
+            long sent = System.currentTimeMillis();
+            String response;
+            synchronized (commandLock) {
+                response = postCommand(value);
+            }
             if ("{\"status\":\"success\"}".equals(response)) {
-                // Sleep for a bit, otherwise we won't get the new value in the response
-                Thread.sleep(1000);
-                coapStatus.refreshValue();
-                return gson.fromJson(coapStatus.getValue(), PhilipsAirPurifierDataDTO.class);
+                // the device pushes the new state through the observe relation
+                String json = waitForNotification(sent, COMMAND_RESPONSE_TIMEOUT);
+                return json != null ? gson.fromJson(json, PhilipsAirPurifierDataDTO.class) : null;
             } else {
                 logger.debug("Command failed. Response: {}", response);
             }
@@ -329,6 +325,41 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             logger.debug("Error sending command '{}': {}", gson.toJson(value), e.getMessage());
         }
         return null;
+    }
+
+    private String postCommand(PhilipsAirPurifierWritableDataDTO value) throws ConnectorException, IOException {
+        long controlCounter = getSync(counter);
+        logger.debug("ControlCounter from sync={}", controlCounter);
+        JsonObject cmd = (JsonObject) gson.toJsonTree(value);
+        cmd.addProperty("CommandType", "app");
+        cmd.addProperty("DeviceId", "");
+        cmd.addProperty("EnduserId", "1");
+        PhilipsAirPurifierStateDTO state = new PhilipsAirPurifierStateDTO();
+        state.setDesired(cmd);
+        PhilipsAirPurifierStatusDTO fullCmd = new PhilipsAirPurifierStatusDTO();
+        fullCmd.setState(state);
+        String commandValue = gson.toJson(fullCmd);
+        controlCounter++;
+        logger.debug("Sending command {}", commandValue);
+        String encryped = PhilipsAirCoapCipher.encryptedMsg(commandValue, controlCounter, logger);
+        return encryped == null ? "Encryption failed" : post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encryped);
+    }
+
+    /**
+     * Waits for a status notification received after the given time.
+     *
+     * @return the notified status, or null if none was received within the timeout
+     */
+    private @Nullable String waitForNotification(long since, long timeout) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + timeout;
+        synchronized (notificationLock) {
+            long remaining = timeout;
+            while (lastNotification < since && remaining > 0) {
+                notificationLock.wait(remaining);
+                remaining = deadline - System.currentTimeMillis();
+            }
+            return lastNotification >= since ? lastJson : null;
+        }
     }
 
     private long getSync(long currentCounter) throws ConnectorException, IOException {
