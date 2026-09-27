@@ -82,6 +82,20 @@ public class MiotParserTest {
                     { "iid": 1, "type": "urn:miot-spec-v2:action:reset-brush-life:00002830:test-model:1",
                       "description": "Reset Brush Life", "in": [], "out": [] }
                   ]
+                },
+                {
+                  "iid": 10,
+                  "type": "urn:miot-spec-v2:service:brush-cleaner:00007815:test-model:1",
+                  "description": "Brush Cleaner",
+                  "properties": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:property:brush-life-level:00000079:test-model:1",
+                      "description": "Brush Life Level", "format": "uint8", "access": ["read", "notify"],
+                      "unit": "percentage", "value-range": [0, 100, 1] }
+                  ],
+                  "actions": [
+                    { "iid": 1, "type": "urn:miot-spec-v2:action:reset-brush-life1:00002830:test-model:1",
+                      "description": "Reset Brush Life", "in": [], "out": [] }
+                  ]
                 }
               ]
             }
@@ -119,13 +133,14 @@ public class MiotParserTest {
         assertNotNull(stateDescription);
         List<@Nullable String> values = stateDescription.getOptions().stream().map(OptionsValueListDTO::getValue)
                 .toList();
-        assertEquals(List.of("brush-cleaner-reset-brush-life", "brush-cleaner-reset-brush-life1"), values);
+        assertEquals(List.of("brush-cleaner-reset-brush-life", "brush-cleaner-reset-brush-life1",
+                "brush-cleaner-reset-brush-life11"), values);
 
         List<String> matchValues = actions.getActions().stream().map(MiIoDeviceAction::getCondition)
                 .map(Objects::requireNonNull).map((MiIoDeviceActionCondition c) -> c.getParameters().getAsJsonArray()
                         .get(0).getAsJsonObject().get("matchValue").getAsString())
                 .toList();
         assertEquals(values, matchValues);
-        assertEquals(List.of(8, 9), actions.getActions().stream().map(MiIoDeviceAction::getSiid).toList());
+        assertEquals(List.of(8, 9, 10), actions.getActions().stream().map(MiIoDeviceAction::getSiid).toList());
     }
 }

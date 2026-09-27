@@ -360,12 +360,12 @@ public class MiotParser {
                 // services of the same type (e.g. main and side brush) share action names, while the action value
                 // must be unique as every action matching the selected value is executed
                 int cnt = 0;
-                while (actionCheck.contains(description + cnt)) {
-                    cnt++;
+                String candidate = description;
+                while (!actionCheck.add(candidate)) {
+                    candidate = description + ++cnt;
                 }
-                actionCheck.add(description + cnt);
                 if (cnt > 0) {
-                    description = description + cnt;
+                    description = candidate;
                     label = label + " " + cnt;
                     logger.warn("duplicate for action:{} ({})", description, cnt);
                 }
