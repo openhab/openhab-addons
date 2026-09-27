@@ -19,11 +19,9 @@ import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -53,7 +51,8 @@ public class PhilipsAirCipher {
             "AKTRy9XD/TQSZ2WkQu+5mQX4EE3SWKxQf9ZAbP8UJm0xJm/qHlxBVkt3fmkPVQTyExYCF7SwG4hqXpFUf54nSfTX+9fTuaku4ZCdDSJj+Ap2pqJMCHoJH1MdvwoBabaiitZipNGOc6+jLXedWRjQi8iFj03O+XwqJIVebusis7Ll"));
     private static final BigInteger P = new BigInteger(Base64.getDecoder().decode(
             "ALELj5aggOAd3pLeXq5dVOxSyZ+8+wajxppqncpS0jthYHPihnWiPRiYOO8eLuZSwBPstK6pBhEjJJdcPNSbg7+sy919kMS9cJhIjpwhmnNyTv/W+uVkRzj6oxpP9VvMwKFRr18NyLS9Rb833zZcGmXmjP2nbU2nCN8fsrwuSkNx"));
-    private static final Random RAND = new Random();
+    private static final SecureRandom RAND = new SecureRandom();
+    private static final int SHARED_SECRET_LENGTH = 128;
 
     private @Nullable Cipher decipher;
     private @Nullable Cipher cipher;
@@ -99,17 +98,10 @@ public class PhilipsAirCipher {
         return candidate;
     }
 
-    public String calculateKey(String hellman, String key) throws GeneralSecurityException, InterruptedException,
-            TimeoutException, ExecutionException, InvalidAlgorithmParameterException {
+    public String calculateKey(String hellman, String key) throws GeneralSecurityException {
         BigInteger b = new BigInteger(hellman, 16);
         BigInteger s = b.modPow(a, P);
-        byte[] sByteArray = s.toByteArray();
-        // remove trailing 0
-        if (sByteArray.length > 128 && sByteArray[0] == 0) {
-            sByteArray = Arrays.copyOfRange(sByteArray, 1, 128);
-        }
-
-        byte[] sByteArrayTrunc = Arrays.copyOfRange(sByteArray, 0, 16);
+        byte[] sByteArrayTrunc = Arrays.copyOfRange(toFixedLength(s), 0, 16);
         byte[] hexKey = HexUtils.hexToBytes(key);
 
         Cipher ciph = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -118,6 +110,19 @@ public class PhilipsAirCipher {
         byte[] keyDecoded = ciph.doFinal(hexKey);
         String aesKey = HexUtils.bytesToHex(keyDecoded).substring(0, 32);
         return aesKey;
+    }
+
+    /**
+     * Encodes the shared secret as fixed length big-endian byte array, as the device does.
+     * {@link BigInteger#toByteArray()}
+     * returns the minimal two's-complement representation, which may have a leading sign byte or be shorter.
+     */
+    static byte[] toFixedLength(BigInteger value) {
+        byte[] bytes = value.toByteArray();
+        byte[] fixed = new byte[SHARED_SECRET_LENGTH];
+        int length = Math.min(bytes.length, SHARED_SECRET_LENGTH);
+        System.arraycopy(bytes, bytes.length - length, fixed, SHARED_SECRET_LENGTH - length, length);
+        return fixed;
     }
 
     public @Nullable String decrypt(String encodedContent) throws IllegalBlockSizeException, BadPaddingException {

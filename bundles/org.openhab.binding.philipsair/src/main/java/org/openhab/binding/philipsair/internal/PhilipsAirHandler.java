@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * @author Michal Boronski - Initial contribution
  * @author Marcel Verpaalen - OH3 migration
  * @author Marcel Verpaalen - Add optional channels reported by the device
+ * @author Marcel Verpaalen - Release the connection on dispose
  *
  */
 @NonNullByDefault
@@ -76,7 +77,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
             HUMIDITY, SENSORS, TEMPERATURE, SENSORS, WATER_LEVEL, SENSORS, WICKS_FILTER, FILTERS);
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable PhilipsAirAPIConnection connection;
+    private final Object connectionLock = new Object();
+    private volatile @Nullable PhilipsAirAPIConnection connection;
+    private boolean disposed = true;
     private @Nullable PhilipsAirPurifierDataDTO currentData;
     private @Nullable PhilipsAirPurifierDeviceDTO deviceInfo;
     private @Nullable PhilipsAirPurifierFiltersDTO filters;
@@ -89,6 +92,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        PhilipsAirAPIConnection connection = this.connection;
         if (connection == null) {
             return;
         }
@@ -200,6 +204,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
             callback.configurationUpdated(thing);
         }
         updateStatus(ThingStatus.OFFLINE);
+        synchronized (connectionLock) {
+            disposed = false;
+        }
         scheduler.submit(() -> getConnection(config));
         final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
@@ -210,26 +217,54 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     private void getConnection(PhilipsAirConfiguration config) {
+        // created outside the lock, as the HTTP connection may block on the key exchange
+        PhilipsAirAPIConnection newConnection = createConnection(config);
+        PhilipsAirAPIConnection oldConnection;
+        synchronized (connectionLock) {
+            if (disposed) {
+                oldConnection = newConnection;
+            } else {
+                oldConnection = connection;
+                connection = newConnection;
+            }
+        }
+        if (oldConnection != null) {
+            oldConnection.dispose();
+        }
+    }
+
+    PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
         if (SUPPORTED_COAP_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
             logger.debug("Starting Coap based connectivity");
-            connection = new PhilipsAirCoapAPIConnection(config);
+            return new PhilipsAirCoapAPIConnection(config);
         } else {
             logger.debug("Starting HTTP based connectivity");
-            connection = new PhilipsAirHttpAPIConnection(config, httpClient);
+            return new PhilipsAirHttpAPIConnection(config, httpClient);
         }
     }
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
+            this.refreshJob = null;
         }
-
+        PhilipsAirAPIConnection oldConnection;
+        synchronized (connectionLock) {
+            disposed = true;
+            oldConnection = connection;
+            connection = null;
+        }
+        if (oldConnection != null) {
+            oldConnection.dispose();
+        }
         super.dispose();
     }
 
     private void updateThing() {
         try {
+            PhilipsAirAPIConnection connection = this.connection;
             if (connection != null) {
                 this.updateData(connection);
             } else {

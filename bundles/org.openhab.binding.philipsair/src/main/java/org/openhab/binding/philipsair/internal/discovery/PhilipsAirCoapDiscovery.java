@@ -54,6 +54,7 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,8 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
 
     private final Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirCoapDiscovery.class);
-    private CoapClient client = new CoapClient();
+    private final CoapClient client;
+    private final CoapEndpoint endpoint;
     private @Nullable ScheduledFuture<?> coapDiscoveryJob;
     private final NetworkAddressService networkAddressService;
 
@@ -92,7 +94,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         Configuration netConfig = Configuration.getStandard().set(CoapConfig.RESPONSE_MATCHING,
                 CoapConfig.MatcherMode.RELAXED); // allow many responders
 
-        CoapEndpoint endpoint = new CoapEndpoint.Builder().setConfiguration(netConfig).build();
+        endpoint = new CoapEndpoint.Builder().setConfiguration(netConfig).build();
         if (logger.isTraceEnabled()) {
             MessageInterceptor interceptor = new CoapMessageLogger();
             endpoint.addInterceptor(interceptor);
@@ -141,6 +143,14 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         this.networkAddressService = networkAddressService;
         this.client = new CoapClient();
         this.client.setEndpoint(endpoint);
+    }
+
+    @Override
+    @Deactivate
+    protected void deactivate() {
+        super.deactivate();
+        client.shutdown();
+        endpoint.destroy();
     }
 
     @Override

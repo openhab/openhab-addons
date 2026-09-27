@@ -53,4 +53,10 @@ public abstract class PhilipsAirAPIConnection {
     public PhilipsAirConfiguration getConfig() {
         return this.config;
     }
+
+    /**
+     * Releases the resources held by this connection. The connection must not be used afterwards.
+     */
+    public void dispose() {
+    }
 }

@@ -68,12 +68,13 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
 
     private ExpiringCache<String> coapStatus = new ExpiringCache<>(EXPIRE_TIME, this::refreshData);
     private String host = "";
-    private CoapClient client = new CoapClient();
+    private final CoapClient client = new CoapClient();
+    private final CoapEndpoint endpoint;
     private long counter = 1;
     private boolean hasSync = false;
     private long syncCounter = 0;
     private int attempt = -1;
-    private @Nullable CoapObserveRelation observe = null;
+    private volatile @Nullable CoapObserveRelation observe = null;
     private volatile @Nullable String lastJson = null;
     private volatile long lastUpdated = 0L; // epoch ms of last valid JSON
     private int mid;
@@ -95,7 +96,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                 .set(CoapConfig.ACK_TIMEOUT, 20, TimeUnit.SECONDS)
                 .set(CoapConfig.EXCHANGE_LIFETIME, 65, TimeUnit.SECONDS);
 
-        CoapEndpoint endpoint = new CoapEndpoint.Builder().setConfiguration(netConfig).build();
+        endpoint = new CoapEndpoint.Builder().setConfiguration(netConfig).build();
         if (logger.isDebugEnabled()) {
             MessageInterceptor interceptor = new CoapMessageLogger();
             endpoint.addInterceptor(interceptor);
@@ -261,6 +262,18 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     @Override
     public PhilipsAirConfiguration getConfig() {
         return this.config;
+    }
+
+    @Override
+    public void dispose() {
+        CoapObserveRelation observe = this.observe;
+        if (observe != null) {
+            observe.proactiveCancel();
+            this.observe = null;
+        }
+        client.shutdown();
+        endpoint.destroy();
+        logger.debug("PhilipsAirCoapAPIConnection for {} disposed", host);
     }
 
     @Override

@@ -52,6 +52,7 @@ import com.google.gson.JsonSyntaxException;
  * Handles communication with Philips Air purifiers AC2729 and AC2889 and others
  *
  * @author Michał Boroński - Initial contribution
+ * @author Marcel Verpaalen - Fix key exchange and error response handling
  *
  */
 
@@ -82,16 +83,18 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     }
 
     private void initCipher() {
+        this.cipher = null;
         try {
             final PhilipsAirCipher cipher = new PhilipsAirCipher();
-            if (config.getKey() != null && config.getKey().isEmpty()) {
-                exchangeKeys();
+            if (config.getKey().isEmpty()) {
+                exchangeKeys(cipher);
             }
             cipher.initKey(config.getKey());
             this.cipher = cipher;
-        } catch (GeneralSecurityException | PhilipsAirAPIException | InterruptedException e) {
-            logger.warn("An exception occured", e);
-            this.cipher = null;
+        } catch (GeneralSecurityException | IllegalArgumentException e) {
+            logger.debug("Could not initialize the encryption key: {}", e.getMessage());
+        } catch (PhilipsAirAPIException e) {
+            logger.debug("Key exchange with {} failed: {}", config.getHost(), e.getMessage());
         }
     }
 
@@ -145,10 +148,12 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     private String getResponse(String url, HttpMethod method, @Nullable String content, boolean decode)
             throws PhilipsAirAPIException {
         try {
+            PhilipsAirCipher cipher = this.cipher;
             if (decode && cipher == null) {
-                logger.warn("Cipher not initialized");
+                logger.debug("Cipher not initialized, exchanging keys");
                 config.setKey("");
                 initCipher();
+                cipher = getCipher();
             }
 
             if (cooldownTimer > System.currentTimeMillis()) {
@@ -166,73 +171,86 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
             ContentResponse contentResponse = request.timeout(config.getRefreshInterval(), TimeUnit.SECONDS).send();
             int httpStatus = contentResponse.getStatus();
             String finalcontent = contentResponse.getContentAsString();
-            logger.trace("Philips Air Purifier device encrypted response: '{}'", finalcontent);
+            logger.trace("Philips Air Purifier device response: status = {}, content = '{}'", httpStatus, finalcontent);
 
-            if (decode) {
-                try {
-                    finalcontent = this.cipher.decrypt(finalcontent);
-                } catch (BadPaddingException bexp) {
-                    // retry for once with a new key
-                    config.setKey("");
-                    initCipher();
-                    finalcontent = this.cipher.decrypt(finalcontent);
-                }
-            }
-
-            logger.debug("Philips Air Purifier device response: status = {}, content = '{}'", httpStatus, finalcontent);
             switch (httpStatus) {
                 case OK_200:
-                    if (finalcontent != null) {
-                        return finalcontent;
-                    }
-                case BAD_REQUEST_400:
-                case UNAUTHORIZED_401:
-                case NOT_FOUND_404:
-                    logger.debug("Philips Air Purifier device responded with status code {}", httpStatus);
-                    throw new PhilipsAirAPIException(String.format("Error with status %d", httpStatus));
+                    break;
                 case TOO_MANY_REQUESTS_429:
                     cooldownTimer = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
+                    // fall through
                 default:
                     logger.debug("Philips Air Purifier device responded with status code {}", httpStatus);
                     throw new PhilipsAirAPIException(String.format("Error with status %d", httpStatus));
             }
+
+            // only successful responses are encrypted
+            if (decode && cipher != null) {
+                try {
+                    finalcontent = cipher.decrypt(finalcontent);
+                } catch (BadPaddingException bexp) {
+                    logger.debug("Could not decrypt response, exchanging keys");
+                    config.setKey("");
+                    initCipher();
+                    finalcontent = getCipher().decrypt(finalcontent);
+                }
+            }
+            if (finalcontent == null) {
+                throw new PhilipsAirAPIException("Empty response");
+            }
+            logger.debug("Philips Air Purifier device response: '{}'", finalcontent);
+            return finalcontent;
+        } catch (PhilipsAirAPIException e) {
+            throw e;
         } catch (ExecutionException e) {
             String errorMessage = e.getLocalizedMessage() != null ? e.getLocalizedMessage() : e.getMessage();
             logger.trace("Exception occurred during execution: {}", errorMessage, e);
             throw new PhilipsAirAPIException(errorMessage, e);
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new PhilipsAirAPIException(e.getMessage(), e);
+        } catch (TimeoutException e) {
             String errorMessage = e.getLocalizedMessage() != null ? e.getLocalizedMessage() : e.getMessage();
             logger.debug("Exception occurred during execution: {}", errorMessage, e);
             throw new PhilipsAirAPIException(errorMessage, e);
-        } catch (Exception e) {
-            String errorMessage = e.getLocalizedMessage() != null ? e.getLocalizedMessage() : e.getMessage();
-            logger.warn("Unexpected exception occurred during execution: {}", errorMessage, e);
-            throw new PhilipsAirAPIException(errorMessage, e);
+        } catch (GeneralSecurityException | IllegalArgumentException e) {
+            logger.debug("Could not decrypt response: {}", e.getMessage());
+            throw new PhilipsAirAPIException(e.getMessage(), e);
         }
     }
 
-    public @Nullable String exchangeKeys() throws PhilipsAirAPIException, InterruptedException {
-        final PhilipsAirCipher cipher = this.cipher;
+    private PhilipsAirCipher getCipher() throws PhilipsAirAPIException {
+        PhilipsAirCipher cipher = this.cipher;
         if (cipher == null) {
-            return null;
+            throw new PhilipsAirAPIException("Encryption key not available");
         }
+        return cipher;
+    }
 
+    /**
+     * Exchanges a new session key with the device using the not yet initialized cipher and stores it in the
+     * configuration.
+     */
+    private void exchangeKeys(PhilipsAirCipher cipher) throws PhilipsAirAPIException {
         String url = buildURL(KEY_URL, config.getHost());
         String data = "{\"diffie\":\"" + cipher.getApow() + "\"}";
         String encodedContent = getResponse(url, PUT, data, false);
-        JsonObject encodedJson = gson.fromJson(encodedContent, JsonObject.class);
-        String key = encodedJson.get("key").getAsString();
-        String hellman = encodedJson.get("hellman").getAsString();
-        String aesKey;
+        JsonObject encodedJson;
         try {
-            aesKey = cipher.calculateKey(hellman, key);
-        } catch (GeneralSecurityException | TimeoutException | ExecutionException e) {
+            encodedJson = gson.fromJson(encodedContent, JsonObject.class);
+        } catch (JsonSyntaxException e) {
+            throw new PhilipsAirAPIException("Invalid key exchange response", e);
+        }
+        if (encodedJson == null || !encodedJson.has("key") || !encodedJson.has("hellman")) {
+            throw new PhilipsAirAPIException("Invalid key exchange response: " + encodedContent);
+        }
+        try {
+            config.setKey(cipher.calculateKey(encodedJson.get("hellman").getAsString(),
+                    encodedJson.get("key").getAsString()));
+        } catch (GeneralSecurityException | IllegalArgumentException | UnsupportedOperationException
+                | IllegalStateException e) {
             throw new PhilipsAirAPIException(e);
         }
-
-        config.setKey(aesKey);
-        this.cipher = cipher;
-        return aesKey;
     }
 
     @Override
