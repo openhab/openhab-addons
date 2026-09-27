@@ -38,7 +38,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirCipher;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
-import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
 import org.openhab.core.config.core.Configuration;
@@ -46,6 +45,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -87,12 +87,13 @@ public class PhilipsAirHandlerTest extends JavaTest {
     private static final String STATUS_MODE_A = "{\"om\":\"1\",\"pwr\":\"1\",\"cl\":false,\"aqil\":25,\"uil\":\"1\",\"dt\":1,\"dtrs\":57,\"mode\":\"A\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":7,\"iaql\":2,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0}";
     private static final String STATUS_CL_ON = "{\"om\":\"1\",\"pwr\":\"1\",\"cl\":true,\"aqil\":25,\"uil\":\"1\",\"dt\":1,\"dtrs\":57,\"mode\":\"A\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":7,\"iaql\":2,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0}";
 
-    private static final List<String> ALL_CHANNELS = List.of("controls#pwr:Switch", "controls#om:String",
-            "controls#cl:Switch", "controls#mode:String", "controls#dt:Number", "controls#dtrs:Number",
-            "controls#rhset:Number", "controls#func:String", "controls-ui#uil:Switch", "controls-ui#aqil:Number",
-            "controls-ui#ddp:String", "sensors#pm25:Number:Density", "sensors#iaql:Number", "sensors#aqit:Number",
-            "sensors#err:String", "sensors#rh:Number:Dimensionless", "sensors#temp:Number:Temperature",
-            "sensors#wl:Number");
+    private static final List<String> ALL_CHANNELS = List.of("controls#power:Switch", "controls#fan-speed:String",
+            "controls#child-lock:Switch", "controls#mode:String", "controls#timer:Number",
+            "controls#timer-remaining:Number", "controls#target-humidity:Number", "controls#function:String",
+            "controls-ui#button-light:Switch", "controls-ui#light-level:Number", "controls-ui#displayed-index:String",
+            "sensors#pm25:Number:Density", "sensors#allergen-index:Number", "sensors#air-quality-threshold:Number",
+            "sensors#error-code:String", "sensors#humidity:Number:Dimensionless",
+            "sensors#temperature:Number:Temperature", "sensors#water-level:Number");
 
     private static final Gson GSON = new Gson();
     private final PhilipsAirCipher cipher;
@@ -184,9 +185,9 @@ public class PhilipsAirHandlerTest extends JavaTest {
     @Test
     public void initializeGoesOnlineAfterFirstData() throws Exception {
         mockResponses(DEVICE, STATUS);
-        PhilipsAirHandler handler = createHandler(List.of("controls#pwr:Switch"), new Configuration());
+        PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), new Configuration());
 
-        initializeAndRefresh(handler, "controls#pwr");
+        initializeAndRefresh(handler, "controls#power");
 
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback, atLeast(2)).statusUpdated(any(Thing.class), statusInfoCaptor.capture());
@@ -200,26 +201,26 @@ public class PhilipsAirHandlerTest extends JavaTest {
         mockResponses(DEVICE, STATUS);
         PhilipsAirHandler handler = createHandler(ALL_CHANNELS, new Configuration());
 
-        initializeAndRefresh(handler, "controls#pwr");
+        initializeAndRefresh(handler, "controls#power");
 
-        assertEquals(OnOffType.ON, lastState("controls#pwr"));
-        assertEquals(new StringType("s"), lastState("controls#om"));
-        assertEquals(OnOffType.OFF, lastState("controls#cl"));
+        assertEquals(OnOffType.ON, lastState("controls#power"));
+        assertEquals(new StringType("s"), lastState("controls#fan-speed"));
+        assertEquals(OnOffType.OFF, lastState("controls#child-lock"));
         assertEquals(new StringType("P"), lastState("controls#mode"));
-        assertEquals(new DecimalType(0), lastState("controls#dt"));
-        assertEquals(new DecimalType(0), lastState("controls#dtrs"));
-        assertEquals(new DecimalType(40), lastState("controls#rhset"));
-        assertEquals(new StringType("PH"), lastState("controls#func"));
-        assertEquals(OnOffType.ON, lastState("controls-ui#uil"));
-        assertEquals(new DecimalType(75), lastState("controls-ui#aqil"));
-        assertEquals(new StringType("1"), lastState("controls-ui#ddp"));
+        assertEquals(new DecimalType(0), lastState("controls#timer"));
+        assertEquals(new QuantityType<>(0, Units.MINUTE), lastState("controls#timer-remaining"));
+        assertEquals(new DecimalType(40), lastState("controls#target-humidity"));
+        assertEquals(new StringType("PH"), lastState("controls#function"));
+        assertEquals(OnOffType.ON, lastState("controls-ui#button-light"));
+        assertEquals(new DecimalType(75), lastState("controls-ui#light-level"));
+        assertEquals(new StringType("1"), lastState("controls-ui#displayed-index"));
         assertEquals(new QuantityType<>(8, DENSITY_UNIT), lastState("sensors#pm25"));
-        assertEquals(new DecimalType(2), lastState("sensors#iaql"));
-        assertEquals(new DecimalType(4), lastState("sensors#aqit"));
-        assertEquals(new StringType("0"), lastState("sensors#err"));
-        assertEquals(56, ((QuantityType<?>) lastState("sensors#rh")).intValue());
-        assertEquals(21, ((QuantityType<?>) lastState("sensors#temp")).intValue());
-        assertEquals(new DecimalType(0), lastState("sensors#wl"));
+        assertEquals(new DecimalType(2), lastState("sensors#allergen-index"));
+        assertEquals(new DecimalType(4), lastState("sensors#air-quality-threshold"));
+        assertEquals(new StringType("0"), lastState("sensors#error-code"));
+        assertEquals(56, ((QuantityType<?>) lastState("sensors#humidity")).intValue());
+        assertEquals(21, ((QuantityType<?>) lastState("sensors#temperature")).intValue());
+        assertEquals(new DecimalType(0), lastState("sensors#water-level"));
     }
 
     @Test
@@ -229,14 +230,14 @@ public class PhilipsAirHandlerTest extends JavaTest {
         offsets.put(PhilipsAirConfiguration.CONFIG_DEF_TEMPERATURE_OFFSET, 1.0);
         offsets.put(PhilipsAirConfiguration.CONFIG_DEF_HUMIDITY_OFFSET, -1.0);
         PhilipsAirHandler handler = createHandler(
-                List.of("sensors#rh:Number:Dimensionless", "sensors#temp:Number:Temperature"), offsets);
+                List.of("sensors#humidity:Number:Dimensionless", "sensors#temperature:Number:Temperature"), offsets);
 
-        initializeAndRefresh(handler, "sensors#rh");
+        initializeAndRefresh(handler, "sensors#humidity");
 
-        QuantityType<?> humidity = (QuantityType<?>) lastState("sensors#rh");
+        QuantityType<?> humidity = (QuantityType<?>) lastState("sensors#humidity");
         assertEquals(55f, humidity.floatValue());
         assertEquals(HUMIDITY_UNIT, humidity.getUnit());
-        QuantityType<?> temperature = (QuantityType<?>) lastState("sensors#temp");
+        QuantityType<?> temperature = (QuantityType<?>) lastState("sensors#temperature");
         assertEquals(22f, temperature.floatValue());
         assertEquals(TEMPERATURE_UNIT, temperature.getUnit());
     }
@@ -258,42 +259,43 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
     @Test
     public void testSendCommandPWR() throws Exception {
-        sendCommandTemplate("controls#pwr:Switch", OnOffType.OFF, OnOffType.ON, OnOffType.OFF, STATUS, STATUS_PWR_OFF);
+        sendCommandTemplate("controls#power:Switch", OnOffType.OFF, OnOffType.ON, OnOffType.OFF, STATUS,
+                STATUS_PWR_OFF);
     }
 
     @Test
     public void testSendCommandUIL() throws Exception {
-        sendCommandTemplate("controls-ui#uil:Switch", OnOffType.OFF, OnOffType.ON, OnOffType.OFF, STATUS,
+        sendCommandTemplate("controls-ui#button-light:Switch", OnOffType.OFF, OnOffType.ON, OnOffType.OFF, STATUS,
                 STATUS_UIL_OFF);
     }
 
     @Test
     public void testSendCommandDDP() throws Exception {
-        sendCommandTemplate("controls-ui#ddp:String", new StringType("0"), new StringType("1"), new StringType("0"),
-                STATUS, STATUS_DDP_0);
+        sendCommandTemplate("controls-ui#displayed-index:String", new StringType("0"), new StringType("1"),
+                new StringType("0"), STATUS, STATUS_DDP_0);
     }
 
     @Test
     public void testSendCommandOM1() throws Exception {
-        sendCommandTemplate("controls#om:String", new StringType("1"), new StringType("s"), new StringType("1"), STATUS,
-                STATUS_OM_1);
+        sendCommandTemplate("controls#fan-speed:String", new StringType("1"), new StringType("s"), new StringType("1"),
+                STATUS, STATUS_OM_1);
     }
 
     @Test
     public void testSendCommandOMs() throws Exception {
-        sendCommandTemplate("controls#om:String", new StringType("s"), new StringType("1"), new StringType("s"),
+        sendCommandTemplate("controls#fan-speed:String", new StringType("s"), new StringType("1"), new StringType("s"),
                 STATUS_OM_1, STATUS);
     }
 
     @Test
     public void testSendCommandAqil() throws Exception {
-        sendCommandTemplate("controls-ui#aqil:Number", new DecimalType(25), new DecimalType(75), new DecimalType(25),
-                STATUS, STATUS_AQIL_25);
+        sendCommandTemplate("controls-ui#light-level:Number", new DecimalType(25), new DecimalType(75),
+                new DecimalType(25), STATUS, STATUS_AQIL_25);
     }
 
     @Test
     public void testSendCommandDt() throws Exception {
-        sendCommandTemplate("controls#dt:Number", new DecimalType(1), new DecimalType(0), new DecimalType(1), STATUS,
+        sendCommandTemplate("controls#timer:Number", new DecimalType(1), new DecimalType(0), new DecimalType(1), STATUS,
                 STATUS_DT_1);
     }
 
@@ -305,21 +307,22 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
     @Test
     public void testSendCommandCL() throws Exception {
-        sendCommandTemplate("controls#cl:Switch", OnOffType.ON, OnOffType.OFF, OnOffType.ON, STATUS, STATUS_CL_ON);
+        sendCommandTemplate("controls#child-lock:Switch", OnOffType.ON, OnOffType.OFF, OnOffType.ON, STATUS,
+                STATUS_CL_ON);
     }
 
     @Test
     public void configurationIsOnlyPersistedWhenChanged() throws Exception {
         mockResponses(DEVICE, STATUS);
-        PhilipsAirHandler handler = createHandler(List.of("controls#pwr:Switch"), new Configuration());
+        PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), new Configuration());
 
-        initializeAndRefresh(handler, "controls#pwr");
+        initializeAndRefresh(handler, "controls#power");
         assertEquals("AC2889/10",
                 handler.getThing().getConfiguration().get(PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID));
         long thingUpdates = countThingUpdates();
 
-        handler.handleCommand(new ChannelUID(THING_UID, "controls#pwr"), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(THING_UID, "controls#pwr"), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), RefreshType.REFRESH);
 
         assertEquals(thingUpdates, countThingUpdates());
     }
@@ -330,19 +333,19 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @Test
-    public void deviceInfoAndFiltersDoNotDependOnStatus() {
+    public void filtersDoNotDependOnStatus() {
         PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
-        PhilipsAirPurifierDeviceDTO deviceInfo = GSON.fromJson(DEVICE, PhilipsAirPurifierDeviceDTO.class);
         PhilipsAirPurifierFiltersDTO filters = GSON.fromJson(
                 "{\"fltsts0\":10,\"fltsts1\":2000,\"fltsts2\":3000,\"wicksts\":400}",
                 PhilipsAirPurifierFiltersDTO.class);
 
-        assertEquals("1.0.4", handler.getValue(new ChannelUID(THING_UID, "swversion"), null, deviceInfo, null));
-        assertEquals(10, handler.getValue(new ChannelUID(THING_UID, "filters#fltsts0"), null, null, filters));
+        assertEquals(10, handler.getValue(new ChannelUID(THING_UID, "filters#pre-filter-life"), null, null, filters));
         // fltsts1 is the HEPA filter, fltsts2 the active carbon filter
-        assertEquals(2000, handler.getValue(new ChannelUID(THING_UID, "filters#fltsts1"), null, null, filters));
-        assertEquals(3000, handler.getValue(new ChannelUID(THING_UID, "filters#fltsts2"), null, null, filters));
-        assertEquals(400, handler.getValue(new ChannelUID(THING_UID, "filters#wicksts"), null, null, filters));
+        assertEquals(2000,
+                handler.getValue(new ChannelUID(THING_UID, "filters#hepa-filter-life"), null, null, filters));
+        assertEquals(3000,
+                handler.getValue(new ChannelUID(THING_UID, "filters#carbon-filter-life"), null, null, filters));
+        assertEquals(400, handler.getValue(new ChannelUID(THING_UID, "filters#wick-filter-life"), null, null, filters));
     }
 
     @Test
@@ -350,9 +353,10 @@ public class PhilipsAirHandlerTest extends JavaTest {
         PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
         PhilipsAirPurifierDataDTO data = GSON.fromJson("{}", PhilipsAirPurifierDataDTO.class);
 
-        for (String channel : List.of("controls#pwr", "controls#om", "controls#cl", "controls#mode", "controls#dt",
-                "controls-ui#uil", "controls-ui#aqil", "controls-ui#ddp", "sensors#aqit", "sensors#rh", "sensors#temp",
-                "sensors#wl", "controls#rhset", "controls#func")) {
+        for (String channel : List.of("controls#power", "controls#fan-speed", "controls#child-lock", "controls#mode",
+                "controls#timer", "controls-ui#button-light", "controls-ui#light-level", "controls-ui#displayed-index",
+                "sensors#air-quality-threshold", "sensors#humidity", "sensors#temperature", "sensors#water-level",
+                "controls#target-humidity", "controls#function")) {
             assertNull(handler.getValue(new ChannelUID(THING_UID, channel), data, null, null), channel);
         }
     }
@@ -362,25 +366,26 @@ public class PhilipsAirHandlerTest extends JavaTest {
         PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
 
         // testing not obvious (non intuitive types) command conversions
-        PhilipsAirPurifierWritableDataDTO commandDto = handler.prepareCommandData("ddp", StringType.valueOf("0"));
+        PhilipsAirPurifierWritableDataDTO commandDto = handler.prepareCommandData("displayed-index",
+                StringType.valueOf("0"));
         assertEquals("{\"ddp\":\"0\"}", GSON.toJson(commandDto));
 
-        commandDto = handler.prepareCommandData("uil", OnOffType.ON);
+        commandDto = handler.prepareCommandData("button-light", OnOffType.ON);
         assertEquals("{\"uil\":\"1\"}", GSON.toJson(commandDto));
 
-        commandDto = handler.prepareCommandData("pwr", OnOffType.ON);
+        commandDto = handler.prepareCommandData("power", OnOffType.ON);
         assertEquals("{\"pwr\":\"1\"}", GSON.toJson(commandDto));
 
-        commandDto = handler.prepareCommandData("aqil", DecimalType.valueOf("25"));
+        commandDto = handler.prepareCommandData("light-level", DecimalType.valueOf("25"));
         assertEquals("{\"aqil\":25}", GSON.toJson(commandDto));
 
-        commandDto = handler.prepareCommandData("cl", OnOffType.ON);
+        commandDto = handler.prepareCommandData("child-lock", OnOffType.ON);
         assertEquals("{\"cl\":true}", GSON.toJson(commandDto));
 
-        commandDto = handler.prepareCommandData("om", StringType.valueOf("2"));
+        commandDto = handler.prepareCommandData("fan-speed", StringType.valueOf("2"));
         assertEquals("{\"om\":\"2\",\"mode\":\"M\"}", GSON.toJson(commandDto));
 
-        commandDto = handler.prepareCommandData("rhset", DecimalType.valueOf("50"));
+        commandDto = handler.prepareCommandData("target-humidity", DecimalType.valueOf("50"));
         assertEquals("{\"rhset\":50}", GSON.toJson(commandDto));
     }
 }

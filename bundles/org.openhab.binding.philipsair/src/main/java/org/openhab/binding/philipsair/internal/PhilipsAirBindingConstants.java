@@ -96,11 +96,11 @@ public class PhilipsAirBindingConstants {
     /**
      * Power switch
      */
-    public static final String POWER = "pwr";
+    public static final String POWER = "power";
     /**
-     * Fan mode (s - silent, 1, 2, 3, t - turbo)
+     * Fan speed (s - silent, 1, 2, 3, t - turbo)
      */
-    public static final String FAN_MODE = "om";
+    public static final String FAN_MODE = "fan-speed";
     /**
      * Auto mode : P - auto, B - bacteria, M - manual, A - allergen, S - sleep, N -
      * night
@@ -109,82 +109,80 @@ public class PhilipsAirBindingConstants {
     /**
      * Buttons light
      */
-    public static final String BUTTONS_LIGHT = "uil";
+    public static final String BUTTONS_LIGHT = "button-light";
     /**
-     * Light birightness level
+     * Light brightness level
      */
-    public static final String LED_LIGHT_LEVEL = "aqil";
+    public static final String LED_LIGHT_LEVEL = "light-level";
     /**
      * Index used to show air quality
      */
-    public static final String DISPLAYED_INDEX = "ddp";
+    public static final String DISPLAYED_INDEX = "displayed-index";
     /**
      * Allergen index
      */
-    public static final String ALLERGEN_INDEX = "iaql";
+    public static final String ALLERGEN_INDEX = "allergen-index";
 
-    public static final String AIR_QUALITY_NOTIFICATION_THRESHOLD = "aqit";
+    public static final String AIR_QUALITY_NOTIFICATION_THRESHOLD = "air-quality-threshold";
     /**
      * Child lock
      */
-    public static final String CHILD_LOCK = "cl";
+    public static final String CHILD_LOCK = "child-lock";
     /**
      * Auto time-off
      */
-    public static final String AUTO_TIMEOFF = "dt";
+    public static final String AUTO_TIMEOFF = "timer";
     /**
      * Error code
      */
-    public static final String ERROR_CODE = "err";
+    public static final String ERROR_CODE = "error-code";
     /**
      * Current minutes left to turn off
      */
-    public static final String TIMER_COUNTDOWN = "dtrs";
-
-    public static final String SOFTWARE_VERSION = "swversion";
+    public static final String TIMER_COUNTDOWN = "timer-remaining";
 
     /**
      * Current humidity
      */
-    public static final String HUMIDITY = "rh";
+    public static final String HUMIDITY = "humidity";
 
     /**
      * Humidity setpoint
      */
-    public static final String HUMIDITY_SETPOINT = "rhset";
+    public static final String HUMIDITY_SETPOINT = "target-humidity";
 
     /**
      * Current temperature
      */
-    public static final String TEMPERATURE = "temp";
+    public static final String TEMPERATURE = "temperature";
 
     /**
      * 'P': 'Purification', 'PH': 'Purification & Humidification'
      */
-    public static final String FUNCTION = "func";
+    public static final String FUNCTION = "function";
 
     /**
      * water level
      */
-    public static final String WATER_LEVEL = "wl";
+    public static final String WATER_LEVEL = "water-level";
 
     /**
      * Pre-filter
      */
-    public static final String PRE_FILTER = "fltsts0";
+    public static final String PRE_FILTER = "pre-filter-life";
 
     /**
      * Wicks filter estimated lifetime
      */
-    public static final String WICKS_FILTER = "wicksts";
+    public static final String WICKS_FILTER = "wick-filter-life";
 
     /**
      * Active carbon estimated lifetime
      */
-    public static final String CARBON_FILTER = "fltsts2";
+    public static final String CARBON_FILTER = "carbon-filter-life";
 
     /**
      * HEPA estimated lifetime
      */
-    public static final String HEPA_FILTER = "fltsts1";
+    public static final String HEPA_FILTER = "hepa-filter-life";
 }

@@ -95,9 +95,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
         ArgumentCaptor<Thing> thingCaptor = ArgumentCaptor.forClass(Thing.class);
         verify(callback, times(1)).thingUpdated(thingCaptor.capture());
         Set<String> channelIds = channelIds(thingCaptor.getValue().getChannels());
-        assertEquals(
-                Set.of("controls#pwr", "controls#rhset", "controls#func", "sensors#rh", "sensors#temp", "sensors#wl"),
-                channelIds);
+        assertEquals(Set.of("controls#power", "controls#target-humidity", "controls#function", "sensors#humidity",
+                "sensors#temperature", "sensors#water-level"), channelIds);
 
         handler.updateData(connection);
 
@@ -112,7 +111,7 @@ public class PhilipsAirHandlerOptionalChannelsTest {
         handler.updateData(connection);
 
         verify(callback, never()).thingUpdated(any());
-        assertEquals(Set.of("controls#pwr"), channelIds(handler.getThing().getChannels()));
+        assertEquals(Set.of("controls#power"), channelIds(handler.getThing().getChannels()));
     }
 
     private static Set<String> channelIds(List<Channel> channels) {

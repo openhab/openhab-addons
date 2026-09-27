@@ -40,6 +40,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -459,7 +460,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case AUTO_TIMEOFF:
                     return data.getTimer();
                 case TIMER_COUNTDOWN:
-                    return data.getTimerLeft();
+                    return new QuantityType<>(data.getTimerLeft(), Units.MINUTE);
                 case MODE:
                     return data.getMode();
                 case ALLERGEN_INDEX:
@@ -487,10 +488,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case WATER_LEVEL:
                     return data.getWaterLevel();
             }
-        }
-
-        if (deviceInfo != null && SOFTWARE_VERSION.equals(field)) {
-            return deviceInfo.getSoftwareVersion();
         }
 
         if (filters != null) {

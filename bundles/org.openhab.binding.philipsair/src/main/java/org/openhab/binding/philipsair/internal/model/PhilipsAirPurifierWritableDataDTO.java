@@ -13,7 +13,6 @@
 package org.openhab.binding.philipsair.internal.model;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -27,37 +26,37 @@ import com.google.gson.annotations.SerializedName;
  */
 public class PhilipsAirPurifierWritableDataDTO {
 
-    @SerializedName(PhilipsAirBindingConstants.FAN_MODE)
+    @SerializedName("om")
     @Expose
     private @Nullable String fanSpeed;
-    @SerializedName(PhilipsAirBindingConstants.POWER)
+    @SerializedName("pwr")
     @Expose
     private @Nullable String power;
-    @SerializedName(PhilipsAirBindingConstants.CHILD_LOCK)
+    @SerializedName("cl")
     @Expose
     private @Nullable Boolean childLock;
-    @SerializedName(PhilipsAirBindingConstants.LED_LIGHT_LEVEL)
+    @SerializedName("aqil")
     @Expose
     private @Nullable Integer lightLevel;
-    @SerializedName(PhilipsAirBindingConstants.BUTTONS_LIGHT)
+    @SerializedName("uil")
     @Expose
     private @Nullable String buttons;
-    @SerializedName(PhilipsAirBindingConstants.AUTO_TIMEOFF)
+    @SerializedName("dt")
     @Expose
     private @Nullable Integer timer;
-    @SerializedName(PhilipsAirBindingConstants.MODE)
+    @SerializedName("mode")
     @Expose
     private @Nullable String mode;
-    @SerializedName(PhilipsAirBindingConstants.AIR_QUALITY_NOTIFICATION_THRESHOLD)
+    @SerializedName("aqit")
     @Expose
     private @Nullable Integer aqit;
-    @SerializedName(PhilipsAirBindingConstants.DISPLAYED_INDEX)
+    @SerializedName("ddp")
     @Expose
     private @Nullable String displayIndex;
-    @SerializedName(PhilipsAirBindingConstants.HUMIDITY_SETPOINT)
+    @SerializedName("rhset")
     @Expose
     private @Nullable Integer humiditySetpoint;
-    @SerializedName(PhilipsAirBindingConstants.FUNCTION)
+    @SerializedName("func")
     @Expose
     private @Nullable String function;
 

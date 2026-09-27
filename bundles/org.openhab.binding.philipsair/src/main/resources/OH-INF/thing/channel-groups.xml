@@ -7,73 +7,73 @@
 	<channel-group-type id="controls-ui">
 		<label>Controls-UI</label>
 		<channels>
-			<channel id="uil" typeId="uil"/>
-			<channel id="aqil" typeId="aqil"/>
-			<channel id="ddp" typeId="ddp"/>
+			<channel id="button-light" typeId="button-light"/>
+			<channel id="light-level" typeId="light-level"/>
+			<channel id="displayed-index" typeId="displayed-index"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="controls-basic">
 		<label>Controls</label>
 		<channels>
-			<channel id="pwr" typeId="pwr"/>
-			<channel id="om" typeId="om"/>
+			<channel id="power" typeId="power"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
 			<channel id="mode" typeId="mode"/>
-			<channel id="dt" typeId="dt"/>
-			<channel id="dtrs" typeId="dtrs"/>
-			<channel id="cl" typeId="cl"/>
+			<channel id="timer" typeId="timer"/>
+			<channel id="timer-remaining" typeId="timer-remaining"/>
+			<channel id="child-lock" typeId="child-lock"/>
 
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="controls-adv">
 		<label>Controls</label>
 		<channels>
-			<channel id="pwr" typeId="pwr"/>
-			<channel id="om" typeId="om"/>
-			<channel id="cl" typeId="cl"/>
+			<channel id="power" typeId="power"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
+			<channel id="child-lock" typeId="child-lock"/>
 			<channel id="mode" typeId="mode"/>
-			<channel id="dt" typeId="dt"/>
-			<channel id="dtrs" typeId="dtrs"/>
-			<channel id="rhset" typeId="rhset"/>
-			<channel id="func" typeId="func"/>
+			<channel id="timer" typeId="timer"/>
+			<channel id="timer-remaining" typeId="timer-remaining"/>
+			<channel id="target-humidity" typeId="target-humidity"/>
+			<channel id="function" typeId="function"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="sensors-basic">
 		<label>Sensors</label>
 		<channels>
 			<channel id="pm25" typeId="pm25"/>
-			<channel id="iaql" typeId="iaql"/>
-			<channel id="aqit" typeId="aqit"/>
-			<channel id="err" typeId="err"/>
+			<channel id="allergen-index" typeId="allergen-index"/>
+			<channel id="air-quality-threshold" typeId="air-quality-threshold"/>
+			<channel id="error-code" typeId="error-code"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="sensors-adv">
 		<label>Sensors</label>
 		<channels>
 			<channel id="pm25" typeId="pm25"/>
-			<channel id="temp" typeId="temp"/>
-			<channel id="rh" typeId="rh"/>
-			<channel id="wl" typeId="wl"/>
-			<channel id="iaql" typeId="iaql"/>
-			<channel id="aqit" typeId="aqit"/>
-			<channel id="err" typeId="err"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="water-level" typeId="water-level"/>
+			<channel id="allergen-index" typeId="allergen-index"/>
+			<channel id="air-quality-threshold" typeId="air-quality-threshold"/>
+			<channel id="error-code" typeId="error-code"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="filters">
 		<label>Filters</label>
 		<channels>
-			<channel id="fltsts0" typeId="fltsts0"/>
-			<channel id="fltsts1" typeId="fltsts1"/>
-			<channel id="fltsts2" typeId="fltsts2"/>
+			<channel id="pre-filter-life" typeId="pre-filter-life"/>
+			<channel id="hepa-filter-life" typeId="hepa-filter-life"/>
+			<channel id="carbon-filter-life" typeId="carbon-filter-life"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="filters-wicks">
 		<label>Filters with Wick</label>
 		<channels>
-			<channel id="fltsts0" typeId="fltsts0"/>
-			<channel id="fltsts1" typeId="fltsts1"/>
-			<channel id="fltsts2" typeId="fltsts2"/>
-			<channel id="wicksts" typeId="wicksts"/>
+			<channel id="pre-filter-life" typeId="pre-filter-life"/>
+			<channel id="hepa-filter-life" typeId="hepa-filter-life"/>
+			<channel id="carbon-filter-life" typeId="carbon-filter-life"/>
+			<channel id="wick-filter-life" typeId="wick-filter-life"/>
 		</channels>
 	</channel-group-type>
 
