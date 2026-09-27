@@ -20,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLConnection;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.digitalmediaserver.cast.CastDevice;
@@ -305,6 +306,9 @@ public class ChromecastCommander {
                     session.play(ms.getMediaSessionId(), false);
                 } else {
                     MediaBuilder builder = new MediaBuilder(url, resolveContentType(url, mimeType), StreamType.NONE);
+                    if (title != null) {
+                        builder.customData(Map.of("title", title));
+                    }
                     session.load(builder, true, 0.0, false);
                 }
             } else {

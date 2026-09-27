@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.chromecast.internal;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -33,6 +34,7 @@ import org.digitalmediaserver.cast.message.enumeration.IdleReason;
 import org.digitalmediaserver.cast.message.enumeration.PlayerState;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -63,6 +65,23 @@ class ChromecastCommanderTest {
         commander.playMedia(null, "file:///sound.mp3", null);
 
         verify(session).load(any(MediaBuilder.class), eq(true), eq(0.0), eq(false));
+    }
+
+    @Test
+    void mediaTitleIsIncludedInLoadRequest() throws Exception {
+        Application application = mock(Application.class);
+        Session session = mock(Session.class);
+        when(chromeCast.isApplicationAvailable(MEDIA_PLAYER)).thenReturn(true);
+        when(chromeCast.isApplicationRunning(MEDIA_PLAYER)).thenReturn(true);
+        when(chromeCast.getRunningApplication()).thenReturn(application);
+        when(chromeCast.startSession("openHAB", application)).thenReturn(session);
+        when(session.getMediaStatus()).thenReturn(List.of());
+
+        commander.playMedia("Notification", "file:///sound.mp3", "audio/mpeg");
+
+        ArgumentCaptor<MediaBuilder> builderCaptor = ArgumentCaptor.forClass(MediaBuilder.class);
+        verify(session).load(builderCaptor.capture(), eq(true), eq(0.0), eq(false));
+        assertEquals("Notification", builderCaptor.getValue().build().getCustomData().get("title"));
     }
 
     @Test
