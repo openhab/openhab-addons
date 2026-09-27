@@ -81,7 +81,8 @@ public class RadioThermostatBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_RTHERM);
 
-    public static final Set<String> NO_UPDATE_CHANNEL_IDS = Set.of(REMOTE_TEMP, MESSAGE);
+    public static final Set<String> TSAT_CHANNEL_IDS = Set.of(TEMPERATURE, MODE, FAN_MODE, PROGRAM_MODE, SET_POINT,
+            OVERRIDE, HOLD, STATUS, FAN_STATUS, DAY, HOUR, MINUTE, DATE_STAMP, NEXT_TEMP, NEXT_TIME);
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = ImperialUnits.FAHRENHEIT;

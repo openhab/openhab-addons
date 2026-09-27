@@ -484,11 +484,9 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         rthermData.setThermostatData(gson.fromJson(evtVal, RadioThermostatTstatDTO.class));
                         // if thermostat returned -1 for temperature, skip this update
                         if (rthermData.getThermostatData().getTemperature() >= 0) {
-                            // Update all channels from rthermData
-                            getThing().getChannels().forEach(channel -> {
-                                if (!NO_UPDATE_CHANNEL_IDS.contains(channel.getUID().getId())) {
-                                    updateChannel(channel.getUID().getId(), rthermData);
-                                }
+                            // Update the relevant channels with the data from '/tstat'
+                            TSAT_CHANNEL_IDS.forEach(channelId -> {
+                                updateChannel(channelId, rthermData);
                             });
                         }
                     }
