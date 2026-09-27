@@ -188,6 +188,27 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         verify(thingCallback).stateUpdated(channelUid, new org.openhab.core.library.types.DecimalType("42"));
     }
 
+    @Test
+    public void testPoller2RejectsNumericChannelForCoilPoller() {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 100);
+        pollerConfig.put("length", 2);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_COIL);
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "coil-poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "value");
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "uint16"));
+        poller = createPoller2ThingBuilder("coil-poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "Number").withConfiguration(channelConfig).build())
+                .build();
+        addThing(poller);
+
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        assertThat(poller.getStatusInfo().getDescription(),
+                is(equalTo("poller2 numeric channels require type 'holding' or 'input', not 'coil'")));
+    }
+
     private void testPollerLengthCheck(String type, int length, boolean expectedOnline) {
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 0L);

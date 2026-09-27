@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
 import org.openhab.binding.modbus.internal.handler.Poller2Channel;
 import org.openhab.binding.modbus.internal.handler.Poller2ChannelConfiguration;
@@ -47,6 +48,14 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
     @Override
     public synchronized void initialize() {
         ModbusPollerConfiguration configuration = getConfigAs(ModbusPollerConfiguration.class);
+        String type = configuration.getType();
+        if (!getThing().getChannels().isEmpty()
+                && !ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER.equals(type)
+                && !ModbusBindingConstantsInternal.READ_TYPE_INPUT_REGISTER.equals(type)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "poller2 numeric channels require type 'holding' or 'input', not '%s'".formatted(type));
+            return;
+        }
         pollStart = configuration.getStart();
         Map<ChannelUID, Poller2Channel> parsedChannels = new LinkedHashMap<>();
         for (Channel channel : getThing().getChannels()) {
