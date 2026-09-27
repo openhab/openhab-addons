@@ -130,6 +130,9 @@ public class GeminiActions implements ThingActions {
 
         int resolvedRequestTimeout = Objects.requireNonNullElse(requestTimeout,
                 config != null ? config.requestTimeout : DEFAULT_REQUEST_TIMEOUT);
+        if (!GeminiHandler.isValidTimeout(resolvedRequestTimeout)) {
+            resolvedRequestTimeout = DEFAULT_REQUEST_TIMEOUT;
+        }
 
         try {
             GeminiResponse response = apiClient.sendPrompt(resolvedModel, prompt, resolvedSystemMessage,

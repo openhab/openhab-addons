@@ -183,7 +183,7 @@ public class GeminiHandler extends BaseThingHandler {
             return;
         }
 
-        if (invalidTimeout(c.requestTimeout)) {
+        if (!isValidTimeout(c.requestTimeout)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/requestTimeout.configuration-error");
             return;
@@ -248,7 +248,7 @@ public class GeminiHandler extends BaseThingHandler {
         return List.of(GeminiModelOptionProvider.class, GeminiActions.class, GeminiHLIService.class);
     }
 
-    private boolean invalidTimeout(int timeout) {
-        return timeout <= 0;
+    public static boolean isValidTimeout(@Nullable Integer timeout) {
+        return timeout == null || timeout > 0;
     }
 }
