@@ -107,6 +107,18 @@ public class NetworkUtils {
         return Duration.ofNanos((long) (micros * NANOS_PER_MICRO));
     }
 
+    /**
+     * Returns the scheme, host and port of the given {@link URI} for logging. The user info, path, query and fragment
+     * are left out, as they may contain credentials.
+     *
+     * @param uri the {@link URI} to be logged
+     * @return the scheme, host and port of the given {@link URI}
+     */
+    public static String toLoggableTarget(URI uri) {
+        int port = uri.getPort();
+        return uri.getScheme() + "://" + uri.getHost() + (port == -1 ? "" : ":" + port);
+    }
+
     private final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
 
     private LatencyParser latencyParser = new LatencyParser();
@@ -308,11 +320,11 @@ public class NetworkUtils {
             try {
                 listener.getInputStream().close();
             } catch (IOException e) {
-                logger.trace("Could not discard the response body of {}: {}", uri, e.getMessage());
+                logger.trace("Could not discard the response body of {}: {}", toLoggableTarget(uri), e.getMessage());
             }
             return result;
         } catch (ExecutionException | TimeoutException e) {
-            logger.trace("Could not request {}: {}", uri, e.getMessage());
+            logger.trace("Could not request {}: {}", toLoggableTarget(uri), e.getMessage());
             return null;
         }
     }

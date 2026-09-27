@@ -181,10 +181,12 @@ public class NetworkHandlerTest extends JavaTest {
 
     @Test
     public void httpDeviceMalformedUrlInitTests() {
-        NetworkHandler handler = createHttpHandler("https://example.com/not a valid path");
+        NetworkHandler handler = createHttpHandler("https://user:secret@example.com/not a valid path?token=secret");
 
         handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), resolver));
-        assertConfigurationError();
+        ThingStatusInfo statusInfo = assertConfigurationError();
+        // The status description must not expose credentials contained in the URL
+        assertThat(statusInfo.getDescription(), not(containsString("secret")));
     }
 
     @Test
@@ -290,10 +292,11 @@ public class NetworkHandlerTest extends JavaTest {
         return handler;
     }
 
-    private void assertConfigurationError() {
+    private ThingStatusInfo assertConfigurationError() {
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
         assertThat(statusInfoCaptor.getValue().getStatus(), is(equalTo(ThingStatus.OFFLINE)));
         assertThat(statusInfoCaptor.getValue().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        return statusInfoCaptor.getValue();
     }
 }

@@ -243,8 +243,9 @@ public class NetworkHandler extends BaseThingHandler
                 try {
                     uri = new URI(config.url);
                 } catch (URISyntaxException e) {
+                    // The exception message contains the URL, which may contain credentials
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Configured URL is not valid: " + e.getMessage());
+                            "Configured URL is not valid: " + e.getReason() + " at index " + e.getIndex());
                     return;
                 }
                 String host = uri.getHost();

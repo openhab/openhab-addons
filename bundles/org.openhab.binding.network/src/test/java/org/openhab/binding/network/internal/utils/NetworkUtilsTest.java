@@ -108,6 +108,15 @@ public class NetworkUtilsTest {
         assertNull(networkUtils.httpPing(httpClient, URI.create(baseUrl + "/ok"), TIMEOUT));
     }
 
+    @Test
+    public void toLoggableTargetOmitsSensitiveParts() {
+        assertThat(
+                NetworkUtils.toLoggableTarget(
+                        URI.create("https://user:secret@example.com:8443/api/secret/status?token=secret#secret")),
+                is("https://example.com:8443"));
+        assertThat(NetworkUtils.toLoggableTarget(URI.create("http://example.com/status")), is("http://example.com"));
+    }
+
     private void stopServer() {
         if (!serverStopped) {
             serverStopped = true;

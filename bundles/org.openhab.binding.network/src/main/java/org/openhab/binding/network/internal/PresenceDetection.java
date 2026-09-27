@@ -549,7 +549,7 @@ public class PresenceDetection implements IPRequestReceivedCallback {
         if (uri == null || client == null) {
             return;
         }
-        logger.trace("Perform HTTP presence detection for {}", uri);
+        logger.trace("Perform HTTP presence detection for {}", NetworkUtils.toLoggableTarget(uri));
 
         try {
             HttpPingResult pingResult = networkUtils.httpPing(client, uri, timeout);
