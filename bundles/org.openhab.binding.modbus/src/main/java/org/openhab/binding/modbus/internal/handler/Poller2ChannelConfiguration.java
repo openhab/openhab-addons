@@ -51,9 +51,20 @@ public final class Poller2ChannelConfiguration {
             return error("Channel '%s' has invalid valueType '%s'".formatted(channelId, valueTypeText));
         }
 
+        Object errorPolicy = configuration.getOrDefault("errorPolicy", "undef");
+        final PollerReadFailurePolicy parsedErrorPolicy;
+        if ("undef".equals(errorPolicy)) {
+            parsedErrorPolicy = PollerReadFailurePolicy.UNDEF;
+        } else if ("keepLast".equals(errorPolicy)) {
+            parsedErrorPolicy = PollerReadFailurePolicy.KEEP_LAST;
+        } else {
+            return error("Channel '%s' has invalid errorPolicy '%s'; expected 'undef' or 'keepLast'"
+                    .formatted(channelId, errorPolicy));
+        }
+
         final Poller2Channel channel;
         try {
-            channel = new Poller2Channel(addressText, parsedValueType, PollerReadFailurePolicy.UNDEF);
+            channel = new Poller2Channel(addressText, parsedValueType, parsedErrorPolicy);
         } catch (IllegalArgumentException e) {
             return error("Channel '%s' has invalid address '%s'; expected X or X.Y".formatted(channelId, addressText));
         }
