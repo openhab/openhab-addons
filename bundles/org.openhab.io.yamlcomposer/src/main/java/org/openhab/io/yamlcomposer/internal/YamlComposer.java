@@ -228,7 +228,7 @@ public class YamlComposer {
         variableLoader.extractVariables(variablesSection, locator, standardContext);
 
         Object templatesSection = removeByScalarKey(yamlMap, ComposerConfig.TEMPLATES_KEY);
-        new TemplateLoader(logger, relativePath, templates, recursiveTransformer, locator, scope)
+        new TemplateLoader(logger, relativePath, templates, recursiveTransformer, locator)
                 .extractTemplates(templatesSection, standardContext);
 
         // Phase 5: extract/remove packages
