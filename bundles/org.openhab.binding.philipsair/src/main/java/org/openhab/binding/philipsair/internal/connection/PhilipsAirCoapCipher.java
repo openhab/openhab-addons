@@ -40,15 +40,21 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public class PhilipsAirCoapCipher {
     private static final String SHARED_SECRET = "JiangPan";
+    private static final int COUNTER_LENGTH = 8;
+    private static final int HASH_LENGTH = 64;
 
     public static String decryptMsg(@Nullable String responseText, Logger logger) {
         if (responseText == null || responseText.isBlank()) {
             return "";
         }
-        String counter = responseText.substring(0, 8);
-        String hash = responseText.substring(responseText.length() - 64, responseText.length());
-        String encodedMessageAndCounter = responseText.substring(0, responseText.length() - 64);
-        String encodedMessage = responseText.substring(8, responseText.length() - 64);
+        if (responseText.length() < COUNTER_LENGTH + HASH_LENGTH) {
+            logger.debug("Message too short to decrypt: '{}'", responseText);
+            return "";
+        }
+        String counter = responseText.substring(0, COUNTER_LENGTH);
+        String hash = responseText.substring(responseText.length() - HASH_LENGTH);
+        String encodedMessageAndCounter = responseText.substring(0, responseText.length() - HASH_LENGTH);
+        String encodedMessage = responseText.substring(COUNTER_LENGTH, responseText.length() - HASH_LENGTH);
         try {
             String calculatedHash = toSHA(encodedMessageAndCounter);
             if (!hash.contentEquals(calculatedHash)) {
@@ -67,7 +73,8 @@ public class PhilipsAirCoapCipher {
             }
             return decryptedMsg;
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException
+                | IllegalArgumentException e) {
             logger.debug("Error decrypting message: {}. Message Text: '{}'", e.getMessage(), responseText);
         }
         return "Could not decrypt";

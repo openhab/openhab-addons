@@ -33,11 +33,11 @@ public class PhilipsAirPurifierFiltersDTO {
 
     @SerializedName("fltsts1")
     @Expose
-    int carbonFilter;
+    int hepaFilter;
 
     @SerializedName("fltsts2")
     @Expose
-    int hepaFilter;
+    int carbonFilter;
 
     @SerializedName("wicksts")
     @Expose

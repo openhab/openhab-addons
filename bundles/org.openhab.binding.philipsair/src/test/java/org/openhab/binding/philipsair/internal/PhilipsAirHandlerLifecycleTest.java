@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.test.java.JavaTest;
@@ -37,7 +38,12 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
+
+import com.google.gson.Gson;
 
 /**
  * Tests that {@link PhilipsAirHandler} releases its connection when it is disposed.
@@ -65,7 +71,8 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     public void setUp() {
         Configuration config = new Configuration();
         config.put(PhilipsAirConfiguration.CONFIG_HOST, "1.1.1.1");
-        Thing thing = ThingBuilder.create(THING_TYPE_COAP, THING_UID).withConfiguration(config).build();
+        Thing thing = ThingBuilder.create(THING_TYPE_COAP, THING_UID).withConfiguration(config)
+                .withChannel(ChannelBuilder.create(POWER_CHANNEL, "Switch").build()).build();
         handler = new PhilipsAirHandler(thing, httpClient) {
             @Override
             PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
@@ -97,6 +104,26 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         clearInvocations(connection);
         handler.handleCommand(POWER_CHANNEL, OnOffType.OFF);
         verify(connection, never()).sendCommand(any(), any());
+    }
+
+    @Test
+    public void failedCommandKeepsLastState() throws InterruptedException {
+        when(callback.isChannelLinked(POWER_CHANNEL)).thenReturn(true);
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
+        when(connection.sendCommand(any(), any())).thenReturn(null);
+        releaseConnection.countDown();
+        handler.initialize();
+        waitForAssert(() -> {
+            handler.handleCommand(POWER_CHANNEL, RefreshType.REFRESH);
+            verify(callback, atLeastOnce()).stateUpdated(POWER_CHANNEL, OnOffType.ON);
+        });
+
+        handler.handleCommand(POWER_CHANNEL, OnOffType.OFF);
+
+        verify(connection).sendCommand(any(), any());
+        verify(callback, never()).stateUpdated(POWER_CHANNEL, UnDefType.NULL);
+        handler.dispose();
     }
 
     @Test

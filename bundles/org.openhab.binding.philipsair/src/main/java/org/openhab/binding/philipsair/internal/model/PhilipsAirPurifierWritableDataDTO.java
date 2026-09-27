@@ -29,40 +29,39 @@ public class PhilipsAirPurifierWritableDataDTO {
 
     @SerializedName(PhilipsAirBindingConstants.FAN_MODE)
     @Expose
-    private String fanSpeed;
+    private @Nullable String fanSpeed;
     @SerializedName(PhilipsAirBindingConstants.POWER)
     @Expose
-    private String power;
+    private @Nullable String power;
     @SerializedName(PhilipsAirBindingConstants.CHILD_LOCK)
     @Expose
-    private Boolean childLock;
+    private @Nullable Boolean childLock;
     @SerializedName(PhilipsAirBindingConstants.LED_LIGHT_LEVEL)
     @Expose
-    private Integer lightLevel;
+    private @Nullable Integer lightLevel;
     @SerializedName(PhilipsAirBindingConstants.BUTTONS_LIGHT)
     @Expose
-    private String buttons;
+    private @Nullable String buttons;
     @SerializedName(PhilipsAirBindingConstants.AUTO_TIMEOFF)
     @Expose
-    private Integer timer;
+    private @Nullable Integer timer;
     @SerializedName(PhilipsAirBindingConstants.MODE)
     @Expose
-    private String mode;
+    private @Nullable String mode;
     @SerializedName(PhilipsAirBindingConstants.AIR_QUALITY_NOTIFICATION_THRESHOLD)
     @Expose
-    private Integer aqit;
+    private @Nullable Integer aqit;
     @SerializedName(PhilipsAirBindingConstants.DISPLAYED_INDEX)
     @Expose
-    private String displayIndex;
+    private @Nullable String displayIndex;
     @SerializedName(PhilipsAirBindingConstants.HUMIDITY_SETPOINT)
     @Expose
     private @Nullable Integer humiditySetpoint;
     @SerializedName(PhilipsAirBindingConstants.FUNCTION)
     @Expose
-    @Nullable
-    private String function;
+    private @Nullable String function;
 
-    public String getFanSpeed() {
+    public @Nullable String getFanSpeed() {
         return fanSpeed;
     }
 
@@ -70,7 +69,7 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.fanSpeed = fanSpeed;
     }
 
-    public String getPower() {
+    public @Nullable String getPower() {
         return power;
     }
 
@@ -78,7 +77,7 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.power = pwr;
     }
 
-    public boolean getChildLock() {
+    public @Nullable Boolean getChildLock() {
         return childLock;
     }
 
@@ -86,7 +85,7 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.childLock = childLock;
     }
 
-    public int getLightLevel() {
+    public @Nullable Integer getLightLevel() {
         return lightLevel;
     }
 
@@ -94,7 +93,7 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.lightLevel = lightLevel;
     }
 
-    public String getButtons() {
+    public @Nullable String getButtons() {
         return buttons;
     }
 
@@ -102,7 +101,7 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.buttons = buttons;
     }
 
-    public int getTimer() {
+    public @Nullable Integer getTimer() {
         return timer;
     }
 
@@ -110,7 +109,7 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.timer = timer;
     }
 
-    public String getMode() {
+    public @Nullable String getMode() {
         return mode;
     }
 
@@ -118,7 +117,7 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.mode = mode;
     }
 
-    public int getAqit() {
+    public @Nullable Integer getAqit() {
         return aqit;
     }
 
@@ -126,7 +125,7 @@ public class PhilipsAirPurifierWritableDataDTO {
         this.aqit = aqit;
     }
 
-    public String getDisplayIndex() {
+    public @Nullable String getDisplayIndex() {
         return displayIndex;
     }
 

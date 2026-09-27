@@ -37,6 +37,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirCipher;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -303,6 +306,55 @@ public class PhilipsAirHandlerTest extends JavaTest {
     @Test
     public void testSendCommandCL() throws Exception {
         sendCommandTemplate("controls#cl:Switch", OnOffType.ON, OnOffType.OFF, OnOffType.ON, STATUS, STATUS_CL_ON);
+    }
+
+    @Test
+    public void configurationIsOnlyPersistedWhenChanged() throws Exception {
+        mockResponses(DEVICE, STATUS);
+        PhilipsAirHandler handler = createHandler(List.of("controls#pwr:Switch"), new Configuration());
+
+        initializeAndRefresh(handler, "controls#pwr");
+        assertEquals("AC2889/10",
+                handler.getThing().getConfiguration().get(PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID));
+        long thingUpdates = countThingUpdates();
+
+        handler.handleCommand(new ChannelUID(THING_UID, "controls#pwr"), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(THING_UID, "controls#pwr"), RefreshType.REFRESH);
+
+        assertEquals(thingUpdates, countThingUpdates());
+    }
+
+    private long countThingUpdates() {
+        return mockingDetails(callback).getInvocations().stream().filter(invocation -> List
+                .of("thingUpdated", "configurationUpdated").contains(invocation.getMethod().getName())).count();
+    }
+
+    @Test
+    public void deviceInfoAndFiltersDoNotDependOnStatus() {
+        PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
+        PhilipsAirPurifierDeviceDTO deviceInfo = GSON.fromJson(DEVICE, PhilipsAirPurifierDeviceDTO.class);
+        PhilipsAirPurifierFiltersDTO filters = GSON.fromJson(
+                "{\"fltsts0\":10,\"fltsts1\":2000,\"fltsts2\":3000,\"wicksts\":400}",
+                PhilipsAirPurifierFiltersDTO.class);
+
+        assertEquals("1.0.4", handler.getValue(new ChannelUID(THING_UID, "swversion"), null, deviceInfo, null));
+        assertEquals(10, handler.getValue(new ChannelUID(THING_UID, "filters#fltsts0"), null, null, filters));
+        // fltsts1 is the HEPA filter, fltsts2 the active carbon filter
+        assertEquals(2000, handler.getValue(new ChannelUID(THING_UID, "filters#fltsts1"), null, null, filters));
+        assertEquals(3000, handler.getValue(new ChannelUID(THING_UID, "filters#fltsts2"), null, null, filters));
+        assertEquals(400, handler.getValue(new ChannelUID(THING_UID, "filters#wicksts"), null, null, filters));
+    }
+
+    @Test
+    public void missingValuesAreNull() {
+        PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
+        PhilipsAirPurifierDataDTO data = GSON.fromJson("{}", PhilipsAirPurifierDataDTO.class);
+
+        for (String channel : List.of("controls#pwr", "controls#om", "controls#cl", "controls#mode", "controls#dt",
+                "controls-ui#uil", "controls-ui#aqil", "controls-ui#ddp", "sensors#aqit", "sensors#rh", "sensors#temp",
+                "sensors#wl", "controls#rhset", "controls#func")) {
+            assertNull(handler.getValue(new ChannelUID(THING_UID, channel), data, null, null), channel);
+        }
     }
 
     @Test

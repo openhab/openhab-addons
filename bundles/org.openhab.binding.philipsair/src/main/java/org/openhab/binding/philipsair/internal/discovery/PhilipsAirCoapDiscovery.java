@@ -55,6 +55,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,8 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
 
     @Activate
     public PhilipsAirCoapDiscovery(@Reference ConfigurationAdmin configAdmin,
-            @Reference NetworkAddressService networkAddressService) throws IllegalArgumentException {
+            @Reference NetworkAddressService networkAddressService, Map<String, Object> configProperties)
+            throws IllegalArgumentException {
         super(DISCOVERY_TIME);
 
         CoapConfig.register();
@@ -143,6 +145,13 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         this.networkAddressService = networkAddressService;
         this.client = new CoapClient();
         this.client.setEndpoint(endpoint);
+        super.activate(configProperties);
+    }
+
+    @Override
+    @Modified
+    protected void modified(@Nullable Map<String, Object> configProperties) {
+        super.modified(configProperties);
     }
 
     @Override

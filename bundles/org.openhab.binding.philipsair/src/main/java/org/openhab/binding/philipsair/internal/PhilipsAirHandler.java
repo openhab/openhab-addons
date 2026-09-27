@@ -34,6 +34,7 @@ import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -103,7 +104,10 @@ public class PhilipsAirHandler extends BaseThingHandler {
             logger.debug("Sending {} as {}", channelUID.getId(), command.toString());
             PhilipsAirPurifierWritableDataDTO commandData = prepareCommandData(channelUID.getIdWithoutGroup(), command);
             try {
-                currentData = connection.sendCommand(channelUID.getIdWithoutGroup(), commandData);
+                PhilipsAirPurifierDataDTO data = connection.sendCommand(channelUID.getIdWithoutGroup(), commandData);
+                if (data != null) {
+                    currentData = data;
+                }
             } catch (PhilipsAirAPIException e) {
                 logger.debug("An exception occured", e);
             }
@@ -311,17 +315,15 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
         if (deviceInfo != null) {
             this.deviceInfo = deviceInfo;
-            getAirPurifierConfig().setModelid(deviceInfo.getModelId());
-            this.getConfig().put(PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID, deviceInfo.getModelId()); // TODO : change
-                                                                                                        // to
-                                                                                                        // properties?
-            this.getConfig().put(PhilipsAirConfiguration.CONFIG_KEY, connection.getConfig().getKey());
-            Map<String, String> properties = fillDeviceProperties(deviceInfo, editProperties());
-            updateProperties(properties);
-            ThingHandlerCallback callback = getCallback();
-            if (callback != null) {
-                callback.configurationUpdated(thing);
+            Configuration configuration = editConfiguration();
+            boolean changed = updateConfigValue(configuration, PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID,
+                    deviceInfo.getModelId());
+            changed |= updateConfigValue(configuration, PhilipsAirConfiguration.CONFIG_KEY,
+                    connection.getConfig().getKey());
+            if (changed) {
+                updateConfiguration(configuration);
             }
+            updateProperties(fillDeviceProperties(deviceInfo, editProperties()));
         }
 
         if (filters != null) {
@@ -376,6 +378,14 @@ public class PhilipsAirHandler extends BaseThingHandler {
             case WATER_LEVEL -> data.getWaterLevel() != null;
             default -> false;
         };
+    }
+
+    private static boolean updateConfigValue(Configuration configuration, String key, @Nullable String value) {
+        if (value == null || value.equals(configuration.get(key))) {
+            return false;
+        }
+        configuration.put(key, value);
+        return true;
     }
 
     private void updateChannels() {
@@ -436,15 +446,16 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case DISPLAYED_INDEX:
                     return data.getDisplayIndex();
                 case BUTTONS_LIGHT:
-                    return data.getButtons().equals("0") ? OnOffType.OFF : OnOffType.ON;
+                    return toOnOff(data.getButtons());
                 case POWER:
-                    return data.getPower().equals("0") ? OnOffType.OFF : OnOffType.ON;
+                    return toOnOff(data.getPower());
                 case PM25:
                     return new QuantityType<Density>(data.getPm25(), DENSITY_UNIT);
                 case FAN_MODE:
                     return data.getFanSpeed();
                 case CHILD_LOCK:
-                    return data.getChildLock() ? OnOffType.ON : OnOffType.OFF;
+                    Boolean childLock = data.getChildLock();
+                    return childLock != null ? OnOffType.from(childLock) : null;
                 case AUTO_TIMEOFF:
                     return data.getTimer();
                 case TIMER_COUNTDOWN:
@@ -476,30 +487,30 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case WATER_LEVEL:
                     return data.getWaterLevel();
             }
+        }
 
-            if (deviceInfo != null) {
-                switch (field) {
-                    case SOFTWARE_VERSION:
-                        return deviceInfo.getSoftwareVersion();
+        if (deviceInfo != null && SOFTWARE_VERSION.equals(field)) {
+            return deviceInfo.getSoftwareVersion();
+        }
 
-                }
-            }
-
-            if (filters != null) {
-                switch (field) {
-                    case PRE_FILTER:
-                        return filters.getPreFilter();
-                    case WICKS_FILTER:
-                        return filters.getWickFilter();
-                    case CARBON_FILTER:
-                        return filters.getCarbonFilter();
-                    case HEPA_FILTER:
-                        return filters.getHepaFilter();
-                }
+        if (filters != null) {
+            switch (field) {
+                case PRE_FILTER:
+                    return filters.getPreFilter();
+                case WICKS_FILTER:
+                    return filters.getWickFilter();
+                case CARBON_FILTER:
+                    return filters.getCarbonFilter();
+                case HEPA_FILTER:
+                    return filters.getHepaFilter();
             }
         }
 
         return null;
+    }
+
+    private static @Nullable OnOffType toOnOff(@Nullable String value) {
+        return value != null ? OnOffType.from(!"0".equals(value)) : null;
     }
 
     public PhilipsAirConfiguration getAirPurifierConfig() {

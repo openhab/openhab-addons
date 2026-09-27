@@ -15,7 +15,6 @@ package org.openhab.binding.philipsair.internal.discovery;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +28,13 @@ import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -49,27 +49,27 @@ import org.slf4j.LoggerFactory;
  * @author Marcel Verpaalen - Match model numbers with region suffix
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+@Component(service = UpnpDiscoveryParticipant.class, configurationPid = "discovery.philipsair", immediate = true)
 public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirUpnpDiscoveryParticipant.class);
     private boolean isAutoDiscoveryEnabled = true;
 
     @Activate
-    protected void activate(ComponentContext componentContext) {
-        activateOrModifyService(componentContext);
+    protected void activate(Map<String, Object> properties) {
+        activateOrModifyService(properties);
     }
 
     @Modified
-    protected void modified(ComponentContext componentContext) {
-        activateOrModifyService(componentContext);
+    protected void modified(Map<String, Object> properties) {
+        activateOrModifyService(properties);
     }
 
-    private void activateOrModifyService(ComponentContext componentContext) {
-        Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
-        String autoDiscoveryPropertyValue = (String) properties.get("enableAutoDiscovery");
-        if (autoDiscoveryPropertyValue != null && autoDiscoveryPropertyValue.length() != 0) {
-            isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
-        }
+    private void activateOrModifyService(Map<String, Object> properties) {
+        // 'enableAutoDiscovery' is kept for backwards compatibility
+        Boolean legacyEnabled = ConfigParser.valueAs(properties.get("enableAutoDiscovery"), Boolean.class);
+        isAutoDiscoveryEnabled = ConfigParser.valueAsOrElse(
+                properties.get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY), Boolean.class,
+                legacyEnabled != null ? legacyEnabled : true);
     }
 
     @Override
