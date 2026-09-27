@@ -204,7 +204,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     }
 
     private Bridge createTcpMock() {
-        Bridge tcpBridge = ModbusPollerThingHandlerTest.createTcpThingBuilder("tcp1").build();
+        Bridge tcpBridge = BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP,
+                new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_TCP, "tcp1")).build();
         ModbusTcpThingHandler tcpThingHandler = Mockito.mock(ModbusTcpThingHandler.class);
         tcpBridge.setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
         tcpBridge.setHandler(tcpThingHandler);
