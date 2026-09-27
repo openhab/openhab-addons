@@ -4,8 +4,9 @@
  * See the NOTICE file(s) distributed with this work for additional
  * information.
  *
- * This program and accompanying materials are made available under the terms of the
- * Eclipse Public License 2.0 which is available at http://www.eclipse.org/legal/epl-2.0.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
  */
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
 
 /**
@@ -25,10 +27,10 @@ import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
 @NonNullByDefault
 public final class Poller2ChannelConfiguration {
 
-    private final Optional<Poller2Channel> channel;
-    private final Optional<String> error;
+    private final @Nullable Poller2Channel channel;
+    private final @Nullable String error;
 
-    private Poller2ChannelConfiguration(Optional<Poller2Channel> channel, Optional<String> error) {
+    private Poller2ChannelConfiguration(@Nullable Poller2Channel channel, @Nullable String error) {
         this.channel = channel;
         this.error = error;
     }
@@ -70,18 +72,18 @@ public final class Poller2ChannelConfiguration {
         }
         Optional<String> rangeError = channel.validateReadRange(pollStart, pollLength);
         return rangeError.map(message -> error("Channel '%s': %s".formatted(channelId, message)))
-                .orElseGet(() -> new Poller2ChannelConfiguration(Optional.of(channel), Optional.empty()));
+                .orElseGet(() -> new Poller2ChannelConfiguration(channel, null));
     }
 
     private static Poller2ChannelConfiguration error(String message) {
-        return new Poller2ChannelConfiguration(Optional.empty(), Optional.of(message));
+        return new Poller2ChannelConfiguration(null, message);
     }
 
     public Optional<Poller2Channel> channel() {
-        return channel;
+        return Optional.ofNullable(channel);
     }
 
     public Optional<String> error() {
-        return error;
+        return Optional.ofNullable(error);
     }
 }

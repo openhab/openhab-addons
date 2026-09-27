@@ -20,6 +20,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.AfterEach;
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.openhab.binding.modbus.handler.ModbusPoller2ThingHandler;
 import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
@@ -45,6 +47,7 @@ import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.core.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -52,6 +55,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +85,13 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         return BridgeBuilder
                 .create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER,
                         new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER, id))
+                .withLabel("label for " + id);
+    }
+
+    public static BridgeBuilder createPoller2ThingBuilder(String id) {
+        return BridgeBuilder
+                .create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2,
+                        new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, id))
                 .withLabel("label for " + id);
     }
 
@@ -150,6 +161,31 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         verifyEndpointBasicInitInteraction();
         // polling is _not_ setup
         verifyNoMoreInteractions(mockedModbusManager);
+    }
+
+    @Test
+    public void testPoller2UpdatesItsConfiguredChannelFromPollResult()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 100);
+        pollerConfig.put("length", 2);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "value");
+        Configuration channelConfig = new Configuration(Map.of("address", "101", "valueType", "uint16"));
+        poller = createPoller2ThingBuilder("poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "Number").withConfiguration(channelConfig).build())
+                .build();
+        addThing(poller);
+
+        ModbusPoller2ThingHandler handler = (ModbusPoller2ThingHandler) poller.getHandler();
+        handler.setCallback(thingCallback);
+        ModbusReadCallback callback = getPollerCallback(handler);
+        callback.handle(new AsyncModbusReadResult(Mockito.mock(ModbusReadRequestBlueprint.class),
+                new ModbusRegisterArray(0x0001, 0x002A)));
+
+        verify(thingCallback).stateUpdated(channelUid, new org.openhab.core.library.types.DecimalType("42"));
     }
 
     private void testPollerLengthCheck(String type, int length, boolean expectedOnline) {
