@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,6 +47,13 @@ public abstract class OppoConnector {
     private static final String NOP = "NOP";
     private static final String OK = "OK";
 
+    private static final Pattern DV983H_POWER_PATTERN = Pattern.compile(".*POWER (ON|OFF).*");
+    private static final Pattern DV983H_DISC_TYPE_PATTERN = Pattern
+            .compile(".*(OPENING|NO DISC|LOADING|DVD-VIDEO|DVD-AUDIO|SACD|CD-DA).*");
+    private static final Pattern DV983H_VOLUME_PATTERN = Pattern.compile(".*Volume is ([0-2][0-9]).*");
+    private static final String DV983H_MUTE_STRING = "Now is mute";
+    private static final String DV983H_FIRMWARE_STRING = "DV983H";
+
     private final Logger logger = LoggerFactory.getLogger(OppoConnector.class);
 
     private String beginCmd = "#";
@@ -63,6 +71,8 @@ public abstract class OppoConnector {
     private @Nullable Thread readerThread;
 
     private final List<OppoMessageEventListener> listeners = new ArrayList<>();
+
+    protected boolean isDvdModel = false;
 
     /**
      * Called when using direct IP connection for 83/93/95/103/105
@@ -242,10 +252,23 @@ public abstract class OppoConnector {
      * @param incomingMessage the received message
      */
     public void handleIncomingMessage(byte[] incomingMessage) {
-        String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
+        final String message = new String(incomingMessage, StandardCharsets.US_ASCII).trim();
 
         logger.debug("handleIncomingMessage: {}", message);
 
+        if (isDvdModel) {
+            handleDvdMessage(message);
+        } else {
+            handleBdpMessage(message);
+        }
+    }
+
+    /**
+     * Process a message from the Blu-ray player and dispatch it to the event listener
+     *
+     * @param message the received message
+     */
+    private void handleBdpMessage(String message) {
         if (NOP_OK.equals(message)) {
             dispatchKeyValue(NOP, OK);
             return;
@@ -275,6 +298,48 @@ public abstract class OppoConnector {
         if (matcher.find()) {
             // pull out the update type and the remainder of the message
             dispatchKeyValue(matcher.group(1), matcher.group(2));
+            return;
+        }
+
+        logger.debug("unhandled message: {}", message);
+    }
+
+    /**
+     * Process a message from the DV-983H and dispatch it to the event listener
+     *
+     * @param message the received message
+     */
+    private void handleDvdMessage(String message) {
+        Matcher matcher = DV983H_POWER_PATTERN.matcher(message);
+        if (matcher.find()) {
+            dispatchKeyValue(QPW, matcher.group(1));
+            return;
+        }
+
+        matcher = DV983H_DISC_TYPE_PATTERN.matcher(message.toUpperCase(Locale.ENGLISH));
+        if (matcher.find()) {
+            dispatchKeyValue(UDT, matcher.group(1));
+            return;
+        }
+
+        matcher = DV983H_VOLUME_PATTERN.matcher(message);
+        if (matcher.find()) {
+            try {
+                // DV-983H volume is 00-20, multiply by 5 to get 0-100%
+                dispatchKeyValue(QVL, String.valueOf(Integer.parseInt(matcher.group(1)) * 5));
+            } catch (NumberFormatException e) {
+                logger.debug("Unable to parse volume for message: {}", message);
+            }
+            return;
+        }
+
+        if (message.contains(DV983H_MUTE_STRING)) {
+            dispatchKeyValue(QVL, MUTE);
+            return;
+        }
+
+        if (message.contains(DV983H_FIRMWARE_STRING)) {
+            dispatchKeyValue(QVR, message);
             return;
         }
 

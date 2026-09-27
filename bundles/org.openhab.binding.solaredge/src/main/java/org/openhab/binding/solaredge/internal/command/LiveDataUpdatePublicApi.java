@@ -59,7 +59,7 @@ public class LiveDataUpdatePublicApi extends AbstractCommand implements SolarEdg
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
+    protected void handleResponse(@Nullable Result result) {
         logger.debug("[LiveDataUpdatePublicApi] onComplete()");
         logger.trace("URL: {}", getURL());
 

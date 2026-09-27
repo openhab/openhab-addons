@@ -21,12 +21,14 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -36,6 +38,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -46,6 +49,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<EvccLoadpointHandler> {
 
+    private final ArrayList<String> requestedUrls = new ArrayList<>();
     private final JsonObject modifiedTestState = exampleResponse.deepCopy();
     private final JsonObject testObject = exampleResponse.getAsJsonArray("loadpoints").get(0).getAsJsonObject();
     private final JsonObject modifiedVerifyObject = verifyObject.deepCopy().getAsJsonArray("loadpoints").get(0)
@@ -82,6 +86,11 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
 
             @Override
             protected void updateState(ChannelUID channelUID, State state) {
+            }
+
+            @Override
+            protected void performApiRequest(String url, String method, JsonElement payload) {
+                requestedUrls.add(url);
             }
         };
     }
@@ -172,5 +181,20 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
     public void testGetStateFromCachedState() {
         JsonObject result = handler.getStateFromCachedState(exampleResponse);
         assertSame(exampleResponse.getAsJsonArray("loadpoints").get(0), result);
+    }
+
+    @Test
+    public void testEnableAndDisableSettingsUseNestedApiPaths() {
+        EvccLoadpointHandler testHandler = Objects.requireNonNull(handler);
+        testHandler.endpoint = "http://evcc/api/loadpoints/1";
+
+        testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-enable-threshold"), new DecimalType(100));
+        testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-enable-delay"), new DecimalType(10));
+        testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-disable-threshold"), new DecimalType(-50));
+        testHandler.handleCommand(new ChannelUID("test:thing:uid:loadpoint-disable-delay"), new DecimalType(20));
+
+        assertEquals(java.util.List.of("http://evcc/api/loadpoints/1/enable/threshold/100",
+                "http://evcc/api/loadpoints/1/enable/delay/10", "http://evcc/api/loadpoints/1/disable/threshold/-50",
+                "http://evcc/api/loadpoints/1/disable/delay/20"), requestedUrls);
     }
 }

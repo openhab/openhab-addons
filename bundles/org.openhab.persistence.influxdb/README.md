@@ -1,6 +1,6 @@
 # InfluxDB (0.9 and newer) Persistence
 
-This service allows you to persist and query states using the [InfluxDB](https://www.influxdata.com/products/influxdb-overview/) and [InfluxDB 2.0](https://v2.docs.influxdata.com/v2.0/) time series database. The persisted values can be queried from within openHAB.
+This service allows you to persist and query states using the [InfluxDB](https://www.influxdata.com/products/influxdb-overview/), [InfluxDB 2.0](https://v2.docs.influxdata.com/v2.0/) and [InfluxDB 3.0](https://docs.influxdata.com/influxdb3/core/) time series database. The persisted values can be queried from within openHAB.
 There are also nice tools on the web for visualizing InfluxDB time series, such as [Grafana](https://grafana.com/), and the new InfluxDB 2.0 version introduces [powerful data processing features](https://docs.influxdata.com/influxdb/v2.0/process-data/get-started/).
 
 ## Database Structure
@@ -30,9 +30,9 @@ Some example entries for an item with the name "speedtest" without any further c
 
 ## Prerequisites
 
-First of all, you have to set up and run an InfluxDB 1.X or 2.X server.
+First of all, you have to set up and run an InfluxDB 1.X, 2.X or 3.X server.
 This is very easy, and you will find good documentation on the
-[InfluxDB website for the 2.X version](https://v2.docs.influxdata.com/v2.0/get-started/) and [InfluxDB website for the 1.X version](https://docs.influxdata.com/influxdb/v1.7/).
+[InfluxDB website for the 3.X version](https://docs.influxdata.com/influxdb3/core/get-started/), [InfluxDB website for the 2.X version](https://v2.docs.influxdata.com/v2.0/get-started/) and [InfluxDB website for the 1.X version](https://docs.influxdata.com/influxdb/v1.7/).
 
 ## Configuration
 
@@ -41,15 +41,15 @@ Attention: The file-based configuration overrides the UI configuration.
 
 | Property        | Default               | Required | Description                                                                                                                                               |
 | --------------- | --------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| version         | V1                    | No       | InfluxDB database version: V1 for 1.X and V2 for 2.X                                                                                                      |
+| version         | V1                    | No       | InfluxDB database version: V1 for 1.X, V2 for 2.X and V3 for 3.X                                                                                          |
 | url             | <http://127.0.0.1:8086> | No       | Database URL                                                                                                                                              |
-| user            | openhab               | No       | Name of the database user, e.g., `openhab`                                                                                                                |
-| password        |                       | No(\*)   | Password of the database user you choose                                                                                                                  |
-| token           |                       | No(\*)   | Token to authenticate to the database (only for V2). [Instructions on how to create one](https://v2.docs.influxdata.com/v2.0/security/tokens/create-token/) |
-| db              | openhab               | No       | Name of the database for V1 and name of the organization for V2                                                                                           |
-| retentionPolicy | autogen               | No       | Name of the retention policy for V1 and name of the bucket for V2                                                                                         |
+| user            | openhab               | No       | Name of the database user, e.g., `openhab` (not used for V3)                                                                                              |
+| password        |                       | No(\*)   | Password of the database user you choose (not used for V3)                                                                                                |
+| token           |                       | No(\*)   | Token to authenticate to the database (required for V3, optional for V2). [Instructions on how to create one](https://v2.docs.influxdata.com/v2.0/security/tokens/create-token/) |
+| db              | openhab               | No       | Name of the database for V1 and V3, and name of the organization for V2                                                                                   |
+| retentionPolicy | autogen               | No       | Name of the retention policy for V1 and name of the bucket for V2 (not used for V3, as InfluxDB 3 databases have no retention-policy concept)             |
 
-(\*) For the 1.X version, you must provide user and password; for 2.X, you can use user and password or a token.
+(\*) For the 1.X version, you must provide user and password; for 2.X, you can use user and password or a token; for 3.X, you must provide a token.
 That means that if you use all default values, at minimum you must provide a password or a token.
 
 All item- and event-related configuration is defined in the file `persistence/influxdb.persist`.

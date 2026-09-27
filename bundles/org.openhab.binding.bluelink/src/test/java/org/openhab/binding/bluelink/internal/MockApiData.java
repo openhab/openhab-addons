@@ -25,28 +25,33 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public final class MockApiData {
     public static final String TOKEN_RESPONSE_CA;
     public static final String TOKEN_RESPONSE_US;
-    public static final String TOKEN_RESPONSE_EU;
     public static final String ENROLLMENT_RESPONSE_US;
     public static final String VEHICLES_RESPONSE_EU;
     public static final String DEVICE_REGISTRATION_RESPONSE_EU;
     public static final String VEHICLE_STATUS_RESPONSE_CA;
     public static final String VEHICLE_STATUS_RESPONSE_US;
     public static final String VEHICLE_STATUS_RESPONSE_EU;
+    public static final String VEHICLE_STATUS_RESPONSE_EU_CCS2;
+    public static final String VEHICLE_STATUS_RESPONSE_EU_CCS2_PHEV;
+    public static final String VEHICLE_STATUS_RESPONSE_EU_CCS2_SENTINEL;
+    public static final String VEHICLE_STATUS_RESPONSE_EU_CCS2_IGNITION;
     public static final String TEST_USERNAME = "test@example.com";
     public static final String TEST_PASSWORD = "testpassword";
-    public static final String TEST_REFRESH_TOKEN = "test-refresh-token";
 
     static {
         try {
             TOKEN_RESPONSE_CA = loadResource("/login-response-ca.json");
             TOKEN_RESPONSE_US = loadResource("/login-response-us.json");
-            TOKEN_RESPONSE_EU = loadResource("/login-response-eu.json");
             ENROLLMENT_RESPONSE_US = loadResource("/enrollment-details-us.json");
             VEHICLES_RESPONSE_EU = loadResource("/vehicles-eu.json");
             DEVICE_REGISTRATION_RESPONSE_EU = loadResource("/device-registration-eu.json");
             VEHICLE_STATUS_RESPONSE_US = loadResource("/vehicle-status-us.json");
             VEHICLE_STATUS_RESPONSE_CA = loadResource("/vehicle-status-ca.json");
             VEHICLE_STATUS_RESPONSE_EU = loadResource("/vehicle-status-eu.json");
+            VEHICLE_STATUS_RESPONSE_EU_CCS2 = loadResource("/vehicle-status-eu-ccs2.json");
+            VEHICLE_STATUS_RESPONSE_EU_CCS2_PHEV = loadResource("/vehicle-status-eu-ccs2-phev.json");
+            VEHICLE_STATUS_RESPONSE_EU_CCS2_SENTINEL = loadResource("/vehicle-status-eu-ccs2-sentinel.json");
+            VEHICLE_STATUS_RESPONSE_EU_CCS2_IGNITION = loadResource("/vehicle-status-eu-ccs2-ignition.json");
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }

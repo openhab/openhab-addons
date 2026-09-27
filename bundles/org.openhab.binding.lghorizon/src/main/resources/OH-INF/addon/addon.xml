@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="lghorizon" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>LGHorizon Binding</name>
+	<description>Integrates TV set-top boxes using the LG Horizon platform.</description>
+	<keywords>Telenet, Base, Ziggo, Virgin Media, UPC, Sunrise</keywords>
+	<connection>cloud</connection>
+	<countries>be,nl,gb,ie,ch,pl</countries>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>TELENETTVBOX</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
+</addon:addon>

@@ -275,7 +275,8 @@ public class RRMapDraw {
                 noGo.lineTo(x2, y2);
                 noGo.lineTo(x3, y3);
                 noGo.lineTo(x, y);
-                g2d.setColor(drawOptions.getColorNoGoZones());
+                g2d.setColor(area.getKey() == RRMapFileParser.EXT_ZONES ? drawOptions.getColorExtZones()
+                        : drawOptions.getColorNoGoZones());
                 g2d.fill(noGo);
                 g2d.setColor(area.getKey() == 9 ? Color.RED : Color.WHITE);
                 g2d.draw(noGo);

@@ -107,7 +107,7 @@ public class Shelly1CoIoTProtocol {
                     case "input":
                         handleInput(sen, s, rGroup, updates);
                         break;
-                    case "brightness":
+                    case SHELLY_COLOR_BRIGHTNESS:
                         // already handled by state/output
                         break;
                     case "overtemp": // ++
@@ -127,7 +127,7 @@ public class Shelly1CoIoTProtocol {
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD,
                                 OnOffType.from(s.value == 1));
                         break;
-                    case "vibration": // DW with FW1.6.5+
+                    case SHELLY_EVENT_VIBRATION: // DW with FW1.6.5+
                         updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                                 OnOffType.from(s.value == 1));
                         if (s.value == 1) {
@@ -143,31 +143,31 @@ public class Shelly1CoIoTProtocol {
                                 OnOffType.from(s.value == 1));
                         break;
                     // RGBW2/Bulb
-                    case "red":
-                    case "green":
-                    case "blue":
-                    case "white":
-                    case "gain":
-                    case "effect":
+                    case SHELLY_COLOR_RED:
+                    case SHELLY_COLOR_GREEN:
+                    case SHELLY_COLOR_BLUE:
+                    case SHELLY_COLOR_WHITE:
+                    case SHELLY_COLOR_GAIN:
+                    case "effect" :
                         if (!profile.inColor) {
                             break;
                         }
                         ShellyLightModel model = getLightModelForSensor(sen, lightModels);
                         if (model != null) {
                             switch (sen.desc.toLowerCase(Locale.ROOT)) {
-                                case "red":
+                                case SHELLY_COLOR_RED:
                                     model.setColor(R, (int) s.value);
                                     break;
-                                case "green":
+                                case SHELLY_COLOR_GREEN:
                                     model.setColor(G, (int) s.value);
                                     break;
-                                case "blue":
+                                case SHELLY_COLOR_BLUE:
                                     model.setColor(B, (int) s.value);
                                     break;
-                                case "white":
+                                case SHELLY_COLOR_WHITE:
                                     model.setColor(CW, (int) s.value);
                                     break;
-                                case "gain":
+                                case SHELLY_COLOR_GAIN:
                                     model.setGain((int) s.value);
                                     break;
                                 case "effect":
@@ -264,7 +264,7 @@ public class Shelly1CoIoTProtocol {
                     // continue until we find the correct one
                     continue;
                 }
-                if ("brightness".equalsIgnoreCase(d.desc)) {
+                if (SHELLY_COLOR_BRIGHTNESS.equalsIgnoreCase(d.desc)) {
                     brightness = update.value;
                 } else if ("output".equalsIgnoreCase(d.desc) || "state".equalsIgnoreCase(d.desc)) {
                     power = update.value;

@@ -26,6 +26,7 @@
 			<channel id="repeat" typeId="repeat"/>
 			<channel id="favorite" typeId="favorite"/>
 			<channel id="led" typeId="led"/>
+			<channel id="buttonlock" typeId="buttonlock"/>
 			<channel id="localcoordinator" typeId="localcoordinator"/>
 			<channel id="loudness" typeId="loudness"/>
 			<channel id="mute" typeId="system.mute"/>
@@ -60,6 +61,7 @@
 		<properties>
 			<property name="vendor">IKEA</property>
 			<property name="modelId">SYMFONISK</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>udn</representation-property>

@@ -28,6 +28,7 @@ import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.converter.SmartthingsConverter;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -73,6 +74,9 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof State state && state instanceof OpenClosedType) {
+            return;
+        }
         Bridge bridge = getBridge();
 
         // Check if the bridge has not been initialized yet

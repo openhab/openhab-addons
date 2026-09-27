@@ -27,6 +27,10 @@ public enum OppoCommand {
     POWER_OFF("POF"),
     PLAY("PLA"),
     PAUSE("PAU"),
+    /**
+     * DV-983H only
+     */
+    PLAY_PAUSE("PLP"),
     PREV("PRE"),
     REWIND("REV"),
     FFORWARD("FWD"),
@@ -79,6 +83,8 @@ public enum OppoCommand {
             QUERY_HDMI_RESOLUTION, QUERY_DISC_TYPE, QUERY_AUDIO_TYPE, QUERY_SUBTITLE_TYPE, QUERY_SUBTITLE_SHIFT,
             QUERY_OSD_POSITION, QUERY_REPEAT_MODE, QUERY_ZOOM_MODE, QUERY_3D_STATUS, QUERY_INPUT_SOURCE,
             QUERY_HDR_SETTING);
+
+    public static final Set<OppoCommand> QUERY_COMMANDS_983H = Set.of(QUERY_VOLUME, QUERY_DISC_TYPE);
 
     OppoCommand(String value) {
         this.value = value;

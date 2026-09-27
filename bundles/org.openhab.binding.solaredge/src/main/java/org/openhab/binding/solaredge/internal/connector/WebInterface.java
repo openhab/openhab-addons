@@ -14,10 +14,15 @@ package org.openhab.binding.solaredge.internal.connector;
 
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
+import java.time.Clock;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,7 +32,10 @@ import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.openhab.binding.solaredge.internal.AtomicReferenceTrait;
 import org.openhab.binding.solaredge.internal.command.PrivateApiTokenCheck;
 import org.openhab.binding.solaredge.internal.command.PublicApiKeyCheck;
+import org.openhab.binding.solaredge.internal.command.PublicApiV2KeyCheck;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
+import org.openhab.binding.solaredge.internal.config.PublicApiAuthentication;
+import org.openhab.binding.solaredge.internal.config.PublicApiVersion;
 import org.openhab.binding.solaredge.internal.config.SolarEdgeConfiguration;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.openhab.core.thing.ThingStatus;
@@ -39,19 +47,22 @@ import org.slf4j.LoggerFactory;
  * The connector is responsible for communication with the solaredge webportal
  *
  * @author Alexander Friese - initial contribution
+ * @author Ronny Grun - Monitoring API V2 authentication and rate-limit handling
  */
 @NonNullByDefault
 public class WebInterface implements AtomicReferenceTrait {
 
     private static final int API_KEY_THRESHOLD = 40;
     private static final int TOKEN_THRESHOLD = 80;
+    private static final long DEFAULT_RATE_LIMIT_PAUSE_MILLIS = TimeUnit.MINUTES.toMillis(1);
+    private static final long MAX_RATE_LIMIT_PAUSE_MILLIS = TimeUnit.DAYS.toMillis(1);
 
     private final Logger logger = LoggerFactory.getLogger(WebInterface.class);
 
     /**
      * Configuration
      */
-    private SolarEdgeConfiguration config;
+    private volatile SolarEdgeConfiguration config;
 
     /**
      * handler for updating thing status
@@ -61,7 +72,7 @@ public class WebInterface implements AtomicReferenceTrait {
     /**
      * holds authentication status
      */
-    private boolean authenticated = false;
+    private volatile boolean authenticated = false;
 
     /**
      * HTTP client for asynchronous calls
@@ -73,11 +84,15 @@ public class WebInterface implements AtomicReferenceTrait {
      * existing scheduler instance.
      */
     private final ScheduledExecutorService scheduler;
+    private final Clock clock;
 
     /**
      * request executor
      */
     private final WebRequestExecutor requestExecutor;
+    private final Object requestLifecycleLock = new Object();
+    private final AtomicLong requestGeneration = new AtomicLong();
+    private final AtomicLong rateLimitPauseUntilMillis = new AtomicLong();
 
     /**
      * periodic request executor job
@@ -90,7 +105,7 @@ public class WebInterface implements AtomicReferenceTrait {
      *
      * @author afriese - initial contribution
      */
-    private class WebRequestExecutor implements Runnable {
+    private class WebRequestExecutor {
 
         /**
          * queue which holds the commands to execute
@@ -142,7 +157,10 @@ public class WebInterface implements AtomicReferenceTrait {
         /**
          * authenticates with the Solaredge WEB interface
          */
-        private synchronized void authenticate() {
+        private synchronized void authenticate(long generation) {
+            if (generation != requestGeneration.get()) {
+                return;
+            }
             setAuthenticated(false);
 
             if (preCheck()) {
@@ -150,9 +168,12 @@ public class WebInterface implements AtomicReferenceTrait {
 
                 if (config.isUsePrivateApi()) {
                     tokenCheckCommand = new PrivateApiTokenCheck(handler, this::processAuthenticationResult);
+                } else if (PublicApiVersion.V2.equals(config.getPublicApiVersion())) {
+                    tokenCheckCommand = new PublicApiV2KeyCheck(handler, this::processAuthenticationResult);
                 } else {
                     tokenCheckCommand = new PublicApiKeyCheck(handler, this::processAuthenticationResult);
                 }
+                tokenCheckCommand.bindRequestGeneration(generation, requestGeneration::get);
                 tokenCheckCommand.performAction(httpClient);
             }
         }
@@ -168,9 +189,24 @@ public class WebInterface implements AtomicReferenceTrait {
 
             if (config.isUsePrivateApi() && localTokenOrApiKey.length() < TOKEN_THRESHOLD) {
                 preCheckStatusMessage = STATUS_INVALID_TOKEN_LENGTH;
-            } else if (!config.isUsePrivateApi() && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
+            } else if (!config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())
+                    && PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication())
+                    && (config.getOAuthClientId().isBlank() || config.getOAuthClientSecret().isBlank())) {
+                preCheckStatusMessage = STATUS_MISSING_OAUTH_CLIENT_CREDENTIALS;
+            } else if (!config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())
+                    && PublicApiAuthentication.OAUTH.equals(config.getPublicApiAuthentication())
+                    && !handler.hasPublicApiV2Credential()) {
+                return false;
+            } else if (!config.isUsePrivateApi()
+                    && (!PublicApiVersion.V2.equals(config.getPublicApiVersion())
+                            || PublicApiAuthentication.API_KEY.equals(config.getPublicApiAuthentication()))
+                    && localTokenOrApiKey.isBlank()) {
+                preCheckStatusMessage = STATUS_MISSING_API_KEY;
+            } else if (!config.isUsePrivateApi() && PublicApiVersion.V1.equals(config.getPublicApiVersion())
+                    && localTokenOrApiKey.length() > API_KEY_THRESHOLD) {
                 preCheckStatusMessage = STATUS_INVALID_API_KEY_LENGTH;
-            } else if (!config.isUsePrivateApi() && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
+            } else if (!config.isUsePrivateApi() && PublicApiVersion.V1.equals(config.getPublicApiVersion())
+                    && calcRequestsPerDay() > WEB_REQUEST_PUBLIC_API_DAY_LIMIT) {
                 preCheckStatusMessage = STATUS_REQUEST_LIMIT_EXCEEDED;
             } else if (config.isUsePrivateApi() && !config.isMeterInstalled()) {
                 preCheckStatusMessage = STATUS_NO_METER_CONFIGURED;
@@ -198,14 +234,20 @@ public class WebInterface implements AtomicReferenceTrait {
          * @param command
          */
         void enqueue(SolarEdgeCommand command) {
-            try {
-                commandQueue.add(command);
-            } catch (IllegalStateException ex) {
-                if (commandQueue.size() >= WEB_REQUEST_QUEUE_MAX_SIZE) {
-                    logger.debug(
-                            "Could not add command to command queue because queue is already full. Maybe SolarEdge is down?");
-                } else {
-                    logger.warn("Could not add command to queue - IllegalStateException");
+            synchronized (requestLifecycleLock) {
+                if (isRateLimitPaused()
+                        || !command.bindRequestGeneration(requestGeneration.get(), requestGeneration::get)) {
+                    return;
+                }
+                try {
+                    commandQueue.add(command);
+                } catch (IllegalStateException ex) {
+                    if (commandQueue.size() >= WEB_REQUEST_QUEUE_MAX_SIZE) {
+                        logger.debug(
+                                "Could not add command to command queue because queue is already full. Maybe SolarEdge is down?");
+                    } else {
+                        logger.warn("Could not add command to queue - IllegalStateException");
+                    }
                 }
             }
         }
@@ -213,13 +255,19 @@ public class WebInterface implements AtomicReferenceTrait {
         /**
          * executes the web request
          */
-        @Override
-        public void run() {
+        void run(long generation) {
+            if (generation != requestGeneration.get()) {
+                return;
+            }
+            if (isRateLimitPaused()) {
+                return;
+            }
             if (!isAuthenticated()) {
-                authenticate();
+                authenticate(generation);
             }
 
-            if (isAuthenticated() && !commandQueue.isEmpty()) {
+            if (generation == requestGeneration.get() && !isRateLimitPaused() && isAuthenticated()
+                    && !commandQueue.isEmpty()) {
                 try {
                     executeCommand();
                 } catch (Exception ex) {
@@ -249,19 +297,71 @@ public class WebInterface implements AtomicReferenceTrait {
      * @param httpClient
      */
     public WebInterface(ScheduledExecutorService scheduler, SolarEdgeHandler handler, HttpClient httpClient) {
+        this(scheduler, handler, httpClient, Clock.systemUTC());
+    }
+
+    WebInterface(ScheduledExecutorService scheduler, SolarEdgeHandler handler, HttpClient httpClient, Clock clock) {
         this.config = handler.getConfiguration();
         this.handler = handler;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
+        this.clock = clock;
         this.requestExecutor = new WebRequestExecutor();
         this.requestExecutorJobReference = new AtomicReference<>(null);
     }
 
+    /** Pause V2 requests after HTTP 429; queued data will be refreshed by the next polling cycle. */
+    public void pausePublicApiV2Requests(@Nullable String retryAfter) {
+        long now = clock.millis();
+        long delay = retryAfterDelayMillis(retryAfter, now);
+        long pauseUntil = now + delay;
+        synchronized (requestLifecycleLock) {
+            rateLimitPauseUntilMillis.accumulateAndGet(pauseUntil, Math::max);
+            requestExecutor.commandQueue.clear();
+        }
+        logger.debug("Pausing Monitoring API V2 requests for {} seconds after HTTP 429", delay / 1000);
+    }
+
+    private boolean isRateLimitPaused() {
+        return !config.isUsePrivateApi() && PublicApiVersion.V2.equals(config.getPublicApiVersion())
+                && clock.millis() < rateLimitPauseUntilMillis.get();
+    }
+
+    static long retryAfterDelayMillis(@Nullable String retryAfter, long nowMillis) {
+        if (retryAfter == null || retryAfter.isBlank()) {
+            return DEFAULT_RATE_LIMIT_PAUSE_MILLIS;
+        }
+        try {
+            long seconds = Long.parseLong(retryAfter.trim());
+            if (seconds < 0) {
+                return DEFAULT_RATE_LIMIT_PAUSE_MILLIS;
+            }
+            return Math.max(TimeUnit.SECONDS.toMillis(1),
+                    Math.min(MAX_RATE_LIMIT_PAUSE_MILLIS, TimeUnit.SECONDS.toMillis(seconds)));
+        } catch (NumberFormatException e) {
+            try {
+                long deadline = ZonedDateTime.parse(retryAfter, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant()
+                        .toEpochMilli();
+                return Math.max(TimeUnit.SECONDS.toMillis(1),
+                        Math.min(MAX_RATE_LIMIT_PAUSE_MILLIS, deadline - nowMillis));
+            } catch (DateTimeParseException dateException) {
+                return DEFAULT_RATE_LIMIT_PAUSE_MILLIS;
+            }
+        }
+    }
+
     public void start() {
-        this.config = handler.getConfiguration();
-        setAuthenticated(false);
-        updateJobReference(requestExecutorJobReference, scheduler.scheduleWithFixedDelay(requestExecutor,
-                WEB_REQUEST_INITIAL_DELAY, WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
+        synchronized (requestLifecycleLock) {
+            cancelJobReference(requestExecutorJobReference);
+            long generation = requestGeneration.incrementAndGet();
+            rateLimitPauseUntilMillis.set(0);
+            requestExecutor.commandQueue.clear();
+            this.config = handler.getConfiguration();
+            setAuthenticated(false);
+            updateJobReference(requestExecutorJobReference,
+                    scheduler.scheduleWithFixedDelay(() -> requestExecutor.run(generation), WEB_REQUEST_INITIAL_DELAY,
+                            WEB_REQUEST_INTERVAL, TimeUnit.MILLISECONDS));
+        }
     }
 
     /**
@@ -278,8 +378,13 @@ public class WebInterface implements AtomicReferenceTrait {
      */
     public void dispose() {
         logger.debug("Webinterface disposed.");
-        cancelJobReference(requestExecutorJobReference);
-        setAuthenticated(false);
+        synchronized (requestLifecycleLock) {
+            cancelJobReference(requestExecutorJobReference);
+            requestGeneration.incrementAndGet();
+            rateLimitPauseUntilMillis.set(0);
+            requestExecutor.commandQueue.clear();
+            setAuthenticated(false);
+        }
     }
 
     /**

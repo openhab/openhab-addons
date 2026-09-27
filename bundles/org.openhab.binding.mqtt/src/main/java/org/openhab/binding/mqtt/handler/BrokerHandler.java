@@ -236,6 +236,12 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             connection.setTimeoutExecutor(scheduler, TIMEOUT_DEFAULT);
         }
 
+        connection.setCleanSessionStart(config.cleanSessionStart);
+        String webSocketPath = config.webSocketPath;
+        if (!webSocketPath.isEmpty()) {
+            connection.setWebSocketPath(webSocketPath);
+        }
+
         return connection;
     }
 

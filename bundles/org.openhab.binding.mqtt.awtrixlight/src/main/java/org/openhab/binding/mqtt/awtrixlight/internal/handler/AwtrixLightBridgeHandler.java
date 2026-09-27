@@ -352,6 +352,10 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
         this.sendMQTT(this.basetopic + TOPIC_NOTIFY, notificationMessage, false);
     }
 
+    public void dismissNotification() {
+        this.sendMQTT(this.basetopic + TOPIC_NOTIFY_DISMISS, "", false);
+    }
+
     public void setAppDiscoveryCallback(AwtrixLightBridgeDiscoveryService awtrixLightBridgeDiscoveryService) {
         this.discoveryCallback = awtrixLightBridgeDiscoveryService;
     }

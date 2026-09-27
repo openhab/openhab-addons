@@ -297,6 +297,12 @@ public class AccountHandlerActivityDispatchTest {
     }
 
     @Test
+    public void testAConfiguredPollingIntervalIsAFloorAndNotACap() {
+        assertTrue(AccountHandler.pollingInterval(600, 10) == 600, "a configured interval above the minimum holds");
+        assertTrue(AccountHandler.pollingInterval(5, 10) == 10, "a configured interval below the minimum is raised");
+    }
+
+    @Test
     public void testFailedPollsDoubleTheIntervalUpToTheHourlyRefresh() {
         assertTrue(AccountHandler.failedPollTicksToSkip(1, 60) == 1, "the first failure skips one tick");
         assertTrue(AccountHandler.failedPollTicksToSkip(2, 60) == 3, "the second failure skips three ticks");

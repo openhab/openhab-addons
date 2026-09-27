@@ -14,9 +14,11 @@ package org.openhab.binding.tesla.internal.handler;
 
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -102,8 +104,9 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     private final Gson gson = new Gson();
 
+    // written while holding lock, read by the vehicle handlers without it
     @Nullable
-    private TokenResponse logonToken;
+    private volatile TokenResponse logonToken;
     private final Set<VehicleListener> vehicleListeners = new HashSet<>();
 
     public TeslaAccountHandler(Bridge bridge, Client teslaClient, HttpClientFactory httpClientFactory,
@@ -182,9 +185,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             return true;
         } else if (response != null && response.getStatus() == 401) {
             logger.debug("The access token has expired, trying to get a new one.");
-            ThingStatusInfo authenticationResult = authenticate();
-            updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
-                    authenticationResult.getDescription());
+            reauthenticate();
         } else {
             apiIntervalErrors++;
             if (immediatelyFail || apiIntervalErrors >= API_MAXIMUM_ERRORS_IN_INTERVAL) {
@@ -223,10 +224,16 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             }
 
             JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
-            Vehicle[] vehicleArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
-            if (vehicleArray == null) {
+            Vehicle[] productArray = gson.fromJson(jsonObject.getAsJsonArray("response"), Vehicle[].class);
+            if (productArray == null) {
                 logger.debug("Response resulted in unexpected null array");
                 return new Vehicle[0];
+            }
+            // The products endpoint also returns energy products (e.g. Wall Connector, Powerwall), which have no VIN
+            Vehicle[] vehicleArray = Arrays.stream(productArray).filter(v -> v.vin != null && !v.vin.isBlank())
+                    .toArray(Vehicle[]::new);
+            if (vehicleArray.length < productArray.length) {
+                logger.debug("Ignoring {} product(s) without a VIN", productArray.length - vehicleArray.length);
             }
             for (Vehicle vehicle : vehicleArray) {
                 String responseString = invokeAndParse(vehicle.id, null, null, dataRequestTarget, 0);
@@ -271,6 +278,9 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         return this.getThing().getUID().getId();
     }
 
+    /**
+     * Callers must hold {@link #lock}, so that the token and the status that results from it stay consistent.
+     */
     ThingStatusInfo authenticate() {
         TokenResponse token = logonToken;
 
@@ -300,7 +310,14 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                         "No refresh token is provided.");
             }
 
-            this.logonToken = ssoHandler.getAccessToken(refreshToken);
+            try {
+                this.logonToken = ssoHandler.getAccessToken(refreshToken);
+            } catch (IOException e) {
+                logger.debug("Failed to obtain an access token, will try again: {}", e.getMessage());
+                this.logonToken = null;
+                return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to obtain access token for API: " + e.getMessage());
+            }
             if (this.logonToken == null) {
                 return new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Failed to obtain access token for API - the refresh token might be invalid.");
@@ -308,6 +325,25 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         }
 
         return new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+    }
+
+    /**
+     * Obtains a new access token and applies the result to the account status. Without an access token no request
+     * is sent, so the status is the only way back: the connect job retries after a communication error, whereas a
+     * rejected refresh token needs to be fixed by the user.
+     * <p>
+     * Several vehicles or requests can get a 401 at the same time. The lock makes the renewal and the status update a
+     * single step, so that a failed renewal cannot clear the token between a successful renewal and its ONLINE status.
+     */
+    void reauthenticate() {
+        lock.lock();
+        try {
+            ThingStatusInfo authenticationResult = authenticate();
+            updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
+                    authenticationResult.getDescription());
+        } finally {
+            lock.unlock();
+        }
     }
 
     protected @Nullable String invokeAndParse(@Nullable String vehicleId, @Nullable String command,

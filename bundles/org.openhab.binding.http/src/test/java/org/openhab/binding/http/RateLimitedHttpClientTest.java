@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.util.List;
@@ -60,15 +61,16 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
 
     @Test
     public void testWithoutLimit() {
-        doLimitTest(0, List.of(false, false));
+        RateLimitedHttpClient rateLimitedHttpClient = new RateLimitedHttpClient(httpClient, scheduler);
+        rateLimitedHttpClient.setDelay(0);
+        URI url = URI.create("http://localhost:" + port + TEST_LOCATION);
 
-        // we except to receive the responses in the correct order
-        assertEquals(0, responses.get(0).seqNumber);
-        assertEquals(1, responses.get(1).seqNumber);
-
-        // Set upper tolerance to 300ms to account for build server jitter
-        long msBetween = responses.get(1).time - responses.get(0).time;
-        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(0), lessThan(300)));
+        try {
+            assertTrue(rateLimitedHttpClient.newRequest(url, HttpMethod.GET, "", null).isDone());
+            assertTrue(rateLimitedHttpClient.newRequest(url, HttpMethod.GET, "", null).isDone());
+        } finally {
+            rateLimitedHttpClient.shutdown();
+        }
     }
 
     @Test

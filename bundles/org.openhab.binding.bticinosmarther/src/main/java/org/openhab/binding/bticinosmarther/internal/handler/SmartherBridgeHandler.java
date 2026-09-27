@@ -208,8 +208,9 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void handleRemoval() {
-        super.handleRemoval();
         stopPoll(true);
+        oAuthFactory.deleteServiceAndAccessToken(thing.getUID().getAsString());
+        super.handleRemoval();
     }
 
     @Override

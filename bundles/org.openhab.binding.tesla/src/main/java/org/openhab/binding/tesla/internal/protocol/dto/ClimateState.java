@@ -76,10 +76,24 @@ public class ClimateState {
     public int rightTempDirection;
     @SerializedName("seat_heater_left")
     public int seatHeaterLeft;
+    // Not every model has these heaters. If the vehicle does not report a value, the field stays null and is left
+    // out when the channels are updated, instead of reporting 0 / OFF.
+    @SerializedName("seat_heater_rear_center")
+    public Integer seatHeaterRearCenter;
+    @SerializedName("seat_heater_rear_left")
+    public Integer seatHeaterRearLeft;
+    @SerializedName("seat_heater_rear_left_back")
+    public Integer seatHeaterRearLeftBack;
+    @SerializedName("seat_heater_rear_right")
+    public Integer seatHeaterRearRight;
+    @SerializedName("seat_heater_rear_right_back")
+    public Integer seatHeaterRearRightBack;
     @SerializedName("seat_heater_right")
     public int seatHeaterRight;
     @SerializedName("side_mirror_heaters")
     public boolean sideMirrorHeaters;
+    @SerializedName("steering_wheel_heater")
+    public Boolean steeringWheelHeater;
     @SerializedName("supports_fan_only_cabin_overheat_protection")
     public boolean supportsFanOnlyCabinOverheatProtection;
     @SerializedName("timestamp")

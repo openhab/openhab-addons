@@ -173,6 +173,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.autoblind</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.automower</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -534,6 +539,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.emby</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.emerald</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -1038,6 +1048,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.lghorizon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.lgthinq</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -1094,6 +1109,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.logreader</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.loqed</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -1244,6 +1264,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.modbus</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.modbus.ankersolix</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -1608,6 +1633,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.plivo</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.plugwise</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -1664,6 +1694,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.qolsysiq</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.rachio</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -110,6 +110,7 @@
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.elroconnects/ @mherwege
 /bundles/org.openhab.binding.emby/ @volfan6415
+/bundles/org.openhab.binding.emerald/ @psmedley
 /bundles/org.openhab.binding.emotiva/ @espenaf
 /bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.energidataservice/ @jlaur
@@ -210,6 +211,7 @@
 /bundles/org.openhab.binding.lcn/ @fwolter
 /bundles/org.openhab.binding.leapmotion/ @kaikreuzer
 /bundles/org.openhab.binding.lghombot/ @FluBBaOfWard
+/bundles/org.openhab.binding.lghorizon/ @mherwege
 /bundles/org.openhab.binding.lgthinq/ @nemerdaud
 /bundles/org.openhab.binding.lgtvserial/ @fa2k
 /bundles/org.openhab.binding.lgwebos/ @sprehn
@@ -222,6 +224,7 @@
 /bundles/org.openhab.binding.lirc/ @kabili207
 /bundles/org.openhab.binding.livisismarthome/ @Novanic
 /bundles/org.openhab.binding.logreader/ @paulianttila
+/bundles/org.openhab.binding.loqed/ @octa22
 /bundles/org.openhab.binding.loxone/ @ppieczul
 /bundles/org.openhab.binding.lutron/ @actong @bobadair
 /bundles/org.openhab.binding.luxom/ @jesperskriasoft
@@ -252,6 +255,7 @@
 /bundles/org.openhab.binding.millheat/ @seime
 /bundles/org.openhab.binding.minecraft/ @ibaton
 /bundles/org.openhab.binding.modbus/ @ssalonen
+/bundles/org.openhab.binding.modbus.ankersolix/ @evorg
 /bundles/org.openhab.binding.modbus.e3dc/ @weymann
 /bundles/org.openhab.binding.modbus.foxinverter/ @holgerfriedrich
 /bundles/org.openhab.binding.modbus.helioseasycontrols/ @bern77
@@ -325,6 +329,7 @@
 /bundles/org.openhab.binding.playstation/ @FluBBaOfWard
 /bundles/org.openhab.binding.plclogo/ @falkena
 /bundles/org.openhab.binding.plex/ @aronbeurskens
+/bundles/org.openhab.binding.plivo/ @sarveshpatil-plivo
 /bundles/org.openhab.binding.plugwise/ @wborn
 /bundles/org.openhab.binding.plugwiseha/ @lsiepel
 /bundles/org.openhab.binding.powermax/ @lolodomo
@@ -337,6 +342,7 @@
 /bundles/org.openhab.binding.pushsafer/ @appzer @cweitkamp
 /bundles/org.openhab.binding.qbus/ @QbusKoen
 /bundles/org.openhab.binding.qolsysiq/ @digitaldan
+/bundles/org.openhab.binding.rachio/ @kovacsi2899
 /bundles/org.openhab.binding.radiobrowser/ @skinah
 /bundles/org.openhab.binding.radiothermostat/ @mlobstein
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
@@ -368,6 +374,7 @@
 /bundles/org.openhab.binding.sensorcommunity/ @weymann
 /bundles/org.openhab.binding.serial/ @MikeJMajor
 /bundles/org.openhab.binding.serialbutton/ @kaikreuzer
+/bundles/org.openhab.binding.autoblind/ @BiloxiGeek
 /bundles/org.openhab.binding.shelly/ @markus7017
 /bundles/org.openhab.binding.siemenshvac/ @lo92fr
 /bundles/org.openhab.binding.siemensrds/ @andrewfg
