@@ -43,7 +43,7 @@ public class PhilipsAirConfiguration {
      */
     public static final String CONFIG_HOST = "host";
 
-    public static final int MIN_REFESH_INTERVAL = 5;
+    public static final int MIN_REFRESH_INTERVAL = 5;
 
     /**
      * Data retrieval rate from the device

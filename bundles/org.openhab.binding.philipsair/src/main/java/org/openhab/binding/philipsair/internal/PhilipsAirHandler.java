@@ -117,23 +117,15 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     public PhilipsAirPurifierWritableDataDTO prepareCommandData(String parameter, Command command) {
-        OnOffType onOffCommand = null;
-        DecimalType decimalCommand = null;
-        String stringCommand = null;
-
-        if (command instanceof OnOffType) {
-            onOffCommand = (OnOffType) command;
-        } else if (command instanceof DecimalType) {
-            decimalCommand = (DecimalType) command;
-        } else if (command instanceof StringType) {
-            stringCommand = command.toString();
-        }
+        OnOffType onOffCommand = command instanceof OnOffType onOff ? onOff : null;
+        String stringCommand = command instanceof StringType ? command.toString() : null;
+        Integer intCommand = toInteger(command);
 
         PhilipsAirPurifierWritableDataDTO data = new PhilipsAirPurifierWritableDataDTO();
         switch (parameter) {
             case LED_LIGHT_LEVEL:
-                if (decimalCommand != null) {
-                    data.setLightLevel(decimalCommand.intValue());
+                if (intCommand != null) {
+                    data.setLightLevel(intCommand);
                 }
                 break;
             case DISPLAYED_INDEX:
@@ -142,13 +134,13 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 }
                 break;
             case BUTTONS_LIGHT:
-                if (onOffCommand != null && onOffCommand.as(DecimalType.class) != null) {
-                    data.setButtons(onOffCommand.as(DecimalType.class).toString());
+                if (onOffCommand != null) {
+                    data.setButtons(onOffCommand == OnOffType.ON ? "1" : "0");
                 }
                 break;
             case POWER:
-                if (onOffCommand != null && onOffCommand.as(DecimalType.class) != null) {
-                    data.setPower(onOffCommand.as(DecimalType.class).toString());
+                if (onOffCommand != null) {
+                    data.setPower(onOffCommand == OnOffType.ON ? "1" : "0");
                 }
                 break;
             case FAN_MODE:
@@ -158,13 +150,13 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 data.setMode("M");
                 break;
             case CHILD_LOCK:
-                if (onOffCommand != null && onOffCommand.as(DecimalType.class) != null) {
-                    data.setChildLock(command == OnOffType.ON);
+                if (onOffCommand != null) {
+                    data.setChildLock(onOffCommand == OnOffType.ON);
                 }
                 break;
             case AUTO_TIMEOFF:
-                if (decimalCommand != null) {
-                    data.setTimer(decimalCommand.intValue());
+                if (intCommand != null) {
+                    data.setTimer(intCommand);
                 }
                 break;
             case MODE:
@@ -173,13 +165,13 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 }
                 break;
             case AIR_QUALITY_NOTIFICATION_THRESHOLD:
-                if (decimalCommand != null) {
-                    data.setAqit(decimalCommand.intValue());
+                if (intCommand != null) {
+                    data.setAqit(intCommand);
                 }
                 break;
             case HUMIDITY_SETPOINT:
-                if (decimalCommand != null) {
-                    data.setHumiditySetpoint(decimalCommand.intValue());
+                if (intCommand != null) {
+                    data.setHumiditySetpoint(intCommand);
                 }
                 break;
             case FUNCTION:
@@ -192,23 +184,31 @@ public class PhilipsAirHandler extends BaseThingHandler {
         return data;
     }
 
+    /**
+     * Converts numeric commands to the integer value the device expects. Dimensionless quantities (e.g. a humidity
+     * setpoint sent as {@code 0.5} or {@code 50 %}) are converted to percent.
+     */
+    private static @Nullable Integer toInteger(Command command) {
+        if (command instanceof DecimalType decimal) {
+            return decimal.intValue();
+        } else if (command instanceof QuantityType<?> quantity) {
+            QuantityType<?> percent = quantity.toUnit(Units.PERCENT);
+            return (percent != null ? percent : quantity).intValue();
+        }
+        return null;
+    }
+
     @Override
     public void initialize() {
         logger.debug("Start initializing!");
         final PhilipsAirConfiguration config = getAirPurifierConfig();
         int refreshInterval = config.getRefreshInterval();
-        if (refreshInterval < PhilipsAirConfiguration.MIN_REFESH_INTERVAL
+        if (refreshInterval < PhilipsAirConfiguration.MIN_REFRESH_INTERVAL
                 && !(SUPPORTED_COAP_THING_TYPES_UIDS.contains(getThing().getThingTypeUID()))) {
-            logger.info("refreshInterval too low. Using {}", PhilipsAirConfiguration.MIN_REFESH_INTERVAL);
-            refreshInterval = PhilipsAirConfiguration.MIN_REFESH_INTERVAL;
+            logger.debug("refreshInterval too low. Using {}", PhilipsAirConfiguration.MIN_REFRESH_INTERVAL);
+            refreshInterval = PhilipsAirConfiguration.MIN_REFRESH_INTERVAL;
         }
-        // TODO: disabling this, as it may cause start delays
-        // this.getConfig().put(PhilipsAirConfiguration.CONFIG_DEF_REFRESH_INTERVAL, config.getRefreshInterval());
-        ThingHandlerCallback callback = getCallback();
-        if (callback != null) {
-            callback.configurationUpdated(thing);
-        }
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.UNKNOWN);
         synchronized (connectionLock) {
             disposed = false;
         }
@@ -276,8 +276,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 logger.debug("Cannot update Air Purifier device {}", thing.getUID());
                 getConnection(getAirPurifierConfig());
             }
-        } catch (Exception e) {
-            logger.info("Exception while updating thing: {}", e.getMessage(), e);
+        } catch (RuntimeException e) {
+            logger.debug("Exception while updating thing {}: {}", thing.getUID(), e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -289,7 +290,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                logger.debug("No connection --> no update for {}", thing.getUID());
+                logger.debug("No data received for {}", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response from device");
             }
         } catch (PhilipsAirAPIException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());

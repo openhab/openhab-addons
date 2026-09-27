@@ -25,6 +25,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -36,6 +37,9 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -124,6 +128,16 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         verify(connection).sendCommand(any(), any());
         verify(callback, never()).stateUpdated(POWER_CHANNEL, UnDefType.NULL);
         handler.dispose();
+    }
+
+    @Test
+    public void noDataSetsOffline() {
+        handler.updateData(connection);
+
+        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
+        verify(callback).statusUpdated(any(Thing.class), statusCaptor.capture());
+        assertEquals(ThingStatus.OFFLINE, statusCaptor.getValue().getStatus());
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, statusCaptor.getValue().getStatusDetail());
     }
 
     @Test

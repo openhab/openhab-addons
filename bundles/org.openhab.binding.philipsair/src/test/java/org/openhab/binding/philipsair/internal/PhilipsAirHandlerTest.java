@@ -192,7 +192,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback, atLeast(2)).statusUpdated(any(Thing.class), statusInfoCaptor.capture());
         List<ThingStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
-        assertEquals(ThingStatus.OFFLINE, statusInfos.get(0).getStatus());
+        assertEquals(ThingStatus.UNKNOWN, statusInfos.get(0).getStatus());
         assertEquals(ThingStatus.ONLINE, statusInfos.get(statusInfos.size() - 1).getStatus());
     }
 
@@ -387,5 +387,12 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         commandDto = handler.prepareCommandData("target-humidity", DecimalType.valueOf("50"));
         assertEquals("{\"rhset\":50}", GSON.toJson(commandDto));
+
+        // Number:Dimensionless items send quantities
+        commandDto = handler.prepareCommandData("target-humidity", new QuantityType<>(60, Units.PERCENT));
+        assertEquals("{\"rhset\":60}", GSON.toJson(commandDto));
+
+        commandDto = handler.prepareCommandData("target-humidity", new QuantityType<>(0.4, Units.ONE));
+        assertEquals("{\"rhset\":40}", GSON.toJson(commandDto));
     }
 }
