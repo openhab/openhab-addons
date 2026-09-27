@@ -18,6 +18,7 @@
 			<channel id="destinationlocation" typeId="destinationlocation"/>
 			<channel id="distancetoarrival" typeId="distancetoarrival"/>
 			<channel id="minutestoarrival" typeId="minutestoarrival"/>
+			<channel id="minutestofullcharge" typeId="minutestofullcharge"/>
 			<channel id="trafficminutesdelay" typeId="trafficminutesdelay"/>
 			<channel id="autoconditioning" typeId="autoconditioning"/>
 			<channel id="autoparkstate" typeId="autoparkstate"/>
@@ -56,7 +57,9 @@
 			<channel id="climate" typeId="climate"/>
 			<channel id="doorlock" typeId="doorlock"/>
 			<channel id="driverfrontdoor" typeId="driverfrontdoor"/>
+			<channel id="driverfrontwindow" typeId="driverfrontwindow"/>
 			<channel id="driverreardoor" typeId="driverreardoor"/>
+			<channel id="driverrearwindow" typeId="driverrearwindow"/>
 			<channel id="drivertemp" typeId="drivertemp"/>
 			<channel id="estimatedbatteryrange" typeId="estimatedbatteryrange"/>
 			<channel id="estimatedrange" typeId="estimatedrange"/>
@@ -91,7 +94,9 @@
 			<channel id="outsidetemp" typeId="outsidetemp"/>
 			<channel id="parsedcalendar" typeId="parsedcalendar"/>
 			<channel id="passengerfrontdoor" typeId="passengerfrontdoor"/>
+			<channel id="passengerfrontwindow" typeId="passengerfrontwindow"/>
 			<channel id="passengerreardoor" typeId="passengerreardoor"/>
+			<channel id="passengerrearwindow" typeId="passengerrearwindow"/>
 			<channel id="passengertemp" typeId="passengertemp"/>
 			<channel id="power" typeId="power"/>
 			<channel id="preconditioning" typeId="preconditioning"/>
@@ -121,16 +126,22 @@
 			<channel id="steeringwheelheater" typeId="steeringwheelheater"/>
 			<channel id="combinedtemp" typeId="combinedtemp"/>
 			<channel id="timetofullcharge" typeId="timetofullcharge"/>
+			<channel id="tirepressurefrontleft" typeId="tirepressurefrontleft"/>
+			<channel id="tirepressurefrontright" typeId="tirepressurefrontright"/>
+			<channel id="tirepressurerearleft" typeId="tirepressurerearleft"/>
+			<channel id="tirepressurerearright" typeId="tirepressurerearright"/>
+			<channel id="tirepressurewarning" typeId="tirepressurewarning"/>
 			<channel id="tripcharging" typeId="tripcharging"/>
 			<channel id="usablebatterylevel" typeId="usablebatterylevel"/>
 			<channel id="userchargeenablerequest" typeId="userchargeenablerequest"/>
+			<channel id="userpresent" typeId="userpresent"/>
 			<channel id="valetmode" typeId="valetmode"/>
 			<channel id="valetpin" typeId="valetpin"/>
 			<channel id="wakeup" typeId="wakeup"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">4</property>
 		</properties>
 
 		<representation-property>vin</representation-property>
