@@ -15,6 +15,7 @@ package org.openhab.binding.modbus.sungrow.internal;
 import static org.openhab.core.io.transport.modbus.ModbusConstants.ValueType.*;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.function.Function;
 
 import javax.measure.Unit;
@@ -316,7 +317,7 @@ public enum SungrowInverterRegisters {
      * @return the channel name.
      */
     public String getChannelName() {
-        return this.name().toLowerCase().replace('_', '-');
+        return this.name().toLowerCase(Locale.ROOT).replace('_', '-');
     }
 
     /**

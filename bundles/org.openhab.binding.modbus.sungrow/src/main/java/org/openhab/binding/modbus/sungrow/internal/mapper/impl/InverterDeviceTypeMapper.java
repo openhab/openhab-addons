@@ -20,18 +20,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Tim Scholand - Initial contribution
  */
 @NonNullByDefault
-public class DeviceTypeMapper {
+public class InverterDeviceTypeMapper {
 
-    private static final DeviceTypeMapper INSTANCE = new DeviceTypeMapper();
+    private static final InverterDeviceTypeMapper INSTANCE = new InverterDeviceTypeMapper();
 
     /**
      * @return a singleton instance of the mapper
      */
-    public static DeviceTypeMapper instance() {
+    public static InverterDeviceTypeMapper instance() {
         return INSTANCE;
     }
 
-    private DeviceTypeMapper() {
+    private InverterDeviceTypeMapper() {
         // use instance()
     }
 

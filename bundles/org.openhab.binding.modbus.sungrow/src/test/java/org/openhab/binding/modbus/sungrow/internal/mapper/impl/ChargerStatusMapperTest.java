@@ -14,6 +14,8 @@ package org.openhab.binding.modbus.sungrow.internal.mapper.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
@@ -21,11 +23,15 @@ import org.junit.jupiter.api.Test;
  * @author Sönke Küper - Initial contribution
  */
 @NonNullByDefault
-class DeviceTypeMapperTest {
+class ChargerStatusMapperTest {
 
     @Test
-    public void testMapDeviceType() {
-        int valueFromHex = Integer.parseInt("E25", 16);
-        assertEquals("SH15T-V11", DeviceTypeMapper.instance().map(valueFromHex));
+    void testMappings() {
+        ChargerStatusMapper mapper = ChargerStatusMapper.instance();
+
+        assertEquals("Idle (unplugged)", mapper.map(BigDecimal.ONE));
+        assertEquals("Standby (plugged)", mapper.map(BigDecimal.valueOf(2)));
+        assertEquals("Charging", mapper.map(BigDecimal.valueOf(3)));
+        assertEquals("Charging completed", mapper.map(BigDecimal.valueOf(6)));
     }
 }
