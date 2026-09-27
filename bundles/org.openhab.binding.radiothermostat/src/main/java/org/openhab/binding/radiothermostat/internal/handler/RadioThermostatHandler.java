@@ -77,7 +77,6 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private static final int DEFAULT_REFRESH_PERIOD_MIN = 2;
     private static final int DEFAULT_LOG_REFRESH_PERIOD_MIN = 10;
     private static final int COMMAND_POLLING_DELAY_SEC = 20;
-    private static final int MODE_POLLING_DELAY_SEC = 60;
 
     private final RadioThermostatStateDescriptionProvider stateDescriptionProvider;
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatHandler.class);
@@ -212,6 +211,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        refreshJob = null;
 
         Runnable runnable = () -> {
             // populate the heat and cool programs on the thermostat from the user configuration,
@@ -234,7 +234,6 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             connector.getAsyncThermostatData(DEFAULT_RESOURCE, System.currentTimeMillis());
         };
 
-        refreshJob = null;
         this.refreshJob = scheduler.scheduleWithFixedDelay(runnable, initialDelaySec, refreshPeriod * 60,
                 TimeUnit.SECONDS);
     }
@@ -368,9 +367,9 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 logger.debug("Command: {} -> Not an integer", cmdStr);
             }
 
-            // When processing a command, delay the polling job for 20s unless changing mode then wait 60s
+            // When processing a command, delay the polling job for 20s unless changing mode then wait the refreshPeriod
             if (!MESSAGE.equals(channel)) {
-                rescheduleRefreshJob(!MODE.equals(channel) ? COMMAND_POLLING_DELAY_SEC : MODE_POLLING_DELAY_SEC);
+                rescheduleRefreshJob(!MODE.equals(channel) ? COMMAND_POLLING_DELAY_SEC : refreshPeriod * 60);
             }
 
             switch (channel) {
@@ -484,14 +483,11 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         // if polling startTime is before lastCommandTime, ignore this update for writable channels
                         final boolean ignoreUpd = event.getStartTime() < lastCommandTime;
 
-                        // Update all channels from rthermData unless update should be ignored
+                        // Update all channels from rthermData unless the update should be ignored
                         getThing().getChannels().forEach(channel -> {
                             if (!NO_UPDATE_CHANNEL_IDS.contains(channel.getUID().getId())
                                     && !(DEBOUNCE_CHANNEL_IDS.contains(channel.getUID().getId()) && ignoreUpd)) {
                                 updateChannel(channel.getUID().getId(), rthermData);
-                            } else {
-                                logger.debug("skipping update for channel: {}, ignoreUpd: {}", channel.getUID().getId(),
-                                        ignoreUpd);
                             }
                         });
                     }

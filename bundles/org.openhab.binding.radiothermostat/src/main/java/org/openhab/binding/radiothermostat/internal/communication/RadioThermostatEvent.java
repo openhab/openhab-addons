@@ -33,6 +33,7 @@ public class RadioThermostatEvent extends EventObject {
         super(source);
         this.key = key;
         this.value = value;
+        this.startTime = startTime;
     }
 
     public String getKey() {
