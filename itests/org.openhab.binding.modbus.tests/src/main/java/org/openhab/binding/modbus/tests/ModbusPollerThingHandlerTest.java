@@ -206,7 +206,32 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
         assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         assertThat(poller.getStatusInfo().getDescription(),
-                is(equalTo("poller2 numeric channels require type 'holding' or 'input', not 'coil'")));
+                is(equalTo("Channel 'value' has invalid valueType 'uint16'; coils and discrete inputs are bits")));
+    }
+
+    @Test
+    public void testPoller2UpdatesDefaultBitChannelFromCoilResult()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 100);
+        pollerConfig.put("length", 2);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_COIL);
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "coil-poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "value");
+        Configuration channelConfig = new Configuration(Map.of("address", "101"));
+        poller = createPoller2ThingBuilder("coil-poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "Switch").withConfiguration(channelConfig).build())
+                .build();
+        addThing(poller);
+
+        ModbusPoller2ThingHandler handler = (ModbusPoller2ThingHandler) poller.getHandler();
+        handler.setCallback(thingCallback);
+        ModbusReadCallback callback = getPollerCallback(handler);
+        callback.handle(
+                new AsyncModbusReadResult(Mockito.mock(ModbusReadRequestBlueprint.class), new BitArray(false, true)));
+
+        verify(thingCallback).stateUpdated(channelUid, new org.openhab.core.library.types.DecimalType("1"));
     }
 
     private void testPollerLengthCheck(String type, int length, boolean expectedOnline) {
