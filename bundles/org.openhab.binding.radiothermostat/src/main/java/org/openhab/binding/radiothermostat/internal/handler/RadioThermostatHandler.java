@@ -90,7 +90,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private @Nullable ScheduledFuture<?> logRefreshJob;
     private @Nullable ScheduledFuture<?> clockSyncJob;
 
-    private long lastCommandTime = 0L;
+    private volatile long lastCommandTime = 0L;
     private int refreshPeriod = DEFAULT_REFRESH_PERIOD_MIN;
     private int logRefreshPeriod = DEFAULT_LOG_REFRESH_PERIOD_MIN;
     private boolean isCT80 = false;
@@ -214,6 +214,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         refreshJob = null;
 
         Runnable runnable = () -> {
+            final long startTime = System.currentTimeMillis();
+
             // populate the heat and cool programs on the thermostat from the user configuration,
             // the commands will be sent each time the refresh job runs until a success response is seen
             if (!heatProgramJson.isEmpty()) {
@@ -231,7 +233,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             }
 
             // send an async call to the thermostat to get the 'tstat' data
-            connector.getAsyncThermostatData(DEFAULT_RESOURCE, System.currentTimeMillis());
+            connector.getAsyncThermostatData(DEFAULT_RESOURCE, startTime);
         };
 
         this.refreshJob = scheduler.scheduleWithFixedDelay(runnable, initialDelaySec, refreshPeriod * 60,
