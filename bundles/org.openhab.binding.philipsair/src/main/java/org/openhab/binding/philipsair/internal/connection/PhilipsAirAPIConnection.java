@@ -55,6 +55,12 @@ public abstract class PhilipsAirAPIConnection {
     }
 
     /**
+     * Called periodically to maintain the connection, e.g. to (re)establish the subscription for pushed updates.
+     */
+    public void ensureConnected() {
+    }
+
+    /**
      * Releases the resources held by this connection. The connection must not be used afterwards.
      */
     public void dispose() {

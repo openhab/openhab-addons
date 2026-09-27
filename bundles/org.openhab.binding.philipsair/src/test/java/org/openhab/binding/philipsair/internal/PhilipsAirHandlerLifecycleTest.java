@@ -131,6 +131,27 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     }
 
     @Test
+    public void pushedDataIsOnlyAcceptedFromActiveConnection() throws Exception {
+        when(callback.isChannelLinked(POWER_CHANNEL)).thenReturn(true);
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
+        releaseConnection.countDown();
+        handler.initialize();
+        waitForAssert(() -> verify(connection).ensureConnected());
+
+        handler.dataReceived(mock(PhilipsAirAPIConnection.class));
+        verify(callback, never()).stateUpdated(any(), any());
+
+        handler.dataReceived(connection);
+        verify(callback).stateUpdated(POWER_CHANNEL, OnOffType.ON);
+
+        handler.dispose();
+        clearInvocations(callback);
+        handler.dataReceived(connection);
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
     public void noDataSetsOffline() {
         handler.updateData(connection);
 

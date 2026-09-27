@@ -80,6 +80,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
     private final Object connectionLock = new Object();
+    // serializes updates from the refresh job, refresh commands and data pushed by the device
+    private final Object updateLock = new Object();
     private volatile @Nullable PhilipsAirAPIConnection connection;
     private boolean disposed = true;
     private @Nullable PhilipsAirPurifierDataDTO currentData;
@@ -225,23 +227,28 @@ public class PhilipsAirHandler extends BaseThingHandler {
         // created outside the lock, as the HTTP connection may block on the key exchange
         PhilipsAirAPIConnection newConnection = createConnection(config);
         PhilipsAirAPIConnection oldConnection;
+        boolean published;
         synchronized (connectionLock) {
-            if (disposed) {
-                oldConnection = newConnection;
-            } else {
+            published = !disposed;
+            if (published) {
                 oldConnection = connection;
                 connection = newConnection;
+            } else {
+                oldConnection = newConnection;
             }
         }
         if (oldConnection != null) {
             oldConnection.dispose();
+        }
+        if (published) {
+            newConnection.ensureConnected();
         }
     }
 
     PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
         if (SUPPORTED_COAP_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
             logger.debug("Starting Coap based connectivity");
-            return new PhilipsAirCoapAPIConnection(config);
+            return new PhilipsAirCoapAPIConnection(config, this::dataReceived);
         } else {
             logger.debug("Starting HTTP based connectivity");
             return new PhilipsAirHttpAPIConnection(config, httpClient);
@@ -271,6 +278,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         try {
             PhilipsAirAPIConnection connection = this.connection;
             if (connection != null) {
+                connection.ensureConnected();
                 this.updateData(connection);
             } else {
                 logger.debug("Cannot update Air Purifier device {}", thing.getUID());
@@ -282,19 +290,33 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Called by a connection when the device pushed a new status.
+     */
+    void dataReceived(PhilipsAirAPIConnection source) {
+        synchronized (connectionLock) {
+            if (disposed || !source.equals(connection)) {
+                return;
+            }
+        }
+        updateData(source);
+    }
+
     public void updateData(@Nullable PhilipsAirAPIConnection connection) {
         logger.trace("Update data for {}", thing.getUID());
-        try {
-            if (requestData(connection)) {
-                addOptionalChannels();
-                updateChannels();
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                logger.debug("No data received for {}", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response from device");
+        synchronized (updateLock) {
+            try {
+                if (requestData(connection)) {
+                    addOptionalChannels();
+                    updateChannels();
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    logger.debug("No data received for {}", thing.getUID());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response from device");
+                }
+            } catch (PhilipsAirAPIException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
             }
-        } catch (PhilipsAirAPIException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 

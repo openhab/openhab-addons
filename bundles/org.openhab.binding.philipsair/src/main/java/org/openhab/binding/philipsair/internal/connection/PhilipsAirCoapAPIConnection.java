@@ -14,6 +14,7 @@ package org.openhab.binding.philipsair.internal.connection;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapHandler;
@@ -36,7 +37,6 @@ import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDT
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierStateDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierStatusDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
-import org.openhab.core.cache.ExpiringCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +48,10 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link PhilipsAirCoapAPIConnection} is responsible for handling commands, for the 2019 and newer models
- * communicating
- * using the coap protocol.
+ * communicating using the CoAP protocol.
+ * <p>
+ * The device pushes its status through a CoAP observe relation. Each valid notification is passed to the listener;
+ * {@link #ensureConnected()} is called periodically to (re)establish the relation when notifications stop.
  *
  * @author Marcel Verpaalen - Initial contribution
  *
@@ -62,40 +64,46 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private static final String RESOURCE_PATH_CONTROL = "/sys/dev/control";
     private static final int COAP_PORT = 5683;
     private static final long TIMEOUT = 25000;
-    private static final long COMMAND_RESPONSE_TIMEOUT = 2000;
+    private static final int MAX_REREGISTER_ATTEMPTS = 6;
+    private static final long MIN_REREGISTER_AFTER_MS = 30000;
+    private static final long MIN_STALE_AFTER_MS = 60000;
 
     private final Gson gson = new Gson();
-    private final long EXPIRE_TIME = 60000L;
+    private final long reregisterAfterMs;
+    private final long staleAfterMs;
 
-    private ExpiringCache<String> coapStatus = new ExpiringCache<>(EXPIRE_TIME, this::refreshData);
     private String host = "";
     private final CoapClient client = new CoapClient();
     private final CoapEndpoint endpoint;
     private volatile long counter = 1;
-    // commands are only serialized with each other, so they never wait for a (possibly slow) status refresh
+    // commands are only serialized with each other, so they never wait for the observe relation to be (re)established
     private final Object commandLock = new Object();
-    private final Object notificationLock = new Object();
-    private long notificationCount = 0L;
     private boolean hasSync = false;
     private long syncCounter = 0;
-    private int attempt = -1;
+    private volatile int attempt = 0;
+    private volatile @Nullable Consumer<PhilipsAirAPIConnection> listener;
     private volatile @Nullable CoapObserveRelation observe = null;
     private volatile @Nullable String lastJson = null;
     private volatile long lastUpdated = 0L; // epoch ms of last valid JSON
     private int mid;
 
-    public PhilipsAirCoapAPIConnection(PhilipsAirConfiguration config) {
+    /**
+     * @param config the thing configuration
+     * @param listener called with this connection whenever the device reported a new status
+     */
+    public PhilipsAirCoapAPIConnection(PhilipsAirConfiguration config, Consumer<PhilipsAirAPIConnection> listener) {
         super(config);
+        this.listener = listener;
         CoapConfig.register();
 
         if (!config.getHost().isEmpty()) {
             host = config.getHost();
         } else {
-            logger.info("Host is empty, cannot start COAP connection");
+            logger.debug("Host is empty, cannot start COAP connection");
         }
-        if (config.getRefreshInterval() < 10) {
-            logger.info("Refresh interval < 10 not supported");
-        }
+        long refreshIntervalMs = TimeUnit.SECONDS.toMillis(config.getRefreshInterval());
+        reregisterAfterMs = Math.max(refreshIntervalMs, MIN_REREGISTER_AFTER_MS);
+        staleAfterMs = Math.max(2 * refreshIntervalMs, MIN_STALE_AFTER_MS);
 
         Configuration netConfig = Configuration.getStandard().set(CoapConfig.DEDUPLICATOR, CoapConfig.NO_DEDUPLICATOR)
                 .set(CoapConfig.ACK_TIMEOUT, 20, TimeUnit.SECONDS)
@@ -111,36 +119,37 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         logger.debug("PhilipsAirCoapAPIConnection initialized using host {}", host);
     }
 
-    private synchronized String refreshData() {
-        final long now = System.currentTimeMillis();
-        final @Nullable String last = this.lastJson;
-
-        // If we have a recent value, return it directly
-        if (last != null && (now - this.lastUpdated) < EXPIRE_TIME) {
-            logger.debug("Returning cached value ({}ms old) for {}", (now - this.lastUpdated), host);
-            return last;
+    /**
+     * Establishes the observe relation, or re-registers it when the device has not sent a notification recently. The
+     * relation itself is asynchronous; only the counter sync before a new relation waits for the device.
+     */
+    @Override
+    public synchronized void ensureConnected() {
+        if (listener == null) {
+            return;
         }
-
-        // Otherwise, (re)establish/maintain observe and return last known value
-        try {
-            logger.debug("Refreshing data for {}", host);
-            this.lastUpdated = System.currentTimeMillis();
-
-            final CoapObserveRelation reuseObserve = this.observe;
-            if (reuseObserve != null && !reuseObserve.isCanceled()) {
-                if (attempt < 6) {
-                    logger.debug("Send COAP ping to {}:{}", client.getURI(), client.ping(TIMEOUT));
-                    logger.debug("Reregister #{},{}", attempt, reuseObserve.reregister());
-                    attempt += 1;
-                    // Return last known value while re-registering
-                    return last != null ? last : "";
-                } else {
-                    logger.debug("Cancel request #{}", attempt);
-                    reuseObserve.proactiveCancel();
-                }
+        final long sinceLastUpdate = System.currentTimeMillis() - lastUpdated;
+        final CoapObserveRelation currentObserve = this.observe;
+        if (currentObserve != null && !currentObserve.isCanceled()) {
+            if (sinceLastUpdate < reregisterAfterMs) {
+                return;
             }
-            attempt = 0;
+            if (attempt < MAX_REREGISTER_ATTEMPTS) {
+                attempt++;
+                logger.debug("No update from {} for {}ms, re-register #{}: {}", host, sinceLastUpdate, attempt,
+                        currentObserve.reregister());
+                return;
+            }
+            logger.debug("No update from {} after {} re-registrations, restarting observe", host, attempt);
+            currentObserve.proactiveCancel();
+            this.observe = null;
+        }
+        attempt = 0;
+        startObserve();
+    }
 
+    private void startObserve() {
+        try {
             String uri = getUriString(host, COAP_PORT, RESOURCE_PATH_STATUS);
             if (!hasSync) {
                 counter = getSync(counter);
@@ -155,17 +164,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             if (this.mid > 0 && Math.abs(this.mid - request.getMID()) > 100) {
                 logger.debug("Different MIDs in request and responses: {} &  {}", request.getMID(), this.mid + 1);
                 request.setMID(this.mid + 1);
-
             } else {
                 logger.debug("MIDs in sync:  {}", this.mid + 1);
-            }
-
-            logger.debug("Send COAP ping to {}:{}", client.getURI(), client.ping(TIMEOUT));
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return last != null ? last : "";
             }
 
             logger.debug("Start Observe request {}", uri);
@@ -180,17 +180,12 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                     logger.debug("Error for {}", uri);
                 }
             });
-
-            logger.debug("Finished refreshData for {}", host);
         } catch (ConnectorException | IOException e) {
-            logger.debug("Error while refreshing {}: {}", host, e.getMessage());
+            logger.debug("Error while starting observe for {}: {}", host, e.getMessage());
         }
-
-        // SWR: until we receive a new response, serve the last known value (may be empty)
-        return last != null ? last : "";
     }
 
-    private String processCoapResponse(String uri, @Nullable CoapResponse response) {
+    private void processCoapResponse(String uri, @Nullable CoapResponse response) {
         if (response != null) {
             if (!response.isSuccess()) {
                 logger.debug("Response is not success: {}", response.getCode());
@@ -198,19 +193,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             logger.trace("Response is advanced: {}", response.advanced());
             String content = response.getResponseText();
             if (content != null) {
-                String resp = processResponse(content.trim(), uri);
-                logger.debug("Response {}", resp);
-                if (resp.length() > 2) {
-                    lastJson = resp;
-                    lastUpdated = System.currentTimeMillis();
-                    coapStatus.putValue(resp);
-                    synchronized (notificationLock) {
-                        notificationCount++;
-                        notificationLock.notifyAll();
-                    }
+                if (processNotification(content, uri)) {
                     this.mid = response.advanced().getMID();
-                    logger.debug("put :{}", resp);
-                    return resp;
                 }
             } else {
                 logger.debug("Response content null for {}", response.advanced());
@@ -218,7 +202,27 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         } else {
             logger.debug("Response is null for {}", uri);
         }
-        return "";
+    }
+
+    /**
+     * Processes the (encrypted) content of a status notification and notifies the listener if it holds a valid status.
+     *
+     * @return true if the notification held a valid status
+     */
+    boolean processNotification(String content, String uri) {
+        String resp = processResponse(content.trim(), uri);
+        logger.debug("Response {}", resp);
+        if (resp.length() <= 2) {
+            return false;
+        }
+        lastJson = resp;
+        lastUpdated = System.currentTimeMillis();
+        attempt = 0;
+        Consumer<PhilipsAirAPIConnection> listener = this.listener;
+        if (listener != null) {
+            listener.accept(this);
+        }
+        return true;
     }
 
     private String processResponse(String rawResponse, String uri) {
@@ -269,6 +273,14 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         return counter;
     }
 
+    /**
+     * @return the last reported status, or null if the device did not report a status recently
+     */
+    private @Nullable String currentStatus() {
+        String json = lastJson;
+        return json != null && System.currentTimeMillis() - lastUpdated < staleAfterMs ? json : null;
+    }
+
     @Override
     public PhilipsAirConfiguration getConfig() {
         return this.config;
@@ -276,6 +288,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
 
     @Override
     public void dispose() {
+        listener = null;
         CoapObserveRelation observe = this.observe;
         if (observe != null) {
             observe.proactiveCancel();
@@ -287,49 +300,41 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     }
 
     @Override
-    public synchronized @Nullable PhilipsAirPurifierDataDTO getAirPurifierStatus(String host)
-            throws JsonSyntaxException {
-        return gson.fromJson(coapStatus.getValue(), PhilipsAirPurifierDataDTO.class);
+    public @Nullable PhilipsAirPurifierDataDTO getAirPurifierStatus(String host) throws JsonSyntaxException {
+        String json = currentStatus();
+        return json != null ? gson.fromJson(json, PhilipsAirPurifierDataDTO.class) : null;
     }
 
     @Override
-    public synchronized @Nullable PhilipsAirPurifierDeviceDTO getAirPurifierDevice(String host)
-            throws JsonSyntaxException {
-        return gson.fromJson(coapStatus.getValue(), PhilipsAirPurifierDeviceDTO.class);
+    public @Nullable PhilipsAirPurifierDeviceDTO getAirPurifierDevice(String host) throws JsonSyntaxException {
+        String json = currentStatus();
+        return json != null ? gson.fromJson(json, PhilipsAirPurifierDeviceDTO.class) : null;
     }
 
     @Override
-    public synchronized @Nullable PhilipsAirPurifierFiltersDTO getAirPurifierFiltersStatus(String host)
-            throws JsonSyntaxException {
-        return gson.fromJson(coapStatus.getValue(), PhilipsAirPurifierFiltersDTO.class);
+    public @Nullable PhilipsAirPurifierFiltersDTO getAirPurifierFiltersStatus(String host) throws JsonSyntaxException {
+        String json = currentStatus();
+        return json != null ? gson.fromJson(json, PhilipsAirPurifierFiltersDTO.class) : null;
     }
 
+    /**
+     * Sends the command to the device. No state is returned, as the device pushes the new state through the observe
+     * relation.
+     */
     @Override
     public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value) {
         try {
-            String response;
-            long notificationsBefore;
             synchronized (commandLock) {
                 String encrypted = prepareCommand(value);
                 if (encrypted == null) {
                     logger.debug("Could not encrypt command '{}'", gson.toJson(value));
                     return null;
                 }
-                // only notifications received after the control request can reflect the command
-                synchronized (notificationLock) {
-                    notificationsBefore = notificationCount;
+                String response = post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encrypted);
+                if (!"{\"status\":\"success\"}".equals(response)) {
+                    logger.debug("Command failed. Response: {}", response);
                 }
-                response = post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encrypted);
             }
-            if ("{\"status\":\"success\"}".equals(response)) {
-                // the device pushes the new state through the observe relation
-                String json = waitForNotification(notificationsBefore, COMMAND_RESPONSE_TIMEOUT);
-                return json != null ? gson.fromJson(json, PhilipsAirPurifierDataDTO.class) : null;
-            } else {
-                logger.debug("Command failed. Response: {}", response);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         } catch (JsonSyntaxException | ConnectorException | IOException e) {
             logger.debug("Error sending command '{}': {}", gson.toJson(value), e.getMessage());
         }
@@ -354,23 +359,6 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         return PhilipsAirCoapCipher.encryptedMsg(commandValue, controlCounter, logger);
     }
 
-    /**
-     * Waits for a status notification newer than the given notification count.
-     *
-     * @return the notified status, or null if none was received within the timeout
-     */
-    private @Nullable String waitForNotification(long notificationsBefore, long timeout) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + timeout;
-        synchronized (notificationLock) {
-            long remaining = timeout;
-            while (notificationCount <= notificationsBefore && remaining > 0) {
-                notificationLock.wait(remaining);
-                remaining = deadline - System.currentTimeMillis();
-            }
-            return notificationCount > notificationsBefore ? lastJson : null;
-        }
-    }
-
     private long getSync(long currentCounter) throws ConnectorException, IOException {
         String controlCounterResponse = post(client, host, COAP_PORT, RESOURCE_PATH_SYNC,
                 String.format("%08X", currentCounter));
@@ -384,7 +372,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private String post(CoapClient client, String server, int port, String resourcePath, String body)
             throws ConnectorException, IOException {
         String uri = getUriString(server, port, resourcePath);
-        // the URI is set on the request, as the shared client URI is also changed by the polling thread
+        // the URI is set on the request, as the shared client URI is also changed when (re)starting the observe
         Request request = Request.newPost();
         request.setURI(uri);
         request.setPayload(body);
