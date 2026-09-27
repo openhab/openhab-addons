@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.modbus.handler;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -65,6 +67,7 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
         pollStart = configuration.getStart();
         Map<ChannelUID, Poller2Channel> parsedChannels = new LinkedHashMap<>();
         Map<ChannelUID, Poller2BitChannel> parsedBitChannels = new LinkedHashMap<>();
+        List<String> configurationErrors = new ArrayList<>();
         for (Channel channel : getThing().getChannels()) {
             if (registerPoller) {
                 Poller2ChannelConfiguration parsed = Poller2ChannelConfiguration.create(channel.getUID().getId(),
@@ -72,23 +75,28 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
                         configuration.getLength());
                 Optional<String> error = parsed.error();
                 if (error.isPresent()) {
-                    channels = Map.of();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, error.get());
-                    return;
+                    configurationErrors.add(error.get());
+                } else {
+                    parsedChannels.put(channel.getUID(), parsed.channel().orElseThrow());
                 }
-                parsedChannels.put(channel.getUID(), parsed.channel().orElseThrow());
             } else if (bitPoller) {
                 Poller2BitChannelConfiguration parsed = Poller2BitChannelConfiguration.create(channel.getUID().getId(),
                         channel.getConfiguration().getProperties(), configuration.getStart(),
                         configuration.getLength());
                 Optional<String> error = parsed.error();
                 if (error.isPresent()) {
-                    bitChannels = Map.of();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, error.get());
-                    return;
+                    configurationErrors.add(error.get());
+                } else {
+                    parsedBitChannels.put(channel.getUID(), parsed.channel().orElseThrow());
                 }
-                parsedBitChannels.put(channel.getUID(), parsed.channel().orElseThrow());
             }
+        }
+        if (!configurationErrors.isEmpty()) {
+            channels = Map.of();
+            bitChannels = Map.of();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    String.join(System.lineSeparator(), configurationErrors));
+            return;
         }
         channels = Map.copyOf(parsedChannels);
         bitChannels = Map.copyOf(parsedBitChannels);

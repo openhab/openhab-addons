@@ -234,6 +234,31 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         verify(thingCallback).stateUpdated(channelUid, new org.openhab.core.library.types.DecimalType("1"));
     }
 
+    @Test
+    public void testPoller2ReportsEveryInvalidChannelConfiguration() {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 100);
+        pollerConfig.put("length", 2);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "invalid-poller2");
+        poller = createPoller2ThingBuilder("invalid-poller2").withConfiguration(pollerConfig)
+                .withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(new ChannelUID(pollerUid, "first"), "Number")
+                        .withConfiguration(new Configuration(Map.of("address", "102", "valueType", "uint16"))).build())
+                .withChannel(ChannelBuilder.create(new ChannelUID(pollerUid, "second"), "Number")
+                        .withConfiguration(new Configuration(Map.of("address", "100.1", "valueType", "uint16")))
+                        .build())
+                .build();
+        addThing(poller);
+
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        assertThat(poller.getStatusInfo().getDescription(),
+                is(equalTo("Channel 'first': Address 102 is outside poll window 100..101\n"
+                        + "Channel 'second': Sub-address 1 is invalid for value type uint16")));
+    }
+
     private void testPollerLengthCheck(String type, int length, boolean expectedOnline) {
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 0L);
