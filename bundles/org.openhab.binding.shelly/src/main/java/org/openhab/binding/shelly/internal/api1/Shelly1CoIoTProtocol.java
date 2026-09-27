@@ -148,7 +148,7 @@ public class Shelly1CoIoTProtocol {
                     case SHELLY_COLOR_BLUE:
                     case SHELLY_COLOR_WHITE:
                     case SHELLY_COLOR_GAIN:
-                    case "effect" :
+                    case "effect":
                         if (!profile.inColor) {
                             break;
                         }
