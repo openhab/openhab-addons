@@ -20,6 +20,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.openhab.binding.atagone.internal.AtagOneBindingConstants.*;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,6 +45,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.atagone.internal.api.AtagOneApiClient;
+import org.openhab.binding.atagone.internal.api.AtagOneCommunicationException;
 import org.openhab.binding.atagone.internal.dto.ControlUpdateDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigDTO;
 import org.openhab.binding.atagone.internal.dto.DeviceConfigUpdateDTO;
@@ -59,6 +62,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
@@ -79,6 +83,7 @@ class AtagOneHandlerTest {
     private @Mock @NonNullByDefault({}) Thing thing;
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
     private @Mock @NonNullByDefault({}) AtagOneApiClient apiClient;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
     private @NonNullByDefault({}) AtagOneHandler handler;
 
     @BeforeEach
@@ -96,6 +101,82 @@ class AtagOneHandlerTest {
         Field field = AtagOneHandler.class.getDeclaredField("apiClient");
         field.setAccessible(true);
         field.set(handler, client);
+    }
+
+    private void setGeneration(long value) throws ReflectiveOperationException {
+        Field field = AtagOneHandler.class.getDeclaredField("generation");
+        field.setAccessible(true);
+        field.set(handler, value);
+    }
+
+    private @Nullable ScheduledFuture<?> getPollJob() throws ReflectiveOperationException {
+        Field field = AtagOneHandler.class.getDeclaredField("pollJob");
+        field.setAccessible(true);
+        return (ScheduledFuture<?>) field.get(handler);
+    }
+
+    private void invokeStartPollJob(int delaySeconds, long generation) throws ReflectiveOperationException {
+        Method method = AtagOneHandler.class.getDeclaredMethod("startPollJob", int.class, long.class);
+        method.setAccessible(true);
+        method.invoke(handler, delaySeconds, generation);
+    }
+
+    private void invokePausePollJob(long generation) throws ReflectiveOperationException {
+        Method method = AtagOneHandler.class.getDeclaredMethod("pausePollJob", long.class);
+        method.setAccessible(true);
+        method.invoke(handler, generation);
+    }
+
+    private void invokePoll(long generation) throws ReflectiveOperationException {
+        Method method = AtagOneHandler.class.getDeclaredMethod("poll", long.class);
+        method.setAccessible(true);
+        method.invoke(handler, generation);
+    }
+
+    @Test
+    void staleStartPollJobDoesNotCancelCurrentJob() throws ReflectiveOperationException {
+        setGeneration(5L);
+        invokeStartPollJob(0, 5L);
+        ScheduledFuture<?> currentJob = getPollJob();
+        assertNotNull(currentJob);
+
+        invokeStartPollJob(0, 4L);
+
+        assertSame(currentJob, getPollJob());
+        assertFalse(currentJob.isCancelled());
+    }
+
+    @Test
+    void stalePausePollJobDoesNotCancelCurrentJob() throws ReflectiveOperationException {
+        setGeneration(5L);
+        invokeStartPollJob(0, 5L);
+        ScheduledFuture<?> currentJob = getPollJob();
+        assertNotNull(currentJob);
+
+        invokePausePollJob(4L);
+
+        assertSame(currentJob, getPollJob());
+        assertFalse(currentJob.isCancelled());
+
+        invokePausePollJob(5L);
+
+        assertNull(getPollJob());
+        assertTrue(currentJob.isCancelled());
+    }
+
+    @Test
+    void stalePollFailureDoesNotUpdateStatus() throws Exception {
+        handler.setCallback(callback);
+        seedApiClient(apiClient);
+        setGeneration(5L);
+        when(apiClient.retrieve()).thenAnswer(invocation -> {
+            setGeneration(6L);
+            throw new AtagOneCommunicationException("boom");
+        });
+
+        invokePoll(5L);
+
+        verify(callback, never()).statusUpdated(any(), any());
     }
 
     @SuppressWarnings("unchecked")

@@ -277,7 +277,7 @@ public class AtagOneHandler extends BaseThingHandler {
     private void sendControlUpdate(AtagOneApiClient client, long myGeneration, String channelId,
             ControlUpdateDTO control, DeviceConfigUpdateDTO configUpdate) {
         boolean hasConfig = configUpdate.hasChanges();
-        stopPollJob();
+        pausePollJob(myGeneration);
         try {
             client.updateControl(control, hasConfig ? configUpdate : null);
             if (generation == myGeneration) {
@@ -327,7 +327,7 @@ public class AtagOneHandler extends BaseThingHandler {
     }
 
     private void sendChScheduleUpdate(AtagOneApiClient client, long myGeneration, ScheduleDTO schedule) {
-        stopPollJob();
+        pausePollJob(myGeneration);
         try {
             client.updateChSchedule(schedule);
             if (generation == myGeneration) {
@@ -362,7 +362,7 @@ public class AtagOneHandler extends BaseThingHandler {
     }
 
     private void sendDhwScheduleUpdate(AtagOneApiClient client, long myGeneration, ScheduleDTO schedule) {
-        stopPollJob();
+        pausePollJob(myGeneration);
         try {
             client.updateDhwSchedule(schedule);
             if (generation == myGeneration) {
@@ -1145,21 +1145,33 @@ public class AtagOneHandler extends BaseThingHandler {
             updateChannels(r);
             goOnline();
         } catch (AtagOneCommunicationException e) {
+            if (generation != myGeneration) {
+                return;
+            }
             logger.debug("Poll failed: {}", e.getMessage());
             goOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
             logger.warn("Unexpected error while processing poll response: {}", e.getMessage(), e);
+            if (generation != myGeneration) {
+                return;
+            }
             goOffline(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
     private synchronized void startPollJob(int initialDelaySeconds, long myGeneration) {
-        stopPollJob();
         if (generation != myGeneration) {
             return;
         }
+        stopPollJob();
         pollJob = scheduler.scheduleWithFixedDelay(() -> poll(myGeneration), initialDelaySeconds,
                 config.refreshInterval, TimeUnit.SECONDS);
+    }
+
+    private synchronized void pausePollJob(long myGeneration) {
+        if (generation == myGeneration) {
+            stopPollJob();
+        }
     }
 
     private synchronized void stopPollJob() {
