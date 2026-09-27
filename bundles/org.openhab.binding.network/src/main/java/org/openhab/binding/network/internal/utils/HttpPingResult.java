@@ -10,22 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.network.internal;
+package org.openhab.binding.network.internal.utils;
+
+import java.time.Duration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * All the supported presence detection types of this binding.
- * Used by {@see PresenceDetectionValue}.
+ * Information about the result of an HTTP request which was sent for presence detection.
  *
- * @author David Graeff - Initial contribution
- * @author Alexander Friese - Add HTTP presence detection
+ * @param statusCode the HTTP status code which was returned by the server
+ * @param executionTime the time it took until the response status was received
+ *
+ * @author Alexander Friese - Initial contribution
  */
 @NonNullByDefault
-public enum PresenceDetectionType {
-    ARP_PING,
-    ICMP_PING,
-    TCP_CONNECTION,
-    DHCP_REQUEST,
-    HTTP_REQUEST
+public record HttpPingResult(int statusCode, Duration executionTime) {
 }
