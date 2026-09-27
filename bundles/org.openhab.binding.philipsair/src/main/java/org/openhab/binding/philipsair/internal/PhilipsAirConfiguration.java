@@ -12,13 +12,6 @@
  */
 package org.openhab.binding.philipsair.internal;
 
-import java.util.Collections;
-import java.util.Dictionary;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -55,47 +48,7 @@ public class PhilipsAirConfiguration {
     private String key = "";
     private String modelid = "";
     private float temperatureOffset;
-    private float humidityOffset;;
-
-    public void updateFromProperties(Map<String, Object> properties) {
-        // Validate.notNull(properties); //eliminate need apache.commons--> Should not be needed
-
-        for (Map.Entry<String, Object> e : properties.entrySet()) {
-            if (e.getKey() != null) {
-                switch (e.getKey()) {
-                    case CONFIG_KEY:
-                        setKey((String) e.getValue());
-                        break;
-                    case CONFIG_HOST:
-                        setHost((String) e.getValue());
-                        break;
-                    case CONFIG_DEF_REFRESH_INTERVAL:
-                        setRefreshInterval((Integer) e.getValue());
-                        break;
-                    case CONFIG_DEF_DEVICE_UUID:
-                        setDeviceUUID((String) e.getValue());
-                        break;
-                    case CONFIG_DEF_MODEL_ID:
-                        setModelid((String) e.getValue());
-                        break;
-                    case CONFIG_DEF_HUMIDITY_OFFSET:
-                        setHumidityOffset((float) e.getValue());
-                        break;
-                    case CONFIG_DEF_TEMPERATURE_OFFSET:
-                        setTemperatureOffset((float) e.getValue());
-                        break;
-                }
-            }
-
-        }
-    }
-
-    public void updateFromProperties(Dictionary<String, Object> properties) {
-        // Validate.notNull(properties);//eliminate need apache.commons--> Should not be needed
-        List<String> keys = Collections.list(properties.keys());
-        Map<String, Object> dictCopy = keys.stream().collect(Collectors.toMap(Function.identity(), properties::get));
-        updateFromProperties(dictCopy);
-    }
+    private float humidityOffset;
 
     public int getRefreshInterval() {
         return refreshInterval;
@@ -137,7 +90,7 @@ public class PhilipsAirConfiguration {
         this.modelid = modelid;
     }
 
-    public double getTemperatureOffset() {
+    public float getTemperatureOffset() {
         return temperatureOffset;
     }
 

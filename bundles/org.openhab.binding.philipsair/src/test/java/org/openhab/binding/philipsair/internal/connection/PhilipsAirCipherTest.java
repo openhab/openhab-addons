@@ -18,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -70,5 +71,12 @@ public class PhilipsAirCipherTest {
     public void testEncrypt() throws GeneralSecurityException, UnsupportedEncodingException {
         cipher.initKey(FAKE_KEY);
         assertEquals("765kW9EGhHMhtzJ/rxeyIg==", cipher.encrypt("{\"ddp\":\"0\"}"));
+    }
+
+    @Test
+    public void testNonAsciiRoundTrip() throws GeneralSecurityException, UnsupportedEncodingException {
+        cipher.initKey(FAKE_KEY);
+        String status = "{\"name\":\"Wohnzimmer Küche\"}";
+        assertEquals(status, cipher.decrypt(Objects.requireNonNull(cipher.encrypt(status))));
     }
 }

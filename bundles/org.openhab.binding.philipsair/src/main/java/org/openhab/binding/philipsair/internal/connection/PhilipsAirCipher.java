@@ -133,7 +133,7 @@ public class PhilipsAirCipher {
         @SuppressWarnings("null")
         byte[] decoded = decipher.doFinal(Base64.getDecoder().decode(encodedContent));
         byte[] unpaded = Arrays.copyOfRange(decoded, 2, decoded.length);
-        return new String(unpaded, StandardCharsets.US_ASCII);
+        return new String(unpaded, StandardCharsets.UTF_8);
     }
 
     public @Nullable String encrypt(String data)
@@ -145,7 +145,7 @@ public class PhilipsAirCipher {
 
         String encodedData = AA + data;
         @SuppressWarnings("null")
-        byte[] encryptedBytes = cipher.doFinal(encodedData.getBytes(StandardCharsets.US_ASCII));
+        byte[] encryptedBytes = cipher.doFinal(encodedData.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 }

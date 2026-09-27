@@ -541,11 +541,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private static Map<String, String> fillDeviceProperties(PhilipsAirPurifierDeviceDTO device,
             Map<String, String> properties) {
         properties.put(PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
-        if (device != null) {
-            properties.put(PROPERTY_MODEL_ID, device.getModelId());
-            properties.put(PROPERTY_FIRMWARE_VERSION, device.getSoftwareVersion());
-            properties.put(PhilipsAirBindingConstants.PROPERTY_NAME, device.getName());
-        }
+        properties.put(PROPERTY_MODEL_ID, device.getModelId());
+        properties.put(PROPERTY_FIRMWARE_VERSION, device.getSoftwareVersion());
+        properties.put(PhilipsAirBindingConstants.PROPERTY_NAME, device.getName());
 
         return properties;
     }

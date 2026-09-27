@@ -6,22 +6,26 @@
 
 	<config-description uri="thing-type:philipsair:config">
 		<parameter name="host" type="text" required="true">
+			<context>network-address</context>
 			<label>IP or Hostname</label>
-			<description>IP or hostname of the thing</description>
+			<description>IP address or hostname of the device</description>
 		</parameter>
 		<parameter name="key" type="text" required="false">
+			<context>password</context>
 			<label>Key</label>
-			<description>Air Purifier device token for communication
-			</description>
+			<description>Encryption key for HTTP devices, exchanged with the device automatically when empty</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="deviceUUID" type="text" required="false">
 			<label>Device ID (UDN)</label>
-			<description>Device ID number for communication (in UUID)
-			</description>
+			<description>Device ID (UUID)</description>
+			<advanced>true</advanced>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" required="false">
-			<label>Refresh interval</label>
-			<description>Refresh rate (in seconds)</description>
+		<parameter name="refreshInterval" type="integer" required="false" min="5" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval in seconds. For CoAP devices, which push their updates, the interval at which the
+				connection is checked.</description>
+			<default>60</default>
 		</parameter>
 		<parameter name="humidityOffset" type="decimal" required="false" min="-100" max="100">
 			<label>Humidity Offset</label>

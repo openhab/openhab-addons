@@ -18,6 +18,7 @@ import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.network.interceptors.MessageInterceptor;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class CoapMessageLogger implements MessageInterceptor {
         logger.debug("Code: {}", response.getCode());
         logger.debug("Options: {}", response.getOptions());
         if (response.getPayload() != null) {
-            logger.debug("Payload (hex): {}", toHex(response.getPayload()));
+            logger.debug("Payload (hex): {}", HexUtils.bytesToHex(response.getPayload()));
             logger.debug("Payload (string): {}", response.getPayloadString());
         }
     }
@@ -83,7 +84,7 @@ public class CoapMessageLogger implements MessageInterceptor {
         logger.debug("Code: {}", request.getCode());
         logger.debug("Options: {}", request.getOptions());
         if (request.getPayload() != null) {
-            logger.debug("Payload (hex): {}", toHex(request.getPayload()));
+            logger.debug("Payload (hex): {}", HexUtils.bytesToHex(request.getPayload()));
             logger.debug("Payload (string): {}", request.getPayloadString());
         }
     }
@@ -108,16 +109,5 @@ public class CoapMessageLogger implements MessageInterceptor {
         // Empty messages are usually ACK or RST
         logger.debug("Sending CoAP empty message to {}: Type={}, MID={}",
                 message.getDestinationContext().getPeerAddress(), message.getType(), message.getMID());
-    }
-
-    private static String toHex(byte[] bytes) {
-        if (bytes == null) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02X", b));
-        }
-        return sb.toString();
     }
 }
