@@ -424,7 +424,7 @@ sudo apt update && sudo apt install ffmpeg
 ```
 
 **IMPORTANT:**
-The binding has its own file server that works by allowing access to the snapshot and video streams with no user/password for requests that come from an IP located in the `ipWhitelist`.
+The binding has its own file server that works by allowing access to the snapshot and video streams with no user/password for requests that come from an IP located in the `ipWhitelist`. Incoming ONVIF event notifications are accepted from the configured camera IP address and from IPs in the `ipWhitelist`.
 Requests from external IPs or internal requests that are not on the `ipWhitelist` will fail to get any answer.
 If you prefer to use your own firewall instead, you can also choose to make the `ipWhitelist` equal "DISABLE" and then all internal IPs will have access.
 
