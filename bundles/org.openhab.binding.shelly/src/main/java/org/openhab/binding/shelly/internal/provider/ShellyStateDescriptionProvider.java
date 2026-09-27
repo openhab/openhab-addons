@@ -16,7 +16,9 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,6 +55,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = { DynamicStateDescriptionProvider.class, ShellyStateDescriptionProvider.class })
 public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
     private final ThingRegistry thingRegistry;
+    private final Map<ChannelUID, StateDescriptionFragment> cache = new ConcurrentHashMap<>();
 
     @Activate
     public ShellyStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
@@ -75,7 +78,7 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
     private @Nullable StateDescriptionFragment getStateDescriptionFragment(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         ChannelTypeUID uid = channel.getChannelTypeUID();
-        if (uid == null || originalStateDescription == null) {
+        if (uid == null) {
             return null;
         }
 
@@ -95,7 +98,9 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
             return null;
         }
 
-        StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create(originalStateDescription);
+        StateDescriptionFragmentBuilder builder = originalStateDescription != null
+                ? StateDescriptionFragmentBuilder.create(originalStateDescription)
+                : StateDescriptionFragmentBuilder.create();
 
         boolean hasOptions = false;
         List<StateOption> stateOptions = handler.getStateOptions(uid);
@@ -146,10 +151,16 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
     public void notifyStateDescriptionUpdated(Channel channel) {
         ChannelUID channelUID = channel.getUID();
         StateDescriptionFragment fragment = getStateDescriptionFragment(channel, null, null);
-        if (fragment != null) {
-            ItemChannelLinkRegistry registry = itemChannelLinkRegistry;
-            postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUID,
-                    registry != null ? registry.getLinkedItemNames(channelUID) : Set.of(), fragment, null));
+        if (fragment == null) {
+            return;
         }
+        StateDescriptionFragment previous = cache.get(channelUID);
+        if (previous != null && previous.equals(fragment)) {
+            return;
+        }
+        cache.put(channelUID, fragment);
+        ItemChannelLinkRegistry registry = itemChannelLinkRegistry;
+        postEvent(ThingEventFactory.createChannelDescriptionChangedEvent(channelUID,
+                registry != null ? registry.getLinkedItemNames(channelUID) : Set.of(), fragment, null));
     }
 }
