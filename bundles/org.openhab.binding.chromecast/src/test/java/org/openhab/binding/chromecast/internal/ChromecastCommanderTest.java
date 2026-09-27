@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.chromecast.internal;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -19,9 +21,12 @@ import static org.mockito.Mockito.when;
 import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.CHANNEL_APP_ID;
 import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants.MEDIA_PLAYER;
 
+import java.util.List;
+
 import org.digitalmediaserver.cast.CastDevice;
 import org.digitalmediaserver.cast.Session;
 import org.digitalmediaserver.cast.message.entity.Application;
+import org.digitalmediaserver.cast.message.entity.Media.MediaBuilder;
 import org.digitalmediaserver.cast.message.entity.MediaStatus;
 import org.digitalmediaserver.cast.message.entity.ReceiverStatus;
 import org.digitalmediaserver.cast.message.enumeration.IdleReason;
@@ -44,6 +49,42 @@ class ChromecastCommanderTest {
     private final ChromecastScheduler scheduler = mock(ChromecastScheduler.class);
     private final ChromecastStatusUpdater statusUpdater = mock(ChromecastStatusUpdater.class);
     private final ChromecastCommander commander = new ChromecastCommander(chromeCast, scheduler, statusUpdater);
+
+    @Test
+    void mediaWithoutExplicitContentTypeIsLoaded() throws Exception {
+        Application application = mock(Application.class);
+        Session session = mock(Session.class);
+        when(chromeCast.isApplicationAvailable(MEDIA_PLAYER)).thenReturn(true);
+        when(chromeCast.isApplicationRunning(MEDIA_PLAYER)).thenReturn(true);
+        when(chromeCast.getRunningApplication()).thenReturn(application);
+        when(chromeCast.startSession("openHAB", application)).thenReturn(session);
+        when(session.getMediaStatus()).thenReturn(List.of());
+
+        commander.playMedia(null, "file:///sound.mp3", null);
+
+        verify(session).load(any(MediaBuilder.class), eq(true), eq(0.0), eq(false));
+    }
+
+    @Test
+    void refreshUsesLatestMediaStatus() throws Exception {
+        Application application = mock(Application.class);
+        ReceiverStatus receiverStatus = mock(ReceiverStatus.class);
+        Session session = mock(Session.class);
+        MediaStatus previous = mock(MediaStatus.class);
+        MediaStatus current = mock(MediaStatus.class);
+        when(chromeCast.isConnected()).thenReturn(true);
+        when(chromeCast.getReceiverStatus()).thenReturn(receiverStatus);
+        when(receiverStatus.getRunningApplication()).thenReturn(application);
+        when(application.getTransportId()).thenReturn("transport-id");
+        when(chromeCast.startSession("openHAB", application)).thenReturn(session);
+        when(session.getMediaStatus()).thenReturn(List.of(previous, current));
+        when(current.getPlayerState()).thenReturn(PlayerState.PLAYING);
+
+        commander.handleRefresh();
+
+        verify(statusUpdater).updateMediaStatus(current);
+        verify(chromeCast, never()).stopApplication(application, false);
+    }
 
     @Test
     void appIdCommandLaunchesApplication() throws Exception {
@@ -89,7 +130,7 @@ class ChromecastCommanderTest {
         when(application.getAppId()).thenReturn(MEDIA_PLAYER);
         when(application.getSessionId()).thenReturn("other-session");
         when(chromeCast.startSession("openHAB", application)).thenReturn(session);
-        when(session.getMediaStatus()).thenReturn(mediaStatus);
+        when(session.getMediaStatus()).thenReturn(List.of(mediaStatus));
         when(mediaStatus.getPlayerState()).thenReturn(PlayerState.IDLE);
         when(mediaStatus.getIdleReason()).thenReturn(IdleReason.FINISHED);
         when(statusUpdater.getAppSessionId()).thenReturn("openhab-session");

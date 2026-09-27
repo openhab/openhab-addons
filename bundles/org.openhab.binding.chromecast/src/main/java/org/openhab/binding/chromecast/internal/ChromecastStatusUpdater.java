@@ -27,8 +27,8 @@ import org.digitalmediaserver.cast.message.entity.Media;
 import org.digitalmediaserver.cast.message.entity.MediaStatus;
 import org.digitalmediaserver.cast.message.entity.ReceiverStatus;
 import org.digitalmediaserver.cast.message.entity.Volume;
+import org.digitalmediaserver.cast.message.enumeration.MetadataType;
 import org.digitalmediaserver.cast.message.enumeration.PlayerState;
-import org.digitalmediaserver.cast.util.MetadataUtil.MetadataType;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.chromecast.internal.handler.ChromecastHandler;
@@ -105,7 +105,7 @@ public class ChromecastStatusUpdater {
             return;
         }
 
-        if (status.getApplications() == null) {
+        if (status.getRunningApplication() == null) {
             this.appSessionId = null;
         }
 
@@ -194,7 +194,10 @@ public class ChromecastStatusUpdater {
         State duration = UnDefType.UNDEF;
         String metadataType = MetadataType.GENERIC.name();
         if (media != null) {
-            metadataType = media.getMetadataType().name();
+            if (media.getMetadata() != null) {
+                MetadataType type = media.getMetadataType();
+                metadataType = type == null ? MetadataType.GENERIC.name() : type.name();
+            }
 
             lastDuration = media.getDuration();
             // duration can be null when a new song is about to play.

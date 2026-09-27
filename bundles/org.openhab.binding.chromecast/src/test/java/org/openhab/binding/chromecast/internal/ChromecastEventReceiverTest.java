@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.chromecast.internal;
 
+import static org.digitalmediaserver.cast.event.CastEvent.CastEventType.CLOSE;
 import static org.digitalmediaserver.cast.event.CastEvent.CastEventType.CONNECTED;
 import static org.digitalmediaserver.cast.event.CastEvent.CastEventType.MEDIA_STATUS;
 import static org.digitalmediaserver.cast.event.CastEvent.CastEventType.RECEIVER_STATUS;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -52,6 +54,8 @@ class ChromecastEventReceiverTest {
         eventReceiver.onEvent(event);
 
         verify(statusUpdater).updateStatus(ThingStatus.ONLINE);
+        verify(scheduler).scheduleRefresh();
+        verify(statusUpdater, never()).updateMediaStatus(null);
         verify(scheduler, never()).scheduleConnect();
     }
 
@@ -64,6 +68,8 @@ class ChromecastEventReceiverTest {
 
         verify(statusUpdater).updateStatus(ThingStatus.OFFLINE);
         verify(scheduler).scheduleConnect();
+        verify(scheduler).cancelRefresh();
+        verify(statusUpdater, never()).updateMediaStatus(null);
     }
 
     @Test
@@ -85,11 +91,18 @@ class ChromecastEventReceiverTest {
     @Test
     void missingReceiverStatusResponseClearsReceiverState() {
         CastEvent<Object> event = createEvent(RECEIVER_STATUS);
-        when(event.getData(ReceiverStatusResponse.class)).thenReturn(null);
+        doReturn(null).when(event).getData(ReceiverStatusResponse.class);
 
         eventReceiver.onEvent(event);
 
         verify(statusUpdater).processStatusUpdate(null);
+    }
+
+    @Test
+    void closeEventClearsMediaStatus() {
+        eventReceiver.onEvent(createEvent(CLOSE));
+
+        verify(statusUpdater).updateMediaStatus(null);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -15,6 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Chromecast Binding</name>
 
   <properties>
+    <bnd.importpackage>javax.annotation;resolution:=optional</bnd.importpackage>
     <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
   </properties>
 

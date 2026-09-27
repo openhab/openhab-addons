@@ -47,14 +47,15 @@ public class ChromecastEventReceiver implements CastEventListener {
             case CONNECTED:
                 Boolean isConnected = (Boolean) event.getData();
                 if (isConnected == null || !isConnected) {
-                    // scheduler.cancelRefresh();
+                    scheduler.cancelRefresh();
                     statusUpdater.updateStatus(ThingStatus.OFFLINE);
                     // We might have just had a connection problem, let's try to reconnect.
                     scheduler.scheduleConnect();
                 } else {
                     statusUpdater.updateStatus(ThingStatus.ONLINE);
-                    // scheduler.scheduleRefresh();
+                    scheduler.scheduleRefresh();
                 }
+                break;
             case CLOSE:
                 statusUpdater.updateMediaStatus(null);
                 break;

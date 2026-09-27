@@ -16,6 +16,10 @@ import static org.openhab.binding.chromecast.internal.ChromecastBindingConstants
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URLConnection;
+import java.util.List;
 import java.util.Objects;
 
 import org.digitalmediaserver.cast.CastDevice;
@@ -46,6 +50,7 @@ import org.slf4j.LoggerFactory;
  * This sends the various commands to the Chromecast.
  *
  * @author Jason Holmes - Initial contribution
+ * @author Leo Siepel - Cast API compatibility and media type handling
  */
 @NonNullByDefault
 public class ChromecastCommander {
@@ -58,6 +63,8 @@ public class ChromecastCommander {
     private static final int VOLUMESTEP = 10;
 
     private static final String SOURCE = "openHAB";
+    private static final String DEFAULT_MEDIA_TYPE = "application/octet-stream";
+    private static final int CONTENT_TYPE_TIMEOUT_MS = 5000;
 
     public ChromecastCommander(CastDevice chromeCast, ChromecastScheduler scheduler,
             ChromecastStatusUpdater statusUpdater) {
@@ -129,7 +136,7 @@ public class ChromecastCommander {
                 }
 
                 Session session = chromeCast.startSession(SOURCE, application);
-                MediaStatus mediaStatus = session.getMediaStatus();
+                MediaStatus mediaStatus = getLatestMediaStatus(session);
                 statusUpdater.updateMediaStatus(mediaStatus);
 
                 if (mediaStatus != null && mediaStatus.getPlayerState() == PlayerState.IDLE
@@ -175,7 +182,7 @@ public class ChromecastCommander {
             }
 
             Session session = chromeCast.startSession(SOURCE, app);
-            MediaStatus mediaStatus = session.getMediaStatus();
+            MediaStatus mediaStatus = getLatestMediaStatus(session);
             logger.debug("mediaStatus {}", mediaStatus);
             int mediaSessionId = -1;
             if (mediaStatus != null) {
@@ -292,12 +299,12 @@ public class ChromecastCommander {
                 // If the current track is paused, launching a new request results in nothing happening, therefore
                 // resume current track.
                 Session session = chromeCast.startSession(SOURCE, chromeCast.getRunningApplication());
-                MediaStatus ms = session.getMediaStatus();
+                MediaStatus ms = getLatestMediaStatus(session);
                 if (ms != null && PlayerState.PAUSED == ms.getPlayerState() && url.equals(ms.getMedia().getUrl())) {
                     logger.debug("Current stream paused, resuming");
                     session.play(ms.getMediaSessionId(), false);
                 } else {
-                    MediaBuilder builder = new MediaBuilder(url, mimeType, StreamType.NONE);
+                    MediaBuilder builder = new MediaBuilder(url, resolveContentType(url, mimeType), StreamType.NONE);
                     session.load(builder, true, 0.0, false);
                 }
             } else {
@@ -313,6 +320,38 @@ public class ChromecastCommander {
                         "IOException while trying to play media: " + e.getMessage());
             }
         }
+    }
+
+    private @Nullable MediaStatus getLatestMediaStatus(Session session) throws IOException {
+        List<MediaStatus> statuses = session.getMediaStatus();
+        return statuses == null || statuses.isEmpty() ? null : statuses.getLast();
+    }
+
+    private String resolveContentType(String url, @Nullable String mimeType) {
+        if (mimeType != null && !mimeType.isBlank()) {
+            return mimeType;
+        }
+
+        try {
+            URLConnection connection = URI.create(url).toURL().openConnection();
+            if (connection instanceof HttpURLConnection httpConnection) {
+                httpConnection.setConnectTimeout(CONTENT_TYPE_TIMEOUT_MS);
+                httpConnection.setReadTimeout(CONTENT_TYPE_TIMEOUT_MS);
+                try {
+                    String contentType = httpConnection.getContentType();
+                    if (contentType != null && !contentType.isBlank()) {
+                        return contentType;
+                    }
+                } finally {
+                    httpConnection.disconnect();
+                }
+            }
+        } catch (IllegalArgumentException | IOException e) {
+            logger.debug("Could not determine media content type for {}: {}", url, e.getMessage());
+        }
+
+        String guessedContentType = URLConnection.guessContentTypeFromName(url);
+        return guessedContentType == null ? DEFAULT_MEDIA_TYPE : guessedContentType;
     }
 
     public void dispose() {

@@ -33,6 +33,7 @@ public class ChromecastScheduler {
 
     private final ScheduledExecutorService scheduler;
     private final long connectDelay;
+    private final long refreshRate;
     private final Runnable connectRunnable;
     private final Runnable refreshRunnable;
 
@@ -49,10 +50,11 @@ public class ChromecastScheduler {
     private boolean destroyed;
 
     public ChromecastScheduler(ScheduledExecutorService scheduler, long connectDelay, Runnable connectRunnable,
-            Runnable refreshRunnable) {
+            long refreshRate, Runnable refreshRunnable) {
         this.scheduler = scheduler;
         this.connectDelay = connectDelay;
         this.connectRunnable = connectRunnable;
+        this.refreshRate = refreshRate;
         this.refreshRunnable = refreshRunnable;
     }
 
@@ -87,10 +89,10 @@ public class ChromecastScheduler {
             return;
         }
         cancelRefresh();
-        logger.debug("Scheduling refresh with a delay of 1 second");
+        logger.debug("Scheduling refresh every {} seconds", refreshRate);
         // With an initial delay of 1 second the refresh job can be restarted when several channels are refreshed at
         // once e.g. due to channel linking
-        refreshFuture = scheduler.schedule(refreshRunnable, 1, TimeUnit.SECONDS);
+        refreshFuture = scheduler.scheduleWithFixedDelay(refreshRunnable, 1, refreshRate, TimeUnit.SECONDS);
     }
 
     public synchronized void cancelRefresh() {

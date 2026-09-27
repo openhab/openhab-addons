@@ -43,6 +43,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +92,7 @@ public class ChromecastHandler extends BaseThingHandler {
     public void initialize() {
         ChromecastConfig config = getConfigAs(ChromecastConfig.class);
 
-        final String hostName = config.host;
+        final String hostName = config.ipAddress;
         final long generation;
         final Future<?> previousInitialization;
         final Coordinator previousCoordinator;
@@ -109,7 +110,7 @@ public class ChromecastHandler extends BaseThingHandler {
 
         CompletableFuture<Void> cleanupFuture = previousCoordinator == null ? CompletableFuture.completedFuture(null)
                 : CompletableFuture.runAsync(previousCoordinator::destroy, executor);
-        if (hostName.isBlank()) {
+        if (hostName == null || hostName.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Chromecast. Host name is not valid or missing.");
             return;
@@ -304,7 +305,8 @@ public class ChromecastHandler extends BaseThingHandler {
         private Coordinator(ChromecastHandler handler, Thing thing, CastDevice chromeCast, long refreshRate) {
             this.chromeCast = chromeCast;
 
-            this.scheduler = new ChromecastScheduler(handler.executor, CONNECT_DELAY, this::connect, this::refresh);
+            this.scheduler = new ChromecastScheduler(handler.executor, CONNECT_DELAY, this::connect, refreshRate,
+                    this::refresh);
             this.statusUpdater = new ChromecastStatusUpdater(thing, handler);
 
             this.commander = new ChromecastCommander(chromeCast, scheduler, statusUpdater);

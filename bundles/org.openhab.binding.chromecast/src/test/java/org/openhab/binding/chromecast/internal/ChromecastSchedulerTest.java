@@ -35,7 +35,7 @@ class ChromecastSchedulerTest {
     private final ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
     private final Runnable connectRunnable = mock(Runnable.class);
     private final Runnable refreshRunnable = mock(Runnable.class);
-    private final ChromecastScheduler scheduler = new ChromecastScheduler(executor, 10, connectRunnable,
+    private final ChromecastScheduler scheduler = new ChromecastScheduler(executor, 10, connectRunnable, 10,
             refreshRunnable);
 
     @Test
@@ -44,7 +44,7 @@ class ChromecastSchedulerTest {
         scheduler.scheduleRefresh();
 
         verify(executor).schedule(connectRunnable, 10, TimeUnit.SECONDS);
-        verify(executor).schedule(refreshRunnable, 1, TimeUnit.SECONDS);
+        verify(executor).scheduleWithFixedDelay(refreshRunnable, 1, 10, TimeUnit.SECONDS);
     }
 
     @Test
@@ -54,5 +54,7 @@ class ChromecastSchedulerTest {
         scheduler.scheduleRefresh();
 
         verify(executor, never()).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
+        verify(executor, never()).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(),
+                any(TimeUnit.class));
     }
 }

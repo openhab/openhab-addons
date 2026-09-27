@@ -13,6 +13,7 @@
 package org.openhab.binding.chromecast.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Thing configuration from openHAB.
@@ -21,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ChromecastConfig {
-    public String host = "";
+    public @Nullable String ipAddress = null;
     public int port = 8009;
     public long refreshRate = 10;
 }
