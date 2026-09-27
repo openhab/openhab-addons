@@ -711,7 +711,7 @@ public class ShellyLightModel extends LightModel {
         baselineOperatingMode = operatingMode;
         baselineBrightness = super.getBrightness(true);
         baselineColorTemperature = super.getColorTemperature();
-        LOGGER.debug("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => acquired", handler.thingName, apiLightIndex,
+        LOGGER.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => acquired", handler.thingName, apiLightIndex,
                 channelGroupSuffix);
     }
 
@@ -724,7 +724,7 @@ public class ShellyLightModel extends LightModel {
     public boolean release(boolean forceChannelUpdates) {
         try {
             boolean updated = handler.updateChannelsFromLightModel(this, forceChannelUpdates);
-            LOGGER.debug("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => released ({}modified)",
+            LOGGER.trace("{}: ShellyLightModel(apiIndex:{}, groupSuffix:{}) => released ({}modified)",
                     handler.thingName, apiLightIndex, channelGroupSuffix, isDirty() ? "" : "un");
             return updated;
         } finally {

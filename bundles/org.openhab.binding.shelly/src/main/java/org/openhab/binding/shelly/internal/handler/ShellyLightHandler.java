@@ -542,7 +542,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         for (ShellyLightModel model : lightModels.values()) {
             model.acquire();
         }
-        logger.debug("{}: all light models acquired", thingName);
+        logger.trace("{}: all light models acquired", thingName);
         return new LightModelsImpl();
     }
 
@@ -579,7 +579,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
                 for (ShellyLightModel model : lightModels.values()) {
                     model.release(forceChannelUpdates);
                 }
-                logger.debug("{}: all light models released", thingName);
+                logger.trace("{}: all light models released", thingName);
             } finally {
                 lightModelsLock.unlock();
             }
