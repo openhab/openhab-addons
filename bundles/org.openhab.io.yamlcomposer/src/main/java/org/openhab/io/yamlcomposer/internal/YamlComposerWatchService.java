@@ -27,8 +27,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.service.WatchService;
 import org.openhab.core.service.WatchService.Kind;
-import org.osgi.framework.Constants;
 import org.openhab.io.yamlcomposer.internal.dynamic.DynamicSourceRegistry;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -65,7 +65,7 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
     @Activate
     public YamlComposerWatchService( //
             @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService,
-            @Reference DynamicSourceRegistry dynamicSourceRegistry,
+            @Reference DynamicSourceRegistry dynamicSourceRegistry, //
             Map<String, Object> config) {
         this.watchService = watchService;
         this.dynamicSourceRegistry = dynamicSourceRegistry;
@@ -170,7 +170,8 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
                 return;
             }
 
-            if (ComposerUtils.writeCompiledOutput(yamlObject, sourcePath, outputPath, trackedEnvVars)) {
+            if (ComposerUtils.writeCompiledOutput(yamlObject, sourcePath, outputPath, trackedEnvVars,
+                    settings.output())) {
                 logger.info("YAML Composer: {} -> {}", relativeSourcePath, relativeOutputPath);
             }
         } catch (IOException e) {

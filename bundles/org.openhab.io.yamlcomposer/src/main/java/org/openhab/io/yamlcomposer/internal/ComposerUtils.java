@@ -102,14 +102,15 @@ final class ComposerUtils {
                 YamlOutputConfig.defaultConfig());
     }
 
-    static void writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars,
+    static boolean writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars,
             YamlOutputConfig outputConfig) throws IOException {
-        writeCompiledOutput(dataMap, sourcePath, outputPath, trackedEnvVars, System.getenv(), outputConfig);
+        return writeCompiledOutput(dataMap, sourcePath, outputPath, trackedEnvVars, System.getenv(), outputConfig);
     }
 
-    static void writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars,
+    static boolean writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars,
             Map<String, String> envMap) throws IOException {
-        writeCompiledOutput(dataMap, sourcePath, outputPath, trackedEnvVars, envMap, YamlOutputConfig.defaultConfig());
+        return writeCompiledOutput(dataMap, sourcePath, outputPath, trackedEnvVars, envMap,
+                YamlOutputConfig.defaultConfig());
     }
 
     /**
@@ -154,10 +155,10 @@ final class ComposerUtils {
 
         Dump yaml = new Dump(dumpSettings);
         Object unaliasedData = breakAliases(dataMap);
-        String compiledYaml = yaml.dumpToString(unaliasedData);
+        String compiledYamlBody = yaml.dumpToString(unaliasedData);
 
         if (outputConfig.sectionSpacing() > 0) {
-            compiledYaml = formatYamlSpacing(compiledYaml, outputConfig.sectionSpacing());
+            compiledYamlBody = formatYamlSpacing(compiledYamlBody, outputConfig.sectionSpacing());
         }
 
         List<String> sortedEnvVars = new ArrayList<>(trackedEnvVars);
