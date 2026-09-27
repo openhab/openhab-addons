@@ -388,8 +388,11 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
             logger.trace("{}: updateLightModelFromStatus() with {}", thingName, new Gson().toJson(light));
         }
 
+        String mode = light.mode;
+        Mode remoteMode = mode == null ? null : Mode.valueOf(mode.toUpperCase());
+
         // fix Gen 1 issue where status DTO contains fields for inactive mode; i.e. only apply active mode fields
-        if (!SHELLY_MODE_WHITE.equals(light.mode)) {
+        if (remoteMode != Mode.WHITE) {
 
             // COLOR: this may change model's mode
             if (light.red != null && light.green != null && light.blue != null) {
@@ -409,15 +412,15 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
             if (light.effect != null) {
                 model.setEffect(getInteger(light.effect));
             }
+        }
+
+        // fix Gen 1 issue where status DTO contains fields for inactive mode; i.e. only apply active mode fields
+        if (remoteMode != Mode.COLOR) {
 
             // BRIGHTNESS: this may change model's mode and on-off state
             if (light.brightness != null) {
                 model.setBrightness(getInteger(light.brightness));
             }
-        }
-
-        // fix Gen 1 issue where status DTO contains fields for inactive mode; i.e. only apply active mode fields
-        if (!SHELLY_MODE_COLOR.equals(light.mode)) {
 
             // COLOR TEMP: this may change model's mode
             if (light.temp instanceof Integer colorTemp && colorTemp > 0) {
@@ -425,12 +428,15 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
             }
         }
 
-        // MODE: setters auto- update the light model's mode
-        // i.e. do nothing
-
         // ON-OFF: setters may have updated the light model's state so do this last
         if (light.ison != null) {
             model.setOnOff(light.ison);
+        }
+
+        // MODE: setters auto- update light model mode, but log if remote and local mode are not consistent
+        if (remoteMode != null && remoteMode != model.getMode()) {
+            logger.debug("{}: remote mode {} not consistent with local mode {}", thingName, remoteMode,
+                    model.getMode());
         }
     }
 
