@@ -15,7 +15,6 @@ package org.openhab.binding.philipsair.internal.discovery;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.PROPERTY_DEV_TYPE;
 import static org.openhab.core.thing.Thing.*;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +35,6 @@ import org.eclipse.californium.core.config.CoapConfig;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.core.network.interceptors.MessageInterceptor;
 import org.eclipse.californium.elements.config.Configuration;
-import org.eclipse.californium.elements.exception.ConnectorException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
@@ -204,11 +202,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         broadcastAddresses.add("224.0.1.187"); // CoAP All-Nodes multicast address
         logger.debug("Broadcast to {} addresses", broadcastAddresses.size());
         for (String host : broadcastAddresses) {
-            try {
-                mget(client, COAP_PORT, PATH, host);
-            } catch (ConnectorException | IOException e) {
-                logger.debug("Error while discovering: {}", e.getMessage(), e);
-            }
+            mget(client, COAP_PORT, PATH, host);
         }
     }
 
@@ -247,63 +241,33 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         properties.put(key, value != null ? value : "");
     }
 
-    private void mget(CoapClient client, int port, String resourcePath, String host)
-            throws ConnectorException, IOException {
+    /**
+     * Sends the discovery request without waiting for the responses. Responses from all devices are received
+     * asynchronously and create the discovery results.
+     */
+    private void mget(CoapClient client, int port, String resourcePath, String host) {
         String uri = "coap://" + host + ":" + port + "/" + resourcePath;
         logger.debug("Send discovery request: {}", uri);
-        client.setURI(uri);
         Request multicastRequest = Request.newGet();
         multicastRequest.setType(Type.NON);
         multicastRequest.setURI(uri);
-
-        // sends a multicast request
-        MultiCoapHandler handler = new MultiCoapHandler(this, logger);
-        client.advanced(handler, multicastRequest);
-
-        // note: with the Californium R4 this is not working Work around is via message interceptor
-        while (handler.waitOn(DISCOVERY_TIME * 1000L)) {
-            // Loop while waiting for responses
-        }
+        client.advanced(new DiscoveryCoapHandler(), multicastRequest);
     }
 
-    private static class MultiCoapHandler implements CoapHandler {
-
-        private boolean on;
-        private final PhilipsAirCoapDiscovery philipsAirCoapDiscovery;
-        private final Logger logger;
-
-        public MultiCoapHandler(PhilipsAirCoapDiscovery philipsAirCoapDiscovery, Logger logger) {
-            this.philipsAirCoapDiscovery = philipsAirCoapDiscovery;
-            this.logger = logger;
-        }
-
-        public synchronized boolean waitOn(long timeout) {
-            on = false;
-            try {
-                wait(timeout);
-            } catch (InterruptedException e) {
-                // Restore the interrupted status
-                Thread.currentThread().interrupt();
-            }
-            return on;
-        }
-
-        private synchronized void on() {
-            on = true;
-            notifyAll();
-        }
+    /**
+     * Handles the discovery responses matched to the request. With Californium 3 not all responses of a multicast
+     * request are matched, so the message interceptor processes the responses as well.
+     */
+    private class DiscoveryCoapHandler implements CoapHandler {
 
         @Override
         public void onLoad(@Nullable CoapResponse response) {
-            logger.debug("Received coap response {}", Utils.prettyPrint(response));
-
-            on();
             if (response != null) {
                 InetSocketAddress ip = response.advanced().getSourceContext().getPeerAddress();
                 logger.trace("Received coap response from '{}' - {}", ip, Utils.prettyPrint(response));
                 String resTxt = response.getResponseText();
                 if (resTxt != null && !resTxt.isBlank()) {
-                    philipsAirCoapDiscovery.discovered(response.getResponseText(), ip.getHostString());
+                    discovered(resTxt, ip.getHostString());
                 }
             } else {
                 logger.debug("Received NULL coap response");
@@ -312,7 +276,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
 
         @Override
         public void onError() {
-            logger.warn("An unspecified CoAP error occurred during discovery.");
+            logger.debug("CoAP error during discovery");
         }
     }
 }
