@@ -232,7 +232,6 @@
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,
-					"maximum": -1,
 					"step": 1,
 					"pattern": "%.0f %unit%",
 					"readOnly": true
