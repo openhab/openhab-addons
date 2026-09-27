@@ -594,13 +594,18 @@ public class OnvifConnection {
             ptzDevice = false;
             logger.debug("Camera has no ONVIF PTZ support.");
             List<org.openhab.core.thing.Channel> removeChannels = new ArrayList<>();
-            org.openhab.core.thing.Channel channel = ipCameraHandler.getThing().getChannel(CHANNEL_PAN);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
-            channel = ipCameraHandler.getThing().getChannel(CHANNEL_TILT);
-            if (channel != null) {
-                removeChannels.add(channel);
+            org.openhab.core.thing.Channel channel;
+            // Reolink cameras behind an NVR or Home Hub can offer pan and tilt via the Reolink API instead,
+            // ReolinkHandler decides about these channels based on GetAbility.
+            if (!REOLINK_THING.equals(ipCameraHandler.getThing().getThingTypeUID().getId())) {
+                channel = ipCameraHandler.getThing().getChannel(CHANNEL_PAN);
+                if (channel != null) {
+                    removeChannels.add(channel);
+                }
+                channel = ipCameraHandler.getThing().getChannel(CHANNEL_TILT);
+                if (channel != null) {
+                    removeChannels.add(channel);
+                }
             }
             channel = ipCameraHandler.getThing().getChannel(CHANNEL_ZOOM);
             if (channel != null) {
@@ -1075,6 +1080,13 @@ public class OnvifConnection {
     }
 
     void parsePresets(String message) {
+        if (REOLINK_THING.equals(ipCameraHandler.getThing().getThingTypeUID().getId())
+                && ipCameraHandler.reolinkPtz.isSupported()) {
+            // The presets are provided via the Reolink API. NVRs and hubs report an empty ONVIF preset list for
+            // the connected cameras, which would otherwise overwrite them.
+            logger.debug("Ignoring ONVIF presets, as PTZ is controlled via the Reolink API");
+            return;
+        }
         List<StateOption> presets = new ArrayList<>();
         int counter = 1;// Presets start at 1 not 0. HOME may be added to index 0.
         presetTokens = listOfResults(message, "<tptz:Preset", "token=\"");

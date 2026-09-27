@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.ReolinkState.GetAbilityResponse;
+import org.openhab.binding.ipcamera.internal.ReolinkState.GetAbilityResponse.Value.Ability.AbilityChn;
 import org.openhab.binding.ipcamera.internal.ReolinkState.GetAiStateResponse;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.openhab.core.library.types.OnOffType;
@@ -203,6 +204,36 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                                 removeChannels.add(channel);
                             }
                         }
+                        // PTZ abilities are evaluated for the channel of this thing, as NVRs and hubs report one
+                        // entry per input channel.
+                        int nvrChannel = ipCameraHandler.cameraConfig.getNvrChannel();
+                        AbilityChn[] abilityChn = getAbilityResponse[0].value.ability.abilityChn;
+                        AbilityChn ptzAbility = abilityChn != null && nvrChannel >= 0 && nvrChannel < abilityChn.length
+                                ? abilityChn[nvrChannel]
+                                : null;
+                        if (ptzAbility != null && ptzAbility.ptzType != null && ptzAbility.ptzType.ver > 0) {
+                            ipCameraHandler.logger.debug("Camera supports PTZ via the Reolink API (ptzType {}).",
+                                    ptzAbility.ptzType.ver);
+                            ipCameraHandler.reolinkPtz.setSupported(true);
+                            ipCameraHandler.addMissingChannels(List.of(CHANNEL_PAN, CHANNEL_TILT));
+                            ipCameraHandler.reolinkPtz.requestPresets();
+                            ipCameraHandler.reolinkPtz.requestPosition();
+                        } else if (ptzAbility != null) {
+                            ipCameraHandler.logger.debug("Camera has no PTZ support via the Reolink API.");
+                            ipCameraHandler.reolinkPtz.setSupported(false);
+                            if (!ipCameraHandler.onvifCamera.supportsPTZ()
+                                    || !ipCameraHandler.onvifCamera.isConnected()) {
+                                List<org.openhab.core.thing.Channel> ptzChannels = new ArrayList<>();
+                                for (String id : List.of(CHANNEL_PAN, CHANNEL_TILT)) {
+                                    org.openhab.core.thing.Channel ptzChannel = ipCameraHandler.getThing()
+                                            .getChannel(id);
+                                    if (ptzChannel != null) {
+                                        ptzChannels.add(ptzChannel);
+                                    }
+                                }
+                                ipCameraHandler.removeChannels(ptzChannels);
+                            }
+                        }
                         if (getAbilityResponse[0].value.ability.abilityChn[0].supportAiFace == null
                                 || getAbilityResponse[0].value.ability.abilityChn[0].supportAiFace.permit == 0) {
                             ipCameraHandler.logger.debug("Camera has no AiFace support.");
@@ -329,6 +360,12 @@ public class ReolinkHandler extends ChannelDuplexHandler {
                     } else {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_RECORDINGS, OnOffType.ON);
                     }
+                    break;
+                case "/api.cgi?cmd=GetPtzCurPos":
+                    ipCameraHandler.reolinkPtz.handlePositionResponse(content);
+                    break;
+                case "/api.cgi?cmd=GetPtzPreset":
+                    ipCameraHandler.reolinkPtz.handlePresetResponse(content);
                     break;
                 case "/api.cgi?cmd=Reboot":
                     // This handles reboot action response.

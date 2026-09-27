@@ -49,6 +49,10 @@ public class CameraConfig {
     private String snapshotOptions = "";
     private String motionOptions = "";
     private boolean ptzContinuous;
+    private int ptzPanMin = 0;
+    private int ptzPanMax = 6000;
+    private int ptzTiltMin = 150;
+    private int ptzTiltMax = 1400;
     private int gifPreroll;
 
     public int getOnvifMediaProfile() {
@@ -105,6 +109,22 @@ public class CameraConfig {
 
     public boolean getPtzContinuous() {
         return ptzContinuous;
+    }
+
+    public int getPtzPanMin() {
+        return ptzPanMin;
+    }
+
+    public int getPtzPanMax() {
+        return ptzPanMax;
+    }
+
+    public int getPtzTiltMin() {
+        return ptzTiltMin;
+    }
+
+    public int getPtzTiltMax() {
+        return ptzTiltMax;
     }
 
     public String getAlarmInputUrl() {
