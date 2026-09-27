@@ -1215,13 +1215,20 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 ### Shelly Duo Bulb E27 Gen3 (thing-type: shellyplusduobulb)
 
-| Group   | Channel     | Type   | read-only | Description                                                             |
-| ------- | ----------- | ------ | --------- | ----------------------------------------------------------------------- |
-| control | autoOn      | Number | r/w       | Sets a timer to turn the device ON after every OFF command; in seconds  |
-|         | autoOff     | Number | r/w       | Sets a timer to turn the device OFF after every ON command; in seconds  |
-|         | timerActive | Switch | yes       | ON: An auto-on/off timer is active                                      |
-| white   | temperature | Number:Temperature | r/w | Color temperature in Kelvin: 2700..6500                           |
-|         | brightness  | Dimmer | r/w       | Brightness: 0..100% or 0..100; also controls power (ON/OFF)             |
+| Group   | Channel           | Type               | read-only | Description                                                            |
+| ------- | ----------------- | ------------------ | --------- | ---------------------------------------------------------------------- |
+| control | autoOn            | Number             | r/w       | Sets a timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff           | Number             | r/w       | Sets a timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive       | Switch             | yes       | ON: An auto-on/off timer is active                                     |
+| white   | temperature       | Number:Temperature | r/w       | Color temperature in Kelvin: 2700..6500                                |
+|         | brightness        | Dimmer             | r/w       | Brightness: 0..100% or 0..100; also controls power (ON/OFF)            |
+| meter   | currentPower      | Number             | yes       | Current power consumption in Watts                                     |
+|         | energyHistMin1    | Number             | yes       | Total energy consumed during the previous minute, minute -1 (Wh)       |
+|         | energyHistMin2    | Number             | yes       | Total energy consumed during minute -2 (Wh)                            |
+|         | energyHistMin3    | Number             | yes       | Total energy consumed during minute -3 (Wh)                            |
+|         | energyAvgLast3Min | Number             | yes       | Average energy per minute over minutes -1 to -3 (Wh)                   |
+|         | totalEnergy       | Number             | yes       | Total energy consumption in kWh                                        |
+|         | lastUpdate        | DateTime           | yes       | Timestamp of the last measurement                                      |
 
 The Duo Bulb Gen3 is a tunable-white (CCT) bulb only, like the Gen1 Shelly Duo - it has no RGB color output.
 There is no separate power channel: sending brightness 0 turns the bulb off, sending brightness > 0 turns it on.
@@ -1252,7 +1259,7 @@ There is no separate power channel: sending brightness 0 turns the bulb off, sen
 The Multicolor Bulb Gen3 has both full RGB color output and a tunable white (CCT) mode, like the Gen1 Shelly Color Bulb, but the two modes share the same LEDs: only one is active at a time, and there is no dedicated `mode` channel.
 Sending a color (`color#hsb`, `color#red`/`green`/`blue` or `color#full` with any color other than "white") switches to color mode; sending `color#full="white"` or `white#temperature` switches back to white mode.
 While in color mode `white#temperature` reports UNDEF, because the LEDs don't show a color temperature.
-Unlike the Duo Bulb Gen3, the Multicolor Bulb Gen3 has power metering hardware and reports current power and energy consumption in both modes.
+Like the Duo Bulb Gen3, the Multicolor Bulb Gen3 has power metering hardware and reports current power and energy consumption in both modes.
 
 ### Shelly H&T (thing-type: shellyht)
 

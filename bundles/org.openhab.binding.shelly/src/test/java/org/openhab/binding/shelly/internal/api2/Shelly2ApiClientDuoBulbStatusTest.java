@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUSCOLORBULB;
+import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUSDUOBULB;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_MODE_COLOR;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_MODE_WHITE;
 
@@ -34,6 +35,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2Energy;
@@ -108,6 +110,12 @@ public class Shelly2ApiClientDuoBulbStatusTest {
         };
     }
 
+    private ShellyDeviceProfile duoBulbProfile() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        profile.status.lights = new ArrayList<>(List.of(new ShellySettingsLight()));
+        return profile;
+    }
+
     private Shelly2RGBCCTStatus rgbcctStatus(@Nullable String mode) {
         Shelly2RGBCCTStatus status = new Shelly2RGBCCTStatus();
         status.id = 0;
@@ -144,6 +152,32 @@ public class Shelly2ApiClientDuoBulbStatusTest {
         assertThat(byMinute[0], is(0.01));
         assertThat(byMinute[1], is(0.02));
         assertThat(byMinute[2], is(0.03));
+    }
+
+    @Test
+    void cctPowerAndEnergyAreWiredIntoMeterChannel() throws ShellyApiException {
+        ShellyDeviceProfile profile = duoBulbProfile();
+        profile.numMeters = 1;
+        profile.status.emeters = new ArrayList<>(List.of(new ShellySettingsEMeter()));
+        Shelly2ApiClient client = newClient(profile);
+
+        Shelly2DeviceStatusLight cct = new Shelly2DeviceStatusLight();
+        cct.id = 0;
+        cct.output = true;
+        cct.brightness = 42.0;
+        cct.apower = 5.5;
+        Shelly2Energy energy = new Shelly2Energy();
+        energy.total = 567.0;
+        cct.aenergy = energy;
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.cct0 = cct;
+
+        client.fillDeviceStatus(profile.status, result, false);
+
+        ShellySettingsEMeter emeter = profile.status.emeters.get(0);
+        assertThat(emeter.power, is(5.5));
+        assertThat(emeter.total, is(567.0));
     }
 
     @Test

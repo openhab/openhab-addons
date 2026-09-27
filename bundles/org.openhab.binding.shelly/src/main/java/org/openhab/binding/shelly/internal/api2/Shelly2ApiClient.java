@@ -1469,6 +1469,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (cctValue == null) {
             return false;
         }
+        updateComponentMeter(status, 0, cctValue.apower, cctValue.aenergy, null, null, channelUpdate);
         return applyLightStatus(status, 0, cctValue.output, cctValue.brightness, null, null, cctValue.ct, channelUpdate,
                 false);
     }
