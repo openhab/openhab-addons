@@ -100,7 +100,6 @@ public class ShellyDeviceProfile {
     public boolean isDuo; // true only if it is a Duo
     public boolean isVintage; // true only for Shelly Vintage (isDuo, but fixed warm-white, no CCT)
     public boolean isRGBW2; // true only if it a RGBW2
-    public boolean isPlusRgbwPm;
     public boolean isProRgbwwPm; // true only for a Shelly Pro RGBWW PM (device.profile alone can't tell it apart
                                  // from a Plus RGBW PM running the same rgb/rgbw/light profile)
     public boolean isRGBCCT; // true for Gen3 Multicolor Bulb with rgbcct:0 component (RGB + CCT mode switching)
@@ -227,7 +226,6 @@ public class ShellyDeviceProfile {
         isVintage = THING_TYPE_SHELLYVINTAGE.equals(thingTypeUID);
         isRGBCCT = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
-        isPlusRgbwPm = THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID);
         isProRgbwwPm = THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
         if (isLight) {

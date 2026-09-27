@@ -1467,7 +1467,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         lights.set(idx, ds);
 
-        if (profile.isProRgbwwPm || profile.isPlusRgbwPm) {
+        if (profile.isProRgbwwPm) {
             // the color component always sits at settings.lights[0]
             updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
