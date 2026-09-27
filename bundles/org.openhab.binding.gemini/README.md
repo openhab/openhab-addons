@@ -32,7 +32,7 @@ API keys can be created and managed under Google AI Studio: <https://aistudio.go
 | topP            | decimal | A value between 0.0 and 1.0 for nucleus sampling, where the model considers the results of the tokens with topP probability mass.        | 1.0                   | no       | yes      |
 | maxOutputTokens | integer | The maximum number of tokens to include in a candidate.                                                                                  | 2048                  | no       | yes      |
 | maxModelTurns   | integer | The maximum number of interaction turns with the model allowed in a single request to prevent infinite loops and excess resource usage.  | 10                    | no       | yes      |
-| thinkingLevel   | text    | Controls effort on thinking for models supporting it (`unspecified`, `minimal`, `low`, `medium`, `high`).                                | none                  | no       | yes      |
+| thinkingLevel   | text    | Controls effort on thinking for models supporting it (`unspecified`, `minimal`, `low`, `medium`, `high`).                                | minimal               | no       | yes      |
 
 It is generally recommended to either alter temperature or topP, but not both.
 For Gemini 3.x models, Google recommends keeping both values at their default.

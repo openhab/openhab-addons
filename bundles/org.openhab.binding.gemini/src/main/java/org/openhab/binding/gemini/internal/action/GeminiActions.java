@@ -113,16 +113,21 @@ public class GeminiActions implements ThingActions {
         double resolvedTopP = Objects.requireNonNullElse(topP, config != null ? config.topP : DEFAULT_TOP_P);
         int resolvedMaxOutputTokens = Objects.requireNonNullElse(maxOutputTokens,
                 config != null ? config.maxOutputTokens : DEFAULT_MAX_OUTPUT_TOKENS);
-        GeminiThinkingLevel resolvedThinkingLevel = DEFAULT_THINKING_LEVEL;
-        if (config != null && !config.thinkingLevel.isBlank()) {
-            var configuredThinkingLevel = GeminiThinkingLevel.fromString(config.thinkingLevel);
-            if (configuredThinkingLevel != null) {
-                resolvedThinkingLevel = configuredThinkingLevel;
-            } else {
-                logger.warn("Invalid value for 'thinkingLevel' parameter: {} (falling back to default: {})",
-                        config.thinkingLevel, DEFAULT_THINKING_LEVEL);
-            }
+
+        // Attempt to parse the passed-in thinking level
+        GeminiThinkingLevel resolvedThinkingLevel = GeminiThinkingLevel.fromString(thinkingLevel);
+        if (resolvedThinkingLevel == null && thinkingLevel != null && !thinkingLevel.isBlank()) {
+            logger.warn("Invalid thinking level configured: {} (falling back to Thing default)", thinkingLevel);
         }
+        // Fallback to the thing's configured thinking level
+        if (resolvedThinkingLevel == null && config != null && !config.thinkingLevel.isBlank()) {
+            resolvedThinkingLevel = GeminiThinkingLevel.fromString(config.thinkingLevel);
+        }
+        // Fallback to the default thinking level
+        if (resolvedThinkingLevel == null) {
+            resolvedThinkingLevel = DEFAULT_THINKING_LEVEL;
+        }
+
         int resolvedRequestTimeout = Objects.requireNonNullElse(requestTimeout,
                 config != null ? config.requestTimeout : DEFAULT_REQUEST_TIMEOUT);
 

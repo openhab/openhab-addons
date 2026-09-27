@@ -266,7 +266,7 @@ public class GeminiApiClient {
 
     private @Nullable GeminiThinkingConfig createThinkingConfig(@Nullable GeminiThinkingLevel thinkingLevel,
             String model) {
-        if (thinkingLevel == null || modelsNotSupportingThinkingLevel.contains(model)) {
+        if (thinkingLevel == null || modelsNotSupportingThinkingLevel.contains(model + ":" + thinkingLevel.name())) {
             return null;
         }
         return new GeminiThinkingConfig(null, null, thinkingLevel);
@@ -368,9 +368,9 @@ public class GeminiApiClient {
                 } else if (status == HttpStatus.BAD_REQUEST_400 && body.toLowerCase().contains("thinking level")
                         && body.toLowerCase().contains("not supported")) {
                     logger.debug("Model {} doesn't support thinking level; caching and retrying without it", model);
-                    modelsNotSupportingThinkingLevel.add(model);
                     GeminiGenerationConfig genConfig = requestPayload.generationConfig();
                     if (genConfig != null && genConfig.thinkingConfig() != null) {
+                        modelsNotSupportingThinkingLevel.add(model + ":" + genConfig.thinkingConfig().thinkingLevel());
                         GeminiGenerationConfig newGenConfig = new GeminiGenerationConfig(genConfig.maxOutputTokens(),
                                 genConfig.temperature(), genConfig.topP(), null);
                         GeminiRequest retryRequestPayload = new GeminiRequest(requestPayload.contents(),
