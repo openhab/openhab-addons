@@ -45,7 +45,7 @@ rule "WS90 Gust Warning"
 when
     Item WS90_GustSpeed changed
 then
-    if (WS90_GustSpeed.state > (15 | "m/s")) {
+    if (WS90_GustSpeed.state > 15|"m/s") {
         logInfo("WS90", "Gust speed high: " + WS90_GustSpeed.state)
         sendBroadcastNotification("Storm warning: gusts over 15 m/s")
     }
@@ -180,7 +180,8 @@ then
 end
 ```
 
-`now.toLocalDate.atStartOfDay(now.zone)` yields midnight in your local time zone, so the values reset automatically with the first temperature update after midnight.
+`now.toLocalDate.atStartOfDay(now.zone)` yields midnight in the JVM's configured time zone (`now.zone`, not necessarily openHAB's Regional Settings time zone), so the values reset automatically with the first temperature update after midnight.
+Use `zoneId` instead of `now.zone` if it must follow the Regional Settings time zone specifically.
 As in Example 3, pass a service ID as a second argument (e.g. `.minimumSince(dayStart, "influxdb")`) if `temperature` isn't stored in your default persistence service.
 
 ## 5. How Apparent Temperature Is Calculated
