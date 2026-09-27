@@ -188,8 +188,7 @@ public class ThingRegistrySourceProvider
             ThingStatusInfo statusInfo = statusEvent.getStatusInfo();
             ThingStatusInfo oldStatusInfo = statusEvent.getOldStatusInfo();
 
-            boolean wasDisabled = oldStatusInfo != null
-                    && oldStatusInfo.getStatusDetail() == ThingStatusDetail.DISABLED;
+            boolean wasDisabled = oldStatusInfo.getStatusDetail() == ThingStatusDetail.DISABLED;
             boolean isDisabled = statusInfo.getStatusDetail() == ThingStatusDetail.DISABLED;
 
             if (wasDisabled != isDisabled) {
@@ -211,7 +210,7 @@ public class ThingRegistrySourceProvider
     }
 
     @Override
-    public Map<String, Map<String, @Nullable Object>> getLazyMap() {
+    public Map<String, @Nullable Map<String, @Nullable Object>> getLazyMap() {
         return new LazyRegistryMap<>(uidStr -> {
             try {
                 return thingRegistry.get(new ThingUID(uidStr));

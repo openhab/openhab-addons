@@ -130,7 +130,7 @@ class DynamicSourceRegistryTest {
         }
 
         @Override
-        public Map<String, Map<String, @Nullable Object>> getLazyMap() {
+        public Map<String, @Nullable Map<String, @Nullable Object>> getLazyMap() {
             return Map.of();
         }
 

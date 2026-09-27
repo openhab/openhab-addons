@@ -14,6 +14,7 @@ package org.openhab.io.yamlcomposer.internal.dynamic;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -91,7 +92,7 @@ public class DynamicSourceRegistry {
     }
 
     /** Retrieves the lazy session-cached map for the given source name. */
-    public @Nullable Map<String, Map<String, @Nullable Object>> getLazyMap(String source) {
+    public @Nullable Map<String, @Nullable Map<String, @Nullable Object>> getLazyMap(String source) {
         DynamicSourceProvider<?> provider = sourceProviders.get(source);
         if (provider == null) {
             return null;
@@ -101,7 +102,8 @@ public class DynamicSourceRegistry {
 
     /** Registers a file's runtime dependency on a dynamic source registry (e.g., "ITEMS", "THINGS"). */
     public void registerDependency(Path path, String source) {
-        dependentFilesBySource.computeIfAbsent(source, k -> ConcurrentHashMap.newKeySet()).add(path);
+        Objects.requireNonNull(dependentFilesBySource.computeIfAbsent(source, k -> ConcurrentHashMap.newKeySet()))
+                .add(path);
     }
 
     /** Removes tracked dynamic source requirements for a deleted or unmodified file. */

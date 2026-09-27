@@ -109,7 +109,7 @@ public class ItemRegistrySourceProvider implements DynamicSourceProvider<Item>, 
     }
 
     @Override
-    public Map<String, Map<String, @Nullable Object>> getLazyMap() {
+    public Map<String, @Nullable Map<String, @Nullable Object>> getLazyMap() {
         return new LazyRegistryMap<>( //
                 name -> {
                     try {
@@ -119,7 +119,7 @@ public class ItemRegistrySourceProvider implements DynamicSourceProvider<Item>, 
                     }
                 }, //
                 itemRegistry::getItems, //
-                Item::getName, //
+                item -> item.getName(), //
                 this::adaptToMap //
         );
     }

@@ -73,7 +73,6 @@ public class IfProcessor extends AbstractConditionalProcessor implements Placeho
             return null;
         }
 
-        Map<String, @Nullable Object> flattenedScope = context.scope().flatten();
         for (Branch branch : logic.branches()) {
             Object evaluated = switch (branch.condition()) {
                 case null -> "false"; // Treat null condition as false

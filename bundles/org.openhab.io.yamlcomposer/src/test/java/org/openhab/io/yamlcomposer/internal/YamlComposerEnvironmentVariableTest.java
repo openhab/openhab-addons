@@ -34,7 +34,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.core.OpenHAB;
-import org.openhab.io.yamlcomposer.internal.YamlComposer.CacheEntry;
 import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 
 /**
@@ -235,7 +234,6 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             Path output = Objects.requireNonNull(sharedTempDir).resolve("env_absent_output.yaml");
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
             Object yamlObject = loadWithTracking(main, trackedEnv);
 
             // Write compiled output header while the variable is absent (un-set)

@@ -42,5 +42,5 @@ public interface DynamicSourceProvider<T> {
     void setOnChangeListener(Consumer<EntityChange> listener);
 
     /** Returns a lazily-evaluated map of all entities, keyed by their unique identifier. */
-    Map<String, Map<String, @Nullable Object>> getLazyMap();
+    Map<String, @Nullable Map<String, @Nullable Object>> getLazyMap();
 }

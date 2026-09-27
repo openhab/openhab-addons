@@ -30,13 +30,13 @@ import org.eclipse.jdt.annotation.Nullable;
  * @param <T> The type of the entity in the registry.
  * @author Jimmy Tanagra - Initial contribution
  */
-@NonNullByDefault({})
-public class LazyRegistryMap<T> extends AbstractMap<String, Map<String, @Nullable Object>> {
+@NonNullByDefault
+public class LazyRegistryMap<T> extends AbstractMap<String, @Nullable Map<String, @Nullable Object>> {
     private final Function<String, @Nullable T> lookupFunction;
     private final Supplier<Collection<T>> allEntitiesSupplier;
     private final Function<T, String> keyExtractor;
     private final Function<T, Map<String, @Nullable Object>> adapter;
-    private final Map<String, Map<String, @Nullable Object>> cache = new LinkedHashMap<>();
+    private final Map<String, @Nullable Map<String, @Nullable Object>> cache = new LinkedHashMap<>();
     private boolean fullyLoaded = false;
 
     public LazyRegistryMap(Function<String, @Nullable T> lookupFunction, Supplier<Collection<T>> allEntitiesSupplier,
@@ -55,6 +55,7 @@ public class LazyRegistryMap<T> extends AbstractMap<String, Map<String, @Nullabl
         if (cache.containsKey(keyStr)) {
             return cache.get(keyStr);
         }
+        @Nullable
         T entity = lookupFunction.apply(keyStr);
         if (entity == null) {
             return null;
@@ -76,7 +77,7 @@ public class LazyRegistryMap<T> extends AbstractMap<String, Map<String, @Nullabl
     }
 
     @Override
-    public Set<Entry<String, Map<String, @Nullable Object>>> entrySet() {
+    public Set<Entry<String, @Nullable Map<String, @Nullable Object>>> entrySet() {
         if (!fullyLoaded) {
             for (T entity : allEntitiesSupplier.get()) {
                 String key = keyExtractor.apply(entity);
