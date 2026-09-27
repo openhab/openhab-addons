@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.LogSession;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.expression.filters.DigFilter;
 import org.openhab.io.yamlcomposer.internal.expression.filters.EnumerateFilter;
 import org.openhab.io.yamlcomposer.internal.expression.filters.LabelFilter;
@@ -79,22 +80,25 @@ public class ExpressionEvaluator {
      * Evaluate a Jinjava expression and return the raw object result (no string coercion).
      *
      * @param expression the expression content without delimiters (e.g., "user.profile")
-     * @param variables the variable context
-     * @param envVarCallback callback for environment variable access
+     * @param context the evaluation context containing live scope, callbacks, and resolvers
      * @param logSession the logging session
      * @param sourceLocation description of the source location for logging
      * @return the evaluated object in its native type
      */
-    public static @Nullable Object renderObject(String expression, Map<String, @Nullable Object> variables,
-            Consumer<String> envVarCallback, LogSession logSession, String sourceLocation) {
+    public static @Nullable Object renderObject( //
+            String expression, //
+            EvaluationContext context, //
+            LogSession logSession, String sourceLocation) {
 
         // Transform Ruby-style ranges ([1..5] / [1...5]) into Jinjava-compatible range() calls
         String transformedExpression = RangeExpressionTransformer.transform(expression);
 
+        Map<String, @Nullable Object> variables = context.scope().flatten();
+
         @SuppressWarnings("null")
-        Context context = new Context(JINJAVA.getGlobalContext(), variables);
-        context.setDynamicVariableResolver(varName -> dynamicVariableResolver(varName, variables, envVarCallback));
-        JinjavaInterpreter interpreter = new JinjavaInterpreter(JINJAVA, context, CONFIG);
+        Context jinjaContext = new Context(JINJAVA.getGlobalContext(), variables);
+        jinjaContext.setDynamicVariableResolver(varName -> dynamicVariableResolver(varName, context));
+        JinjavaInterpreter interpreter = new JinjavaInterpreter(JINJAVA, jinjaContext, CONFIG);
 
         Object result;
         try (var scope = JinjavaInterpreter.closeablePushCurrent(interpreter).get()) {
@@ -147,22 +151,26 @@ public class ExpressionEvaluator {
     }
 
     /**
-     * Dynamic variable resolver for Jinjava to provide special variables like "VARS" and "ENV".
+     * Dynamic variable resolver for Jinjava to provide special variables like "VARS" and "ENV"
+     * as well as dynamic source lookups via the context's sourceResolver.
      *
      * @param varName the name of the variable being resolved
-     * @param context the current variable context
-     * @param envVarCallback callback for environment variable access
-     * @return the value of the special variable, or null if it's not a special variable
+     * @param context the evaluation context containing scope, callbacks, and resolvers
+     * @return the value of the special variable or dynamic source, or null if unresolvable
      */
-    private static @Nullable Object dynamicVariableResolver(@Nullable String varName,
-            Map<String, @Nullable Object> context, Consumer<String> envVarCallback) {
+    private static @Nullable Object dynamicVariableResolver(@Nullable String varName, EvaluationContext context) {
         if ("VARS".equals(varName)) {
-            return context;
+            return context.scope().flatten();
         }
 
         if ("ENV".equals(varName)) {
-            return new TrackingEnvMap(envVarCallback);
+            return new TrackingEnvMap(context.envVarCallback());
         }
+
+        if (varName != null) {
+            return context.sourceResolver().apply(varName);
+        }
+
         return null;
     }
 

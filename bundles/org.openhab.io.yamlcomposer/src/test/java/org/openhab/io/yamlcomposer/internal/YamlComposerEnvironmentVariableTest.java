@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.core.OpenHAB;
 import org.openhab.io.yamlcomposer.internal.YamlComposer.CacheEntry;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 
 /**
  * The {@link YamlComposerEnvironmentVariableTest} contains tests for the {@code packages} functionality in the
@@ -60,10 +61,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
                     """);
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-
-            YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache);
+            loadWithTracking(main, trackedEnv);
 
             assertThat(trackedEnv, containsInAnyOrder(equalTo("APP_CONFIG"), equalTo("CUSTOM_PATH")));
         }
@@ -88,10 +86,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
                     """);
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-
-            YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache);
+            loadWithTracking(main, trackedEnv);
 
             assertThat(trackedEnv, containsInAnyOrder(equalTo("APP_CONFIG"), equalTo("APP_NAME")));
         }
@@ -106,10 +101,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
                     """);
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-
-            YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache);
+            loadWithTracking(main, trackedEnv);
 
             assertThat(trackedEnv, containsInAnyOrder(equalTo("PRIMARY_SETTING"), equalTo("INCLUDED_SETTING")));
         }
@@ -125,10 +117,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
                     """);
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-
-            YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache);
+            loadWithTracking(main, trackedEnv);
 
             assertThat(trackedEnv, containsInAnyOrder(equalTo("TEMPLATE_SETTING")));
         }
@@ -145,10 +134,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
                     """);
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-
-            YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache);
+            loadWithTracking(main, trackedEnv);
 
             assertThat(trackedEnv, containsInAnyOrder(equalTo("MERGED_SETTING")));
         }
@@ -159,10 +145,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             Path main = writeFixture("env_unreferenced.yaml", "setting: static_value");
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-
-            YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache);
+            loadWithTracking(main, trackedEnv);
 
             assertThat(trackedEnv, empty());
         }
@@ -179,9 +162,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             Path output = Objects.requireNonNull(sharedTempDir).resolve("output.yaml");
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache));
+            Object yamlObject = loadWithTracking(main, trackedEnv);
 
             try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
                 ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv);
@@ -204,17 +185,15 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
                     "value2");
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-
-            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache));
+            Object yamlObject = loadWithTracking(main, trackedEnv);
 
             try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
                 ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv, envMap);
             }
 
-            // Environment should register as UNCHANGED when checked against the same environment map
-            boolean changed = ComposerUtils.isEnvironmentChanged(output, envMap);
+            // Environment should register as UNCHANGED when checked against the same environment map using file content
+            String content = Files.readString(output);
+            boolean changed = ComposerUtils.isEnvironmentChanged(content, envMap);
             assertThat(changed, is(false));
         }
 
@@ -229,22 +208,21 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             Path output = Objects.requireNonNull(sharedTempDir).resolve("env_change_output.yaml");
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache));
+            Object yamlObject = loadWithTracking(main, trackedEnv);
 
             try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
                 ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv, envMap);
             }
 
             // Verify it returns false when the environment value hasn't changed yet
-            assertThat(ComposerUtils.isEnvironmentChanged(output, envMap), is(false));
+            String content = Files.readString(output);
+            assertThat(ComposerUtils.isEnvironmentChanged(content, envMap), is(false));
 
             // Mutate the environment map value to simulate a change
             envMap.put(envName, "changed_value");
 
             // Verify it returns true after the change
-            assertThat(ComposerUtils.isEnvironmentChanged(output, envMap), is(true));
+            assertThat(ComposerUtils.isEnvironmentChanged(content, envMap), is(true));
         }
 
         @Test
@@ -258,8 +236,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
             ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache));
+            Object yamlObject = loadWithTracking(main, trackedEnv);
 
             // Write compiled output header while the variable is absent (un-set)
             try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
@@ -267,13 +244,14 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             }
 
             // Verify isEnvironmentChanged() returns false while the variable remains absent
-            assertThat(ComposerUtils.isEnvironmentChanged(output, envMap), is(false));
+            String content = Files.readString(output);
+            assertThat(ComposerUtils.isEnvironmentChanged(content, envMap), is(false));
 
             // Add the variable to the map with an empty string value ("")
             envMap.put(envName, "");
 
             // Verify that the transition from absent (null) to empty string ("") returns true
-            assertThat(ComposerUtils.isEnvironmentChanged(output, envMap), is(true));
+            assertThat(ComposerUtils.isEnvironmentChanged(content, envMap), is(true));
         }
 
         @Test
@@ -283,9 +261,8 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             Path output = Objects.requireNonNull(sharedTempDir).resolve("legacy_output.yaml");
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache));
+
+            Object yamlObject = loadWithTracking(main, trackedEnv);
 
             try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
                 ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv);
@@ -296,7 +273,8 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             removeHeaderFromFile(output, "Env-Hash");
 
             // Legacy files without Env headers must trigger regeneration (return true)
-            boolean changed = ComposerUtils.isEnvironmentChanged(output);
+            String content = Files.readString(output);
+            boolean changed = ComposerUtils.isEnvironmentChanged(content);
             assertThat(changed, is(true));
         }
 
@@ -309,9 +287,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             Path output = Objects.requireNonNull(sharedTempDir).resolve("zero_tracked_output.yaml");
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache));
+            Object yamlObject = loadWithTracking(main, trackedEnv);
 
             // Write output with zero tracked variables in trackedEnv
             try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
@@ -319,7 +295,8 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             }
 
             // File has empty/zero-variable Env header -> NOT legacy -> returns false (no regeneration)
-            assertThat(ComposerUtils.isEnvironmentChanged(output, envMap), is(false));
+            String content = Files.readString(output);
+            assertThat(ComposerUtils.isEnvironmentChanged(content, envMap), is(false));
         }
 
         @Test
@@ -334,9 +311,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             Path output = Objects.requireNonNull(sharedTempDir).resolve("wrapping_output.yaml");
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache));
+            Object yamlObject = loadWithTracking(main, trackedEnv);
 
             try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
                 ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv);
@@ -357,9 +332,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             Path output = Objects.requireNonNull(sharedTempDir).resolve("long_output.yaml");
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache));
+            Object yamlObject = loadWithTracking(main, trackedEnv);
 
             try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
                 ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv);
@@ -377,16 +350,15 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             Path output = Objects.requireNonNull(sharedTempDir).resolve("no_header_output.yaml");
 
             Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
-            ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-            Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
-            }, trackedEnv::add, logSession, includeCache));
+            Object yamlObject = loadWithTracking(main, trackedEnv);
 
             try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
                 ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv);
             }
             removeHeaderFromFile(output);
 
-            boolean changed = ComposerUtils.isEnvironmentChanged(output);
+            String content = Files.readString(output);
+            boolean changed = ComposerUtils.isEnvironmentChanged(content);
             assertThat(changed, is(true));
         }
 
@@ -402,5 +374,11 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             List<String> cleaned = lines.stream().filter(line -> !line.startsWith(headerPrefix)).toList();
             Files.write(file, cleaned);
         }
+    }
+
+    private Object loadWithTracking(Path main, Set<String> trackedEnv) throws IOException {
+        EvaluationContext context = new EvaluationContext(trackedEnv::add, sourceName -> null);
+        return Objects.requireNonNull(YamlComposer.load(main, context, p -> {
+        }, logSession, new ConcurrentHashMap<>()));
     }
 }

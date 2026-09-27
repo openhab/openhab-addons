@@ -50,11 +50,11 @@ public class TemplateLoader {
      * Extracts templates from the given map and stores them into the templates map.
      *
      * @param templatesSection the section of the YAML model containing templates
+     * @param context the current evaluation context
      */
-    public void extractTemplates(@Nullable Object templatesSection) {
+    public void extractTemplates(@Nullable Object templatesSection, EvaluationContext context) {
         if (templatesSection instanceof java.util.Map<?, ?> templatesMap) {
             StructuralMerger structuralMerger = recursiveTransformer.getStructuralMerger();
-            EvaluationContext context = new EvaluationContext(scope, ProcessingPhase.STANDARD);
             Map<Object, @Nullable Object> resolvedTemplates = new LinkedHashMap<>(templatesMap.size());
 
             structuralMerger.composeMapPreservingValues(templatesMap, resolvedTemplates, recursiveTransformer, context);

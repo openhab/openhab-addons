@@ -1,0 +1,46 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.io.yamlcomposer.internal.dynamic;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+/**
+ * Supplies raw entities and entity-level change notifications for a dynamic data source (e.g., "things").
+ *
+ * @param <T> entity type exposed by this source
+ */
+@NonNullByDefault
+public interface DynamicSourceProvider<T> {
+    /** Returns source identifier (e.g. "ITEMS", "THINGS"). */
+    String getSourceName();
+
+    /** Returns true if this provider supports the requested source identifier (e.g. "THINGS"). */
+    boolean supportsSource(String source);
+
+    /** Returns all current raw entities from the underlying system registry. */
+    Collection<T> getAllEntities();
+
+    /** Converts a raw entity instance into a standard property map. */
+    Map<String, Object> adaptToMap(T entity);
+
+    /** Registers a listener to receive discrete entity change events. */
+    void setOnChangeListener(Consumer<EntityChange> listener);
+
+    /** Returns a lazily-evaluated map of all entities, keyed by their unique identifier. */
+    Map<String, Map<String, @Nullable Object>> getLazyMap();
+}

@@ -15,9 +15,7 @@ package org.openhab.io.yamlcomposer.internal.processors;
 import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -30,6 +28,7 @@ import org.openhab.io.yamlcomposer.internal.YamlComposer;
 import org.openhab.io.yamlcomposer.internal.YamlComposer.CacheEntry;
 import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
+import org.openhab.io.yamlcomposer.internal.core.Scope;
 import org.openhab.io.yamlcomposer.internal.placeholders.IncludePlaceholder;
 import org.snakeyaml.engine.v2.exceptions.MarkedYamlEngineException;
 import org.snakeyaml.engine.v2.exceptions.YamlEngineException;
@@ -47,7 +46,6 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
     private final Path basePath;
     private final List<Path> includeStack;
     private final Consumer<Path> includeCallback;
-    private final Consumer<String> envVarCallback;
     private final ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache;
 
     /**
@@ -61,14 +59,12 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
      * @param logger the logger to use for logging messages
      */
     public IncludeProcessor(Path basePath, List<Path> includeStack, Consumer<Path> includeCallback,
-            ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache, Consumer<String> envVarCallback,
-            BufferedLogger logger) {
+            ConcurrentHashMap<Path, @Nullable CacheEntry> includeCache, BufferedLogger logger) {
         this.logger = logger;
         this.basePath = basePath.toAbsolutePath().normalize();
         this.includeStack = includeStack;
         this.includeCallback = includeCallback;
         this.includeCache = includeCache;
-        this.envVarCallback = envVarCallback;
     }
 
     @Override
@@ -120,13 +116,13 @@ public class IncludeProcessor implements PlaceholderProcessor<IncludePlaceholder
         }
 
         // Handle parameters and variables
-        Map<String, @Nullable Object> includeVariables = new HashMap<>(context.scope().flatten());
-        includeVariables.putAll(params.varsMap()); // params override current variables
-        includeVariables.put("ARGS", params.varsMap());
+        Scope includeScope = context.scope().createChild();
+        includeScope.putAll(params.varsMap()); // params override current variables
+        includeScope.put("ARGS", params.varsMap());
 
         try {
-            YamlComposer includeComposer = new YamlComposer(includePath, includeVariables, includeStack,
-                    includeCallback, envVarCallback, logger.getLogSession(), includeCache);
+            YamlComposer includeComposer = new YamlComposer(includePath, context.forFragment(includeScope),
+                    includeStack, includeCallback, logger.getLogSession(), includeCache);
             includeCallback.accept(includePath);
             return includeComposer.load();
         } catch (YamlEngineException | IOException e) {

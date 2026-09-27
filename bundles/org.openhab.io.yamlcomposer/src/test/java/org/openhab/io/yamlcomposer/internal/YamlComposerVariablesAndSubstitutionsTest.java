@@ -796,8 +796,8 @@ class YamlComposerVariablesAndSubstitutionsTest extends AbstractYamlComposerTest
 
                 Set<String> trackedEnv = ConcurrentHashMap.newKeySet();
                 ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-                Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, p -> {
-                }, trackedEnv::add, logSession, includeCache));
+                Object yamlObject = Objects.requireNonNull(YamlComposer.load(main, emptyContext(), p -> {
+                }, logSession, includeCache));
 
                 try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
                     ComposerUtils.writeCompiledOutput(yamlObject, main, output, trackedEnv);

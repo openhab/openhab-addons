@@ -15,6 +15,7 @@ package org.openhab.io.yamlcomposer.internal;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
@@ -64,6 +65,8 @@ final class ComposerUtils {
 
                             """;
 
+    private static final String HEADER_MARKER = GENERATED_HEADER.lines().iterator().next();
+
     private ComposerUtils() {
         // Static utility class
     }
@@ -78,18 +81,24 @@ final class ComposerUtils {
     }
 
     /**
-     * Writes the fully processed YAML representation as it would be seen by openHAB after preprocessing
-     * to a compiled output file using the system environment.
+     * Writes the fully processed YAML representation to a compiled output file using the system environment.
+     * <p>
+     * To prevent unnecessary disk write operations and avoid triggering downstream file-reload events in openHAB,
+     * this method checks if the target file already exists and compares its YAML body (ignoring header
+     * metadata such as generation timestamps) against the proposed content. If the compiled body and tracked
+     * environment hashes are identical, the write is skipped.
      *
      * @param dataMap the resulting data map to dump
      * @param sourcePath the absolute path of the source file being processed
      * @param outputPath the absolute path of the compiled output file
      * @param trackedEnvVars the set of environment variables referenced during composition
+     * @return {@code true} if the file was written to disk; {@code false} if the write was skipped
+     *         because the existing output body and environment state are identical
      * @throws IOException if writing to the file fails
      */
-    static void writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars)
+    static boolean writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars)
             throws IOException {
-        writeCompiledOutput(dataMap, sourcePath, outputPath, trackedEnvVars, System.getenv(),
+        return writeCompiledOutput(dataMap, sourcePath, outputPath, trackedEnvVars, System.getenv(),
                 YamlOutputConfig.defaultConfig());
     }
 
@@ -104,10 +113,14 @@ final class ComposerUtils {
     }
 
     /**
-     * Writes the fully processed YAML representation as it would be seen by openHAB after preprocessing
-     * to a compiled output file using the provided environment map.
-     *
+     * Writes the fully processed YAML representation to a compiled output file using the provided environment map.
+     * <p>
      * Used by tests to simulate different environment variable values without modifying the system environment.
+     * <p>
+     * To prevent unnecessary disk write operations and avoid triggering downstream file-reload events in openHAB,
+     * this method checks if the target file already exists and compares its YAML body (ignoring header
+     * metadata such as generation timestamps) against the proposed content. If the compiled body and tracked
+     * environment hashes are identical, the write is skipped.
      *
      * @param dataMap the resulting data map to dump
      * @param sourcePath the absolute path of the source file being processed
@@ -115,9 +128,11 @@ final class ComposerUtils {
      * @param trackedEnvVars the set of environment variables referenced during composition
      * @param envMap the environment variable map to compute the initial hash against
      * @param outputConfig the YAML output configuration to use for dumping
+     * @return {@code true} if the file was written to disk; {@code false} if the write was skipped
+     *         because the existing output body and environment state are identical
      * @throws IOException if writing to the file fails
      */
-    static void writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars,
+    static boolean writeCompiledOutput(Object dataMap, Path sourcePath, Path outputPath, Set<String> trackedEnvVars,
             Map<String, String> envMap, YamlOutputConfig outputConfig) throws IOException {
         Path outputDir = outputPath.getParent();
         if (outputDir != null) {
@@ -151,39 +166,46 @@ final class ComposerUtils {
         String envHashStr = computeEnvHash(sortedEnvVars, envMap);
 
         Path sourcePathRelative = ComposerConfig.configRoot().relativize(sourcePath);
-        compiledYaml = GENERATED_HEADER.formatted(OpenHAB.getVersion(), OpenHAB.buildString(), sourcePathRelative,
-                ZonedDateTime.now(), envDepsFormatted, envHashStr) + compiledYaml;
 
-        Files.writeString(outputPath, compiledYaml, StandardCharsets.UTF_8);
+        if (Files.exists(outputPath)) {
+            String existingContent = Files.readString(outputPath, StandardCharsets.UTF_8);
+            String existingBody = extractBody(existingContent);
+
+            if (existingBody.equals(compiledYamlBody) && !isEnvironmentChanged(existingContent, envMap)) {
+                return false;
+            }
+        }
+
+        String finalHeader = GENERATED_HEADER.formatted(OpenHAB.getVersion(), OpenHAB.buildString(), sourcePathRelative,
+                ZonedDateTime.now(), envDepsFormatted, envHashStr);
+
+        Files.writeString(outputPath, finalHeader + compiledYamlBody, StandardCharsets.UTF_8);
+        return true;
     }
 
     /**
-     * Checks if any environment variables tracked in the compiled file's header have changed
-     * relative to the current system environment.
+     * Checks if any environment variables tracked in the provided output file content have changed
+     * relative to the system environment.
      *
-     * @param outputPath the path to the generated output file
+     * @param content the raw string content of the generated file
      * @return true if environment values changed or header is legacy/unreadable, false otherwise
      */
-    static boolean isEnvironmentChanged(Path outputPath) {
-        return isEnvironmentChanged(outputPath, System.getenv());
+    static boolean isEnvironmentChanged(String content) {
+        return isEnvironmentChanged(content, System.getenv());
     }
 
     /**
-     * Checks if any environment variables tracked in the compiled file's header have changed
+     * Checks if any environment variables tracked in the provided output file content have changed
      * relative to the provided environment map.
-     *
+     * <p>
      * Used by tests to simulate different environment variable values without modifying the system environment.
      *
-     * @param outputPath the path to the generated output file
+     * @param content the raw string content of the generated file
      * @param envMap the environment variable map to check against
      * @return true if environment values changed or header is legacy/unreadable, false otherwise
      */
-    static boolean isEnvironmentChanged(Path outputPath, Map<String, String> envMap) {
-        if (!Files.exists(outputPath)) {
-            return true;
-        }
-
-        try (BufferedReader reader = Files.newBufferedReader(outputPath, StandardCharsets.UTF_8)) {
+    static boolean isEnvironmentChanged(String content, Map<String, String> envMap) {
+        try (BufferedReader reader = new BufferedReader(new StringReader(content))) {
             String line;
             List<String> envVars = new ArrayList<>();
             String envHashLine = null;
@@ -205,15 +227,15 @@ final class ComposerUtils {
 
                 if (line.startsWith("# Env-Deps:")) {
                     collectingEnvDeps = true;
-                    String content = line.substring("# Env-Deps:".length()).trim();
-                    envVars.addAll(parseEnvVars(content));
+                    String headerVal = line.substring("# Env-Deps:".length()).trim();
+                    envVars.addAll(parseEnvVars(headerVal));
                 } else if (line.startsWith("# Env-Hash:")) {
                     collectingEnvDeps = false;
                     envHashLine = line.substring("# Env-Hash:".length()).trim();
                 } else if (collectingEnvDeps) {
                     if (line.startsWith("#")) {
-                        String content = line.substring(1).trim();
-                        envVars.addAll(parseEnvVars(content));
+                        String headerVal = line.substring(1).trim();
+                        envVars.addAll(parseEnvVars(headerVal));
                     } else {
                         collectingEnvDeps = false;
                     }
@@ -238,6 +260,29 @@ final class ComposerUtils {
         } catch (IOException e) {
             return true;
         }
+    }
+
+    /**
+     * Extracts the core YAML content body from a full document string by stripping the generated header block.
+     * <p>
+     * Header boundaries are identified by the opening and closing comment markers derived directly from
+     * {@link #GENERATED_HEADER}. If no header block markers are found, the raw content string is returned with
+     * leading whitespace stripped.
+     *
+     * @param fullYamlContent the complete file content including optional header
+     * @return the content body stripped of its header section
+     */
+    private static String extractBody(String fullYamlContent) {
+        if (!HEADER_MARKER.isEmpty()) {
+            int firstMarker = fullYamlContent.indexOf(HEADER_MARKER);
+            if (firstMarker != -1) {
+                int secondMarker = fullYamlContent.indexOf(HEADER_MARKER, firstMarker + HEADER_MARKER.length());
+                if (secondMarker != -1) {
+                    return fullYamlContent.substring(secondMarker + HEADER_MARKER.length()).stripLeading();
+                }
+            }
+        }
+        return fullYamlContent.stripLeading();
     }
 
     private static List<String> parseEnvVars(String content) {
