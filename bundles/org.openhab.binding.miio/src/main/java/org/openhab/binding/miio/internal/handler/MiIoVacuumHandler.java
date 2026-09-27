@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -107,6 +108,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private static final int NO_MAP_ID = 63;
     private static final int MULTI_FLOOR_LAB_STATUS = 3;
+    private static final int MAX_MAP_RELOAD_RETRIES = 8;
     private final ChannelUID mapChannelUid;
 
     private static final Set<RobotCababilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
@@ -124,6 +126,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private ExpiringCache<String> map;
     private String lastHistoryId = "";
     private String lastMap = "";
+    private int mapReloadRetries = MAX_MAP_RELOAD_RETRIES;
+    private @Nullable ScheduledFuture<?> mapReloadJob;
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCababilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
@@ -276,7 +280,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         if (channelUID.getId().equals(RobotCababilities.CURRENT_MAP.getChannel())
                 && command instanceof DecimalType mapId) {
             sendCommand(MiIoCommand.LOAD_MULTI_MAP, "[" + mapId.intValue() + "]");
-            lastMap = "";
             map.invalidateValue();
             forceStatusUpdate();
             return;
@@ -698,6 +701,17 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     }
 
     @Override
+    public void dispose() {
+        final ScheduledFuture<?> mapReloadJob = this.mapReloadJob;
+        if (mapReloadJob != null) {
+            mapReloadJob.cancel(true);
+            this.mapReloadJob = null;
+        }
+        super.dispose();
+        stateDescriptionProvider.removeDescriptionsForThing(getThing().getUID());
+    }
+
+    @Override
     protected boolean initializeData() {
         updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
         return super.initializeData();
@@ -762,10 +776,23 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             case GET_MAP:
                 if (response.getResult().isJsonArray()) {
                     String mapresponse = response.getResult().getAsJsonArray().get(0).getAsString();
-                    if (!mapresponse.contentEquals("retry") && !mapresponse.contentEquals(lastMap)) {
+                    if (mapresponse.contentEquals("retry") && mapReloadRetries < MAX_MAP_RELOAD_RETRIES) {
+                        // after loading another map the vacuum needs some time before the new map is available
+                        mapReloadRetries++;
+                        mapReloadJob = miIoScheduler.schedule(() -> sendCommand(MiIoCommand.GET_MAP), 1,
+                                TimeUnit.SECONDS);
+                    } else if (!mapresponse.contentEquals("retry") && !mapresponse.contentEquals(lastMap)) {
                         lastMap = mapresponse;
                         miIoScheduler.submit(() -> updateState(CHANNEL_VACUUM_MAP, getMap(mapresponse)));
                     }
+                }
+                break;
+            case LOAD_MULTI_MAP:
+                // request the new map image directly, as without periodic refresh it would not be updated
+                lastMap = "";
+                if (isLinked(mapChannelUid)) {
+                    mapReloadRetries = 0;
+                    sendCommand(MiIoCommand.GET_MAP);
                 }
                 break;
             case GET_MAP_STATUS:

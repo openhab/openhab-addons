@@ -14,6 +14,7 @@ package org.openhab.binding.miio.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.events.EventPublisher;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
@@ -38,5 +39,9 @@ public class MiIoStateDescriptionProvider extends BaseDynamicStateDescriptionPro
         this.eventPublisher = eventPublisher;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
+    }
+
+    public void removeDescriptionsForThing(ThingUID thingUID) {
+        channelOptionsMap.keySet().removeIf(channelUID -> thingUID.equals(channelUID.getThingUID()));
     }
 }

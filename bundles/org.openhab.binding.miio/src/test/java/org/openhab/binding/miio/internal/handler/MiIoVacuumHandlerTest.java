@@ -175,6 +175,26 @@ public class MiIoVacuumHandlerTest {
     }
 
     @Test
+    public void testLoadMapRequestsNewMap() {
+        MiIoVacuumHandler handler = spy(miIoHandler);
+        doReturn(1).when(handler).sendCommand(any(MiIoCommand.class));
+        String cmdString = "{\"id\":15,\"method\":\"load_multi_map\",\"params\":[1]}";
+        MiIoSendCommand response = new MiIoSendCommand(15, MiIoCommand.LOAD_MULTI_MAP,
+                JsonParser.parseString(cmdString).getAsJsonObject(), "", "");
+        response.setResponse(JsonParser.parseString("{\"result\":[\"ok\"],\"id\":15}").getAsJsonObject());
+
+        handler.onMessageReceived(response);
+
+        verify(handler).sendCommand(MiIoCommand.GET_MAP);
+    }
+
+    @Test
+    public void testDisposeRemovesMapOptions() {
+        miIoHandler.dispose();
+        verify(stateDescriptionProvider).removeDescriptionsForThing(thingUID);
+    }
+
+    @Test
     public void testCurrentMapState() {
         assertEquals(new DecimalType(0), MiIoVacuumHandler.currentMapState(3, 0));
         assertEquals(new DecimalType(1), MiIoVacuumHandler.currentMapState(7, 0));
