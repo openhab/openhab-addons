@@ -115,8 +115,9 @@ public class ShellyChannelMigration {
     }
 
     // Gen1: only /emeter devices (EM) expose a reset API. 3EM resets at the device level, not per meter.
+    // Duo/Multicolor Bulb G3 (isDuo) meter on CCT/RGBCCT components, which have no ResetCounters RPC.
     private static boolean supportsPerMeterReset(ShellyDeviceProfile profile) {
-        return !profile.is3EM && (profile.isGen2 || profile.isEMeter);
+        return !profile.is3EM && !profile.isDuo && (profile.isGen2 || profile.isEMeter);
     }
 
     private static boolean isGen1Rgbw2(ShellyDeviceProfile profile) {

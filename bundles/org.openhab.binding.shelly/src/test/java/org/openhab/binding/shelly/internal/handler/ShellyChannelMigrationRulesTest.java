@@ -126,6 +126,22 @@ public class ShellyChannelMigrationRulesTest {
     }
 
     @Test
+    void schema6DuoBulbG3GetsMinuteEnergyButNoResetSinceCctHasNoResetApi() {
+        // Duo/Multicolor Bulb G3 meter on CCT/RGBCCT components, which have no ResetCounters RPC
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        ShellyThingInterface handler = handlerAtSchema(5, profile,
+                channel(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER));
+
+        ShellyChannelMigration.migrateChannels(handler);
+
+        Set<String> created = capturedNewChannelIds(handler);
+        assertEquals(Set.of(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN1),
+                mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN2),
+                mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYHISTMIN3),
+                mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_ENERGYAVGLAST3MIN)), created);
+    }
+
+    @Test
     void schema6CreatesNoMinuteEnergySiblingsWithoutCurrentPowerAnchor() {
         ShellyThingInterface handler = handlerAtSchema(5, false,
                 channel(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALENERGY));
