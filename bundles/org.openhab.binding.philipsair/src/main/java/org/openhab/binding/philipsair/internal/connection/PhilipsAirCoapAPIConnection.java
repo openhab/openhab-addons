@@ -75,7 +75,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     // commands are only serialized with each other, so they never wait for a (possibly slow) status refresh
     private final Object commandLock = new Object();
     private final Object notificationLock = new Object();
-    private volatile long lastNotification = 0L;
+    private long notificationCount = 0L;
     private boolean hasSync = false;
     private long syncCounter = 0;
     private int attempt = -1;
@@ -205,7 +205,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                     lastUpdated = System.currentTimeMillis();
                     coapStatus.putValue(resp);
                     synchronized (notificationLock) {
-                        lastNotification = lastUpdated;
+                        notificationCount++;
                         notificationLock.notifyAll();
                     }
                     this.mid = response.advanced().getMID();
@@ -307,14 +307,23 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     @Override
     public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value) {
         try {
-            long sent = System.currentTimeMillis();
             String response;
+            long notificationsBefore;
             synchronized (commandLock) {
-                response = postCommand(value);
+                String encrypted = prepareCommand(value);
+                if (encrypted == null) {
+                    logger.debug("Could not encrypt command '{}'", gson.toJson(value));
+                    return null;
+                }
+                // only notifications received after the control request can reflect the command
+                synchronized (notificationLock) {
+                    notificationsBefore = notificationCount;
+                }
+                response = post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encrypted);
             }
             if ("{\"status\":\"success\"}".equals(response)) {
                 // the device pushes the new state through the observe relation
-                String json = waitForNotification(sent, COMMAND_RESPONSE_TIMEOUT);
+                String json = waitForNotification(notificationsBefore, COMMAND_RESPONSE_TIMEOUT);
                 return json != null ? gson.fromJson(json, PhilipsAirPurifierDataDTO.class) : null;
             } else {
                 logger.debug("Command failed. Response: {}", response);
@@ -327,7 +336,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         return null;
     }
 
-    private String postCommand(PhilipsAirPurifierWritableDataDTO value) throws ConnectorException, IOException {
+    private @Nullable String prepareCommand(PhilipsAirPurifierWritableDataDTO value)
+            throws ConnectorException, IOException {
         long controlCounter = getSync(counter);
         logger.debug("ControlCounter from sync={}", controlCounter);
         JsonObject cmd = (JsonObject) gson.toJsonTree(value);
@@ -341,24 +351,23 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         String commandValue = gson.toJson(fullCmd);
         controlCounter++;
         logger.debug("Sending command {}", commandValue);
-        String encryped = PhilipsAirCoapCipher.encryptedMsg(commandValue, controlCounter, logger);
-        return encryped == null ? "Encryption failed" : post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encryped);
+        return PhilipsAirCoapCipher.encryptedMsg(commandValue, controlCounter, logger);
     }
 
     /**
-     * Waits for a status notification received after the given time.
+     * Waits for a status notification newer than the given notification count.
      *
      * @return the notified status, or null if none was received within the timeout
      */
-    private @Nullable String waitForNotification(long since, long timeout) throws InterruptedException {
+    private @Nullable String waitForNotification(long notificationsBefore, long timeout) throws InterruptedException {
         long deadline = System.currentTimeMillis() + timeout;
         synchronized (notificationLock) {
             long remaining = timeout;
-            while (lastNotification < since && remaining > 0) {
+            while (notificationCount <= notificationsBefore && remaining > 0) {
                 notificationLock.wait(remaining);
                 remaining = deadline - System.currentTimeMillis();
             }
-            return lastNotification >= since ? lastJson : null;
+            return notificationCount > notificationsBefore ? lastJson : null;
         }
     }
 
