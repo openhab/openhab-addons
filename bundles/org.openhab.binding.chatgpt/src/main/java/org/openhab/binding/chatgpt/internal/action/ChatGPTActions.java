@@ -112,12 +112,20 @@ public class ChatGPTActions implements ThingActions {
                         : DEFAULT_REASONING_EFFORT);
         int resolvedRequestTimeout = Objects.requireNonNullElse(requestTimeout,
                 config != null ? config.requestTimeout : DEFAULT_REQUEST_TIMEOUT);
+        if (!ChatGPTHandler.isValidTimeout(resolvedRequestTimeout)) {
+            resolvedRequestTimeout = DEFAULT_REQUEST_TIMEOUT;
+        }
 
         try {
             ChatResponse response = apiClient.sendPrompt(resolvedModel, prompt, resolvedSystemMessage,
                     resolvedTemperature, resolvedTopP, resolvedMaxTokens, resolvedReasoningEffort,
                     resolvedRequestTimeout);
             if (response.getChoices() != null && !response.getChoices().isEmpty()) {
+                if ("length".equals(response.getChoices().getFirst().getFinishReason())) {
+                    logger.warn("Token length exceeded. Increase maximum token limit to avoid the issue.");
+                    return null;
+                }
+
                 ChatMessage chatResponseMessage = response.getChoices().getFirst().getChatMessage();
                 if (chatResponseMessage != null && chatResponseMessage.getContent() != null) {
                     return chatResponseMessage.getContent();
