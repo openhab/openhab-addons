@@ -37,6 +37,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -50,6 +51,7 @@ import org.openhab.core.util.HexUtils;
 public class PhilipsAirHttpAPIConnectionTest {
 
     private static final String SESSION_KEY = "00112233445566778899AABBCCDDEEFF";
+    private static final String OLD_SESSION_KEY = "FFEEDDCCBBAA99887766554433221100";
     private static final String STATUS = "{\"pwr\":\"1\",\"om\":\"2\",\"pm25\":7}";
 
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
@@ -81,8 +83,12 @@ public class PhilipsAirHttpAPIConnectionTest {
     }
 
     private static String encrypt(String content) throws Exception {
+        return encrypt(content, SESSION_KEY);
+    }
+
+    private static String encrypt(String content, String key) throws Exception {
         PhilipsAirCipher cipher = new PhilipsAirCipher();
-        cipher.initKey(SESSION_KEY);
+        cipher.initKey(key);
         String encrypted = cipher.encrypt(content);
         assertNotNull(encrypted);
         return encrypted;
@@ -112,6 +118,39 @@ public class PhilipsAirHttpAPIConnectionTest {
 
         assertEquals("", config.getKey());
         assertThrows(PhilipsAirAPIException.class, () -> connection.getAirPurifierStatus("1.1.1.1"));
+    }
+
+    @Test
+    public void statusIsRequestedAgainAfterKeyRenewal() throws Exception {
+        config.setKey(OLD_SESSION_KEY);
+        when(response.getStatus()).thenReturn(200);
+        // the device lost the key: the first response is encrypted with another key
+        when(response.getContentAsString()).thenReturn(encrypt(STATUS, "0123456789ABCDEF0123456789ABCDEF"),
+                keyExchangeResponse(), encrypt(STATUS));
+
+        PhilipsAirHttpAPIConnection connection = new PhilipsAirHttpAPIConnection(config, httpClient);
+        PhilipsAirPurifierDataDTO data = connection.getAirPurifierStatus("1.1.1.1");
+
+        assertNotNull(data);
+        assertEquals(7, data.getPm25());
+        assertEquals(SESSION_KEY, config.getKey());
+        verify(request, times(3)).send();
+    }
+
+    @Test
+    public void commandIsNotRepeatedAfterKeyRenewal() throws Exception {
+        config.setKey(OLD_SESSION_KEY);
+        when(response.getStatus()).thenReturn(200);
+        when(response.getContentAsString()).thenReturn(encrypt(STATUS, "0123456789ABCDEF0123456789ABCDEF"),
+                keyExchangeResponse(), encrypt(STATUS));
+
+        PhilipsAirHttpAPIConnection connection = new PhilipsAirHttpAPIConnection(config, httpClient);
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setPower("0");
+
+        assertThrows(PhilipsAirAPIException.class, () -> connection.sendCommand("pwr", command));
+        assertEquals(SESSION_KEY, config.getKey());
+        verify(request, times(2)).send();
     }
 
     @Test

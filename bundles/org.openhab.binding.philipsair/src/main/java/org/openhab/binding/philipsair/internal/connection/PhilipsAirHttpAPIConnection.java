@@ -147,6 +147,11 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
 
     private String getResponse(String url, HttpMethod method, @Nullable String content, boolean decode)
             throws PhilipsAirAPIException {
+        return getResponse(url, method, content, decode, false);
+    }
+
+    private String getResponse(String url, HttpMethod method, @Nullable String content, boolean decode, boolean isRetry)
+            throws PhilipsAirAPIException {
         try {
             PhilipsAirCipher cipher = this.cipher;
             if (decode && cipher == null) {
@@ -192,7 +197,13 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
                     logger.debug("Could not decrypt response, exchanging keys");
                     config.setKey("");
                     initCipher();
-                    finalcontent = getCipher().decrypt(finalcontent);
+                    getCipher();
+                    // the response was encrypted with the previous key. A command is not repeated, as its content
+                    // was also encrypted with the previous key.
+                    if (isRetry || method != HttpMethod.GET) {
+                        throw new PhilipsAirAPIException("Could not decrypt response, encryption key renewed");
+                    }
+                    return getResponse(url, method, content, decode, true);
                 }
             }
             if (finalcontent == null) {
@@ -254,8 +265,8 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     }
 
     @Override
-    public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value)
-            throws PhilipsAirAPIException {
+    public synchronized @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter,
+            PhilipsAirPurifierWritableDataDTO value) throws PhilipsAirAPIException {
         final PhilipsAirCipher cipher = this.cipher;
         if (cipher == null) {
             return null;

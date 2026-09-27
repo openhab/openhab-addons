@@ -159,7 +159,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                // ignore
+                Thread.currentThread().interrupt();
+                return last != null ? last : "";
             }
 
             logger.debug("Start Observe request {}", uri);
@@ -193,7 +194,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             String content = response.getResponseText();
             if (content != null) {
                 String resp = processResponse(content.trim(), uri);
-                logger.info("Response {}", resp);
+                logger.debug("Response {}", resp);
                 if (resp.length() > 2) {
                     lastJson = resp;
                     lastUpdated = System.currentTimeMillis();
@@ -295,7 +296,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     }
 
     @Override
-    public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value) {
+    public synchronized @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter,
+            PhilipsAirPurifierWritableDataDTO value) {
         try {
             long controlCounter = getSync(counter);
             logger.debug("ControlCounter from sync={}", controlCounter);
@@ -309,7 +311,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             fullCmd.setState(state);
             String commandValue = gson.toJson(fullCmd);
             controlCounter++;
-            logger.info("Sending command {}", commandValue);
+            logger.debug("Sending command {}", commandValue);
             String encryped = PhilipsAirCoapCipher.encryptedMsg(commandValue, controlCounter, logger);
             String response = encryped == null ? "Encryption failed"
                     : post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encryped);
@@ -321,8 +323,10 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             } else {
                 logger.debug("Command failed. Response: {}", response);
             }
-        } catch (JsonSyntaxException | ConnectorException | InterruptedException | IOException e) {
-            logger.info("Error sending command '{}': {}", gson.toJson(value), e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (JsonSyntaxException | ConnectorException | IOException e) {
+            logger.debug("Error sending command '{}': {}", gson.toJson(value), e.getMessage());
         }
         return null;
     }
@@ -340,8 +344,9 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private String post(CoapClient client, String server, int port, String resourcePath, String body)
             throws ConnectorException, IOException {
         String uri = getUriString(server, port, resourcePath);
-        client.setURI(uri);
+        // the URI is set on the request, as the shared client URI is also changed by the polling thread
         Request request = Request.newPost();
+        request.setURI(uri);
         request.setPayload(body);
         CoapResponse response = client.advanced(request);
         if (response != null) {
