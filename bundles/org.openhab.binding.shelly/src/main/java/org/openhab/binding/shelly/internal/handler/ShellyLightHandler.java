@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -389,7 +390,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         }
 
         String mode = light.mode;
-        Mode remoteMode = mode == null ? null : Mode.valueOf(mode.toUpperCase());
+        Mode remoteMode = mode == null ? null : Mode.valueOf(mode.toUpperCase(Locale.ROOT));
 
         // fix Gen 1 issue where status DTO contains fields for inactive mode; i.e. only apply active mode fields
         if (remoteMode != Mode.WHITE) {
