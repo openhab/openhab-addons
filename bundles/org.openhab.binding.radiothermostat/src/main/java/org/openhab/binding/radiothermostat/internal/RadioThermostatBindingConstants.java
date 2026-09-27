@@ -81,9 +81,6 @@ public class RadioThermostatBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_RTHERM);
 
-    public static final Set<String> DEBOUNCE_CHANNEL_IDS = Set.of(MODE, FAN_MODE, PROGRAM_MODE, SET_POINT, OVERRIDE,
-            HOLD, NEXT_TEMP, NEXT_TIME);
-
     public static final Set<String> NO_UPDATE_CHANNEL_IDS = Set.of(REMOTE_TEMP, MESSAGE);
 
     // Units of measurement of the data delivered by the API

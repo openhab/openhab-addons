@@ -479,19 +479,18 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             // Map the JSON response to the correct object and update appropriate channels
             switch (evtKey) {
                 case DEFAULT_RESOURCE:
-                    rthermData.setThermostatData(gson.fromJson(evtVal, RadioThermostatTstatDTO.class));
-                    // if thermostat returned -1 for temperature, skip this update
-                    if (rthermData.getThermostatData().getTemperature() >= 0) {
-                        // if polling startTime is before lastCommandTime, ignore this update for writable channels
-                        final boolean ignoreUpd = event.getStartTime() < lastCommandTime;
-
-                        // Update all channels from rthermData unless the update should be ignored
-                        getThing().getChannels().forEach(channel -> {
-                            if (!NO_UPDATE_CHANNEL_IDS.contains(channel.getUID().getId())
-                                    && !(DEBOUNCE_CHANNEL_IDS.contains(channel.getUID().getId()) && ignoreUpd)) {
-                                updateChannel(channel.getUID().getId(), rthermData);
-                            }
-                        });
+                    // if polling startTime is before lastCommandTime, ignore this update
+                    if (event.getStartTime() > lastCommandTime) {
+                        rthermData.setThermostatData(gson.fromJson(evtVal, RadioThermostatTstatDTO.class));
+                        // if thermostat returned -1 for temperature, skip this update
+                        if (rthermData.getThermostatData().getTemperature() >= 0) {
+                            // Update all channels from rthermData
+                            getThing().getChannels().forEach(channel -> {
+                                if (!NO_UPDATE_CHANNEL_IDS.contains(channel.getUID().getId())) {
+                                    updateChannel(channel.getUID().getId(), rthermData);
+                                }
+                            });
+                        }
                     }
                     break;
                 case HUMIDITY_RESOURCE:
