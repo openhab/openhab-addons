@@ -358,7 +358,6 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         if (command instanceof RefreshType) {
             updateChannel(channel, rthermData);
         } else {
-            lastCommandTime = System.currentTimeMillis();
             Integer cmdInt = -1;
             final String cmdStr = command.toString();
             try {
@@ -371,6 +370,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
             // When processing a command, delay the polling job for 20s unless changing mode then wait the refreshPeriod
             if (!MESSAGE.equals(channel)) {
+                lastCommandTime = System.currentTimeMillis();
                 rescheduleRefreshJob(!MODE.equals(channel) ? COMMAND_POLLING_DELAY_SEC : refreshPeriod * 60);
             }
 
