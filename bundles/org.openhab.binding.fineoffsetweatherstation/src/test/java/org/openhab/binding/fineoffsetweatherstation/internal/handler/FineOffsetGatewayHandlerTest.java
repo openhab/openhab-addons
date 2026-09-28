@@ -15,10 +15,12 @@ package org.openhab.binding.fineoffsetweatherstation.internal.handler;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_HUMIDITY;
@@ -35,6 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,8 +63,11 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.internal.BridgeImpl;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Tests for the dynamic channel handling of the {@link FineOffsetGatewayHandler}.
@@ -141,6 +147,44 @@ public class FineOffsetGatewayHandlerTest {
             Integer channelNumber) {
         return new MeasuredValue(MeasureType.TEMPERATURE, channelPrefix, channelNumber, channelTypeUID,
                 new DecimalType(1), channelPrefix, sensor);
+    }
+
+    /**
+     * Emulates the real TranslationProvider: formats defaultText with the varargs via MessageFormat, and returns null
+     * when defaultText is null (as the real provider does for missing descriptions).
+     */
+    private void stubTranslationProvider() {
+        when(translationProviderMock.getText(any(), any(), any(), any(), any())).thenAnswer(invocation -> {
+            String defaultText = invocation.getArgument(2);
+            if (defaultText == null) {
+                return null;
+            }
+            Object[] args = invocation.getArguments();
+            // args[4..] are the varargs passed after locale
+            Object[] msgArgs = new Object[args.length - 4];
+            for (int i = 0; i < msgArgs.length; i++) {
+                msgArgs[i] = args[i + 4];
+            }
+            return msgArgs.length > 0 ? MessageFormat.format(defaultText, msgArgs) : defaultText;
+        });
+    }
+
+    private Thing wh51Ch1SensorThing() {
+        Thing sensorThing = org.mockito.Mockito.mock(Thing.class);
+        FineOffsetSensorHandler sensorHandler = org.mockito.Mockito.mock(FineOffsetSensorHandler.class);
+        Configuration sensorConfig = new Configuration(
+                Map.of(FineOffsetSensorConfiguration.SENSOR, SensorGatewayBinding.WH51_CH1.name()));
+        when(sensorThing.getThingTypeUID()).thenReturn(THING_TYPE_SENSOR);
+        when(sensorThing.getConfiguration()).thenReturn(sensorConfig);
+        when(sensorThing.getHandler()).thenReturn(sensorHandler);
+        when(sensorThing.getUID()).thenReturn(new ThingUID(THING_TYPE_SENSOR, BRIDGE_UID.getId(), "WH51_CH1"));
+        return sensorThing;
+    }
+
+    private @Nullable String soilChannelDescription() {
+        return ((Bridge) handler.getThing()).getChannels().stream()
+                .filter(c -> "moisture-soil-channel-1".equals(c.getUID().getId())).findFirst().orElseThrow()
+                .getDescription();
     }
 
     @Test
@@ -250,31 +294,8 @@ public class FineOffsetGatewayHandlerTest {
 
     @Test
     void deprecationNoteContainsFullSensorChannelUid() throws Exception {
-        // Stub getText to emulate the real TranslationProvider: format defaultText with varargs via MessageFormat.
-        // Return null when defaultText is null (mirrors real provider behaviour for missing descriptions).
-        when(translationProviderMock.getText(any(), any(), any(), any(), any())).thenAnswer(invocation -> {
-            String defaultText = invocation.getArgument(2);
-            if (defaultText == null) {
-                return null;
-            }
-            Object[] args = invocation.getArguments();
-            // args[4..] are the varargs passed after locale
-            Object[] msgArgs = new Object[args.length - 4];
-            for (int i = 0; i < msgArgs.length; i++) {
-                msgArgs[i] = args[i + 4];
-            }
-            return msgArgs.length > 0 ? MessageFormat.format(defaultText, msgArgs) : defaultText;
-        });
-
-        ThingUID sensorThingUID = new ThingUID(THING_TYPE_SENSOR, BRIDGE_UID.getId(), "WH51_CH1");
-        Thing sensorThing = org.mockito.Mockito.mock(Thing.class);
-        FineOffsetSensorHandler sensorHandler = org.mockito.Mockito.mock(FineOffsetSensorHandler.class);
-        Configuration sensorConfig = new Configuration(
-                Map.of(FineOffsetSensorConfiguration.SENSOR, SensorGatewayBinding.WH51_CH1.name()));
-        when(sensorThing.getThingTypeUID()).thenReturn(THING_TYPE_SENSOR);
-        when(sensorThing.getConfiguration()).thenReturn(sensorConfig);
-        when(sensorThing.getHandler()).thenReturn(sensorHandler);
-        when(sensorThing.getUID()).thenReturn(sensorThingUID);
+        stubTranslationProvider();
+        Thing sensorThing = wh51Ch1SensorThing();
         when(bridgeMock.getThings()).thenReturn(List.of(sensorThing));
 
         MeasuredValue soilMoisture = taggedValue("moisture-soil-channel", CHANNEL_TYPE_HUMIDITY, Sensor.WH51, 1);
@@ -282,11 +303,8 @@ public class FineOffsetGatewayHandlerTest {
         updateLiveData();
 
         // The description of the created gateway channel must reference the full ChannelUID
-        String expectedUid = new ChannelUID(sensorThingUID, "moisture-soil-channel").getAsString();
-        List<Channel> channels = ((Bridge) handler.getThing()).getChannels();
-        Channel soilChannel = channels.stream().filter(c -> "moisture-soil-channel-1".equals(c.getUID().getId()))
-                .findFirst().orElseThrow();
-        assertThat(soilChannel.getDescription(), containsString(expectedUid));
+        String expectedUid = new ChannelUID(sensorThing.getUID(), "moisture-soil-channel").getAsString();
+        assertThat(soilChannelDescription(), containsString(expectedUid));
 
         // Verify the correct i18n key was used
         verify(translationProviderMock).getText(any(), eq("gateway.dynamic-channel.deprecation-note"), any(), any(),
@@ -308,5 +326,64 @@ public class FineOffsetGatewayHandlerTest {
         // Verify the with-target key was NOT used (double-call regression guard)
         verify(translationProviderMock, never()).getText(any(), eq("gateway.dynamic-channel.deprecation-note"), any(),
                 any(), any());
+    }
+
+    @Test
+    void failedPollMarksSensorsUndefinedWithoutAdvancingRemovalDebounce() throws Exception {
+        Thing sensorThing = wh51Ch1SensorThing();
+        FineOffsetSensorHandler sensorHandler = (FineOffsetSensorHandler) sensorThing.getHandler();
+        when(bridgeMock.getThings()).thenReturn(List.of(sensorThing));
+        Channel humidityChannel = ChannelBuilder.create(new ChannelUID(BRIDGE_UID, "humidity"))
+                .withType(CHANNEL_TYPE_HUMIDITY).build();
+        when(bridgeMock.getChannels()).thenReturn(List.of(humidityChannel));
+
+        when(gatewayQueryServiceMock.getMeasuredValues()).thenReturn(null);
+        pollTimes(REMOVAL_THRESHOLD);
+
+        verify(sensorHandler, times(REMOVAL_THRESHOLD)).markMeasuredValuesUndefined();
+        verify(sensorHandler, never()).updateMeasuredValues(any());
+        verify(callbackMock, times(REMOVAL_THRESHOLD)).stateUpdated(humidityChannel.getUID(), UnDefType.UNDEF);
+
+        // the first successful poll without humidity must count as its first miss, not its eleventh
+        liveDataReturns(temperature);
+        updateLiveData();
+        assertThat(currentChannelIds(), containsInAnyOrder("temperature", "humidity"));
+    }
+
+    @Test
+    void persistedChannelWithoutDeprecationNoteIsRefreshed() throws Exception {
+        stubTranslationProvider();
+        Thing sensorThing = wh51Ch1SensorThing();
+        when(bridgeMock.getThings()).thenReturn(List.of(sensorThing));
+        // a gateway channel persisted before the deprecation note existed
+        when(bridgeMock.getChannels())
+                .thenReturn(List.of(ChannelBuilder.create(new ChannelUID(BRIDGE_UID, "moisture-soil-channel-1"))
+                        .withType(CHANNEL_TYPE_HUMIDITY).build()));
+
+        liveDataReturns(taggedValue("moisture-soil-channel", CHANNEL_TYPE_HUMIDITY, Sensor.WH51, 1));
+        updateLiveData();
+
+        String expectedUid = new ChannelUID(sensorThing.getUID(), "moisture-soil-channel").getAsString();
+        assertThat(soilChannelDescription(), containsString(expectedUid));
+
+        // an up-to-date description must not trigger further Thing updates
+        ((BridgeImpl) handler.getThing()).addThing(sensorThing);
+        updateLiveData();
+        verify(callbackMock, times(1)).thingUpdated(any());
+    }
+
+    @Test
+    void noTargetNoteIsReplacedOnceSensorThingIsAdded() throws Exception {
+        stubTranslationProvider();
+        liveDataReturns(taggedValue("moisture-soil-channel", CHANNEL_TYPE_HUMIDITY, Sensor.WH51, 1));
+        updateLiveData();
+        assertThat(soilChannelDescription(), not(containsString("channel:")));
+
+        Thing sensorThing = wh51Ch1SensorThing();
+        ((BridgeImpl) handler.getThing()).addThing(sensorThing);
+        updateLiveData();
+
+        String expectedUid = new ChannelUID(sensorThing.getUID(), "moisture-soil-channel").getAsString();
+        assertThat(soilChannelDescription(), containsString(expectedUid));
     }
 }

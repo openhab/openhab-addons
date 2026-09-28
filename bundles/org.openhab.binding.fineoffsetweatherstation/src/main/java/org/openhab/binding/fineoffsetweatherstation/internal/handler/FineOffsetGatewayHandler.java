@@ -175,8 +175,12 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         Bridge bridge = (Bridge) thing;
         DynamicChannelReconciler.Plan plan = reconciler.reconcile(data, thing.getChannels(),
                 MeasuredValue::getChannelId, this::createChannel);
-        if (plan.hasChannelChanges()) {
-            List<Channel> channels = new ArrayList<>(thing.getChannels());
+        Map<String, Channel> refreshed = refreshDeprecationNotes(data, thing.getChannels());
+        if (plan.hasChannelChanges() || !refreshed.isEmpty()) {
+            List<Channel> channels = new ArrayList<>();
+            for (Channel channel : thing.getChannels()) {
+                channels.add(refreshed.getOrDefault(channel.getUID().getId(), channel));
+            }
             channels.addAll(plan.channelsToAdd);
             channels.removeAll(plan.channelsToRemove);
             updateBridgeThing(bridgeBuilder -> bridgeBuilder.withChannels(channels));
@@ -222,6 +226,33 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * Rebuilds existing tagged channels whose description is outdated: channels persisted before the deprecation note
+     * existed, or created before their sensor Thing was added and thus still carrying the no-target note.
+     *
+     * @return the rebuilt channels by channel ID
+     */
+    private Map<String, Channel> refreshDeprecationNotes(Collection<MeasuredValue> data,
+            Collection<Channel> currentChannels) {
+        Map<String, Channel> currentById = new HashMap<>();
+        for (Channel channel : currentChannels) {
+            currentById.put(channel.getUID().getId(), channel);
+        }
+        Map<String, Channel> refreshed = new HashMap<>();
+        for (MeasuredValue value : data) {
+            Channel existing = currentById.get(value.getChannelId());
+            if (existing == null || value.getSensor() == null) {
+                continue;
+            }
+            String description = channelDescription(value);
+            if (description != null && !description.equals(existing.getDescription())) {
+                refreshed.put(value.getChannelId(),
+                        ChannelBuilder.create(existing).withDescription(description).build());
+            }
+        }
+        return refreshed;
+    }
+
     private @Nullable Channel createChannel(MeasuredValue measuredValue) {
         ChannelTypeUID channelTypeId = measuredValue.getChannelTypeUID();
         if (channelTypeId == null) {
@@ -236,6 +267,21 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         if (label != null) {
             builder.withLabel(label);
         }
+        String description = channelDescription(measuredValue);
+        if (description != null) {
+            builder.withDescription(description);
+        }
+        @Nullable
+        ChannelType type = channelTypeRegistry.getChannelType(channelTypeId);
+        if (type != null) {
+            builder.withAcceptedItemType(type.getItemType());
+        }
+        return builder.build();
+    }
+
+    /** The translated channel description, followed by the deprecation note for values of a discrete sensor. */
+    private @Nullable String channelDescription(MeasuredValue measuredValue) {
+        String channelKey = THING_TYPE_GATEWAY.getId() + ".dynamic-channel." + measuredValue.getChannelPrefix();
         String description = translationProvider.getText(bundle, channelKey + ".description", null,
                 localeProvider.getLocale(), measuredValue.getChannelNumber());
         if (measuredValue.getSensor() != null) {
@@ -252,15 +298,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
                 description = description == null ? note : description + " " + note;
             }
         }
-        if (description != null) {
-            builder.withDescription(description);
-        }
-        @Nullable
-        ChannelType type = channelTypeRegistry.getChannelType(channelTypeId);
-        if (type != null) {
-            builder.withAcceptedItemType(type.getItemType());
-        }
-        return builder.build();
+        return description;
     }
 
     private @Nullable String sensorChannelUid(MeasuredValue measuredValue) {
