@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +86,8 @@ public class EvccForecastHandlerTest {
 
             @Override
             protected void updateState(ChannelUID channelUID, State state) {
-                updatedStates.computeIfAbsent(channelUID.getId(), id -> new ArrayList<>()).add(state);
+                Objects.requireNonNull(updatedStates.computeIfAbsent(channelUID.getId(), id -> new ArrayList<>()))
+                        .add(state);
             }
 
             @Override
@@ -124,9 +126,9 @@ public class EvccForecastHandlerTest {
 
     @Test
     public void scaledForecastChannelAppliesFixtureScaleWhileSolarRemainsUnscaled() {
-        JsonObject entry = new JsonObject();
-        entry.addProperty("ts", "2026-01-01T10:00:00Z");
-        entry.addProperty("val", 100);
+        JsonArray entry = new JsonArray();
+        entry.add(Instant.parse("2026-01-01T10:00:00Z").getEpochSecond());
+        entry.add(100);
 
         JsonArray timeseries = new JsonArray();
         timeseries.add(entry);
