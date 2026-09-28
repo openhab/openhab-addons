@@ -902,6 +902,9 @@ public class ShellyComponents {
         return updated;
     }
 
+    /**
+     * Process {@link Shelly2RGBWStatus} notification rgb, white, brightness (gain), and on-off fields.
+     */
     public static boolean updateRGBW(Shelly2RGBWStatus value, ShellyThingInterface thingHandler)
             throws ShellyApiException {
         if (!thingHandler.areChannelsCreated()) {
@@ -944,7 +947,7 @@ public class ShellyComponents {
             }
 
             if (value.brightness != null) {
-                model.setBrightness(Objects.requireNonNull(value.brightness).intValue());
+                model.setGain(Objects.requireNonNull(value.brightness).intValue());
                 updated = true;
             }
 
@@ -956,6 +959,10 @@ public class ShellyComponents {
         return updated;
     }
 
+    /**
+     * Process {@link Shelly2RGBCCTStatus} notification color or color temp fields (depending on the mode),
+     * gain/brightness fields (depending on the mode), and on-off.
+     */
     public static boolean updateRGBCCT(Shelly2RGBCCTStatus value, ShellyThingInterface thingHandler)
             throws ShellyApiException {
         if (!thingHandler.areChannelsCreated()) {
@@ -995,12 +1002,17 @@ public class ShellyComponents {
                 updated = true;
             }
 
+            if (Mode.COLOR == mode && value.brightness != null) {
+                model.setGain(Objects.requireNonNull(value.brightness).intValue());
+                updated = true;
+            }
+
             if (Mode.WHITE == mode && value.ct != null) {
                 model.setColorTemp(Objects.requireNonNull(value.ct).doubleValue());
                 updated = true;
             }
 
-            if (value.brightness != null) {
+            if (Mode.WHITE == mode && value.brightness != null) {
                 model.setBrightness(Objects.requireNonNull(value.brightness).intValue());
                 updated = true;
             }
@@ -1013,6 +1025,11 @@ public class ShellyComponents {
         return updated;
     }
 
+    /**
+     * Process {@link Shelly2DeviceStatusLight} notification brightness, color temp, and on-off fields.
+     * Note: although {@link Shelly2DeviceStatusLight} has an rgb field, it is only ever used for white/cct
+     * lights so that field is ignored.
+     */
     public static boolean updateLightMode(Shelly2DeviceStatusLight value, ShellyThingInterface thingHandler)
             throws ShellyApiException {
         if (!thingHandler.areChannelsCreated()) {

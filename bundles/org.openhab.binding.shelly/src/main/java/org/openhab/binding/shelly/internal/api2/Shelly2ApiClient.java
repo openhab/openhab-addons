@@ -1430,6 +1430,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         return channelUpdate ? ShellyComponents.updateDali(getThing(), status) : false;
     }
 
+    /**
+     * Process {@link Shelly2RGBWStatus} notification rgb, white, brightness (gain), and on-off fields.
+     */
     private boolean updateRGBWStatus(ShellySettingsStatus status, @Nullable Shelly2RGBWStatus value,
             boolean channelUpdate) throws ShellyApiException {
         if (value == null) {
@@ -1478,6 +1481,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         return channelUpdate ? ShellyComponents.updateRGBW(value, getThing()) : false;
     }
 
+    /**
+     * Process {@link Shelly2RGBCCTStatus} notification color or color temp fields (depending on the mode),
+     * gain/brightness fields (depending on the mode), and on-off.
+     */
     private boolean updateRGBCCTStatus(ShellySettingsStatus status, @Nullable Shelly2RGBCCTStatus value,
             boolean channelUpdate) throws ShellyApiException {
         if (value == null) {
@@ -1529,6 +1536,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         return false;
     }
 
+    /**
+     * Process {@link Shelly2DeviceStatusLight} notification brightness, color temp, and on-off fields.
+     * Note: although {@link Shelly2DeviceStatusLight} has an rgb field, it is only ever used for white/cct
+     * lights so that field is ignored.
+     */
     private boolean updateLightModeStatus(int idIn, ShellySettingsStatus status,
             @Nullable Shelly2DeviceStatusLight value, boolean channelUpdate) throws ShellyApiException {
         if (value == null) {
