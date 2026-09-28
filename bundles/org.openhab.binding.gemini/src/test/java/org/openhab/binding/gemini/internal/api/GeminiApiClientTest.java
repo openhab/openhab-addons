@@ -66,8 +66,10 @@ public class GeminiApiClientTest {
     private static final String PROMPT = "Which lamps in the living room are on?";
     private static final String RESPONSE_JSON = """
             {"candidates":[{"content":{"role":"model","parts":[{"text":"Lamp1 is on."}]}}]}""";
-    private static final String THINKING_LEVEL_ERROR_JSON = """
+    private static final String THINKING_LEVEL_NOT_SUPPORTED_ERROR_JSON = """
             {"error":{"code":400,"message":"Thinking level is not supported for this model.","status":"INVALID_ARGUMENT"}}""";
+    private static final String INVALID_THINKING_LEVEL_ERROR_JSON = """
+            {"error": {"code": 400,"message": "Thinking level MINIMAL is not supported for this model. Please retry with other thinking level.","status": "INVALID_ARGUMENT"}}""";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -238,24 +240,24 @@ public class GeminiApiClientTest {
     public void thinkingLevelNotSupportedRetriesWithoutThinkingConfigAndCaches() throws Exception {
         ContentResponse errorResponse = typedMock(ContentResponse.class);
         when(errorResponse.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
-        when(errorResponse.getContentAsString()).thenReturn(THINKING_LEVEL_ERROR_JSON);
+        when(errorResponse.getContentAsString()).thenReturn(THINKING_LEVEL_NOT_SUPPORTED_ERROR_JSON);
 
         ContentResponse successResponse = typedMock(ContentResponse.class);
         when(successResponse.getStatus()).thenReturn(HttpStatus.OK_200);
         when(successResponse.getContentAsString()).thenReturn(RESPONSE_JSON);
 
-        // Request with invalid thinking level value => error response
+        // Request with thinking level but model doesn't support it => error response
         // expected to retry without thinking level => success response
         when(request.send()).thenReturn(errorResponse).thenReturn(successResponse);
         apiClient.sendPrompt(MODEL, PROMPT, null, null, null, null, GeminiThinkingLevel.LOW, null);
 
-        // Request with invalid thinking level value => API client removes thinking level => success response
+        // Request with thinking level => API client removes thinking level => success response
         when(request.send()).thenReturn(successResponse);
         apiClient.sendPrompt(MODEL, PROMPT, null, null, null, null, GeminiThinkingLevel.LOW, null);
 
-        // Request with valid thinking level value => success response
+        // Request for different model => success response
         when(request.send()).thenReturn(successResponse);
-        apiClient.sendPrompt(MODEL, PROMPT, null, null, null, null, GeminiThinkingLevel.MEDIUM, null);
+        apiClient.sendPrompt(MODEL + "-v2", PROMPT, null, null, null, null, GeminiThinkingLevel.MEDIUM, null);
 
         ArgumentCaptor<ContentProvider> captor = ArgumentCaptor.forClass(ContentProvider.class);
         verify(request, times(4)).content(captor.capture());
@@ -271,7 +273,7 @@ public class GeminiApiClientTest {
         JsonNode secondRoot = parseContentProvider(providers.get(1));
         assertFalse(secondRoot.get("generationConfig").has("thinkingConfig"));
 
-        // Third request payload (subsequent call for cached model + thinking level) should NOT have thinkingConfig
+        // Third request payload (subsequent call for cached model) should NOT have thinkingConfig
         JsonNode thirdRoot = parseContentProvider(providers.get(2));
         assertFalse(thirdRoot.get("generationConfig").has("thinkingConfig"));
 

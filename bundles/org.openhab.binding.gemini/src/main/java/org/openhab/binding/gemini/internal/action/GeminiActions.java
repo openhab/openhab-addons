@@ -117,7 +117,7 @@ public class GeminiActions implements ThingActions {
         // Attempt to parse the passed-in thinking level
         GeminiThinkingLevel resolvedThinkingLevel = GeminiThinkingLevel.fromString(thinkingLevel);
         if (resolvedThinkingLevel == null && thinkingLevel != null && !thinkingLevel.isBlank()) {
-            logger.warn("Invalid thinking level configured: {} (falling back to Thing default)", thinkingLevel);
+            logger.warn("Invalid thinking level: {} (falling back to Thing default)", thinkingLevel);
         }
         // Fallback to the thing's configured thinking level
         if (resolvedThinkingLevel == null && config != null && !config.thinkingLevel.isBlank()) {
