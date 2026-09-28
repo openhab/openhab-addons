@@ -217,8 +217,8 @@ public class FineOffsetGatewayDiscoveryService extends AbstractDiscoveryService 
             }
             try (GatewayQueryService gatewayQueryService = protocol.getGatewayQueryService(config, null)) {
                 Collection<MeasuredValue> result = gatewayQueryService.getMeasuredValues();
-                logger.trace("found {} measured values via protocol {}", result.size(), protocol);
-                if (!result.isEmpty()) {
+                logger.trace("found {} measured values via protocol {}", result == null ? 0 : result.size(), protocol);
+                if (result != null && !result.isEmpty()) {
                     return protocol;
                 }
             } catch (IOException e) {
