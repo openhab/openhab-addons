@@ -279,7 +279,14 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
             if (commandValue == null || commandValue.isEmpty()) {
                 return null;
             }
-            String response = getResponse(buildURL(STATUS_URL, config.getHost()), PUT, commandValue.toString(), true);
+            String statusUrl = buildURL(STATUS_URL, config.getHost());
+            String response;
+            try {
+                response = getResponse(statusUrl, PUT, commandValue.toString(), true);
+            } finally {
+                // the cached status no longer reflects the device state, even if the command failed
+                cache.invalidate(statusUrl);
+            }
             logger.debug("{}", response);
             return gson.fromJson(response, PhilipsAirPurifierDataDTO.class);
         } catch (InvalidKeyException | JsonSyntaxException | IllegalBlockSizeException | BadPaddingException

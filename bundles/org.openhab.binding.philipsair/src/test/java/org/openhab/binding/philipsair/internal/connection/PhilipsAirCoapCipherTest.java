@@ -49,6 +49,20 @@ public class PhilipsAirCoapCipherTest {
 
     @Test
     public void invalidMessageIsNotDecrypted() {
-        assertEquals("Could not decrypt", PhilipsAirCoapCipher.decryptMsg("1234ABCD" + "XY" + "0".repeat(64), logger));
+        assertEquals("", PhilipsAirCoapCipher.decryptMsg("1234ABCD" + "XY" + "0".repeat(64), logger));
+    }
+
+    @Test
+    public void corruptedMessageIsRejected() {
+        String encrypted = PhilipsAirCoapCipher.encryptedMsg("{\"state\":{\"reported\":{\"pwr\":\"1\"}}}", 0x1234ABCDL,
+                logger);
+        assertNotNull(encrypted);
+        char last = encrypted.charAt(encrypted.length() - 1);
+        String corrupted = encrypted.substring(0, encrypted.length() - 1) + (last == '0' ? '1' : '0');
+
+        assertEquals("", PhilipsAirCoapCipher.decryptMsg(corrupted, logger));
+        String lowerCaseHash = encrypted.substring(0, encrypted.length() - 64)
+                + encrypted.substring(encrypted.length() - 64).toLowerCase();
+        assertNotEquals("", PhilipsAirCoapCipher.decryptMsg(lowerCaseHash, logger));
     }
 }

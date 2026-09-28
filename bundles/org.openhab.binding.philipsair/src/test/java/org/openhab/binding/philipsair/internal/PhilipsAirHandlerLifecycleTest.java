@@ -31,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
+import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIException;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -90,6 +91,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
             }
         };
         handler.setCallback(callback);
+        when(connection.getConfig()).thenReturn(new PhilipsAirConfiguration());
     }
 
     @Test
@@ -159,6 +161,32 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         verify(callback).statusUpdated(any(Thing.class), statusCaptor.capture());
         assertEquals(ThingStatus.OFFLINE, statusCaptor.getValue().getStatus());
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, statusCaptor.getValue().getStatusDetail());
+    }
+
+    @Test
+    public void noStatusIsPublishedAfterDispose() throws InterruptedException {
+        CountDownLatch requestStarted = new CountDownLatch(1);
+        CountDownLatch finishRequest = new CountDownLatch(1);
+        when(connection.getAirPurifierStatus(any())).thenAnswer(invocation -> {
+            requestStarted.countDown();
+            finishRequest.await(10, TimeUnit.SECONDS);
+            throw new PhilipsAirAPIException("interrupted");
+        });
+        releaseConnection.countDown();
+        handler.initialize();
+        waitForAssert(() -> verify(connection).ensureConnected());
+
+        Thread refresh = new Thread(() -> handler.handleCommand(POWER_CHANNEL, RefreshType.REFRESH));
+        refresh.setDaemon(true);
+        refresh.start();
+        assertTrue(requestStarted.await(10, TimeUnit.SECONDS));
+        handler.dispose();
+        clearInvocations(callback);
+        finishRequest.countDown();
+        refresh.join(TimeUnit.SECONDS.toMillis(10));
+
+        assertFalse(refresh.isAlive());
+        verify(callback, never()).statusUpdated(any(), any());
     }
 
     @Test

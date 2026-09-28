@@ -57,8 +57,10 @@ public class PhilipsAirCoapCipher {
         String encodedMessage = responseText.substring(COUNTER_LENGTH, responseText.length() - HASH_LENGTH);
         try {
             String calculatedHash = toSHA(encodedMessageAndCounter);
-            if (!hash.contentEquals(calculatedHash)) {
-                logger.warn("Message Hash mismatch hash expected '{}' got '{}' ", hash, calculatedHash);
+            if (!hash.equalsIgnoreCase(calculatedHash)) {
+                // the hash is unkeyed, it only detects corrupted messages
+                logger.debug("Ignoring message with hash mismatch, expected '{}' got '{}'", hash, calculatedHash);
+                return "";
             }
             String keyAndIv = toMD5(SHARED_SECRET + counter);
             String secret = keyAndIv.substring(0, keyAndIv.length() / 2);
@@ -77,7 +79,7 @@ public class PhilipsAirCoapCipher {
                 | IllegalArgumentException e) {
             logger.debug("Error decrypting message: {}. Message Text: '{}'", e.getMessage(), responseText);
         }
-        return "Could not decrypt";
+        return "";
     }
 
     public @Nullable static String encryptedMsg(String commandText, long counter, Logger logger) {

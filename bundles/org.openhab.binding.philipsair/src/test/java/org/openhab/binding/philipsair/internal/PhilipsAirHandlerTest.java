@@ -371,8 +371,14 @@ public class PhilipsAirHandlerTest extends JavaTest {
         for (String channel : List.of("controls#power", "controls#fan-speed", "controls#child-lock", "controls#mode",
                 "controls#timer", "controls-ui#button-light", "controls-ui#light-level", "controls-ui#displayed-index",
                 "sensors#air-quality-threshold", "sensors#humidity", "sensors#temperature", "sensors#water-level",
-                "controls#target-humidity", "controls#function")) {
+                "controls#target-humidity", "controls#function", "controls#timer-remaining", "sensors#pm25",
+                "sensors#allergen-index", "sensors#error-code")) {
             assertNull(handler.getValue(new ChannelUID(THING_UID, channel), data, null, null), channel);
+        }
+        PhilipsAirPurifierFiltersDTO filters = GSON.fromJson("{}", PhilipsAirPurifierFiltersDTO.class);
+        for (String channel : List.of("filters#pre-filter-life", "filters#hepa-filter-life",
+                "filters#carbon-filter-life", "filters#wick-filter-life")) {
+            assertNull(handler.getValue(new ChannelUID(THING_UID, channel), null, null, filters), channel);
         }
     }
 
@@ -409,5 +415,15 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         commandDto = handler.prepareCommandData("target-humidity", new QuantityType<>(0.4, Units.ONE));
         assertEquals("{\"rhset\":40}", GSON.toJson(commandDto));
+    }
+
+    @Test
+    public void unsupportedCommandsAreNotSent() {
+        PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
+
+        assertNull(handler.prepareCommandData("pm25", DecimalType.valueOf("5")));
+        assertNull(handler.prepareCommandData("fan-speed", OnOffType.ON));
+        assertNull(handler.prepareCommandData("light-level", OnOffType.ON));
+        assertNull(handler.prepareCommandData("power", StringType.valueOf("1")));
     }
 }

@@ -28,16 +28,16 @@ import com.google.gson.annotations.SerializedName;
 public class PhilipsAirPurifierDataDTO extends PhilipsAirPurifierWritableDataDTO {
     @SerializedName("dtrs")
     @Expose
-    private int timerLeft;
+    private @Nullable Integer timerLeft;
     @SerializedName("pm25")
     @Expose
-    private int pm25;
+    private @Nullable Integer pm25;
     @SerializedName("iaql")
     @Expose
-    private int allergenLevel;
+    private @Nullable Integer allergenLevel;
     @SerializedName("err")
     @Expose
-    private int errorCode;
+    private @Nullable Integer errorCode;
     @SerializedName("rh")
     @Expose
     private @Nullable Float humidity;
@@ -48,35 +48,35 @@ public class PhilipsAirPurifierDataDTO extends PhilipsAirPurifierWritableDataDTO
     @Expose
     private @Nullable Integer waterLevel;
 
-    public int getTimerLeft() {
+    public @Nullable Integer getTimerLeft() {
         return timerLeft;
     }
 
-    public void setTimerLeft(int timerLeft) {
+    public void setTimerLeft(@Nullable Integer timerLeft) {
         this.timerLeft = timerLeft;
     }
 
-    public int getPm25() {
+    public @Nullable Integer getPm25() {
         return pm25;
     }
 
-    public void setPm25(int pm25) {
+    public void setPm25(@Nullable Integer pm25) {
         this.pm25 = pm25;
     }
 
-    public int getAllergenLevel() {
+    public @Nullable Integer getAllergenLevel() {
         return allergenLevel;
     }
 
-    public void setAllergenLevel(int allergenLevel) {
+    public void setAllergenLevel(@Nullable Integer allergenLevel) {
         this.allergenLevel = allergenLevel;
     }
 
-    public int getErrorCode() {
+    public @Nullable Integer getErrorCode() {
         return errorCode;
     }
 
-    public void setErrorCode(int errorCode) {
+    public void setErrorCode(@Nullable Integer errorCode) {
         this.errorCode = errorCode;
     }
 

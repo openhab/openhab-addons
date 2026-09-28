@@ -58,6 +58,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link PhilipsAirHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -83,10 +85,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
     // serializes updates from the refresh job, refresh commands and data pushed by the device
     private final Object updateLock = new Object();
     private volatile @Nullable PhilipsAirAPIConnection connection;
-    private boolean disposed = true;
+    private boolean disposed;
     private @Nullable PhilipsAirPurifierDataDTO currentData;
     private @Nullable PhilipsAirPurifierDeviceDTO deviceInfo;
     private @Nullable PhilipsAirPurifierFiltersDTO filters;
+    private boolean filtersProbed;
     private final HttpClient httpClient;
 
     public PhilipsAirHandler(Thing thing, HttpClient httpClient) {
@@ -104,21 +107,32 @@ public class PhilipsAirHandler extends BaseThingHandler {
             logger.debug("Refreshing {}", channelUID);
             updateData(connection);
         } else {
-            logger.debug("Sending {} as {}", channelUID.getId(), command.toString());
-            PhilipsAirPurifierWritableDataDTO commandData = prepareCommandData(channelUID.getIdWithoutGroup(), command);
+            String parameter = channelUID.getIdWithoutGroup();
+            PhilipsAirPurifierWritableDataDTO commandData = prepareCommandData(parameter, command);
+            if (commandData == null) {
+                logger.debug("Ignoring unsupported command {} for {}", command, channelUID);
+                return;
+            }
+            logger.debug("Sending {} as {}", channelUID.getId(), command);
+            PhilipsAirPurifierDataDTO data = null;
             try {
-                PhilipsAirPurifierDataDTO data = connection.sendCommand(channelUID.getIdWithoutGroup(), commandData);
+                data = connection.sendCommand(parameter, commandData);
+            } catch (PhilipsAirAPIException e) {
+                logger.debug("Sending {} to {} failed: {}", command, channelUID, e.getMessage());
+            }
+            synchronized (updateLock) {
                 if (data != null) {
                     currentData = data;
                 }
-            } catch (PhilipsAirAPIException e) {
-                logger.debug("An exception occured", e);
+                updateChannels();
             }
-            updateChannels();
         }
     }
 
-    public PhilipsAirPurifierWritableDataDTO prepareCommandData(String parameter, Command command) {
+    /**
+     * @return the data to send for the command, or null if the channel does not accept the command
+     */
+    public @Nullable PhilipsAirPurifierWritableDataDTO prepareCommandData(String parameter, Command command) {
         OnOffType onOffCommand = command instanceof OnOffType onOff ? onOff : null;
         String stringCommand = command instanceof StringType ? command.toString() : null;
         Integer intCommand = toInteger(command);
@@ -126,63 +140,75 @@ public class PhilipsAirHandler extends BaseThingHandler {
         PhilipsAirPurifierWritableDataDTO data = new PhilipsAirPurifierWritableDataDTO();
         switch (parameter) {
             case LED_LIGHT_LEVEL:
-                if (intCommand != null) {
-                    data.setLightLevel(intCommand);
+                if (intCommand == null) {
+                    return null;
                 }
+                data.setLightLevel(intCommand);
                 break;
             case DISPLAYED_INDEX:
-                if (stringCommand != null) {
-                    data.setDisplayIndex(stringCommand);
+                if (stringCommand == null) {
+                    return null;
                 }
+                data.setDisplayIndex(stringCommand);
                 break;
             case BUTTONS_LIGHT:
-                if (onOffCommand != null) {
-                    data.setButtons(onOffCommand == OnOffType.ON ? "1" : "0");
+                if (onOffCommand == null) {
+                    return null;
                 }
+                data.setButtons(onOffCommand == OnOffType.ON ? "1" : "0");
                 break;
             case POWER:
-                if (onOffCommand != null) {
-                    data.setPower(onOffCommand == OnOffType.ON ? "1" : "0");
+                if (onOffCommand == null) {
+                    return null;
                 }
+                data.setPower(onOffCommand == OnOffType.ON ? "1" : "0");
                 break;
             case FAN_MODE:
-                if (stringCommand != null) {
-                    data.setFanSpeed(stringCommand);
+                if (stringCommand == null) {
+                    return null;
                 }
+                data.setFanSpeed(stringCommand);
                 data.setMode("M");
                 break;
             case CHILD_LOCK:
-                if (onOffCommand != null) {
-                    data.setChildLock(onOffCommand == OnOffType.ON);
+                if (onOffCommand == null) {
+                    return null;
                 }
+                data.setChildLock(onOffCommand == OnOffType.ON);
                 break;
             case AUTO_TIMEOFF:
-                if (intCommand != null) {
-                    data.setTimer(intCommand);
+                if (intCommand == null) {
+                    return null;
                 }
+                data.setTimer(intCommand);
                 break;
             case MODE:
-                if (stringCommand != null) {
-                    data.setMode(stringCommand);
+                if (stringCommand == null) {
+                    return null;
                 }
+                data.setMode(stringCommand);
                 break;
             case AIR_QUALITY_NOTIFICATION_THRESHOLD:
-                if (intCommand != null) {
-                    data.setAqit(intCommand);
+                if (intCommand == null) {
+                    return null;
                 }
+                data.setAqit(intCommand);
                 break;
             case HUMIDITY_SETPOINT:
-                if (intCommand != null) {
-                    data.setHumiditySetpoint(intCommand);
+                if (intCommand == null) {
+                    return null;
                 }
+                data.setHumiditySetpoint(intCommand);
                 break;
             case FUNCTION:
-                if (stringCommand != null) {
-                    data.setFunction(stringCommand);
+                if (stringCommand == null) {
+                    return null;
                 }
+                data.setFunction(stringCommand);
                 break;
+            default:
+                return null;
         }
-
         return data;
     }
 
@@ -205,11 +231,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
         logger.debug("Start initializing!");
         final PhilipsAirConfiguration config = getAirPurifierConfig();
         int refreshInterval = config.getRefreshInterval();
-        if (refreshInterval < PhilipsAirConfiguration.MIN_REFRESH_INTERVAL
-                && !(SUPPORTED_COAP_THING_TYPES_UIDS.contains(getThing().getThingTypeUID()))) {
-            logger.debug("refreshInterval too low. Using {}", PhilipsAirConfiguration.MIN_REFRESH_INTERVAL);
-            refreshInterval = PhilipsAirConfiguration.MIN_REFRESH_INTERVAL;
-        }
         updateStatus(ThingStatus.UNKNOWN);
         synchronized (connectionLock) {
             disposed = false;
@@ -286,7 +307,15 @@ public class PhilipsAirHandler extends BaseThingHandler {
             }
         } catch (RuntimeException e) {
             logger.debug("Exception while updating thing {}: {}", thing.getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            if (!isDisposed()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+    }
+
+    private boolean isDisposed() {
+        synchronized (connectionLock) {
+            return disposed;
         }
     }
 
@@ -305,17 +334,26 @@ public class PhilipsAirHandler extends BaseThingHandler {
     public void updateData(@Nullable PhilipsAirAPIConnection connection) {
         logger.trace("Update data for {}", thing.getUID());
         synchronized (updateLock) {
+            boolean received;
+            String error = "No response from device";
             try {
-                if (requestData(connection)) {
-                    addOptionalChannels();
-                    updateChannels();
-                    updateStatus(ThingStatus.ONLINE);
-                } else {
-                    logger.debug("No data received for {}", thing.getUID());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No response from device");
-                }
-            } catch (PhilipsAirAPIException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                received = requestData(connection);
+            } catch (PhilipsAirAPIException | JsonSyntaxException e) {
+                received = false;
+                error = e.getLocalizedMessage();
+            }
+            // the request may have blocked while the handler was disposed
+            if (isDisposed()) {
+                return;
+            }
+            if (received && connection != null) {
+                updateDeviceConfiguration(connection);
+                addOptionalChannels();
+                updateChannels();
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                logger.debug("No data received for {}: {}", thing.getUID(), error);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
             }
         }
     }
@@ -326,12 +364,23 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
 
         String host = getAirPurifierConfig().getHost();
-        PhilipsAirPurifierDeviceDTO deviceInfo = connection.getAirPurifierDevice(host);
+        // the device info is static, so it is only requested once
+        PhilipsAirPurifierDeviceDTO deviceInfo = this.deviceInfo == null ? connection.getAirPurifierDevice(host) : null;
         PhilipsAirPurifierDataDTO data = connection.getAirPurifierStatus(host);
         PhilipsAirPurifierFiltersDTO filters = null;
         List<Channel> filterGroup = thing.getChannelsOfGroup(PhilipsAirBindingConstants.FILTERS);
-        if (filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
+        if (connection instanceof PhilipsAirCoapAPIConnection
+                || filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
+            // CoAP devices push the filter status with the status, so it is available without an extra request
             filters = connection.getAirPurifierFiltersStatus(host);
+        } else if (!filtersProbed) {
+            // the filter status is requested once to detect the optional wick filter channel
+            filtersProbed = true;
+            try {
+                filters = connection.getAirPurifierFiltersStatus(host);
+            } catch (PhilipsAirAPIException | JsonSyntaxException e) {
+                logger.debug("Could not request the filter status of {}: {}", thing.getUID(), e.getMessage());
+            }
         }
 
         if (data != null) {
@@ -340,11 +389,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
         if (deviceInfo != null) {
             this.deviceInfo = deviceInfo;
-            Configuration configuration = editConfiguration();
-            if (updateConfigValue(configuration, PhilipsAirConfiguration.CONFIG_KEY, connection.getConfig().getKey())) {
-                updateConfiguration(configuration);
-            }
-            updateProperties(fillDeviceProperties(deviceInfo, editProperties()));
         }
 
         if (filters != null) {
@@ -352,6 +396,20 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
 
         return data != null || deviceInfo != null || filters != null;
+    }
+
+    /**
+     * Persists the key the connection may have (re)negotiated and publishes the device properties.
+     */
+    private void updateDeviceConfiguration(PhilipsAirAPIConnection connection) {
+        Configuration configuration = editConfiguration();
+        if (updateConfigValue(configuration, PhilipsAirConfiguration.CONFIG_KEY, connection.getConfig().getKey())) {
+            updateConfiguration(configuration);
+        }
+        PhilipsAirPurifierDeviceDTO deviceInfo = this.deviceInfo;
+        if (deviceInfo != null) {
+            updateProperties(fillDeviceProperties(deviceInfo, editProperties()));
+        }
     }
 
     /**
@@ -402,7 +460,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     private static boolean updateConfigValue(Configuration configuration, String key, @Nullable String value) {
-        if (value == null || value.equals(configuration.get(key))) {
+        if (value == null || value.isEmpty() || value.equals(configuration.get(key))) {
             return false;
         }
         configuration.put(key, value);
@@ -471,7 +529,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case POWER:
                     return toOnOff(data.getPower());
                 case PM25:
-                    return new QuantityType<Density>(data.getPm25(), DENSITY_UNIT);
+                    Integer pm25 = data.getPm25();
+                    return pm25 != null ? new QuantityType<Density>(pm25, DENSITY_UNIT) : null;
                 case FAN_MODE:
                     return data.getFanSpeed();
                 case CHILD_LOCK:
@@ -480,7 +539,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case AUTO_TIMEOFF:
                     return data.getTimer();
                 case TIMER_COUNTDOWN:
-                    return new QuantityType<>(data.getTimerLeft(), Units.MINUTE);
+                    Integer timerLeft = data.getTimerLeft();
+                    return timerLeft != null ? new QuantityType<>(timerLeft, Units.MINUTE) : null;
                 case MODE:
                     return data.getMode();
                 case ALLERGEN_INDEX:
@@ -488,7 +548,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case AIR_QUALITY_NOTIFICATION_THRESHOLD:
                     return data.getAqit();
                 case ERROR_CODE:
-                    return String.valueOf(data.getErrorCode());
+                    Integer errorCode = data.getErrorCode();
+                    return errorCode != null ? errorCode.toString() : null;
                 case HUMIDITY:
                     Float humidity = data.getHumidity();
                     return humidity != null
@@ -531,7 +592,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
     }
 
     public PhilipsAirConfiguration getAirPurifierConfig() {
-        return getConfigAs(PhilipsAirConfiguration.class);
+        PhilipsAirConfiguration config = getConfigAs(PhilipsAirConfiguration.class);
+        if (config.getRefreshInterval() < PhilipsAirConfiguration.MIN_REFRESH_INTERVAL) {
+            config.setRefreshInterval(PhilipsAirConfiguration.MIN_REFRESH_INTERVAL);
+        }
+        return config;
     }
 
     private static Map<String, String> fillDeviceProperties(PhilipsAirPurifierDeviceDTO device,

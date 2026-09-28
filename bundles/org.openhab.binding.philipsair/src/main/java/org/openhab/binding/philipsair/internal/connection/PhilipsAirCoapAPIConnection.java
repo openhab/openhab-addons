@@ -235,18 +235,19 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     }
 
     private String processResponse(String rawResponse, String uri) {
-        if (!rawResponse.isBlank()) {
-            hasSync = true;
+        String decrypted = rawResponse.isBlank() ? "" : PhilipsAirCoapCipher.decryptMsg(rawResponse, logger);
+        if (!decrypted.isEmpty()) {
             logger.trace("Raw Response from {}: {}", uri, rawResponse);
-
-            counter = getCounter(rawResponse);
-            String decrypted = PhilipsAirCoapCipher.decryptMsg(rawResponse, logger);
             logger.trace("Decrypted response from {}: {}", uri, decrypted);
             try {
                 JsonElement airResponse = JsonParser.parseString(decrypted);
                 if (airResponse.isJsonObject() && airResponse.getAsJsonObject().has("state")) {
                     JsonElement stateObj = airResponse.getAsJsonObject().get("state");
                     if (stateObj.isJsonObject() && stateObj.getAsJsonObject().has("reported")) {
+                        counter = getCounter(rawResponse);
+                        hasSync = true;
+                        // the sync is only renewed after consecutive invalid responses
+                        syncCounter = 0;
                         return stateObj.getAsJsonObject().get("reported").toString();
                     } else {
                         logger.debug("Response does not contain 'reported' element");

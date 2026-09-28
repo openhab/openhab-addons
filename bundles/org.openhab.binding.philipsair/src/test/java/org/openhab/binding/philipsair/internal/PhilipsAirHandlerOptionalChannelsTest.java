@@ -34,6 +34,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIException;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -83,6 +84,7 @@ public class PhilipsAirHandlerOptionalChannelsTest {
                 .thenAnswer(invocation -> ChannelBuilder.create((ChannelUID) invocation.getArgument(0), "Number"));
         handler = new PhilipsAirHandler(thing, httpClient);
         handler.setCallback(callback);
+        when(connection.getConfig()).thenReturn(new PhilipsAirConfiguration());
     }
 
     @Test
@@ -112,6 +114,19 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
         verify(callback, never()).thingUpdated(any());
         assertEquals(Set.of("controls#power"), channelIds(handler.getThing().getChannels()));
+    }
+
+    @Test
+    public void wickFilterChannelIsAddedWithoutLinkedFilterChannels() throws PhilipsAirAPIException {
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
+        when(connection.getAirPurifierFiltersStatus(any()))
+                .thenReturn(gson.fromJson(HUMIDIFIER_STATUS, PhilipsAirPurifierFiltersDTO.class));
+
+        handler.updateData(connection);
+
+        assertEquals(Set.of("controls#power", "filters#wick-filter-life"),
+                channelIds(handler.getThing().getChannels()));
     }
 
     private static Set<String> channelIds(List<Channel> channels) {

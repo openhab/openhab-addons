@@ -37,6 +37,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
 import org.openhab.core.util.HexUtils;
 
@@ -151,6 +152,49 @@ public class PhilipsAirHttpAPIConnectionTest {
         assertThrows(PhilipsAirAPIException.class, () -> connection.sendCommand("pwr", command));
         assertEquals(SESSION_KEY, config.getKey());
         verify(request, times(2)).send();
+    }
+
+    @Test
+    public void commandInvalidatesCachedStatus() throws Exception {
+        config.setKey(SESSION_KEY);
+        when(response.getStatus()).thenReturn(200);
+        String statusOff = "{\"pwr\":\"0\",\"om\":\"2\",\"pm25\":7}";
+        when(response.getContentAsString()).thenReturn(encrypt(STATUS), encrypt(statusOff), encrypt(statusOff));
+
+        PhilipsAirHttpAPIConnection connection = new PhilipsAirHttpAPIConnection(config, httpClient);
+        PhilipsAirPurifierDataDTO data = connection.getAirPurifierStatus("1.1.1.1");
+        assertNotNull(data);
+        assertEquals("1", data.getPower());
+
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setPower("0");
+        connection.sendCommand("pwr", command);
+
+        data = connection.getAirPurifierStatus("1.1.1.1");
+        assertNotNull(data);
+        assertEquals("0", data.getPower());
+        verify(request, times(3)).send();
+    }
+
+    @Test
+    public void missingValuesAreNotZero() throws Exception {
+        config.setKey(SESSION_KEY);
+        when(response.getStatus()).thenReturn(200);
+        when(response.getContentAsString()).thenReturn(encrypt("{\"pwr\":\"1\"}"), encrypt("{}"));
+
+        PhilipsAirHttpAPIConnection connection = new PhilipsAirHttpAPIConnection(config, httpClient);
+        PhilipsAirPurifierDataDTO data = connection.getAirPurifierStatus("1.1.1.1");
+        PhilipsAirPurifierFiltersDTO filters = connection.getAirPurifierFiltersStatus("1.1.1.1");
+
+        assertNotNull(data);
+        assertNull(data.getPm25());
+        assertNull(data.getErrorCode());
+        assertNull(data.getTimerLeft());
+        assertNull(data.getAllergenLevel());
+        assertNotNull(filters);
+        assertNull(filters.getPreFilter());
+        assertNull(filters.getHepaFilter());
+        assertNull(filters.getCarbonFilter());
     }
 
     @Test

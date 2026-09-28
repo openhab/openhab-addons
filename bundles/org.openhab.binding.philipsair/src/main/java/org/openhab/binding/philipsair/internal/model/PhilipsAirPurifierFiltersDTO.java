@@ -29,42 +29,45 @@ public class PhilipsAirPurifierFiltersDTO {
 
     @SerializedName("fltsts0")
     @Expose
-    int preFilter;
+    @Nullable
+    Integer preFilter;
 
     @SerializedName("fltsts1")
     @Expose
-    int hepaFilter;
+    @Nullable
+    Integer hepaFilter;
 
     @SerializedName("fltsts2")
     @Expose
-    int carbonFilter;
+    @Nullable
+    Integer carbonFilter;
 
     @SerializedName("wicksts")
     @Expose
     @Nullable
     Integer wickFilter;
 
-    public int getPreFilter() {
+    public @Nullable Integer getPreFilter() {
         return preFilter;
     }
 
-    public void setPreFilter(int preFilter) {
+    public void setPreFilter(@Nullable Integer preFilter) {
         this.preFilter = preFilter;
     }
 
-    public int getCarbonFilter() {
+    public @Nullable Integer getCarbonFilter() {
         return carbonFilter;
     }
 
-    public void setCarbonFilter(int carbonFilter) {
+    public void setCarbonFilter(@Nullable Integer carbonFilter) {
         this.carbonFilter = carbonFilter;
     }
 
-    public int getHepaFilter() {
+    public @Nullable Integer getHepaFilter() {
         return hepaFilter;
     }
 
-    public void setHepaFilter(int hepaFilter) {
+    public void setHepaFilter(@Nullable Integer hepaFilter) {
         this.hepaFilter = hepaFilter;
     }
 

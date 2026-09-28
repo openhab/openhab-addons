@@ -33,8 +33,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.util.HexUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Performs message de- and encyrption
@@ -46,7 +44,6 @@ import org.slf4j.LoggerFactory;
 public class PhilipsAirCipher {
     private static final String AA = "AA";
 
-    private final Logger logger = LoggerFactory.getLogger(PhilipsAirCipher.class);
     private static final BigInteger G = new BigInteger(Base64.getDecoder().decode(
             "AKTRy9XD/TQSZ2WkQu+5mQX4EE3SWKxQf9ZAbP8UJm0xJm/qHlxBVkt3fmkPVQTyExYCF7SwG4hqXpFUf54nSfTX+9fTuaku4ZCdDSJj+Ap2pqJMCHoJH1MdvwoBabaiitZipNGOc6+jLXedWRjQi8iFj03O+XwqJIVebusis7Ll"));
     private static final BigInteger P = new BigInteger(Base64.getDecoder().decode(
@@ -79,7 +76,6 @@ public class PhilipsAirCipher {
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(HexUtils.hexToBytes(key), "AES"),
                     new IvParameterSpec(new byte[16]));
         } catch (GeneralSecurityException e) {
-            logger.warn("An exception occured", e);
             cipher = null;
             decipher = null;
             throw e;

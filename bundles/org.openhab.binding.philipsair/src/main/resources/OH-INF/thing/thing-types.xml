@@ -13,6 +13,7 @@
 			<channel-group typeId="sensors-basic" id="sensors"/>
 			<channel-group typeId="filters" id="filters"/>
 		</channel-groups>
+		<representation-property>deviceUUID</representation-property>
 		<config-description-ref uri="thing-type:philipsair:config"/>
 	</thing-type>
 
@@ -25,6 +26,7 @@
 			<channel-group typeId="sensors-basic" id="sensors"/>
 			<channel-group typeId="filters" id="filters"/>
 		</channel-groups>
+		<representation-property>deviceUUID</representation-property>
 		<config-description-ref uri="thing-type:philipsair:config"/>
 	</thing-type>
 
@@ -37,6 +39,7 @@
 			<channel-group typeId="sensors-basic" id="sensors"/>
 			<channel-group typeId="filters" id="filters"/>
 		</channel-groups>
+		<representation-property>deviceUUID</representation-property>
 		<config-description-ref uri="thing-type:philipsair:config"/>
 	</thing-type>
 
@@ -49,6 +52,7 @@
 			<channel-group typeId="sensors-adv" id="sensors"/>
 			<channel-group typeId="filters-wicks" id="filters"/>
 		</channel-groups>
+		<representation-property>deviceUUID</representation-property>
 		<config-description-ref uri="thing-type:philipsair:config"/>
 	</thing-type>
 
@@ -61,6 +65,7 @@
 			<channel-group typeId="sensors-basic" id="sensors"/>
 			<channel-group typeId="filters" id="filters"/>
 		</channel-groups>
+		<representation-property>deviceUUID</representation-property>
 		<config-description-ref uri="thing-type:philipsair:config"/>
 	</thing-type>
 
@@ -73,6 +78,7 @@
 			<channel-group typeId="sensors-adv" id="sensors"/>
 			<channel-group typeId="filters-wicks" id="filters"/>
 		</channel-groups>
+		<representation-property>deviceUUID</representation-property>
 		<config-description-ref uri="thing-type:philipsair:config"/>
 	</thing-type>
 
