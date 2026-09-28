@@ -74,6 +74,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     private BasicChannelTypeProvider basicChannelTypeProvider;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
+    private final MiIoStateDescriptionProvider stateDescriptionProvider;
     private @Nullable Future<Boolean> scheduledTask;
     private final Logger logger = LoggerFactory.getLogger(MiIoHandlerFactory.class);
 
@@ -82,13 +83,15 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
             @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference MiIoDatabaseWatchService miIoDatabaseWatchService, @Reference CloudConnector cloudConnector,
             @Reference BasicChannelTypeProvider basicChannelTypeProvider, @Reference TranslationProvider i18nProvider,
-            @Reference LocaleProvider localeProvider, Map<String, Object> properties) {
+            @Reference LocaleProvider localeProvider, @Reference MiIoStateDescriptionProvider stateDescriptionProvider,
+            Map<String, Object> properties) {
         this.httpClientFactory = httpClientFactory;
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.channelTypeRegistry = channelTypeRegistry;
         this.basicChannelTypeProvider = basicChannelTypeProvider;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
+        this.stateDescriptionProvider = stateDescriptionProvider;
         this.cloudConnector = cloudConnector;
         String username = (String) properties.get("username");
         if (username != null && !username.trim().isEmpty()) {
@@ -141,7 +144,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
-                    i18nProvider, localeProvider);
+                    stateDescriptionProvider, i18nProvider, localeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_CLOUD)) {
             return new MiIoCloudThingHandler(thing, cloudConnector);
