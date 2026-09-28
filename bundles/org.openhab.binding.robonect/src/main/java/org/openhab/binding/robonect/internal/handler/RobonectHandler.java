@@ -16,8 +16,10 @@ import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 
 import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -273,6 +275,11 @@ public class RobonectHandler extends BaseThingHandler {
                     default -> "su";
                 };
                 value = onOff == OnOffType.ON ? "1" : "0";
+            } else if (command instanceof DateTimeType dateTime
+                    && (setting.equals("start") || setting.equals("end"))) {
+                LocalTime time = dateTime.getZonedDateTime(ZoneOffset.UTC).toLocalTime();
+                parameter = setting;
+                value = time.format(DateTimeFormatter.ofPattern("HH:mm"));
             } else if (command instanceof DecimalType decimal && (setting.equals("start") || setting.equals("end"))) {
                 int minutes = decimal.intValue();
                 if (minutes < 0 || minutes >= 24 * 60) {
@@ -316,9 +323,14 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private void updateTimerTime(String channel, String time) {
-        if (time != null && time.matches("\\d{2}:\\d{2}"))
-            updateState(channel, new DecimalType(
-                    Integer.parseInt(time.substring(0, 2)) * 60 + Integer.parseInt(time.substring(3, 5))));
+        if (time != null && time.matches("\\d{2}:\\d{2}")) {
+            int hours = Integer.parseInt(time.substring(0, 2));
+            int minutes = Integer.parseInt(time.substring(3, 5));
+            if (hours >= 24 || minutes >= 60) {
+                return;
+            }
+            updateState(channel, toTimeOnlyDateTime(LocalTime.of(hours, minutes)));
+        }
     }
 
     private void updateTimerDay(String prefix, String day, Boolean value) {
@@ -845,7 +857,7 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     /**
-     * Updates one job time channel with a number of minutes after midnight.
+     * Updates one job time channel using the Unix epoch date and UTC to represent the time of day.
      *
      * @param channelId job time channel identifier
      * @param value UI value in {@code HH:mm} format, or {@code null}
@@ -866,7 +878,11 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(channelId, UnDefType.UNDEF);
             return;
         }
-        updateState(channelId, new QuantityType<>(hours * 60 + minutes, Units.MINUTE));
+        updateState(channelId, toTimeOnlyDateTime(LocalTime.of(hours, minutes)));
+    }
+
+    private DateTimeType toTimeOnlyDateTime(LocalTime time) {
+        return new DateTimeType(Instant.ofEpochSecond(time.toSecondOfDay()));
     }
 
     /**

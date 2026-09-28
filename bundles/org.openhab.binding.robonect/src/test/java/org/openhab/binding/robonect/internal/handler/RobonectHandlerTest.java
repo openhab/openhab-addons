@@ -49,7 +49,6 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -254,6 +253,8 @@ public class RobonectHandlerTest {
 
     @Test
     public void shouldUseAjaxUiInfoForJobTimes() {
+        ArgumentCaptor<State> jobStartCaptor = ArgumentCaptor.forClass(State.class);
+        ArgumentCaptor<State> jobEndCaptor = ArgumentCaptor.forClass(State.class);
         MowerInfo mowerInfo = createSuccessfulMowerInfoResponse();
         AjaxInfo ajaxInfo = new AjaxInfo();
         ajaxInfo.setTimerMenuText("Job");
@@ -270,10 +271,20 @@ public class RobonectHandlerTest {
                 eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_JOB)), eq(OnOffType.ON));
         verify(callbackMock).stateUpdated(
                 eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_JOB_START)),
-                eq(new QuantityType<>(600, Units.MINUTE)));
+                jobStartCaptor.capture());
         verify(callbackMock).stateUpdated(
                 eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_JOB_END)),
-                eq(new QuantityType<>(720, Units.MINUTE)));
+                jobEndCaptor.capture());
+        ZonedDateTime jobStart = ((DateTimeType) jobStartCaptor.getValue()).getZonedDateTime(ZoneId.of("UTC"));
+        assertEquals(1970, jobStart.getYear());
+        assertEquals(1, jobStart.getDayOfYear());
+        assertEquals(10, jobStart.getHour());
+        assertEquals(0, jobStart.getMinute());
+        ZonedDateTime jobEnd = ((DateTimeType) jobEndCaptor.getValue()).getZonedDateTime(ZoneId.of("UTC"));
+        assertEquals(1970, jobEnd.getYear());
+        assertEquals(1, jobEnd.getDayOfYear());
+        assertEquals(12, jobEnd.getHour());
+        assertEquals(0, jobEnd.getMinute());
         verify(callbackMock).stateUpdated(
                 eq(new ChannelUID(new ThingUID("1:2:3"), RobonectBindingConstants.CHANNEL_STATUS_MODE)),
                 eq(new StringType("AUTO")));

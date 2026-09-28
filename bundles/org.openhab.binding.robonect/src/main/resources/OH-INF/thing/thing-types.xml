@@ -440,31 +440,31 @@
 	</channel-type>
 
 	<channel-type id="batteryVoltageType">
-		<item-type>Number:ElectricPotential</item-type>
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="batteryCurrentType">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unitHint="mA">Number:ElectricCurrent</item-type>
 		<label>Battery Current</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="batteryTemperatureType">
-		<item-type>Number:Temperature</item-type>
+		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Battery Temperature</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="batteryCapacityType">
-		<item-type>Number:ElectricCharge</item-type>
+		<item-type unitHint="mAh">Number:ElectricCharge</item-type>
 		<label>Battery Capacity</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="batteryRemainingCapacityType">
-		<item-type>Number:ElectricCharge</item-type>
+		<item-type unitHint="mAh">Number:ElectricCharge</item-type>
 		<label>Battery Remaining Capacity</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -476,13 +476,13 @@
 	</channel-type>
 
 	<channel-type id="driveMotorSpeedType">
-		<item-type>Number:Speed</item-type>
+		<item-type unitHint="cm/s">Number:Speed</item-type>
 		<label>Drive Motor Speed</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="driveMotorCurrentType">
-		<item-type>Number:ElectricCurrent</item-type>
+		<item-type unitHint="mA">Number:ElectricCurrent</item-type>
 		<label>Drive Motor Current</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
@@ -579,10 +579,10 @@
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="timerTimeType">
-		<item-type>Number:Time</item-type>
+		<item-type>DateTime</item-type>
 		<label>Timer Time</label>
-		<description>Minutes after midnight.</description>
-		<state readOnly="false" pattern="%d min"/>
+		<description>Scheduled timer start or end time.</description>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="timerDayType">
 		<item-type>Switch</item-type>
@@ -601,7 +601,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="weatherTemperatureType">
-		<item-type>Number:Temperature</item-type>
+		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Weather Temperature</label>
 		<state readOnly="true"/>
 	</channel-type>
@@ -616,12 +616,12 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="weatherRemainingType">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Weather Remaining Time</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="weatherIntervalType">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Weather Update Interval</label>
 		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
@@ -646,7 +646,7 @@
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="pushIntervalType">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Push Service Interval</label>
 		<state readOnly="false"/>
 	</channel-type>
@@ -666,9 +666,9 @@
 	</channel-type>
 
 	<channel-type id="durationType">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Status Duration</label>
-		<description>The number of seconds the mower is in the current status.</description>
+		<description>The time the mower is in the current status.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -680,21 +680,21 @@
 	</channel-type>
 
 	<channel-type id="distanceType">
-		<item-type>Number:Length</item-type>
+		<item-type unitHint="m">Number:Length</item-type>
 		<label>Status Distance</label>
 		<description>The distance the mower is away from the charging station when searching the remote start.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="hoursType">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Total Mowing Hours</label>
 		<description>The number of total mowing hours</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%d %unit% test"/>
 	</channel-type>
 
 	<channel-type id="temperatureType">
-		<item-type>Number:Temperature</item-type>
+		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The temperature inside the mower</description>
 		<tags>
@@ -812,10 +812,10 @@
 	</channel-type>
 
 	<channel-type id="jobTimeType">
-		<item-type>Number:Time</item-type>
+		<item-type>DateTime</item-type>
 		<label>Job Time</label>
-		<description>Minutes after midnight reported for the active mowing job.</description>
-		<state readOnly="true" pattern="%d min"/>
+		<description>Start or end time reported for the active mowing job.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="timerStatusType">
