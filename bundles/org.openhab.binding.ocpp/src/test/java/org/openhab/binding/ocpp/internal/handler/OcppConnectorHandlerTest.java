@@ -439,20 +439,78 @@ class OcppConnectorHandlerTest {
         ClearChargingProfileRequest clear = (ClearChargingProfileRequest) unpause;
         assertEquals(Integer.valueOf(1), clear.getConnectorId(), "clear must target this connector");
         assertEquals(Integer.valueOf(0), clear.getStackLevel(), "clear must target our stack level");
-        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_CHARGE_LIMIT)), eq(UnDefType.UNDEF));
+        verify(callback, org.mockito.Mockito.atLeastOnce())
+                .stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_CHARGE_LIMIT)), eq(UnDefType.UNDEF));
+        verify(callback, never()).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_CHARGE_LIMIT)),
+                eq(new org.openhab.core.library.types.QuantityType<>(0.0, org.openhab.core.library.unit.Units.AMPERE)));
         verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_PAUSE)), eq(OnOffType.OFF));
     }
 
     @Test
-    void aZeroChargeLimitClearsTheCapRatherThanSuspending() {
+    void aZeroChargeLimitStopsTheChargeRatherThanLiftingTheCap() {
         OcppChargePointHandler chargePoint = attachReadyChargePoint();
 
         command(CHANNEL_CHARGE_LIMIT, new DecimalType(0));
 
+        assertEquals(0.0, sentLimit(lastProfile(chargePoint)));
+    }
+
+    @Test
+    void aNegativeChargeLimitStopsTheChargeToo() {
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(-3));
+
+        assertEquals(0.0, sentLimit(lastProfile(chargePoint)));
+    }
+
+    @Test
+    void aZeroPowerLimitStopsTheCharge() {
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+
+        command(CHANNEL_POWER_LIMIT, new DecimalType(0));
+
+        assertEquals(0.0, sentLimit(lastProfile(chargePoint)));
+    }
+
+    @Test
+    void clearLimitHandsTheCurrentBackToTheCharger() {
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(10));
+
+        command(CHANNEL_CLEAR_LIMIT, OnOffType.ON);
+
         ArgumentCaptor<Request> captor = ArgumentCaptor.forClass(Request.class);
-        verify(chargePoint, times(1)).send(captor.capture());
-        assertTrue(captor.getValue() instanceof ClearChargingProfileRequest,
-                "a 0 A charge limit must clear the cap, not suspend the connector");
+        verify(chargePoint, times(2)).send(captor.capture());
+        assertTrue(captor.getAllValues().get(1) instanceof ClearChargingProfileRequest);
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_CHARGE_LIMIT)), eq(UnDefType.UNDEF));
+        verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_CLEAR_LIMIT)), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void aLimitClearedDuringAPauseIsLiftedWhenThePauseEnds() {
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(10));
+        command(CHANNEL_PAUSE, OnOffType.ON);
+
+        command(CHANNEL_CLEAR_LIMIT, OnOffType.ON);
+        verify(chargePoint, times(2)).send(any());
+        command(CHANNEL_PAUSE, OnOffType.OFF);
+
+        ArgumentCaptor<Request> captor = ArgumentCaptor.forClass(Request.class);
+        verify(chargePoint, times(3)).send(captor.capture());
+        assertTrue(captor.getAllValues().get(2) instanceof ClearChargingProfileRequest);
+    }
+
+    @Test
+    void unpausingWithAZeroLimitKeepsTheChargeStopped() {
+        OcppChargePointHandler chargePoint = attachReadyChargePoint();
+        command(CHANNEL_CHARGE_LIMIT, new DecimalType(0));
+        command(CHANNEL_PAUSE, OnOffType.ON);
+
+        command(CHANNEL_PAUSE, OnOffType.OFF);
+
+        assertEquals(0.0, sentLimit(lastProfile(chargePoint)));
     }
 
     @Test
@@ -461,11 +519,11 @@ class OcppConnectorHandlerTest {
         // uncapped.
         OcppChargePointHandler chargePoint = attachReadyChargePoint(ClearChargingProfileStatus.Unknown);
 
-        command(CHANNEL_CHARGE_LIMIT, new DecimalType(0));
+        command(CHANNEL_CLEAR_LIMIT, OnOffType.ON);
 
         ArgumentCaptor<Request> captor = ArgumentCaptor.forClass(Request.class);
         verify(chargePoint, times(1)).send(captor.capture());
-        assertTrue(captor.getValue() instanceof ClearChargingProfileRequest, "a 0 A limit must clear the cap");
+        assertTrue(captor.getValue() instanceof ClearChargingProfileRequest, "clear-limit must clear the cap");
         verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_CHARGE_LIMIT)), eq(UnDefType.UNDEF));
         verify(callback).stateUpdated(eq(new ChannelUID(THING_UID, CHANNEL_PAUSE)), eq(OnOffType.OFF));
     }

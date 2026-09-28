@@ -121,10 +121,11 @@ A charger that does not advertise the profile is left untouched.
 | energy-active-import    | Number:Energy            | R          | Energy register (Energy.Active.Import.Register)                                                 |
 | session-energy          | Number:Energy            | R          | Energy of the last session (meter-stop − meter-start), published once at session end            |
 | charging                | Switch                   | RW         | ON while a transaction runs; command to remote start/stop                                       |
-| charge-limit            | Number:ElectricCurrent   | RW         | Charge current cap via SetChargingProfile                                                       |
+| charge-limit            | Number:ElectricCurrent   | RW         | Charge current cap via SetChargingProfile; 0 stops the charge                                   |
 | power-limit             | Number:Power             | RW         | Charge power cap (watts) for power-only chargers; takes over from charge-limit until a later charge-limit clears it |
 | number-phases           | Number                   | RW         | Phases to charge on (1/2/3); 0 = charger default. Needs a charger that supports phase switching |
 | pause                   | Switch                   | RW         | Pause charging (profile limit 0) without ending the transaction                                 |
+| clear-limit             | Switch                   | W          | Momentary — remove charge-limit and power-limit, so the charger returns to its own maximum      |
 | availability            | Switch                   | RW         | OCPP availability (Operative/Inoperative)                                                       |
 | unlock                  | Switch                   | W          | Momentary — unlock the connector                                                                |
 | hardware-max-current    | Number:ElectricCurrent   | RW         | Hardware current ceiling via a vendor config key; only created when `hardwareMaxCurrentKey` is set |
@@ -151,9 +152,11 @@ The one session it cannot stop is one that began while openHAB was down or befor
 For such a session, suspend the power with `pause` (a 0 A profile needs no transaction) or end it with the `chargepoint`-level `reset` (which reboots the whole charger).
 
 `charge-limit` caps the charging current: the value is sent as a `SetChargingProfile` and the channel reflects the applied limit once accepted.
+Setting it to 0 stops the charge, as a 0 A limit does in OCPP, and `clear-limit` removes the cap, so the charger goes back to its own maximum.
 Some chargers only accept a charge limit expressed in watts (their OCPP `ChargingScheduleAllowedChargingRateUnit` is `Power`, not `Current`); the binding learns this from the charger and converts `charge-limit` amps to watts with `nominalVoltage` and `phases`, so the same amps channel still works.
 Alternatively set `power-limit` (watts) directly — it is sent as-is, with no conversion, on any charger that accepts a power limit, and takes over from `charge-limit` while it is set.
 Commanding `charge-limit` again clears the power-limit and returns to amps, so the most recent command always wins.
+A `power-limit` of 0 stops the charge too, and `clear-limit` removes it along with `charge-limit`.
 `number-phases` requests charging on a given number of phases (1, 2 or 3) by setting `numberPhases` in the charging profile — for switching a car to single-phase when solar surplus is low, for instance; 0 clears the request so the charger keeps its own default (OCPP assumes 3).
 It only takes effect on a charger that supports phase switching (its `ConnectorSwitch3to1PhaseSupported` is true), and when set it also drives the amps→watts conversion above.
 `pause` suspends charging with a 0 A profile without ending the transaction; switching it off resumes — at your `charge-limit` if one is set, otherwise by removing the cap so the charger returns to its own maximum — distinct from `charging`, which ends the session.
@@ -244,7 +247,7 @@ If you are unsure what the charger actually sends, enable `log:set DEBUG org.ope
 ### A Connector Sits at SuspendedEVSE and Will Not Charge
 
 `SuspendedEVSE` means the charge point itself is withholding energy — a charging-profile limit or an authorization result — unlike `SuspendedEV`, which is the vehicle not drawing (battery full, or charging scheduled in the car).
-Check the connector is not left paused and that `charge-limit` is not 0: sending `pause` OFF resumes charging — at your `charge-limit` if one is set, otherwise by clearing the cap so the charger returns to its own maximum.
+Check the connector is not left paused and that neither `charge-limit` nor `power-limit` is 0, which stops the charge: sending `pause` OFF resumes at your `charge-limit`, and `clear-limit` returns the charger to its own maximum.
 Some chargers also suspend when a `charge-limit` is set _before_ a transaction starts — with no transaction it goes out as a `TxDefaultProfile`, which such a charger accepts but then drops to `SuspendedEVSE` a few seconds in.
 On those, start the charge first and set the limit once it is `Charging`: send `charging` ON (or plug in), wait for `Charging`, then set `charge-limit`.
 Adjusting it mid-charge afterwards works normally.

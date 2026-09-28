@@ -155,8 +155,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
     private volatile @Nullable OcppChargePointHandler chargePoint;
     private volatile @Nullable Integer transactionId;
     private volatile @Nullable Integer meterStart;
-    private volatile double currentLimitAmps;
-    private volatile double powerLimitWatts;
+    // NaN is no limit, which leaves the charger at its own maximum; 0 is a limit that stops the charge.
+    private volatile double currentLimitAmps = Double.NaN;
+    private volatile double powerLimitWatts = Double.NaN;
     private volatile int numberPhasesRequested;
     private volatile boolean paused;
     // A TxProfile lapses with its transaction (OCPP 1.6 errata 7.10), so what it carried moves to the default.
@@ -316,9 +317,9 @@ public class OcppConnectorHandler extends BaseThingHandler {
             case CHANNEL_CHARGE_LIMIT:
                 Double limit = toAmps(command);
                 if (limit != null) {
-                    currentLimitAmps = limit;
+                    currentLimitAmps = Math.max(0, limit);
                     // Last command wins: a once-set power-limit must not shadow every later amps command.
-                    powerLimitWatts = 0;
+                    powerLimitWatts = Double.NaN;
                     if (!paused) {
                         applyLimit();
                     }
@@ -327,7 +328,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
             case CHANNEL_POWER_LIMIT:
                 Double powerWatts = toWatts(command);
                 if (powerWatts != null) {
-                    powerLimitWatts = powerWatts;
+                    powerLimitWatts = Math.max(0, powerWatts);
                     if (!paused) {
                         applyLimit();
                     }
@@ -360,6 +361,16 @@ public class OcppConnectorHandler extends BaseThingHandler {
             case CHANNEL_AVAILABILITY:
                 if (command instanceof OnOffType onOff) {
                     changeAvailability(onOff == OnOffType.ON);
+                }
+                break;
+            case CHANNEL_CLEAR_LIMIT:
+                if (command == OnOffType.ON) {
+                    currentLimitAmps = Double.NaN;
+                    powerLimitWatts = Double.NaN;
+                    if (!paused) {
+                        applyLimit();
+                    }
+                    updateState(CHANNEL_CLEAR_LIMIT, OnOffType.OFF);
                 }
                 break;
             case CHANNEL_UNLOCK:
@@ -462,7 +473,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
                             + "the requested {}-phase setting may be ignored",
                     cp != null ? cp.getChargePointId() : "?", connectorId, numberPhases);
         }
-        boolean powerSourced = watts > 0.0 && !paused && allowsPower;
+        boolean powerSourced = !Double.isNaN(watts) && !paused && allowsPower;
         ChargingRateUnitType wireUnit;
         double wireValue;
         if (powerSourced) {
@@ -494,7 +505,7 @@ public class OcppConnectorHandler extends BaseThingHandler {
             limitHeldByTxProfile = true;
         }
         // A 0 A profile suspends the EVSE, so 'no cap' must clear the profile.
-        if (!claim.paused() && claim.wireValue() <= 0.0) {
+        if (!claim.paused() && Double.isNaN(claim.wireValue())) {
             clearProfile(claim);
         } else {
             setProfile(claim);
@@ -523,7 +534,8 @@ public class OcppConnectorHandler extends BaseThingHandler {
         if (claim.powerSourced()) {
             updateState(CHANNEL_POWER_LIMIT, new QuantityType<>(claim.limitWatts(), Units.WATT));
         } else {
-            updateState(CHANNEL_CHARGE_LIMIT, new QuantityType<>(claim.limitAmps(), Units.AMPERE));
+            updateState(CHANNEL_CHARGE_LIMIT, Double.isNaN(claim.limitAmps()) ? UnDefType.UNDEF
+                    : new QuantityType<>(claim.limitAmps(), Units.AMPERE));
         }
         Integer phaseCount = claim.numberPhases();
         if (phaseCount != null) {

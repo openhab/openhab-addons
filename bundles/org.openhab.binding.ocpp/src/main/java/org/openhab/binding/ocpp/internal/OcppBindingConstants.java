@@ -45,6 +45,7 @@ public class OcppBindingConstants {
     public static final String CHANNEL_PAUSE = "pause";
     public static final String CHANNEL_AVAILABILITY = "availability";
     public static final String CHANNEL_UNLOCK = "unlock";
+    public static final String CHANNEL_CLEAR_LIMIT = "clear-limit";
     public static final String CHANNEL_HARDWARE_MAX_CURRENT = "hardware-max-current";
 
     // Connector channels — metering

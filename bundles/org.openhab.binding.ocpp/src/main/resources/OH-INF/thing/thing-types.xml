@@ -167,6 +167,7 @@
 			<channel id="power-limit" typeId="power-limit"/>
 			<channel id="number-phases" typeId="number-phases"/>
 			<channel id="pause" typeId="pause"/>
+			<channel id="clear-limit" typeId="clear-limit"/>
 			<channel id="availability" typeId="availability"/>
 			<channel id="unlock" typeId="unlock"/>
 			<channel id="current-import-l1" typeId="current-phase">
@@ -351,7 +352,8 @@
 	<channel-type id="charge-limit">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charge Current Limit</label>
-		<description>Maximum charging current applied via SetChargingProfile.</description>
+		<description>Maximum charging current applied via SetChargingProfile. 0 stops the charge; clear-limit removes
+			the cap.</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -366,7 +368,7 @@
 		<label>Charge Power Limit</label>
 		<description>Maximum charging power. Used for a charger that only accepts a power limit; when set it overrides
 			the
-			current limit. Leave unset to use the charge current limit.</description>
+			current limit. Leave unset to use the charge current limit; 0 stops the charge.</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Setpoint</tag>
@@ -409,6 +411,16 @@
 		<item-type>Switch</item-type>
 		<label>Available</label>
 		<description>OCPP availability (Operative/Inoperative) via ChangeAvailability.</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="clear-limit">
+		<item-type>Switch</item-type>
+		<label>Clear Limit</label>
+		<description>Momentary — remove the charge and power limit, so the charger returns to its own maximum.</description>
 		<tags>
 			<tag>Switch</tag>
 		</tags>
