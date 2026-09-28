@@ -317,8 +317,23 @@ public class PhilipsAirHandlerTest extends JavaTest {
         PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), new Configuration());
 
         initializeAndRefresh(handler, "controls#power");
-        assertEquals("AC2889/10",
-                handler.getThing().getConfiguration().get(PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID));
+        assertEquals("AC2889/10", handler.getThing().getProperties().get(Thing.PROPERTY_MODEL_ID));
+        assertEquals("1.0.4", handler.getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION));
+        long thingUpdates = countThingUpdates();
+
+        handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), RefreshType.REFRESH);
+        handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), RefreshType.REFRESH);
+
+        assertEquals(thingUpdates, countThingUpdates());
+    }
+
+    @Test
+    public void missingDevicePropertiesDoNotPersistTheThing() throws Exception {
+        mockResponses("{\"name\":\"Philips\",\"modelid\":\"AC2889/10\"}", STATUS);
+        PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), new Configuration());
+
+        initializeAndRefresh(handler, "controls#power");
+        assertFalse(handler.getThing().getProperties().containsKey(Thing.PROPERTY_FIRMWARE_VERSION));
         long thingUpdates = countThingUpdates();
 
         handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), RefreshType.REFRESH);

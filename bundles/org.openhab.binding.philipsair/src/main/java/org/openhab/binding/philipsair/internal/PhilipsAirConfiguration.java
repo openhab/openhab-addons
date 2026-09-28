@@ -27,7 +27,6 @@ public class PhilipsAirConfiguration {
     public static final String CONFIG_KEY = "key";
     public static final String CONFIG_DEF_DEVICE_UUID = "deviceUUID";
     public static final String CONFIG_DEF_REFRESH_INTERVAL = "refreshInterval";
-    public static final String CONFIG_DEF_MODEL_ID = "modelid";
     public static final String CONFIG_DEF_HUMIDITY_OFFSET = "humidityOffset";
     public static final String CONFIG_DEF_TEMPERATURE_OFFSET = "temperatureOffset";
 
@@ -46,7 +45,6 @@ public class PhilipsAirConfiguration {
     private String host = "";
     private String deviceUUID = "";
     private String key = "";
-    private String modelid = "";
     private float temperatureOffset;
     private float humidityOffset;
 
@@ -80,14 +78,6 @@ public class PhilipsAirConfiguration {
 
     public void setDeviceUUID(String deviceUUID) {
         this.deviceUUID = deviceUUID;
-    }
-
-    public String getModelid() {
-        return modelid;
-    }
-
-    public void setModelid(String modelid) {
-        this.modelid = modelid;
     }
 
     public float getTemperatureOffset() {

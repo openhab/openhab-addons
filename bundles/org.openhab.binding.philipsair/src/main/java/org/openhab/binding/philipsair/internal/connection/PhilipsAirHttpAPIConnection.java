@@ -66,6 +66,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     private static final String KEY_URL = "http://%HOST%/di/v1/products/0/security";
     private static final String FILTERS_URL = "http://%HOST%/di/v1/products/1/fltsts";
     private static final String FIRMWARE_URL = "http://%HOST%/di/v1/products/0/firmware";
+    private static final long REQUEST_TIMEOUT_SECONDS = 10;
 
     private final ExpiringCacheMap<String, String> cache;
     private final Gson gson = new Gson();
@@ -173,7 +174,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
                 request.content(new StringContentProvider(content));
             }
 
-            ContentResponse contentResponse = request.timeout(config.getRefreshInterval(), TimeUnit.SECONDS).send();
+            ContentResponse contentResponse = request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             int httpStatus = contentResponse.getStatus();
             String finalcontent = contentResponse.getContentAsString();
             logger.trace("Philips Air Purifier device response: status = {}, content = '{}'", httpStatus, finalcontent);

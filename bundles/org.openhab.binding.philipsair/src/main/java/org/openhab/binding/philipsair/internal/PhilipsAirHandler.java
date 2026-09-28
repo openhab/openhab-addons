@@ -341,11 +341,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         if (deviceInfo != null) {
             this.deviceInfo = deviceInfo;
             Configuration configuration = editConfiguration();
-            boolean changed = updateConfigValue(configuration, PhilipsAirConfiguration.CONFIG_DEF_MODEL_ID,
-                    deviceInfo.getModelId());
-            changed |= updateConfigValue(configuration, PhilipsAirConfiguration.CONFIG_KEY,
-                    connection.getConfig().getKey());
-            if (changed) {
+            if (updateConfigValue(configuration, PhilipsAirConfiguration.CONFIG_KEY, connection.getConfig().getKey())) {
                 updateConfiguration(configuration);
             }
             updateProperties(fillDeviceProperties(deviceInfo, editProperties()));
@@ -541,10 +537,17 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private static Map<String, String> fillDeviceProperties(PhilipsAirPurifierDeviceDTO device,
             Map<String, String> properties) {
         properties.put(PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
-        properties.put(PROPERTY_MODEL_ID, device.getModelId());
-        properties.put(PROPERTY_FIRMWARE_VERSION, device.getSoftwareVersion());
-        properties.put(PhilipsAirBindingConstants.PROPERTY_NAME, device.getName());
+        // a null value would make updateProperties persist the thing on every update
+        putIfNotNull(properties, PROPERTY_MODEL_ID, device.getModelId());
+        putIfNotNull(properties, PROPERTY_FIRMWARE_VERSION, device.getSoftwareVersion());
+        putIfNotNull(properties, PhilipsAirBindingConstants.PROPERTY_NAME, device.getName());
 
         return properties;
+    }
+
+    private static void putIfNotNull(Map<String, String> properties, String key, @Nullable String value) {
+        if (value != null) {
+            properties.put(key, value);
+        }
     }
 }

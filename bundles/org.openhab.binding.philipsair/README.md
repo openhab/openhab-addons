@@ -64,7 +64,6 @@ The following parameters can be set manually:
 | key               | Encryption key for the communication with HTTP devices. Optional, exchanged with the device automatically.   |
 | deviceUUID        | Device ID. Optional, set automatically upon discovery.                                                       |
 | refreshInterval   | Refresh interval in seconds. Optional, the default is 60 seconds.                                            |
-| modelid           | Model of the device. Optional, detected automatically.                                                       |
 | humidityOffset    | Offset added to the humidity readings. Optional, the default is 0 %.                                         |
 | temperatureOffset | Offset added to the temperature readings. Optional, the default is 0 °C.                                     |
 

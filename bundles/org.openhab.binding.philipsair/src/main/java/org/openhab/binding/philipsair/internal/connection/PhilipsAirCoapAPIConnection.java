@@ -154,6 +154,9 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             if (!hasSync) {
                 counter = getSync(counter);
                 logger.debug("Counter for {}: {}", host, counter);
+                if (listener == null) {
+                    return; // disposed while waiting for the sync response
+                }
             }
             client.setURI(uri);
 
@@ -169,7 +172,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             }
 
             logger.debug("Start Observe request {}", uri);
-            this.observe = client.observe(request, new CoapHandler() {
+            CoapObserveRelation newObserve = client.observe(request, new CoapHandler() {
                 @Override
                 public void onLoad(@Nullable CoapResponse response) {
                     processCoapResponse(uri, response);
@@ -180,7 +183,13 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                     logger.debug("Error for {}", uri);
                 }
             });
-        } catch (ConnectorException | IOException e) {
+            this.observe = newObserve;
+            // dispose() clears the listener before cancelling the relation, so either it sees this relation or the
+            // relation is cancelled here
+            if (listener == null) {
+                newObserve.proactiveCancel();
+            }
+        } catch (ConnectorException | IOException | IllegalStateException e) {
             logger.debug("Error while starting observe for {}: {}", host, e.getMessage());
         }
     }
