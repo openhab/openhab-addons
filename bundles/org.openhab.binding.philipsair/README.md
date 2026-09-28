@@ -1,46 +1,42 @@
 # Philips Air Purifier Binding
 
-This binding provides readings and control of Philips Air Purifier devices.
+This binding monitors and controls Philips air purifiers and combined air purifier/humidifiers over the local network.
+No cloud account is needed.
 
-This binding builds on the protocol reverse engineering done by [rgerganov](https://github.com/rgerganov/py-air-control/commits?author=rgerganov) in [py-air-control](https://github.com/rgerganov/py-air-control), many thanks for that work.
+The binding builds on the protocol reverse engineering done by [rgerganov](https://github.com/rgerganov/py-air-control/commits?author=rgerganov) in [py-air-control](https://github.com/rgerganov/py-air-control), many thanks for that work.
 
 ## Supported Things
 
-The following devices have been tested:
+Philips air purifiers use one of two local protocols, depending on their age:
 
-- AC2889/10
-- AC2729
-- AC2729/50
-- AC1214/10
-- AC3829/10
+- **HTTP**: older models, discovered using UPnP. The communication is encrypted with a key that the binding exchanges with the device automatically.
+- **CoAP**: models released from about 2019 on. These devices push their state changes to openHAB.
 
-Other Philips Air Purifiers are likely to work as well; feedback on compatibility with other models is welcome.
+| Thing Type | Protocol | Description                                                     |
+|------------|----------|-----------------------------------------------------------------|
+| ac2889-10  | HTTP     | Philips Air Purifier AC2889/10                                  |
+| ac2729     | HTTP     | Philips Air Purifier/Humidifier AC2729                          |
+| ac1214-10  | HTTP     | Philips Air Purifier AC1214/10                                  |
+| ac3829-10  | HTTP     | Philips Air Purifier/Humidifier AC3829/10                       |
+| universal  | HTTP     | Any other Philips air purifier using the HTTP protocol          |
+| coap       | CoAP     | Philips air purifiers using the CoAP protocol                   |
 
-| Thing Type | Description                                                                          |
-|------------|--------------------------------------------------------------------------------------|
-| ac2889-10  | Philips Air Purifier AC2889/10 (HTTP protocol)                                       |
-| ac2729     | Philips Air Purifier/Humidifier AC2729 (HTTP protocol)                               |
-| ac1214-10  | Philips Air Purifier AC1214/10 (HTTP protocol)                                       |
-| ac3829-10  | Philips Air Purifier/Humidifier AC3829/10 (HTTP protocol)                            |
-| universal  | Any other Philips Air Purifier using the HTTP protocol                               |
-| coap       | Philips Air Purifiers using the CoAP protocol (most models released from 2019 on)    |
+The following models have been tested: AC1214/10, AC2729, AC2729/50, AC2889/10 and AC3829/10.
+Other models using the same protocols are likely to work as well; feedback on compatibility with other models is welcome.
 
-### Features
+### Limitations
 
-- discovery via UPnP (HTTP devices) and CoAP (CoAP devices)
-- power on/off
-- fan speed and purification mode control
-- light control
-- sensor readings (air quality, temperature, humidity)
-- filter status
-- child lock
-- temperature and humidity offsets
+The CoAP support covers devices that report their state with the classic field names (e.g. `pwr`, `om`, `pm25`), such as the AC2889, AC3033, AC3829 and AC4236 series.
+
+Recent models report their state with numbered field names (e.g. `D03-02` or `D03102`) instead.
+Examples are the AC0850, AC0950, AC1715, AC2210, AC3210, AC3420, AC3737, AMF and HU series.
+These models are not supported yet: they can be added as `coap` thing and go online, but their channels stay `NULL` and commands have no effect.
 
 ## Discovery
 
-The binding discovers Philips Air Purifiers on the local network automatically.
-The models listed above are recognized as their own thing type, all other devices using the HTTP protocol are discovered as `universal` thing.
-Devices using the CoAP protocol are discovered as `coap` thing.
+The binding discovers Philips air purifiers on the local network automatically.
+HTTP devices are found using UPnP: the models listed above are discovered as their own thing type, all other HTTP devices as `universal` thing.
+CoAP devices are found with a CoAP broadcast and discovered as `coap` thing.
 
 Background discovery is enabled by default.
 It can be disabled in the UI under Settings → Add-on Settings → Philips Air Purifier Binding, or by adding the following line to `services/runtime.cfg`:
@@ -54,116 +50,140 @@ This setting applies to both the UPnP and the CoAP discovery.
 ## Thing Configuration
 
 Discovered things do not need any configuration.
-For HTTP devices, the binding exchanges the encryption key with the device automatically after the thing is added.
 
-The following parameters can be set manually:
+| Parameter         | Type    | Required | Default | Description                                                                                                        |
+|-------------------|---------|----------|---------|--------------------------------------------------------------------------------------------------------------------|
+| host              | text    | yes      |         | IP address or hostname of the device. Set automatically upon discovery.                                            |
+| key               | text    | no       |         | Encryption key for HTTP devices. Exchanged with the device automatically when empty. Not used for CoAP devices.   |
+| deviceUUID        | text    | no       |         | Device ID. Set automatically upon discovery and used to identify discovered things.                               |
+| refreshInterval   | integer | no       | 60      | Refresh interval in seconds (minimum 5).                                                                           |
+| humidityOffset    | decimal | no       | 0       | Offset in % added to the humidity readings (-100 to 100).                                                          |
+| temperatureOffset | decimal | no       | 0       | Offset in °C added to the temperature readings (-50 to 50).                                                        |
 
-| Parameter         | Description                                                                                                  |
-|-------------------|--------------------------------------------------------------------------------------------------------------|
-| host              | IP address or hostname of the device. Set automatically upon discovery.                                      |
-| key               | Encryption key for the communication with HTTP devices. Optional, exchanged with the device automatically.   |
-| deviceUUID        | Device ID. Optional, set automatically upon discovery.                                                       |
-| refreshInterval   | Refresh interval in seconds. Optional, the default is 60 seconds.                                            |
-| humidityOffset    | Offset added to the humidity readings. Optional, the default is 0 %.                                         |
-| temperatureOffset | Offset added to the temperature readings. Optional, the default is 0 °C.                                     |
+HTTP devices are polled at the refresh interval.
+When the device rejects the key, for example after a reset, the binding exchanges a new key automatically.
 
-CoAP devices push their state changes to openHAB.
-For these devices the refresh interval is only used to check that the device still sends updates; the thing goes offline when no update is received within twice the refresh interval (at least 60 seconds).
-
-demo.things
-
-```java
-philipsair:ac2889-10:livingroom "Philips Air AC2889/10" @ "Living Room" [ host="192.168.1.10", refreshInterval=15 ]
-philipsair:ac3829-10:bedroom "Philips Air AC3829/10" @ "Bedroom" [ host="192.168.1.11", refreshInterval=15 ]
-```
+CoAP devices push their state changes, so they are not polled.
+For these devices the refresh interval is only used to check that the device still sends updates.
+The thing goes offline when no update is received within twice the refresh interval, but at least 60 seconds.
 
 ## Channels
 
-| Channel Group | Channel ID            | Item Type            | Description                                                                          |
-|---------------|-----------------------|----------------------|--------------------------------------------------------------------------------------|
-| controls      | power                 | Switch               | Device power on/off                                                                  |
-| controls      | fan-speed             | String               | Fan speed (s - silent, 1, 2, 3, t - turbo)                                           |
-| controls      | mode                  | String               | Mode (P - auto, A - allergen, S - sleep, M - manual, B - bacteria, N - night)        |
-| controls      | timer                 | Number               | Timer in hours (0-5)                                                                 |
-| controls      | timer-remaining       | Number:Time          | Time left until the timer switches the device off                                    |
-| controls      | child-lock            | Switch               | Child lock on/off                                                                    |
-| controls      | target-humidity       | Number:Dimensionless | Humidity setpoint                                                                    |
-| controls      | function              | String               | Function (P - purification, PH - purification and humidification)                    |
-| controls-ui   | button-light          | Switch               | Button light on/off                                                                  |
-| controls-ui   | light-level           | Number:Dimensionless | LED light level (0, 25, 50, 75, 100 %)                                               |
-| controls-ui   | displayed-index       | String               | Index shown on the display (1 - PM2.5, 0 - allergen index)                           |
-| sensors       | pm25                  | Number:Density       | PM2.5 particle concentration                                                         |
-| sensors       | allergen-index        | Number               | Allergen index                                                                       |
-| sensors       | air-quality-threshold | Number               | Air quality index at which the device notifies                                       |
-| sensors       | error-code            | String               | Error code                                                                           |
-| sensors       | humidity              | Number:Dimensionless | Current humidity                                                                     |
-| sensors       | temperature           | Number:Temperature   | Current temperature                                                                  |
-| sensors       | water-level           | Number:Dimensionless | Water tank level                                                                     |
-| filters       | pre-filter-life       | Number:Time          | Estimated time until the pre-filter needs to be cleaned (in hours)                   |
-| filters       | hepa-filter-life      | Number:Time          | Estimated remaining lifetime of the HEPA filter (in hours)                           |
-| filters       | carbon-filter-life    | Number:Time          | Estimated remaining lifetime of the active carbon filter (in hours)                  |
-| filters       | wick-filter-life      | Number:Time          | Estimated remaining lifetime of the wick filter (in hours)                           |
+The channels are organized in the groups `controls`, `controls-ui`, `sensors` and `filters`.
 
-The channels `target-humidity`, `function`, `humidity`, `temperature`, `water-level` and `wick-filter-life` are only supported by some models.
-For thing types that do not define them (e.g. `coap` and `universal`), they are added automatically once the device reports the corresponding value.
+| Channel Group | Channel ID            | Item Type            | Read/Write | Description                                                                              |
+|---------------|-----------------------|----------------------|------------|------------------------------------------------------------------------------------------|
+| controls      | power                 | Switch               | RW         | Device power                                                                             |
+| controls      | fan-speed             | String               | RW         | Fan speed: `s` (silent), `1`, `2`, `3`, `t` (turbo). Setting the fan speed also switches the device to manual mode. |
+| controls      | mode                  | String               | RW         | Mode: `P` (auto), `A` (allergen), `S` (sleep), `M` (manual), `B` (bacteria), `N` (night) |
+| controls      | timer                 | Number               | RW         | Switch-off timer in hours (0-5, 0 is off)                                                |
+| controls      | timer-remaining       | Number:Time          | R          | Time left until the timer switches the device off                                        |
+| controls      | child-lock            | Switch               | RW         | Child lock                                                                               |
+| controls      | target-humidity       | Number:Dimensionless | RW         | Humidity setpoint (40-70 %, in steps of 10 %)                                            |
+| controls      | function              | String               | RW         | Function: `P` (purification), `PH` (purification and humidification)                    |
+| controls-ui   | button-light          | Switch               | RW         | Button light                                                                             |
+| controls-ui   | light-level           | Number:Dimensionless | RW         | Display light level (0, 25, 50, 75, 100 %)                                               |
+| controls-ui   | displayed-index       | String               | RW         | Index shown on the display: `1` (PM2.5), `0` (allergen index)                            |
+| sensors       | pm25                  | Number:Density       | R          | PM2.5 particle concentration                                                             |
+| sensors       | allergen-index        | Number               | R          | Allergen index                                                                           |
+| sensors       | air-quality-threshold | Number               | RW         | Air quality index at which the device notifies                                           |
+| sensors       | error-code            | String               | R          | Error code, e.g. `0` (no error), `49408` (no water), `32768` (water tank open), `49155` (clean pre-filter) |
+| sensors       | humidity              | Number:Dimensionless | R          | Current humidity, corrected by `humidityOffset`                                          |
+| sensors       | temperature           | Number:Temperature   | R          | Current temperature, corrected by `temperatureOffset`                                    |
+| sensors       | water-level           | Number:Dimensionless | R          | Water tank level                                                                         |
+| filters       | pre-filter-life       | Number:Time          | R          | Time until the pre-filter needs to be cleaned                                            |
+| filters       | hepa-filter-life      | Number:Time          | R          | Remaining lifetime of the HEPA filter                                                    |
+| filters       | carbon-filter-life    | Number:Time          | R          | Remaining lifetime of the active carbon filter                                           |
+| filters       | wick-filter-life      | Number:Time          | R          | Remaining lifetime of the humidifier wick                                                |
+
+The channels `target-humidity`, `function`, `humidity`, `temperature`, `water-level` and `wick-filter-life` are only available on models with a humidifier or the corresponding sensors.
+The `ac2729` and `ac3829-10` thing types always have them.
+For the other thing types, in particular `universal` and `coap`, they are added automatically once the device reports the corresponding value.
 
 ## Thing Properties
 
-| Property        | Description                                          |
-|-----------------|------------------------------------------------------|
-| vendor          | Always `Philips`                                     |
-| modelId         | Model reported by the device, e.g. `AC2889/10`       |
-| firmwareVersion | Firmware version of the device                       |
-| name            | Name of the device as configured in the Philips app |
+| Property        | Description                                                           |
+|-----------------|-----------------------------------------------------------------------|
+| vendor          | Always `Philips`                                                      |
+| modelId         | Model reported by the device, e.g. `AC2889/10`                        |
+| firmwareVersion | Firmware version of the device                                        |
+| name            | Name of the device as configured in the Philips app                   |
+| deviceType      | Device type reported during discovery                                 |
+| manufacturer    | Manufacturer reported during discovery                                |
+| macAddress      | MAC address of the device, reported during UPnP discovery             |
 
-Discovered things are identified by their `deviceUUID` configuration parameter.
+The properties `deviceType`, `manufacturer` and `macAddress` are only set on discovered things.
 
 ## Full Example
 
-demo.items
+### Thing Configuration
 
 ```java
-Switch                ac2889_10_power          "Power"                <switch>       { channel="philipsair:ac2889-10:livingroom:controls#power" }
-String                ac2889_10_fan_speed      "Fan Speed"            <fan>          { channel="philipsair:ac2889-10:livingroom:controls#fan-speed" }
-String                ac2889_10_mode           "Mode"                 <text>         { channel="philipsair:ac2889-10:livingroom:controls#mode" }
-Switch                ac2889_10_button_light   "Button Light"         <lightbulb>    { channel="philipsair:ac2889-10:livingroom:controls-ui#button-light" }
-String                ac2889_10_index          "Displayed Index"      <text>         { channel="philipsair:ac2889-10:livingroom:controls-ui#displayed-index" }
-Number:Dimensionless  ac2889_10_light_level    "LED Light Level"      <lightbulb>    { channel="philipsair:ac2889-10:livingroom:controls-ui#light-level" }
-Number:Time           ac2889_10_timer_left     "Timer Remaining"      <time>         { channel="philipsair:ac2889-10:livingroom:controls#timer-remaining" }
-Number                ac2889_10_timer          "Timer"                <time>         { channel="philipsair:ac2889-10:livingroom:controls#timer" }
-Number:Density        ac2889_10_pm25           "PM2.5"                <smoke>        { channel="philipsair:ac2889-10:livingroom:sensors#pm25" }
-Number                ac2889_10_allergen       "Allergen Index"       <text>         { channel="philipsair:ac2889-10:livingroom:sensors#allergen-index" }
-String                ac2889_10_error          "Error"                <error>        { channel="philipsair:ac2889-10:livingroom:sensors#error-code" }
-Number:Time           ac2889_10_pre_filter     "Pre-filter"           <text>         { channel="philipsair:ac2889-10:livingroom:filters#pre-filter-life" }
-Number:Time           ac2889_10_carbon_filter  "Carbon Filter"        <text>         { channel="philipsair:ac2889-10:livingroom:filters#carbon-filter-life" }
-Number:Time           ac2889_10_hepa_filter    "HEPA Filter"          <text>         { channel="philipsair:ac2889-10:livingroom:filters#hepa-filter-life" }
-
-Switch                ac3829_10_child_lock     "Child Lock"           <lock>         { channel="philipsair:ac3829-10:bedroom:controls#child-lock" }
-Number:Time           ac3829_10_wick_filter    "Wick Filter"          <text>         { channel="philipsair:ac3829-10:bedroom:filters#wick-filter-life" }
-Number:Dimensionless  ac3829_10_humidity       "Humidity"             <humidity>     { channel="philipsair:ac3829-10:bedroom:sensors#humidity" }
-Number:Dimensionless  ac3829_10_target_hum     "Humidity Setpoint"    <humidity>     { channel="philipsair:ac3829-10:bedroom:controls#target-humidity" }
-Number:Temperature    ac3829_10_temperature    "Temperature"          <temperature>  { channel="philipsair:ac3829-10:bedroom:sensors#temperature" }
-String                ac3829_10_function       "Function"             <text>         { channel="philipsair:ac3829-10:bedroom:controls#function" }
-Number:Dimensionless  ac3829_10_water_level    "Water Level"          <cistern>      { channel="philipsair:ac3829-10:bedroom:sensors#water-level" }
+Thing philipsair:ac2889-10:livingroom "Air Purifier Living Room" @ "Living Room" [ host="192.168.1.10", refreshInterval=15 ]
+Thing philipsair:ac3829-10:bedroom    "Air Purifier Bedroom"     @ "Bedroom"     [ host="192.168.1.11", refreshInterval=15 ]
+Thing philipsair:coap:office          "Air Purifier Office"      @ "Office"      [ host="192.168.1.12" ]
 ```
 
-demo.sitemap
+### Item Configuration
 
 ```java
-sitemap philips_air_purifier label="Philips Air Purifier" {
-    Frame label="Control" {
-        Switch item=ac2889_10_power
-        Selection item=ac2889_10_fan_speed
-        Selection item=ac2889_10_mode
+Switch                LivingRoom_AP_Power          "Power"                  <switch>       { channel="philipsair:ac2889-10:livingroom:controls#power" }
+String                LivingRoom_AP_FanSpeed       "Fan Speed"              <fan>          { channel="philipsair:ac2889-10:livingroom:controls#fan-speed" }
+String                LivingRoom_AP_Mode           "Mode"                   <text>         { channel="philipsair:ac2889-10:livingroom:controls#mode" }
+Number                LivingRoom_AP_Timer          "Timer [%d h]"           <time>         { channel="philipsair:ac2889-10:livingroom:controls#timer" }
+Number:Time           LivingRoom_AP_TimerLeft      "Timer Remaining"        <time>         { channel="philipsair:ac2889-10:livingroom:controls#timer-remaining" }
+Switch                LivingRoom_AP_ButtonLight    "Button Light"           <lightbulb>    { channel="philipsair:ac2889-10:livingroom:controls-ui#button-light" }
+Number:Dimensionless  LivingRoom_AP_LightLevel     "Light Level"            <lightbulb>    { channel="philipsair:ac2889-10:livingroom:controls-ui#light-level" }
+String                LivingRoom_AP_Index          "Displayed Index"        <text>         { channel="philipsair:ac2889-10:livingroom:controls-ui#displayed-index" }
+Number:Density        LivingRoom_AP_PM25           "PM2.5"                  <smoke>        { channel="philipsair:ac2889-10:livingroom:sensors#pm25" }
+Number                LivingRoom_AP_Allergen       "Allergen Index"         <text>         { channel="philipsair:ac2889-10:livingroom:sensors#allergen-index" }
+String                LivingRoom_AP_Error          "Error"                  <error>        { channel="philipsair:ac2889-10:livingroom:sensors#error-code" }
+Number:Time           LivingRoom_AP_PreFilter      "Pre-filter"             <text>         { channel="philipsair:ac2889-10:livingroom:filters#pre-filter-life" }
+Number:Time           LivingRoom_AP_HepaFilter     "HEPA Filter"            <text>         { channel="philipsair:ac2889-10:livingroom:filters#hepa-filter-life" }
+Number:Time           LivingRoom_AP_CarbonFilter   "Carbon Filter"          <text>         { channel="philipsair:ac2889-10:livingroom:filters#carbon-filter-life" }
+
+Switch                Bedroom_AP_Power             "Power"                  <switch>       { channel="philipsair:ac3829-10:bedroom:controls#power" }
+Switch                Bedroom_AP_ChildLock         "Child Lock"             <lock>         { channel="philipsair:ac3829-10:bedroom:controls#child-lock" }
+String                Bedroom_AP_Function          "Function"               <text>         { channel="philipsair:ac3829-10:bedroom:controls#function" }
+Number:Dimensionless  Bedroom_AP_TargetHumidity    "Humidity Setpoint"      <humidity>     { channel="philipsair:ac3829-10:bedroom:controls#target-humidity" }
+Number:Dimensionless  Bedroom_AP_Humidity          "Humidity"               <humidity>     { channel="philipsair:ac3829-10:bedroom:sensors#humidity" }
+Number:Temperature    Bedroom_AP_Temperature       "Temperature"            <temperature>  { channel="philipsair:ac3829-10:bedroom:sensors#temperature" }
+Number:Dimensionless  Bedroom_AP_WaterLevel        "Water Level"            <cistern>      { channel="philipsair:ac3829-10:bedroom:sensors#water-level" }
+Number:Time           Bedroom_AP_WickFilter        "Wick"                   <text>         { channel="philipsair:ac3829-10:bedroom:filters#wick-filter-life" }
+
+Switch                Office_AP_Power              "Power"                  <switch>       { channel="philipsair:coap:office:controls#power" }
+Number:Density        Office_AP_PM25               "PM2.5"                  <smoke>        { channel="philipsair:coap:office:sensors#pm25" }
+```
+
+### Sitemap Configuration
+
+```perl
+sitemap philipsair label="Air Purifiers" {
+    Frame label="Living Room" {
+        Switch    item=LivingRoom_AP_Power
+        Selection item=LivingRoom_AP_FanSpeed
+        Selection item=LivingRoom_AP_Mode
+        Setpoint  item=LivingRoom_AP_Timer minValue=0 maxValue=5 step=1
+        Text      item=LivingRoom_AP_TimerLeft
+        Switch    item=LivingRoom_AP_ButtonLight
+        Selection item=LivingRoom_AP_Index
+        Text      item=LivingRoom_AP_PM25
+        Text      item=LivingRoom_AP_Allergen
+        Text      item=LivingRoom_AP_PreFilter
+        Text      item=LivingRoom_AP_HepaFilter
+        Text      item=LivingRoom_AP_CarbonFilter
     }
-    Frame label="Display" {
-        Switch item=ac2889_10_button_light
-        Selection item=ac2889_10_index
+    Frame label="Bedroom" {
+        Switch    item=Bedroom_AP_Power
+        Selection item=Bedroom_AP_Function
+        Setpoint  item=Bedroom_AP_TargetHumidity minValue=40 maxValue=70 step=10
+        Text      item=Bedroom_AP_Humidity
+        Text      item=Bedroom_AP_Temperature
+        Text      item=Bedroom_AP_WaterLevel
     }
-    Frame label="Sensors" {
-        Text item=ac2889_10_pm25
-        Text item=ac3829_10_temperature
-        Text item=ac3829_10_humidity
+    Frame label="Office" {
+        Switch    item=Office_AP_Power
+        Text      item=Office_AP_PM25
     }
 }
 ```
