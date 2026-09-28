@@ -145,6 +145,11 @@ public class Shelly2ApiClientDuoBulbStatusTest {
         lights.add(new ShellySettingsLight());
         profile.status.lights = lights;
         
+        // Initialize settings.lights for the ShellyLightModel
+        ArrayList<ShellySettingsRgbwLight> settingsLights = new ArrayList<>();
+        settingsLights.add(new ShellySettingsRgbwLight());
+        profile.settings.lights = settingsLights;
+        
         return profile;
     }
 
