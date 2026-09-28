@@ -13,8 +13,11 @@
 package org.openhab.binding.shelly.internal.api2;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUSCOLORBULB;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUSDUOBULB;
@@ -27,6 +30,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -35,6 +39,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
@@ -43,19 +48,30 @@ import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 
 /**
  * Covers {@link Shelly2ApiClient#fillDeviceStatus} for the Multicolor Bulb G3 ({@code rgbcct:0}) profile, in
  * particular {@code updateDuoBulbStatus}'s handling of {@code NotifyStatus} payloads that omit the {@code mode}
- * field on partial (output/brightness-only) updates.
+ * field on partial (output/brightness-only) updates. Also covers energy and power wiring for meters associated with
+ * duo bulbs (both RGBCCT and CCT-only variants).
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings({ "null" })
 public class Shelly2ApiClientDuoBulbStatusTest {
+
+    @BeforeAll
+    static void initChannelDefinitions() {
+        ShellyTranslationProvider messages = mock(ShellyTranslationProvider.class);
+        when(messages.get(anyString(), org.mockito.ArgumentMatchers.any(Object[].class))).thenAnswer(i -> i.getArgument(0));
+        new ShellyChannelDefinitions(messages);
+    }
 
     @Mock
     private @NonNullByDefault({}) ShellyThingInterface thing;
@@ -65,17 +81,30 @@ public class Shelly2ApiClientDuoBulbStatusTest {
         profile.isRGBCCT = true;
         profile.inColor = inColor;
         profile.device.mode = inColor ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE;
-        profile.status.lights = new ArrayList<>(List.of(new ShellySettingsLight()));
+        
+        // Initialize status.lights for light updates
+        ArrayList<ShellySettingsLight> lights = new ArrayList<>();
+        lights.add(new ShellySettingsLight());
+        profile.status.lights = lights;
+        
+        // Initialize settings.lights for the ShellyLightModel
+        ArrayList<ShellySettingsRgbwLight> settingsLights = new ArrayList<>();
+        settingsLights.add(new ShellySettingsRgbwLight());
+        profile.settings.lights = settingsLights;
+        
         return profile;
     }
 
     private Shelly2ApiClient newClient(ShellyDeviceProfile profile) {
         when(thing.getProfile()).thenReturn(profile);
+        return new Shelly2ApiClient("test", discoveryConfig(), thing);
+    }
+
+    private ShellyApiConfiguration discoveryConfig() {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
                 .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, "192.168.1.50"));
         ShellyBindingRuntimeConfig bindingConfig = new ShellyBindingRuntimeConfig(raw, 8080, nullNas());
-        ShellyApiConfiguration config = new ShellyApiConfiguration(bindingConfig, "test-realm", "192.168.1.100");
-        return new Shelly2ApiClient("test", config, thing);
+        return new ShellyApiConfiguration(bindingConfig, "test-realm", "192.168.1.100");
     }
 
     private static NetworkAddressService nullNas() {
@@ -112,7 +141,12 @@ public class Shelly2ApiClientDuoBulbStatusTest {
 
     private ShellyDeviceProfile duoBulbProfile() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
-        profile.status.lights = new ArrayList<>(List.of(new ShellySettingsLight()));
+        
+        // Initialize status.lights for light updates
+        ArrayList<ShellySettingsLight> lights = new ArrayList<>();
+        lights.add(new ShellySettingsLight());
+        profile.status.lights = lights;
+        
         return profile;
     }
 
@@ -129,7 +163,9 @@ public class Shelly2ApiClientDuoBulbStatusTest {
     void rgbcctPowerAndEnergyAreWiredIntoMeterChannel() throws ShellyApiException {
         ShellyDeviceProfile profile = multicolorBulbProfile(true);
         profile.numMeters = 1;
-        profile.status.emeters = new ArrayList<>(List.of(new ShellySettingsEMeter()));
+        ArrayList<ShellySettingsEMeter> emeters = new ArrayList<>();
+        emeters.add(new ShellySettingsEMeter());
+        profile.status.emeters = emeters;
         Shelly2ApiClient client = newClient(profile);
 
         Shelly2RGBCCTStatus rgbcct = rgbcctStatus("rgb");
@@ -158,7 +194,9 @@ public class Shelly2ApiClientDuoBulbStatusTest {
     void cctPowerAndEnergyAreWiredIntoMeterChannel() throws ShellyApiException {
         ShellyDeviceProfile profile = duoBulbProfile();
         profile.numMeters = 1;
-        profile.status.emeters = new ArrayList<>(List.of(new ShellySettingsEMeter()));
+        ArrayList<ShellySettingsEMeter> emeters = new ArrayList<>();
+        emeters.add(new ShellySettingsEMeter());
+        profile.status.emeters = emeters;
         Shelly2ApiClient client = newClient(profile);
 
         Shelly2DeviceStatusLight cct = new Shelly2DeviceStatusLight();
