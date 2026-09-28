@@ -61,6 +61,13 @@ public abstract class PhilipsAirAPIConnection {
     }
 
     /**
+     * @return true if the device pushes its status, so it does not need to be polled
+     */
+    public boolean isPushingStatus() {
+        return false;
+    }
+
+    /**
      * Releases the resources held by this connection. The connection must not be used afterwards.
      */
     public void dispose() {

@@ -92,17 +92,17 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         };
         handler.setCallback(callback);
         when(connection.getConfig()).thenReturn(new PhilipsAirConfiguration());
+        // the thing is a CoAP thing, which is not polled right after the connection is created
+        when(connection.isPushingStatus()).thenReturn(true);
     }
 
     @Test
-    public void disposeReleasesConnection() throws InterruptedException {
+    public void disposeReleasesConnection() throws Exception {
         releaseConnection.countDown();
         handler.initialize();
-        assertTrue(connectionCreated.await(10, TimeUnit.SECONDS));
-        waitForAssert(() -> {
-            handler.handleCommand(POWER_CHANNEL, OnOffType.ON);
-            verify(connection, atLeastOnce()).sendCommand(any(), any());
-        });
+        waitForAssert(() -> verify(connection).ensureConnected());
+        handler.handleCommand(POWER_CHANNEL, OnOffType.ON);
+        verify(connection, timeout(10000)).sendCommand(any(), any());
 
         handler.dispose();
 
@@ -113,7 +113,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     }
 
     @Test
-    public void failedCommandKeepsLastState() throws InterruptedException {
+    public void failedCommandKeepsLastState() throws Exception {
         when(callback.isChannelLinked(POWER_CHANNEL)).thenReturn(true);
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
@@ -125,9 +125,12 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
             verify(callback, atLeastOnce()).stateUpdated(POWER_CHANNEL, OnOffType.ON);
         });
 
+        clearInvocations(callback);
         handler.handleCommand(POWER_CHANNEL, OnOffType.OFF);
 
-        verify(connection).sendCommand(any(), any());
+        verify(connection, timeout(10000)).sendCommand(any(), any());
+        // the last known state is published again
+        verify(callback, timeout(10000)).stateUpdated(POWER_CHANNEL, OnOffType.ON);
         verify(callback, never()).stateUpdated(POWER_CHANNEL, UnDefType.NULL);
         handler.dispose();
     }
@@ -164,7 +167,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     }
 
     @Test
-    public void noStatusIsPublishedAfterDispose() throws InterruptedException {
+    public void noStatusIsPublishedAfterDispose() throws Exception {
         CountDownLatch requestStarted = new CountDownLatch(1);
         CountDownLatch finishRequest = new CountDownLatch(1);
         when(connection.getAirPurifierStatus(any())).thenAnswer(invocation -> {
@@ -176,21 +179,18 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         handler.initialize();
         waitForAssert(() -> verify(connection).ensureConnected());
 
-        Thread refresh = new Thread(() -> handler.handleCommand(POWER_CHANNEL, RefreshType.REFRESH));
-        refresh.setDaemon(true);
-        refresh.start();
+        handler.handleCommand(POWER_CHANNEL, RefreshType.REFRESH);
         assertTrue(requestStarted.await(10, TimeUnit.SECONDS));
         handler.dispose();
         clearInvocations(callback);
         finishRequest.countDown();
-        refresh.join(TimeUnit.SECONDS.toMillis(10));
 
-        assertFalse(refresh.isAlive());
-        verify(callback, never()).statusUpdated(any(), any());
+        // the refresh completes asynchronously, without an observable event when nothing is published
+        verify(callback, after(1000).never()).statusUpdated(any(), any());
     }
 
     @Test
-    public void connectionCreatedAfterDisposeIsReleased() throws InterruptedException {
+    public void connectionCreatedAfterDisposeIsReleased() throws Exception {
         handler.initialize();
         assertTrue(connectionCreated.await(10, TimeUnit.SECONDS));
 

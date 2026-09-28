@@ -17,6 +17,7 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link PhilipsAirUpnpDiscoveryParticipantTest} is responsible for discovering
+ * The {@link PhilipsAirUpnpDiscoveryParticipant} is responsible for discovering
  * new Philips Air Purifier things
  *
  * @author Michał Boroński - Initial contribution
@@ -144,10 +145,10 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
 
     /**
      * Maps the UPnP model number to a thing type. Devices report the model number with or without the region suffix
-     * (e.g. 'AC2889' or 'AC2889/10'), so both are matched against the thing type id (e.g. 'ac2889_10').
+     * (e.g. 'AC2889' or 'AC2889/10'), so both are matched against the thing type id (e.g. 'ac2889-10').
      */
     static ThingTypeUID getThingType(@Nullable String modelNumber) {
-        String model = modelNumber != null ? modelNumber.toLowerCase().replace('/', '_') : "";
+        String model = modelNumber != null ? modelNumber.toLowerCase(Locale.ROOT).replace('/', '-') : "";
         if (!model.isEmpty()) {
             for (ThingTypeUID thingType : List.of(THING_TYPE_AC2889_10, THING_TYPE_AC1214_10, THING_TYPE_AC2729,
                     THING_TYPE_AC3829_10)) {

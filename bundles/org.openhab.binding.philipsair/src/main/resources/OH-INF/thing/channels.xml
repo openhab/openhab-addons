@@ -76,20 +76,18 @@
 		</state>
 	</channel-type>
 	<channel-type id="light-level">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>LED Light Level</label>
-
 		<description>Level 100, 75, 50, 25, 0</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Brightness</tag>
 		</tags>
-		<state pattern="%d" min="0" max="100" step="25"/>
+		<state pattern="%d %unit%" min="0" max="100" step="25"/>
 	</channel-type>
 	<channel-type id="child-lock">
 		<item-type>Switch</item-type>
 		<label>Child Lock</label>
-
 		<description>Child lock enabled/disabled</description>
 		<tags>
 			<tag>Switch</tag>
@@ -140,7 +138,7 @@
 	</channel-type>
 	<channel-type id="air-quality-threshold">
 		<item-type>Number</item-type>
-		<label>Air Quality Notification Threshold</label>
+		<label>Air Quality Threshold</label>
 		<description>Air quality index at which the device notifies</description>
 		<tags>
 			<tag>Setpoint</tag>
@@ -155,7 +153,6 @@
 			<tag>Alarm</tag>
 			<tag>Info</tag>
 		</tags>
-
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="0">No error</option>
@@ -167,44 +164,44 @@
 	</channel-type>
 
 	<channel-type id="pre-filter-life">
-		<item-type>Number</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Pre-filter</label>
 		<description>Estimated time to perform a manual clean up of the Pre-filter</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="wick-filter-life">
-		<item-type>Number</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Wick</label>
 		<description>Wick filter estimated lifetime</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="carbon-filter-life">
-		<item-type>Number</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Carbon</label>
 		<description>Active carbon filter estimated lifetime</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="hepa-filter-life">
-		<item-type>Number</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>HEPA Filter</label>
 		<description>HEPA filter estimated lifetime</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
@@ -255,13 +252,13 @@
 		</state>
 	</channel-type>
 	<channel-type id="water-level">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Water Level</label>
 		<description>Water tank level</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Level</tag>
 		</tags>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

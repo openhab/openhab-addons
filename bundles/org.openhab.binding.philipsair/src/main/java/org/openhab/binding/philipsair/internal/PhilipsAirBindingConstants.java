@@ -40,10 +40,10 @@ public class PhilipsAirBindingConstants {
     public static final String VENDOR = "Philips";
 
     public static final String SUPPORTED_MODEL_UNIVERSAL = "universal";
-    public static final String SUPPORTED_MODEL_NUMBER_AC2889_10 = "ac2889_10";
+    public static final String SUPPORTED_MODEL_NUMBER_AC2889_10 = "ac2889-10";
     public static final String SUPPORTED_MODEL_NUMBER_AC2729 = "ac2729";
-    public static final String SUPPORTED_MODEL_NUMBER_AC1214_10 = "ac1214_10";
-    public static final String SUPPORTED_MODEL_NUMBER_AC3829_10 = "ac3829_10";
+    public static final String SUPPORTED_MODEL_NUMBER_AC1214_10 = "ac1214-10";
+    public static final String SUPPORTED_MODEL_NUMBER_AC3829_10 = "ac3829-10";
 
     public static final String SUPPORTED_MODEL_COAP = "coap";
 

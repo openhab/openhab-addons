@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="controls-ui">
-		<label>Controls-UI</label>
+		<label>Display</label>
 		<channels>
 			<channel id="button-light" typeId="button-light"/>
 			<channel id="light-level" typeId="light-level"/>

@@ -292,8 +292,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     }
 
     @Override
-    public PhilipsAirConfiguration getConfig() {
-        return this.config;
+    public boolean isPushingStatus() {
+        return true;
     }
 
     @Override

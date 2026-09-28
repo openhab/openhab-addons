@@ -12,13 +12,9 @@
  */
 package org.openhab.binding.philipsair.internal.connection;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
@@ -26,7 +22,6 @@ import java.util.Base64;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -132,9 +127,7 @@ public class PhilipsAirCipher {
         return new String(unpaded, StandardCharsets.UTF_8);
     }
 
-    public @Nullable String encrypt(String data)
-            throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException,
-            NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException {
+    public @Nullable String encrypt(String data) throws IllegalBlockSizeException, BadPaddingException {
         if (cipher == null) {
             return null;
         }

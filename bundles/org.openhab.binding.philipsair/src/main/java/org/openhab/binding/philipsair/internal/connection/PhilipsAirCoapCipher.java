@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.philipsair.internal.connection;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -103,8 +102,7 @@ public class PhilipsAirCoapCipher {
             }
             return encrypedMessage;
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException
-                | UnsupportedEncodingException e) {
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             logger.trace("Error decoding message: {}", e.getMessage(), e);
         }
         return null;
@@ -129,16 +127,16 @@ public class PhilipsAirCoapCipher {
         SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "AES");
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
-        return new String(cipher.doFinal(HexUtils.hexToBytes(strToDecrypt)));
+        return new String(cipher.doFinal(HexUtils.hexToBytes(strToDecrypt)), StandardCharsets.UTF_8);
     }
 
-    public static String encrypt(String strToEncrypt, String secret, String iv) throws NoSuchAlgorithmException,
-            NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException,
-            BadPaddingException, UnsupportedEncodingException {
+    public static String encrypt(String strToEncrypt, String secret, String iv)
+            throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         IvParameterSpec ivspec = new IvParameterSpec(iv.getBytes(StandardCharsets.UTF_8));
         SecretKeySpec secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "AES");
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
-        return HexUtils.bytesToHex(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+        return HexUtils.bytesToHex(cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8)));
     }
 }

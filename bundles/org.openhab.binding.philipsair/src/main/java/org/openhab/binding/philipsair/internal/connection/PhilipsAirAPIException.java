@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Michał Boroński - Initial contribution
  */
 @NonNullByDefault
-public class PhilipsAirAPIException extends RuntimeException {
+public class PhilipsAirAPIException extends Exception {
 
     private static final long serialVersionUID = 1L;
 

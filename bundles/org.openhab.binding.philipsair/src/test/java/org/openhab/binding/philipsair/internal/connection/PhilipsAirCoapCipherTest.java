@@ -14,6 +14,8 @@ package org.openhab.binding.philipsair.internal.connection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -62,7 +64,7 @@ public class PhilipsAirCoapCipherTest {
 
         assertEquals("", PhilipsAirCoapCipher.decryptMsg(corrupted, logger));
         String lowerCaseHash = encrypted.substring(0, encrypted.length() - 64)
-                + encrypted.substring(encrypted.length() - 64).toLowerCase();
+                + encrypted.substring(encrypted.length() - 64).toLowerCase(Locale.ROOT);
         assertNotEquals("", PhilipsAirCoapCipher.decryptMsg(lowerCaseHash, logger));
     }
 }

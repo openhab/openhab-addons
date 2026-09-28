@@ -49,7 +49,6 @@ import org.openhab.core.net.NetUtil;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -84,9 +83,8 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     private final NetworkAddressService networkAddressService;
 
     @Activate
-    public PhilipsAirCoapDiscovery(@Reference ConfigurationAdmin configAdmin,
-            @Reference NetworkAddressService networkAddressService, Map<String, Object> configProperties)
-            throws IllegalArgumentException {
+    public PhilipsAirCoapDiscovery(@Reference NetworkAddressService networkAddressService,
+            Map<String, Object> configProperties) {
         super(DISCOVERY_TIME);
 
         CoapConfig.register();
@@ -162,14 +160,10 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-
         stopBackgroundDiscovery();
-        ScheduledFuture<?> coapDiscoveryJob = this.coapDiscoveryJob;
-        if (coapDiscoveryJob == null || coapDiscoveryJob.isCancelled()) {
-            logger.debug("Starting PhilipsAir (COAP) background discovery job");
-            this.coapDiscoveryJob = scheduler.scheduleWithFixedDelay(this::backgroundScan, 0,
-                    BACKGROUND_DISCOVERY_INTERVAL, TimeUnit.SECONDS);
-        }
+        logger.debug("Starting PhilipsAir (COAP) background discovery job");
+        coapDiscoveryJob = scheduler.scheduleWithFixedDelay(this::backgroundScan, 0, BACKGROUND_DISCOVERY_INTERVAL,
+                TimeUnit.SECONDS);
     }
 
     private void backgroundScan() {

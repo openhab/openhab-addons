@@ -4,9 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="ac2889_10">
-		<label>Philips Air Purifier AC2889/10</label>
+	<thing-type id="ac2889-10">
+		<label>Air Purifier AC2889/10</label>
 		<description>Philips Air Purifier AC2889/10</description>
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="controls-basic" id="controls"/>
 			<channel-group typeId="controls-ui" id="controls-ui"/>
@@ -18,8 +19,9 @@
 	</thing-type>
 
 	<thing-type id="universal">
-		<label>Philips Air Purifier</label>
-		<description>Philips Air Purifier</description>
+		<label>Air Purifier (HTTP)</label>
+		<description>Philips Air Purifier using the HTTP protocol</description>
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="controls-basic" id="controls"/>
 			<channel-group typeId="controls-ui" id="controls-ui"/>
@@ -31,8 +33,9 @@
 	</thing-type>
 
 	<thing-type id="coap">
-		<label>Philips Air Purifier</label>
+		<label>Air Purifier (CoAP)</label>
 		<description>Philips Air Purifier using COAP protocol</description>
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="controls-basic" id="controls"/>
 			<channel-group typeId="controls-ui" id="controls-ui"/>
@@ -44,8 +47,9 @@
 	</thing-type>
 
 	<thing-type id="ac2729">
-		<label>Philips Air Purifier AC2729</label>
+		<label>Air Purifier AC2729</label>
 		<description>Philips Air Purifier AC2729</description>
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="controls-adv" id="controls"/>
 			<channel-group typeId="controls-ui" id="controls-ui"/>
@@ -56,9 +60,10 @@
 		<config-description-ref uri="thing-type:philipsair:config"/>
 	</thing-type>
 
-	<thing-type id="ac1214_10">
-		<label>Philips Air Purifier AC1214/10</label>
+	<thing-type id="ac1214-10">
+		<label>Air Purifier AC1214/10</label>
 		<description>Philips Air Purifier AC1214/10</description>
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="controls-basic" id="controls"/>
 			<channel-group typeId="controls-ui" id="controls-ui"/>
@@ -69,9 +74,10 @@
 		<config-description-ref uri="thing-type:philipsair:config"/>
 	</thing-type>
 
-	<thing-type id="ac3829_10">
-		<label>Philips Air Purifier AC3829/10</label>
+	<thing-type id="ac3829-10">
+		<label>Air Purifier AC3829/10</label>
 		<description>Philips Air Purifier AC3829/10</description>
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="controls-adv" id="controls"/>
 			<channel-group typeId="controls-ui" id="controls-ui"/>

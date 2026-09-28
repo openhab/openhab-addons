@@ -64,8 +64,8 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "AC2889, ac2889_10", "AC2889/10, ac2889_10", "AC3829, ac3829_10", "AC3829/10, ac3829_10",
-            "AC1214, ac1214_10", "AC2729, ac2729", "AC2729/50, ac2729", "AC3829/50, universal", "AC3333, universal" })
+    @CsvSource({ "AC2889, ac2889-10", "AC2889/10, ac2889-10", "AC3829, ac3829-10", "AC3829/10, ac3829-10",
+            "AC1214, ac1214-10", "AC2729, ac2729", "AC2729/50, ac2729", "AC3829/50, universal", "AC3333, universal" })
     public void thingTypeIsDerivedFromModelNumber(String modelNumber, String expectedThingTypeId) {
         when(modelDetails.getModelNumber()).thenReturn(modelNumber);
 

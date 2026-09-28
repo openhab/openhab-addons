@@ -65,7 +65,7 @@ import com.google.gson.Gson;
  * Test cases for {@link PhilipsAirHandler} using the encrypted HTTP protocol. The HTTP client is mocked, the
  * encryption, parsing and channel updates are exercised for real.
  *
- * @author michalboronski - Initial contribution
+ * @author Michał Boroński - Initial contribution
  * @author Marcel Verpaalen - Re-enable tests for current handler behavior
  */
 @NonNullByDefault
@@ -90,10 +90,11 @@ public class PhilipsAirHandlerTest extends JavaTest {
     private static final List<String> ALL_CHANNELS = List.of("controls#power:Switch", "controls#fan-speed:String",
             "controls#child-lock:Switch", "controls#mode:String", "controls#timer:Number",
             "controls#timer-remaining:Number", "controls#target-humidity:Number", "controls#function:String",
-            "controls-ui#button-light:Switch", "controls-ui#light-level:Number", "controls-ui#displayed-index:String",
-            "sensors#pm25:Number:Density", "sensors#allergen-index:Number", "sensors#air-quality-threshold:Number",
-            "sensors#error-code:String", "sensors#humidity:Number:Dimensionless",
-            "sensors#temperature:Number:Temperature", "sensors#water-level:Number");
+            "controls-ui#button-light:Switch", "controls-ui#light-level:Number:Dimensionless",
+            "controls-ui#displayed-index:String", "sensors#pm25:Number:Density", "sensors#allergen-index:Number",
+            "sensors#air-quality-threshold:Number", "sensors#error-code:String",
+            "sensors#humidity:Number:Dimensionless", "sensors#temperature:Number:Temperature",
+            "sensors#water-level:Number:Dimensionless");
 
     private static final Gson GSON = new Gson();
     private final PhilipsAirCipher cipher;
@@ -212,7 +213,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         assertEquals(new DecimalType(40), lastState("controls#target-humidity"));
         assertEquals(new StringType("PH"), lastState("controls#function"));
         assertEquals(OnOffType.ON, lastState("controls-ui#button-light"));
-        assertEquals(new DecimalType(75), lastState("controls-ui#light-level"));
+        assertEquals(new QuantityType<>(75, Units.PERCENT), lastState("controls-ui#light-level"));
         assertEquals(new StringType("1"), lastState("controls-ui#displayed-index"));
         assertEquals(new QuantityType<>(8, DENSITY_UNIT), lastState("sensors#pm25"));
         assertEquals(new DecimalType(2), lastState("sensors#allergen-index"));
@@ -220,7 +221,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         assertEquals(new StringType("0"), lastState("sensors#error-code"));
         assertEquals(56, ((QuantityType<?>) lastState("sensors#humidity")).intValue());
         assertEquals(21, ((QuantityType<?>) lastState("sensors#temperature")).intValue());
-        assertEquals(new DecimalType(0), lastState("sensors#water-level"));
+        assertEquals(new QuantityType<>(0, Units.PERCENT), lastState("sensors#water-level"));
     }
 
     @Test
@@ -253,8 +254,10 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         handler.handleCommand(new ChannelUID(THING_UID, channelId), command);
 
-        assertEquals(stateAfter, lastState(channelId));
-        verify(request).method(HttpMethod.PUT);
+        waitForAssert(() -> {
+            assertEquals(stateAfter, lastState(channelId));
+            verify(request).method(HttpMethod.PUT);
+        });
     }
 
     @Test
@@ -289,8 +292,8 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
     @Test
     public void testSendCommandAqil() throws Exception {
-        sendCommandTemplate("controls-ui#light-level:Number", new DecimalType(25), new DecimalType(75),
-                new DecimalType(25), STATUS, STATUS_AQIL_25);
+        sendCommandTemplate("controls-ui#light-level:Number:Dimensionless", new DecimalType(25),
+                new QuantityType<>(75, Units.PERCENT), new QuantityType<>(25, Units.PERCENT), STATUS, STATUS_AQIL_25);
     }
 
     @Test
@@ -354,13 +357,15 @@ public class PhilipsAirHandlerTest extends JavaTest {
                 "{\"fltsts0\":10,\"fltsts1\":2000,\"fltsts2\":3000,\"wicksts\":400}",
                 PhilipsAirPurifierFiltersDTO.class);
 
-        assertEquals(10, handler.getValue(new ChannelUID(THING_UID, "filters#pre-filter-life"), null, null, filters));
+        assertEquals(new QuantityType<>(10, Units.HOUR),
+                handler.getValue(new ChannelUID(THING_UID, "filters#pre-filter-life"), null, null, filters));
         // fltsts1 is the HEPA filter, fltsts2 the active carbon filter
-        assertEquals(2000,
+        assertEquals(new QuantityType<>(2000, Units.HOUR),
                 handler.getValue(new ChannelUID(THING_UID, "filters#hepa-filter-life"), null, null, filters));
-        assertEquals(3000,
+        assertEquals(new QuantityType<>(3000, Units.HOUR),
                 handler.getValue(new ChannelUID(THING_UID, "filters#carbon-filter-life"), null, null, filters));
-        assertEquals(400, handler.getValue(new ChannelUID(THING_UID, "filters#wick-filter-life"), null, null, filters));
+        assertEquals(new QuantityType<>(400, Units.HOUR),
+                handler.getValue(new ChannelUID(THING_UID, "filters#wick-filter-life"), null, null, filters));
     }
 
     @Test
