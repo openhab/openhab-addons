@@ -47,6 +47,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
@@ -654,5 +655,18 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
         }
         Bridge bridge = getBridge();
         return bridge != null && bridge.getHandler() instanceof HassLinkBridgeHandler handler ? handler : null;
+    }
+
+    /**
+     * Returns true if the channel is linked to an item, false otherwise.
+     * Overrides the default implementation to prevent logging warnings when the handler is disposed or uninitialized.
+     */
+    @Override
+    public boolean isLinked(ChannelUID channelUID) {
+        ThingHandlerCallback callback = getCallback();
+        if (disposed || callback == null) {
+            return false;
+        }
+        return callback.isChannelLinked(channelUID);
     }
 }
