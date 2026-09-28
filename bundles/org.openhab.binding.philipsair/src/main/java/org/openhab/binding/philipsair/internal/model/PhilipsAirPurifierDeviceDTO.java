@@ -19,7 +19,7 @@ import com.google.gson.annotations.SerializedName;
  * Contains info details of the Air Purifier thing
  *
  * @author Michał Boroński - Initial contribution
- *
+ * @author Marcel Verpaalen - Add CoAP device support
  */
 public class PhilipsAirPurifierDeviceDTO {
 

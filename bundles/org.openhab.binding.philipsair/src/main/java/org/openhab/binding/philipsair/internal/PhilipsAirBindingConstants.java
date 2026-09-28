@@ -32,6 +32,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * are used across the whole binding.
  *
  * @author Michal Boronski - Initial contribution
+ * @author Marcel Verpaalen - Add coap protocol support and update channel definitions
  */
 @NonNullByDefault
 public class PhilipsAirBindingConstants {

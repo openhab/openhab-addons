@@ -21,8 +21,7 @@ import com.google.gson.annotations.SerializedName;
  * Holds status of particular features of the Air Purifier thing that can be changed by the user via commands
  *
  * @author Michał Boroński - Initial contribution
- * @Nullable
- *
+ * @author Marcel Verpaalen - Update property definitions
  */
 public class PhilipsAirPurifierWritableDataDTO {
 

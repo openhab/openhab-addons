@@ -32,6 +32,7 @@ import org.osgi.service.component.annotations.Reference;
  * thing handlers.
  *
  * @author Michal Boronski - Initial contribution
+ * @author Marcel Verpaalen - Add support for coap and http protocol connections
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.philipsair", service = ThingHandlerFactory.class)

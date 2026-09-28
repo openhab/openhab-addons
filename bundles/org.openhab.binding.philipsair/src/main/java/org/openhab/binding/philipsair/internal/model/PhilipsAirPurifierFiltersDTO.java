@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  * Cintains filter estimated lifetime
  *
  * @author Michał Boroński - Initial contribution
- *
+ * @author Marcel Verpaalen - Add null handling and code cleanup
  */
 @NonNullByDefault
 public class PhilipsAirPurifierFiltersDTO {

@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
  * verifies basics of the key exchange procedure
  *
  * @author michalboronski - Initial contribution
+ * @author Marcel Verpaalen - Code cleanup and align with guidelines
  */
 public class PhilipsAirCipherTest {
     private static PhilipsAirCipher cipher = null;

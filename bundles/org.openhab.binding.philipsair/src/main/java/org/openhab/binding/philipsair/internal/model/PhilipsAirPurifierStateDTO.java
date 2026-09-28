@@ -22,9 +22,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Holds status of particular features of the Air Purifier thing
  *
- * @author Michał Boroński - Initial contribution
- * @Nullable
- *
+ * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
 public class PhilipsAirPurifierStateDTO {

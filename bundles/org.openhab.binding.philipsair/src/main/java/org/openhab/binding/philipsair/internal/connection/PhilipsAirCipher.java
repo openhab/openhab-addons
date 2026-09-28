@@ -33,7 +33,7 @@ import org.openhab.core.util.HexUtils;
  * Performs message de- and encyrption
  *
  * @author Michał Boroński - Initial contribution
- *
+ * @author Marcel Verpaalen - Fix key exchange and add error handling
  */
 @NonNullByDefault
 public class PhilipsAirCipher {

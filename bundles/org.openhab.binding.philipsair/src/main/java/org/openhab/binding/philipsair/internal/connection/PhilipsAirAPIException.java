@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * connections to Philips Air Purifier.
  *
  * @author Michał Boroński - Initial contribution
+ * @author Marcel Verpaalen - Code cleanup and align with guidelines
  */
 @NonNullByDefault
 public class PhilipsAirAPIException extends Exception {

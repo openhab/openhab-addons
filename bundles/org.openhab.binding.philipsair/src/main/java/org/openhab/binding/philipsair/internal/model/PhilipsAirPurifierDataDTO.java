@@ -21,8 +21,7 @@ import com.google.gson.annotations.SerializedName;
  * Holds status of particular features of the Air Purifier thing
  *
  * @author Michał Boroński - Initial contribution
- * @Nullable
- *
+ * @author Marcel Verpaalen - Add null handling and code cleanup
  */
 
 public class PhilipsAirPurifierDataDTO extends PhilipsAirPurifierWritableDataDTO {

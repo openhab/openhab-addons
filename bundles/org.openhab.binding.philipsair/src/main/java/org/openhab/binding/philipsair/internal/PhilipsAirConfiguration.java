@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * configuration parameters.
  *
  * @author Michal Boronski - Initial contribution
- *
+ * @author Marcel Verpaalen - Add configuration properties and timeout handling
  */
 @NonNullByDefault
 public class PhilipsAirConfiguration {
