@@ -22,6 +22,7 @@ import org.openhab.binding.gemini.internal.GeminiConfiguration;
 import org.openhab.binding.gemini.internal.GeminiHandler;
 import org.openhab.binding.gemini.internal.api.GeminiApiClient;
 import org.openhab.binding.gemini.internal.api.GeminiApiException;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingLevel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
@@ -67,7 +68,13 @@ public class GeminiActions implements ThingActions {
     }
 
     public @Nullable String sendMessage(@Nullable String prompt, @Nullable String model) {
-        return sendMessage(prompt, model, null, null, null, null, null);
+        return sendMessage(prompt, model, null, null, null, null, null, null);
+    }
+
+    public @Nullable String sendMessage(@Nullable String prompt, @Nullable String model, @Nullable String systemMessage,
+            @Nullable Double temperature, @Nullable Double topP, @Nullable Integer maxOutputTokens,
+            @Nullable Integer requestTimeout) {
+        return sendMessage(prompt, model, systemMessage, temperature, topP, maxOutputTokens, null, requestTimeout);
     }
 
     @RuleAction(label = "@text/action.sendMessage.label", description = "@text/action.sendMessage.description")
@@ -78,6 +85,7 @@ public class GeminiActions implements ThingActions {
             @ActionInput(name = "temperature", label = "@text/action.sendMessage.temperature.label", description = "@text/action.sendMessage.temperature.description", type = "java.lang.Double") @Nullable Double temperature,
             @ActionInput(name = "topP", label = "@text/action.sendMessage.topP.label", description = "@text/action.sendMessage.topP.description", type = "java.lang.Double") @Nullable Double topP,
             @ActionInput(name = "maxOutputTokens", label = "@text/action.sendMessage.maxOutputTokens.label", description = "@text/action.sendMessage.maxOutputTokens.description", type = "java.lang.Integer") @Nullable Integer maxOutputTokens,
+            @ActionInput(name = "thinkingLevel", label = "@text/action.sendMessage.thinkingLevel.label", description = "@text/action.sendMessage.thinkingLevel.description", type = "java.lang.String") @Nullable String thinkingLevel,
             @ActionInput(name = "requestTimeout", label = "@text/action.sendMessage.requestTimeout.label", description = "@text/action.sendMessage.requestTimeout.description", type = "java.lang.Integer") @Nullable Integer requestTimeout) {
         if (prompt == null || prompt.isBlank()) {
             logger.warn("Cannot send message: prompt is null or blank.");
@@ -105,12 +113,31 @@ public class GeminiActions implements ThingActions {
         double resolvedTopP = Objects.requireNonNullElse(topP, config != null ? config.topP : DEFAULT_TOP_P);
         int resolvedMaxOutputTokens = Objects.requireNonNullElse(maxOutputTokens,
                 config != null ? config.maxOutputTokens : DEFAULT_MAX_OUTPUT_TOKENS);
+
+        // Attempt to parse the passed-in thinking level
+        GeminiThinkingLevel resolvedThinkingLevel = GeminiThinkingLevel.fromString(thinkingLevel);
+        if (resolvedThinkingLevel == null && thinkingLevel != null && !thinkingLevel.isBlank()) {
+            logger.warn("Invalid thinking level: {} (falling back to Thing default)", thinkingLevel);
+        }
+        // Fallback to the thing's configured thinking level
+        if (resolvedThinkingLevel == null && config != null && !config.thinkingLevel.isBlank()) {
+            resolvedThinkingLevel = GeminiThinkingLevel.fromString(config.thinkingLevel);
+        }
+        // Fallback to the default thinking level
+        if (resolvedThinkingLevel == null) {
+            resolvedThinkingLevel = DEFAULT_THINKING_LEVEL;
+        }
+
         int resolvedRequestTimeout = Objects.requireNonNullElse(requestTimeout,
                 config != null ? config.requestTimeout : DEFAULT_REQUEST_TIMEOUT);
+        if (!GeminiHandler.isValidTimeout(resolvedRequestTimeout)) {
+            resolvedRequestTimeout = DEFAULT_REQUEST_TIMEOUT;
+        }
 
         try {
             GeminiResponse response = apiClient.sendPrompt(resolvedModel, prompt, resolvedSystemMessage,
-                    resolvedTemperature, resolvedTopP, resolvedMaxOutputTokens, resolvedRequestTimeout);
+                    resolvedTemperature, resolvedTopP, resolvedMaxOutputTokens, resolvedThinkingLevel,
+                    resolvedRequestTimeout);
             String text = response.getFirstText();
             if (text != null) {
                 return text;
@@ -139,11 +166,18 @@ public class GeminiActions implements ThingActions {
     public static @Nullable String sendMessage(ThingActions actions, @Nullable String prompt, @Nullable String model,
             @Nullable String systemMessage, @Nullable Double temperature, @Nullable Double topP,
             @Nullable Integer maxOutputTokens, @Nullable Integer requestTimeout) {
+        return sendMessage(actions, prompt, model, systemMessage, temperature, topP, maxOutputTokens, null,
+                requestTimeout);
+    }
+
+    public static @Nullable String sendMessage(ThingActions actions, @Nullable String prompt, @Nullable String model,
+            @Nullable String systemMessage, @Nullable Double temperature, @Nullable Double topP,
+            @Nullable Integer maxOutputTokens, @Nullable String thinkingLevel, @Nullable Integer requestTimeout) {
         if (!(actions instanceof GeminiActions geminiActions)) {
             throw new IllegalArgumentException("The 'actions' argument is not an instance of GeminiActions");
         }
 
         return geminiActions.sendMessage(prompt, model, systemMessage, temperature, topP, maxOutputTokens,
-                requestTimeout);
+                thinkingLevel, requestTimeout);
     }
 }

@@ -26,5 +26,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NonNullByDefault
 public record GeminiThinkingConfig(@Nullable Boolean includeThoughts, @Nullable Integer thinkingBudget,
-        @Nullable String thinkingLevel) {
+        @Nullable GeminiThinkingLevel thinkingLevel) {
 }
