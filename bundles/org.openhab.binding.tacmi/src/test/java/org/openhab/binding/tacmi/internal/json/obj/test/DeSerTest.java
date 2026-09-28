@@ -33,7 +33,7 @@ import com.google.gson.stream.JsonReader;
  *
  */
 @NonNullByDefault
-class DeSer {
+class DeSerTest {
     @Test
     void test() {
         Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
