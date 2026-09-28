@@ -1028,7 +1028,7 @@ public class ShellyComponents {
     /**
      * Process {@link Shelly2DeviceStatusLight} notification brightness, color temp, and on-off fields.
      * Note: although {@link Shelly2DeviceStatusLight} has an rgb field, it is only ever used for white/cct
-     * lights so that field is ignored.
+     * lights so that field is not processed.
      */
     public static boolean updateLightMode(Shelly2DeviceStatusLight value, ShellyThingInterface thingHandler)
             throws ShellyApiException {

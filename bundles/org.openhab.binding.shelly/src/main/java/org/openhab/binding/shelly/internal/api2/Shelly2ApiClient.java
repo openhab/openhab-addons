@@ -1470,7 +1470,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         lights.set(idx, ds);
 
-        if (profile.isProRgbwwPm) {
+        if (profile.isRGBW2 || profile.isDuo) { // TODO check the filtering logic here
             // the color component always sits at settings.lights[0]
             updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
@@ -1529,6 +1529,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         lights.set(idx, ds);
 
+        if (profile.isDuo) { // TODO check the filtering logic here
+            updateComponentMeter(status, idx, value.apower, value.aenergy, null, null, channelUpdate);
+        }
+
         if (channelUpdate) {
             return ShellyComponents.updateRGBCCT(value, getThing());
         }
@@ -1539,7 +1543,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     /**
      * Process {@link Shelly2DeviceStatusLight} notification brightness, color temp, and on-off fields.
      * Note: although {@link Shelly2DeviceStatusLight} has an rgb field, it is only ever used for white/cct
-     * lights so that field is ignored.
+     * lights so that field is not processed.
      */
     private boolean updateLightModeStatus(int idIn, ShellySettingsStatus status,
             @Nullable Shelly2DeviceStatusLight value, boolean channelUpdate) throws ShellyApiException {
@@ -1549,7 +1553,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         // device reports each component type 0-based; the flat settings.lights list reserves slot 0 for the
         // color component (rgb0/rgbw0) whenever one is present, so shift by that offset here.
-        int idx = getInteger(idIn) + profile.getColorComponentCount();
+        int idx = idIn + profile.getColorComponentCount();
 
         List<ShellySettingsLight> lights = status.lights;
         if (lights == null || idx >= lights.size()) {
@@ -1573,7 +1577,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         lights.set(idx, ds);
 
-        if (profile.isProRgbwwPm) {
+        if (idx == 0 && (profile.isRGBW2 || profile.isDuo)) { // TODO check the filtering logic here
             // Plus RGBW PM's white-mode light0..3 channels also reach this point but must not be metered here
             updateComponentMeter(status, idx, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
