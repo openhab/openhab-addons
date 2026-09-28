@@ -189,6 +189,23 @@ public class ShellyChannelMigrationTest {
     }
 
     @Test
+    void createEMeterChannelsOmitsResetTotalForDuoBulbG3() {
+        // Duo/Multicolor Bulb G3 meter on CCT/RGBCCT components, which have no ResetCounters RPC
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID("shelly", "shellyplusduobulb", "test"));
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        ShellySettingsEMeter emeter = new ShellySettingsEMeter();
+        emeter.power = 5.5;
+        emeter.total = 60.0;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createEMeterChannels(thing, profile, emeter,
+                CHANNEL_GROUP_METER);
+
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_RESETTOTAL)));
+    }
+
+    @Test
     void energyHistMinLabelHasNoTrailingDigitSuffix() {
         // Regression: createChannel() used to append a digit to any label whose channel NAME ended in a
         // digit, even when that digit is part of the channel's fixed identity, not a group index.
