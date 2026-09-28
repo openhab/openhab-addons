@@ -177,7 +177,7 @@ public class ChatGPTHandler extends BaseThingHandler {
         if (channel != null) {
             ChatGPTChannelConfiguration channelConfig = channel.getConfiguration()
                     .as(ChatGPTChannelConfiguration.class);
-            if (isValidTimeout(channelConfig.requestTimeout)) {
+            if (channelConfig.requestTimeout != null && isValidTimeout(channelConfig.requestTimeout)) {
                 return channelConfig.requestTimeout;
             }
         }
