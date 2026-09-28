@@ -90,6 +90,9 @@ public class Shelly2ApiClientDuoBulbStatusTest {
         settingsLights.add(new ShellySettingsRgbwLight());
         profile.settings.lights = settingsLights;
         
+        // Initialize numMeters so that updateMeter() doesn't return early
+        profile.numMeters = 1;
+        
         return profile;
     }
 
@@ -149,6 +152,9 @@ public class Shelly2ApiClientDuoBulbStatusTest {
         ArrayList<ShellySettingsRgbwLight> settingsLights = new ArrayList<>();
         settingsLights.add(new ShellySettingsRgbwLight());
         profile.settings.lights = settingsLights;
+        
+        // Initialize numMeters so that updateMeter() doesn't return early
+        profile.numMeters = 1;
         
         return profile;
     }
