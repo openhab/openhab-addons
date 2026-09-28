@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -75,6 +76,9 @@ public class GeminiApiClient {
     private static final String HEADER_API_KEY = "x-goog-api-key";
     private static final String ROLE_USER = "user";
     private static final String ROLE_MODEL = "model";
+
+    private static final Pattern INVALID_THINKING_LEVEL_PATTERN = Pattern
+            .compile("(?i)\\bThinking level\\s+([A-Z_]+)\\s+is not supported for this model\\b");
 
     private final Logger logger = LoggerFactory.getLogger(GeminiApiClient.class);
 
@@ -378,7 +382,7 @@ public class GeminiApiClient {
                         return executeGenerateContentRequest(model, retryRequestPayload, timeoutSeconds);
                     }
                 } else if (status == HttpStatus.BAD_REQUEST_400
-                        && body.matches("(?i)Thinking level\\s+[A-Z_]+\\s+is not supported for this model\\.")) {
+                        && INVALID_THINKING_LEVEL_PATTERN.matcher(body).matches()) {
                     GeminiGenerationConfig genConfig = requestPayload.generationConfig();
                     if (genConfig != null && genConfig.thinkingConfig() != null) {
                         throw new GeminiApiException("Model " + model + " doesn't support thinking level "
