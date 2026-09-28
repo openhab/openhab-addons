@@ -14,6 +14,7 @@ package org.openhab.binding.dreame.internal;
 
 import static org.openhab.binding.dreame.internal.DreameBindingConstants.THING_TYPE_ACCOUNT;
 import static org.openhab.binding.dreame.internal.DreameBindingConstants.THING_TYPE_MOWER;
+import static org.openhab.binding.dreame.internal.DreameBindingConstants.THING_TYPE_VACUUM;
 
 import java.util.Set;
 
@@ -22,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dreame.internal.api.DreameApiClient;
 import org.openhab.binding.dreame.internal.handler.DreameAccountHandler;
 import org.openhab.binding.dreame.internal.handler.DreameMowerHandler;
+import org.openhab.binding.dreame.internal.handler.DreameVacuumHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -34,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Creates handlers for Dreame account bridges and robotic mowers.
+ * Creates handlers for Dreame account bridges, robotic mowers and vacuum things.
  *
  * @author Ronny Grun - Initial contribution
  */
@@ -42,7 +44,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.dreame", service = ThingHandlerFactory.class)
 public class DreameHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_MOWER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_MOWER,
+            THING_TYPE_VACUUM);
     private final HttpClientFactory httpClientFactory;
 
     @Activate
@@ -62,6 +65,9 @@ public class DreameHandlerFactory extends BaseThingHandlerFactory {
         }
         if (THING_TYPE_MOWER.equals(thing.getThingTypeUID())) {
             return new DreameMowerHandler(thing);
+        }
+        if (THING_TYPE_VACUUM.equals(thing.getThingTypeUID())) {
+            return new DreameVacuumHandler(thing);
         }
         return null;
     }

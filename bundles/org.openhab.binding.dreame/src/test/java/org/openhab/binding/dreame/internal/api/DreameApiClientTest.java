@@ -100,7 +100,7 @@ class DreameApiClientTest {
     }
 
     @Test
-    void deviceParserKeepsOnlyMowers() throws DreameCloudException {
+    void deviceParserRecognizesMowersAndVacuumCandidates() throws DreameCloudException {
         String json = """
                 {"code":0,"data":{"page":{"records":[
                   {"did":"123","customName":"","model":"dreame.mower.g2422","masterUid":"42","bindDomain":"host:8883","property":"{}",
@@ -113,10 +113,31 @@ class DreameApiClientTest {
         List<DreameDevice> devices = new DreameApiResponseParser()
                 .parseDevices(JsonParser.parseString(json).getAsJsonObject());
 
-        assertEquals(
-                List.of(new DreameDevice("123", "A1 Pro 2000", "dreame.mower.g2422", "", "42", "host:8883", "{}"),
-                        new DreameDevice("124", "MOVA 1000", "mova.mower.g2405c", "", "43", "mova-host:19974", "{}")),
-                devices);
+        assertEquals(List.of(new DreameDevice("123", "A1 Pro 2000", "dreame.mower.g2422", "", "42", "host:8883", "{}"),
+                new DreameDevice("124", "MOVA 1000", "mova.mower.g2405c", "", "43", "mova-host:19974", "{}"),
+                new DreameDevice("456", "Vacuum", "dreame.vacuum.r2228o", "", "", "", "")), devices);
+    }
+
+    @Test
+    void deviceParserRejectsUnknownAndMalformedCandidatesWithoutLosingMowers() throws DreameCloudException {
+        String json = """
+                {"data":{"page":{"records":[
+                  null, 42,
+                  {"did":"1","model":"unknown.vacuum.example"},
+                  {"did":"2","model":"dreame.vacuum."},
+                  {"did":"3","model":{}},
+                  {"did":{},"model":"dreame.vacuum.example"},
+                  {"model":"dreame.vacuum.example"},
+                  {"did":"4","model":"dreame.vacuum.example","ver":{},"property":[],"name":{}},
+                  {"did":"5","model":"mova.mower.g2405c"}
+                ]}}}
+                """;
+        List<DreameDevice> devices = new DreameApiResponseParser()
+                .parseDevices(JsonParser.parseString(json).getAsJsonObject());
+        assertEquals(List.of("4", "5"), devices.stream().map(DreameDevice::id).toList());
+        assertEquals(List.of("5"), devices.stream().filter(DreameDevice::isMower).map(DreameDevice::id).toList());
+        assertEquals(List.of("4"), devices.stream().filter(DreameDevice::isVacuum).map(DreameDevice::id).toList());
+        assertEquals("", devices.getFirst().version());
     }
 
     @Test

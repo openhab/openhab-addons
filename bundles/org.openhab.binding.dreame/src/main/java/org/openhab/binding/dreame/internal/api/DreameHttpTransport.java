@@ -44,6 +44,7 @@ import com.google.gson.JsonParseException;
 @NonNullByDefault
 final class DreameHttpTransport {
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(15);
+    private static final int MAX_FILE_CHARACTERS = 4 * 1024 * 1024;
 
     private final Logger logger = LoggerFactory.getLogger(DreameHttpTransport.class);
     private final HttpClient httpClient;
@@ -80,7 +81,9 @@ final class DreameHttpTransport {
             ContentResponse response = request.send();
             long elapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started);
             logger.debug("{} POST {} returned HTTP {} in {} ms", service, path, response.getStatus(), elapsed);
-            if (path.endsWith("/iotuserdata/getDeviceData")) {
+            if (path.endsWith("/iotuserbind/device/listV2")) {
+                logger.trace("{} device-list response received (content omitted)", service);
+            } else if (path.endsWith("/iotuserdata/getDeviceData")) {
                 logger.trace("{} map response for {} contains {} characters", service, path,
                         response.getContentAsString().length());
             } else {
@@ -100,6 +103,30 @@ final class DreameHttpTransport {
             throw new DreameCloudException(service + " request was interrupted", e);
         } catch (ExecutionException | TimeoutException | JsonParseException e) {
             throw new DreameCloudException(service + " request failed", e);
+        }
+    }
+
+    String getFile(String url) throws DreameCloudException {
+        String service = authentication.cloudService().label();
+        Request request = httpClient.newRequest(url).method(HttpMethod.GET)
+                .timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS).header(HttpHeader.ACCEPT, "*/*")
+                .header(HttpHeader.USER_AGENT, authentication.cloudService().userAgent());
+        try {
+            ContentResponse response = request.send();
+            if (!HttpStatus.isSuccess(response.getStatus())) {
+                throw new DreameCloudException(service + " map download returned HTTP " + response.getStatus());
+            }
+            String content = response.getContentAsString();
+            if (content.isBlank() || content.length() > MAX_FILE_CHARACTERS) {
+                throw new DreameCloudException(service + " returned invalid map file data");
+            }
+            logger.debug("{} map file download returned {} characters", service, content.length());
+            return content;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new DreameCloudException(service + " map download was interrupted", e);
+        } catch (ExecutionException | TimeoutException e) {
+            throw new DreameCloudException(service + " map download failed", e);
         }
     }
 

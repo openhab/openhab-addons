@@ -21,8 +21,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dreame.internal.api.DreameCloudException;
 import org.openhab.binding.dreame.internal.api.DreameCloudService;
 import org.openhab.binding.dreame.internal.api.DreameMowerApi;
+import org.openhab.binding.dreame.internal.api.DreameVacuumApi;
 import org.openhab.binding.dreame.internal.config.DreameAccountConfiguration;
 import org.openhab.binding.dreame.internal.discovery.DreameMowerDiscoveryService;
+import org.openhab.binding.dreame.internal.discovery.DreameVacuumDiscoveryService;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -35,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Owns the selected cloud session shared by mower things.
+ * Owns the selected cloud session shared by mower and vacuum things.
  *
  * @author Ronny Grun - Initial contribution
  */
@@ -47,6 +49,7 @@ public class DreameAccountHandler extends BaseBridgeHandler {
     private final AtomicInteger lifecycleGeneration = new AtomicInteger();
     private volatile List<DreameDevice> devices = List.of();
     private volatile @Nullable DreameMowerDiscoveryService discoveryService;
+    private volatile @Nullable DreameVacuumDiscoveryService vacuumDiscoveryService;
 
     public DreameAccountHandler(Bridge bridge, DreameMowerApi apiClient) {
         super(bridge);
@@ -90,6 +93,10 @@ public class DreameAccountHandler extends BaseBridgeHandler {
             if (discovery != null) {
                 discovery.discoverDevices();
             }
+            DreameVacuumDiscoveryService vacuumDiscovery = vacuumDiscoveryService;
+            if (vacuumDiscovery != null) {
+                vacuumDiscovery.discoverDevices();
+            }
         } catch (DreameCloudException e) {
             if (generation != lifecycleGeneration.get()) {
                 return;
@@ -100,15 +107,27 @@ public class DreameAccountHandler extends BaseBridgeHandler {
     }
 
     public @Nullable DreameDevice getDevice(String deviceId) {
-        return devices.stream().filter(device -> device.id().equals(deviceId)).findFirst().orElse(null);
+        return getDevices().stream().filter(device -> device.id().equals(deviceId)).findFirst().orElse(null);
     }
 
     public DreameMowerApi getApiClient() {
         return apiClient;
     }
 
+    public @Nullable DreameVacuumApi getVacuumApi() {
+        return apiClient instanceof DreameVacuumApi vacuumApi ? vacuumApi : null;
+    }
+
     public List<DreameDevice> getDevices() {
-        return devices;
+        return devices.stream().filter(DreameDevice::isMower).toList();
+    }
+
+    public List<DreameDevice> getVacuumDevices() {
+        return devices.stream().filter(DreameDevice::isVacuum).toList();
+    }
+
+    public void setVacuumDiscoveryService(@Nullable DreameVacuumDiscoveryService service) {
+        vacuumDiscoveryService = service;
     }
 
     public void setDiscoveryService(@Nullable DreameMowerDiscoveryService discoveryService) {
@@ -117,13 +136,14 @@ public class DreameAccountHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(DreameMowerDiscoveryService.class);
+        return List.of(DreameMowerDiscoveryService.class, DreameVacuumDiscoveryService.class);
     }
 
     @Override
     public void dispose() {
         lifecycleGeneration.incrementAndGet();
         discoveryService = null;
+        vacuumDiscoveryService = null;
         devices = List.of();
         apiClient.logout();
         super.dispose();

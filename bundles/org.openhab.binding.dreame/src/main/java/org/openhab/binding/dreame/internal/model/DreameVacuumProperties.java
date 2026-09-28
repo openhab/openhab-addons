@@ -12,25 +12,19 @@
  */
 package org.openhab.binding.dreame.internal.model;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Device information returned by the Dreamehome account API.
+ * Numeric and structured properties returned by one vacuum status request.
  *
  * @author Ronny Grun - Initial contribution
  */
 @NonNullByDefault
-public record DreameDevice(String id, String name, String model, String version, String masterUid, String bindDomain,
-        String property) {
-    public boolean isMower() {
-        return model.startsWith("dreame.mower.") || model.startsWith("mova.mower.");
-    }
-
-    public boolean isVacuum() {
-        return isVacuumModel(model);
-    }
-
-    public static boolean isVacuumModel(String model) {
-        return model.matches("dreame\\.vacuum\\.[A-Za-z0-9_-]{1,64}");
+public record DreameVacuumProperties(Map<String, Integer> numeric, Map<String, String> text) {
+    public DreameVacuumProperties {
+        numeric = Map.copyOf(numeric);
+        text = Map.copyOf(text);
     }
 }
