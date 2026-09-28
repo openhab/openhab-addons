@@ -13,9 +13,15 @@
 package org.openhab.binding.dreame.internal.api;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Clock;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,7 +33,12 @@ import org.openhab.binding.dreame.internal.model.DreameMowingStatistics;
 import org.openhab.binding.dreame.internal.model.DreameMqttConfiguration;
 import org.openhab.binding.dreame.internal.model.DreameProperty;
 import org.openhab.binding.dreame.internal.model.DreameStatus;
+import org.openhab.binding.dreame.internal.model.DreameVacuumAction;
+import org.openhab.binding.dreame.internal.model.DreameVacuumProperties;
+import org.openhab.binding.dreame.internal.model.DreameVacuumSetting;
 import org.openhab.binding.dreame.internal.util.DreameDiagnostics;
+import org.openhab.binding.dreame.internal.util.DreameVacuumDiagnostics;
+import org.openhab.binding.dreame.internal.util.DreameVacuumMapImage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +55,7 @@ import com.google.gson.JsonPrimitive;
  * @author Ronny Grun - Initial contribution
  */
 @NonNullByDefault
-public class DreameApiClient implements DreameMowerApi {
+public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
     private static final BigDecimal MIN_CUTTING_HEIGHT = new BigDecimal("3.0");
     private static final BigDecimal MAX_CUTTING_HEIGHT = new BigDecimal("7.0");
     private static final BigDecimal CUTTING_HEIGHT_STEP = new BigDecimal("0.5");
@@ -54,12 +65,14 @@ public class DreameApiClient implements DreameMowerApi {
     private static final String DEVICES_PATH = "/dreame-user-iot/iotuserbind/device/listV2";
     private static final String HISTORY_PATH = "/dreame-user-iot/iotstatus/history";
     private static final String DEVICE_DATA_PATH = "/dreame-user-iot/iotuserdata/getDeviceData";
+    private static final String FILE_DOWNLOAD_PATH = "/dreame-user-iot/iotfile/getDownloadUrl";
     private static final String COMMAND_PATH_PREFIX = "/dreame-iot-com";
     private final DreameAuthenticationService authentication;
     private final DreameHttpTransport transport;
     private final DreameApiResponseParser responseParser = new DreameApiResponseParser();
     private final Gson gson = new Gson();
     private final AtomicInteger requestId = new AtomicInteger(1);
+    private final Map<String, Integer> vacuumCleaningModes = new HashMap<>();
 
     public DreameApiClient(HttpClient httpClient) {
         this(httpClient, Clock.systemUTC());
@@ -191,6 +204,314 @@ public class DreameApiClient implements DreameMowerApi {
         parameters.addProperty("aiid", action.actionId());
         parameters.add("in", new JsonArray());
         sendCommand(device, "action", parameters);
+    }
+
+    @Override
+    public synchronized DreameVacuumProperties getVacuumProperties(DreameDevice device, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+            throw new DreameCloudException("Vacuum properties are not supported for this model");
+        }
+        // Correlation IDs and addresses follow DreameVacuumProperty in the vacuum reference implementation.
+        int[][] properties = { { 0, 2, 1 }, { 1, 2, 2 }, { 2, 3, 1 }, { 3, 3, 2 }, { 4, 4, 1 }, { 5, 4, 2 },
+                { 6, 4, 3 }, { 7, 4, 4 }, { 8, 4, 5 }, { 9, 4, 7 }, { 10, 4, 23 }, { 11, 4, 25 }, { 12, 4, 40 },
+                { 13, 4, 50 }, { 14, 9, 1 }, { 15, 9, 2 }, { 16, 10, 1 }, { 17, 10, 2 }, { 18, 11, 1 }, { 19, 11, 2 },
+                { 20, 12, 2 }, { 21, 12, 3 }, { 22, 12, 4 }, { 23, 16, 1 }, { 24, 16, 2 }, { 25, 18, 1 }, { 26, 18, 2 },
+                { 27, 20, 1 }, { 28, 20, 2 } };
+        JsonArray parameters = new JsonArray();
+        for (int[] property : properties) {
+            JsonObject parameter = new JsonObject();
+            parameter.addProperty("did", Integer.toString(property[0]));
+            parameter.addProperty("siid", property[1]);
+            parameter.addProperty("piid", property[2]);
+            parameters.add(parameter);
+        }
+        JsonElement result = sendCommand(device, "get_properties", parameters, isCurrent);
+        if (!(result instanceof JsonArray values)) {
+            throw new DreameCloudException("Vacuum returned invalid property data");
+        }
+        Map<String, Integer> propertiesByAddress = DreameVacuumDiagnostics.readPropertyResults(values);
+        Map<String, String> textProperties = DreameVacuumDiagnostics.readTextPropertyResults(values);
+        if (propertiesByAddress.isEmpty() && textProperties.isEmpty()) {
+            throw new DreameCloudException("Vacuum returned no valid status properties");
+        }
+        Integer cleaningMode = propertiesByAddress.get("4/23");
+        if (cleaningMode != null) {
+            vacuumCleaningModes.put(device.id(), cleaningMode);
+        }
+        return new DreameVacuumProperties(propertiesByAddress, textProperties);
+    }
+
+    @Override
+    public synchronized @Nullable String getVacuumMapListObjectName(DreameDevice device, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+            throw new DreameCloudException("Vacuum map list is not supported for this model");
+        }
+        JsonObject parameter = new JsonObject();
+        parameter.addProperty("did", "12");
+        parameter.addProperty("siid", 6);
+        parameter.addProperty("piid", 8);
+        JsonArray parameters = new JsonArray();
+        parameters.add(parameter);
+        JsonElement result = sendCommand(device, "get_properties", parameters, isCurrent);
+        if (!(result instanceof JsonArray values) || values.isEmpty()
+                || !(values.get(0) instanceof JsonObject property)) {
+            throw new DreameCloudException("Vacuum returned invalid map-list property data");
+        }
+        if (!property.has("code") || property.get("code").getAsInt() != 0
+                || !(property.get("value") instanceof JsonPrimitive value) || !value.isString()) {
+            return null;
+        }
+        return DreameVacuumMapImage.mapListObjectName(value.getAsString());
+    }
+
+    @Override
+    public synchronized void callVacuumAction(DreameDevice device, DreameVacuumAction action, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+            throw new DreameCloudException("Vacuum commands are not supported for this model");
+        }
+        JsonObject parameters = new JsonObject();
+        parameters.addProperty("did", device.id());
+        parameters.addProperty("siid", action.serviceId());
+        parameters.addProperty("aiid", action.actionId());
+        JsonArray inputs = new JsonArray();
+        String inputValue = action.inputValue();
+        if (inputValue != null) {
+            JsonObject input = new JsonObject();
+            input.addProperty("piid", action.inputPropertyId());
+            input.addProperty("value", inputValue);
+            inputs.add(input);
+        }
+        parameters.add("in", inputs);
+        JsonElement result = sendCommand(device, "action", parameters, isCurrent);
+        if (!(result instanceof JsonObject object) || !(object.get("code") instanceof JsonPrimitive code)
+                || !code.isNumber()) {
+            throw new DreameCloudException("Vacuum command returned an invalid device result");
+        }
+        try {
+            int value = code.getAsBigDecimal().intValueExact();
+            if (value != 0) {
+                logger.debug("Vacuum command {} rejected with code {}", action, value);
+                throw new DreameCloudException("Vacuum command rejected with code " + value);
+            }
+        } catch (ArithmeticException | NumberFormatException e) {
+            throw new DreameCloudException("Vacuum command returned an invalid result code");
+        }
+    }
+
+    @Override
+    public synchronized void setVacuumSetting(DreameDevice device, DreameVacuumSetting setting, int value,
+            BooleanSupplier isCurrent) throws DreameCloudException {
+        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+            throw new DreameCloudException("Vacuum settings are not supported for this model");
+        }
+        if (!isCurrent.getAsBoolean()) {
+            throw new DreameCloudException("Vacuum setting cancelled before dispatch");
+        }
+        if (setting == DreameVacuumSetting.CLEANING_MODE) {
+            int current = vacuumCleaningModes.getOrDefault(device.id(), 0x1400);
+            int deviceMode = switch (value) {
+                case 0 -> 2;
+                case 1 -> 1;
+                case 2 -> 0;
+                default -> throw new DreameCloudException("Unsupported vacuum cleaning mode");
+            };
+            value = current & ~0x03 | deviceMode;
+        }
+        JsonObject property = new JsonObject();
+        property.addProperty("did", device.id());
+        property.addProperty("siid", setting.serviceId());
+        property.addProperty("piid", setting.propertyId());
+        String autoSwitchKey = setting.autoSwitchKey();
+        if (autoSwitchKey == null) {
+            property.addProperty("value", value);
+        } else {
+            JsonObject autoSwitch = new JsonObject();
+            autoSwitch.addProperty("k", autoSwitchKey);
+            autoSwitch.addProperty("v", value);
+            property.addProperty("value", gson.toJson(autoSwitch));
+        }
+        JsonArray parameters = new JsonArray();
+        parameters.add(property);
+        JsonElement result = sendCommand(device, "set_properties", parameters, isCurrent);
+        if (!(result instanceof JsonArray results) || results.size() != 1
+                || !(results.get(0) instanceof JsonObject response)
+                || !(response.get("code") instanceof JsonPrimitive code) || !code.isNumber()
+                || !isExactInteger(code, 0)) {
+            throw new DreameCloudException("Vacuum setting was not acknowledged");
+        }
+        if (setting == DreameVacuumSetting.CLEANING_MODE) {
+            vacuumCleaningModes.put(device.id(), value);
+        }
+    }
+
+    @Override
+    public synchronized void cleanVacuumRooms(DreameDevice device, List<Integer> roomIds, int suctionLevel,
+            int waterVolume, BooleanSupplier isCurrent) throws DreameCloudException {
+        if (!"dreame.vacuum.r9445d".equals(device.model()) || roomIds.isEmpty() || roomIds.size() > 32) {
+            throw new DreameCloudException("Vacuum room cleaning is not supported for this request");
+        }
+        JsonArray selections = new JsonArray();
+        for (int roomId : roomIds) {
+            if (roomId < 1 || roomId > 63) {
+                throw new DreameCloudException("Invalid vacuum room identifier");
+            }
+            JsonArray selection = new JsonArray();
+            for (int value : new int[] { roomId, 1, suctionLevel, waterVolume, 1 }) {
+                selection.add(value);
+            }
+            selections.add(selection);
+        }
+        JsonObject cleaning = new JsonObject();
+        cleaning.add("selects", selections);
+        JsonArray inputs = new JsonArray();
+        JsonObject status = new JsonObject();
+        status.addProperty("piid", 1);
+        status.addProperty("value", 18);
+        inputs.add(status);
+        JsonObject properties = new JsonObject();
+        properties.addProperty("piid", 10);
+        properties.addProperty("value", gson.toJson(cleaning));
+        inputs.add(properties);
+        JsonObject parameters = new JsonObject();
+        parameters.addProperty("did", device.id());
+        parameters.addProperty("siid", 4);
+        parameters.addProperty("aiid", 1);
+        parameters.add("in", inputs);
+        JsonElement result = sendCommand(device, "action", parameters, isCurrent);
+        if (!(result instanceof JsonObject response) || !(response.get("code") instanceof JsonPrimitive code)
+                || !code.isNumber() || !isExactInteger(code, 0)) {
+            throw new DreameCloudException("Vacuum room cleaning was not acknowledged");
+        }
+    }
+
+    @Override
+    public synchronized @Nullable String getVacuumMap(DreameDevice device, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+            throw new DreameCloudException("Vacuum maps are not supported for this model");
+        }
+        JsonObject frameRequest = new JsonObject();
+        frameRequest.addProperty("req_type", 1);
+        frameRequest.addProperty("frame_type", "I");
+        frameRequest.addProperty("force_type", 1);
+        JsonObject input = new JsonObject();
+        input.addProperty("piid", 2);
+        input.addProperty("value", gson.toJson(frameRequest));
+        JsonArray inputs = new JsonArray();
+        inputs.add(input);
+        JsonObject parameters = new JsonObject();
+        parameters.addProperty("did", device.id());
+        parameters.addProperty("siid", 6);
+        parameters.addProperty("aiid", 1);
+        parameters.add("in", inputs);
+        JsonElement result = sendCommand(device, "action", parameters, isCurrent);
+        if (!(result instanceof JsonObject object) || !(object.get("code") instanceof JsonPrimitive code)
+                || !code.isNumber() || !(object.get("out") instanceof JsonArray output)) {
+            throw new DreameCloudException("Vacuum map request returned an invalid result");
+        }
+        try {
+            if (code.getAsBigDecimal().intValueExact() != 0) {
+                throw new DreameCloudException("Vacuum map request was rejected");
+            }
+        } catch (ArithmeticException | NumberFormatException e) {
+            throw new DreameCloudException("Vacuum map request returned an invalid result code");
+        }
+        String objectName = "";
+        for (JsonElement element : output) {
+            if (element instanceof JsonObject property && property.get("piid") instanceof JsonPrimitive piid
+                    && piid.isNumber() && property.get("value") instanceof JsonPrimitive value && value.isString()) {
+                String mapValue = value.getAsString();
+                if (mapValue.isBlank()) {
+                    continue;
+                }
+                if (isExactInteger(piid, 1)) {
+                    return mapValue;
+                }
+                if (isExactInteger(piid, 3)) {
+                    objectName = mapValue;
+                } else if (isExactInteger(piid, 13)) {
+                    String[] parts = mapValue.split(",", 3);
+                    if (parts.length >= 2) {
+                        if ("0".equals(parts[0])) {
+                            return parts[1];
+                        }
+                        objectName = parts[1] + (parts.length == 3 ? "," + parts[2] : "");
+                    }
+                }
+            }
+        }
+        return objectName.isBlank() ? null : downloadVacuumMap(device, objectName, isCurrent);
+    }
+
+    @Override
+    public synchronized String getVacuumMapList(DreameDevice device, String objectName, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+            throw new DreameCloudException("Vacuum map lists are not supported for this model");
+        }
+        return downloadVacuumMap(device, objectName, isCurrent);
+    }
+
+    private String downloadVacuumMap(DreameDevice device, String objectName, BooleanSupplier isCurrent)
+            throws DreameCloudException {
+        validateMapObjectName(objectName);
+        if (!isCurrent.getAsBoolean()) {
+            throw new DreameCloudException("Map download cancelled before dispatch");
+        }
+        JsonObject request = new JsonObject();
+        request.addProperty("did", device.id());
+        request.addProperty("model", device.model());
+        request.addProperty("filename", objectName);
+        request.addProperty("region", authentication.country());
+        JsonObject response = transport.post(FILE_DOWNLOAD_PATH, gson.toJson(request), true);
+        assertSuccess(response, "Cloud map-file query failed");
+        JsonElement data = response.get("data");
+        if (!(data instanceof JsonPrimitive value) || !value.isString() || value.getAsString().isBlank()) {
+            throw new DreameCloudException("Cloud map-file query returned no download URL");
+        }
+        String url = value.getAsString();
+        validateMapDownloadUrl(url);
+        if (!isCurrent.getAsBoolean()) {
+            throw new DreameCloudException("Map download cancelled before transfer");
+        }
+        return transport.getFile(url);
+    }
+
+    private static void validateMapObjectName(String objectName) throws DreameCloudException {
+        if (objectName.length() > 1024 || objectName.contains("..") || objectName.indexOf('\n') >= 0
+                || objectName.indexOf('\r') >= 0 || !objectName.contains("/")) {
+            throw new DreameCloudException("Vacuum returned an invalid map object name");
+        }
+    }
+
+    private static void validateMapDownloadUrl(String value) throws DreameCloudException {
+        try {
+            URI url = new URI(value);
+            String host = url.getHost();
+            if (!"https".equalsIgnoreCase(url.getScheme()) || host == null || !isTrustedMapDownloadHost(host)
+                    || url.getUserInfo() != null || url.getPort() != -1 && url.getPort() != 443) {
+                throw new DreameCloudException("Cloud returned an invalid map download URL");
+            }
+        } catch (URISyntaxException e) {
+            throw new DreameCloudException("Cloud returned an invalid map download URL", e);
+        }
+    }
+
+    private static boolean isTrustedMapDownloadHost(String host) {
+        String normalized = host.toLowerCase(Locale.ROOT);
+        return "aliyuncs.com".equals(normalized) || normalized.endsWith(".aliyuncs.com")
+                || "iot.dreame.tech".equals(normalized) || normalized.endsWith(".iot.dreame.tech");
+    }
+
+    private static boolean isExactInteger(JsonPrimitive value, int expected) {
+        try {
+            return value.getAsBigDecimal().intValueExact() == expected;
+        } catch (ArithmeticException | NumberFormatException e) {
+            return false;
+        }
     }
 
     public synchronized void startZoneMowing(DreameDevice device, List<Integer> zoneIds) throws DreameCloudException {
@@ -359,7 +680,15 @@ public class DreameApiClient implements DreameMowerApi {
 
     private JsonElement sendCommand(DreameDevice device, String method, JsonElement parameters)
             throws DreameCloudException {
+        return sendCommand(device, method, parameters, () -> true);
+    }
+
+    private JsonElement sendCommand(DreameDevice device, String method, JsonElement parameters,
+            BooleanSupplier isCurrent) throws DreameCloudException {
         ensureAuthenticated();
+        if (!isCurrent.getAsBoolean()) {
+            throw new DreameCloudException("Command cancelled before dispatch");
+        }
         int id = requestId.incrementAndGet();
         JsonObject data = new JsonObject();
         data.addProperty("did", device.id());

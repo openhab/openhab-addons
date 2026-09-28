@@ -27,6 +27,7 @@ public final class DreameBindingConstants {
 
     public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_MOWER = new ThingTypeUID(BINDING_ID, "mower");
+    public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
 
     public static final String CHANNEL_COMMAND = "command";
     public static final String CHANNEL_STATE = "state";

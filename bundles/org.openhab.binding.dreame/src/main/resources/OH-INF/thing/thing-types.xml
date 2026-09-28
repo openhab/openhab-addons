@@ -36,6 +36,57 @@
 		</config-description>
 	</bridge-type>
 
+	<thing-type id="vacuum">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Dreame Vacuum</label>
+		<description>Vacuum status, map and controls</description>
+		<channels>
+			<channel id="command" typeId="vacuum-command"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="state" typeId="vacuum-state"/>
+			<channel id="operating-status" typeId="vacuum-operating-status"/>
+			<channel id="charging-status" typeId="vacuum-charging-status"/>
+			<channel id="error-code" typeId="vacuum-error-code"/>
+			<channel id="cleaning-time" typeId="vacuum-cleaning-time"/>
+			<channel id="cleaned-area" typeId="vacuum-cleaned-area"/>
+			<channel id="suction-level" typeId="vacuum-suction-level"/>
+			<channel id="water-volume" typeId="vacuum-water-volume"/>
+			<channel id="task-status" typeId="vacuum-task-status"/>
+			<channel id="cleaning-mode" typeId="vacuum-cleaning-mode"/>
+			<channel id="clean-genius" typeId="vacuum-clean-genius"/>
+			<channel id="cleaning-route" typeId="vacuum-cleaning-route"/>
+			<channel id="drying-time" typeId="vacuum-drying-time"/>
+			<channel id="main-brush-left" typeId="vacuum-main-brush-left"/>
+			<channel id="main-brush-time-left" typeId="vacuum-main-brush-time-left"/>
+			<channel id="side-brush-left" typeId="vacuum-side-brush-left"/>
+			<channel id="side-brush-time-left" typeId="vacuum-side-brush-time-left"/>
+			<channel id="filter-left" typeId="vacuum-filter-left"/>
+			<channel id="filter-time-left" typeId="vacuum-filter-time-left"/>
+			<channel id="sensor-dirty-left" typeId="vacuum-sensor-dirty-left"/>
+			<channel id="sensor-dirty-time-left" typeId="vacuum-sensor-dirty-time-left"/>
+			<channel id="mop-pad-left" typeId="vacuum-mop-pad-left"/>
+			<channel id="mop-pad-time-left" typeId="vacuum-mop-pad-time-left"/>
+			<channel id="detergent-left" typeId="vacuum-detergent-left"/>
+			<channel id="detergent-time-left" typeId="vacuum-detergent-time-left"/>
+			<channel id="total-cleaning-time" typeId="vacuum-total-cleaning-time"/>
+			<channel id="cleaning-count" typeId="vacuum-cleaning-count"/>
+			<channel id="total-cleaned-area" typeId="vacuum-total-cleaned-area"/>
+			<channel id="base-status" typeId="vacuum-base-status"/>
+			<channel id="rooms" typeId="vacuum-rooms"/>
+			<channel id="room-cleaning" typeId="vacuum-room-cleaning"/>
+			<channel id="map-png" typeId="vacuum-map-png"/>
+			<channel id="map-svg" typeId="vacuum-map-svg"/>
+		</channels>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device identifier reported by the cloud account</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<thing-type id="mower">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
@@ -93,6 +144,278 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+
+	<channel-type id="vacuum-map-png">
+		<item-type>Image</item-type>
+		<label>Vacuum Map (PNG)</label>
+		<description>Rendered vacuum map in PNG format</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-map-svg">
+		<item-type>Image</item-type>
+		<label>Vacuum Map (SVG)</label>
+		<description>Vector SVG preview of the complete vacuum map</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-command">
+		<item-type>String</item-type>
+		<label>Vacuum Command</label>
+		<description>Vacuum cleaning, dock and station commands; displays the last acknowledged command</description>
+		<state>
+			<options>
+				<option value="START">Start Cleaning</option>
+				<option value="PAUSE">Pause</option>
+				<option value="DOCK">Return to Dock</option>
+				<option value="STOP">Stop</option>
+				<option value="LOCATE">Locate</option>
+				<option value="AUTO_EMPTY">Empty Dust Bin</option>
+				<option value="WASH_MOPS">Wash Mops</option>
+				<option value="PAUSE_WASHING">Pause Mop Washing</option>
+				<option value="START_DRYING">Start Mop Drying</option>
+				<option value="STOP_DRYING">Stop Mop Drying</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-state">
+		<item-type>String</item-type>
+		<label>Vacuum State</label>
+		<description>Last observed vacuum device state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-operating-status">
+		<item-type>String</item-type>
+		<label>Vacuum Operating Status</label>
+		<description>Last observed vacuum operating status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-charging-status">
+		<item-type>String</item-type>
+		<label>Vacuum Charging Status</label>
+		<description>Last observed vacuum charging status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-error-code">
+		<item-type>Number</item-type>
+		<label>Vacuum Error Code</label>
+		<description>Last observed numeric vacuum error code</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-cleaning-time">
+		<item-type>Number</item-type>
+		<label>Cleaning Time</label>
+		<description>Elapsed cleaning time reported by the vacuum in minutes</description>
+		<state readOnly="true" min="0" pattern="%d min"/>
+	</channel-type>
+
+	<channel-type id="vacuum-cleaned-area">
+		<item-type>Number</item-type>
+		<label>Cleaned Area</label>
+		<description>Area cleaned during the current task in square metres</description>
+		<state readOnly="true" min="0" pattern="%.0f m²"/>
+	</channel-type>
+
+	<channel-type id="vacuum-suction-level">
+		<item-type>String</item-type>
+		<label>Suction Level</label>
+		<state>
+			<options>
+				<option value="QUIET">Quiet</option>
+				<option value="STANDARD">Standard</option>
+				<option value="STRONG">Strong</option>
+				<option value="TURBO">Turbo</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-water-volume">
+		<item-type>String</item-type>
+		<label>Water Volume</label>
+		<state>
+			<options>
+				<option value="LOW">Low</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="HIGH">High</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-task-status">
+		<item-type>String</item-type>
+		<label>Task Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-cleaning-mode">
+		<item-type>String</item-type>
+		<label>Cleaning Mode</label>
+		<state>
+			<options>
+				<option value="SWEEPING">Sweeping</option>
+				<option value="MOPPING">Mopping</option>
+				<option value="SWEEPING_AND_MOPPING">Sweeping and Mopping</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-base-status">
+		<item-type>String</item-type>
+		<label>Base Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-clean-genius">
+		<item-type>String</item-type>
+		<label>CleanGenius</label>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ROUTINE">Routine Cleaning</option>
+				<option value="DEEP">Deep Cleaning</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-cleaning-route">
+		<item-type>String</item-type>
+		<label>Cleaning Route</label>
+		<state>
+			<options>
+				<option value="STANDARD">Standard</option>
+				<option value="QUICK">Quick</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-drying-time">
+		<item-type>String</item-type>
+		<label>Drying Time</label>
+		<state>
+			<options>
+				<option value="2H">2 Hours</option>
+				<option value="3H">3 Hours</option>
+				<option value="4H">4 Hours</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-main-brush-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Main Brush Remaining</label>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-main-brush-time-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Main Brush Time Remaining</label>
+		<state pattern="%.0f h" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-side-brush-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Side Brush Remaining</label>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-side-brush-time-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Side Brush Time Remaining</label>
+		<state pattern="%.0f h" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-filter-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Filter Remaining</label>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-filter-time-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Filter Time Remaining</label>
+		<state pattern="%.0f h" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-sensor-dirty-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Sensor Cleaning Remaining</label>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-sensor-dirty-time-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Sensor Cleaning Time Remaining</label>
+		<state pattern="%.0f h" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-mop-pad-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mop Pad Remaining</label>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-mop-pad-time-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mop Pad Time Remaining</label>
+		<state pattern="%.0f h" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-detergent-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Detergent Remaining</label>
+		<state pattern="%.0f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-detergent-time-left" advanced="true">
+		<item-type>Number</item-type>
+		<label>Detergent Time Remaining</label>
+		<state pattern="%.0f d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-total-cleaning-time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Total Cleaning Time</label>
+		<state pattern="%.0f min" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-cleaning-count" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cleaning Count</label>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-total-cleaned-area" advanced="true">
+		<item-type>Number</item-type>
+		<label>Total Cleaned Area</label>
+		<state pattern="%.0f m²" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-room-cleaning">
+		<item-type>String</item-type>
+		<label>Room Cleaning</label>
+		<description>Comma-separated numeric room IDs to clean once; displays the last acknowledged selection</description>
+		<state/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-rooms">
+		<item-type>String</item-type>
+		<label>Rooms</label>
+		<description>Room segment IDs and names reported by the current map</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="command">
 		<item-type>String</item-type>

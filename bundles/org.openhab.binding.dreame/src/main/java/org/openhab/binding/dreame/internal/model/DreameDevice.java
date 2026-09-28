@@ -22,4 +22,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public record DreameDevice(String id, String name, String model, String version, String masterUid, String bindDomain,
         String property) {
+    public boolean isMower() {
+        return model.startsWith("dreame.mower.") || model.startsWith("mova.mower.");
+    }
+
+    public boolean isVacuum() {
+        return isVacuumModel(model);
+    }
+
+    public static boolean isVacuumModel(String model) {
+        return model.matches("dreame\\.vacuum\\.[A-Za-z0-9_-]{1,64}");
+    }
 }

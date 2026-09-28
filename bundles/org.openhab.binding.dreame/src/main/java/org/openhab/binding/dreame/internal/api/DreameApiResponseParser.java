@@ -54,20 +54,26 @@ final class DreameApiResponseParser {
         List<DreameDevice> devices = new ArrayList<>();
         for (JsonElement element : records) {
             if (element instanceof JsonObject device) {
-                String id = stringValue(device, "did");
-                String model = stringValue(device, "model");
-                if (!id.isBlank() && isMowerModel(model)) {
-                    String displayName = defaultIfBlank(stringValue(device, "name"), stringValue(device, "customName"));
+                String id = deviceStringValue(device, "did");
+                String model = deviceStringValue(device, "model");
+                if (!id.isBlank() && (isMowerModel(model) || DreameDevice.isVacuumModel(model))) {
+                    String displayName = defaultIfBlank(deviceStringValue(device, "name"),
+                            deviceStringValue(device, "customName"));
                     if (displayName.isBlank() && device.get("deviceInfo") instanceof JsonObject deviceInfo) {
-                        displayName = stringValue(deviceInfo, "displayName");
+                        displayName = deviceStringValue(deviceInfo, "displayName");
                     }
                     devices.add(new DreameDevice(id, defaultIfBlank(displayName, model), model,
-                            stringValue(device, "ver"), stringValue(device, "masterUid"),
-                            stringValue(device, "bindDomain"), stringValue(device, "property")));
+                            deviceStringValue(device, "ver"), deviceStringValue(device, "masterUid"),
+                            deviceStringValue(device, "bindDomain"), deviceStringValue(device, "property")));
                 }
             }
         }
         return List.copyOf(devices);
+    }
+
+    private static String deviceStringValue(JsonObject device, String key) {
+        JsonElement value = device.get(key);
+        return value != null && value.isJsonPrimitive() ? value.getAsString() : "";
     }
 
     private static boolean isMowerModel(String model) {

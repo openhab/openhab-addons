@@ -15,7 +15,7 @@ package org.openhab.binding.dreame.internal.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Credentials and routing information for one mower's Dreame MQTT connection.
+ * Credentials and routing information for one device's Dreame MQTT connection.
  *
  * @author Ronny Grun - Initial contribution
  */
