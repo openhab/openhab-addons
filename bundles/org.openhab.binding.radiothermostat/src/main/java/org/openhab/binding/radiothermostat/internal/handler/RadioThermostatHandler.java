@@ -205,7 +205,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      *
      * @param initialDelaySec the delay before the refreshJob runs for the first time
      */
-    private void rescheduleRefreshJob(int initialDelaySec) {
+    private synchronized void rescheduleRefreshJob(int initialDelaySec) {
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
@@ -301,7 +301,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
         logger.debug("Disposing the RadioThermostat handler.");
         connector.removeEventListener(this);
 
@@ -349,7 +349,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         final String channel = channelUID.getId();
 
         if (command instanceof RefreshType) {
@@ -365,8 +365,11 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 logger.debug("Command: {} -> Not an integer", cmdStr);
             }
 
+            final boolean isModeChange = MODE.equals(channel)
+                    && !cmdInt.equals(rthermData.getThermostatData().getMode());
+
             // When processing a command, delay the polling job for 20s unless changing mode then wait the refreshPeriod
-            if (!MESSAGE.equals(channel)) {
+            if (!MESSAGE.equals(channel) && !isModeChange) {
                 lastCommandTime = System.currentTimeMillis();
                 rescheduleRefreshJob(!MODE.equals(channel) ? COMMAND_POLLING_DELAY_SEC : refreshPeriod * 60);
             }
@@ -374,7 +377,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             switch (channel) {
                 case MODE:
                     // only do if commanded mode is different than current mode
-                    if (!cmdInt.equals(rthermData.getThermostatData().getMode())) {
+                    if (isModeChange) {
                         connector.sendCommand("tmode", cmdStr, DEFAULT_RESOURCE);
 
                         // set the new operating mode, reset everything else,
