@@ -1577,8 +1577,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         lights.set(idx, ds);
 
-        if (idx == 0 && (profile.isRGBW2 || profile.isDuo)) { // TODO check the filtering logic here
-            // Plus RGBW PM's white-mode light0..3 channels also reach this point but must not be metered here
+        if (profile.isRGBW2 || profile.isDuo) { // TODO check the filtering logic here
+            // TODO ?? Plus RGBW PM's white-mode light0..3 channels also reach this point but must not be metered here
             updateComponentMeter(status, idx, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
 
