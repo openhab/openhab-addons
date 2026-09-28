@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +78,21 @@ public class PhilipsAirCoapAPIConnectionTest {
         assertEquals("1", status.getPower());
         assertEquals("2", status.getFanSpeed());
         assertEquals(45f, status.getHumidity());
+    }
+
+    @Test
+    public void recentModelStatusIsTranslated() {
+        assertTrue(connection.processNotification(encrypt(
+                "{\"state\":{\"reported\":{\"D01S03\":\"Office\",\"D01S05\":\"AC3737/10\",\"D03102\":1,\"D03221\":8}}}"),
+                URI));
+
+        PhilipsAirPurifierDataDTO status = connection.getAirPurifierStatus("127.0.0.1");
+        assertNotNull(status);
+        assertEquals("1", status.getPower());
+        assertEquals(8, status.getPm25());
+        PhilipsAirPurifierDeviceDTO device = connection.getAirPurifierDevice("127.0.0.1");
+        assertNotNull(device);
+        assertEquals("AC3737/10", device.getModelId());
     }
 
     @Test

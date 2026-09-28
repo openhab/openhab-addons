@@ -84,6 +84,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private volatile @Nullable Consumer<PhilipsAirAPIConnection> listener;
     private volatile @Nullable CoapObserveRelation observe = null;
     private volatile @Nullable String lastJson = null;
+    // the scheme of the last status, commands are sent in the classic scheme until the device reported its status
+    private volatile CoapKeyScheme keyScheme = CoapKeyScheme.CLASSIC;
     private volatile long lastUpdated = 0L; // epoch ms of last valid JSON
     private int mid;
 
@@ -243,12 +245,15 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                 JsonElement airResponse = JsonParser.parseString(decrypted);
                 if (airResponse.isJsonObject() && airResponse.getAsJsonObject().has("state")) {
                     JsonElement stateObj = airResponse.getAsJsonObject().get("state");
-                    if (stateObj.isJsonObject() && stateObj.getAsJsonObject().has("reported")) {
+                    if (stateObj.isJsonObject()
+                            && stateObj.getAsJsonObject().get("reported") instanceof JsonObject reported) {
                         counter = getCounter(rawResponse);
                         hasSync = true;
                         // the sync is only renewed after consecutive invalid responses
                         syncCounter = 0;
-                        return stateObj.getAsJsonObject().get("reported").toString();
+                        CoapKeyScheme scheme = CoapKeyScheme.detect(reported);
+                        keyScheme = scheme;
+                        return scheme.toClassic(reported).toString();
                     } else {
                         logger.debug("Response does not contain 'reported' element");
                     }
@@ -333,9 +338,14 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
      */
     @Override
     public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value) {
+        JsonObject desired = keyScheme.toDevice((JsonObject) gson.toJsonTree(value));
+        if (desired.isEmpty()) {
+            logger.debug("Command '{}' is not supported by {}", gson.toJson(value), host);
+            return null;
+        }
         try {
             synchronized (commandLock) {
-                String encrypted = prepareCommand(value);
+                String encrypted = prepareCommand(desired);
                 if (encrypted == null) {
                     logger.debug("Could not encrypt command '{}'", gson.toJson(value));
                     return null;
@@ -351,16 +361,14 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         return null;
     }
 
-    private @Nullable String prepareCommand(PhilipsAirPurifierWritableDataDTO value)
-            throws ConnectorException, IOException {
+    private @Nullable String prepareCommand(JsonObject desired) throws ConnectorException, IOException {
         long controlCounter = getSync(counter);
         logger.debug("ControlCounter from sync={}", controlCounter);
-        JsonObject cmd = (JsonObject) gson.toJsonTree(value);
-        cmd.addProperty("CommandType", "app");
-        cmd.addProperty("DeviceId", "");
-        cmd.addProperty("EnduserId", "1");
+        desired.addProperty("CommandType", "app");
+        desired.addProperty("DeviceId", "");
+        desired.addProperty("EnduserId", "1");
         PhilipsAirPurifierStateDTO state = new PhilipsAirPurifierStateDTO();
-        state.setDesired(cmd);
+        state.setDesired(desired);
         PhilipsAirPurifierStatusDTO fullCmd = new PhilipsAirPurifierStatusDTO();
         fullCmd.setState(state);
         String commandValue = gson.toJson(fullCmd);

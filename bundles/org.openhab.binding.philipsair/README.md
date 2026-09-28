@@ -24,13 +24,52 @@ Philips air purifiers use one of two local protocols, depending on their age:
 The following models have been tested: AC1214/10, AC2729, AC2729/50, AC2889/10 and AC3829/10.
 Other models using the same protocols are likely to work as well; feedback on compatibility with other models is welcome.
 
-### Limitations
+### Recent CoAP Models
 
-The CoAP support covers devices that report their state with the classic field names (e.g. `pwr`, `om`, `pm25`), such as the AC2889, AC3033, AC3829 and AC4236 series.
+CoAP devices such as the AC2889, AC3033, AC3829 and AC4236 series report their state with the classic field names (e.g. `pwr`, `om`, `pm25`) and are fully supported.
 
 Recent models report their state with numbered field names (e.g. `D03-02` or `D03102`) instead.
 Examples are the AC0850, AC0950, AC1715, AC2210, AC3210, AC3420, AC3737, AMF and HU series.
-These models are not supported yet: they can be added as `coap` thing and go online, but their channels stay `NULL` and commands have no effect.
+These models are supported in a limited way, as their modes, fan speeds and light settings differ per model:
+
+| Channel                        | Recent models                                        |
+|--------------------------------|------------------------------------------------------|
+| `power`                        | read and write                                       |
+| `child-lock`                   | read and write (only models with `D03xxx` fields)    |
+| `pm25`, `allergen-index`       | read only                                            |
+| `humidity`, `temperature`      | read only (only models with `D03xxx` fields)         |
+| `pre-filter-life`, `hepa-filter-life` | read only                                     |
+| all other channels             | not supported, the channels stay `NULL`              |
+
+The thing properties `modelId`, `firmwareVersion` and `name` are set for these models as well.
+Support for these models has not been tested with real devices yet; feedback is welcome.
+If such a device is not discovered, add it manually as `coap` thing with its IP address.
+
+### Helping to Support a New Model
+
+Adding full support for a model requires knowing which field holds which setting and which values it takes.
+If you own a model that is not fully supported, you can help by collecting this information:
+
+1. Add the device as `coap` thing (or `universal` thing for an HTTP device) and make sure it is online.
+1. Enable debug logging for the binding in the openHAB console:
+
+   ```shell
+   log:set DEBUG org.openhab.binding.philipsair
+   ```
+
+1. Change one setting at a time with the buttons on the device or in the Philips app, and note what you changed, e.g. "mode from Auto to Sleep" or "fan speed from 1 to 2".
+   Wait until a new status line appears in `openhab.log` after each change: `Status from <ip>: {...}` for CoAP devices, `Philips Air Purifier device response: '{...}'` for HTTP devices.
+   Go through all modes, fan speeds, light levels, the timer, the child lock and, for humidifiers, the humidity setpoint.
+1. Note the values the Philips app shows at the same time, e.g. PM2.5, humidity, temperature and the remaining filter lifetimes.
+1. Reset the log level with `log:set INFO org.openhab.binding.philipsair`.
+
+Then open an issue on [GitHub](https://github.com/openhab/openhab-addons/issues) or a topic on the [openHAB community forum](https://community.openhab.org), and include:
+
+- the model number printed on the device label (e.g. `AC3737/10`) and its firmware version
+- the status log lines, each with the change you made just before it
+- the values shown in the Philips app
+
+The status lines do not contain passwords or keys, but they do contain the device name and ID; you may replace those before posting.
 
 ## Discovery
 
