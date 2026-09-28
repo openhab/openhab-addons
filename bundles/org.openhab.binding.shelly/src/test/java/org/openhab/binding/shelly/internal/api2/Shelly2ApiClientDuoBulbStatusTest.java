@@ -77,6 +77,7 @@ public class Shelly2ApiClientDuoBulbStatusTest {
     private ShellyDeviceProfile multicolorBulbProfile(boolean inColor) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSCOLORBULB);
         profile.isRGBCCT = true;
+        profile.isDuo = true; // Required for updateDuoBulbStatus to process the profile
         profile.inColor = inColor;
         profile.device.mode = inColor ? SHELLY_MODE_COLOR : SHELLY_MODE_WHITE;
         
@@ -142,6 +143,7 @@ public class Shelly2ApiClientDuoBulbStatusTest {
 
     private ShellyDeviceProfile duoBulbProfile() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        profile.isDuo = true; // Ensure isDuo is set for updateDuoBulbStatus processing
         
         // Initialize status.lights for light updates
         ArrayList<ShellySettingsLight> lights = new ArrayList<>();
