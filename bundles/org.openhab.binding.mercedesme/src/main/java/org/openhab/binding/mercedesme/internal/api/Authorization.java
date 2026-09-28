@@ -519,7 +519,7 @@ public class Authorization {
 
         int status = response.getStatus();
         String body = response.getContentAsString();
-        logger.trace("Step 4b: Decline passkey prompt {} - {}", status, body);
+        logger.trace("Step 4b: Decline passkey prompt {}", status);
         if (status != HttpStatus.OK_200) {
             throw new MercedesMeAuthException("Failed to decline passkey prompt. HTTP " + status);
         }
@@ -551,7 +551,7 @@ public class Authorization {
         ContentResponse response = send(request);
         int status = response.getStatus();
         String body = response.getContentAsString();
-        logger.trace("Step 4c: Submit legal consent {} - {}", status, body);
+        logger.trace("Step 4c: Submit legal consent {}", status);
         if (status != HttpStatus.OK_200) {
             throw new MercedesMeAuthException("Failed to submit legal consent. HTTP " + status);
         }
