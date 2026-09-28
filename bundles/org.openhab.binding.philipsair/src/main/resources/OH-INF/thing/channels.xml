@@ -8,11 +8,19 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Device power</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="fan-speed">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<description>Fan speed</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state pattern="%s">
 			<options>
 				<option value="s">Silent</option>
@@ -27,6 +35,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Filter mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s">
 			<options>
 				<option value="P">Auto</option>
@@ -42,12 +54,20 @@
 		<item-type>Switch</item-type>
 		<label>Buttons</label>
 		<description>Buttons light</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 		<state pattern="%s"/>
 	</channel-type>
 	<channel-type id="displayed-index">
 		<item-type>String</item-type>
 		<label>Displayed Index</label>
 		<description>Display PM2.5 index or Allergen Index</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false" pattern="%s">
 			<options>
 				<option value="1">PM2.5</option>
@@ -60,6 +80,10 @@
 		<label>LED Light Level</label>
 
 		<description>Level 100, 75, 50, 25, 0</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state pattern="%d" min="0" max="100" step="25"/>
 	</channel-type>
 	<channel-type id="child-lock">
@@ -67,18 +91,30 @@
 		<label>Child Lock</label>
 
 		<description>Child lock enabled/disabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="timer-remaining">
 		<item-type>Number:Time</item-type>
 		<label>Timer Remaining</label>
 		<description>Time left until the timer switches the device off</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 	<channel-type id="timer">
 		<item-type>Number</item-type>
 		<label>Timer</label>
 		<description>Timer in hours (0-5)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state min="0" max="5" pattern="%d" step="1"/>
 	</channel-type>
 
@@ -86,23 +122,39 @@
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>PM 2.5 particles pollution level</description>
-		<state readOnly="true" pattern="%.0f %unit%" min="0" max="5000"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f µg/m³" min="0" max="5000"/>
 	</channel-type>
 	<channel-type id="allergen-index">
 		<item-type>Number</item-type>
 		<label>Allergen Index</label>
 		<description>Allergen index</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="air-quality-threshold">
 		<item-type>Number</item-type>
 		<label>Air Quality Notification Threshold</label>
 		<description>Air quality index at which the device notifies</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state pattern="%d"/>
 	</channel-type>
 	<channel-type id="error-code">
 		<item-type>String</item-type>
 		<label>Error Message</label>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Info</tag>
+		</tags>
 
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -118,24 +170,40 @@
 		<item-type>Number</item-type>
 		<label>Pre-filter</label>
 		<description>Estimated time to perform a manual clean up of the Pre-filter</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="wick-filter-life">
 		<item-type>Number</item-type>
 		<label>Wick</label>
 		<description>Wick filter estimated lifetime</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="carbon-filter-life">
 		<item-type>Number</item-type>
 		<label>Carbon</label>
 		<description>Active carbon filter estimated lifetime</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="hepa-filter-life">
 		<item-type>Number</item-type>
 		<label>HEPA Filter</label>
 		<description>HEPA filter estimated lifetime</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="humidity">
@@ -143,6 +211,10 @@
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" min="0" max="100"/>
 	</channel-type>
 	<channel-type id="target-humidity">
@@ -150,6 +222,10 @@
 		<label>Humidity Setpoint</label>
 		<description>Humidity setpoint</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="false" pattern="%.0f %unit%" min="40" max="70" step="10"/>
 	</channel-type>
 	<channel-type id="temperature">
@@ -157,12 +233,20 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="function">
 		<item-type>String</item-type>
 		<label>Function</label>
 		<description>P: Purification, PH: Purification and Humidification</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false" pattern="%s">
 			<options>
 				<option value="P">Purification</option>
@@ -174,6 +258,10 @@
 		<item-type>Number</item-type>
 		<label>Water Level</label>
 		<description>Water tank level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 </thing:thing-descriptions>
