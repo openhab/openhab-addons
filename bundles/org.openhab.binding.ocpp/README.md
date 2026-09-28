@@ -101,7 +101,9 @@ Off (0) by default, so a charger that answers first time is unaffected.
 Vendor, model, firmware version and serial number are published as thing properties from the charger's BootNotification.
 
 The local authorization list lets a cached RFID card start a charge while openHAB or the network is offline, on a charger that supports `LocalAuthListManagement`.
-The list lives on the `local-auth-list` channel as a comma-separated set of idTags: set it (from a rule or the UI) and the binding pushes it to the charger with `SendLocalList`, versioned by content so it is not rewritten on every boot.
+The list lives on the `local-auth-list` channel as a comma-separated set of idTags: set it (from a rule or the UI) and the binding pushes it to the charger with `SendLocalList`.
+It is compared with the charger's list version on every connect and sent only when they differ, so a change made while the charger was offline, clearing it included, reaches it when it reconnects.
+An empty list only goes to a charger this binding has given a list before, so a charger that keeps its own cards is left alone.
 It is persisted on the charge point thing, so it survives an openHAB restart.
 To add a card without knowing its id, use `learn-card`: switch it ON and present the card at the reader — the binding takes the idTag from the charger's Authorize and adds it to the list, then disarms.
 Learning also disarms on its own after 60 s if no card is presented.
@@ -153,6 +155,8 @@ For such a session, suspend the power with `pause` (a 0 A profile needs no trans
 
 `charge-limit` caps the charging current: the value is sent as a `SetChargingProfile` and the channel reflects the applied limit once accepted.
 Setting it to 0 stops the charge, as a 0 A limit does in OCPP, and `clear-limit` removes the cap, so the charger goes back to its own maximum.
+Unless `forceTxDefaultProfile` is set, the limit goes out during a transaction as a `TxProfile`, which the charger drops when that transaction ends, and outside one as the `TxDefaultProfile` the next transaction starts under.
+So when a transaction that got a `TxProfile` ends, the binding sends the current limit again as the `TxDefaultProfile`, and the next session starts at the last limit, or paused if it was paused.
 Some chargers only accept a charge limit expressed in watts (their OCPP `ChargingScheduleAllowedChargingRateUnit` is `Power`, not `Current`); the binding learns this from the charger and converts `charge-limit` amps to watts with `nominalVoltage` and `phases`, so the same amps channel still works.
 Alternatively set `power-limit` (watts) directly — it is sent as-is, with no conversion, on any charger that accepts a power limit, and takes over from `charge-limit` while it is set.
 Commanding `charge-limit` again clears the power-limit and returns to amps, so the most recent command always wins.
@@ -161,6 +165,7 @@ A `power-limit` of 0 stops the charge too, and `clear-limit` removes it along wi
 It only takes effect on a charger that supports phase switching (its `ConnectorSwitch3to1PhaseSupported` is true), and when set it also drives the amps→watts conversion above.
 `pause` suspends charging with a 0 A profile without ending the transaction; switching it off resumes — at your `charge-limit` if one is set, otherwise by removing the cap so the charger returns to its own maximum — distinct from `charging`, which ends the session.
 A pause is a 0 A limit, so a resume must lift the cap rather than send another 0 A, which a charger reads as "stay suspended".
+A `charge-limit` set during a pause is kept and sent when the pause ends.
 `availability` takes the connector Operative or Inoperative, `unlock` releases the cable lock, and the `chargepoint`-level `reset` performs a soft reset of the whole charger.
 
 ## Full Example
@@ -258,6 +263,12 @@ If the server starts (`OCPP JSON server listening`) but no `Charger connected` l
 First rule out the network: from a device on the charger's own network segment (not just any machine), check the openHAB host and port are reachable — `nc -zv <openhab-host> 8887` — and use the host's IP rather than a `.lan` name to rule out DNS.
 A charger that always sends an HTTP Basic-auth header — some send their id with a very short or empty password on every connection, a V2C Trydan being one — is accepted when no `authPassword` is configured, so that is not a cause of a silent no-connect.
 
+### Checking What the Charger Was Actually Sent
+
+`log:set TRACE eu.chargetime.ocpp.JSONCommunicator` logs every OCPP message in both directions: `Send a message:` is what openHAB sent, `Receive a message:` what the charger sent, and a request and its answer carry the same id.
+That is the evidence a charger vendor needs when a charger answers `Accepted` and then does not act on it.
+It also logs every meter value and idTag, so switch it off again with `log:set DEFAULT eu.chargetime.ocpp.JSONCommunicator`.
+
 ### Power Readings Lag Behind the Charger
 
 The `power-active-import` and per-phase metering channels only update when the charger sends a `MeterValues` sample, so between samples they look stale (the energy register keeps climbing because it is a running total).
@@ -276,6 +287,7 @@ Every charger dials `ws://<openhab-host>:<port>/<chargePointId>`; the only real 
 | Alfen Eve Single Pro                | `ws://<host>:8887/<id>` (CSMS URL in the ACE Service Installer)                   | Its BootNotification model can exceed OCPP's 20-character limit; the binding accepts it rather than refusing the charger.                                            |
 | Mennekes Amtron (Bender controller) | Backend URL `ws://<host>:8887/` plus ChargeBoxIdentity `<id>` in a separate field | The controller joins them into `ws://<host>:8887/<id>`. Do not copy the `/OCPPJProxy/v16/` path from the Bender docs — that is only for their proxy backend.         |
 | V2C Trydan                          | `ws://<host>:8887/<id>`                                                           | Sends a short-password HTTP Basic-auth header on every connection; accepted (the binding relaxes the library's password-length check when no `authPassword` is set). |
+| Easee                               | `ws://<host>:8887/<id>`                                                           | Answers `Accepted` to a 6 A limit but does not start charging on it; 7 A works. After a reboot one unit ignored every limit until its dynamic circuit limit was set again in the Easee app. |
 
 ## Security
 
