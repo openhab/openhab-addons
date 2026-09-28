@@ -110,7 +110,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                 .set(CoapConfig.EXCHANGE_LIFETIME, 65, TimeUnit.SECONDS);
 
         endpoint = new CoapEndpoint.Builder().setConfiguration(netConfig).build();
-        if (logger.isDebugEnabled()) {
+        if (logger.isTraceEnabled()) {
             MessageInterceptor interceptor = new CoapMessageLogger();
             endpoint.addInterceptor(interceptor);
         }
@@ -220,10 +220,10 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
      */
     boolean processNotification(String content, String uri) {
         String resp = processResponse(content.trim(), uri);
-        logger.debug("Response {}", resp);
         if (resp.length() <= 2) {
             return false;
         }
+        logger.debug("Status from {}: {}", host, resp);
         lastJson = resp;
         lastUpdated = System.currentTimeMillis();
         attempt = 0;
@@ -241,7 +241,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
 
             counter = getCounter(rawResponse);
             String decrypted = PhilipsAirCoapCipher.decryptMsg(rawResponse, logger);
-            logger.debug("Response from {}: {}", uri, decrypted);
+            logger.trace("Decrypted response from {}: {}", uri, decrypted);
             try {
                 JsonElement airResponse = JsonParser.parseString(decrypted);
                 if (airResponse.isJsonObject() && airResponse.getAsJsonObject().has("state")) {

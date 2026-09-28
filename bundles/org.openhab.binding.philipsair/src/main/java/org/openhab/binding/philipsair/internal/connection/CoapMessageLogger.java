@@ -39,53 +39,53 @@ public class CoapMessageLogger implements MessageInterceptor {
 
     @Override
     public void receiveResponse(@Nullable Response response) {
-        logger.debug("<<<<< COAP RESPONSE RECEIVED <<<<<");
+        logger.trace("<<<<< COAP RESPONSE RECEIVED <<<<<");
         if (response == null) {
-            logger.debug("Response is null");
+            logger.trace("Response is null");
             return;
         }
-        logger.debug("Source: {}", response.getSourceContext().getPeerAddress());
-        logger.debug("Type: {}", response.getType());
-        logger.debug("MID: {}", response.getMID());
-        logger.debug("Token: {}", response.getTokenString());
-        logger.debug("Code: {}", response.getCode());
-        logger.debug("Options: {}", response.getOptions());
+        logger.trace("Source: {}", response.getSourceContext().getPeerAddress());
+        logger.trace("Type: {}", response.getType());
+        logger.trace("MID: {}", response.getMID());
+        logger.trace("Token: {}", response.getTokenString());
+        logger.trace("Code: {}", response.getCode());
+        logger.trace("Options: {}", response.getOptions());
         if (response.getPayload() != null) {
-            logger.debug("Payload (hex): {}", HexUtils.bytesToHex(response.getPayload()));
-            logger.debug("Payload (string): {}", response.getPayloadString());
+            logger.trace("Payload (hex): {}", HexUtils.bytesToHex(response.getPayload()));
+            logger.trace("Payload (string): {}", response.getPayloadString());
         }
     }
 
     @Override
     public void receiveEmptyMessage(@Nullable EmptyMessage message) {
-        logger.debug("<<<<< COAP EMPTY MESSAGE RECEIVED <<<<<");
+        logger.trace("<<<<< COAP EMPTY MESSAGE RECEIVED <<<<<");
         if (message == null) {
-            logger.debug("Message is null");
+            logger.trace("Message is null");
             return;
         }
 
-        logger.debug("Source: {}", message.getSourceContext().getPeerAddress());
-        logger.debug("Type: {}", message.getType());
-        logger.debug("MID: {}", message.getMID());
+        logger.trace("Source: {}", message.getSourceContext().getPeerAddress());
+        logger.trace("Type: {}", message.getType());
+        logger.trace("MID: {}", message.getMID());
     }
 
     @Override
     public void sendRequest(@Nullable Request request) {
         if (request == null) {
-            logger.debug("Request is null");
+            logger.trace("Request is null");
             return;
         }
-        logger.debug("Sending CoAP request to {}: {} {}", request.getDestinationContext().getPeerAddress(),
+        logger.trace("Sending CoAP request to {}: {} {}", request.getDestinationContext().getPeerAddress(),
                 request.getCode(), request.getURI());
-        logger.debug("Source: {}", request.getLocalAddress());
-        logger.debug("Type: {}", request.getType());
-        logger.debug("MID: {}", request.getMID());
-        logger.debug("Token: {}", request.getTokenString());
-        logger.debug("Code: {}", request.getCode());
-        logger.debug("Options: {}", request.getOptions());
+        logger.trace("Source: {}", request.getLocalAddress());
+        logger.trace("Type: {}", request.getType());
+        logger.trace("MID: {}", request.getMID());
+        logger.trace("Token: {}", request.getTokenString());
+        logger.trace("Code: {}", request.getCode());
+        logger.trace("Options: {}", request.getOptions());
         if (request.getPayload() != null) {
-            logger.debug("Payload (hex): {}", HexUtils.bytesToHex(request.getPayload()));
-            logger.debug("Payload (string): {}", request.getPayloadString());
+            logger.trace("Payload (hex): {}", HexUtils.bytesToHex(request.getPayload()));
+            logger.trace("Payload (string): {}", request.getPayloadString());
         }
     }
 
@@ -93,21 +93,21 @@ public class CoapMessageLogger implements MessageInterceptor {
     public void sendResponse(@Nullable Response response) {
         // This is normally server-side only, but let's log just in case
         if (response == null) {
-            logger.debug("Response is null");
+            logger.trace("Response is null");
             return;
         }
-        logger.debug("Sending CoAP response to {}: {} - {}", response.getDestinationContext().getPeerAddress(),
+        logger.trace("Sending CoAP response to {}: {} - {}", response.getDestinationContext().getPeerAddress(),
                 response.getCode(), response.getPayloadString());
     }
 
     @Override
     public void sendEmptyMessage(@Nullable EmptyMessage message) {
         if (message == null) {
-            logger.debug("Message is null");
+            logger.trace("Message is null");
             return;
         }
         // Empty messages are usually ACK or RST
-        logger.debug("Sending CoAP empty message to {}: Type={}, MID={}",
+        logger.trace("Sending CoAP empty message to {}: Type={}, MID={}",
                 message.getDestinationContext().getPeerAddress(), message.getType(), message.getMID());
     }
 }
