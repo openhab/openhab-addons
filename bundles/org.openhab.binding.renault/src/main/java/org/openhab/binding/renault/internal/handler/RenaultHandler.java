@@ -41,6 +41,7 @@ import org.openhab.binding.renault.internal.api.Car.ChargingMode;
 import org.openhab.binding.renault.internal.api.Car.LockStatus;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplementedException;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DateTimeType;
@@ -457,7 +458,7 @@ public class RenaultHandler extends BaseThingHandler {
         run(() -> {
             try {
                 handler.run();
-            } catch (RenaultNotImplementedException e) {
+            } catch (RenaultNotImplementedException | RenaultForbiddenException e) {
                 logger.debug("Disabling unsupported {} status update", type, e);
                 disabler.run();
             }
