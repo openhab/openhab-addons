@@ -83,9 +83,10 @@ public class RadioThermostatConnector {
      * event listeners as a RadioThermostat event when it is finally received
      *
      * @param resource the url of the json resource on the thermostat
-     * @param startTime the system time in millis at the moment the method was called
      */
-    public void getAsyncThermostatData(String resource, long startTime) {
+    public void getAsyncThermostatData(String resource) {
+        final long startTime = System.currentTimeMillis();
+
         httpClient.newRequest(buildRequestURL(resource)).method(GET).timeout(30, TimeUnit.SECONDS)
                 .send(new BufferingResponseListener() {
                     @Override
@@ -163,7 +164,7 @@ public class RadioThermostatConnector {
      *
      * @param key the key
      * @param value the value
-     * @param startTime the system time in millis when the action that resulted in this event was initiated
+     * @param startTime the system time in millis when the request that resulted in this event was initiated
      */
     private void dispatchKeyValue(String key, @Nullable String value, long startTime) {
         if (value == null) {
