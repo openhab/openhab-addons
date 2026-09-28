@@ -12,6 +12,7 @@
 		<channel-groups>
 			<channel-group id="control" typeId="duoControl"/>
 			<channel-group id="white" typeId="whiteSettings"/>
+			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
@@ -28,6 +29,7 @@
 			<channel-group id="control" typeId="duoControl"/>
 			<channel-group id="color" typeId="colorSettingsRGB"/>
 			<channel-group id="white" typeId="whiteSettings"/>
+			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 

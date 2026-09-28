@@ -407,6 +407,7 @@ Its placement depends on the device type:
 - Gen2+ devices with a meter (relay-PM, roller, PM, EM/EM1 clamp meters, EM-50, EM Mini) and the Gen1 EM expose `resetTotals` per meter group (`meter#resetTotals`, `meter1#resetTotals`, ...), resetting only that meter's counters.
 - Three-phase 3EM devices (Gen1 3EM, Plus 3EM-63, Pro 3EM) expose `resetTotals` once in the common `device` group; it resets all phases together.
 - Gen1 devices with a simple power meter (e.g. 1PM, Plug-S, Shelly 2/2.5, dimmers) have no reset API in the firmware, so no `resetTotals` channel is created for them.
+- The Duo Bulb G3 and Multicolor Bulb G3 meter on CCT/RGBCCT components, which likewise have no reset API in the firmware, so no `resetTotals` channel is created for them.
 
 ### Thing Status
 
@@ -1160,47 +1161,57 @@ totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly Duo Color (thing-type: shellycolorbulb)
 
-| Group   | Channel         | Type               | read-only | Advanced | Description                                                                              |
-| ------- | --------------- | ------------------ | --------- | -------- | ---------------------------------------------------------------------------------------- |
-| control | power           | Switch             | r/w       | yes      | Switch light ON/OFF                                                                      |
-|         | button          | Trigger            | yes       |          | Event trigger, see section Button Events                                                 |
-|         | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                   |
-|         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                   |
-|         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                       |
-| color   | hsb             | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                    |
-|         | full            | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                   |
-|         | red             | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                         |
-|         | green           | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                     |
-|         | blue            | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                       |
-|         | white           | Dimmer             | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)                     |
-|         | gain            | Dimmer             | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                      |
-|         | effect          | Number             | r/w       |          | Puts the light into effect mode: 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash |
-| white   | brightness      | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                       |
-|         | temperature-pct | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention     |
-|         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention     |
-| meter   | currentPower    | Number             | yes       |          | Current power consumption in Watts                                                       |
+| Group   | Channel           | Type               | read-only | Advanced | Description                                                                              |
+|---------|-------------------|--------------------|-----------|----------|------------------------------------------------------------------------------------------|
+| control | power             | Switch             | r/w       | yes      | Switch light ON/OFF                                                                      |
+|         | button            | Trigger            | yes       |          | Event trigger, see section Button Events                                                 |
+|         | autoOn            | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                   |
+|         | autoOff           | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                   |
+|         | timerActive       | Switch             | yes       |          | ON: An auto-on/off timer is active                                                       |
+| color   | hsb               | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                    |
+|         | full              | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                   |
+|         | red               | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                         |
+|         | green             | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                     |
+|         | blue              | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                       |
+|         | white             | Dimmer             | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)                     |
+|         | gain              | Dimmer             | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                      |
+|         | effect            | Number             | r/w       |          | Puts the light into effect mode: 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash |
+| white   | brightness        | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                       |
+|         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention     |
+|         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention     |
+| meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                       |
+|         | energyHistMin1    | Number             | yes       |          | Total energy consumed during the previous minute, minute -1 (Wh)                         |
+|         | energyHistMin2    | Number             | yes       |          | Total energy consumed during minute -2 (Wh)                                              |
+|         | energyHistMin3    | Number             | yes       |          | Total energy consumed during minute -3 (Wh)                                              |
+|         | energyAvgLast3Min | Number             | yes       |          | Average energy per minute over minutes -1 to -3 (Wh)                                     |
+|         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                          |
+|         | lastUpdate        | DateTime           | yes       |          | Timestamp of the last measurement                                                        |
 
 ### Shelly Duo RGBW Color Bulb (thing-type: shellycolorbulb)
 
-| Group   | Channel      | Type         | read-only | Advanced | Description                                                             |
-| ------- | ------------ | ------------ | --------- | -------- | ----------------------------------------------------------------------- |
-| control | power        | Switch       | r/w       | yes      | Switch light ON/OFF                                                     |
-|         | button       | Trigger      | yes       |          | Event trigger, see section Button Events                                |
-|         | autoOn       | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds  |
-|         | autoOff      | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds  |
-|         | timerActive  | Switch       | yes       |          | ON: An auto-on/off timer is active                                      |
-| color   | hsb          | Multiple (*) | r/w       |          | Main full color control according to openHAB Light Control Convention   |
-|         | full         | String       | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
-|         | red          | Dimmer       | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)        |
-|         | green        | Dimmer       | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)    |
-|         | blue         | Dimmer       | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)      |
-|         | white        | Dimmer       | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)    |
-|         | gain         | Dimmer       | r/w       | yes      | Gain setting: 0..100% or 0..100                                         |
-|         | effect       | Number       | r/w       |          | Puts the light into effect mode: 0..3                                   |
-|         |              |              |           |          | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                 |
-| meter   | currentPower | Number       | yes       |          | Current power consumption in Watts                                      |
-
-Channels in group `color` or `white` apply depending on the selected mode - they are not active at the same time.
+| Group   | Channel           | Type         | read-only | Advanced | Description                                                            |
+|---------|-------------------|--------------|-----------|----------|------------------------------------------------------------------------|
+| control | power             | Switch       | r/w       | yes      | Switch light ON/OFF                                                    |
+|         | button            | Trigger      | yes       |          | Event trigger, see section Button Events                               |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                     |
+| color   | hsb               | Multiple (*) | r/w       |          | Main full color control according to openHAB Light Control Convention  |
+|         | full              | String       | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w" |
+|         | red               | Dimmer       | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)       |
+|         | green             | Dimmer       | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)   |
+|         | blue              | Dimmer       | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)     |
+|         | white             | Dimmer       | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)   |
+|         | gain              | Dimmer       | r/w       | yes      | Gain setting: 0..100% or 0..100                                        |
+|         | effect            | Number       | r/w       |          | Puts the light into effect mode: 0..3                                  |
+|         |                   |              |           |          | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                |
+| meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts                                     |
+|         | energyHistMin1    | Number       | yes       |          | Total energy consumed during the previous minute, minute -1 (Wh)       |
+|         | energyHistMin2    | Number       | yes       |          | Total energy consumed during minute -2 (Wh)                            |
+|         | energyHistMin3    | Number       | yes       |          | Total energy consumed during minute -3 (Wh)                            |
+|         | energyAvgLast3Min | Number       | yes       |          | Average energy per minute over minutes -1 to -3 (Wh)                   |
+|         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                        |
+|         | lastUpdate        | DateTime     | yes       |          | Timestamp of the last measurement                                      |
 
 ### Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 
@@ -1276,35 +1287,51 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 
 ### Shelly Duo Bulb E27 Gen3 (thing-type: shellyplusduobulb)
 
-| Group   | Channel         | Type               | read-only | Advanced | Description                                                                          |
-| ------- | --------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------------------ |
-| control | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
-|         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
-|         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
-| white   | brightness      | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                   |
-|         | temperature-pct | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+| Group   | Channel           | Type               | read-only | Advanced | Description                                                                          |
+|---------|-------------------|--------------------|-----------|----------|--------------------------------------------------------------------------------------|
+| control | autoOn            | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
+|         | autoOff           | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
+|         | timerActive       | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
+| white   | brightness        | Multiple (*)       | r/w       |          | Main dimming control according to openHAB Light Control Convention                   |
+|         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
+|         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+| meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                   |
+|         | energyHistMin1    | Number             | yes       |          | Total energy consumed during the previous minute, minute -1 (Wh)                     |
+|         | energyHistMin2    | Number             | yes       |          | Total energy consumed during minute -2 (Wh)                                          |
+|         | energyHistMin3    | Number             | yes       |          | Total energy consumed during minute -3 (Wh)                                          |
+|         | energyAvgLast3Min | Number             | yes       |          | Average energy per minute over minutes -1 to -3 (Wh)                                 |
+|         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                      |
+|         | lastUpdate        | DateTime           | yes       |          | Timestamp of the last measurement                                                    |
 
 The Duo Bulb Gen3 is a tunable-white (CCT) bulb only, like the Gen1 Shelly Duo - it has no RGB color output.
+It has power metering hardware and reports current power and energy consumption.
 
 ### Shelly Multicolor Bulb E27 Gen3 (thing-type: shellypluscolorbulb)
 
-| Group   | Channel         | Type               | read-only | Advanced | Description                                                                          |
-| ------- | --------------- | ------------------ | --------- | -------- | ------------------------------------------------------------------------------------ |
-| control | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
-|         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
-|         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
-| color   | hsb             | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                |
-|         | full            | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"                 |
-|         | red             | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                     |
-|         | green           | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                 |
-|         | blue            | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                   |
-| white   | brightness      | Dimmer             | r/w       | yes      | Brightness: 0..100% or 0..100; also controls power (ON/OFF)                          |
-|         | temperature-pct | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+| Group   | Channel           | Type               | read-only | Advanced | Description                                                                          |
+|---------|-------------------|--------------------|-----------|----------|--------------------------------------------------------------------------------------|
+| control | autoOn            | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds               |
+|         | autoOff           | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds               |
+|         | timerActive       | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
+| color   | hsb               | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                |
+|         | full              | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b"                 |
+|         | red               | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                     |
+|         | green             | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                 |
+|         | blue              | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                   |
+| white   | brightness        | Dimmer             | r/w       | yes      | Brightness: 0..100% or 0..100; also controls power (ON/OFF)                          |
+|         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
+|         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+| meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                   |
+|         | energyHistMin1    | Number             | yes       |          | Total energy consumed during the previous minute, minute -1 (Wh)                     |
+|         | energyHistMin2    | Number             | yes       |          | Total energy consumed during minute -2 (Wh)                                          |
+|         | energyHistMin3    | Number             | yes       |          | Total energy consumed during minute -3 (Wh)                                          |
+|         | energyAvgLast3Min | Number             | yes       |          | Average energy per minute over minutes -1 to -3 (Wh)                                 |
+|         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                      |
+|         | lastUpdate        | DateTime           | yes       |          | Timestamp of the last measurement                                                    |
 
 The Multicolor Bulb Gen3 has both full RGB color output and a tunable white (CCT) mode, like the Gen1 Shelly Color Bulb, but the two modes share the same LEDs: only one is active at a time, and there is no dedicated `mode` channel.
-Sending a color (`color#hsb`, `color#red`/`green`/`blue` switches to color mode; sending `color#full="white"`, `white#temperature`, or `white#temperature-pct` switches back to white mode.
+Sending a color (`color#hsb`, `color#red`/`green`/`blue` switches to color mode; sending `white#temperature`, or `white#temperature-pct` switches back to white mode.
+It has power metering hardware and reports current power and energy consumption in both modes.
 
 ### Shelly H&T (thing-type: shellyht)
 

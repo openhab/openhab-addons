@@ -389,17 +389,24 @@ public class ChatGPTApiClient {
                 }
 
                 if (reasoningEffort != null && response.getStatus() == HttpStatus.BAD_REQUEST_400
-                        && errorBody.toLowerCase().contains("unrecognized request argument")
                         && errorBody.contains("reasoning_effort")) {
-                    logger.debug("Model {} doesn't support reasoning_effort; caching and retrying without it", model);
-                    modelsNotSupportingReasoningEffort.add(model);
-                    try {
-                        JsonNode jsonNode = objectMapper.readTree(queryJson);
-                        ((com.fasterxml.jackson.databind.node.ObjectNode) jsonNode).remove("reasoning_effort");
-                        String retryJson = objectMapper.writeValueAsString(jsonNode);
-                        return executeCompletionRequest(retryJson, model, timeoutSeconds, null);
-                    } catch (IOException e) {
-                        logger.debug("Failed to remove reasoning_effort from payload for retry: {}", e.getMessage());
+                    if (errorBody.toLowerCase().contains("unrecognized request argument")) {
+                        logger.debug("Model {} doesn't support reasoning_effort; caching and retrying without it",
+                                model);
+                        modelsNotSupportingReasoningEffort.add(model);
+                        try {
+                            JsonNode jsonNode = objectMapper.readTree(queryJson);
+                            ((com.fasterxml.jackson.databind.node.ObjectNode) jsonNode).remove("reasoning_effort");
+                            String retryJson = objectMapper.writeValueAsString(jsonNode);
+                            return executeCompletionRequest(retryJson, model, timeoutSeconds, null);
+                        } catch (IOException e) {
+                            logger.debug("Failed to remove reasoning_effort from payload for retry: {}",
+                                    e.getMessage());
+                        }
+                    } else if (errorBody.toLowerCase().contains("unsupported value")) {
+                        logger.warn(
+                                "ChatGPT API request failed due to invalid 'reasoningEffort' value, check your Thing/channel configuration: {}",
+                                errorBody);
                     }
                 }
 

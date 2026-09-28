@@ -36,13 +36,13 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link EvccDiscoveryService} is responsible for scanning the API response for things
- *
+ * The {@link EvccThingDiscoveryService} is responsible for scanning the API response for things
+ * 
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-@Component(scope = ServiceScope.PROTOTYPE, service = EvccDiscoveryService.class, configurationPid = "discovery.evcc")
-public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<EvccBridgeHandler> {
+@Component(scope = ServiceScope.PROTOTYPE, service = EvccThingDiscoveryService.class, configurationPid = "thing-discovery.evcc")
+public class EvccThingDiscoveryService extends AbstractThingHandlerDiscoveryService<EvccBridgeHandler> {
 
     private static final int TIMEOUT = 5;
     private static final int SCAN_INTERVAL_IN_SECONDS = 5; // We can scan every 5 seconds since we are using the cached
@@ -55,7 +55,7 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
     private @Nullable ScheduledFuture<?> evccDiscoveryJob;
 
     @Activate
-    public EvccDiscoveryService(@Reference List<EvccDiscoveryMapper> mappers) {
+    public EvccThingDiscoveryService(@Reference List<EvccDiscoveryMapper> mappers) {
         super(EvccBridgeHandler.class, SUPPORTED_THING_TYPES, TIMEOUT, true);
         this.mappers = mappers;
     }
