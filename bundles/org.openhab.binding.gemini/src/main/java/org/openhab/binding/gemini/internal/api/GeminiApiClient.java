@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -76,9 +75,6 @@ public class GeminiApiClient {
     private static final String HEADER_API_KEY = "x-goog-api-key";
     private static final String ROLE_USER = "user";
     private static final String ROLE_MODEL = "model";
-
-    private static final Pattern INVALID_THINKING_LEVEL_PATTERN = Pattern
-            .compile("(?i)\\bThinking level\\s+([A-Z_]+)\\s+is not supported for this model\\b");
 
     private final Logger logger = LoggerFactory.getLogger(GeminiApiClient.class);
 
@@ -382,11 +378,15 @@ public class GeminiApiClient {
                         return executeGenerateContentRequest(model, retryRequestPayload, timeoutSeconds);
                     }
                 } else if (status == HttpStatus.BAD_REQUEST_400
-                        && INVALID_THINKING_LEVEL_PATTERN.matcher(body).matches()) {
+                        && body.toLowerCase().contains("please retry with other thinking level")) {
                     GeminiGenerationConfig genConfig = requestPayload.generationConfig();
-                    if (genConfig != null && genConfig.thinkingConfig() != null) {
-                        throw new GeminiApiException("Model " + model + " doesn't support thinking level "
-                                + genConfig.thinkingConfig().thinkingLevel());
+                    if (genConfig != null && genConfig.thinkingConfig() != null
+                            && genConfig.thinkingConfig().thinkingLevel() != null) {
+                        String thinkingLevel = genConfig.thinkingConfig().thinkingLevel().name().toLowerCase();
+                        logger.warn("Gemini request failed: Model {} doesn't support thinking level {}", model,
+                                thinkingLevel);
+                        throw new GeminiApiException(
+                                "Model " + model + " doesn't support thinking level " + thinkingLevel);
                     }
                 } else {
                     logger.debug("Gemini request failed on the final attempt with HTTP {} {}: {}", status,
