@@ -26,7 +26,7 @@ import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FixedLengthAudioStream;
 import org.openhab.core.common.Disposable;
-import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.tts.Voice;
 
 /**
  * Implementation of {@link AudioStream} for {@link PicoTTSService}
