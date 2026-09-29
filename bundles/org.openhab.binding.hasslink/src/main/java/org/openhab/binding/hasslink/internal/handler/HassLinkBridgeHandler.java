@@ -339,25 +339,51 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
             }
         }
 
-        URI uri;
-        boolean requiresAuth = false;
         String baseUri = restBaseUri;
+        if (baseUri.isBlank()) {
+            return;
+        }
+
+        URI baseUriObj;
+        try {
+            baseUriObj = URI.create(baseUri);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid base REST URI '{}': {}", baseUri, e.getMessage());
+            return;
+        }
+
+        URI uri;
         if (pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://")) {
-            uri = URI.create(pathOrUrl);
-            requiresAuth = !baseUri.isBlank() && hasSameOrigin(uri, URI.create(baseUri));
+            try {
+                uri = URI.create(pathOrUrl);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid image URL '{}': {}", pathOrUrl, e.getMessage());
+                return;
+            }
+
+            if (!hasSameOrigin(uri, baseUriObj)) {
+                logger.warn(
+                        "Rejecting image request to untrusted origin '{}'. Only URLs matching the configured Home Assistant origin ({}) are allowed.",
+                        pathOrUrl, baseUri);
+                return;
+            }
         } else if (pathOrUrl.startsWith("/")) {
-            uri = URI.create(baseUri + pathOrUrl);
-            requiresAuth = true;
+            try {
+                uri = URI.create(baseUri + pathOrUrl);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid image path '{}': {}", pathOrUrl, e.getMessage());
+                return;
+            }
         } else {
             return;
         }
 
         HttpRequest.Builder builder = HttpRequest.newBuilder(uri).GET();
-        if (requiresAuth && !accessToken.isBlank()) {
+        if (!accessToken.isBlank()) {
             builder.header("Authorization", "Bearer " + accessToken);
         }
 
-        logger.debug("Fetching Home Assistant image from {} (requiresAuth={})", uri, requiresAuth);
+        logger.debug("Fetching Home Assistant image from {}", uri);
 
         httpClient.sendAsync(builder.build(), HttpResponse.BodyHandlers.ofByteArray()).thenAccept(response -> {
             if (response.statusCode() / 100 == 2) {
