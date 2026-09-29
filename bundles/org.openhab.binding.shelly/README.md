@@ -1091,24 +1091,24 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ### Shelly Bulb (thing-type: shellybulb)
 
-| Group   | Channel         | Type               | read-only | Advanced | Description                                                                          |
-| ------- | --------------- | ------------------ | --------- | ---------| ------------------------------------------------------------------------------------ |
-| control | power           | Switch             | r/w       | yes      | Switch light ON/OFF                                                                  |
-|         | mode            | Switch             | r/w       | yes      | Color mode: color or white                                                           |
-|         | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF; in sec                           |
-|         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON: in sec                           |
-|         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                   |
-| color   | hsb             | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                |
-|         | full            | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"               |
-|         | red             | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                     |
-|         | green           | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                 |
-|         | blue            | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                   |
-|         | white           | Dimmer             | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)                 |
-|         | gain            | Dimmer             | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                  |
+| Group   | Channel         | Type               | read-only | Advanced | Description                                                                                                                                 |
+|---------|-----------------|--------------------|-----------|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| control | power           | Switch             | r/w       | yes      | Switch light ON/OFF                                                                                                                         |
+|         | mode            | Switch             | r/w       | yes      | Color mode: color or white                                                                                                                  |
+|         | autoOn          | Number             | r/w       |          | Sets a timer to turn the device ON after every OFF; in sec                                                                                  |
+|         | autoOff         | Number             | r/w       |          | Sets a timer to turn the device OFF after every ON: in sec                                                                                  |
+|         | timerActive     | Switch             | yes       |          | ON: An auto-on/off timer is active                                                                                                          |
+| color   | hsb             | Multiple (*)       | r/w       |          | Main full color control according to openHAB Light Control Convention                                                                       |
+|         | full            | String             | r/w       | yes      | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"                                                                      |
+|         | red             | Dimmer             | r/w       | yes      | Red brightness: 0..100% or 0..255 (control only the red channel)                                                                            |
+|         | green           | Dimmer             | r/w       | yes      | Green brightness: 0..100% or 0..255 (control only the green channel)                                                                        |
+|         | blue            | Dimmer             | r/w       | yes      | Blue brightness: 0..100% or 0..255 (control only the blue channel)                                                                          |
+|         | white           | Dimmer             | r/w       | yes      | White brightness: 0..100% or 0..255 (control only the white channel)                                                                        |
+|         | gain            | Dimmer             | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                                                                         |
 |         | effect          | Number             | r/w       |          | Puts the light into effect mode: 0..6 0=No effect, 1=Meteor Shows, 2=Gradual Change, 3=Breath 4=Flash, 5=On/Off Gradual, 6=Red/Green Change |
-| white   | brightness      | Dimmer             | r/w       | yes      | Brightness: 0..100%                                                                  |
-|         | temperature-pct | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
-|         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
+| white   | brightness      | Dimmer             | r/w       | yes      | Brightness: 0..100%                                                                                                                         |
+|         | temperature-pct | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention                                                        |
+|         | temperature     | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention                                                        |
 
 `Note:`
 The openHAB color picker has only values for red/green/blue (RGB), not for white as supported by the RGBW2.
