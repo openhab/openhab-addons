@@ -15,6 +15,7 @@ package org.openhab.binding.robonect.internal.model;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test;
  * returned from the module can be handled.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Push trigger and duration parsing tests
  */
 public class ModelParserTest {
 
@@ -41,6 +43,38 @@ public class ModelParserTest {
         assertTrue(answer.isSuccessful());
         assertNull(answer.getErrorMessage());
         assertNull(answer.getErrorCode());
+    }
+
+    @Test
+    public void shouldParseNumberedPushTriggersWithoutAnUpperLimit() {
+        PushInfo info = subject.parse("""
+                {"successful":true,"push":{"trigger":{"interval":30,
+                "trigger0":{"name":"Parked","enter":true,"leave":false},
+                "trigger12":{"name":"Mowing","enter":false,"leave":true}}}}
+                """, PushInfo.class);
+        assertTrue(info.isSuccessful());
+        PushTriggers triggers = Objects.requireNonNull(Objects.requireNonNull(info.getPush()).getTrigger());
+        assertEquals(30, triggers.getInterval());
+        assertEquals(2, triggers.getTriggers().size());
+        assertEquals(Boolean.TRUE, Objects.requireNonNull(triggers.getTriggers().get("0")).getEnter());
+        assertEquals(Boolean.TRUE, Objects.requireNonNull(triggers.getTriggers().get("12")).getLeave());
+    }
+
+    @Test
+    public void shouldParseRecentDurationsAndAdditionalStatusFields() {
+        HourInfo hours = subject.parse("""
+                {"successful":true,"seek":[{"duration":2},{"duration":4}],
+                "mowing":[{"duration":7},{"duration":9}]}
+                """, HourInfo.class);
+        assertEquals(2, Objects.requireNonNull(hours.getSeek()).size());
+        assertEquals(4, Objects.requireNonNull(hours.getSeek()).get(1).getDuration());
+        assertEquals(9, Objects.requireNonNull(hours.getMowing()).get(1).getDuration());
+
+        MowerInfo status = subject.parse("""
+                {"successful":true,"status":{"home":true,"prevent":3}}
+                """, MowerInfo.class);
+        assertEquals(Boolean.TRUE, Objects.requireNonNull(status.getStatus()).getHome());
+        assertEquals(3, Objects.requireNonNull(status.getStatus()).getPrevent());
     }
 
     @Test

@@ -84,6 +84,18 @@ Robonect firmware 1.x exposes optional telemetry and configuration channels for 
 statistics, remote-start points, timers, boundary-wire sensors, weather, WLAN, portal, GPIO extensions, door control,
 and service operations. Unsupported endpoints are ignored, so these channels can remain unset on older firmware.
 
+The binding creates `battery-<slot>-*` and `wire-sensor-<slot>-*` channels from the returned lists, with slots numbered
+from 1. Battery groups expose ID, charge, voltage, current, temperature, full capacity, and remaining capacity; wire
+groups expose label, quality, and the `a`, `n`, `f`, and `g1` diagnostic values. The existing unnumbered `battery-*`
+channels continue to show the first battery. These measurements are read-only.
+
+Each numbered push trigger in the response creates `push-trigger-<number>-name`, `-enter`, and `-leave` channels. The
+enter and leave Switch channels are writable; changing one preserves the other setting. The `prevent` Number
+channel reports the raw mowing prevention code, and the `home` Switch reports whether the mower is at home.
+
+The `statistics-seek` and `statistics-mowing` String channels contain comma-separated recent durations in minutes.
+Each also has `-min`, `-max`, and `-average` `Number:Time` channels with a minute unit hint.
+
 The optional `ajaxUiScraping` configuration reads the localized, undocumented web-interface endpoint. It enables job
 start and end times and recognizes end-of-day mode where the JSON API reports only `HOME`. Because this interface can
 change with a Robonect firmware update and varies by language, it is disabled by default; failures fall back to normal

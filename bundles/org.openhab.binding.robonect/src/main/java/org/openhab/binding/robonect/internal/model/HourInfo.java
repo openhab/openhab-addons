@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -23,8 +25,26 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class HourInfo extends RobonectAnswer {
     private @Nullable HourGeneral general;
+    private @Nullable List<DurationEntry> seek;
+    private @Nullable List<DurationEntry> mowing;
 
     public @Nullable HourGeneral getGeneral() {
         return general;
+    }
+
+    public @Nullable List<DurationEntry> getSeek() {
+        return seek;
+    }
+
+    public @Nullable List<DurationEntry> getMowing() {
+        return mowing;
+    }
+
+    public static class DurationEntry {
+        private @Nullable Integer duration;
+
+        public @Nullable Integer getDuration() {
+            return duration;
+        }
     }
 }

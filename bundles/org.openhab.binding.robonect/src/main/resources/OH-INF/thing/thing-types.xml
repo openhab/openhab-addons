@@ -71,6 +71,30 @@
 			<channel id="statistics-charging-hours" typeId="statisticsHoursType"/>
 			<channel id="statistics-charges" typeId="statisticsCountType"/>
 			<channel id="statistics-errors" typeId="statisticsCountType"/>
+			<channel id="statistics-seek" typeId="statisticsDurationsType">
+				<label>Recent Searching Durations</label>
+			</channel>
+			<channel id="statistics-seek-min" typeId="statisticsDurationType">
+				<label>Minimum Search Duration</label>
+			</channel>
+			<channel id="statistics-seek-max" typeId="statisticsDurationType">
+				<label>Maximum Search Duration</label>
+			</channel>
+			<channel id="statistics-seek-average" typeId="statisticsDurationType">
+				<label>Average Search Duration</label>
+			</channel>
+			<channel id="statistics-mowing" typeId="statisticsDurationsType">
+				<label>Recent Mowing Durations</label>
+			</channel>
+			<channel id="statistics-mowing-min" typeId="statisticsDurationType">
+				<label>Minimum Mowing Duration</label>
+			</channel>
+			<channel id="statistics-mowing-max" typeId="statisticsDurationType">
+				<label>Maximum Mowing Duration</label>
+			</channel>
+			<channel id="statistics-mowing-average" typeId="statisticsDurationType">
+				<label>Average Mowing Duration</label>
+			</channel>
 			<channel id="remote-1-name" typeId="remoteNameType"/>
 			<channel id="remote-1-visible" typeId="remoteSwitchType"/>
 			<channel id="remote-1-path" typeId="remotePathType"/>
@@ -101,174 +125,10 @@
 			<channel id="remote-5-proportion" typeId="remoteProportionType"/>
 			<channel id="remote-5-distance" typeId="remoteDistanceType"/>
 			<channel id="remote-5-corridor-cut" typeId="remoteSwitchType"/>
-			<channel id="wire-sensor-1-label" typeId="wireSensorLabelType"/>
-			<channel id="wire-sensor-1-quality" typeId="wireSensorQualityType"/>
-			<channel id="wire-sensor-1-a" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-1-n" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-1-f" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-1-g1" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-2-label" typeId="wireSensorLabelType"/>
-			<channel id="wire-sensor-2-quality" typeId="wireSensorQualityType"/>
-			<channel id="wire-sensor-2-a" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-2-n" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-2-f" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-2-g1" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-3-label" typeId="wireSensorLabelType"/>
-			<channel id="wire-sensor-3-quality" typeId="wireSensorQualityType"/>
-			<channel id="wire-sensor-3-a" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-3-n" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-3-f" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-3-g1" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-4-label" typeId="wireSensorLabelType"/>
-			<channel id="wire-sensor-4-quality" typeId="wireSensorQualityType"/>
-			<channel id="wire-sensor-4-a" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-4-n" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-4-f" typeId="wireSensorValueType"/>
-			<channel id="wire-sensor-4-g1" typeId="wireSensorValueType"/>
 			<channel id="portal-enabled" typeId="portalSwitchType"/>
 			<channel id="portal-connected" typeId="portalSwitchType"/>
 			<channel id="portal-url" typeId="portalStringType"/>
 			<channel id="portal-host" typeId="portalStringType"/>
-			<channel id="timer-1-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-1-start" typeId="timerTimeType"/>
-			<channel id="timer-1-end" typeId="timerTimeType"/>
-			<channel id="timer-1-monday" typeId="timerDayType"/>
-			<channel id="timer-1-tuesday" typeId="timerDayType"/>
-			<channel id="timer-1-wednesday" typeId="timerDayType"/>
-			<channel id="timer-1-thursday" typeId="timerDayType"/>
-			<channel id="timer-1-friday" typeId="timerDayType"/>
-			<channel id="timer-1-saturday" typeId="timerDayType"/>
-			<channel id="timer-1-sunday" typeId="timerDayType"/>
-			<channel id="timer-2-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-2-start" typeId="timerTimeType"/>
-			<channel id="timer-2-end" typeId="timerTimeType"/>
-			<channel id="timer-2-monday" typeId="timerDayType"/>
-			<channel id="timer-2-tuesday" typeId="timerDayType"/>
-			<channel id="timer-2-wednesday" typeId="timerDayType"/>
-			<channel id="timer-2-thursday" typeId="timerDayType"/>
-			<channel id="timer-2-friday" typeId="timerDayType"/>
-			<channel id="timer-2-saturday" typeId="timerDayType"/>
-			<channel id="timer-2-sunday" typeId="timerDayType"/>
-			<channel id="timer-3-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-3-start" typeId="timerTimeType"/>
-			<channel id="timer-3-end" typeId="timerTimeType"/>
-			<channel id="timer-3-monday" typeId="timerDayType"/>
-			<channel id="timer-3-tuesday" typeId="timerDayType"/>
-			<channel id="timer-3-wednesday" typeId="timerDayType"/>
-			<channel id="timer-3-thursday" typeId="timerDayType"/>
-			<channel id="timer-3-friday" typeId="timerDayType"/>
-			<channel id="timer-3-saturday" typeId="timerDayType"/>
-			<channel id="timer-3-sunday" typeId="timerDayType"/>
-			<channel id="timer-4-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-4-start" typeId="timerTimeType"/>
-			<channel id="timer-4-end" typeId="timerTimeType"/>
-			<channel id="timer-4-monday" typeId="timerDayType"/>
-			<channel id="timer-4-tuesday" typeId="timerDayType"/>
-			<channel id="timer-4-wednesday" typeId="timerDayType"/>
-			<channel id="timer-4-thursday" typeId="timerDayType"/>
-			<channel id="timer-4-friday" typeId="timerDayType"/>
-			<channel id="timer-4-saturday" typeId="timerDayType"/>
-			<channel id="timer-4-sunday" typeId="timerDayType"/>
-			<channel id="timer-5-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-5-start" typeId="timerTimeType"/>
-			<channel id="timer-5-end" typeId="timerTimeType"/>
-			<channel id="timer-5-monday" typeId="timerDayType"/>
-			<channel id="timer-5-tuesday" typeId="timerDayType"/>
-			<channel id="timer-5-wednesday" typeId="timerDayType"/>
-			<channel id="timer-5-thursday" typeId="timerDayType"/>
-			<channel id="timer-5-friday" typeId="timerDayType"/>
-			<channel id="timer-5-saturday" typeId="timerDayType"/>
-			<channel id="timer-5-sunday" typeId="timerDayType"/>
-			<channel id="timer-6-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-6-start" typeId="timerTimeType"/>
-			<channel id="timer-6-end" typeId="timerTimeType"/>
-			<channel id="timer-6-monday" typeId="timerDayType"/>
-			<channel id="timer-6-tuesday" typeId="timerDayType"/>
-			<channel id="timer-6-wednesday" typeId="timerDayType"/>
-			<channel id="timer-6-thursday" typeId="timerDayType"/>
-			<channel id="timer-6-friday" typeId="timerDayType"/>
-			<channel id="timer-6-saturday" typeId="timerDayType"/>
-			<channel id="timer-6-sunday" typeId="timerDayType"/>
-			<channel id="timer-7-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-7-start" typeId="timerTimeType"/>
-			<channel id="timer-7-end" typeId="timerTimeType"/>
-			<channel id="timer-7-monday" typeId="timerDayType"/>
-			<channel id="timer-7-tuesday" typeId="timerDayType"/>
-			<channel id="timer-7-wednesday" typeId="timerDayType"/>
-			<channel id="timer-7-thursday" typeId="timerDayType"/>
-			<channel id="timer-7-friday" typeId="timerDayType"/>
-			<channel id="timer-7-saturday" typeId="timerDayType"/>
-			<channel id="timer-7-sunday" typeId="timerDayType"/>
-			<channel id="timer-8-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-8-start" typeId="timerTimeType"/>
-			<channel id="timer-8-end" typeId="timerTimeType"/>
-			<channel id="timer-8-monday" typeId="timerDayType"/>
-			<channel id="timer-8-tuesday" typeId="timerDayType"/>
-			<channel id="timer-8-wednesday" typeId="timerDayType"/>
-			<channel id="timer-8-thursday" typeId="timerDayType"/>
-			<channel id="timer-8-friday" typeId="timerDayType"/>
-			<channel id="timer-8-saturday" typeId="timerDayType"/>
-			<channel id="timer-8-sunday" typeId="timerDayType"/>
-			<channel id="timer-9-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-9-start" typeId="timerTimeType"/>
-			<channel id="timer-9-end" typeId="timerTimeType"/>
-			<channel id="timer-9-monday" typeId="timerDayType"/>
-			<channel id="timer-9-tuesday" typeId="timerDayType"/>
-			<channel id="timer-9-wednesday" typeId="timerDayType"/>
-			<channel id="timer-9-thursday" typeId="timerDayType"/>
-			<channel id="timer-9-friday" typeId="timerDayType"/>
-			<channel id="timer-9-saturday" typeId="timerDayType"/>
-			<channel id="timer-9-sunday" typeId="timerDayType"/>
-			<channel id="timer-10-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-10-start" typeId="timerTimeType"/>
-			<channel id="timer-10-end" typeId="timerTimeType"/>
-			<channel id="timer-10-monday" typeId="timerDayType"/>
-			<channel id="timer-10-tuesday" typeId="timerDayType"/>
-			<channel id="timer-10-wednesday" typeId="timerDayType"/>
-			<channel id="timer-10-thursday" typeId="timerDayType"/>
-			<channel id="timer-10-friday" typeId="timerDayType"/>
-			<channel id="timer-10-saturday" typeId="timerDayType"/>
-			<channel id="timer-10-sunday" typeId="timerDayType"/>
-			<channel id="timer-11-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-11-start" typeId="timerTimeType"/>
-			<channel id="timer-11-end" typeId="timerTimeType"/>
-			<channel id="timer-11-monday" typeId="timerDayType"/>
-			<channel id="timer-11-tuesday" typeId="timerDayType"/>
-			<channel id="timer-11-wednesday" typeId="timerDayType"/>
-			<channel id="timer-11-thursday" typeId="timerDayType"/>
-			<channel id="timer-11-friday" typeId="timerDayType"/>
-			<channel id="timer-11-saturday" typeId="timerDayType"/>
-			<channel id="timer-11-sunday" typeId="timerDayType"/>
-			<channel id="timer-12-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-12-start" typeId="timerTimeType"/>
-			<channel id="timer-12-end" typeId="timerTimeType"/>
-			<channel id="timer-12-monday" typeId="timerDayType"/>
-			<channel id="timer-12-tuesday" typeId="timerDayType"/>
-			<channel id="timer-12-wednesday" typeId="timerDayType"/>
-			<channel id="timer-12-thursday" typeId="timerDayType"/>
-			<channel id="timer-12-friday" typeId="timerDayType"/>
-			<channel id="timer-12-saturday" typeId="timerDayType"/>
-			<channel id="timer-12-sunday" typeId="timerDayType"/>
-			<channel id="timer-13-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-13-start" typeId="timerTimeType"/>
-			<channel id="timer-13-end" typeId="timerTimeType"/>
-			<channel id="timer-13-monday" typeId="timerDayType"/>
-			<channel id="timer-13-tuesday" typeId="timerDayType"/>
-			<channel id="timer-13-wednesday" typeId="timerDayType"/>
-			<channel id="timer-13-thursday" typeId="timerDayType"/>
-			<channel id="timer-13-friday" typeId="timerDayType"/>
-			<channel id="timer-13-saturday" typeId="timerDayType"/>
-			<channel id="timer-13-sunday" typeId="timerDayType"/>
-			<channel id="timer-14-enabled" typeId="timerEnabledType"/>
-			<channel id="timer-14-start" typeId="timerTimeType"/>
-			<channel id="timer-14-end" typeId="timerTimeType"/>
-			<channel id="timer-14-monday" typeId="timerDayType"/>
-			<channel id="timer-14-tuesday" typeId="timerDayType"/>
-			<channel id="timer-14-wednesday" typeId="timerDayType"/>
-			<channel id="timer-14-thursday" typeId="timerDayType"/>
-			<channel id="timer-14-friday" typeId="timerDayType"/>
-			<channel id="timer-14-saturday" typeId="timerDayType"/>
-			<channel id="timer-14-sunday" typeId="timerDayType"/>
 			<channel id="weather-break" typeId="weatherSwitchType"/>
 			<channel id="weather-rain" typeId="weatherRainType"/>
 			<channel id="weather-temperature" typeId="weatherTemperatureType"/>
@@ -305,6 +165,8 @@
 			<channel id="mode" typeId="modeType"/>
 			<channel id="start" typeId="startType"/>
 			<channel id="status" typeId="mowerStatusType"/>
+			<channel id="prevent" typeId="statusPreventType"/>
+			<channel id="home" typeId="statusHomeType"/>
 			<channel id="status-duration" typeId="durationType"/>
 			<channel id="status-distance" typeId="distanceType"/>
 
@@ -518,6 +380,17 @@
 		<label>Operating Count</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="statisticsDurationsType">
+		<item-type>String</item-type>
+		<label>Recent Durations</label>
+		<description>Comma-separated durations in minutes, in the order returned by the mower.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="statisticsDurationType">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Recent Duration Statistic</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
 
 	<channel-type id="remoteNameType">
 		<item-type>String</item-type>
@@ -650,6 +523,16 @@
 		<label>Push Service Interval</label>
 		<state readOnly="false"/>
 	</channel-type>
+	<channel-type id="pushTriggerNameType">
+		<item-type>String</item-type>
+		<label>Push Trigger Name</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="pushTriggerSwitchType">
+		<item-type>Switch</item-type>
+		<label>Push Trigger Setting</label>
+		<state readOnly="false"/>
+	</channel-type>
 
 	<channel-type id="idType">
 		<item-type>String</item-type>
@@ -670,6 +553,17 @@
 		<label>Status Duration</label>
 		<description>The time the mower is in the current status.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="statusPreventType">
+		<item-type>Number</item-type>
+		<label>Mowing Prevention Code</label>
+		<description>Raw prevention code reported by the mower.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="statusHomeType">
+		<item-type>Switch</item-type>
+		<label>Mower At Home</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="resetErrorType">

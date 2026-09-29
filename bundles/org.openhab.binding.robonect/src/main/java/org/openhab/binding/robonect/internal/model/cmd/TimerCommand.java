@@ -13,8 +13,8 @@ public class TimerCommand implements Command {
     private String value;
 
     public TimerCommand withTimer(int timer) {
-        if (timer < 1 || timer > 14)
-            throw new IllegalArgumentException("Timer must be from 1 to 14");
+        if (timer < 0)
+            throw new IllegalArgumentException("Timer must be greater than 0");
         this.timer = timer;
         return this;
     }

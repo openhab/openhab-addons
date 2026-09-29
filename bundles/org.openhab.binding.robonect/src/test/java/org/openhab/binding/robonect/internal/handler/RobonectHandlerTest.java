@@ -32,15 +32,20 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.robonect.internal.RobonectBindingConstants;
 import org.openhab.binding.robonect.internal.RobonectClient;
 import org.openhab.binding.robonect.internal.model.AjaxInfo;
+import org.openhab.binding.robonect.internal.model.BatteryInfo;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
 import org.openhab.binding.robonect.internal.model.ErrorList;
+import org.openhab.binding.robonect.internal.model.HourInfo;
+import org.openhab.binding.robonect.internal.model.ModelParser;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.MowerStatus;
 import org.openhab.binding.robonect.internal.model.NextTimer;
+import org.openhab.binding.robonect.internal.model.PushInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.Status;
 import org.openhab.binding.robonect.internal.model.Timer;
+import org.openhab.binding.robonect.internal.model.WireInfo;
 import org.openhab.binding.robonect.internal.model.Wlan;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -53,6 +58,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -61,6 +67,7 @@ import org.openhab.core.types.UnDefType;
  * The goal of this class is to test RobonectHandler in isolation.
  *
  * @author Marco Meyer - Initial contribution
+ * @author Nico Brüttner - Dynamic channel and duration tests
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -84,6 +91,107 @@ public class RobonectHandlerTest {
         subject = new RobonectHandler(robonectThingMock, httpClientFactoryMock, timeZoneProvider);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);
+    }
+
+    @Test
+    public void shouldCreateChannelsForEveryWireSensorAndBattery() {
+        Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, new ThingUID("1:2:3")).build();
+        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider);
+        subject.setCallback(callbackMock);
+        subject.setRobonectClient(robonectClientMock);
+        ModelParser parser = new ModelParser();
+        when(robonectClientMock.getWireInfo()).thenReturn(parser.parse("""
+                {"successful":true,"sensors":[{"description":"Left","quality":70},
+                {"description":"Right","quality":80},{"description":"Rear","quality":90},
+                {"description":"Extra","quality":60},{"description":"Fifth","quality":50}]}
+                """, WireInfo.class));
+        subject.handleCommand(new ChannelUID(thing.getUID(), "wire-sensor-1-label"), RefreshType.REFRESH);
+        ArgumentCaptor<Thing> updated = ArgumentCaptor.forClass(Thing.class);
+        verify(callbackMock).thingUpdated(updated.capture());
+        assertNotNull(updated.getValue().getChannel("wire-sensor-5-label"));
+
+        when(robonectClientMock.getBatteryInfo()).thenReturn(parser.parse("""
+                {"successful":true,"batteries":[{"id":0,"charge":70},{"id":1,"charge":80}]}
+                """, BatteryInfo.class));
+        subject.handleCommand(new ChannelUID(thing.getUID(), "battery-charge"), RefreshType.REFRESH);
+        verify(callbackMock, atLeastOnce()).thingUpdated(updated.capture());
+        assertNotNull(updated.getValue().getChannel("battery-2-charge"));
+        assertNotNull(updated.getValue().getChannel("wire-sensor-5-label"));
+        verify(callbackMock).stateUpdated(new ChannelUID(thing.getUID(), "battery-charge"),
+                new QuantityType<>(70, org.openhab.core.library.unit.Units.PERCENT));
+
+        when(robonectClientMock.getWireInfo()).thenReturn(parser.parse("""
+                {"successful":true,"sensors":[{"description":"Left","quality":70}]}
+                """, WireInfo.class));
+        subject.handleCommand(new ChannelUID(thing.getUID(), "wire-sensor-1-label"), RefreshType.REFRESH);
+        verify(callbackMock, atLeastOnce()).thingUpdated(updated.capture());
+        assertNull(updated.getValue().getChannel("wire-sensor-5-label"));
+        assertNotNull(updated.getValue().getChannel("battery-2-charge"));
+    }
+
+    @Test
+    public void shouldPreserveOtherPushTriggerSettingWhenSendingCommand() {
+        PushInfo push = new ModelParser().parse("""
+                {"successful":true,"push":{"trigger":{"trigger12":
+                {"name":"Mowing","enter":false,"leave":true}}}}
+                """, PushInfo.class);
+        when(robonectClientMock.getPushInfo()).thenReturn(push);
+        when(robonectClientMock.updatePush("trigger12", "3"))
+                .thenReturn(new ModelParser().parse("{\"successful\":false}", PushInfo.class));
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "push-trigger-12-enter"), OnOffType.ON);
+        verify(robonectClientMock).updatePush("trigger12", "3");
+    }
+
+    @Test
+    public void shouldCreatePushTriggerChannelsBeyondTen() {
+        Thing thing = ThingBuilder.create(RobonectBindingConstants.THING_TYPE_AUTOMOWER, new ThingUID("1:2:3")).build();
+        subject = new RobonectHandler(thing, httpClientFactoryMock, timeZoneProvider);
+        subject.setCallback(callbackMock);
+        subject.setRobonectClient(robonectClientMock);
+        when(robonectClientMock.getPushInfo()).thenReturn(new ModelParser().parse("""
+                {"successful":true,"push":{"trigger":{"interval":30,
+                "trigger0":{"name":"Parked","enter":true,"leave":false},
+                "trigger12":{"name":"Mowing","enter":false,"leave":true}}}}
+                """, PushInfo.class));
+        subject.handleCommand(new ChannelUID(thing.getUID(), "push-trigger-0-name"), RefreshType.REFRESH);
+        ArgumentCaptor<Thing> updated = ArgumentCaptor.forClass(Thing.class);
+        verify(callbackMock).thingUpdated(updated.capture());
+        assertNotNull(updated.getValue().getChannel("push-trigger-12-leave"));
+    }
+
+    @Test
+    public void shouldPublishRecentDurationsAndStatistics() {
+        HourInfo hours = new ModelParser().parse("""
+                {"successful":true,"seek":[{"duration":2},{"duration":4},{"duration":6}],
+                "mowing":[{"duration":10},{"duration":20}]}
+                """, HourInfo.class);
+        when(robonectClientMock.getHourInfo()).thenReturn(hours);
+        ThingUID uid = new ThingUID("1:2:3");
+        subject.handleCommand(new ChannelUID(uid, "statistics-seek"), RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, "statistics-seek"), new StringType("2, 4, 6"));
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, "statistics-mowing"), new StringType("10, 20"));
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, "statistics-seek-average"),
+                new QuantityType<>(4, org.openhab.core.library.unit.Units.MINUTE));
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, "statistics-seek-min"),
+                new QuantityType<>(2, org.openhab.core.library.unit.Units.MINUTE));
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, "statistics-seek-max"),
+                new QuantityType<>(6, org.openhab.core.library.unit.Units.MINUTE));
+    }
+
+    @Test
+    public void shouldPublishHomeAndPreventionCode() {
+        MowerInfo info = new ModelParser().parse("""
+                {"successful":true,"name":"Mower","status":{"status":2,"mode":0,
+                "stopped":false,"battery":50,"hours":1,"duration":2,"distance":0,
+                "home":true,"prevent":3}}
+                """, MowerInfo.class);
+        when(robonectClientMock.getMowerInfo()).thenReturn(info);
+        ThingUID uid = new ThingUID("1:2:3");
+        subject.handleCommand(new ChannelUID(uid, RobonectBindingConstants.CHANNEL_STATUS_HOME), RefreshType.REFRESH);
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, RobonectBindingConstants.CHANNEL_STATUS_HOME),
+                OnOffType.ON);
+        verify(callbackMock).stateUpdated(new ChannelUID(uid, RobonectBindingConstants.CHANNEL_STATUS_PREVENT),
+                new DecimalType(3));
     }
 
     @Test

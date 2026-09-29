@@ -43,6 +43,8 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_STATUS_HOURS = "mowing-hours";
     public static final String CHANNEL_STATUS_MODE = "mode";
     public static final String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_STATUS_PREVENT = "prevent";
+    public static final String CHANNEL_STATUS_HOME = "home";
     public static final String CHANNEL_MOWER_START = "start";
     public static final String CHANNEL_MOWER_STATUS_OFFLINE_TRIGGER = "offlineTrigger";
     public static final String CHANNEL_TIMER_STATUS = "timer-status";
@@ -93,6 +95,8 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_STATISTICS_CHARGING_HOURS = "statistics-charging-hours";
     public static final String CHANNEL_STATISTICS_CHARGES = "statistics-charges";
     public static final String CHANNEL_STATISTICS_ERRORS = "statistics-errors";
+    public static final String CHANNEL_STATISTICS_SEEK = "statistics-seek";
+    public static final String CHANNEL_STATISTICS_MOWING = "statistics-mowing";
     public static final String CHANNEL_PORTAL_ENABLED = "portal-enabled";
     public static final String CHANNEL_PORTAL_CONNECTED = "portal-connected";
     public static final String CHANNEL_PORTAL_URL = "portal-url";
