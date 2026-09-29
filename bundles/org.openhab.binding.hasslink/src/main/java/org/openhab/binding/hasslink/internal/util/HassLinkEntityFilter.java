@@ -196,7 +196,7 @@ public class HassLinkEntityFilter {
         return filterList.stream().anyMatch(s -> !s.isBlank());
     }
 
-    private static boolean matchesGlobOrEquals(String pattern, String input) {
+    public static boolean matchesGlobOrEquals(String pattern, String input) {
         String trimmedPattern = pattern.trim();
         if (trimmedPattern.isEmpty()) {
             return false;
