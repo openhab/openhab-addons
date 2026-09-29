@@ -21,7 +21,7 @@ Philips air purifiers use one of two local protocols, depending on their age:
 | universal  | HTTP     | Any other Philips air purifier using the HTTP protocol          |
 | coap       | CoAP     | Philips air purifiers using the CoAP protocol                   |
 
-The following models have been tested: AC1214/10, AC2729, AC2729/50, AC2889/10 and AC3829/10.
+The following models have been tested: AC1214/10, AC2729, AC2729/50, AC2889/10, AC2939/10, AC3033/10, AC3829/10 and AC5659/10.
 Other models using the same protocols are likely to work as well; feedback on compatibility with other models is welcome.
 
 ### Recent CoAP Models
