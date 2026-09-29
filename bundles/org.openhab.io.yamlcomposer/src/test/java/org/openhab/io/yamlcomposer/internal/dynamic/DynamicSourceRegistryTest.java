@@ -110,6 +110,58 @@ class DynamicSourceRegistryTest {
         assertTrue(invalidatedPaths.isEmpty(), "Unregistered file should not be invalidated");
     }
 
+    @Test
+    void supersedesTaskAndPreventsStaleCallbackExecution() throws InterruptedException {
+        // Create registry with a short debounce delay (e.g., 50ms)
+        TestSourceProvider provider = new TestSourceProvider("things", List.of());
+        DynamicSourceRegistry debouncedRegistry = new DynamicSourceRegistry(Map.of("things", provider), 50);
+
+        Path file = Path.of("porch.yaml");
+        debouncedRegistry.registerDependency(file, "things");
+
+        List<Path> recompiledPaths = new ArrayList<>();
+        debouncedRegistry.setOnFileRecompileListener(recompiledPaths::add);
+
+        // Fire first change event (creates Task 1)
+        provider.fireEntityChange(Map.of(), Map.of("UID", "tapo:light:porch"));
+
+        // Fire second change event 10ms later (supersedes Task 1 with Task 2)
+        Thread.sleep(10);
+        provider.fireEntityChange(Map.of(), Map.of("UID", "tapo:light:porch", "label", "Updated"));
+
+        // Wait for Task 2 to complete
+        Thread.sleep(100);
+
+        // Assert that the listener was only invoked once (Task 1 was disarmed)
+        assertEquals(1, recompiledPaths.size(), "Listener should only fire once for superseded tasks");
+        assertEquals(file, recompiledPaths.get(0));
+
+        debouncedRegistry.clear();
+    }
+
+    @Test
+    void clearDisarmsPendingTasksWithoutFiringListener() throws InterruptedException {
+        TestSourceProvider provider = new TestSourceProvider("things", List.of());
+        DynamicSourceRegistry debouncedRegistry = new DynamicSourceRegistry(Map.of("things", provider), 50);
+
+        Path file = Path.of("porch.yaml");
+        debouncedRegistry.registerDependency(file, "things");
+
+        List<Path> recompiledPaths = new ArrayList<>();
+        debouncedRegistry.setOnFileRecompileListener(recompiledPaths::add);
+
+        // Fire change event
+        provider.fireEntityChange(Map.of(), Map.of("UID", "tapo:light:porch"));
+
+        // Immediately clear/cancel before timer expires
+        debouncedRegistry.clear();
+
+        // Wait past the timer expiration
+        Thread.sleep(100);
+
+        assertTrue(recompiledPaths.isEmpty(), "Pending task should not fire after registry is cleared");
+    }
+
     private static class TestSourceProvider implements DynamicSourceProvider<Map<String, @Nullable Object>> {
         private final String source;
         private final Collection<Map<String, @Nullable Object>> entities;

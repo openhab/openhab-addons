@@ -13,6 +13,7 @@
 package org.openhab.io.yamlcomposer.internal.dynamic;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -47,9 +48,41 @@ public class DynamicSourceRegistry {
     private final ScheduledExecutorService scheduler;
     private final long debounceDelayMs;
     private final Object recompileLock = new Object();
-    private final Map<Path, ScheduledFuture<?>> pendingRecompiles = new ConcurrentHashMap<>();
+    private final Map<Path, RecompileTask> pendingRecompiles = new HashMap<>();
     private volatile Consumer<Path> onFileRecompileListener = path -> {
     };
+
+    private class RecompileTask implements Runnable {
+        private final Path sourcePath;
+        private @Nullable ScheduledFuture<?> future;
+
+        RecompileTask(Path sourcePath) {
+            this.sourcePath = sourcePath;
+        }
+
+        void schedule(ScheduledExecutorService scheduler, long delayMs) {
+            this.future = scheduler.schedule(this, delayMs, TimeUnit.MILLISECONDS);
+        }
+
+        void cancel() {
+            if (future != null) {
+                future.cancel(false);
+            }
+        }
+
+        @Override
+        public void run() {
+            Consumer<Path> listener;
+            synchronized (recompileLock) {
+                if (!Objects.equals(pendingRecompiles.get(sourcePath), this)) {
+                    return;
+                }
+                pendingRecompiles.remove(sourcePath);
+                listener = onFileRecompileListener;
+            }
+            listener.accept(sourcePath);
+        }
+    }
 
     @Activate
     public DynamicSourceRegistry( //
@@ -134,37 +167,38 @@ public class DynamicSourceRegistry {
                 onFileRecompileListener.accept(sourcePath);
                 return;
             }
-            ScheduledFuture<?> future = scheduler.schedule(() -> {
-                synchronized (recompileLock) {
-                    pendingRecompiles.remove(sourcePath);
-                }
-                onFileRecompileListener.accept(sourcePath);
-            }, debounceDelayMs, TimeUnit.MILLISECONDS);
-            pendingRecompiles.put(sourcePath, future);
+
+            RecompileTask task = new RecompileTask(sourcePath);
+            task.schedule(scheduler, debounceDelayMs);
+            pendingRecompiles.put(sourcePath, task);
         }
     }
 
     private void cancelPendingRecompile(Path sourcePath) {
         synchronized (recompileLock) {
-            ScheduledFuture<?> future = pendingRecompiles.remove(sourcePath);
-            if (future != null) {
-                future.cancel(false);
+            RecompileTask task = pendingRecompiles.remove(sourcePath);
+            if (task != null) {
+                task.cancel();
             }
         }
     }
 
     private void cancelAllPendingRecompiles() {
         synchronized (recompileLock) {
-            pendingRecompiles.values().forEach(future -> future.cancel(false));
+            pendingRecompiles.values().forEach(task -> task.cancel());
             pendingRecompiles.clear();
         }
     }
 
     @Deactivate
     public void deactivate() {
-        cancelAllPendingRecompiles();
-        dependentFilesBySource.clear();
-        sourceProviders.values().forEach(provider -> provider.setOnChangeListener(change -> {
-        }));
+        synchronized (recompileLock) {
+            cancelAllPendingRecompiles();
+            dependentFilesBySource.clear();
+            sourceProviders.values().forEach(provider -> provider.setOnChangeListener(change -> {
+            }));
+            onFileRecompileListener = path -> {
+            };
+        }
     }
 }
