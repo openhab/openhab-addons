@@ -42,6 +42,7 @@ import org.openhab.binding.robonect.internal.model.MowerMode;
 import org.openhab.binding.robonect.internal.model.MowerStatus;
 import org.openhab.binding.robonect.internal.model.NextTimer;
 import org.openhab.binding.robonect.internal.model.PushInfo;
+import org.openhab.binding.robonect.internal.model.RemoteInfo;
 import org.openhab.binding.robonect.internal.model.RobonectAnswer;
 import org.openhab.binding.robonect.internal.model.Status;
 import org.openhab.binding.robonect.internal.model.Timer;
@@ -140,6 +141,29 @@ public class RobonectHandlerTest {
                 .thenReturn(new ModelParser().parse("{\"successful\":false}", PushInfo.class));
         subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "push-trigger-12-enter"), OnOffType.ON);
         verify(robonectClientMock).updatePush("trigger12", "3");
+    }
+
+    @Test
+    public void shouldUpdateAndTruncateRemoteStartName() {
+        RemoteInfo response = new RemoteInfo();
+        response.setSuccessful(true);
+        when(robonectClientMock.updateRemoteStart(eq(2), eq("1234567890123456"), isNull(Integer.class),
+                isNull(Integer.class))).thenReturn(response);
+        when(robonectClientMock.getRemoteInfo()).thenReturn(response);
+
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "remote-2-name"),
+                new StringType("12345678901234567890"));
+
+        verify(robonectClientMock).updateRemoteStart(eq(2), eq("1234567890123456"), isNull(Integer.class),
+                isNull(Integer.class));
+    }
+
+    @Test
+    public void shouldIgnoreOutOfRangeRemoteStartDistance() {
+        subject.handleCommand(new ChannelUID(new ThingUID("1:2:3"), "remote-2-distance"),
+                new QuantityType<>(301, org.openhab.core.library.unit.SIUnits.METRE));
+
+        verify(robonectClientMock, never()).updateRemoteStart(anyInt(), any(), any(), any());
     }
 
     @Test

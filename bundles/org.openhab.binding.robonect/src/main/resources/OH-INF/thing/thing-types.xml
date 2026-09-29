@@ -395,7 +395,7 @@
 	<channel-type id="remoteNameType">
 		<item-type>String</item-type>
 		<label>Remote Start Name</label>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="remoteSwitchType">
 		<item-type>Switch</item-type>
@@ -410,12 +410,12 @@
 	<channel-type id="remoteProportionType">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Remote Start Proportion</label>
-		<state readOnly="true" pattern="%d %%"/>
+		<state readOnly="false" pattern="%d %%"/>
 	</channel-type>
 	<channel-type id="remoteDistanceType">
 		<item-type>Number:Length</item-type>
 		<label>Remote Start Distance</label>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="wireSensorLabelType">

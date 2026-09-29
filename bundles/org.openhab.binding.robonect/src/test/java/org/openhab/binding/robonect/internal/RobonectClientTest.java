@@ -201,6 +201,24 @@ public class RobonectClientTest {
     }
 
     @Test
+    public void shouldUpdateRemoteStartValuesTogether()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        when(httpClientMock
+                .newRequest("http://123.456.789.123/json?cmd=remote&name2=Test+name&distance2=10&proportion2=46"))
+                .thenReturn(requestMock);
+        when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
+        when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
+        when(requestMock.send()).thenReturn(responseMock);
+        when(responseMock.getEncoding()).thenReturn("utf8");
+        when(responseMock.getContentAsString()).thenReturn("{\"successful\": true}");
+
+        subject.updateRemoteStart(2, "Test name", 10, 46);
+
+        verify(httpClientMock)
+                .newRequest("http://123.456.789.123/json?cmd=remote&name2=Test+name&distance2=10&proportion2=46");
+    }
+
+    @Test
     public void shouldRetrieveName() throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=name")).thenReturn(requestMock);
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);

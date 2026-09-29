@@ -14,6 +14,7 @@ package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalTime;
@@ -153,6 +154,7 @@ public class RobonectHandler extends BaseThingHandler {
     private static final Pattern WIRE_CHANNEL_PATTERN = Pattern.compile("wire-sensor-\\d+-.+");
     private static final Pattern PUSH_TRIGGER_CHANNEL_PATTERN = Pattern
             .compile("push-trigger-(\\d+)-(name|enter|leave)");
+    private static final Pattern REMOTE_CHANNEL_PATTERN = Pattern.compile("remote-([1-5])-(name|distance|proportion)");
 
     public RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
         this(thing, httpClientFactory, timeZoneProvider, null);
@@ -255,12 +257,63 @@ public class RobonectHandler extends BaseThingHandler {
                 updatePush(channelUID.getId(), command);
                 break;
             default:
-                if (channelUID.getId().startsWith("timer-")) {
+                if (REMOTE_CHANNEL_PATTERN.matcher(channelUID.getId()).matches()) {
+                    updateRemote(channelUID.getId(), command);
+                } else if (channelUID.getId().startsWith("timer-")) {
                     updateTimer(channelUID.getId(), command);
                 } else if (channelUID.getId().startsWith("push-trigger-")) {
                     updatePushTrigger(channelUID.getId(), command);
                 }
                 break;
+        }
+    }
+
+    /** Sends a remote-start point setting and refreshes all values returned by the API. */
+    private void updateRemote(String channelId, Command command) {
+        Matcher matcher = REMOTE_CHANNEL_PATTERN.matcher(channelId);
+        if (!matcher.matches()) {
+            return;
+        }
+        int remoteStart = Integer.parseInt(matcher.group(1));
+        String setting = matcher.group(2);
+        String name = null;
+        Integer distance = null;
+        Integer proportion = null;
+        if (setting.equals("name") && command instanceof StringType string) {
+            name = string.toString();
+            if (name.length() > 16) {
+                logger.warn("Remote start {} name exceeds 16 characters; truncating it", remoteStart);
+                name = name.substring(0, 16);
+            }
+        } else if ((setting.equals("distance") || setting.equals("proportion"))
+                && (command instanceof QuantityType<?> || command instanceof DecimalType)) {
+            try {
+                BigDecimal numericValue = command instanceof QuantityType<?> quantity ? quantity.toBigDecimal()
+                        : ((DecimalType) command).toBigDecimal();
+                int value = numericValue.intValueExact();
+                if (setting.equals("distance")) {
+                    if (value < 0 || value > 300) {
+                        logger.warn("Ignoring invalid remote start distance {}", value);
+                        return;
+                    }
+                    distance = value;
+                } else {
+                    if (value < 0 || value > 100) {
+                        logger.warn("Ignoring invalid remote start proportion {}", value);
+                        return;
+                    }
+                    proportion = value;
+                }
+            } catch (ArithmeticException e) {
+                logger.warn("Ignoring non-integer remote start {} value", setting);
+                return;
+            }
+        } else {
+            return;
+        }
+        RemoteInfo result = robonectClient.updateRemoteStart(remoteStart, name, distance, proportion);
+        if (result.isSuccessful()) {
+            refreshRemoteInfo();
         }
     }
 

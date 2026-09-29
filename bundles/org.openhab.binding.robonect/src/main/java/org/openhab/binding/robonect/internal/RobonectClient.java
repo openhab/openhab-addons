@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
@@ -407,6 +408,22 @@ public class RobonectClient {
      */
     public RemoteInfo getRemoteInfo() {
         return parser.parse(sendCommand(new RemoteCommand()), RemoteInfo.class);
+    }
+
+    /** Updates one or more values of a remote-start point. */
+    public RemoteInfo updateRemoteStart(int remoteStart, @Nullable String name, @Nullable Integer distance,
+            @Nullable Integer proportion) {
+        RemoteCommand command = new RemoteCommand(remoteStart);
+        if (name != null) {
+            command.withName(name);
+        }
+        if (distance != null) {
+            command.withDistance(distance);
+        }
+        if (proportion != null) {
+            command.withProportion(proportion);
+        }
+        return parser.parse(sendCommand(command), RemoteInfo.class);
     }
 
     /**
