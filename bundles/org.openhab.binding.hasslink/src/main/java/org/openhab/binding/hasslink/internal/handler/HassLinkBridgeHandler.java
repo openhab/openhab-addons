@@ -464,6 +464,7 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
         if (!expectedDomains.contains(parsedEntityId.domain())) {
             logger.warn("{} called with unexpected domain '{}' for entity '{}'. Expected one of {}.", methodName,
                     parsedEntityId.domain(), idOrEntityId, expectedDomains);
+            return null;
         }
 
         return parsedEntityId;
