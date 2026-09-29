@@ -85,7 +85,8 @@
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="device" extensible="string,number,switch,dimmer,contact,color,rollershutter,image,event">
+	<thing-type id="device"
+		extensible="string,number,switch,dimmer,contact,color,rollershutter,image,datetime,location,player,event">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
