@@ -36,7 +36,7 @@ public interface DynamicSourceProvider<T> {
     Collection<T> getAllEntities();
 
     /** Converts a raw entity instance into a standard property map. */
-    Map<String, Object> adaptToMap(T entity);
+    Map<String, @Nullable Object> adaptToMap(T entity);
 
     /** Registers a listener to receive discrete entity change events. */
     void setOnChangeListener(Consumer<EntityChange> listener);
