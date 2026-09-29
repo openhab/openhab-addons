@@ -13,6 +13,8 @@
 package org.openhab.io.yamlcomposer.internal.dynamic;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -35,12 +37,21 @@ public interface DynamicSourceProvider<T> {
     /** Returns all current raw entities from the underlying system registry. */
     Collection<T> getAllEntities();
 
+    /** Returns the unique primary key for a raw entity (e.g. Item name or Thing UID). */
+    String getKey(T entity);
+
     /** Converts a raw entity instance into a standard property map. */
     Map<String, @Nullable Object> adaptToMap(T entity);
 
     /** Registers a listener to receive discrete entity change events. */
     void setOnChangeListener(Consumer<EntityChange> listener);
 
-    /** Returns a lazily-evaluated map of all entities, keyed by their unique identifier. */
-    Map<String, @Nullable Map<String, @Nullable Object>> getLazyMap();
+    /** Returns an unmodifiable point-in-time snapshot map of all entities. */
+    default Map<String, Map<String, @Nullable Object>> getSourceMap() {
+        Map<String, Map<String, @Nullable Object>> map = new LinkedHashMap<>();
+        for (T entity : getAllEntities()) {
+            map.put(getKey(entity), adaptToMap(entity));
+        }
+        return Collections.unmodifiableMap(map);
+    }
 }

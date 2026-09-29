@@ -147,8 +147,7 @@ public class YamlComposer {
             Path path, //
             Consumer<Path> includeCallback, //
             Consumer<String> envVarCallback, //
-            Function<String, @Nullable Map<String, @Nullable Map<String, @Nullable Object>>> sourceResolver)
-            throws IOException {
+            Function<String, @Nullable Map<String, Map<String, @Nullable Object>>> sourceResolver) throws IOException {
 
         try (LogSession session = new LogSession()) {
             ConcurrentHashMap<Path, @Nullable CacheEntry> cache = new ConcurrentHashMap<>();

@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
-import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ItemRegistryChangeListener;
 import org.openhab.core.items.dto.ItemDTO;
@@ -69,6 +68,11 @@ public class ItemRegistrySourceProvider implements DynamicSourceProvider<Item>, 
     }
 
     @Override
+    public String getKey(Item entity) {
+        return entity.getName();
+    }
+
+    @Override
     public Map<String, @Nullable Object> adaptToMap(Item item) {
         ItemDTO dto = ItemDTOMapper.map(item);
         Map<String, @Nullable Object> dtoMap = OBJECT_MAPPER.convertValue(dto,
@@ -106,21 +110,5 @@ public class ItemRegistrySourceProvider implements DynamicSourceProvider<Item>, 
     @Deactivate
     public void deactivate() {
         itemRegistry.removeRegistryChangeListener(this);
-    }
-
-    @Override
-    public Map<String, @Nullable Map<String, @Nullable Object>> getLazyMap() {
-        return new LazyRegistryMap<>( //
-                name -> {
-                    try {
-                        return itemRegistry.getItem(name);
-                    } catch (ItemNotFoundException e) {
-                        return null;
-                    }
-                }, //
-                itemRegistry::getItems, //
-                item -> item.getName(), //
-                this::adaptToMap //
-        );
     }
 }

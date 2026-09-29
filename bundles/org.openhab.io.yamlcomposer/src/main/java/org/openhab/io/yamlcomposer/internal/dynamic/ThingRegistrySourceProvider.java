@@ -80,6 +80,11 @@ public class ThingRegistrySourceProvider
     }
 
     @Override
+    public String getKey(Thing entity) {
+        return entity.getUID().toString();
+    }
+
+    @Override
     public Map<String, @Nullable Object> adaptToMap(Thing thing) {
         ThingDTO dto = ThingDTOMapper.map(thing);
         Map<String, @Nullable Object> dtoMap = OBJECT_MAPPER.convertValue(dto,
@@ -207,20 +212,5 @@ public class ThingRegistrySourceProvider
     @Deactivate
     public void deactivate() {
         thingRegistry.removeRegistryChangeListener(this);
-    }
-
-    @Override
-    public Map<String, @Nullable Map<String, @Nullable Object>> getLazyMap() {
-        return new LazyRegistryMap<>(uidStr -> {
-            try {
-                return thingRegistry.get(new ThingUID(uidStr));
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
-        }, //
-                thingRegistry::getAll, //
-                thing -> thing.getUID().toString(), //
-                this::adaptToMap //
-        );
     }
 }

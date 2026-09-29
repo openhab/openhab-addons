@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -152,6 +153,7 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
         try {
             Set<String> trackedEnvVars = new HashSet<>();
             Path absSourcePath = sourcePath.toAbsolutePath().normalize();
+            Map<String, Map<String, Map<String, @Nullable Object>>> sourceMapCache = new HashMap<>();
 
             Object yamlObject = YamlComposer.load( //
                     sourcePath, //
@@ -160,7 +162,7 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
                     sourceName -> {
                         if (dynamicSourceRegistry.supportsSource(sourceName)) {
                             dynamicSourceRegistry.registerDependency(absSourcePath, sourceName);
-                            return dynamicSourceRegistry.getLazyMap(sourceName);
+                            return sourceMapCache.computeIfAbsent(sourceName, dynamicSourceRegistry::getSourceMap);
                         }
                         return null;
                     });

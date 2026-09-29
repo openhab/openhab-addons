@@ -36,12 +36,12 @@ public record EvaluationContext( //
         IdentityHashMap<Object, Object> visited, //
         int templateDepth, //
         Consumer<String> envVarCallback, //
-        Function<String, @Nullable Map<String, @Nullable Map<String, @Nullable Object>>> sourceResolver) {
+        Function<String, @Nullable Map<String, Map<String, @Nullable Object>>> sourceResolver) {
 
     /** Primary constructor for starting a top-level transformation pass. */
     public EvaluationContext( //
             Consumer<String> envVarCallback, //
-            Function<String, @Nullable Map<String, @Nullable Map<String, @Nullable Object>>> sourceResolver) {
+            Function<String, @Nullable Map<String, Map<String, @Nullable Object>>> sourceResolver) {
         this(new Scope(), ProcessingPhase.STANDARD, new IdentityHashMap<>(), 0, envVarCallback, sourceResolver);
     }
 

@@ -91,13 +91,13 @@ public class DynamicSourceRegistry {
         return sourceProviders.containsKey(source);
     }
 
-    /** Retrieves the lazy session-cached map for the given source name. */
-    public @Nullable Map<String, @Nullable Map<String, @Nullable Object>> getLazyMap(String source) {
+    /** Retrieves a point-in-time snapshot map for the given dynamic source name (e.g., "ITEMS", "THINGS"). */
+    public @Nullable Map<String, Map<String, @Nullable Object>> getSourceMap(String source) {
         DynamicSourceProvider<?> provider = sourceProviders.get(source);
         if (provider == null) {
             return null;
         }
-        return provider.getLazyMap();
+        return provider.getSourceMap();
     }
 
     /** Registers a file's runtime dependency on a dynamic source registry (e.g., "ITEMS", "THINGS"). */

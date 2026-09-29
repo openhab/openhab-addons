@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
@@ -56,9 +57,24 @@ class DynamicSourceRegistryTest {
     }
 
     @Test
-    void returnsLazyMapForSupportedSource() {
-        assertNotNull(registry.getLazyMap("things"));
-        assertNull(registry.getLazyMap("unsupported_source"));
+    void returnsSourceMapForSupportedSource() {
+        Map<String, Map<String, @Nullable Object>> sourceMap = registry.getSourceMap("things");
+        assertNotNull(sourceMap);
+        assertEquals(2, sourceMap.size());
+
+        Map<String, @Nullable Object> porch = sourceMap.get("tapo:light:porch");
+        assertNotNull(porch);
+        assertEquals("Porch Light", porch.get("label"));
+
+        assertNull(registry.getSourceMap("unsupported_source"));
+    }
+
+    @Test
+    void sourceMapIsUnmodifiable() {
+        Map<String, Map<String, @Nullable Object>> sourceMap = registry.getSourceMap("things");
+        assertNotNull(sourceMap);
+
+        assertThrows(UnsupportedOperationException.class, () -> sourceMap.put("new:uid", Map.of()));
     }
 
     @Test
@@ -120,6 +136,12 @@ class DynamicSourceRegistryTest {
         }
 
         @Override
+        public String getKey(Map<String, @Nullable Object> entity) {
+            Object uid = entity.get("UID");
+            return uid != null ? uid.toString() : "";
+        }
+
+        @Override
         public Map<String, @Nullable Object> adaptToMap(Map<String, @Nullable Object> entity) {
             return entity;
         }
@@ -127,11 +149,6 @@ class DynamicSourceRegistryTest {
         @Override
         public void setOnChangeListener(Consumer<EntityChange> listener) {
             this.listener = listener;
-        }
-
-        @Override
-        public Map<String, @Nullable Map<String, @Nullable Object>> getLazyMap() {
-            return Map.of();
         }
 
         void fireEntityChange(@Nullable Map<String, @Nullable Object> oldEntity,
