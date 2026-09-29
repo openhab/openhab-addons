@@ -16,7 +16,9 @@ import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,6 +55,8 @@ public class ReolinkPtz {
     private static final int STEP_MS = 400;
     private static final int SEEK_POLL_MS = 250;
     private static final int SEEK_TIMEOUT_MS = 20000;
+    private static final int SEEK_REPLY_TIMEOUT_MS = 3000;
+    private static final int DISPOSE_STOP_TIMEOUT_MS = 1000;
     private static final int REFRESH_AFTER_STOP_MS = 800;
     private static final int REFRESH_AFTER_PRESET_MS = 4000;
     private static final double SLOW_ZONE = 0.15; // fraction of the range in which the slow speed is used
@@ -65,6 +69,7 @@ public class ReolinkPtz {
 
     private final IpCameraHandler handler;
     private volatile boolean supported = false;
+    private volatile boolean moving = false;
     private int lastPan = -1;
     private int lastTilt = -1;
     private int targetPan = -1;
@@ -75,6 +80,8 @@ public class ReolinkPtz {
     private long seekDeadline = 0;
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable ScheduledFuture<?> stopFuture;
+    private @Nullable ScheduledFuture<?> watchdogFuture;
+    private volatile @Nullable CountDownLatch stopLatch;
 
     public ReolinkPtz(IpCameraHandler handler) {
         this.handler = handler;
@@ -93,18 +100,59 @@ public class ReolinkPtz {
     }
 
     /**
-     * Stops pending work. The instance is reused when the thing is initialized again, so the state is reset here.
+     * Stops pending work and a movement that is still in progress. The camera only moves relatively, so nothing would
+     * stop it once the handler is gone. The caller closes the connections and releases the token right afterwards,
+     * therefore this waits a moment for the reply of the Stop command.
      */
-    public synchronized void dispose() {
+    public void dispose() {
+        CountDownLatch latch = reset();
+        if (latch != null) {
+            try {
+                if (!latch.await(DISPOSE_STOP_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
+                    handler.logger.debug("Reolink PTZ Stop was not confirmed before the handler was disposed");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            stopLatch = null;
+        }
+    }
+
+    /**
+     * Handles the reply of PtzCtrl.
+     */
+    public void handleCtrlResponse() {
+        CountDownLatch latch = stopLatch;
+        if (latch != null) {
+            latch.countDown();
+        }
+    }
+
+    /**
+     * The instance is reused when the thing is initialized again, so the state is reset here.
+     *
+     * @return a latch that is released by the reply of the Stop command, or null if the camera was not moving
+     */
+    private synchronized @Nullable CountDownLatch reset() {
+        CountDownLatch latch = null;
         cancel(pollFuture);
         cancel(stopFuture);
+        cancel(watchdogFuture);
         pollFuture = null;
         stopFuture = null;
+        watchdogFuture = null;
+        if (moving) {
+            // best effort, otherwise the camera keeps moving until it reaches its end stop
+            latch = new CountDownLatch(1);
+            stopLatch = latch;
+            sendStop();
+        }
         seekAxis = null;
         seekOp = "";
         targetPan = -1;
         targetTilt = -1;
         supported = false;
+        return latch;
     }
 
     private static void cancel(@Nullable ScheduledFuture<?> future) {
@@ -126,12 +174,14 @@ public class ReolinkPtz {
     }
 
     private void sendPtzCtrl(String op, int speed) {
+        moving = true;
         handler.sendHttpPOST("/api.cgi?cmd=PtzCtrl" + handler.reolinkAuth,
                 "[{\"cmd\":\"PtzCtrl\",\"param\":{\"channel\":" + channel() + ",\"op\":\"" + op + "\",\"speed\":"
                         + speed + "}}]");
     }
 
     private void sendStop() {
+        moving = false;
         handler.sendHttpPOST("/api.cgi?cmd=PtzCtrl" + handler.reolinkAuth,
                 "[{\"cmd\":\"PtzCtrl\",\"param\":{\"channel\":" + channel() + ",\"op\":\"Stop\"}}]");
     }
@@ -267,12 +317,35 @@ public class ReolinkPtz {
         seekOp = "";
         seekSpeed = 0;
         seekDeadline = System.currentTimeMillis() + SEEK_TIMEOUT_MS;
+        armWatchdog();
         requestPosition();
+    }
+
+    /**
+     * Stops the movement of a seek if no valid position arrives in time. It is armed with the first position request
+     * and again after every valid reply, so a failed, malformed or missing reply can not leave the camera moving.
+     */
+    private void armWatchdog() {
+        cancel(watchdogFuture);
+        watchdogFuture = handler.scheduleTask(this::seekWatchdog, SEEK_REPLY_TIMEOUT_MS);
+    }
+
+    private synchronized void seekWatchdog() {
+        watchdogFuture = null;
+        if (seekAxis == null) {
+            return;
+        }
+        handler.logger.debug("Reolink PTZ received no valid position within {} ms, stopping the movement",
+                SEEK_REPLY_TIMEOUT_MS);
+        abortSeek(true);
+        requestPositionLater(REFRESH_AFTER_STOP_MS);
     }
 
     private void abortSeek(boolean sendStop) {
         cancel(pollFuture);
+        cancel(watchdogFuture);
         pollFuture = null;
+        watchdogFuture = null;
         boolean wasMoving = !seekOp.isEmpty();
         seekAxis = null;
         seekOp = "";
@@ -290,6 +363,11 @@ public class ReolinkPtz {
         int[] position = parsePosition(content);
         if (position == null) {
             handler.logger.debug("Reolink GetPtzCurPos reply could not be parsed: {}", content);
+            if (seekAxis != null) {
+                // retry without arming the watchdog again, which stops the movement if no valid reply follows
+                cancel(pollFuture);
+                pollFuture = handler.scheduleTask(this::requestPosition, SEEK_POLL_MS);
+            }
             return;
         }
         lastPan = position[0];
@@ -317,6 +395,8 @@ public class ReolinkPtz {
         // Stop instead of reversing, to avoid oscillating around the target.
         boolean overshot = !seekOp.isEmpty() && !seekOp.equals(op);
         if (reached || overshot || timeout) {
+            cancel(watchdogFuture);
+            watchdogFuture = null;
             if (timeout) {
                 handler.logger.debug("Reolink PTZ did not reach target {} (at {}) in time", target, current);
             }
@@ -343,6 +423,7 @@ public class ReolinkPtz {
             seekOp = op;
             seekSpeed = speed;
         }
+        armWatchdog();
         pollFuture = handler.scheduleTask(this::requestPosition, SEEK_POLL_MS);
     }
 
