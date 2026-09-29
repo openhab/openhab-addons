@@ -27,13 +27,14 @@ import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -161,21 +162,21 @@ final class ComposerUtils {
             compiledYamlBody = formatYamlSpacing(compiledYamlBody, outputConfig.sectionSpacing());
         }
 
-        List<String> sortedEnvVars = new ArrayList<>(trackedEnvVars);
-        Collections.sort(sortedEnvVars);
-        String envDepsFormatted = formatEnvDeps(sortedEnvVars);
-        String envHashStr = computeEnvHash(sortedEnvVars, envMap);
-
         Path sourcePathRelative = ComposerConfig.configRoot().relativize(sourcePath);
 
         if (Files.exists(outputPath)) {
             String existingContent = Files.readString(outputPath, StandardCharsets.UTF_8);
             String existingBody = extractBody(existingContent);
 
-            if (existingBody.equals(compiledYamlBody) && !isEnvironmentChanged(existingContent, envMap)) {
+            if (existingBody.equals(compiledYamlBody)
+                    && !isEnvironmentChanged(existingContent, trackedEnvVars, envMap)) {
                 return false;
             }
         }
+
+        Set<String> sortedEnvVars = new TreeSet<>(trackedEnvVars);
+        String envDepsFormatted = formatEnvDeps(sortedEnvVars);
+        String envHashStr = computeEnvHash(sortedEnvVars, envMap);
 
         String finalHeader = GENERATED_HEADER.formatted(OpenHAB.getVersion(), OpenHAB.buildString(), sourcePathRelative,
                 ZonedDateTime.now(), envDepsFormatted, envHashStr);
@@ -189,10 +190,11 @@ final class ComposerUtils {
      * relative to the system environment.
      *
      * @param content the raw string content of the generated file
+     * @param trackedEnvVars the current set of tracked environment variables from composition
      * @return true if environment values changed or header is legacy/unreadable, false otherwise
      */
-    static boolean isEnvironmentChanged(String content) {
-        return isEnvironmentChanged(content, System.getenv());
+    static boolean isEnvironmentChanged(String content, Set<String> trackedEnvVars) {
+        return isEnvironmentChanged(content, trackedEnvVars, System.getenv());
     }
 
     /**
@@ -202,13 +204,14 @@ final class ComposerUtils {
      * Used by tests to simulate different environment variable values without modifying the system environment.
      *
      * @param content the raw string content of the generated file
+     * @param trackedEnvVars the current set of tracked environment variables from composition
      * @param envMap the environment variable map to check against
      * @return true if environment values changed or header is legacy/unreadable, false otherwise
      */
-    static boolean isEnvironmentChanged(String content, Map<String, String> envMap) {
+    static boolean isEnvironmentChanged(String content, Set<String> trackedEnvVars, Map<String, String> envMap) {
         try (BufferedReader reader = new BufferedReader(new StringReader(content))) {
             String line;
-            List<String> envVars = new ArrayList<>();
+            Set<String> envVars = new HashSet<>();
             String envHashLine = null;
             boolean collectingEnvDeps = false;
             boolean headerStarted = false;
@@ -252,11 +255,11 @@ final class ComposerUtils {
                 return true;
             }
 
-            if (envVars.isEmpty()) {
-                return false;
+            if (!envVars.equals(trackedEnvVars)) {
+                return true;
             }
 
-            String currentHash = computeEnvHash(envVars, envMap);
+            String currentHash = computeEnvHash(trackedEnvVars, envMap);
             return !currentHash.equals(envHashLine);
         } catch (IOException e) {
             return true;
@@ -304,7 +307,7 @@ final class ComposerUtils {
      * @param envVars the list of environment variable names
      * @return a formatted multi-line string suitable for inclusion in the file header
      */
-    private static String formatEnvDeps(List<String> envVars) {
+    private static String formatEnvDeps(Set<String> envVars) {
         if (envVars.isEmpty()) {
             return "";
         }
@@ -333,7 +336,7 @@ final class ComposerUtils {
         return String.join("\n#            ", lines);
     }
 
-    private static String computeEnvHash(List<String> envVars, Map<String, String> envMap) {
+    private static String computeEnvHash(Set<String> envVars, Map<String, String> envMap) {
         if (envVars.isEmpty()) {
             return "";
         }

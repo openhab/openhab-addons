@@ -192,7 +192,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
 
             // Environment should register as UNCHANGED when checked against the same environment map using file content
             String content = Files.readString(output);
-            boolean changed = ComposerUtils.isEnvironmentChanged(content, envMap);
+            boolean changed = ComposerUtils.isEnvironmentChanged(content, trackedEnv, envMap);
             assertThat(changed, is(false));
         }
 
@@ -215,13 +215,13 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
 
             // Verify it returns false when the environment value hasn't changed yet
             String content = Files.readString(output);
-            assertThat(ComposerUtils.isEnvironmentChanged(content, envMap), is(false));
+            assertThat(ComposerUtils.isEnvironmentChanged(content, trackedEnv, envMap), is(false));
 
             // Mutate the environment map value to simulate a change
             envMap.put(envName, "changed_value");
 
             // Verify it returns true after the change
-            assertThat(ComposerUtils.isEnvironmentChanged(content, envMap), is(true));
+            assertThat(ComposerUtils.isEnvironmentChanged(content, trackedEnv, envMap), is(true));
         }
 
         @Test
@@ -243,13 +243,13 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
 
             // Verify isEnvironmentChanged() returns false while the variable remains absent
             String content = Files.readString(output);
-            assertThat(ComposerUtils.isEnvironmentChanged(content, envMap), is(false));
+            assertThat(ComposerUtils.isEnvironmentChanged(content, trackedEnv, envMap), is(false));
 
             // Add the variable to the map with an empty string value ("")
             envMap.put(envName, "");
 
             // Verify that the transition from absent (null) to empty string ("") returns true
-            assertThat(ComposerUtils.isEnvironmentChanged(content, envMap), is(true));
+            assertThat(ComposerUtils.isEnvironmentChanged(content, trackedEnv, envMap), is(true));
         }
 
         @Test
@@ -272,7 +272,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
 
             // Legacy files without Env headers must trigger regeneration (return true)
             String content = Files.readString(output);
-            boolean changed = ComposerUtils.isEnvironmentChanged(content);
+            boolean changed = ComposerUtils.isEnvironmentChanged(content, trackedEnv);
             assertThat(changed, is(true));
         }
 
@@ -294,7 +294,7 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
 
             // File has empty/zero-variable Env header -> NOT legacy -> returns false (no regeneration)
             String content = Files.readString(output);
-            assertThat(ComposerUtils.isEnvironmentChanged(content, envMap), is(false));
+            assertThat(ComposerUtils.isEnvironmentChanged(content, trackedEnv, envMap), is(false));
         }
 
         @Test
@@ -356,8 +356,43 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             removeHeaderFromFile(output);
 
             String content = Files.readString(output);
-            boolean changed = ComposerUtils.isEnvironmentChanged(content);
+            boolean changed = ComposerUtils.isEnvironmentChanged(content, trackedEnv);
             assertThat(changed, is(true));
+        }
+
+        @Test
+        @DisplayName("Rewrites output when tracked dependency list changes even if compiled body is identical")
+        void rewritesOutputWhenTrackedDependenciesChange() throws IOException {
+            Map<String, String> envMap = Map.of("FOO", "same_value", "BAR", "same_value");
+
+            Path main = writeFixture("dep_change_main.yaml", "setting: ${ENV.FOO}");
+            Path output = Objects.requireNonNull(sharedTempDir).resolve("dep_change_output.yaml");
+
+            // First compile pass: tracks FOO
+            Set<String> trackedFoo = Set.of("FOO");
+            Object yamlObjectFoo = loadWithTracking(main, ConcurrentHashMap.newKeySet());
+
+            try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
+                boolean written = ComposerUtils.writeCompiledOutput(yamlObjectFoo, main, output, trackedFoo, envMap);
+                assertThat(written, is(true));
+            }
+
+            String initialContent = Files.readString(output);
+            assertThat(initialContent, containsString("FOO"));
+
+            // Second compile pass: source changed to reference BAR instead of FOO.
+            // Both produce "setting: same_value", so the compiled YAML body is identical.
+            Set<String> trackedBar = Set.of("BAR");
+            Object yamlObjectBar = loadWithTracking(main, ConcurrentHashMap.newKeySet());
+
+            try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
+                boolean rewritten = ComposerUtils.writeCompiledOutput(yamlObjectBar, main, output, trackedBar, envMap);
+                assertThat("Must not skip write when tracked env vars change from FOO to BAR", rewritten, is(true));
+            }
+
+            String updatedContent = Files.readString(output);
+            assertThat(updatedContent, containsString("BAR"));
+            assertThat(updatedContent, not(containsString("FOO")));
         }
 
         private void removeHeaderFromFile(Path file) throws IOException {
