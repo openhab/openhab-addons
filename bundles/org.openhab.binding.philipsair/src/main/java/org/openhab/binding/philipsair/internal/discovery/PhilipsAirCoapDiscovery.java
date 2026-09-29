@@ -88,7 +88,8 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
 
         CoapConfig.register();
 
-        Configuration netConfig = Configuration.getStandard().set(CoapConfig.RESPONSE_MATCHING,
+        // a copy, as the standard configuration is shared with the other bindings using Californium
+        Configuration netConfig = new Configuration(Configuration.getStandard()).set(CoapConfig.RESPONSE_MATCHING,
                 CoapConfig.MatcherMode.RELAXED); // allow many responders
 
         endpoint = new CoapEndpoint.Builder().setConfiguration(netConfig).build();
@@ -106,7 +107,6 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
                     return;
                 }
                 if (response.getPayload() != null) {
-                    // Token/MID validate? Accept even if matcher rejects.
                     String payload = response.getPayloadString();
                     InetSocketAddress src = response.getSourceContext().getPeerAddress();
                     logger.trace("Received coap response from {}  - {}", src, Utils.prettyPrint(response));
@@ -204,7 +204,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         }
     }
 
-    public void discovered(String response, String host) {
+    private void discovered(String response, String host) {
         try {
             PhilipsAirPurifierDeviceDTO info = gson.fromJson(response, PhilipsAirPurifierDeviceDTO.class);
             if (info == null || info.getDeviceId() == null) {

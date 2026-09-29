@@ -16,7 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.californium.core.config.CoapConfig;
+import org.eclipse.californium.elements.config.Configuration;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,6 +62,16 @@ public class PhilipsAirCoapAPIConnectionTest {
         String encrypted = PhilipsAirCoapCipher.encryptedMsg(message, 0x10L, logger);
         assertNotNull(encrypted);
         return encrypted;
+    }
+
+    @Test
+    public void standardCoapConfigurationIsNotChanged() {
+        // the standard configuration is shared with the other bindings using Californium
+        Configuration standard = Configuration.getStandard();
+
+        assertNotEquals(CoapConfig.NO_DEDUPLICATOR, standard.get(CoapConfig.DEDUPLICATOR));
+        assertNotEquals(20L, standard.get(CoapConfig.ACK_TIMEOUT, TimeUnit.SECONDS));
+        assertNotEquals(65L, standard.get(CoapConfig.EXCHANGE_LIFETIME, TimeUnit.SECONDS));
     }
 
     @Test

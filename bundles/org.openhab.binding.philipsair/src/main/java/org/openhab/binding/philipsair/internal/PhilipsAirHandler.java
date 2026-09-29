@@ -83,9 +83,10 @@ public class PhilipsAirHandler extends BaseThingHandler {
      * Channels only supported by some models (e.g. humidifiers), mapped to their channel group. They are added to the
      * thing once the device reports the corresponding value.
      */
-    private static final Map<String, String> OPTIONAL_CHANNELS = Map.of(AUTO_TIMEOFF, CONTROLS, TIMER_COUNTDOWN,
-            CONTROLS, HUMIDITY_SETPOINT, CONTROLS, FUNCTION, CONTROLS, HUMIDITY, SENSORS, TEMPERATURE, SENSORS,
-            WATER_LEVEL, SENSORS, TVOC, SENSORS, RSSI, SENSORS, WICKS_FILTER, FILTERS);
+    private static final List<Map.Entry<String, String>> OPTIONAL_CHANNELS = List.of(Map.entry(AUTO_TIMEOFF, CONTROLS),
+            Map.entry(TIMER_COUNTDOWN, CONTROLS), Map.entry(HUMIDITY_SETPOINT, CONTROLS), Map.entry(FUNCTION, CONTROLS),
+            Map.entry(HUMIDITY, SENSORS), Map.entry(TEMPERATURE, SENSORS), Map.entry(WATER_LEVEL, SENSORS),
+            Map.entry(TVOC, SENSORS), Map.entry(RSSI, SENSORS), Map.entry(WICKS_FILTER, FILTERS));
     /**
      * Model id prefixes of the devices that can show the gas (TVOC) index on the display, as offered by the Philips
      * app.
@@ -102,6 +103,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private static final List<Integer> THRESHOLDS = List.of(1, 4, 7, 10);
     private static final List<Integer> TEXT_THRESHOLDS = List.of(13, 19, 29, 40);
     private static final List<String> TEXT_THRESHOLD_MODELS = List.of("AC4373", "AC4375");
+    /**
+     * The filter status of devices that are not polled for it is requested this many times to detect the optional wick
+     * filter channel, in case a request fails.
+     */
+    private static final int MAX_FILTER_PROBE_ATTEMPTS = 3;
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
     private final Object connectionLock = new Object();
@@ -110,13 +116,15 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private volatile @Nullable PhilipsAirAPIConnection connection;
     private boolean disposed;
     private @Nullable PhilipsAirPurifierDataDTO currentData;
-    private @Nullable PhilipsAirPurifierDeviceDTO deviceInfo;
+    private volatile @Nullable PhilipsAirPurifierDeviceDTO deviceInfo;
     private @Nullable PhilipsAirPurifierFiltersDTO filters;
-    private boolean filtersProbed;
+    // the host the data above was received from, it is discarded when the thing is configured for another device
+    private String dataHost = "";
+    private int filterProbeAttempts;
     // commands and refreshes are executed in order on the scheduler, so handleCommand does not block
     private final Object commandLock = new Object();
     private CompletableFuture<@Nullable Void> commandQueue = CompletableFuture.completedFuture(null);
-    private PhilipsAirConfiguration config;
+    private volatile PhilipsAirConfiguration config;
     private final HttpClient httpClient;
     private final PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
     private boolean modelOptionsSet;
@@ -133,6 +141,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         PhilipsAirAPIConnection connection = this.connection;
         if (connection == null) {
+            logger.debug("Ignoring {} for {}, there is no connection", command, channelUID);
             return;
         }
         if (command == RefreshType.REFRESH) {
@@ -305,6 +314,15 @@ public class PhilipsAirHandler extends BaseThingHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
+        synchronized (updateLock) {
+            if (!config.getHost().equals(dataHost)) {
+                currentData = null;
+                deviceInfo = null;
+                filters = null;
+                filterProbeAttempts = 0;
+                dataHost = config.getHost();
+            }
+        }
         synchronized (connectionLock) {
             disposed = false;
         }
@@ -312,7 +330,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         int refreshInterval = config.getRefreshInterval();
         logger.debug("Start refresh job for {} at interval {} sec.", thing.getUID(), refreshInterval);
         // the first run creates the connection, as the HTTP key exchange may block
-        refreshJob = scheduler.scheduleWithFixedDelay(this::updateThing, 0, refreshInterval, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
     }
 
     /**
@@ -377,7 +395,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         super.dispose();
     }
 
-    private void updateThing() {
+    private void poll() {
         try {
             PhilipsAirAPIConnection connection = this.connection;
             if (connection == null) {
@@ -459,11 +477,12 @@ public class PhilipsAirHandler extends BaseThingHandler {
         if (connection.isPushingStatus() || filterGroup.stream().anyMatch(fg -> isLinked(fg.getUID()))) {
             // pushing devices report the filter status with the status, so it is available without an extra request
             filters = connection.getAirPurifierFiltersStatus(host);
-        } else if (!filtersProbed) {
-            // the filter status is requested once to detect the optional wick filter channel
-            filtersProbed = true;
+        } else if (filterProbeAttempts < MAX_FILTER_PROBE_ATTEMPTS) {
+            // the filter status is requested to detect the optional wick filter channel, until the device answers
+            filterProbeAttempts++;
             try {
                 filters = connection.getAirPurifierFiltersStatus(host);
+                filterProbeAttempts = MAX_FILTER_PROBE_ATTEMPTS;
             } catch (PhilipsAirAPIException | JsonSyntaxException e) {
                 logger.debug("Could not request the filter status of {}: {}", thing.getUID(), e.getMessage());
             }
@@ -520,7 +539,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         PhilipsAirPurifierDataDTO data = currentData;
         PhilipsAirPurifierFiltersDTO filters = this.filters;
         ThingBuilder thingBuilder = null;
-        for (Map.Entry<String, String> optionalChannel : OPTIONAL_CHANNELS.entrySet()) {
+        for (Map.Entry<String, String> optionalChannel : OPTIONAL_CHANNELS) {
             String channelId = optionalChannel.getKey();
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), optionalChannel.getValue(), channelId);
             if (getThing().getChannel(channelUID) == null && isReported(channelId, data, filters)) {
@@ -540,14 +559,14 @@ public class PhilipsAirHandler extends BaseThingHandler {
     /**
      * Limits the options of the displayed index and the air quality notification threshold to the values the model
      * supports. This is decided once after the device reported its status, as a single report may lack optional
-     * fields.
+     * fields. The options depend on the model, so they are not decided before the device info is known.
      */
     private void setModelOptions() {
-        if (modelOptionsSet) {
+        PhilipsAirPurifierDeviceDTO deviceInfo = this.deviceInfo;
+        if (modelOptionsSet || deviceInfo == null) {
             return;
         }
         modelOptionsSet = true;
-        PhilipsAirPurifierDeviceDTO deviceInfo = this.deviceInfo;
 
         List<StateOption> indexOptions = new ArrayList<>(
                 List.of(new StateOption(DISPLAYED_INDEX_ALLERGEN, "Allergen Index"),

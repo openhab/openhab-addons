@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.philipsair.internal;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Dimensionless;
@@ -59,20 +56,15 @@ public class PhilipsAirBindingConstants {
     public static final ThingTypeUID THING_TYPE_AC3829_10 = new ThingTypeUID(BINDING_ID,
             SUPPORTED_MODEL_NUMBER_AC3829_10);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_UNIVERSAL, THING_TYPE_COAP, THING_TYPE_AC2889_10, THING_TYPE_AC2729,
-                    THING_TYPE_AC1214_10, THING_TYPE_AC3829_10).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_UPNP_THING_TYPES_UIDS = Set.of(THING_TYPE_UNIVERSAL,
+            THING_TYPE_AC2889_10, THING_TYPE_AC2729, THING_TYPE_AC1214_10, THING_TYPE_AC3829_10);
 
-    public static final Set<ThingTypeUID> SUPPORTED_UPNP_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_UNIVERSAL, THING_TYPE_AC2889_10, THING_TYPE_AC2729,
-                    THING_TYPE_AC1214_10, THING_TYPE_AC3829_10).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_COAP_THING_TYPES_UIDS = Set.of(THING_TYPE_COAP);
 
-    public static final Set<ThingTypeUID> SUPPORTED_COAP_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_COAP).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UNIVERSAL, THING_TYPE_COAP,
+            THING_TYPE_AC2889_10, THING_TYPE_AC2729, THING_TYPE_AC1214_10, THING_TYPE_AC3829_10);
 
     public static final String DISCOVERY_UPNP_MODEL = "AirPurifier";
-
-    public static final String DISCOVERY_UDN = "udn";
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;

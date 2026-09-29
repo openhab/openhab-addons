@@ -113,7 +113,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     }
 
     private static String buildURL(String url, String host) {
-        return url.replaceFirst("%HOST%", host);
+        return url.replace("%HOST%", host);
     }
 
     private String getResponseFromCache(String url, boolean decrypt) throws PhilipsAirAPIException {
@@ -144,10 +144,10 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
             }
 
             if (cooldownTimer > System.currentTimeMillis()) {
-                logger.debug(
-                        "Cooldown period is active, waiting Philips Air Purifier device responded with status code");
-                throw new PhilipsAirAPIException(
-                        "Cooldown period is active, waiting Philips Air Purifier device responded with status code");
+                String message = "Waiting for the cooldown period, the device responded with status code "
+                        + TOO_MANY_REQUESTS_429;
+                logger.debug("{}", message);
+                throw new PhilipsAirAPIException(message);
             }
 
             Request request = httpClient.newRequest(url).method(method);

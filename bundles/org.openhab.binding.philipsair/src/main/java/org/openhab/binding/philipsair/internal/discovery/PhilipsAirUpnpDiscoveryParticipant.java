@@ -66,11 +66,8 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
     }
 
     private void activateOrModifyService(Map<String, Object> properties) {
-        // 'enableAutoDiscovery' is kept for backwards compatibility
-        Boolean legacyEnabled = ConfigParser.valueAs(properties.get("enableAutoDiscovery"), Boolean.class);
         isAutoDiscoveryEnabled = ConfigParser.valueAsOrElse(
-                properties.get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY), Boolean.class,
-                legacyEnabled != null ? legacyEnabled : true);
+                properties.get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY), Boolean.class, true);
     }
 
     @Override

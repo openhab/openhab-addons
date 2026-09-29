@@ -87,7 +87,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     // the scheme of the last status, commands are sent in the classic scheme until the device reported its status
     private volatile CoapKeyScheme keyScheme = CoapKeyScheme.CLASSIC;
     private volatile long lastUpdated = 0L; // epoch ms of last valid JSON
-    private int mid;
+    // MID of the last valid notification, written by the Californium thread
+    private volatile int mid;
 
     /**
      * @param config the thing configuration
@@ -107,7 +108,9 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         reregisterAfterMs = Math.max(refreshIntervalMs, MIN_REREGISTER_AFTER_MS);
         staleAfterMs = Math.max(2 * refreshIntervalMs, MIN_STALE_AFTER_MS);
 
-        Configuration netConfig = Configuration.getStandard().set(CoapConfig.DEDUPLICATOR, CoapConfig.NO_DEDUPLICATOR)
+        // a copy, as the standard configuration is shared with the other bindings using Californium
+        Configuration netConfig = new Configuration(Configuration.getStandard())
+                .set(CoapConfig.DEDUPLICATOR, CoapConfig.NO_DEDUPLICATOR)
                 .set(CoapConfig.ACK_TIMEOUT, 20, TimeUnit.SECONDS)
                 .set(CoapConfig.EXCHANGE_LIFETIME, 65, TimeUnit.SECONDS);
 
@@ -166,11 +169,14 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             request.setURI(uri);
             request.setType(Type.CON);
             request.setObserve();
-            if (this.mid > 0 && Math.abs(this.mid - request.getMID()) > 100) {
-                logger.debug("Different MIDs in request and responses: {} &  {}", request.getMID(), this.mid + 1);
-                request.setMID(this.mid + 1);
+            // Workaround for the deduplication of the device: a MID far from the last one seen in a notification is
+            // replaced by the one following it.
+            int lastMid = this.mid;
+            if (lastMid > 0 && Math.abs(lastMid - request.getMID()) > 100) {
+                logger.debug("Different MIDs in request and responses: {} & {}", request.getMID(), lastMid + 1);
+                request.setMID(lastMid + 1);
             } else {
-                logger.debug("MIDs in sync:  {}", this.mid + 1);
+                logger.debug("MIDs in sync: request {}, last response {}", request.getMID(), lastMid);
             }
 
             logger.debug("Start Observe request {}", uri);

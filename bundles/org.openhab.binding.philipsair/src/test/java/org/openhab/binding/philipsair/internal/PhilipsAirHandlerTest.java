@@ -320,15 +320,11 @@ public class PhilipsAirHandlerTest extends JavaTest {
         mockResponses(DEVICE, STATUS);
         PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), new Configuration());
 
-        initializeAndRefresh(handler, "controls#power");
+        initializeAndWaitForOnline(handler);
         assertEquals("AC2889/10", handler.getThing().getProperties().get(Thing.PROPERTY_MODEL_ID));
         assertEquals("1.0.4", handler.getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION));
-        long thingUpdates = countThingUpdates();
 
-        handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), RefreshType.REFRESH);
-
-        assertEquals(thingUpdates, countThingUpdates());
+        assertRefreshesDoNotUpdateThing(handler, "controls#power");
     }
 
     @Test
@@ -336,19 +332,51 @@ public class PhilipsAirHandlerTest extends JavaTest {
         mockResponses("{\"name\":\"Philips\",\"modelid\":\"AC2889/10\"}", STATUS);
         PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), new Configuration());
 
-        initializeAndRefresh(handler, "controls#power");
+        initializeAndWaitForOnline(handler);
         assertFalse(handler.getThing().getProperties().containsKey(Thing.PROPERTY_FIRMWARE_VERSION));
+
+        assertRefreshesDoNotUpdateThing(handler, "controls#power");
+    }
+
+    /**
+     * Waits until the first update is complete, so no refresh is still queued in the handler.
+     */
+    private void initializeAndWaitForOnline(PhilipsAirHandler handler) {
+        handler.initialize();
+        waitForAssert(() -> {
+            ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
+            verify(callback, atLeastOnce()).statusUpdated(any(Thing.class), statusInfoCaptor.capture());
+            List<ThingStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
+            assertEquals(ThingStatus.ONLINE, statusInfos.get(statusInfos.size() - 1).getStatus());
+        }, 10000, 100);
+    }
+
+    /**
+     * Refreshes are queued and executed asynchronously, so the thing updates are only compared after both refreshes
+     * have published their state.
+     */
+    private void assertRefreshesDoNotUpdateThing(PhilipsAirHandler handler, String channel) {
+        ChannelUID channelUID = new ChannelUID(THING_UID, channel);
         long thingUpdates = countThingUpdates();
+        long stateUpdates = countStateUpdates(channelUID);
 
-        handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), RefreshType.REFRESH);
-        handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), RefreshType.REFRESH);
+        handler.handleCommand(channelUID, RefreshType.REFRESH);
+        handler.handleCommand(channelUID, RefreshType.REFRESH);
 
+        waitForAssert(() -> assertTrue(countStateUpdates(channelUID) >= stateUpdates + 2), 10000, 100);
         assertEquals(thingUpdates, countThingUpdates());
     }
 
     private long countThingUpdates() {
         return mockingDetails(callback).getInvocations().stream().filter(invocation -> List
                 .of("thingUpdated", "configurationUpdated").contains(invocation.getMethod().getName())).count();
+    }
+
+    private long countStateUpdates(ChannelUID channelUID) {
+        return mockingDetails(callback).getInvocations().stream()
+                .filter(invocation -> "stateUpdated".equals(invocation.getMethod().getName())
+                        && channelUID.equals(invocation.getArgument(0)))
+                .count();
     }
 
     @Test

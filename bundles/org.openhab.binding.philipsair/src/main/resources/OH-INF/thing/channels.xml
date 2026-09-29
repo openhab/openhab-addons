@@ -178,6 +178,7 @@
 	<channel-type id="error-code">
 		<item-type>String</item-type>
 		<label>Error Message</label>
+		<description>Error reported by the device</description>
 		<tags>
 			<tag>Alarm</tag>
 			<tag>Info</tag>

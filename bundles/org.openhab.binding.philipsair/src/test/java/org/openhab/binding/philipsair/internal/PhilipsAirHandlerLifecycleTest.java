@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +34,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIException;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
+import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.test.java.JavaTest;
@@ -155,6 +157,35 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         clearInvocations(callback);
         handler.dataReceived(connection);
         verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void cachedDeviceInfoIsOnlyDiscardedWhenTheHostChanges() throws Exception {
+        Gson gson = new Gson();
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson("{\"modelid\":\"AC2889/10\"}", PhilipsAirPurifierDeviceDTO.class));
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
+        releaseConnection.countDown();
+        handler.initialize();
+        waitForAssert(() -> verify(connection).ensureConnected());
+        handler.updateData(connection);
+        verify(connection, times(1)).getAirPurifierDevice(any());
+        handler.dispose();
+
+        // e.g. a changed refresh interval keeps the info of the device
+        handler.initialize();
+        waitForAssert(() -> verify(connection, times(2)).ensureConnected());
+        handler.updateData(connection);
+        verify(connection, times(1)).getAirPurifierDevice(any());
+        handler.dispose();
+
+        handler.handleConfigurationUpdate(Map.of(PhilipsAirConfiguration.CONFIG_HOST, "2.2.2.2"));
+        handler.initialize();
+        waitForAssert(() -> verify(connection, times(3)).ensureConnected());
+        handler.updateData(connection);
+        verify(connection, times(2)).getAirPurifierDevice(any());
+        handler.dispose();
     }
 
     @Test

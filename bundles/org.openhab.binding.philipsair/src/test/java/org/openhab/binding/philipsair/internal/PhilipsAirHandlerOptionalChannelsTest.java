@@ -176,6 +176,42 @@ public class PhilipsAirHandlerOptionalChannelsTest {
     }
 
     @Test
+    public void modelOptionsAreNotDecidedBeforeTheDeviceInfoIsKnown() throws PhilipsAirAPIException {
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(AC5659_STATUS, PhilipsAirPurifierDataDTO.class));
+
+        handler.updateData(connection);
+
+        verify(stateDescriptionProvider, never()).setStateOptions(any(), any());
+
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson(AC5659_STATUS, PhilipsAirPurifierDeviceDTO.class));
+
+        handler.updateData(connection);
+
+        verify(stateDescriptionProvider, times(2)).setStateOptions(any(), any());
+    }
+
+    @Test
+    public void filterStatusIsRequestedAgainAfterAFailure() throws PhilipsAirAPIException {
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
+        when(connection.getAirPurifierFiltersStatus(any())).thenThrow(new PhilipsAirAPIException("busy"))
+                .thenReturn(gson.fromJson(HUMIDIFIER_STATUS, PhilipsAirPurifierFiltersDTO.class));
+
+        handler.updateData(connection);
+        assertEquals(Set.of("controls#power"), channelIds(handler.getThing().getChannels()));
+
+        handler.updateData(connection);
+        assertEquals(Set.of("controls#power", "filters#wick-filter-life"),
+                channelIds(handler.getThing().getChannels()));
+
+        // once the device answered, the filter status is not requested for the wick filter channel anymore
+        handler.updateData(connection);
+        verify(connection, times(2)).getAirPurifierFiltersStatus(any());
+    }
+
+    @Test
     public void displayedIndexOptionsExcludeGasOnOtherModels() throws PhilipsAirAPIException {
         when(connection.getAirPurifierDevice(any()))
                 .thenReturn(gson.fromJson(HUMIDIFIER_STATUS, PhilipsAirPurifierDeviceDTO.class));
