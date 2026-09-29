@@ -1547,7 +1547,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
      */
     private boolean updateLightModeStatus(int idIn, ShellySettingsStatus status,
             @Nullable Shelly2DeviceStatusLight value, boolean channelUpdate) throws ShellyApiException {
-        if (value == null) {
+        if (profile.isDimmer || value == null) { // dimmers are handled by updateDimmerStatus()
             return false;
         }
 
