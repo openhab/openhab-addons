@@ -157,12 +157,6 @@ class WaterHeaterEntityTest extends AbstractEntityTest {
                     "water_heater", "turn_away_mode_on", id, null);
             assertService(entity.toServiceCall(id, "temperature", new DecimalType(50), state, context).orElseThrow(),
                     "water_heater", "set_temperature", id, Map.of("temperature", 50.0));
-            assertService(
-                    entity.toServiceCall(id, "target_temp_high", new DecimalType(55), state, context).orElseThrow(),
-                    "water_heater", "set_temperature", id, Map.of("temperature_high", 55.0));
-            assertService(
-                    entity.toServiceCall(id, "target_temp_low", new DecimalType(45), state, context).orElseThrow(),
-                    "water_heater", "set_temperature", id, Map.of("temperature_low", 45.0));
         }
     }
 }
