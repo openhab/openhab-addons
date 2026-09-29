@@ -147,12 +147,12 @@ The device ID is:
 
 The binding includes dedicated mapping logic for over 35 Home Assistant entity domains:
 
-- **Lighting & Power:** `light`, `switch`, `button`, `input_button`, `scene`, `script`
+- **Lighting & Power:** `light`, `switch`, `button`, `scene`, `script`
 - **Sensors:** `sensor`, `binary_sensor`, `device_tracker`, `geolocation`, `event`
 - **Climate & Environment:** `climate`, `humidifier`, `water_heater`, `weather`, `fan`
 - **Covers & Locks:** `cover`, `lock`, `valve`
 - **Media & Remotes:** `media_player`, `remote`, `camera`, `image`
-- **Controls & Inputs:** `number`, `input_number`, `select`, `input_select`, `text`, `input_text`, `date`, `time`, `datetime`
+- **Controls & Inputs:** `number`, `select`, `text`, `date`, `time`, `datetime`
 - **Robotics & Vacuum:** `vacuum`, `lawn_mower`, `siren`
 - **System & Infrastructure:** `update`, `alarm_control_panel`, `infrared`, `radio_frequency`
 
