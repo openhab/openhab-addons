@@ -24,14 +24,13 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.openhab.binding.http.internal.http.RateLimitedHttpClient;
 import org.openhab.core.test.TestPortUtil;
 import org.openhab.core.test.java.JavaTest;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 
 /**
- * The {@link AbstractWireMockTest} implements tests for the {@link RateLimitedHttpClient}
+ * Shared WireMock and HTTP client setup for HTTP binding tests.
  *
  * @author Jan N. Klug - Initial contribution
  */
