@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -131,6 +132,20 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BaseBluetoothDev
             devices.remove(device.getAddress());
         }
         discoveryListeners.forEach(listener -> listener.deviceRemoved(device));
+    }
+
+    /**
+     * Performs the given action on every device currently known to this bridge. Subclasses use this
+     * to propagate adapter-wide events (e.g. the adapter going away) to all of their devices without
+     * needing their own copy of the device registry. The action runs while holding the device lock,
+     * so it should be quick and must not call back into device-registry-mutating methods.
+     *
+     * @param action the action to perform on each known device
+     */
+    protected void forEachDevice(Consumer<BD> action) {
+        synchronized (devices) {
+            devices.values().forEach(action);
+        }
     }
 
     private boolean shouldRemove(BD device) {

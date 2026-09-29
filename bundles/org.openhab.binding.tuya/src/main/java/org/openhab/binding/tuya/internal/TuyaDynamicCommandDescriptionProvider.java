@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
@@ -54,6 +55,10 @@ public class TuyaDynamicCommandDescriptionProvider extends BaseDynamicCommandDes
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
         this.bundle = FrameworkUtil.getBundle(this.getClass());
+    }
+
+    public void removeCommandDescriptions(ThingUID thingUID) {
+        channelOptionsMap.keySet().removeIf(channelUID -> thingUID.equals(channelUID.getThingUID()));
     }
 
     // N.B. It would be better to override getCommandDescription, parse the channel type and

@@ -247,7 +247,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
+        config = getConfigAs(SunSynkInverterConfig.class);
         logger.debug("Inverter Config: {}", config);
         if (config.getRefresh() < 60) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

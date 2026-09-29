@@ -7,24 +7,11 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.2.0-SNAPSHOT</version>
+    <version>5.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.kaleidescape</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Kaleidescape Binding</name>
-
-  <properties>
-    <dep.noembedding>commons-net</dep.noembedding>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>commons-net</groupId>
-      <artifactId>commons-net</artifactId>
-      <version>${commons.net.version}</version>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
 
 </project>

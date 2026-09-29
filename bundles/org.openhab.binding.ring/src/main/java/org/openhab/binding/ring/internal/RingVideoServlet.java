@@ -124,8 +124,14 @@ public class RingVideoServlet extends HttpServlet {
 
         logger.debug("RingVideo: {} video '{}' requested", request.getMethod(), filename);
 
-        Path fullPath = videoPaths.stream().map(p -> p.resolve(filename)).filter(Files::exists).findFirst()
-                .orElse(null);
+        Path fullPath = videoPaths.stream().map(p -> {
+            Path targetPath = p.resolve(filename).normalize();
+            // Prevent directory traversal attacks
+            if (!targetPath.startsWith(p.normalize())) {
+                return null;
+            }
+            return targetPath;
+        }).filter(p -> p != null && Files.exists(p)).findFirst().orElse(null);
 
         if (fullPath != null) {
             String mimeType = URLConnection.guessContentTypeFromName(filename);

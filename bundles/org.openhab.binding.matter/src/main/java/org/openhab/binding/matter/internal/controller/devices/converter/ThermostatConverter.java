@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,10 +29,12 @@ import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.binding.matter.internal.util.ValueUtils;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateDescription;
@@ -46,6 +49,17 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
+
+    private static final List<ChannelTypeUID> RUNNING_STATE_HEAT_CHANNEL_TYPES = List
+            .of(CHANNEL_THERMOSTAT_RUNNINGSTATE_HEAT, CHANNEL_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2);
+    private static final List<ChannelTypeUID> RUNNING_STATE_COOL_CHANNEL_TYPES = List
+            .of(CHANNEL_THERMOSTAT_RUNNINGSTATE_COOL, CHANNEL_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2);
+    private static final List<ChannelTypeUID> RUNNING_STATE_FAN_CHANNEL_TYPES = List.of(
+            CHANNEL_THERMOSTAT_RUNNINGSTATE_FAN, CHANNEL_THERMOSTAT_RUNNINGSTATE_FANSTAGE2,
+            CHANNEL_THERMOSTAT_RUNNINGSTATE_FANSTAGE3);
+    private static final List<ChannelTypeUID> RUNNING_STATE_CHANNEL_TYPES = Stream
+            .of(RUNNING_STATE_HEAT_CHANNEL_TYPES, RUNNING_STATE_COOL_CHANNEL_TYPES, RUNNING_STATE_FAN_CHANNEL_TYPES)
+            .flatMap(List::stream).toList();
 
     public ThermostatConverter(ThermostatCluster cluster, MatterBaseThingHandler handler, int endpointNumber,
             String labelPrefix) {
@@ -179,6 +193,17 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
                     .toStateDescription();
             channels.put(tempChannel, stateDescription);
         }
+        // The relay bits are independent outputs that can be active at the same time, so each gets its own channel.
+        // The cluster has no fan feature, so the fan relays are exposed whenever the attribute is present.
+        if (initializingCluster.thermostatRunningState != null) {
+            if (initializingCluster.featureMap.heating) {
+                addRunningStateChannels(channels, channelGroupUID, RUNNING_STATE_HEAT_CHANNEL_TYPES);
+            }
+            if (initializingCluster.featureMap.cooling) {
+                addRunningStateChannels(channels, channelGroupUID, RUNNING_STATE_COOL_CHANNEL_TYPES);
+            }
+            addRunningStateChannels(channels, channelGroupUID, RUNNING_STATE_FAN_CHANNEL_TYPES);
+        }
 
         return channels;
     }
@@ -244,7 +269,14 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
                 updateState(CHANNEL_ID_THERMOSTAT_OUTDOORTEMPERATURE, ValueUtils.valueToTemperature(numberValue));
                 break;
             case ThermostatCluster.ATTRIBUTE_THERMOSTAT_RUNNING_MODE:
-                updateState(CHANNEL_ID_THERMOSTAT_RUNNINGMODE, new DecimalType(numberValue));
+                if (message.value instanceof ThermostatCluster.ThermostatRunningModeEnum runningMode) {
+                    updateState(CHANNEL_ID_THERMOSTAT_RUNNINGMODE, new DecimalType(runningMode.getValue()));
+                }
+                break;
+            case ThermostatCluster.ATTRIBUTE_THERMOSTAT_RUNNING_STATE:
+                if (message.value instanceof ThermostatCluster.RelayStateBitmap runningState) {
+                    updateRunningState(runningState);
+                }
                 break;
             default:
                 logger.debug("Unknown attribute {}", message.path.attributeName);
@@ -285,5 +317,29 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
                 initializingCluster.thermostatRunningMode != null
                         ? new DecimalType(initializingCluster.thermostatRunningMode.getValue())
                         : UnDefType.NULL);
+        updateRunningState(initializingCluster.thermostatRunningState);
+    }
+
+    private void addRunningStateChannels(Map<Channel, @Nullable StateDescription> channels,
+            ChannelGroupUID channelGroupUID, List<ChannelTypeUID> channelTypeUIDs) {
+        for (ChannelTypeUID channelTypeUID : channelTypeUIDs) {
+            channels.put(ChannelBuilder
+                    .create(new ChannelUID(channelGroupUID, channelTypeUID.getId()), CoreItemFactory.SWITCH)
+                    .withType(channelTypeUID).build(), null);
+        }
+    }
+
+    private void updateRunningState(ThermostatCluster.@Nullable RelayStateBitmap runningState) {
+        if (runningState == null) {
+            RUNNING_STATE_CHANNEL_TYPES.forEach(channelTypeUID -> updateState(channelTypeUID.getId(), UnDefType.NULL));
+            return;
+        }
+        updateState(CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEAT, OnOffType.from(runningState.heat));
+        updateState(CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOL, OnOffType.from(runningState.cool));
+        updateState(CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FAN, OnOffType.from(runningState.fan));
+        updateState(CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2, OnOffType.from(runningState.heatStage2));
+        updateState(CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2, OnOffType.from(runningState.coolStage2));
+        updateState(CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE2, OnOffType.from(runningState.fanStage2));
+        updateState(CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE3, OnOffType.from(runningState.fanStage3));
     }
 }

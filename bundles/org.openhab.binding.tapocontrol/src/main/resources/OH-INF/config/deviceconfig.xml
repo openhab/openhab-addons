@@ -22,6 +22,7 @@
 				<option value="">Direct HTTP</option>
 				<option value="AES">Secured HTTP Protocol</option>
 				<option value="KLAP">Secured KLAP HTTP Protocol</option>
+				<option value="KASA">Legacy Kasa Protocol</option>
 			</options>
 			<limitToOptions>true</limitToOptions>
 			<default>AES</default>

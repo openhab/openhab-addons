@@ -201,7 +201,7 @@ public final class QbusCommunication extends BaseThingHandler {
         qbusListenerRunning = false;
         ctdConnected = false;
 
-        logger.trace("Communication stopped from thread {}", Thread.currentThread().getId());
+        logger.trace("Communication stopped from thread {}", Thread.currentThread().threadId());
     }
 
     /**
@@ -268,7 +268,7 @@ public final class QbusCommunication extends BaseThingHandler {
         }
 
         qbusListenerRunning = false;
-        logger.trace("Event listener thread stopped on thread {}", Thread.currentThread().getId());
+        logger.trace("Event listener thread stopped on thread {}", Thread.currentThread().threadId());
     }
 
     /**

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="smaenergymeter:energymeter">
+		<instruction-set targetVersion="1">
+			<update-channel id="powerIn">
+				<type>smaenergymeter:powerInType</type>
+				<label>Purchased Power</label>
+			</update-channel>
+			<update-channel id="powerOut">
+				<type>smaenergymeter:powerOutType</type>
+				<label>Grid Feed-in Power</label>
+			</update-channel>
+			<update-channel id="energyIn">
+				<type>smaenergymeter:energyInType</type>
+				<label>Purchased Energy</label>
+			</update-channel>
+			<update-channel id="energyOut">
+				<type>smaenergymeter:energyOutType</type>
+				<label>Grid Feed-in Energy</label>
+			</update-channel>
+			<update-channel id="powerInL1">
+				<type>smaenergymeter:powerInTypeL1</type>
+				<label>Purchased Power L1</label>
+			</update-channel>
+			<update-channel id="powerOutL1">
+				<type>smaenergymeter:powerOutTypeL1</type>
+				<label>Grid Feed-in Power L1</label>
+			</update-channel>
+			<update-channel id="energyInL1">
+				<type>smaenergymeter:energyInTypeL1</type>
+				<label>Purchased Energy L1</label>
+			</update-channel>
+			<update-channel id="energyOutL1">
+				<type>smaenergymeter:energyOutTypeL1</type>
+				<label>Grid Feed-in Energy L1</label>
+			</update-channel>
+			<update-channel id="powerInL2">
+				<type>smaenergymeter:powerInTypeL2</type>
+				<label>Purchased Power L2</label>
+			</update-channel>
+			<update-channel id="powerOutL2">
+				<type>smaenergymeter:powerOutTypeL2</type>
+				<label>Grid Feed-in Power L2</label>
+			</update-channel>
+			<update-channel id="energyInL2">
+				<type>smaenergymeter:energyInTypeL2</type>
+				<label>Purchased Energy L2</label>
+			</update-channel>
+			<update-channel id="energyOutL2">
+				<type>smaenergymeter:energyOutTypeL2</type>
+				<label>Grid Feed-in Energy L2</label>
+			</update-channel>
+			<update-channel id="powerInL3">
+				<type>smaenergymeter:powerInTypeL3</type>
+				<label>Purchased Power L3</label>
+			</update-channel>
+			<update-channel id="powerOutL3">
+				<type>smaenergymeter:powerOutTypeL3</type>
+				<label>Grid Feed-in Power L3</label>
+			</update-channel>
+			<update-channel id="energyInL3">
+				<type>smaenergymeter:energyInTypeL3</type>
+				<label>Purchased Energy L3</label>
+			</update-channel>
+			<update-channel id="energyOutL3">
+				<type>smaenergymeter:energyOutTypeL3</type>
+				<label>Grid Feed-in Energy L3</label>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

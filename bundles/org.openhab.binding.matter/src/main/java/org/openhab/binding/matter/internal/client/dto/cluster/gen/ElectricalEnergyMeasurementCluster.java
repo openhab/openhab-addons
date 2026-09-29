@@ -202,14 +202,36 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
          * EndTimestamp.
          */
         public BigInteger endSystime; // systime-ms
+        /**
+         * This field shall indicate the reported apparent energy.
+         * If the EnergyMeasurementStruct represents cumulative energy, then this shall represent the cumulative
+         * apparent energy recorded at either the value of the EndTimestamp field or the value of the EndSystime field,
+         * or both.
+         * If the EnergyMeasurementStruct represents periodic energy, then this shall represent the apparent energy
+         * recorded during the period specified by either the StartTimestamp and EndTimestamp fields, the period
+         * specified by the StartSystime and EndSystime fields, or both.
+         */
+        public BigInteger apparentEnergy; // energy-mVAh
+        /**
+         * This field shall be the reported reactive energy.
+         * If the EnergyMeasurementStruct represents cumulative energy, then this shall represent the cumulative
+         * reactive energy recorded at either the value of the EndTimestamp field or the value of the EndSystime field,
+         * or both.
+         * If the EnergyMeasurementStruct represents periodic energy, then this shall represent the reactive energy
+         * recorded during the period specified by either the StartTimestamp and EndTimestamp fields, the period
+         * specified by the StartSystime and EndSystime fields, or both.
+         */
+        public BigInteger reactiveEnergy; // energy-mVARh
 
         public EnergyMeasurementStruct(BigInteger energy, Integer startTimestamp, Integer endTimestamp,
-                BigInteger startSystime, BigInteger endSystime) {
+                BigInteger startSystime, BigInteger endSystime, BigInteger apparentEnergy, BigInteger reactiveEnergy) {
             this.energy = energy;
             this.startTimestamp = startTimestamp;
             this.endTimestamp = endTimestamp;
             this.startSystime = startSystime;
             this.endSystime = endSystime;
+            this.apparentEnergy = apparentEnergy;
+            this.reactiveEnergy = reactiveEnergy;
         }
     }
 
@@ -328,8 +350,8 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
         /**
          * 
          * The feature indicates the server is capable of measuring how much energy has been imported or exported by the
-         * server over the device’s lifetime. This measurement may start from when a device’s firmware is updated to
-         * include this feature, when a device’s firmware is updated to correct measurement errors, or when a device is
+         * server over the device's lifetime. This measurement may start from when a device's firmware is updated to
+         * include this feature, when a device's firmware is updated to correct measurement errors, or when a device is
          * factory reset.
          */
         public boolean cumulativeEnergy;
@@ -340,13 +362,25 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
          * by the server, and may represent overlapping periods.
          */
         public boolean periodicEnergy;
+        /**
+         * 
+         * Measurements report apparent energy
+         */
+        public boolean apparentEnergy;
+        /**
+         * 
+         * Measurements report reactive energy
+         */
+        public boolean reactiveEnergy;
 
         public FeatureMap(boolean importedEnergy, boolean exportedEnergy, boolean cumulativeEnergy,
-                boolean periodicEnergy) {
+                boolean periodicEnergy, boolean apparentEnergy, boolean reactiveEnergy) {
             this.importedEnergy = importedEnergy;
             this.exportedEnergy = exportedEnergy;
             this.cumulativeEnergy = cumulativeEnergy;
             this.periodicEnergy = periodicEnergy;
+            this.apparentEnergy = apparentEnergy;
+            this.reactiveEnergy = reactiveEnergy;
         }
     }
 

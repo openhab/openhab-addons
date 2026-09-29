@@ -18,6 +18,21 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jivesoftware.smack.SmackConfiguration;
+import org.jivesoftware.smack.java7.XmppHostnameVerifier;
+import org.jivesoftware.smack.provider.ProviderManager;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.util.DNSUtil;
+import org.jivesoftware.smack.util.dns.javax.JavaxResolver;
+import org.jivesoftware.smack.util.stringencoder.Base64;
+import org.jivesoftware.smack.util.stringencoder.Base64UrlSafeEncoder;
+import org.jivesoftware.smack.util.stringencoder.java7.Java7Base64Encoder;
+import org.jivesoftware.smack.util.stringencoder.java7.Java7Base64UrlSafeEncoder;
+import org.jivesoftware.smack.xml.SmackXmlParser;
+import org.jivesoftware.smack.xml.xpp3.Xpp3XmlPullParserFactory;
+import org.jivesoftware.smackx.disco.provider.DiscoverInfoProvider;
+import org.jivesoftware.smackx.disco.provider.DiscoverItemsProvider;
+import org.jivesoftware.smackx.xdata.provider.DataFormProvider;
 import org.openhab.binding.ecovacs.internal.handler.EcovacsApiHandler;
 import org.openhab.binding.ecovacs.internal.handler.EcovacsVacuumHandler;
 import org.openhab.core.i18n.LocaleProvider;
@@ -57,6 +72,19 @@ public class EcovacsHandlerFactory extends BaseThingHandlerFactory {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.localeProvider = localeProvider;
         this.i18Provider = i18Provider;
+
+        SmackXmlParser.setXmlPullParserFactory(new Xpp3XmlPullParserFactory());
+        Roster.setRosterLoadedAtLoginDefault(false);
+        var dnsResolver = JavaxResolver.getInstance();
+        if (dnsResolver != null) {
+            DNSUtil.setDNSResolver(dnsResolver);
+        }
+        SmackConfiguration.setDefaultHostnameVerifier(new XmppHostnameVerifier());
+        Base64.setEncoder(Java7Base64Encoder.getInstance());
+        Base64UrlSafeEncoder.setEncoder(Java7Base64UrlSafeEncoder.getInstance());
+        ProviderManager.addIQProvider("query", "http://jabber.org/protocol/disco#info", new DiscoverInfoProvider());
+        ProviderManager.addIQProvider("query", "http://jabber.org/protocol/disco#items", new DiscoverItemsProvider());
+        ProviderManager.addExtensionProvider("x", "jabber:x:data", new DataFormProvider());
     }
 
     @Override

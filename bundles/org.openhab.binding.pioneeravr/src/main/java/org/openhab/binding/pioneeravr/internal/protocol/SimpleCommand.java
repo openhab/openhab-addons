@@ -42,7 +42,8 @@ public class SimpleCommand implements AvrCommand {
         LISTENING_MODE_QUERY("?S"),
         INPUT_QUERY("?F", "?ZS", "?ZT", "?ZEA"),
         MCACC_MEMORY_CHANGE_CYCLIC("0MC"),
-        MCACC_MEMORY_QUERY("?MC");
+        MCACC_MEMORY_QUERY("?MC"),
+        SPEAKER_SELECTION_QUERY("?SPK");
 
         private String[] zoneCommands;
 

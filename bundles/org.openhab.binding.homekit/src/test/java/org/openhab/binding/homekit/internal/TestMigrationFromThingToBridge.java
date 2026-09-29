@@ -44,6 +44,7 @@ import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.mac.MacResolver;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -1773,9 +1774,9 @@ class TestMigrationFromThingToBridge {
                 ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
                 HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle,
                 ScheduledExecutorService scheduler, ManagedThingProvider thingProvider,
-                HomekitMdnsDiscoveryParticipant discoveryParticipant) {
+                HomekitMdnsDiscoveryParticipant discoveryParticipant, MacResolver macResolver) {
             super(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry, keyStore, i18nProvider, bundle,
-                    thingProvider, discoveryParticipant);
+                    thingProvider, discoveryParticipant, macResolver);
             this.injectedTestScheduler = scheduler;
         }
 
@@ -1853,6 +1854,7 @@ class TestMigrationFromThingToBridge {
         HomekitKeyStore keyStore = mock(HomekitKeyStore.class);
         TranslationProvider translationProvider = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
+        MacResolver macResolver = mock(MacResolver.class);
 
         when(thingProvider.get(new ThingUID(THING_TYPE_BRIDGE, thingId))).thenReturn(null);
         when(thingProvider.get(new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, thingId))).thenReturn(null);
@@ -1887,7 +1889,7 @@ class TestMigrationFromThingToBridge {
 
         HomekitAccessoryHandler handler = new TestHomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry,
                 channelGroupTypeRegistry, keyStore, translationProvider, bundle, scheduler, thingProvider,
-                discoveryParticipant);
+                discoveryParticipant, macResolver);
 
         // Inject accessories map
         injectField(handler, "accessories", accessories);
@@ -2003,7 +2005,7 @@ class TestMigrationFromThingToBridge {
         capturedRunnables.get(0).run();
 
         verify(thingProvider).remove(ArgumentMatchers.any(ThingUID.class));
-        verify(discoveryService, times(1)).suppressId("test-unique-id", true);
+        verify(discoveryService, times(1)).setTypeMapping(true, "test-unique-id", null);
         verifyNoMoreInteractions(discoveryService);
 
         ArgumentCaptor<Thing> captor = ArgumentCaptor.forClass(Thing.class);
@@ -2060,7 +2062,7 @@ class TestMigrationFromThingToBridge {
 
         capturedRunnables.get(0).run();
 
-        verify(discoveryService, times(1)).suppressId("test-unique-id", true);
+        verify(discoveryService, times(1)).setTypeMapping(true, "test-unique-id", null);
         verifyNoMoreInteractions(discoveryService);
     }
 
@@ -2200,7 +2202,7 @@ class TestMigrationFromThingToBridge {
 
         capturedRunnables.get(0).run();
 
-        verify(discoveryService, times(1)).suppressId("test-unique-id", true);
+        verify(discoveryService, times(1)).setTypeMapping(true, "test-unique-id", null);
         verifyNoMoreInteractions(discoveryService);
 
         verify(thingProvider, times(2)).add(ArgumentMatchers.any(Thing.class));

@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class RoborockBindingConstants {
 
-    private static final String BINDING_ID = "roborock";
+    public static final String BINDING_ID = "roborock";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID ROBOROCK_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
@@ -115,6 +115,7 @@ public class RoborockBindingConstants {
 
     public static final String CHANNEL_CONTROL = "actions#control";
     public static final String CHANNEL_COMMAND = "actions#commands";
+    public static final String CHANNEL_DP_COMMAND = "actions#dpcommand";
     public static final String CHANNEL_RPC = "actions#rpc";
     public static final String CHANNEL_VACUUM = "actions#vacuum";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
@@ -202,6 +203,8 @@ public class RoborockBindingConstants {
     public static final String THING_CONFIG_CLOUD_METADATA_REFRESH = "cloudMetadataRefresh";
     public static final String THING_CONFIG_CLOUD_REFRESH_INTERVAL = "cloudRefreshInterval";
     public static final String THING_CONFIG_FAST_REFRESH_INTERVAL = "fastRefreshInterval";
+    public static final String THING_PROPERTY_DEVICE_NAME = "deviceName";
+    public static final String THING_PROPERTY_PROTOCOL = "protocol";
     public static final String THING_PROPERTY_SN = "sn";
 
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(ROBOROCK_ACCOUNT);

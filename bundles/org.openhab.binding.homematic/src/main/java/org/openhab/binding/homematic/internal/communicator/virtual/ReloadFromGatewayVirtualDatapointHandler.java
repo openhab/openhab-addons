@@ -16,6 +16,8 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIR
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.communicator.AbstractHomematicGateway;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
@@ -29,6 +31,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class ReloadFromGatewayVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     @Override
     public String getName() {
@@ -41,7 +44,7 @@ public class ReloadFromGatewayVirtualDatapointHandler extends AbstractVirtualDat
     }
 
     @Override
-    public boolean canHandleCommand(HmDatapoint dp, Object value) {
+    public boolean canHandleCommand(HmDatapoint dp, @Nullable Object value) {
         return getName().equals(dp.getName());
     }
 
@@ -49,7 +52,7 @@ public class ReloadFromGatewayVirtualDatapointHandler extends AbstractVirtualDat
     public void handleCommand(VirtualGateway gateway, HmDatapoint dp, HmDatapointConfig dpConfig, Object value)
             throws IOException, HomematicClientException {
         dp.setValue(value);
-        if (MiscUtils.isTrueValue(dp.getValue())) {
+        if (MiscUtils.isTrueValue(value)) {
             try {
                 gateway.triggerDeviceValuesReload(dp.getChannel().getDevice());
             } finally {

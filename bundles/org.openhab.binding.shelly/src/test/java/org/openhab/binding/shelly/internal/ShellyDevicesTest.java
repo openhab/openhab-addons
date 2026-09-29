@@ -76,6 +76,43 @@ public class ShellyDevicesTest {
     }
 
     @ParameterizedTest
+    @MethodSource("provideTestCasesForNumMetersByThingType")
+    void numMetersByThingType(ThingTypeUID thingTypeUid, int expectedMeters) {
+        Integer numMeters = THING_TYPE_CAP_NUM_METERS.get(thingTypeUid);
+        assertThat("THING_TYPE_CAP_NUM_METERS for " + thingTypeUid.getId(), numMeters, is(equalTo(expectedMeters)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForNumMetersByThingType() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUS1L, 0), // no PM — relay-count fallback must be suppressed
+                Arguments.of(THING_TYPE_SHELLYPLUS2L, 0), // no PM — relay-count fallback must be suppressed
+                Arguments.of(THING_TYPE_SHELLYPRO2, 0), //
+                Arguments.of(THING_TYPE_SHELLYPRO3, 0), //
+                Arguments.of(THING_TYPE_SHELLYPROEM50, 2), //
+                Arguments.of(THING_TYPE_SHELLY3EM, 3), //
+                Arguments.of(THING_TYPE_SHELLYPLUS3EM63, 3), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, 3), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER1PM, 1), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER10V, 1), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, 1), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, 1)); //
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForNonPmDimmerThingTypes")
+    void numMetersByThingTypeIsNotOverriddenForNonPmDimmers(ThingTypeUID thingTypeUid) {
+        assertThat("THING_TYPE_CAP_NUM_METERS must not override " + thingTypeUid.getId(),
+                THING_TYPE_CAP_NUM_METERS.get(thingTypeUid), is(nullValue()));
+    }
+
+    private static Stream<Arguments> provideTestCasesForNonPmDimmerThingTypes() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDALIDIMMER)); //
+    }
+
+    @ParameterizedTest
     @MethodSource("provideTestCasesFornNumberInputsByBluThingType")
     void numberInputsByBluThingType(ThingTypeUID thingTypeUid, int expectedInputs) {
         Integer numberInputs = THING_TYPE_CAP_NUM_INPUTS.get(thingTypeUid);
@@ -94,6 +131,7 @@ public class ShellyDevicesTest {
                 Arguments.of(THING_TYPE_SHELLYBLUDW, 1), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, 0), //
                 Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, 0), //
-                Arguments.of(THING_TYPE_SHELLYBLUREMOTE, 2));
+                Arguments.of(THING_TYPE_SHELLYBLUREMOTE, 2), //
+                Arguments.of(THING_TYPE_SHELLYBLUWS90, 0));
     }
 }

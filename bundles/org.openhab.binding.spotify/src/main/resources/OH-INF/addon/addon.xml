@@ -7,5 +7,7 @@
 	<name>Spotify Binding</name>
 	<description>This is the openHAB binding for Spotify used to manage Spotify Connect devices using the Spotify Web API.</description>
 	<connection>cloud</connection>
+	<service-id>binding.spotify.authService</service-id>
+	<config-description-ref uri="binding:spotify:authService"/>
 
 </addon:addon>

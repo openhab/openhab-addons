@@ -10,10 +10,14 @@
 			<label>Hostname/IP Address</label>
 			<description>Hostname or IP address of the device</description>
 		</parameter>
-		<parameter name="macAddress" type="text" required="true">
-			<context>mac-address</context>
-			<label>MAC Address</label>
-			<description>MAC Address of the device</description>
+		<parameter name="deviceId" type="text" required="false">
+			<label>Device ID</label>
+			<description>Govee device identifier reported by the LAN API</description>
+		</parameter>
+		<parameter name="macAddress" type="text" required="false">
+			<label>Deprecated Device ID</label>
+			<description>Deprecated Govee device identifier; use Device ID instead</description>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" unit="s" min="2" max="60" step="1">
 			<label>Light Refresh Interval</label>

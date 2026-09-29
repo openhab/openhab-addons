@@ -42,6 +42,7 @@ public class Hourly {
     private double pop;
     private Precipitation rain;
     private Precipitation snow;
+    private double uvi;
 
     public int getDt() {
         return dt;
@@ -101,5 +102,9 @@ public class Hourly {
 
     public Precipitation getSnow() {
         return snow;
+    }
+
+    public double getUvi() {
+        return uvi;
     }
 }

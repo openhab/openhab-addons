@@ -15,6 +15,8 @@ package org.openhab.binding.homematic.internal.common;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.model.HmInterface;
@@ -24,10 +26,13 @@ import org.openhab.binding.homematic.internal.model.HmInterface;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class HomematicConfig {
     private static final String GATEWAY_TYPE_AUTO = "AUTO";
     private static final String GATEWAY_TYPE_CCU = "CCU";
     private static final String GATEWAY_TYPE_NOCCU = "NOCCU";
+
+    private static final HmGatewayInfo FALLBACK_GATEWAY_INFO = new HmGatewayInfo("", HmGatewayInfo.ID_DEFAULT, "", "");
 
     private static final int DEFAULT_PORT_RF = 2001;
     private static final int DEFAULT_PORT_WIRED = 2000;
@@ -36,7 +41,7 @@ public class HomematicConfig {
     private static final int DEFAULT_PORT_GROUP = 9292;
     public static final int DEFAULT_INSTALL_MODE_DURATION = 60;
 
-    private String gatewayAddress;
+    private String gatewayAddress = "";
     private String gatewayType = GATEWAY_TYPE_AUTO;
 
     private int rfPort;
@@ -45,7 +50,7 @@ public class HomematicConfig {
     private int cuxdPort;
     private int groupPort;
 
-    private String callbackHost;
+    private @Nullable String callbackHost;
     private int xmlCallbackPort;
     private int binCallbackPort;
 
@@ -57,12 +62,12 @@ public class HomematicConfig {
     private boolean factoryResetOnDeletion = false;
     private int bufferSize = 2048;
 
-    private HmGatewayInfo gatewayInfo;
+    private @Nullable HmGatewayInfo gatewayInfo;
     private int callbackRegTimeout;
 
     private boolean useAuthentication;
-    private String userName;
-    private String password;
+    private String userName = "";
+    private String password = "";
 
     /**
      * Returns the Homematic gateway address.
@@ -81,14 +86,14 @@ public class HomematicConfig {
     /**
      * Returns the callback host address.
      */
-    public String getCallbackHost() {
+    public @Nullable String getCallbackHost() {
         return callbackHost;
     }
 
     /**
      * Sets the callback host address.
      */
-    public void setCallbackHost(String callbackHost) {
+    public void setCallbackHost(@Nullable String callbackHost) {
         this.callbackHost = callbackHost;
     }
 
@@ -138,13 +143,14 @@ public class HomematicConfig {
      * Returns the HmGatewayInfo.
      */
     public HmGatewayInfo getGatewayInfo() {
-        return gatewayInfo;
+        HmGatewayInfo info = this.gatewayInfo;
+        return info != null ? info : FALLBACK_GATEWAY_INFO;
     }
 
     /**
      * Sets the HmGatewayInfo.
      */
-    public void setGatewayInfo(HmGatewayInfo gatewayInfo) {
+    public void setGatewayInfo(@Nullable HmGatewayInfo gatewayInfo) {
         this.gatewayInfo = gatewayInfo;
     }
 
@@ -409,7 +415,7 @@ public class HomematicConfig {
      * Returns the encoding that is suitable on requests to and responds from the Homematic gateway.
      */
     public Charset getEncoding() {
-        if (gatewayInfo != null && gatewayInfo.isHomegear()) {
+        if (getGatewayInfo().isHomegear()) {
             return StandardCharsets.UTF_8;
         } else {
             return StandardCharsets.ISO_8859_1;

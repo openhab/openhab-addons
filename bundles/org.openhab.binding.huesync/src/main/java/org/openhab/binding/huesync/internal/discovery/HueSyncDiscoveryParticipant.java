@@ -22,6 +22,7 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -59,7 +60,7 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
      */
     private static final String SERVICE_TYPE = "_huesync._tcp.local.";
 
-    private boolean autoDiscoveryEnabled = true;
+    private volatile boolean autoDiscoveryEnabled = true;
 
     protected final ThingRegistry thingRegistry;
 
@@ -128,16 +129,13 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     private void updateService(ComponentContext componentContext) {
-        String autoDiscoveryPropertyValue = (String) componentContext.getProperties()
+        Object autoDiscoveryPropertyValue = componentContext.getProperties()
                 .get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
-
-        if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
-            boolean value = Boolean.parseBoolean(autoDiscoveryPropertyValue);
-            if (value != this.autoDiscoveryEnabled) {
-                logger.debug("{} update: {} - {}", DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
-                        autoDiscoveryPropertyValue, value);
-                this.autoDiscoveryEnabled = value;
-            }
+        boolean value = ConfigParser.valueAsOrElse(autoDiscoveryPropertyValue, Boolean.class, autoDiscoveryEnabled);
+        if (value != autoDiscoveryEnabled) {
+            logger.debug("{} update: {} - {}", DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
+                    autoDiscoveryPropertyValue, value);
+            autoDiscoveryEnabled = value;
         }
     }
 }

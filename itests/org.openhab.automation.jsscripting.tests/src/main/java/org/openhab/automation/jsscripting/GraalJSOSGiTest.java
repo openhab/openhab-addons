@@ -30,6 +30,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
 import org.openhab.automation.jsscripting.internal.JSScriptServiceUtil;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.automation.jsscripting.internal.scope.OSGiScriptExtensionProvider;
 import org.openhab.core.automation.module.script.action.ScriptExecution;
 import org.openhab.core.scheduler.Scheduler;
 import org.openhab.core.service.WatchService;
@@ -64,6 +65,9 @@ public abstract class GraalJSOSGiTest extends JavaOSGiTest {
     ScriptExecution scriptExecution;
 
     @NonNullByDefault({})
+    OSGiScriptExtensionProvider osgiScriptExtensionProvider;
+
+    @NonNullByDefault({})
     JSScriptServiceUtil jsScriptServiceUtil;
     @NonNullByDefault({})
     JSDependencyTracker jsDependencyTracker;
@@ -82,10 +86,14 @@ public abstract class GraalJSOSGiTest extends JavaOSGiTest {
     public void beforeEach() throws Exception {
         when(watchService.getWatchPath()).thenReturn(tempDir);
 
+        osgiScriptExtensionProvider = new OSGiScriptExtensionProvider();
+        osgiScriptExtensionProvider.activate(bundleContext);
+
         jsScriptServiceUtil = new JSScriptServiceUtil(scheduler, scriptExecution);
         jsDependencyTracker = new JSDependencyTracker(watchService);
 
-        scriptEngineFactory = new GraalJSScriptEngineFactory(jsScriptServiceUtil, jsDependencyTracker, config);
+        scriptEngineFactory = new GraalJSScriptEngineFactory(jsScriptServiceUtil, jsDependencyTracker,
+                osgiScriptExtensionProvider, config);
     }
 
     @AfterEach
@@ -95,6 +103,8 @@ public abstract class GraalJSOSGiTest extends JavaOSGiTest {
 
         jsDependencyTracker.deactivate();
         jsDependencyTracker = null;
+
+        osgiScriptExtensionProvider = null;
 
         clearInvocations(watchService, scheduler, scriptExecution);
     }

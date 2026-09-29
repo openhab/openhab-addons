@@ -72,11 +72,14 @@ public class Login extends AbstractCommand {
     @Override
     public void onComplete(@Nullable Result result) {
         String json = getContentAsString(StandardCharsets.UTF_8);
-        JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
 
-        if (jsonObject != null) {
-            processResult(jsonObject);
+        // on connectivity failures (e.g. timeout) the body is empty or not parseable. We still need to process the
+        // result so that the authentication state is reset and the status is updated accordingly.
+        JsonObject jsonObject = transform(json, JsonObject.class);
+        if (jsonObject == null) {
+            jsonObject = new JsonObject();
         }
+        processResult(jsonObject);
     }
 
     @Override

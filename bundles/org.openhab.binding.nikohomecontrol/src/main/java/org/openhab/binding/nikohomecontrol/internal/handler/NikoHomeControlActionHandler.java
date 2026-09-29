@@ -121,13 +121,13 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
                 nhcAction.execute(NHCON);
             }
         } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
-            int currentValue = nhcAction.getState();
-            int newValue;
+            long currentValue = nhcAction.getState();
+            long newValue;
             if (IncreaseDecreaseType.INCREASE.equals(increaseDecreaseCommand)) {
                 newValue = currentValue + stepValue;
                 // round down to step multiple
                 newValue = newValue - newValue % stepValue;
-                nhcAction.execute(Integer.toString(newValue > 100 ? 100 : newValue));
+                nhcAction.execute(Long.toString(newValue > 100 ? 100 : newValue));
             } else {
                 newValue = currentValue - stepValue;
                 // round up to step multiple
@@ -135,7 +135,7 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
                 if (newValue <= 0) {
                     nhcAction.execute(NHCOFF);
                 } else {
-                    nhcAction.execute(Integer.toString(newValue));
+                    nhcAction.execute(Long.toString(newValue));
                 }
             }
         } else if (command instanceof PercentType percentCommand) {
@@ -285,7 +285,7 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
     }
 
     @Override
-    public void actionEvent(int actionState) {
+    public void actionEvent(long actionState) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
             logger.debug("action with ID {} not initialized", deviceId);
@@ -303,12 +303,12 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case DIMMER:
-                updateState(CHANNEL_BRIGHTNESS, new PercentType(actionState));
+                updateState(CHANNEL_BRIGHTNESS, new PercentType((int) actionState));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case ROLLERSHUTTER:
                 updateState(CHANNEL_ROLLERSHUTTER,
-                        !invert ? new PercentType(100 - actionState) : new PercentType(actionState));
+                        !invert ? new PercentType(100 - (int) actionState) : new PercentType((int) actionState));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             default:

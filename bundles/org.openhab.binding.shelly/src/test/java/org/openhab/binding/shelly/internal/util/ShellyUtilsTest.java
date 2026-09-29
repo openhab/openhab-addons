@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -63,5 +64,20 @@ public class ShellyUtilsTest {
 
         assertThat(actualInstant, allOf(greaterThanOrEqualTo(before), lessThanOrEqualTo(after)));
         assertThat(actualInstant.getNano(), is(0));
+    }
+
+    @Test
+    void stripDeprecatedSuffixRemovesSwitchSuffixFromDeprecatedSplitChannel() {
+        assertEquals("light1#brightness", ShellyUtils.stripDeprecatedSuffix("light1#brightness$Switch"));
+    }
+
+    @Test
+    void stripDeprecatedSuffixRemovesValueSuffixFromDeprecatedSplitChannel() {
+        assertEquals("light1#brightness", ShellyUtils.stripDeprecatedSuffix("light1#brightness$Value"));
+    }
+
+    @Test
+    void stripDeprecatedSuffixLeavesRegularChannelIdUnchanged() {
+        assertEquals("light1#brightness", ShellyUtils.stripDeprecatedSuffix("light1#brightness"));
     }
 }

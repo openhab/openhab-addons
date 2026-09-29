@@ -71,6 +71,7 @@ public class MerossManager implements MqttMessageSubscriber {
     private @Nullable MerossHttpConnector httpConnector;
     private String deviceUUID;
     private MerossDeviceHandlerCallback callback;
+    private MqttMessageBuilder mqttMessageBuilder;
 
     private String deviceRequestTopic;
 
@@ -86,8 +87,9 @@ public class MerossManager implements MqttMessageSubscriber {
 
     public MerossManager(HttpClient httpClient, MerossMqttConnector mqttConnector, String deviceUUID,
             MerossDeviceHandlerCallback callback) {
+        this.mqttMessageBuilder = mqttConnector.getMqttMessageBuilder();
         this.deviceUUID = deviceUUID;
-        this.deviceRequestTopic = MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID);
+        this.deviceRequestTopic = mqttMessageBuilder.buildDeviceRequestTopic(deviceUUID);
         this.callback = callback;
         this.httpClient = httpClient;
         this.mqttConnector = mqttConnector;
@@ -187,7 +189,7 @@ public class MerossManager implements MqttMessageSubscriber {
     }
 
     private CompletableFuture<Boolean> getSystemAll() throws MqttException, InterruptedException {
-        byte[] message = MqttMessageBuilder.buildMqttMessage("GET", MerossEnum.Namespace.SYSTEM_ALL.value(), deviceUUID,
+        byte[] message = mqttMessageBuilder.buildMqttMessage("GET", MerossEnum.Namespace.SYSTEM_ALL.value(), deviceUUID,
                 Collections.emptyMap());
         CompletableFuture<Boolean> ipInitialized = new CompletableFuture<Boolean>();
         publishMessage(deviceRequestTopic, message);
@@ -201,7 +203,7 @@ public class MerossManager implements MqttMessageSubscriber {
     }
 
     private void getAbilities() throws MqttException, InterruptedException {
-        byte[] message = MqttMessageBuilder.buildMqttMessage("GET", MerossEnum.Namespace.SYSTEM_ABILITY.value(),
+        byte[] message = mqttMessageBuilder.buildMqttMessage("GET", MerossEnum.Namespace.SYSTEM_ABILITY.value(),
                 deviceUUID, Collections.emptyMap());
         publishMessage(deviceRequestTopic, message);
     }
@@ -225,7 +227,7 @@ public class MerossManager implements MqttMessageSubscriber {
         }
 
         MerossCommand command = modeFactory.commandMode(commandMode, deviceChannel);
-        byte[] commandMessage = command.command(deviceUUID);
+        byte[] commandMessage = command.command(mqttMessageBuilder, deviceUUID);
 
         publishMessage(deviceRequestTopic, commandMessage);
     }
@@ -246,12 +248,12 @@ public class MerossManager implements MqttMessageSubscriber {
     }
 
     private void getState(String ability) throws MqttException, InterruptedException {
-        byte[] message = MqttMessageBuilder.buildMqttMessage("GET", ability, deviceUUID, Collections.emptyMap());
+        byte[] message = mqttMessageBuilder.buildMqttMessage("GET", ability, deviceUUID, Collections.emptyMap());
         publishMessage(deviceRequestTopic, message);
     }
 
     private void getStateLocal(String ability) throws IOException {
-        byte[] message = MqttMessageBuilder.buildMqttMessage("GET", ability, deviceUUID, Collections.emptyMap());
+        byte[] message = mqttMessageBuilder.buildMqttMessage("GET", ability, deviceUUID, Collections.emptyMap());
         publishMessageLocal(deviceRequestTopic, message);
     }
 

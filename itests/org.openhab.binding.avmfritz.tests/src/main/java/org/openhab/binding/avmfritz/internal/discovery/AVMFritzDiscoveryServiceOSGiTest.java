@@ -31,7 +31,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.dto.DeviceListModel;
@@ -45,6 +44,7 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.SameThreadExecutorService;
 
 /**
  * Tests for {@link AVMFritzDiscoveryService}.
@@ -53,7 +53,6 @@ import org.openhab.core.thing.ThingUID;
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
  */
 @NonNullByDefault
-@Disabled("Often blocks indefinitely, see: https://github.com/openhab/openhab-addons/issues/16536")
 public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTest {
 
     private static final ThingUID BRIGE_THING_ID = new ThingUID("avmfritz:fritzbox:1");
@@ -83,7 +82,8 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
     @BeforeEach
     public void setUp() {
         super.setUp();
-        discovery = new AVMFritzDiscoveryService(mock(LocaleProvider.class), mock(TranslationProvider.class));
+        discovery = new AVMFritzDiscoveryService(new SameThreadExecutorService(), mock(LocaleProvider.class),
+                mock(TranslationProvider.class));
         discovery.setThingHandler(bridgeHandler);
         discovery.addDiscoveryListener(listener);
     }

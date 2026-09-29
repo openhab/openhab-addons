@@ -14,6 +14,7 @@ package org.openhab.binding.homematic.internal.communicator.virtual;
 
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIRTUAL_DATAPOINT_NAME_SIGNAL_STRENGTH;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -26,6 +27,7 @@ import org.openhab.binding.homematic.internal.model.HmValueType;
  * @author Gerhard Riegler - Initial contribution
  */
 
+@NonNullByDefault
 public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointHandler {
     private static final int RSSI_START = 40;
     private static final int RSSI_STEP = 25;
@@ -39,7 +41,10 @@ public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointH
     @Override
     public void initialize(HmDevice device) {
         if (isWirelessDevice(device)) {
-            addDatapoint(device, 0, getName(), HmValueType.INTEGER, getRssiValue(device.getChannel(0)), true);
+            HmChannel channel = device.getChannel(0);
+            if (channel != null) {
+                addDatapoint(channel, getName(), HmValueType.INTEGER, getRssiValue(channel), true);
+            }
         }
     }
 
@@ -54,7 +59,9 @@ public class SignalStrengthVirtualDatapointHandler extends RssiVirtualDatapointH
                     : RSSI_UNITS - ((strength - RSSI_START) / RSSI_STEP);
 
             HmDatapoint vdpRssi = getVirtualDatapoint(channel);
-            vdpRssi.setValue(strength);
+            if (vdpRssi != null) {
+                vdpRssi.setValue(strength);
+            }
         }
     }
 }

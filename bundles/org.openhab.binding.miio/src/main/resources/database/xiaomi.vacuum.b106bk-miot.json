@@ -1,0 +1,1105 @@
+{
+	"deviceMapping": {
+		"id": [
+			"xiaomi.vacuum.b106bk"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Robot Cleaner - Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "vacuum-start-sweep",
+							"label": "Start Cleaning"
+						},
+						{
+							"value": "vacuum-stop-sweeping",
+							"label": "Stop Cleaning"
+						},
+						{
+							"value": "vacuum-start-only-sweep",
+							"label": "Start Vacuuming Only"
+						},
+						{
+							"value": "vacuum-start-sweep-mop",
+							"label": "Start Vacuuming And Mopping"
+						},
+						{
+							"value": "vacuum-start-mop",
+							"label": "Start Mopping Only"
+						},
+						{
+							"value": "battery-start-charge",
+							"label": "Go Charging"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-stop-sweeping"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-only-sweep"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-sweep-mop"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 6,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "vacuum-start-mop"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 3,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "battery-start-charge"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Start Cleaning\",\"vacuum-stop-sweeping\"\u003d\"Stop Cleaning\",\"vacuum-start-only-sweep\"\u003d\"Start Vacuuming Only\",\"vacuum-start-sweep-mop\"\u003d\"Start Vacuuming And Mopping\",\"vacuum-start-mop\"\u003d\"Start Mopping Only\",\"battery-start-charge\"\u003d\"Go Charging\"]`"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Robot Cleaner - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Sleep"
+						},
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Paused"
+						},
+						{
+							"value": "3",
+							"label": "Go Charging"
+						},
+						{
+							"value": "4",
+							"label": "Charging"
+						},
+						{
+							"value": "5",
+							"label": "Sweeping"
+						},
+						{
+							"value": "6",
+							"label": "Mopping"
+						},
+						{
+							"value": "7",
+							"label": "Sweeping and Mopping"
+						},
+						{
+							"value": "8",
+							"label": "Upgrade"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sleep\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Go Charging\",\"4\"\u003d\"Charging\",\"5\"\u003d\"Sweeping\",\"6\"\u003d\"Mopping\",\"7\"\u003d\"Sweeping and Mopping\",\"8\"\u003d\"Upgrade\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Robot Cleaner - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 3000,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Robot Cleaner - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Sweep"
+						},
+						{
+							"value": "1",
+							"label": "Sweep And Mop"
+						},
+						{
+							"value": "2",
+							"label": "Mop"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "cleaningrobot",
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sweep\",\"1\"\u003d\"Sweep And Mop\",\"2\"\u003d\"Mop\"]`"
+			},
+			{
+				"property": "sweep-type",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Robot Cleaner - Sweep Type",
+				"channel": "sweep_type",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Global"
+						},
+						{
+							"value": "1",
+							"label": "Mop"
+						},
+						{
+							"value": "2",
+							"label": "Edge"
+						},
+						{
+							"value": "3",
+							"label": "Area"
+						},
+						{
+							"value": "4",
+							"label": "Point"
+						},
+						{
+							"value": "5",
+							"label": "Remote Control"
+						},
+						{
+							"value": "6",
+							"label": "Explore"
+						},
+						{
+							"value": "7",
+							"label": "Room"
+						},
+						{
+							"value": "8",
+							"label": "Floor Type"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Status",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Global\",\"1\"\u003d\"Mop\",\"2\"\u003d\"Edge\",\"3\"\u003d\"Area\",\"4\"\u003d\"Point\",\"5\"\u003d\"Remote Control\",\"6\"\u003d\"Explore\",\"7\"\u003d\"Room\",\"8\"\u003d\"Floor Type\"]`"
+			},
+			{
+				"property": "battery-level",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Battery - Battery Level",
+				"channel": "battery_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "battery",
+				"tags": [
+					"Measurement",
+					"StateOfCharge"
+				]
+			},
+			{
+				"property": "alarm",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Alarm - Locate",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "volume",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Alarm - Volume",
+				"channel": "volume",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 10,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Setpoint",
+					"SoundVolume"
+				]
+			},
+			{
+				"property": "repeat-state",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Sweep - Clean Twice",
+				"channel": "repeat_state",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "door-state",
+				"siid": 7,
+				"piid": 3,
+				"friendlyName": "Sweep - Installed Box",
+				"channel": "door_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Dust Box"
+						},
+						{
+							"value": "2",
+							"label": "Water Box"
+						},
+						{
+							"value": "3",
+							"label": "2-in-1 Box"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Dust Box\",\"2\"\u003d\"Water Box\",\"3\"\u003d\"2-in-1 Box\"]`"
+			},
+			{
+				"property": "cloth-state",
+				"siid": 7,
+				"piid": 4,
+				"friendlyName": "Sweep - Mop Attached",
+				"channel": "cloth_state",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "suction-state",
+				"siid": 7,
+				"piid": 5,
+				"friendlyName": "Sweep - Suction Level",
+				"channel": "suction_state",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Silent"
+						},
+						{
+							"value": "1",
+							"label": "Standard"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "Turbo"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "fan",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Silent\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Turbo\"]`"
+			},
+			{
+				"property": "water-state",
+				"siid": 7,
+				"piid": 6,
+				"friendlyName": "Sweep - Water Level",
+				"channel": "water_state",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Low"
+						},
+						{
+							"value": "1",
+							"label": "Medium"
+						},
+						{
+							"value": "2",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "water",
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Low\",\"1\"\u003d\"Medium\",\"2\"\u003d\"High\"]`"
+			},
+			{
+				"property": "mop-route",
+				"siid": 7,
+				"piid": 7,
+				"friendlyName": "Sweep - Mop Route",
+				"channel": "mop_route",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "S-Shape"
+						},
+						{
+							"value": "1",
+							"label": "Y-Shape"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"S-Shape\",\"1\"\u003d\"Y-Shape\"]`"
+			},
+			{
+				"property": "side-brush-life",
+				"siid": 7,
+				"piid": 8,
+				"friendlyName": "Sweep - Side Brush Life",
+				"channel": "side_brush_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "side-brush-hours",
+				"siid": 7,
+				"piid": 9,
+				"friendlyName": "Sweep - Side Brush Time Left",
+				"channel": "side_brush_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "main-brush-life",
+				"siid": 7,
+				"piid": 10,
+				"friendlyName": "Sweep - Main Brush Life",
+				"channel": "main_brush_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "main-brush-hours",
+				"siid": 7,
+				"piid": 11,
+				"friendlyName": "Sweep - Main Brush Time Left",
+				"channel": "main_brush_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 360,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "hypa-life",
+				"siid": 7,
+				"piid": 12,
+				"friendlyName": "Sweep - Filter Life",
+				"channel": "hypa_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "hypa-hours",
+				"siid": 7,
+				"piid": 13,
+				"friendlyName": "Sweep - Filter Time Left",
+				"channel": "hypa_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "mop-life",
+				"siid": 7,
+				"piid": 14,
+				"friendlyName": "Sweep - Mop Life",
+				"channel": "mop_life",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Measurement",
+					"Level"
+				]
+			},
+			{
+				"property": "mop-hours",
+				"siid": 7,
+				"piid": 15,
+				"friendlyName": "Sweep - Mop Time Left",
+				"channel": "mop_hours",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 180,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "direction",
+				"siid": 7,
+				"piid": 16,
+				"friendlyName": "Sweep - Remote Control Direction",
+				"channel": "direction",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Forward"
+						},
+						{
+							"value": "2",
+							"label": "Left"
+						},
+						{
+							"value": "3",
+							"label": "Right"
+						},
+						{
+							"value": "4",
+							"label": "Back"
+						},
+						{
+							"value": "5",
+							"label": "Stop"
+						},
+						{
+							"value": "10",
+							"label": "Exit"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Forward\",\"2\"\u003d\"Left\",\"3\"\u003d\"Right\",\"4\"\u003d\"Back\",\"5\"\u003d\"Stop\",\"10\"\u003d\"Exit\"]`"
+			},
+			{
+				"property": "cleaning-time",
+				"siid": 7,
+				"piid": 22,
+				"friendlyName": "Sweep - Cleaning Time",
+				"channel": "cleaning_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 360,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Measurement",
+					"Duration"
+				]
+			},
+			{
+				"property": "cleaning-area",
+				"siid": 7,
+				"piid": 23,
+				"friendlyName": "Sweep - Cleaning Area",
+				"channel": "cleaning_area",
+				"type": "Number:Area",
+				"unit": "square_meter",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1200,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "cleaningrobot",
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "dirt-recognize",
+				"siid": 7,
+				"piid": 35,
+				"friendlyName": "Sweep - Dirt Detection",
+				"channel": "dirt_recognize",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "pet-recognize",
+				"siid": 7,
+				"piid": 36,
+				"friendlyName": "Sweep - Pet Mode",
+				"channel": "pet_recognize",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "ai-recognize",
+				"siid": 7,
+				"piid": 42,
+				"friendlyName": "Sweep - AI Obstacle Recognition",
+				"channel": "ai_recognize",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "carpet-booster",
+				"siid": 7,
+				"piid": 44,
+				"friendlyName": "Sweep - Carpet Boost",
+				"channel": "carpet_booster",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "carpet-avoid",
+				"siid": 7,
+				"piid": 47,
+				"friendlyName": "Sweep - Carpet Avoidance",
+				"channel": "carpet_avoid",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "tank-shake",
+				"siid": 7,
+				"piid": 48,
+				"friendlyName": "Sweep - Mop Vibration",
+				"channel": "tank_shake",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "shake-shift",
+				"siid": 7,
+				"piid": 50,
+				"friendlyName": "Sweep - Mop Vibration Level",
+				"channel": "shake_shift",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Low"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control",
+					"Level"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
+			},
+			{
+				"property": "build-map",
+				"siid": 10,
+				"piid": 14,
+				"friendlyName": "Map - Mapping Status",
+				"channel": "build_map",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Mapping"
+						},
+						{
+							"value": "2",
+							"label": "Mapping While Cleaning"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Mapping\",\"2\"\u003d\"Mapping While Cleaning\"]`"
+			},
+			{
+				"property": "dnd-enable",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "Do Not Disturb - Enabled",
+				"channel": "dnd_enable",
+				"type": "Switch",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status",
+					"Enabled"
+				]
+			},
+			{
+				"property": "dnd-start-hour",
+				"siid": 12,
+				"piid": 2,
+				"friendlyName": "Do Not Disturb - Start Hour",
+				"channel": "dnd_start_hour",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "dnd-start-minute",
+				"siid": 12,
+				"piid": 3,
+				"friendlyName": "Do Not Disturb - Start Minute",
+				"channel": "dnd_start_minute",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "dnd-end-hour",
+				"siid": 12,
+				"piid": 4,
+				"friendlyName": "Do Not Disturb - End Hour",
+				"channel": "dnd_end_hour",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 23,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "dnd-end-minute",
+				"siid": 12,
+				"piid": 5,
+				"friendlyName": "Do Not Disturb - End Minute",
+				"channel": "dnd_end_minute",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 59,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			}
+		],
+		"readmeComment": "Example command for room cleaning `xiaomi_robot_execute.sendCommand(\u0027action{\"siid\":7,\"aiid\":3,\"in\":[{\"piid\":24,\"value\":\"11,12,etc room ids\"},{\"piid\":25,\"value\":0},{\"piid\":26,\"value\":1}]}\u0027)`",
+		"experimental": false
+	}
+}

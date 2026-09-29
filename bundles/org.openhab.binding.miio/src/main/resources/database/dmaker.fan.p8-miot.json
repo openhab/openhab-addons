@@ -89,7 +89,7 @@
 				],
 				"category": "fan",
 				"tags": [
-					"SetPoint"
+					"Setpoint"
 				],
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Level1\",\"2\"\u003d\"Level2\",\"3\"\u003d\"Level3\"]`"
 			},

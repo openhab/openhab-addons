@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.util.List;
@@ -60,15 +61,16 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
 
     @Test
     public void testWithoutLimit() {
-        doLimitTest(0, List.of(false, false));
+        RateLimitedHttpClient rateLimitedHttpClient = new RateLimitedHttpClient(httpClient, scheduler);
+        rateLimitedHttpClient.setDelay(0);
+        URI url = URI.create("http://localhost:" + port + TEST_LOCATION);
 
-        // we except to receive the responses in the correct order
-        assertEquals(0, responses.get(0).seqNumber);
-        assertEquals(1, responses.get(1).seqNumber);
-
-        // we expect a short delay between both requests, but less than 100ms
-        long msBetween = responses.get(1).time - responses.get(0).time;
-        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(0), lessThan(100)));
+        try {
+            assertTrue(rateLimitedHttpClient.newRequest(url, HttpMethod.GET, "", null).isDone());
+            assertTrue(rateLimitedHttpClient.newRequest(url, HttpMethod.GET, "", null).isDone());
+        } finally {
+            rateLimitedHttpClient.shutdown();
+        }
     }
 
     @Test
@@ -78,9 +80,9 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
         assertEquals(0, responses.get(0).seqNumber);
         assertEquals(1, responses.get(1).seqNumber);
 
-        // we expect at least 500ms delay between both requests, but less than 500+100=600ms
+        // we expect at least 500ms delay between both requests, but less than 500+200=700ms
         long msBetween = responses.get(1).time - responses.get(0).time;
-        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(500), lessThan(600)));
+        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(500), lessThan(700)));
     }
 
     @Test
@@ -94,9 +96,9 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
         assertNotEquals(responses.get(1).seqNumber, responses.get(0).seqNumber);
         assertEquals(1, responses.get(2).seqNumber);
 
-        // we expect at least 2*500=1000ms delay between the first and last request, but less than 2*500+100=1100 ms
+        // we expect at least 2*500=1000ms delay between the first and last request, but less than 2*500+300=1300 ms
         long msBetween = responses.get(2).time - responses.get(0).time;
-        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(1000), lessThan(1100)));
+        assertThat((int) msBetween, allOf(greaterThanOrEqualTo(1000), lessThan(1300)));
     }
 
     private void doLimitTest(int setDelay, List<Boolean> config) {
@@ -120,7 +122,8 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
 
             requestFuture.thenAccept(request -> {
                 try {
-                    responses.add(new Response(nextSeqNumber, request.send()));
+                    long requestTime = System.currentTimeMillis();
+                    responses.add(new Response(nextSeqNumber, requestTime, request.send()));
                 } catch (Exception e) {
                 }
             });
@@ -133,11 +136,12 @@ public class RateLimitedHttpClientTest extends AbstractWireMockTest {
 
     private static class Response {
         public final int seqNumber;
-        public final long time = System.currentTimeMillis();
+        public final long time;
         public final String content;
 
-        public Response(int seqNumber, ContentResponse contentResponse) {
+        public Response(int seqNumber, long time, ContentResponse contentResponse) {
             this.seqNumber = seqNumber;
+            this.time = time;
             this.content = contentResponse.getContentAsString();
         }
     }

@@ -34,7 +34,7 @@ import org.openhab.binding.fineoffsetweatherstation.internal.handler.ThingStatus
  * @author Andreas Berger - Initial contribution
  */
 @NonNullByDefault
-public class ELVGatewayQueryService extends GatewayQueryService {
+public class ELVGatewayQueryService extends TcpGatewayQueryService {
 
     private final FineOffsetDataParser fineOffsetDataParser;
 
@@ -67,14 +67,14 @@ public class ELVGatewayQueryService extends GatewayQueryService {
     }
 
     @Override
-    public List<MeasuredValue> getMeasuredValues() {
+    public @Nullable List<MeasuredValue> getMeasuredValues() {
         Command command = Command.CMD_WS980_LIVEDATA;
         // since this request has 2 checksums we shortcut it here and provide the concrete payload directly
         byte[] payload = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0x0b, (byte) 0x00, (byte) 0x06, (byte) 0x04,
                 (byte) 0x04, (byte) 0x19 };
         byte[] data = executeCommand(command.name(), payload, command::isResponseValid);
         if (data == null) {
-            return Collections.emptyList();
+            return null;
         }
         DebugDetails debugDetails = new DebugDetails(data, Command.CMD_WS980_LIVEDATA, Protocol.ELV);
         List<MeasuredValue> measuredValues = fineOffsetDataParser.getMeasuredValues(data, debugDetails);

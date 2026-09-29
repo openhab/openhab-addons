@@ -63,7 +63,7 @@ public abstract class AbstractDishWasherCapabilityFactory extends AbstractCapabi
         Map<String, CourseDefinition> convertedAllCourses = new HashMap<>();
         // change the Key to the reverse MapCourses coming from LG API
         BiConsumer<Map<String, CourseDefinition>, JsonNode> convertCoursesRules = (courseMap, node) -> {
-            node.fields().forEachRemaining(e -> {
+            node.properties().forEach(e -> {
                 CourseDefinition df = courseMap.get(e.getKey());
                 if (df != null) {
                     convertedAllCourses.put(e.getValue().asText(), df);

@@ -36,6 +36,7 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
     public PicoKeypadHandler(Thing thing) {
         super(thing);
         kp = new KeypadConfigPico();
+        triggerChannelTypeId = "picoButtonTrigger"; // Picos only report press and release
     }
 
     @Override

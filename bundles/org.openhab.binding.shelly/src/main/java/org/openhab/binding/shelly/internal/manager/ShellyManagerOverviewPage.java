@@ -29,15 +29,14 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
-import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -185,7 +184,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                         for (int i = versions.size() - 1; i >= 0; i--) {
                             FwArchEntry e = versions.get(i);
                             String version = getString(e.version);
-                            ShellyVersionDTO v = new ShellyVersionDTO();
+                            ShellyVersionComparator v = new ShellyVersionComparator();
                             if (!version.equalsIgnoreCase(pVersion) && !version.equalsIgnoreCase(bVersion)
                                     && (v.compare(version, SHELLY_API_MIN_FWCOIOT) >= 0)
                                     || version.contains("master")) {
@@ -248,7 +247,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                 return false;
             case FILTER_UPDATE:
                 // return handler.getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE) == OnOffType.ON;
-                return getBool(profile.status.hasUpdate);
+                return getBool(profile.status.update.hasUpdate);
             case FILTER_UNPROTECTED:
                 if (profile.device.auth != null) {
                     return !profile.device.auth;
@@ -260,11 +259,10 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
     }
 
     private Map<String, String> getStatusWarnings(ShellyManagerInterface handler) {
-        Thing thing = handler.getThing();
         ThingStatus status = handler.getThing().getStatus();
         ShellyDeviceStats stats = handler.getStats();
         ShellyDeviceProfile profile = handler.getProfile();
-        ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
+        ShellyApiConfiguration config = handler.getApiConfig();
         TreeMap<String, String> result = new TreeMap<>();
 
         if (status != ThingStatus.ONLINE && status != ThingStatus.UNKNOWN) {
@@ -306,7 +304,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             }
         }
         if (profile.alwaysOn && (status == ThingStatus.ONLINE)) {
-            if (config.eventsCoIoT && profile.settings.coiot != null) {
+            if (config.getEnableCoIOT() && profile.settings.coiot != null) {
                 if (profile.settings.coiot.enabled != null && !profile.settings.coiot.enabled) {
                     result.put("CoIoT Status", "COIOT_DISABLED");
                 } else {

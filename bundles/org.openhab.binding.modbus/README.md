@@ -62,7 +62,7 @@ This binding supports 4 different things types
 
 Typically one defines either `tcp` or `serial` bridge, depending on the variant of Modbus slave.
 For each Modbus read request, a `poller` is defined.
-Finally, one ore more `data` things are introduced to extract relevant numbers from the raw Modbus data.
+Finally, one or more `data` things are introduced to extract relevant numbers from the raw Modbus data.
 For write-only communication, `data` things can be introduced directly as children of `tcp` or `serial` bridges.
 
 ## Binding Configuration
@@ -120,12 +120,13 @@ Advanced parameters
 | `reconnectAfterMillis`          |          | integer | `0`                | The connection is kept open at least the time specified here. Value of zero means that connection is disconnected after every MODBUS transaction. In milliseconds.                            |
 | `connectTimeoutMillis`          |          | integer | `10000`            | The maximum time that is waited when establishing the connection. Value of zero means that system/OS default is respected. In milliseconds.                                                   |
 | `enableDiscovery`               |          | boolean | false              | Enable auto-discovery feature. Effective only if a supporting extension has been installed.                                                                                                   |
+| `receiveTimeoutMillis`          |          | integer | `3000`             | Maximum time to wait for data to be received, in milliseconds. A value of zero disables the timeout.                                                                                          |
 
 **Note:** Advanced parameters must be equal for all `tcp` things sharing the same `host` and `port`.
 
 The advanced parameters have conservative defaults, meaning that they should work for most users.
 In some cases when extreme performance is required (e.g. poll period below 10 ms), one might want to decrease the delay parameters, especially `timeBetweenTransactionsMillis`.
-Similarly, with some slower devices on might need to increase the values.
+Similarly, with some slower devices one might need to increase the values.
 
 ### `serial` Thing
 
@@ -137,10 +138,10 @@ Basic parameters
 |-----------|---------|----------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|
 | port      | text    | ✓        |                    | Serial port to use, for example `"/dev/ttyS0"` or `"COM1"`                                                                                                                                                 |   |
 | id        | integer |          | `1`                | Slave id. Also known as station address or unit identifier. See [Wikipedia](https://en.wikipedia.org/wiki/Modbus) and [simplymodbus](https://www.simplymodbus.ca/index.html) articles for more information |   |
-| baud      | integer | ✓        |                    | Baud of the connection. Valid values are: `75`, `110`, `300`, `1200`, `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`.                                                                         |   |
-| stopBits  | text    | ✓        |                    | Stop bits. Valid values are: `"1.0"`, `"1.5"`, `"2.0"`.                                                                                                                                                    |   |
-| parity    | text    | ✓        |                    | Parity. Valid values are: `"none"`, `"even"`, `"odd"`.                                                                                                                                                     |   |
-| dataBits  | integer | ✓        |                    | Data bits. Valid values are: `5`, `6`, `7` and `8`.                                                                                                                                                        |   |
+| baud      | integer |          | `9600`             | Baud of the connection. Valid values are: `75`, `110`, `300`, `1200`, `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`.                                                                         |   |
+| stopBits  | text    |          | `"1.0"`            | Stop bits. Valid values are: `"1.0"`, `"1.5"`, `"2.0"`.                                                                                                                                                    |   |
+| parity    | text    |          | `"none"`           | Parity. Valid values are: `"none"`, `"even"`, `"odd"`.                                                                                                                                                     |   |
+| dataBits  | integer |          | `8`                | Data bits. Valid values are: `5`, `6`, `7` and `8`.                                                                                                                                                        |   |
 | encoding  | text    |          | `"rtu"`            | Encoding. Valid values are: `"ascii"`, `"rtu"`, `"bin"`.                                                                                                                                                   |   |
 | echo      | boolean |          | `false`            | Flag for setting the RS485 echo mode. This controls whether we should try to read back whatever we send on the line, before reading the response. Valid values are: `true`, `false`.                       |   |
 
@@ -199,7 +200,7 @@ You must give each of your data Things a reference (thing ID) that is unique for
 | `readValueType`                             | text    |          | (empty)            | How data is read from modbus. Use empty for write-only things.<br /><br />Bit value type must be used with coils and discrete inputs. With registers all value types are applicable. Valid values are: `"int64"`, `"int64_swap"`, `"uint64"`, `"uint64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"uint32"`, `"uint32_swap"`, `"int16"`, `"uint16"`, `"int8"`, `"uint8"`, or `"bit"`. See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                               |
 | `readStart`                                 | text    |          | (empty)            | Start address to start reading the value. Use empty for write-only things. <br /><br />Input as zero-based index number, e.g. in place of `400001` (first holding register), use the address `"0"`.  Must be between (poller start) and (poller start + poller length - 1) (inclusive).<br /><br />With registers and value type less than 16 bits, you must use `"X.Y"` format where `Y` specifies the sub-element to read from the 16 bit register:<ul> <li>For example, `"3.1"` would mean pick second bit from register index `3` with bit value type. </li><li>With int8 valuetype, it would pick the high byte of register index `3`.</li></ul> |
 | `readTransform`                             | text    |          | `"default"`        | Transformation to apply to polled data, after it has been converted to number using `readValueType`. <br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.<br />Use `"SERVICENAME(ARG)"` or `"SERVICENAME:ARG"` to use transformation service `SERVICENAME` with argument `ARG`. <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled value is ignored. You can chain many transformations with ∩, for example `"SERVICE1(ARG1)∩SERVICE2(ARG2)"`.                                                             |
-| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"int64"`, `"int64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"int16"`. See also [Value types on read and write](#value-types-on-read-and-write). Value of `"bit"` can be used with registers as well when `writeStart` is of format `"X.Y"` (see below). See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                            |
+| `writeValueType`                            | text    |          | (empty)            | How data is written to modbus. Only applicable to registers. Valid values are: `"int64"`, `"int64_swap"`, `"uint64"`, `"uint64_swap"`, `"float32"`, `"float32_swap"`, `"int32"`, `"int32_swap"`, `"uint32"`, `"uint32_swap"`, `"int16"`, `"uint16"`. See also [Value types on read and write](#value-types-on-read-and-write). Value of `"bit"` can be used with registers as well when `writeStart` is of format `"X.Y"` (see below). See also [Value types on read and write](#value-types-on-read-and-write).                                                                                                                                                                                                            |
 | `writeStart`                                | text    |          | (empty)            | Start address of the first holding register or coil in the write. Use empty for read-only things. <br />Use zero based address, e.g. in place of `400001` (first holding register), use the address `"0"`. This address is passed to data frame as is. One can use `"X.Y"` to write individual bit `Y` of an holding `X` (analogous to `readStart`).                                                                                                                                                                                                                                                                                                  |
 | `writeType`                                 | text    |          | (empty)            | Type of data to write. Use empty for read-only things. Valid values: `"coil"` or `"holding"`.<br /><br /> Coil uses function code (FC) FC05 or FC15. Holding register uses FC06 or FC16. See `writeMultipleEvenWithSingleRegisterOrCoil` parameter.                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `writeTransform`                            | text    |          | `"default"`        | Transformation to apply to received commands.<br /><br />Use `"default"` to communicate that no transformation is done and value should be passed as is. <br />Use `"SERVICENAME(ARG)"` or `"SERVICENAME:ARG"` to use transformation service `SERVICENAME` with argument `ARG`. <br />Any other value than the above types will be interpreted as static text, in which case the actual content of the command value is ignored. You can chain many transformations with ∩, for example `"SERVICE1(ARG1)∩SERVICE2(ARG2)"`.                                                                                                                 |
@@ -354,6 +355,10 @@ The manufacturer of any modbus device may choose to use either notation, you may
 
 This section explains the detailed descriptions of different value types on read and write.
 Note that value types less than 16 bits are not supported on write to holding registers (see [poller Thing](#poller-thing) documentation for details).
+
+For reads, signed and unsigned integer value types interpret the same register contents differently.
+For writes, the corresponding signed and unsigned types use the same binary encoding: the numeric command is converted to the selected bit width, so, for example, `int16` and `uint16` produce the same register contents, as do `int32_swap` and `uint32_swap`.
+The separate signed and unsigned write options therefore do not represent different wire formats.
 
 See [Full examples](#full-examples) section for practical examples.
 
@@ -1004,7 +1009,7 @@ It is also possible to use `REFRESH` command to ask the binding to update more f
 import org.eclipse.xtext.xbase.lib.Procedures
 import org.openhab.core.types.RefreshType
 
-val Procedures$Procedure0 refreshData = [ |
+val Procedures$Procedure0 refreshData = [
     // Refresh SetTemperature. In fact, all data things in the same poller are refreshed
     SetTemperature.sendCommand(RefreshType.REFRESH)
     return null

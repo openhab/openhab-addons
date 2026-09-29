@@ -14,7 +14,6 @@ package org.openhab.binding.ahawastecollection.internal;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -82,7 +81,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
             return collectionDates;
         } catch (final IOException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return Collections.emptyMap();
+            return Map.of();
         }
     }
 

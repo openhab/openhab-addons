@@ -2,6 +2,10 @@
 
 This binding is used to control Roborock robot vacuum cleaner products implementing the Roborock protocol.
 
+Robots that use the v1.0 protocol are fully supported.
+The Q7/Q10 series are partially supported - some channels will be fixed in a future update.
+Local control on the Q7/Q10 is not (yet) supported.
+
 ## Supported Things
 
 The following things types are available:
@@ -81,6 +85,7 @@ When `communication=direct` is selected and a capability is cloud-only (for exam
 | Number               | status#state                      | Vacuum Status                              |
 | Switch               | status#map-status                 | Map Box Status                             |
 | Switch               | status#led-status                 | Led Box Status                             |
+| String               | status#current-room               | Current room name, resolved from the live map segment at the robot's position; while the robot is docked, the room of the charging dock |
 | String               | info#carpet-mode                  | Carpet Mode details                        |
 | String               | info#room-mapping                 | Room Mapping details                       |
 | String               | info#multi-maps-list              | Maps Listing details                       |
@@ -127,7 +132,7 @@ In case your vacuum does not support one of these commands, it will show "unsupp
 
 ```java
 Bridge roborock:account:account [ email="xxxx", twofa="xxxx" ] {
-    roborock:vacuum:QrevoS [ refresh=5, cloudRefreshInterval=300 ]
+    Thing vacuum QrevoS [ refresh=5, cloudRefreshInterval=300 ]
 }
 ```
 

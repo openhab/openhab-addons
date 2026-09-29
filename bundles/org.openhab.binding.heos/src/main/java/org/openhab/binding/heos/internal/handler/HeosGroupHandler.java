@@ -106,7 +106,7 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
     public synchronized void initialize() {
         super.initialize();
 
-        configuration = thing.getConfiguration().as(GroupConfiguration.class);
+        configuration = getConfigAs(GroupConfiguration.class);
 
         // Prevents that initialize() is called multiple times if group goes online
         blockInitialization = true;

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -40,4 +41,13 @@ public interface IParadoxCommunicator extends IParadoxInitialLoginCommunicator {
     void initializeData();
 
     MemoryMap getMemoryMap();
+
+    /**
+     * Pushes the supplied time to the panel clock via the EVO serial passthrough command.
+     *
+     * @param time the date/time to set on the panel; must include a valid time-zone so the correct wall-clock values
+     *            are
+     *            encoded
+     */
+    void syncTime(ZonedDateTime time);
 }

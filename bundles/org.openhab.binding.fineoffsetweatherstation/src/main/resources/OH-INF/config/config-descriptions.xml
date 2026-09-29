@@ -18,7 +18,16 @@
 		</parameter>
 		<parameter name="protocol" type="text" required="false">
 			<label>Protocol</label>
-			<description>The protocol to use for communicating with the gateway, valid values are: `DEFAULT` or `ELV`</description>
+			<description>The protocol to use for communicating with the gateway. `DEFAULT` and `ELV` use the TCP binary
+				protocol;
+				`HTTP_ECOWITT` uses the Ecowitt HTTP API (auto-selected during discovery when the gateway supports
+				it).</description>
+			<options>
+				<option value="DEFAULT">Default (TCP)</option>
+				<option value="ELV">ELV (TCP)</option>
+				<option value="HTTP_ECOWITT">Ecowitt HTTP API</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
 			<default>DEFAULT</default>
 		</parameter>
 		<parameter name="pollingInterval" type="integer" required="true">

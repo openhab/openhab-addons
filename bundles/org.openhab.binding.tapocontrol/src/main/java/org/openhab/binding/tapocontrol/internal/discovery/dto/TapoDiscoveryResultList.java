@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tapocontrol.internal.discovery.dto;
 
-import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.TapoUtils.compareValuesAgainstComparator;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,13 +35,13 @@ public class TapoDiscoveryResultList implements Iterable<TapoDiscoveryResult> {
     @Expose
     private List<TapoDiscoveryResult> deviceList = new ArrayList<>(0);
 
-    /* init new emty list */
+    /* init new empty list */
     public TapoDiscoveryResultList() {
     }
 
     /**
      * Add device to devicelist. Overwrite fields of device with new data if already exists and field has values
-     * 
+     *
      * @param result
      */
     public void addResult(TapoDiscoveryResult result) {
@@ -53,12 +53,14 @@ public class TapoDiscoveryResultList implements Iterable<TapoDiscoveryResult> {
             boolean factoryDefault = compareValuesAgainstComparator(old.factoryDefault(), result.factoryDefault(),
                     false);
             boolean isSupportIOT = compareValuesAgainstComparator(old.isSupportIOT(), result.isSupportIOT(), false);
-            TapoDiscoveryResult.EncryptionShema enctyptionShema = compareValuesAgainstComparator(old.encryptionShema(),
-                    result.encryptionShema(), new TapoDiscoveryResult.EncryptionShema(false, "", 0, 0));
+            boolean tpapPreferred = compareValuesAgainstComparator(old.tpapPreferred(), result.tpapPreferred(), false);
+            TapoDiscoveryResult.EncryptionSchema encryptionSchema = compareValuesAgainstComparator(
+                    old.encryptionSchema(), result.encryptionSchema(),
+                    new TapoDiscoveryResult.EncryptionSchema(false, "", 0, 0));
             int role = compareValuesAgainstComparator(old.role(), result.role(), 0);
             int status = compareValuesAgainstComparator(old.status(), result.status(), 0);
             String alias = compareValuesAgainstComparator(old.alias(), result.alias(), "");
-            String appServerUrl = compareValuesAgainstComparator(old.alias(), result.alias(), "");
+            String appServerUrl = compareValuesAgainstComparator(old.appServerUrl(), result.appServerUrl(), "");
             String deviceHwVer = compareValuesAgainstComparator(old.deviceHwVer(), result.deviceHwVer(), "");
             String deviceId = compareValuesAgainstComparator(old.deviceId(), result.deviceId(), "");
             String deviceMac = compareValuesAgainstComparator(old.deviceMac(), result.deviceMac(), "");
@@ -74,9 +76,9 @@ public class TapoDiscoveryResultList implements Iterable<TapoDiscoveryResult> {
 
             /* add new result */
             deviceList.remove(old);
-            deviceList.add(new TapoDiscoveryResult(factoryDefault, isSupportIOT, enctyptionShema, role, status, alias,
-                    appServerUrl, deviceHwVer, deviceId, deviceMac, deviceModel, deviceModel, deviceRegion, deviceType,
-                    fwId, fwVer, hwId, ip, isSameRegion, oemId));
+            deviceList.add(new TapoDiscoveryResult(factoryDefault, isSupportIOT, tpapPreferred, encryptionSchema, role,
+                    status, alias, appServerUrl, deviceHwVer, deviceId, deviceMac, deviceModel, deviceModel,
+                    deviceRegion, deviceType, fwId, fwVer, hwId, ip, isSameRegion, oemId));
         }
     }
 

@@ -67,6 +67,12 @@
 				<default></default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="maxParallelConnections" type="integer" required="false">
+				<label>Max Parallel Connections</label>
+				<description>The maximum number of parallel status requests allowed to the AVR.</description>
+				<default>4</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

@@ -6,6 +6,6 @@
 	<type>binding</type>
 	<name>SagerCaster Binding</name>
 	<description>The Sager Weathercaster is a scientific instrument for accurate prediction of the weather.</description>
-	<connection>local</connection>
+	<connection>none</connection>
 
 </addon:addon>

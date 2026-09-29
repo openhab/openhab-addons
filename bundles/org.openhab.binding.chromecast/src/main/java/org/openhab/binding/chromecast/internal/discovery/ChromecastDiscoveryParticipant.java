@@ -23,6 +23,7 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -54,7 +55,7 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
     private static final String PROPERTY_DEVICE_ID = "id";
     private static final String SERVICE_TYPE = "_googlecast._tcp.local.";
 
-    private boolean isAutoDiscoveryEnabled = true;
+    private volatile boolean isAutoDiscoveryEnabled = true;
 
     @Activate
     protected void activate(ComponentContext componentContext) {
@@ -68,11 +69,11 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     private void activateOrModifyService(ComponentContext componentContext) {
         Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
-        String autoDiscoveryPropertyValue = (String) properties
-                .get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
-        if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
-            isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
-        }
+        // The value is a String when set through runtime.cfg and a Boolean when set through the
+        // REST API, so let ConfigParser handle both, as AbstractDiscoveryService does.
+        isAutoDiscoveryEnabled = ConfigParser.valueAsOrElse(
+                properties.get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY), Boolean.class,
+                isAutoDiscoveryEnabled);
     }
 
     @Override

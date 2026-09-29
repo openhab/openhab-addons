@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="lutron:keypad">
+		<instruction-set targetVersion="1">
+			<update-channel id="button1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button4">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button5">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button6">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button7">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttontoplower">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttontopraise">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonbottomlower">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonbottomraise">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="lutron:ttkeypad">
+		<instruction-set targetVersion="1">
+			<update-channel id="button1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button4">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button5">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button6">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button7">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button8">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button9">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button10">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button11">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button12">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button13">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button14">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button15">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button16">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button17">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonlower1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonlower2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonlower3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonraise1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonraise2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonraise3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="lutron:intlkeypad">
+		<instruction-set targetVersion="1">
+			<update-channel id="button1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button4">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button5">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button6">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button7">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button8">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button9">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button10">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonlower">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonraise">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="lutron:palladiomkeypad">
+		<instruction-set targetVersion="1">
+			<update-channel id="button1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button4">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button5">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button6">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button7">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button8">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonlower1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonlower2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonraise1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonraise2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="lutron:pico">
+		<instruction-set targetVersion="1">
+			<update-channel id="button1">
+				<type>lutron:picoButtonTrigger</type>
+			</update-channel>
+			<update-channel id="button2">
+				<type>lutron:picoButtonTrigger</type>
+			</update-channel>
+			<update-channel id="button3">
+				<type>lutron:picoButtonTrigger</type>
+			</update-channel>
+			<update-channel id="button01">
+				<type>lutron:picoButtonTrigger</type>
+			</update-channel>
+			<update-channel id="button02">
+				<type>lutron:picoButtonTrigger</type>
+			</update-channel>
+			<update-channel id="button03">
+				<type>lutron:picoButtonTrigger</type>
+			</update-channel>
+			<update-channel id="button04">
+				<type>lutron:picoButtonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonlower">
+				<type>lutron:picoButtonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonraise">
+				<type>lutron:picoButtonTrigger</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="lutron:grafikeyekeypad">
+		<instruction-set targetVersion="1">
+			<update-channel id="button1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button4">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button5">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button10">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button11">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button12">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button20">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button21">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button22">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button30">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button31">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button32">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonlower1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonlower2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonlower3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonraise1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonraise2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="buttonraise3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="lutron:vcrx">
+		<instruction-set targetVersion="1">
+			<update-channel id="button1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button4">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button5">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button6">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="lutron:wci">
+		<instruction-set targetVersion="1">
+			<update-channel id="button1">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button2">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button3">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button4">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button5">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button6">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button7">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+			<update-channel id="button8">
+				<type>lutron:buttonTrigger</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

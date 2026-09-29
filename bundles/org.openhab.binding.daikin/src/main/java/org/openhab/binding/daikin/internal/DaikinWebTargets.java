@@ -265,6 +265,9 @@ public class DaikinWebTargets {
 
     private String executeUrl(String url, @Nullable Map<String, String> params)
             throws InterruptedException, TimeoutException, ExecutionException, DaikinCommunicationException {
+        if (httpClient == null) {
+            throw new DaikinCommunicationException("HttpClient is not initialized.");
+        }
         Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (uuid != null) {
             request.header("X-Daikin-uuid", uuid);

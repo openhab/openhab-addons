@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.ecoflow.internal.discovery;
 
-import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.*;
+import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.THING_TYPE_DELTA2;
+import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.THING_TYPE_DELTA2MAX;
+import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.THING_TYPE_POWERSTREAM;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ecoflow.internal.api.EcoflowApi;
 import org.openhab.binding.ecoflow.internal.api.EcoflowApiException;
 import org.openhab.binding.ecoflow.internal.api.dto.response.DeviceListResponseEntry;
@@ -48,7 +51,7 @@ public class EcoflowDeviceDiscoveryService extends AbstractThingHandlerDiscovery
     private final Logger logger = LoggerFactory.getLogger(EcoflowDeviceDiscoveryService.class);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
-    private Optional<EcoflowApi> api = Optional.empty();
+    private @Nullable EcoflowApi api = null;
     private final SchedulerTask onDemandScanTask = new SchedulerTask(scheduler, logger, "OnDemandScan",
             this::scanForDevices);
     private final SchedulerTask backgroundScanTask = new SchedulerTask(scheduler, logger, "BackgroundScan",
@@ -67,7 +70,7 @@ public class EcoflowDeviceDiscoveryService extends AbstractThingHandlerDiscovery
     @Override
     protected synchronized void startBackgroundDiscovery() {
         stopBackgroundDiscovery();
-        backgroundScanTask.scheduleRecurring(60);
+        backgroundScanTask.scheduleRecurring(1, TimeUnit.MINUTES, true);
     }
 
     @Override
@@ -76,7 +79,7 @@ public class EcoflowDeviceDiscoveryService extends AbstractThingHandlerDiscovery
     }
 
     public synchronized void startScanningWithApi(EcoflowApi api) {
-        this.api = Optional.of(api);
+        this.api = api;
         onDemandScanTask.cancel();
         startScan();
     }
@@ -95,32 +98,30 @@ public class EcoflowDeviceDiscoveryService extends AbstractThingHandlerDiscovery
     }
 
     private void scanForDevices() {
-        this.api.ifPresent(api -> {
-            Instant timestampOfLastScan = getTimestampOfLastScan();
-            try {
-                List<DeviceListResponseEntry> devices = api.getDeviceList();
-                if (devices != null) {
-                    logger.debug("Ecoflow discovery found {} devices", devices.size());
-                    for (DeviceListResponseEntry device : devices) {
-                        deviceDiscovered(device);
-                    }
-                    for (Thing thing : thingHandler.getThing().getThings()) {
-                        String serial = thing.getUID().getId();
-                        if (!devices.stream().anyMatch(d -> serial.equals(d.serialNumber))) {
-                            thingRemoved(thing.getUID());
-                        }
-                    }
-                } else {
-                    logger.debug("No devices available in Ecoflow API");
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            } catch (EcoflowApiException e) {
-                logger.debug("Could not retrieve devices from Ecoflow API", e);
-            } finally {
-                removeOlderResults(timestampOfLastScan);
+        final EcoflowApi api = this.api;
+        if (api == null) {
+            return;
+        }
+        Instant timestampOfLastScan = getTimestampOfLastScan();
+        try {
+            List<DeviceListResponseEntry> devices = api.getDeviceList();
+            logger.debug("Ecoflow discovery found {} devices", devices.size());
+            for (DeviceListResponseEntry device : devices) {
+                deviceDiscovered(device);
             }
-        });
+            for (Thing thing : thingHandler.getThing().getThings()) {
+                String serial = thing.getUID().getId();
+                if (!devices.stream().anyMatch(d -> serial.equals(d.serialNumber))) {
+                    thingRemoved(thing.getUID());
+                }
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (EcoflowApiException e) {
+            logger.debug("Could not retrieve devices from Ecoflow API", e);
+        } finally {
+            removeOlderResults(timestampOfLastScan);
+        }
     }
 
     private void deviceDiscovered(DeviceListResponseEntry device) {

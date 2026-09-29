@@ -84,8 +84,12 @@ public class ShellyApiResult {
         return httpCode == INTERNAL_SERVER_ERROR_500;
     }
 
-    public boolean isNotCalibrtated() {
-        return response.contains(SHELLY_APIERR_NOT_CALIBRATED);
+    /**
+     * Returns {@code true} when the device response indicates that a calibration run is required.
+     * Covers Gen1 rollers ("Not calibrated!") and Gen2 Pro Dimmers ("Output not calibrated!").
+     */
+    public boolean isNotCalibrated() {
+        return response.toLowerCase(Locale.ROOT).contains("not calibrated");
     }
 
     public ShellyApiResultBuilder modify() {

@@ -71,6 +71,11 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
     }
 
     @Override
+    public <T> T getConfigAs(Class<T> configurationClass) {
+        return super.getConfigAs(configurationClass);
+    }
+
+    @Override
     public void updateState(String channelID, State state) {
         super.updateState(channelID, state);
     }

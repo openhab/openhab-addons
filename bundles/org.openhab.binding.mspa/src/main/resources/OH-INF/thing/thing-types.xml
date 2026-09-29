@@ -106,7 +106,13 @@
 				<label>Lock Panel</label>
 				<description>Lock physical panel for inputs</description>
 			</channel>
+			<channel id="fault" typeId="fault">
+			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>deviceId</representation-property>
 

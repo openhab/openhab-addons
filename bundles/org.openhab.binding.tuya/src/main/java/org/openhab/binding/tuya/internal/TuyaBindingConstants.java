@@ -13,6 +13,7 @@
 package org.openhab.binding.tuya.internal;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -23,6 +24,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * used across the whole binding.
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Add gateway and sub-device thing types
  */
 @NonNullByDefault
 public class TuyaBindingConstants {
@@ -31,6 +33,12 @@ public class TuyaBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PROJECT = new ThingTypeUID(BINDING_ID, "project");
     public static final ThingTypeUID THING_TYPE_TUYA_DEVICE = new ThingTypeUID(BINDING_ID, "tuyaDevice");
+    public static final ThingTypeUID THING_TYPE_TUYA_GATEWAY = new ThingTypeUID(BINDING_ID, "tuyaGateway");
+    public static final ThingTypeUID THING_TYPE_TUYA_SUB_DEVICE = new ThingTypeUID(BINDING_ID, "tuyaSubDevice");
+
+    // Thing types whose channels are generated from a device schema
+    public static final Set<ThingTypeUID> DEVICE_THING_TYPES = Set.of(THING_TYPE_TUYA_DEVICE, THING_TYPE_TUYA_GATEWAY,
+            THING_TYPE_TUYA_SUB_DEVICE);
 
     public static final String PROPERTY_CATEGORY = "category";
 
@@ -44,6 +52,8 @@ public class TuyaBindingConstants {
     public static final String CONFIG_MAX = "max";
     public static final String CONFIG_PROTOCOL = "protocol";
     public static final String CONFIG_RANGE = "range";
+    public static final String CONFIG_SUB_DEVICE_ID = "subDeviceId";
+    public static final String CONFIG_RELOAD_SCHEMA = "reloadSchema";
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_IR_CODE = new ChannelTypeUID(BINDING_ID, "ir-code");
@@ -51,6 +61,10 @@ public class TuyaBindingConstants {
     public static final List<String> COLOUR_CHANNEL_CODES = List.of("colour_data");
     public static final List<String> DIMMER_CHANNEL_CODES = List.of("bright_value", "bright_value_1", "bright_value_2",
             "temp_value");
+
+    // The maximum length of time a connection to the device is maintained. After this we close
+    // and reconnect in an attempt to limit possible connection related, device-side memory leaks.
+    public static final int TCP_CONNECTION_MAX_LIFETIME = 86400; // Seconds
 
     // The heartbeat interval specifies the maximum amount of time that can pass without us
     // sending anything to a device. Once the heartbeat interval is reached we send a heartbeat
@@ -62,13 +76,26 @@ public class TuyaBindingConstants {
     // The amount of time a device has to respond to a message. If we don't see anything from
     // the device for this long after sending a message we consider the connection dead, close
     // it, and start trying to reconnect.
-    public static final int TCP_CONNECTION_MESSAGE_RESPONSE = 1; // Seconds
+    public static final int TCP_CONNECTION_MESSAGE_RESPONSE = 200; // Milliseconds
+
+    // How long a device has to answer the heartbeat sent after it refused DP_QUERY. A gateway busy relaying the
+    // traffic of its sub-devices can take considerably longer than TCP_CONNECTION_MESSAGE_RESPONSE to answer, and
+    // dropping the connection of a device that did reply, only slowly, costs more than waiting.
+    public static final int TCP_CONNECTION_PROBE_RESPONSE = 2000; // Milliseconds
+
+    // How long to wait before querying the status again after a device refused DP_QUERY. Devices that are not
+    // ready yet refuse DP_QUERY although they handle it, others never handle it. The interval doubles with every
+    // refusal up to TCP_CONNECTION_QUERY_RETRY_MAX. It must not be shorter than TCP_CONNECTION_PROBE_RESPONSE:
+    // the query is a message like any other, so sending it while the probe is still outstanding would replace the
+    // deadline the probe is waiting on with the much shorter TCP_CONNECTION_MESSAGE_RESPONSE.
+    public static final int TCP_CONNECTION_QUERY_RETRY_INITIAL = 2000; // Milliseconds
+    public static final int TCP_CONNECTION_QUERY_RETRY_MAX = 60000; // Milliseconds
 
     // How long to wait for a TCP session to connect before closing it and starting again. We do
     // not rely on TCP's own retry strategy because that varies between implementations so we
     // cannot know when the retry interval has become so great that it exceeds the amount of
     // time a battery device may be awake.
-    public static final int TCP_CONNECT_TIMEOUT = 1000; // Milliseconds
+    public static final int TCP_CONNECT_TIMEOUT = 500; // Milliseconds
 
     // How long to wait before attempting another connection after the previous closed or failed.
     // Note that if the previous attempt failed because the device was not reachable the interval
@@ -78,5 +105,19 @@ public class TuyaBindingConstants {
     // of TCP_CONNECT_TIMEOUT and TCP_CONNECT_RETRY_INTERVAL must therefore be small enough that at
     // least one, preferably two or three, connection attempts will be made during the time the
     // device is awake.
-    public static final int TCP_CONNECT_RETRY_INTERVAL = 1000; // Milliseconds
+    public static final int TCP_CONNECT_RETRY_INTERVAL = 50; // Milliseconds
+
+    // How long to wait before sending the initial query after connecting.
+    // We need to delay the initial query because some battery devices seem to ignore requests that
+    // come too soon and sometimes they claim DP_QUERY isn't supported when it really is. Perhaps the
+    // TCP stack is initialized before the API?
+    public static final int TCP_CONNECT_INITIAL_DELAY = 750; // Milliseconds
+
+    // How long to wait before attempting another connection after the first "Connection refused".
+    // When battery devices wake up their TCP can come online before the API server is started
+    // and even before the API backend is plugged in to the API server. Hammering battery devices
+    // (which tend to be especially slow) with connection attempts will just waste their CPU cycles
+    // and can mean they don't even come online until a second event has overwritten the first
+    // (especially a problem for contact sensors).
+    public static final int TCP_CONNECT_INITIAL_INTERVAL = 1000; // Milliseconds
 }

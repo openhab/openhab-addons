@@ -59,7 +59,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
 
     /**
      * This attribute shall be set to the revision number of the Data Model against which the Node is certified. The
-     * value of this attribute shall be one of the valid values listed in Section 7.1.1, “Revision History”.
+     * value of this attribute shall be one of the valid values listed in Section 7.1.1, "Revision History".
      */
     public Integer dataModelRevision; // 0 uint16 R V
     /**
@@ -89,8 +89,8 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * This attribute shall be an ISO 3166-1 alpha-2 code to represent the country, dependent territory, or special area
      * of geographic interest in which the Node is located at the time of the attribute being set. This attribute shall
      * be set during initial commissioning (unless already set) and may be updated by further reconfigurations. This
-     * attribute may affect some regulatory aspects of the Node’s operation, such as radio transmission power levels in
-     * given spectrum allocation bands if technologies where this is applicable are used. The Location’s region code
+     * attribute may affect some regulatory aspects of the Node's operation, such as radio transmission power levels in
+     * given spectrum allocation bands if technologies where this is applicable are used. The Location's region code
      * shall be interpreted in a case-insensitive manner. If the Node cannot understand the location code with which it
      * was configured, or the location code has not yet been configured, it shall configure itself in a region-agnostic
      * manner as determined by the vendor, avoiding region-specific assumptions as much as is practical. The special
@@ -111,7 +111,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     /**
      * This attribute shall contain the current version number for the software running on this Node. A larger value of
      * SoftwareVersion is newer than a lower value, from the perspective of software updates (see Section 11.20.3.3,
-     * “Availability of Software Images”). Nodes may query this field to determine the currently running version of
+     * "Availability of Software Images"). Nodes may query this field to determine the currently running version of
      * software on another given Node.
      */
     public Integer softwareVersion; // 9 uint32 R V
@@ -120,8 +120,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * version information may be conveyed to users. The maximum length of the SoftwareVersionString attribute is 64
      * bytes of UTF-8 characters. The contents SHOULD only use simple 7-bit ASCII alphanumeric and punctuation
      * characters, so as to simplify the conveyance of the value to a variety of cultures.
-     * Examples of version strings include &quot;1.0&quot;, &quot;1.2.3456&quot;, &quot;1.2-2&quot;,
-     * &quot;1.0b123&quot;, &quot;1.2_3&quot;.
+     * Examples of version strings include "1.0", "1.2.3456", "1.2-2", "1.0b123", "1.2_3".
      */
     public String softwareVersionString; // 10 string R V
     /**
@@ -158,7 +157,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     /**
      * This attribute shall allow a local Node configuration to be disabled. When this attribute is set to True the Node
      * shall disable the ability to configure the Node through an on-Node user interface. The value of the
-     * LocalConfigDisabled attribute shall NOT in any way modify, disable, or otherwise affect the user’s ability to
+     * LocalConfigDisabled attribute shall NOT in any way modify, disable, or otherwise affect the user's ability to
      * trigger a factory reset on the Node.
      */
     public Boolean localConfigDisabled; // 16 bool RW VM
@@ -177,10 +176,10 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * - it shall NOT be identical to the SerialNumber attribute
      * - it shall NOT be printed on the product or delivered with the product
      * The value does not need to be human readable, since it is intended for machine to machine (M2M) communication.
-     * &gt; [!NOTE]
-     * &gt; The conformance of the UniqueID attribute was optional in cluster revisions prior to revision 4.
-     * &gt; [!NOTE]
-     * &gt; This UniqueID attribute shall NOT be the same as the Persistent Unique ID which is used in the Rotating
+     * > [!NOTE]
+     * > NOTE: The conformance of the UniqueID attribute was optional in cluster revisions prior to revision 4.
+     * > [!NOTE]
+     * > NOTE: This UniqueID attribute shall NOT be the same as the Persistent Unique ID which is used in the Rotating
      * Device Identifier mechanism.
      */
     public String uniqueId; // 18 string R V
@@ -225,8 +224,8 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      */
     public Integer specificationVersion; // 21 uint32 R V
     /**
-     * Indicates the maximum number of elements in a single InvokeRequests list (see Section 8.8.2, “Invoke Request
-     * Action”) that the Node is able to process. Note that since this attribute may change over time, both increasing
+     * Indicates the maximum number of elements in a single InvokeRequests list (see Section 8.8.2, "Invoke Request
+     * Action") that the Node is able to process. Note that since this attribute may change over time, both increasing
      * and decreasing, as software versions change for a given Node, clients SHOULD take care not to assume forever
      * unchanging values and SHOULD NOT cache this value permanently at Commissioning time.
      * If the MaxPathsPerInvoke attribute is absent or zero, such as in Basic Information cluster revisions prior to
@@ -254,10 +253,10 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     /**
      * The Leave event SHOULD be generated by the bridge when it detects that the associated device has left the
      * non-Matter network.
-     * &gt; [!NOTE]
-     * &gt; The FabricIndex field has the X conformance, indicating it shall NOT be present. This event, in the context
-     * of Bridged Device Basic Information cluster, has no usable fields, but the original Basic Information cluster’s
-     * field definition is kept for completeness.
+     * > [!NOTE]
+     * > NOTE: The FabricIndex field has the X conformance, indicating it shall NOT be present. This event, in the
+     * context of Bridged Device Basic Information cluster, has no usable fields, but the original Basic Information
+     * cluster's field definition is kept for completeness.
      */
     public static class Leave {
         public String fabricIndex;
@@ -279,7 +278,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     }
 
     /**
-     * This structure provides a description of the product’s appearance.
+     * This structure provides a description of the product's appearance.
      */
     public static class ProductAppearanceStruct {
         /**
@@ -306,14 +305,14 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
         /**
          * This field shall indicate the actual minimum number of concurrent CASE sessions that are supported per
          * fabric.
-         * This value shall NOT be smaller than the required minimum indicated in Section 4.14.2.8, “Minimal Number of
-         * CASE Sessions”.
+         * This value shall NOT be smaller than the required minimum indicated in Section 4.14.2.8, "Minimal Number of
+         * CASE Sessions".
          */
         public Integer caseSessionsPerFabric; // uint16
         /**
          * This field shall indicate the actual minimum number of concurrent subscriptions supported per fabric.
-         * This value shall NOT be smaller than the required minimum indicated in Section 8.5.1, “Subscribe
-         * Transaction”.
+         * This value shall NOT be smaller than the required minimum indicated in Section 8.5.1, "Subscribe
+         * Transaction".
          */
         public Integer subscriptionsPerFabric; // uint16
 
@@ -454,12 +453,12 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * When the bridge detects that the bridged device goes into an active state, an ActiveChanged event shall be
      * generated.
      * In order to avoid unnecessary power consumption in the bridged device:
-     * - The server shall enter a &quot;pending active&quot; state for the associated device when the KeepActive command
-     * is received. The server &quot;pending active&quot; state shall expire after the amount of time defined by the
-     * TimeoutMs field, in milliseconds, if no subsequent KeepActive command is received. When a KeepActive command is
-     * received, the &quot;pending active&quot; state is set, the StayActiveDuration is updated to the greater of the
-     * new value and the previously stored value, and the TimeoutMs is updated to the greater of the new value and the
-     * remaining time until the prior &quot;pending active&quot; state expires.
+     * - The server shall enter a "pending active" state for the associated device when the KeepActive command is
+     * received. The server "pending active" state shall expire after the amount of time defined by the TimeoutMs field,
+     * in milliseconds, if no subsequent KeepActive command is received. When a KeepActive command is received, the
+     * "pending active" state is set, the StayActiveDuration is updated to the greater of the new value and the
+     * previously stored value, and the TimeoutMs is updated to the greater of the new value and the remaining time
+     * until the prior "pending active" state expires.
      * - The server shall only keep the bridged device active once for a request. (The server shall only consider the
      * operation performed if an associated ActiveChanged event was generated.)
      */

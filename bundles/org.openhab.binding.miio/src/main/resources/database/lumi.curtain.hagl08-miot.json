@@ -1,0 +1,385 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.curtain.hagl08"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Curtain - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\"]`"
+			},
+			{
+				"property": "motor-control",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Curtain - Motor Control",
+				"channel": "motor_control",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Pause"
+						},
+						{
+							"value": "1",
+							"label": "Open"
+						},
+						{
+							"value": "2",
+							"label": "Close"
+						},
+						{
+							"value": "3",
+							"label": "Toggle"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "blinds",
+				"tags": [
+					"Control",
+					"OpenState"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Open\",\"2\"\u003d\"Close\",\"3\"\u003d\"Toggle\"]`"
+			},
+			{
+				"property": "current-position",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Curtain - Current Position",
+				"channel": "current_position",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "blinds",
+				"tags": [
+					"Status",
+					"OpenLevel"
+				]
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Curtain - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Stopped"
+						},
+						{
+							"value": "1",
+							"label": "Opening"
+						},
+						{
+							"value": "2",
+							"label": "Closing"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "status",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Stopped\",\"1\"\u003d\"Opening\",\"2\"\u003d\"Closing\"]`"
+			},
+			{
+				"property": "target-position",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Curtain - Target Position",
+				"channel": "target_position",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "blinds",
+				"tags": [
+					"Control",
+					"OpenLevel"
+				]
+			},
+			{
+				"property": "manual-enabled",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Curtain Config - Manual Pull To Start",
+				"channel": "manual_enabled",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Disable"
+						},
+						{
+							"value": "1",
+							"label": "Enable"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]`"
+			},
+			{
+				"property": "polarity",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Curtain Config - Motor Direction",
+				"channel": "polarity",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Normal"
+						},
+						{
+							"value": "1",
+							"label": "Reversed"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Normal\",\"1\"\u003d\"Reversed\"]`"
+			},
+			{
+				"property": "pos-limit",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Curtain Config - Position Limit",
+				"channel": "pos_limit",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Unlimited"
+						},
+						{
+							"value": "1",
+							"label": "Limit"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Unlimited\",\"1\"\u003d\"Limit\"]`"
+			},
+			{
+				"property": "en-night-tip-light",
+				"siid": 4,
+				"piid": 4,
+				"friendlyName": "Curtain Config - Night Indicator Light",
+				"channel": "en_night_tip_light",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Disable"
+						},
+						{
+							"value": "1",
+							"label": "Enable"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "light",
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]`"
+			},
+			{
+				"property": "run-time",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "Curtain Config - Run Time",
+				"channel": "run_time",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 255,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				]
+			},
+			{
+				"property": "f-one-position",
+				"siid": 8,
+				"piid": 5,
+				"friendlyName": "Remote Button - F1 Preset Position",
+				"channel": "f_one_position",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "blinds",
+				"tags": [
+					"Setpoint",
+					"OpenLevel"
+				]
+			},
+			{
+				"property": "f-two-position",
+				"siid": 8,
+				"piid": 6,
+				"friendlyName": "Remote Button - F2 Preset Position",
+				"channel": "f_two_position",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "blinds",
+				"tags": [
+					"Setpoint",
+					"OpenLevel"
+				]
+			},
+			{
+				"property": "f-three-position",
+				"siid": 8,
+				"piid": 7,
+				"friendlyName": "Remote Button - F3 Preset Position",
+				"channel": "f_three_position",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "blinds",
+				"tags": [
+					"Setpoint",
+					"OpenLevel"
+				]
+			}
+		],
+		"experimental": false
+	}
+}

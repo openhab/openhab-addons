@@ -81,6 +81,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -187,6 +188,10 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
             itemChannelLinkProvider = getService(ManagedItemChannelLinkProvider.class);
             assertThat(itemChannelLinkProvider, is(notNullValue()));
         });
+
+        ItemChannelLinkRegistry itemChannelLinkRegistry = getService(ItemChannelLinkRegistry.class);
+        assertThat(itemChannelLinkRegistry, is(notNullValue()));
+        itemChannelLinkRegistry.waitForCompletedAsyncActivationTasks();
 
         waitForAssert(() -> {
             unitProvider = getService(UnitProvider.class);

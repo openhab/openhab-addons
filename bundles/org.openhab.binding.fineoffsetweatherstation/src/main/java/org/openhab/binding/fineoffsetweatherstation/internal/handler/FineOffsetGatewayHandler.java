@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -32,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetGatewayConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetSensorConfiguration;
 import org.openhab.binding.fineoffsetweatherstation.internal.discovery.FineOffsetGatewayDiscoveryService;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.Sensor;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.SensorGatewayBinding;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.MeasuredValue;
 import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.SensorDevice;
@@ -54,7 +56,6 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -71,6 +72,9 @@ import org.slf4j.LoggerFactory;
 public class FineOffsetGatewayHandler extends BaseBridgeHandler {
 
     private static final String PROPERTY_FREQUENCY = "frequency";
+    // {0} = the full ChannelUID of the equivalent channel on the sensor Thing
+    private static final String DEFAULT_DEPRECATION_NOTE_WITH_TARGET = "(deprecated — this value is now also available on the sensor Thing as channel: {0})";
+    private static final String DEFAULT_DEPRECATION_NOTE = "(deprecated — this value is now also available on the sensor Thing)";
 
     private final Logger logger = LoggerFactory.getLogger(FineOffsetGatewayHandler.class);
     private final Bundle bundle;
@@ -85,6 +89,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     private final ThingUID bridgeUID;
 
     private @Nullable Map<SensorGatewayBinding, SensorDevice> sensorDeviceMap;
+    private final DynamicChannelReconciler reconciler = new DynamicChannelReconciler(Set.of());
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> discoverJob;
     private boolean disposed;
@@ -111,6 +116,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         gatewayQueryService = config.protocol.getGatewayQueryService(config, this::updateStatus);
 
         updateStatus(ThingStatus.UNKNOWN);
+        reconciler.reset();
         fetchAndUpdateSensors();
         disposed = false;
         updateBridgeInfo();
@@ -155,26 +161,96 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         Collection<MeasuredValue> data = query(GatewayQueryService::getMeasuredValues);
         if (data == null) {
             getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            // Mirror the failure onto the sensor Things so their measurement channels do not keep stale state. Do not
+            // run the reconciler here: a poll failure must not advance the missing-value removal debounce.
+            for (Thing child : ((Bridge) thing).getThings()) {
+                if (child.getHandler() instanceof FineOffsetSensorHandler sensorHandler) {
+                    sensorHandler.markMeasuredValuesUndefined();
+                }
+            }
             return;
         }
 
-        List<Channel> channels = new ArrayList<>();
-        for (MeasuredValue measuredValue : data) {
-            @Nullable
-            Channel channel = thing.getChannel(measuredValue.getChannelId());
-            if (channel == null) {
-                channel = createChannel(measuredValue);
-                if (channel != null) {
-                    channels.add(channel);
-                }
-            } else {
-                State state = measuredValue.getState();
-                updateState(channel.getUID(), state);
+        // Capture the bridge reference before reconcile may replace thing via updateBridgeThing.
+        Bridge bridge = (Bridge) thing;
+        DynamicChannelReconciler.Plan plan = reconciler.reconcile(data, thing.getChannels(),
+                MeasuredValue::getChannelId, this::createChannel);
+        Map<String, Channel> refreshed = refreshDeprecationNotes(data, thing.getChannels());
+        if (plan.hasChannelChanges() || !refreshed.isEmpty()) {
+            List<Channel> channels = new ArrayList<>();
+            for (Channel channel : thing.getChannels()) {
+                channels.add(refreshed.getOrDefault(channel.getUID().getId(), channel));
             }
-        }
-        if (!channels.isEmpty()) {
+            channels.addAll(plan.channelsToAdd);
+            channels.removeAll(plan.channelsToRemove);
             updateBridgeThing(bridgeBuilder -> bridgeBuilder.withChannels(channels));
         }
+        plan.statesToPost.forEach(this::updateState);
+        dispatchToSensors(bridge, data);
+    }
+
+    /**
+     * Routes each value carrying a {@link Sensor} tag to the child sensor Thing that owns its
+     * {@code (sensor, channel)}. Every child sensor handler is called once per poll - with an empty collection when it
+     * produced nothing - so its missing-measurand debounce advances. Gateway channels are unaffected: they already
+     * received all values above.
+     *
+     * @param bridge the bridge captured before any channel reconcile may replace the {@code thing} reference
+     */
+    private void dispatchToSensors(Bridge bridge, Collection<MeasuredValue> data) {
+        Map<SensorGatewayBinding, List<MeasuredValue>> bySensor = new HashMap<>();
+        for (MeasuredValue value : data) {
+            Sensor sensor = value.getSensor();
+            if (sensor == null) {
+                continue;
+            }
+            SensorGatewayBinding binding = SensorGatewayBinding.forSensorAndChannel(sensor, value.getChannelNumber());
+            if (binding == null) {
+                continue;
+            }
+            bySensor.computeIfAbsent(binding, b -> new ArrayList<>()).add(value);
+        }
+
+        for (Thing child : bridge.getThings()) {
+            if (!THING_TYPE_SENSOR.equals(child.getThingTypeUID())) {
+                continue;
+            }
+            SensorGatewayBinding binding = child.getConfiguration().as(FineOffsetSensorConfiguration.class).sensor;
+            if (binding == null) {
+                continue;
+            }
+            ThingHandler handler = child.getHandler();
+            if (handler instanceof FineOffsetSensorHandler sensorHandler) {
+                sensorHandler.updateMeasuredValues(bySensor.getOrDefault(binding, List.of()));
+            }
+        }
+    }
+
+    /**
+     * Rebuilds existing tagged channels whose description is outdated: channels persisted before the deprecation note
+     * existed, or created before their sensor Thing was added and thus still carrying the no-target note.
+     *
+     * @return the rebuilt channels by channel ID
+     */
+    private Map<String, Channel> refreshDeprecationNotes(Collection<MeasuredValue> data,
+            Collection<Channel> currentChannels) {
+        Map<String, Channel> currentById = new HashMap<>();
+        for (Channel channel : currentChannels) {
+            currentById.put(channel.getUID().getId(), channel);
+        }
+        Map<String, Channel> refreshed = new HashMap<>();
+        for (MeasuredValue value : data) {
+            Channel existing = currentById.get(value.getChannelId());
+            if (existing == null || value.getSensor() == null) {
+                continue;
+            }
+            String description = channelDescription(value);
+            if (description != null && !description.equals(existing.getDescription())) {
+                refreshed.put(value.getChannelId(),
+                        ChannelBuilder.create(existing).withDescription(description).build());
+            }
+        }
+        return refreshed;
     }
 
     private @Nullable Channel createChannel(MeasuredValue measuredValue) {
@@ -191,8 +267,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
         if (label != null) {
             builder.withLabel(label);
         }
-        String description = translationProvider.getText(bundle, channelKey + ".description", null,
-                localeProvider.getLocale(), measuredValue.getChannelNumber());
+        String description = channelDescription(measuredValue);
         if (description != null) {
             builder.withDescription(description);
         }
@@ -202,6 +277,57 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
             builder.withAcceptedItemType(type.getItemType());
         }
         return builder.build();
+    }
+
+    /** The translated channel description, followed by the deprecation note for values of a discrete sensor. */
+    private @Nullable String channelDescription(MeasuredValue measuredValue) {
+        String channelKey = THING_TYPE_GATEWAY.getId() + ".dynamic-channel." + measuredValue.getChannelPrefix();
+        String description = translationProvider.getText(bundle, channelKey + ".description", null,
+                localeProvider.getLocale(), measuredValue.getChannelNumber());
+        if (measuredValue.getSensor() != null) {
+            String sensorChannelUid = sensorChannelUid(measuredValue);
+            String note;
+            if (sensorChannelUid != null) {
+                note = translationProvider.getText(bundle, "gateway.dynamic-channel.deprecation-note",
+                        DEFAULT_DEPRECATION_NOTE_WITH_TARGET, localeProvider.getLocale(), sensorChannelUid);
+            } else {
+                note = translationProvider.getText(bundle, "gateway.dynamic-channel.deprecation-note-no-target",
+                        DEFAULT_DEPRECATION_NOTE, localeProvider.getLocale());
+            }
+            if (note != null) {
+                description = description == null ? note : description + " " + note;
+            }
+        }
+        return description;
+    }
+
+    private @Nullable String sensorChannelUid(MeasuredValue measuredValue) {
+        Sensor sensor = measuredValue.getSensor();
+        if (sensor == null) {
+            return null;
+        }
+        SensorGatewayBinding binding = SensorGatewayBinding.forSensorAndChannel(sensor,
+                measuredValue.getChannelNumber());
+        if (binding == null) {
+            return null;
+        }
+        for (Thing child : ((Bridge) thing).getThings()) {
+            if (!THING_TYPE_SENSOR.equals(child.getThingTypeUID())) {
+                continue;
+            }
+            SensorGatewayBinding childBinding = child.getConfiguration().as(FineOffsetSensorConfiguration.class).sensor;
+            if (childBinding == null) {
+                continue;
+            }
+            if (childBinding.equals(binding)) {
+                ThingUID childUid = child.getUID();
+                if (childUid == null) {
+                    continue;
+                }
+                return new ChannelUID(childUid, measuredValue.getChannelPrefix()).getAsString();
+            }
+        }
+        return null;
     }
 
     private void updateBridgeInfo() {
@@ -234,7 +360,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     private void startDiscoverJob() {
         ScheduledFuture<?> job = discoverJob;
         if (job == null || job.isCancelled()) {
-            int discoverInterval = thing.getConfiguration().as(FineOffsetGatewayConfiguration.class).discoverInterval;
+            int discoverInterval = getConfigAs(FineOffsetGatewayConfiguration.class).discoverInterval;
             discoverJob = scheduler.scheduleWithFixedDelay(this::fetchAndUpdateSensors, 0, discoverInterval,
                     TimeUnit.SECONDS);
         }
@@ -251,7 +377,7 @@ public class FineOffsetGatewayHandler extends BaseBridgeHandler {
     private void startPollingJob() {
         ScheduledFuture<?> job = pollingJob;
         if (job == null || job.isCancelled()) {
-            int pollingInterval = thing.getConfiguration().as(FineOffsetGatewayConfiguration.class).pollingInterval;
+            int pollingInterval = getConfigAs(FineOffsetGatewayConfiguration.class).pollingInterval;
             pollingJob = scheduler.scheduleWithFixedDelay(this::updateLiveData, 5, pollingInterval, TimeUnit.SECONDS);
         }
     }

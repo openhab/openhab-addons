@@ -24,6 +24,9 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.openhab.binding.vitotronic.internal.VitotronicBindingConfiguration;
 import org.openhab.binding.vitotronic.internal.discovery.VitotronicDiscoveryService;
 import org.openhab.core.thing.Bridge;
@@ -34,12 +37,9 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * The {@link VitotronicBridgeHandler} class handles the connection to the
@@ -249,16 +249,16 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
     Runnable socketReceiverRunnable = () -> {
         logger.trace("Start Background Thread for receiving data from adapter");
         try {
-            XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-            xmlReader.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            xmlReader.setContentHandler(new XmlHandler());
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             logger.trace("Start Parser for optolink adapter");
-            xmlReader.parse(new InputSource(inStream));
+            factory.newSAXParser().parse(new InputSource(inStream), new XmlHandler());
 
         } catch (IOException e) {
             logger.trace("Connection error from optolink adapter");
-        } catch (SAXException e) {
-            logger.trace("XML Parser Error");
+        } catch (ParserConfigurationException | SAXException e) {
+            logger.trace("XML Parser Error", e);
 
         }
         updateStatus(ThingStatus.OFFLINE);
@@ -300,7 +300,7 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
 
     // Handles all data what received from optolink adapter
 
-    public class XmlHandler implements ContentHandler {
+    public class XmlHandler extends DefaultHandler {
         boolean isData;
         boolean isDefine;
         boolean isThing;
@@ -382,39 +382,6 @@ public class VitotronicBridgeHandler extends BaseBridgeHandler {
                     isChannel = false;
                     break;
             }
-        }
-
-        // Unused function of xmlReader
-        @Override
-        public void endDocument() throws SAXException {
-        }
-
-        @Override
-        public void ignorableWhitespace(char[] arg0, int arg1, int arg2) throws SAXException {
-        }
-
-        @Override
-        public void processingInstruction(String arg0, String arg1) throws SAXException {
-        }
-
-        @Override
-        public void setDocumentLocator(Locator arg0) {
-        }
-
-        @Override
-        public void skippedEntity(String arg0) throws SAXException {
-        }
-
-        @Override
-        public void startDocument() throws SAXException {
-        }
-
-        @Override
-        public void startPrefixMapping(String arg0, String arg1) throws SAXException {
-        }
-
-        @Override
-        public void endPrefixMapping(String prefix) throws SAXException {
         }
     }
 }

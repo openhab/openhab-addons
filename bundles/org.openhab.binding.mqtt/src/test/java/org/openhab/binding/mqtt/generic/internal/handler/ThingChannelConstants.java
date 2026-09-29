@@ -45,6 +45,8 @@ public class ThingChannelConstants {
     public static final ChannelTypeUID ON_OFF_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.SWITCH);
     public static final ChannelTypeUID NUMBER_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.NUMBER);
     public static final ChannelTypeUID PERCENTAGE_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.DIMMER);
+    public static final ChannelTypeUID IMAGE_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.IMAGE);
+    public static final ChannelTypeUID TRIGGER_CHANNEL = new ChannelTypeUID(BINDING_ID, MqttBindingConstants.TRIGGER);
     public static final ChannelTypeUID UNKNOWN_CHANNEL = new ChannelTypeUID(BINDING_ID, "unknown");
 
     public static final ChannelUID TEXT_CHANNEL_UID = new ChannelUID(TEST_GENERIC_THING, "mytext");

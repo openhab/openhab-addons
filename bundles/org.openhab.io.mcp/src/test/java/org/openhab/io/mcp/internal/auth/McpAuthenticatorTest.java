@@ -108,8 +108,12 @@ class McpAuthenticatorTest {
         when(req.getHeader("Authorization")).thenReturn("Bearer oh.validtoken12345678");
         lenient().when(req.getMethod()).thenReturn("POST");
         lenient().when(req.getRequestURI()).thenReturn("/mcp");
+        org.openhab.core.auth.Authentication authResult = mock(org.openhab.core.auth.Authentication.class);
+        lenient().when(authResult.getUsername()).thenReturn("alice");
+        when(Objects.requireNonNull(userRegistry).authenticate(any(UserApiTokenCredentials.class)))
+                .thenReturn(authResult);
 
-        assertTrue(auth().authenticate(req));
+        assertEquals("alice", auth().authenticate(req));
         verify(Objects.requireNonNull(userRegistry)).authenticate(any(UserApiTokenCredentials.class));
     }
 
@@ -123,7 +127,7 @@ class McpAuthenticatorTest {
         doThrow(new AuthenticationException("bad token")).when(Objects.requireNonNull(userRegistry))
                 .authenticate(any(UserApiTokenCredentials.class));
 
-        assertFalse(auth().authenticate(req));
+        assertNull(auth().authenticate(req));
     }
 
     @Test
@@ -144,7 +148,7 @@ class McpAuthenticatorTest {
         when(jettyRequest.send()).thenReturn(response);
         when(response.getStatus()).thenReturn(200);
 
-        assertTrue(auth().authenticate(req));
+        assertNotNull(auth().authenticate(req));
     }
 
     @Test
@@ -167,7 +171,7 @@ class McpAuthenticatorTest {
         lenient().when(response.getReason()).thenReturn("Unauthorized");
         lenient().when(response.getContentAsString()).thenReturn("{}");
 
-        assertFalse(auth().authenticate(req));
+        assertNull(auth().authenticate(req));
     }
 
     @Test
@@ -180,7 +184,7 @@ class McpAuthenticatorTest {
         when(Objects.requireNonNull(httpClient).newRequest(anyString()))
                 .thenThrow(new RuntimeException("connection refused"));
 
-        assertFalse(auth().authenticate(req));
+        assertNull(auth().authenticate(req));
     }
 
     @Test
@@ -191,7 +195,7 @@ class McpAuthenticatorTest {
         lenient().when(req.getMethod()).thenReturn("POST");
         lenient().when(req.getRequestURI()).thenReturn("/mcp");
 
-        assertFalse(auth().authenticate(req));
+        assertNull(auth().authenticate(req));
     }
 
     @Test

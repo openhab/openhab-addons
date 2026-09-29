@@ -16,8 +16,17 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_ACTIVATE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_CYCLE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_DIM;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_DUAL_DIM;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_EDGE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_TOGGLE;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -29,7 +38,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsInput;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.core.thing.ThingTypeUID;
@@ -44,6 +56,31 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ShellyDeviceProfileTest {
     private final Gson gson = new Gson();
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForIsGeneration2ByServiceName")
+    void isGeneration2ByServiceName(String serviceName, boolean expectedIsGen2) {
+        assertThat("serviceName=" + serviceName, ShellyDeviceProfile.isGeneration2(serviceName),
+                is(equalTo(expectedIsGen2)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForIsGeneration2ByServiceName() {
+        return Stream.of( //
+                Arguments.of("shellydimmerg3-aabbcc", true), //
+                Arguments.of("shellydimmerg4-aabbcc", true), //
+                Arguments.of("shelly0110dimg3-aabbcc", true), //
+                Arguments.of("shelly0110dimg4-aabbcc", true), //
+                Arguments.of("shellyddimmerg3-aabbcc", true), //
+                Arguments.of("shellyddimmerg4-aabbcc", true), //
+                Arguments.of("shellyplusdimmer-aabbcc", true), //
+                Arguments.of("shellyplus10v-aabbcc", true), //
+                Arguments.of("shellypluswdus-aabbcc", true), //
+                Arguments.of("shellyprodimmer1pm-aabbcc", true), //
+                Arguments.of("shellyprodimmer2pm-aabbcc", true), //
+                Arguments.of("shellyprodimmer10v-aabbcc", true), //
+                Arguments.of("shellydimmer-aabbcc", false), //
+                Arguments.of("shellydimmer2-aabbcc", false)); //
+    }
 
     @ParameterizedTest
     @MethodSource("provideTestCasesForApiDetermination")
@@ -84,6 +121,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYHT, false, false), //
                 Arguments.of(THING_TYPE_SHELLYGAS, false, false), //
                 Arguments.of(THING_TYPE_SHELLYFLOOD, false, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSFLOOD, true, false), //
                 Arguments.of(THING_TYPE_SHELLYDOORWIN, false, false), //
                 Arguments.of(THING_TYPE_SHELLYDOORWIN2, false, false), //
                 Arguments.of(THING_TYPE_SHELLYSENSE, false, false), //
@@ -91,7 +129,6 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBUTTON2, false, false), //
                 Arguments.of(THING_TYPE_SHELLYMOTION, false, false), //
                 Arguments.of(THING_TYPE_SHELLYTRV, false, false), //
-                Arguments.of(THING_TYPE_SHELLYEYE, false, false), //
 
                 // Shelly Plus
                 Arguments.of(THING_TYPE_SHELLYPLUS1, true, false), //
@@ -105,6 +142,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSEM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUS3EM63, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
@@ -127,6 +165,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUREMOTE, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUWS90, true, true), //
 
                 // Shelly Pro series
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
@@ -142,8 +181,39 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPRO3EM63, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPRO3EM400, true, false), //
 
+                // Shelly Gen3 Bulb series
+                Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB, true, false), //
+
                 Arguments.of(THING_TYPE_SHELLYPROTECTED, false, false), // password protected device
                 Arguments.of(THING_TYPE_SHELLYUNKNOWN, false, false)); // unknown device
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForGen3BulbFlags")
+    void gen3BulbProfileFlags(ThingTypeUID thingTypeUID) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        assertThat(profile.isDuo, is(true));
+        assertThat(profile.isRGBCCT, is(THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID)));
+        assertThat(profile.isLight, is(true));
+        assertThat(profile.isGen2, is(true));
+    }
+
+    private static Stream<Arguments> provideTestCasesForGen3BulbFlags() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSDUOBULB), //
+                Arguments.of(THING_TYPE_SHELLYPLUSCOLORBULB));
+    }
+
+    @Test
+    void vintageIsDuoButNotCctCapable() {
+        ShellyDeviceProfile vintage = new ShellyDeviceProfile(THING_TYPE_SHELLYVINTAGE);
+        assertThat(vintage.isDuo, is(true));
+        assertThat(vintage.isVintage, is(true));
+
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYDUO).isVintage, is(false));
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYDUORGBW).isVintage, is(false));
+        assertThat(new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB).isVintage, is(false));
     }
 
     @ParameterizedTest
@@ -182,13 +252,14 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, "", 0, 0, 0, 3, CHANNEL_GROUP_LIGHT_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, "", 0, 0, 0, 3, CHANNEL_GROUP_LIGHT_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, "", 0, 0, 1, 3, CHANNEL_GROUP_LIGHT_CONTROL),
-                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_CHANNEL + "4"),
+                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_INDEX + "4"),
                 Arguments.of(THING_TYPE_SHELLYBULB, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYBUTTON2, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYHT, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYFLOOD, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYPLUSFLOOD, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYDOORWIN, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYSMOKE, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYGAS, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
@@ -196,7 +267,165 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYMOTION, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYSENSE, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYTRV, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
-                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR));
+                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYBLUWS90, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForDimmerControlGroup")
+    void getControlGroupForDimmer(int numDimmers, int index, String expectedControlGroup) throws ShellyApiException {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRODIMMER2PM);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+
+        settingsGlobal.relays = new ArrayList<>();
+        settingsGlobal.dimmers = IntStream.range(0, numDimmers).mapToObj(i -> new ShellySettingsDimmer())
+                .collect(Collectors.toCollection(ArrayList::new));
+        deviceProfile.initialize(THING_TYPE_SHELLYPRODIMMER2PM, gson.toJson(settingsGlobal), settingsDevice);
+
+        String actualControlGroup = deviceProfile.getControlGroup(index);
+        assertThat("numDimmers: " + numDimmers + ", index: " + index, actualControlGroup,
+                is(equalTo(expectedControlGroup)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForDimmerControlGroup() {
+        return Stream.of( //
+                // Single-channel dimmers keep the unnumbered control group
+                Arguments.of(0, 0, CHANNEL_GROUP_DIMMER_CONTROL), //
+                Arguments.of(1, 0, CHANNEL_GROUP_DIMMER_CONTROL), //
+                // Multi-channel dimmers (e.g. Pro Dimmer 2PM) get numbered control groups
+                Arguments.of(2, 0, CHANNEL_GROUP_DIMMER_CONTROL + "1"), //
+                Arguments.of(2, 1, CHANNEL_GROUP_DIMMER_CONTROL + "2"));
+    }
+
+    private static ArrayList<ShellySettingsRgbwLight> taggedLights(List<ShellyLightApiComponent> apiComponents) {
+        return apiComponents.stream().map(c -> {
+            ShellySettingsRgbwLight light = new ShellySettingsRgbwLight();
+            light.apiComponent = c;
+            return light;
+        }).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForLegacyLightChannelPrefix")
+    void getControlGroupUsesLegacyPrefixWhenGen1Rgbw2ThingHasDeprecatedChannels(boolean hasLegacyLightChannels,
+            int index, String expectedControlGroup) throws ShellyApiException {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYRGBW2_WHITE);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+        settingsGlobal.lights = IntStream.range(0, 4).mapToObj(i -> new ShellySettingsRgbwLight())
+                .collect(Collectors.toCollection(ArrayList::new));
+        deviceProfile.initialize(THING_TYPE_SHELLYRGBW2_WHITE, gson.toJson(settingsGlobal), settingsDevice);
+        deviceProfile.hasLegacyLightChannels = hasLegacyLightChannels;
+
+        assertThat("hasLegacyLightChannels: " + hasLegacyLightChannels + ", index: " + index,
+                deviceProfile.getControlGroup(index), is(equalTo(expectedControlGroup)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForLegacyLightChannelPrefix() {
+        return Stream.of( //
+                Arguments.of(true, 1, CHANNEL_GROUP_LIGHT_CHANNEL + "2"), //
+                Arguments.of(false, 1, CHANNEL_GROUP_LIGHT_INDEX + "2"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForHybridControlGroup")
+    void getControlGroupForHybridProRgbwwPmProfile(List<ShellyLightApiComponent> apiComponents, int index,
+            String expectedControlGroup) {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        deviceProfile.isRGBW2 = true;
+        deviceProfile.inColor = apiComponents.stream().anyMatch(ShellyApiLightUtil::isColorComponent);
+        deviceProfile.settings.lights = taggedLights(apiComponents);
+
+        assertThat("apiComponents: " + apiComponents + ", index: " + index, deviceProfile.getControlGroup(index),
+                is(equalTo(expectedControlGroup)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForHybridControlGroup() {
+        return Stream.of( //
+                // rgbcct: index 0 (rgb, color) -> control; index 1 (cct, secondary) -> light1
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), 0,
+                        CHANNEL_GROUP_LIGHT_CONTROL), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), 1,
+                        CHANNEL_GROUP_LIGHT_INDEX + "1"), //
+                // rgbx2light: index 0 (rgb) -> control; indexes 1/2 (light) -> light1/light2
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), 0, CHANNEL_GROUP_LIGHT_CONTROL), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), 1, CHANNEL_GROUP_LIGHT_INDEX + "1"), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), 2, CHANNEL_GROUP_LIGHT_INDEX + "2"), //
+                // cctx2: no color component at all -> both indexes numbered from 1
+                Arguments.of(List.of(ShellyLightApiComponent.CCT, ShellyLightApiComponent.CCT), 0,
+                        CHANNEL_GROUP_LIGHT_INDEX + "1"), //
+                Arguments.of(List.of(ShellyLightApiComponent.CCT, ShellyLightApiComponent.CCT), 1,
+                        CHANNEL_GROUP_LIGHT_INDEX + "2"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForHasColorTag")
+    void hasColorTag(List<ShellyLightApiComponent> apiComponents, boolean profileInColor, int idx, boolean expected) {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        deviceProfile.inColor = profileInColor;
+        deviceProfile.settings.lights = taggedLights(apiComponents);
+
+        assertThat("apiComponents: " + apiComponents + ", idx: " + idx, deviceProfile.hasColorTag(idx),
+                is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForHasColorTag() {
+        return Stream.of( //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), true, 0, true), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), true, 1, false), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), true, 0, true), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), true, 2, false), //
+                Arguments.of(List.of(ShellyLightApiComponent.CCT, ShellyLightApiComponent.CCT), false, 0, false), //
+                // untagged Gen1 RGBW2 entry falls back to the whole-profile inColor flag
+                Arguments.of(List.of(ShellyLightApiComponent.NONE), true, 0, true), //
+                Arguments.of(List.of(ShellyLightApiComponent.NONE), false, 0, false), //
+                // out-of-range index also falls back to the whole-profile inColor flag
+                Arguments.of(List.of(ShellyLightApiComponent.RGB), true, 5, true));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForIsCctComponent")
+    void isCctComponent(List<ShellyLightApiComponent> apiComponents, int idx, boolean expected) {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        deviceProfile.settings.lights = taggedLights(apiComponents);
+
+        assertThat("apiComponents: " + apiComponents + ", idx: " + idx, deviceProfile.isCctComponent(idx),
+                is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForIsCctComponent() {
+        return Stream.of( //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), 1, true), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.CCT), 0, false), //
+                Arguments.of(List.of(ShellyLightApiComponent.RGB, ShellyLightApiComponent.LIGHT,
+                        ShellyLightApiComponent.LIGHT), 1, false), //
+                // untagged Gen1 RGBW2 entry is never CCT
+                Arguments.of(List.of(ShellyLightApiComponent.NONE), 0, false), //
+                // out-of-range index is never CCT
+                Arguments.of(List.of(ShellyLightApiComponent.CCT), 5, false));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForIsProRgbwwPm")
+    void isProRgbwwPm(ThingTypeUID thingTypeUID, boolean expected) {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
+
+        assertThat("thingTypeUID: " + thingTypeUID, deviceProfile.isProRgbwwPm, is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForIsProRgbwwPm() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPRORGBWWPM, true), //
+                // Plus RGBW PM reports the same rgb/rgbw/light device.profile values - must not be mistaken for it
+                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, false), //
+                Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, false));
     }
 
     @Test
@@ -249,5 +478,419 @@ public class ShellyDeviceProfileTest {
 
         deviceProfile.updateFromStatus(status);
         assertThat(deviceProfile.numInputs, is(equalTo(-1)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForResolveNumMeters")
+    void resolveNumMeters(ThingTypeUID thingTypeUID, int fromDevice, int fromDeviceConfig, boolean isLight,
+            boolean inColor, int numOutputs, boolean hasRelays, int numRelays, int numRollers, boolean isRoller,
+            int expected) {
+        int actual = ShellyDeviceProfile.resolveNumMeters(thingTypeUID, fromDevice, fromDeviceConfig, isLight, inColor,
+                numOutputs, hasRelays, numRelays, numRollers, isRoller);
+        assertThat("thingType=" + thingTypeUID.getId() + " fromDevice=" + fromDevice + " fromDeviceConfig="
+                + fromDeviceConfig, actual, is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForResolveNumMeters() {
+        // Parameters: thingTypeUID, fromDevice, fromDeviceConfig, isLight, inColor, numOutputs,
+        // hasRelays, numRelays, numRollers, isRoller, expected
+
+        // Priority 1: device-reported value > 0 wins unconditionally
+        return Stream.of( //
+                // P1: fromDevice > 0 — wins regardless of capMap, config or relay count
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, 3, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, 1, -1, false, false, 0, true, 1, 0, false, 1), //
+                Arguments.of(THING_TYPE_SHELLYPRO2, 2, -1, false, false, 0, true, 2, 0, false, 2), // capMap says 0,
+                                                                                                   // device wins
+                Arguments.of(THING_TYPE_SHELLY3EM, 3, -1, false, false, 0, false, 0, 0, false, 3), //
+
+                // P2: capability-map override (fromDevice <= 0)
+                Arguments.of(THING_TYPE_SHELLYPRO2, 0, -1, false, false, 0, true, 2, 0, false, 0), // relay-only Pro2
+                Arguments.of(THING_TYPE_SHELLYPRO3, 0, -1, false, false, 0, true, 3, 0, false, 0), // relay-only Pro3
+                Arguments.of(THING_TYPE_SHELLY3EM, 0, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, -1, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM63, -1, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM400, -1, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPLUS3EM63, -1, -1, false, false, 0, false, 0, 0, false, 3), //
+                Arguments.of(THING_TYPE_SHELLYPROEM50, -1, -1, false, false, 0, false, 0, 0, false, 2), //
+                // ProEM50 capMap wins even when relay is present (relay gets its own slot via hasEM1Clamps override)
+                Arguments.of(THING_TYPE_SHELLYPROEM50, -1, -1, false, false, 0, true, 1, 0, false, 2), //
+                // no-PM relay-only devices: capMap wins over the relay-count fallback
+                Arguments.of(THING_TYPE_SHELLY1, 0, -1, false, false, 0, true, 1, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLY1L, 0, -1, false, false, 0, true, 1, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1, -1, -1, false, false, 0, true, 1, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLYPRO1, -1, -1, false, false, 0, true, 1, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLYMINI_1, -1, -1, false, false, 0, true, 1, 0, false, 0), //
+
+                // P3: device-config detection — thingType not in capMap
+                Arguments.of(THING_TYPE_SHELLYMINI_PM, -1, 1, false, false, 0, false, 0, 0, false, 1), // pm10 → 1
+                Arguments.of(THING_TYPE_SHELLYPLUSEM, -1, 1, false, false, 0, false, 0, 0, false, 1), // pm10 → 1
+                Arguments.of(THING_TYPE_SHELLYMINI_EM, -1, 3, false, false, 0, false, 0, 0, false, 3), // em0 → 3
+                // em1:0 alone → 1 meter (EM Mini G4 single clamp; fix for fromDeviceConfig=1 when em11 absent)
+                Arguments.of(THING_TYPE_SHELLYMINI_EM, -1, 1, false, false, 0, false, 0, 0, false, 1), //
+                // em1:0 + em1:1 → 2 meters (Pro EM50 two clamps; capMap also says 2 so result is the same)
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, -1, 2, false, false, 0, true, 1, 0, false, 2), //
+                Arguments.of(THING_TYPE_SHELLYPRO1PM, -1, 0, false, false, 0, true, 1, 0, false, 0), // config says 0
+
+                // P4: light special-case (fromDeviceConfig=-1, not in capMap)
+                Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, -1, -1, true, true, 4, false, 0, 0, false, 1), // color → 1
+                Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, -1, -1, true, false, 4, false, 0, 0, false, 4), // white →
+                                                                                                           // numOutputs
+                Arguments.of(THING_TYPE_SHELLYDIMMER, -1, -1, true, false, 1, false, 0, 0, false, 1), //
+                Arguments.of(THING_TYPE_SHELLYBULB, -1, -1, true, true, 1, false, 0, 0, false, 1), //
+
+                // P5: relay fallback (not in capMap, not a light, no config data)
+                Arguments.of(THING_TYPE_SHELLYPRO1PM, -1, -1, false, false, 0, true, 1, 0, false, 1), //
+                Arguments.of(THING_TYPE_SHELLYPRO4PM, -1, -1, false, false, 0, true, 4, 0, false, 4), //
+                Arguments.of(THING_TYPE_SHELLY25_ROLLER, -1, -1, false, false, 0, true, 0, 1, true, 1), //
+                Arguments.of(THING_TYPE_SHELLYPLUS2PM_ROLLER, -1, -1, false, false, 0, true, 0, 1, true, 1), //
+
+                // P5 extras: relay fallback with multiple relays or rollers
+                Arguments.of(THING_TYPE_SHELLYPRO4PM, -1, -1, false, false, 0, true, 2, 0, false, 2), //
+                Arguments.of(THING_TYPE_SHELLY25_ROLLER, -1, -1, false, false, 0, true, 0, 2, true, 2), //
+
+                // Default: sensor / BLU device with no meters
+                Arguments.of(THING_TYPE_SHELLYHT, -1, -1, false, false, 0, false, 0, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, -1, -1, false, false, 0, false, 0, 0, false, 0), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, -1, -1, false, false, 0, false, 0, 0, false, 0)); //
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForExtractFwVersion")
+    void extractFwVersion(String rawFwId, String expectedVersion) {
+        assertThat(ShellyDeviceProfile.extractFwVersion(rawFwId), is(equalTo(expectedVersion)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForExtractFwVersion() {
+        return Stream.of( //
+                Arguments.of("20210319-122304/v1.7.5-g9979d16", "1.7.5"), //
+                Arguments.of("20210319-122304/v1.10.0-rc2-89-g623b41ec0-master", "1.10.0-rc2"), //
+                Arguments.of("20200911-133751/v1.8.5-beta1-g7e7e3b24", "1.8.5-beta1"), //
+                Arguments.of("20210226-091047/v1.9.0", "1.9.0"), //
+                Arguments.of("20210226-091047/v.1.10-g623b41ec0", "1.10.0"), //
+                Arguments.of("20220809-125346/v1.12-g99f7e0b", "1.12.0"), //
+                Arguments.of("20260520-144343/2.6.2-06f6da23", "2.6.2-06f6da23"), //
+                Arguments.of("20260520-144343/2.6.2-beta1-06f6da23", "2.6.2-beta1"), //
+                Arguments.of("20260520-144343/2.6.2-rc1-06f6da23", "2.6.2-rc1"), //
+                Arguments.of("20240101-101010/1.4.4", "1.4.4"), //
+                Arguments.of("20240315-093012/1.5.1-cabf215a", "1.5.1-cabf215a"), //
+                Arguments.of("2.6.3", "2.6.3"), //
+                Arguments.of("", ""), //
+                Arguments.of("garbage", ""), //
+                Arguments.of((Object) null, "")); //
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForExtractAppVersion")
+    void extractAppVersion(String rawVer, String expectedVersion) {
+        assertThat(ShellyDeviceProfile.extractAppVersion(rawVer), is(equalTo(expectedVersion)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForExtractAppVersion() {
+        return Stream.of( //
+                // suffix contains 'g' as part of a product code, not a git-describe hash - must be kept in full
+                Arguments.of("1.7.99-powerstripg4prod1", "1.7.99-powerstripg4prod1"), //
+                Arguments.of("1.14.0", "1.14.0"), //
+                Arguments.of("", ""), //
+                Arguments.of((Object) null, "")); //
+    }
+
+    @Test
+    void ws90ProfileFlagsSetCorrectly() throws ShellyApiException {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.initialize(THING_TYPE_SHELLYBLUWS90, "{}", new ShellySettingsDevice());
+
+        assertThat("isWS90", profile.isWS90, is(true));
+        assertThat("isSensor (WS90 contributes to isSensor)", profile.isSensor, is(true));
+        assertThat("hasBattery (all BLU devices)", profile.hasBattery, is(true));
+        assertThat("alwaysOn false for battery-powered BLU", profile.alwaysOn, is(false));
+        assertThat("isBlu", profile.isBlu, is(true));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForFloodDeviceProfile")
+    void floodDeviceProfile(ThingTypeUID thingTypeUID, boolean expectedIsFlood, boolean expectedIsSensor,
+            boolean expectedHasBattery, boolean expectedAlwaysOn, boolean expectedIsGen2) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        assertThat("isFlood for " + thingTypeUID, profile.isFlood, is(equalTo(expectedIsFlood)));
+        assertThat("isSensor for " + thingTypeUID, profile.isSensor, is(equalTo(expectedIsSensor)));
+        assertThat("hasBattery for " + thingTypeUID, profile.hasBattery, is(equalTo(expectedHasBattery)));
+        assertThat("alwaysOn for " + thingTypeUID, profile.alwaysOn, is(equalTo(expectedAlwaysOn)));
+        assertThat("isGen2 for " + thingTypeUID, profile.isGen2, is(equalTo(expectedIsGen2)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForFloodDeviceProfile() {
+        return Stream.of( //
+                // Gen1 flood: not Gen2, battery-powered, sensor
+                Arguments.of(THING_TYPE_SHELLYFLOOD, true, true, true, false, false), //
+                // Gen4 flood: Gen2, battery-powered, sensor
+                Arguments.of(THING_TYPE_SHELLYPLUSFLOOD, true, true, true, false, true), //
+                // Smoke: not flood, is smoke, battery, sensor
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, false, true, true, false, true), //
+                // HT: not flood, is sensor, battery
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, false, true, true, false, true), //
+                // Relay: not flood, not sensor, always-on
+                Arguments.of(THING_TYPE_SHELLYPLUS1, false, false, false, true, true));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForInButtonModeWithActivateMode")
+    void inButtonModeForActivateModeDependsOnInputType(String inputBtnType, boolean expectedButtonMode) {
+        // #21420: Switch.in_mode=activate (relay.btnType) alone doesn't reveal a button input - Shelly also
+        // uses it for stateful switch/PIR inputs. Only the paired Input component's type (settings.inputs,
+        // mapped to SHELLY_BTNT_MOMENTARY for type=button and SHELLY_BTNT_EDGE otherwise) is authoritative.
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1);
+        profile.numRelays = 1;
+        ShellySettingsRelay relay = new ShellySettingsRelay();
+        relay.btnType = SHELLY_BTNT_ACTIVATE;
+        ArrayList<ShellySettingsRelay> relays = new ArrayList<>();
+        relays.add(relay);
+        profile.settings.relays = relays;
+        ArrayList<ShellySettingsInput> inputs = new ArrayList<>();
+        inputs.add(new ShellySettingsInput(inputBtnType));
+        profile.settings.inputs = inputs;
+
+        assertThat(profile.inButtonMode(0), is(equalTo(expectedButtonMode)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForInButtonModeWithActivateMode() {
+        return Stream.of( //
+                Arguments.of(SHELLY_BTNT_MOMENTARY, true), // Input.type=button -> real button input
+                Arguments.of(SHELLY_BTNT_EDGE, false)); // Input.type=switch/analog -> stateful/PIR input
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForDimmerProfileFlags")
+    void dimmerProfileFlags(ThingTypeUID thingTypeUID) throws Exception {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+        ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
+        dimmers.add(new ShellySettingsDimmer());
+        settingsGlobal.dimmers = dimmers;
+        deviceProfile.initialize(thingTypeUID, gson.toJson(settingsGlobal), settingsDevice);
+
+        assertThat("isDimmer for " + thingTypeUID, deviceProfile.isDimmer, is(true));
+        assertThat("hasRelays for " + thingTypeUID, deviceProfile.hasRelays, is(true));
+        assertThat("numRelays for " + thingTypeUID, deviceProfile.numRelays, is(equalTo(0)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForDimmerProfileFlags() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYDIMMER), //
+                Arguments.of(THING_TYPE_SHELLYDIMMER2), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDALIDIMMER), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER1PM), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER10V)); //
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForDimmerInputGroup")
+    void getInputGroupForDimmer(ThingTypeUID thingTypeUID, int numDimmers, int numInputs, int inputIdx,
+            String expectedGroup) throws Exception {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+        settingsGlobal.dimmers = IntStream.range(0, numDimmers).mapToObj(i -> new ShellySettingsDimmer())
+                .collect(Collectors.toCollection(ArrayList::new));
+        deviceProfile.initialize(thingTypeUID, gson.toJson(settingsGlobal), settingsDevice);
+        deviceProfile.numInputs = numInputs;
+
+        String actualGroup = deviceProfile.getInputGroup(inputIdx);
+        assertThat("thingType: " + thingTypeUID + ", numDimmers: " + numDimmers + ", numInputs: " + numInputs
+                + ", inputIdx: " + inputIdx, actualGroup, is(equalTo(expectedGroup)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForDimmerInputGroup() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYDIMMER, 1, 2, 0, CHANNEL_GROUP_RELAY_CONTROL), //
+                Arguments.of(THING_TYPE_SHELLYDIMMER, 1, 2, 1, CHANNEL_GROUP_RELAY_CONTROL), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 0, CHANNEL_GROUP_RELAY_CONTROL + "1"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 1, CHANNEL_GROUP_RELAY_CONTROL + "2"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 0, 0, CHANNEL_GROUP_RELAY_CONTROL)); //
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForDimmerInputSuffix")
+    void getInputSuffixForDimmer(ThingTypeUID thingTypeUID, int numDimmers, int numInputs, int inputIdx,
+            String expectedSuffix) throws Exception {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+        settingsGlobal.dimmers = IntStream.range(0, numDimmers).mapToObj(i -> new ShellySettingsDimmer())
+                .collect(Collectors.toCollection(ArrayList::new));
+        deviceProfile.initialize(thingTypeUID, gson.toJson(settingsGlobal), settingsDevice);
+        deviceProfile.numInputs = numInputs;
+
+        String actualSuffix = deviceProfile.getInputSuffix(inputIdx);
+        assertThat("thingType: " + thingTypeUID + ", numDimmers: " + numDimmers + ", numInputs: " + numInputs
+                + ", inputIdx: " + inputIdx, actualSuffix, is(equalTo(expectedSuffix)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForDimmerInputSuffix() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYDIMMER, 1, 2, 0, "1"), //
+                Arguments.of(THING_TYPE_SHELLYDIMMER, 1, 2, 1, "2"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 0, "1"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 2, 1, "1"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 0, "1"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 1, "2"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 2, "1"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 3, "2")); //
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForDimmerButtonType")
+    void getButtonTypeForDimmer(ThingTypeUID thingTypeUID, int numDimmers, int numInputs, int inputIdx,
+            String expectedButtonType) throws Exception {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(thingTypeUID);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+        settingsGlobal.dimmers = IntStream.range(0, numDimmers).mapToObj(i -> {
+            ShellySettingsDimmer dimmer = new ShellySettingsDimmer();
+            dimmer.btnType = "light" + i;
+            return dimmer;
+        }).collect(Collectors.toCollection(ArrayList::new));
+        deviceProfile.initialize(thingTypeUID, gson.toJson(settingsGlobal), settingsDevice);
+        deviceProfile.numInputs = numInputs;
+
+        String actualButtonType = deviceProfile.getButtonType(inputIdx);
+        assertThat("thingType: " + thingTypeUID + ", numDimmers: " + numDimmers + ", numInputs: " + numInputs
+                + ", inputIdx: " + inputIdx, actualButtonType, is(equalTo(expectedButtonType)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForDimmerButtonType() {
+        return Stream.of( //
+                // Single dimmer channel: both inputs share the one light's in_mode
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, 1, 2, 0, "light0"), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, 1, 2, 1, "light0"), //
+                // Pro Dimmer 2PM: 4 inputs spread across 2 light channels, 2 inputs per channel
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 0, "light0"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 1, "light0"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 2, "light1"), //
+                Arguments.of(THING_TYPE_SHELLYPRODIMMER2PM, 2, 4, 3, "light1"));
+    }
+
+    @Test
+    void inButtonModeForDualDimmerFallsBackToInputsWhenDimmerBtnTypeUnset() throws Exception {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRODIMMER2PM);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+
+        ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
+        dimmers.add(new ShellySettingsDimmer());
+        dimmers.add(new ShellySettingsDimmer());
+        settingsGlobal.dimmers = dimmers;
+
+        ShellySettingsInput i0 = new ShellySettingsInput();
+        i0.btnType = SHELLY_BTNT_EDGE;
+        ShellySettingsInput i1 = new ShellySettingsInput();
+        i1.btnType = SHELLY_BTNT_MOMENTARY;
+        ArrayList<ShellySettingsInput> inputs = new ArrayList<>();
+        inputs.add(i0);
+        inputs.add(i1);
+        settingsGlobal.inputs = inputs;
+
+        deviceProfile.initialize(THING_TYPE_SHELLYPRODIMMER2PM, gson.toJson(settingsGlobal), settingsDevice);
+
+        assertThat("input 0 (edge) must not be button mode", deviceProfile.inButtonMode(0), is(false));
+        assertThat("input 1 (momentary) must be button mode", deviceProfile.inButtonMode(1), is(true));
+    }
+
+    @Test
+    void inButtonModeForDualDimmerPrefersDimmerBtnTypeOverInputs() throws Exception {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRODIMMER2PM);
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+        settingsGlobal.relays = new ArrayList<>();
+
+        ShellySettingsDimmer d0 = new ShellySettingsDimmer();
+        d0.btnType = SHELLY_BTNT_MOMENTARY;
+        ShellySettingsDimmer d1 = new ShellySettingsDimmer();
+        d1.btnType = SHELLY_BTNT_TOGGLE;
+        ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
+        dimmers.add(d0);
+        dimmers.add(d1);
+        settingsGlobal.dimmers = dimmers;
+
+        ShellySettingsInput i0 = new ShellySettingsInput();
+        i0.btnType = SHELLY_BTNT_EDGE;
+        ShellySettingsInput i1 = new ShellySettingsInput();
+        i1.btnType = SHELLY_BTNT_MOMENTARY;
+        ArrayList<ShellySettingsInput> inputs = new ArrayList<>();
+        inputs.add(i0);
+        inputs.add(i1);
+        settingsGlobal.inputs = inputs;
+
+        deviceProfile.initialize(THING_TYPE_SHELLYPRODIMMER2PM, gson.toJson(settingsGlobal), settingsDevice);
+
+        assertThat("dimmer 0 (momentary) must be button mode", deviceProfile.inButtonMode(0), is(true));
+        assertThat("dimmer 1 (toggle) must not be button mode", deviceProfile.inButtonMode(1), is(false));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForInButtonModeWithDimModes")
+    void inButtonModeRecognizesDimAndDualDim(String btnType) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER);
+        ShellySettingsDimmer dimmer = new ShellySettingsDimmer();
+        dimmer.btnType = btnType;
+        ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
+        dimmers.add(dimmer);
+        profile.settings.dimmers = dimmers;
+
+        assertThat(profile.inButtonMode(0), is(true));
+    }
+
+    private static Stream<Arguments> provideTestCasesForInButtonModeWithDimModes() {
+        return Stream.of(Arguments.of(SHELLY_BTNT_DIM), Arguments.of(SHELLY_BTNT_DUAL_DIM));
+    }
+
+    @Test
+    void inButtonModeRecognizesSwitchInModeCycle() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1);
+        ShellySettingsRelay relay = new ShellySettingsRelay();
+        relay.btnType = SHELLY_BTNT_CYCLE;
+        profile.settings.relays = new ArrayList<>(List.of(relay));
+
+        assertThat(profile.inButtonMode(0), is(true));
+    }
+
+    @Test
+    void getButtonTypeAddressesEachIndependentDimmerChannelByIndex() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDIMMER);
+        ShellySettingsDimmer dimmer0 = new ShellySettingsDimmer();
+        dimmer0.btnType = SHELLY_BTNT_DIM;
+        ShellySettingsDimmer dimmer1 = new ShellySettingsDimmer();
+        dimmer1.btnType = SHELLY_BTNT_DUAL_DIM;
+        ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
+        dimmers.add(dimmer0);
+        dimmers.add(dimmer1);
+        profile.settings.dimmers = dimmers;
+
+        assertThat(profile.getButtonType(0), is(equalTo(SHELLY_BTNT_DIM)));
+        assertThat(profile.getButtonType(1), is(equalTo(SHELLY_BTNT_DUAL_DIM)));
+    }
+
+    @Test
+    void getButtonTypeFallsBackToLegacyBtnType1And2ForSingleChannelGen1Dimmer() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYDIMMER2);
+        ShellySettingsDimmer dimmer = new ShellySettingsDimmer();
+        dimmer.btnType1 = SHELLY_BTNT_MOMENTARY;
+        dimmer.btnType2 = SHELLY_BTNT_EDGE;
+        ArrayList<ShellySettingsDimmer> dimmers = new ArrayList<>();
+        dimmers.add(dimmer);
+        profile.settings.dimmers = dimmers;
+
+        assertThat(profile.getButtonType(0), is(equalTo(SHELLY_BTNT_MOMENTARY)));
+        assertThat(profile.getButtonType(1), is(equalTo(SHELLY_BTNT_EDGE)));
     }
 }

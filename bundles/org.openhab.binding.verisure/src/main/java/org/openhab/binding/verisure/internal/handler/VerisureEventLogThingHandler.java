@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
 import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Device;
+import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Gui;
 import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO.EventLog;
 import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO.PagedList;
@@ -84,12 +85,22 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
     private void updateEventLogState(VerisureEventLogDTO eventLogJSON) {
         EventLog eventLog = eventLogJSON.getData().getInstallation().getEventLog();
         if (!eventLog.getPagedList().isEmpty()) {
-            getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID))
+            // The last-event-time channel is handled separately via updateTimeStamp(), so exclude it from the
+            // generic loop to avoid setting it to UNDEF and then immediately overwriting it with the timestamp,
+            // which would produce two state updates/events per refresh.
+            getThing().getChannels().stream().map(Channel::getUID)
+                    .filter(channelUID -> isLinked(channelUID) && !CHANNEL_LAST_EVENT_TIME.equals(channelUID.getId()))
                     .forEach(channelUID -> {
                         State state = getValue(channelUID.getId(), eventLogJSON, eventLog);
                         updateState(channelUID, state);
                     });
             updateInstallationChannels(eventLogJSON);
+            // Trigger event channels before lastEventTime is updated below, so that events newer than the
+            // previous refresh are detected. Skipped on the first refresh (lastEventTime == 0) to avoid
+            // flooding trigger channels on startup.
+            if (lastEventTime != 0) {
+                triggerEventChannels(eventLog);
+            }
             String eventTime = eventLogJSON.getData().getInstallation().getEventLog().getPagedList().get(0)
                     .getEventTime();
             if (eventTime != null) {
@@ -123,13 +134,10 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
                 } else {
                     return UnDefType.NULL;
                 }
-            case CHANNEL_LAST_EVENT_TIME:
-                if (lastEventTime != 0) {
-                    triggerEventChannels(eventLog);
-                }
             case CHANNEL_LAST_EVENT_DEVICE_TYPE:
-                return device != null && device.getGui().getLabel() != null ? new StringType(device.getGui().getLabel())
-                        : UnDefType.NULL;
+                Gui gui = device != null ? device.getGui() : null;
+                String label = gui != null ? gui.getLabel() : null;
+                return label != null ? new StringType(label) : UnDefType.NULL;
             case CHANNEL_LAST_EVENT_TYPE:
                 String lastEventType = eventLog.getPagedList().get(0).getEventType();
                 return lastEventType != null ? new StringType(lastEventType) : UnDefType.NULL;

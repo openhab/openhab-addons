@@ -15,7 +15,6 @@ package org.openhab.binding.daikin.internal.handler;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,7 +54,7 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     private @Nullable AirbaseModelInfo airbaseModelInfo;
 
     public DaikinAirbaseUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
-            @Nullable HttpClient httpClient) {
+            HttpClient httpClient) {
         super(thing, stateDescriptionProvider, httpClient);
     }
 
@@ -121,7 +120,7 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     @Override
     protected boolean changeSetPoint(double newTemperature) throws DaikinCommunicationException {
         AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
-        info.temp = Optional.of(newTemperature);
+        info.temp = newTemperature; // Removed Optional.of()
         return webTargets.setAirbaseControlInfo(info);
     }
 

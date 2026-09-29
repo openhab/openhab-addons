@@ -1,0 +1,19 @@
+{
+    "config": {
+        "on": true,
+        "reachable": true
+    },
+    "ep": 1,
+    "etag": "ca904b42f63d0ccccccccccccccccccccc",
+    "lastseen": "2023-12-29T01:18Z",
+    "manufacturername": "IKEA of Sweden",
+    "modelid": "VINDSTYRKA",
+    "name": "VINDSTYRKA PM2.5",
+    "state": {
+        "pm2_5": 5,
+        "lastupdated": "2023-12-29T01:18:41.184"
+    },
+    "swversion": "1.0.033",
+    "type": "ZHAParticulateMatter",
+    "uniqueid": "00:00:00:00:00:00:00:00-01-042a"
+}

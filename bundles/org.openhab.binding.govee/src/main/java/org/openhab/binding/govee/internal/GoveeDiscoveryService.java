@@ -17,7 +17,10 @@ import java.net.SocketException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.govee.internal.CommunicationManager.GoveeDiscoveryListener;
 import org.openhab.binding.govee.internal.model.DiscoveryData;
+import org.openhab.binding.govee.internal.model.DiscoveryMsg;
 import org.openhab.binding.govee.internal.model.DiscoveryResponse;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -32,12 +36,14 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.mac.MacResolver;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +84,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Stefan Höhn - Initial Contribution
  * @author Danny Baumann - Thread-Safe design refactoring
+ * @author Lee Ballard - Network MAC discovery enrichment
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.govee")
@@ -88,24 +95,33 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
     private final Logger logger = LoggerFactory.getLogger(GoveeDiscoveryService.class);
 
     private final CommunicationManager communicationManager;
+    private final @Nullable MacResolver macResolver;
+    private final Map<String, DiscoveryResponse> pendingMacResolutions = new ConcurrentHashMap<>();
     private @Nullable ScheduledFuture<?> backgroundScanTask;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(GoveeBindingConstants.THING_TYPE_LIGHT);
 
     @Activate
     public GoveeDiscoveryService(final @Reference TranslationProvider i18nProvider,
-            final @Reference LocaleProvider localeProvider,
-            final @Reference CommunicationManager communicationManager) {
+            final @Reference LocaleProvider localeProvider, final @Reference CommunicationManager communicationManager,
+            final @Reference MacResolver macResolver) {
         super(SUPPORTED_THING_TYPES_UIDS, CommunicationManager.SCAN_TIMEOUT_SEC, true);
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
         this.communicationManager = communicationManager;
+        this.macResolver = macResolver;
     }
 
     // for test purposes only
     public GoveeDiscoveryService(CommunicationManager communicationManager) {
+        this(communicationManager, null);
+    }
+
+    // for test purposes only
+    GoveeDiscoveryService(CommunicationManager communicationManager, @Nullable MacResolver macResolver) {
         super(SUPPORTED_THING_TYPES_UIDS, 0, false);
         this.communicationManager = communicationManager;
+        this.macResolver = macResolver;
     }
 
     @Override
@@ -115,22 +131,32 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
     }
 
     public @Nullable DiscoveryResult responseToResult(DiscoveryResponse response) {
-        final DiscoveryData data = response.msg().data();
-        final String macAddress = data.device();
-        if (macAddress.isEmpty()) {
-            logger.warn("Empty Mac address received during discovery - ignoring {}", response);
+        return responseToResult(response, null);
+    }
+
+    private @Nullable DiscoveryResult responseToResult(DiscoveryResponse response, @Nullable String networkMacAddress) {
+        final DiscoveryMsg msg = response.msg();
+        if (!"scan".equals(msg.cmd())) {
+            logger.trace("Ignoring non-scan message received during discovery - {}", response);
+            return null;
+        }
+
+        final DiscoveryData data = msg.data();
+        final String deviceId = data.device();
+        if (deviceId == null || deviceId.isEmpty()) {
+            logger.warn("Missing device ID received during discovery - ignoring {}", response);
             return null;
         }
 
         final String ipAddress = data.ip();
-        if (ipAddress.isEmpty()) {
-            logger.warn("Empty IP address received during discovery - ignoring {}", response);
+        if (ipAddress == null || ipAddress.isEmpty()) {
+            logger.debug("Ignoring scan response without IP address (device not reachable over LAN) - {}", response);
             return null;
         }
 
         final String sku = data.sku();
-        if (sku.isEmpty()) {
-            logger.warn("Empty SKU (product name) received during discovery - ignoring {}", response);
+        if (sku == null || sku.isEmpty()) {
+            logger.warn("Missing SKU (product name) received during discovery - ignoring {}", response);
             return null;
         }
 
@@ -144,24 +170,28 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
         }
         String nameForLabel = productName != null ? productName + " " + sku : sku;
 
-        ThingUID thingUid = new ThingUID(GoveeBindingConstants.THING_TYPE_LIGHT, macAddress.replace(":", "_"));
+        ThingUID thingUid = new ThingUID(GoveeBindingConstants.THING_TYPE_LIGHT, deviceId.replace(":", "_"));
         DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUid)
-                .withRepresentationProperty(GoveeBindingConstants.MAC_ADDRESS)
-                .withProperty(GoveeBindingConstants.MAC_ADDRESS, macAddress)
+                .withRepresentationProperty(GoveeBindingConstants.DEVICE_ID)
+                .withProperty(GoveeBindingConstants.DEVICE_ID, deviceId)
                 .withProperty(GoveeBindingConstants.IP_ADDRESS, ipAddress)
                 .withProperty(GoveeBindingConstants.DEVICE_TYPE, sku)
                 .withLabel(String.format("Govee %s (%s)", nameForLabel, ipAddress));
+
+        if (networkMacAddress != null && !networkMacAddress.isBlank()) {
+            builder.withProperty(GoveeBindingConstants.PROPERTY_NETWORK_MAC_ADDRESS, networkMacAddress);
+        }
 
         if (productName != null) {
             builder.withProperty(GoveeBindingConstants.PRODUCT_NAME, productName);
         }
 
         String hwVersion = data.wifiVersionHard();
-        if (!hwVersion.isEmpty()) {
+        if (hwVersion != null && !hwVersion.isEmpty()) {
             builder.withProperty(GoveeBindingConstants.HW_VERSION, hwVersion);
         }
         String swVersion = data.wifiVersionSoft();
-        if (!swVersion.isEmpty()) {
+        if (swVersion != null && !swVersion.isEmpty()) {
             builder.withProperty(GoveeBindingConstants.SW_VERSION, swVersion);
         }
 
@@ -203,7 +233,51 @@ public class GoveeDiscoveryService extends AbstractDiscoveryService implements G
         DiscoveryResult discoveryResult = responseToResult(discoveryResponse);
         if (discoveryResult != null) {
             thingDiscovered(discoveryResult);
+            resolveNetworkMac(discoveryResponse, discoveryResult);
         }
+    }
+
+    private void resolveNetworkMac(DiscoveryResponse discoveryResponse, DiscoveryResult discoveryResult) {
+        MacResolver macResolver = this.macResolver;
+        Object ipProperty = discoveryResult.getProperties().get(GoveeBindingConstants.IP_ADDRESS);
+        if (macResolver == null || !(ipProperty instanceof String ipAddress)
+                || pendingMacResolutions.putIfAbsent(ipAddress, discoveryResponse) != null) {
+            return;
+        }
+
+        try {
+            CompletableFuture<@Nullable String> macFuture = macResolver.resolveMac(ipAddress);
+            macFuture.whenComplete((macAddress, exception) -> {
+                if (exception == null) {
+                    networkMacResolved(ipAddress, macAddress);
+                } else if (pendingMacResolutions.remove(ipAddress) != null) {
+                    logger.debug("Failed to resolve a MAC address for IP {}", ipAddress, exception);
+                }
+            });
+        } catch (RuntimeException exception) {
+            pendingMacResolutions.remove(ipAddress);
+            logger.debug("Failed to start MAC address resolution for IP {}", ipAddress, exception);
+        }
+    }
+
+    private void networkMacResolved(String ipAddress, @Nullable String macAddress) {
+        DiscoveryResponse discoveryResponse = pendingMacResolutions.remove(ipAddress);
+        if (discoveryResponse == null) {
+            return;
+        }
+        if (macAddress == null) {
+            logger.debug("IP {} did not resolve to a MAC address", ipAddress);
+            return;
+        }
+        DiscoveryResult discoveryResult = responseToResult(discoveryResponse, macAddress);
+        if (discoveryResult != null) {
+            thingDiscovered(discoveryResult);
+        }
+    }
+
+    @Deactivate
+    protected void deactivate() {
+        pendingMacResolutions.clear();
     }
 
     @Override

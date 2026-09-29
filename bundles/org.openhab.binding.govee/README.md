@@ -176,10 +176,15 @@ arp -a | grep "MAC_ADDRESS"
 | Name            | Type    | Description                                                      | Default | Required | Advanced |
 |-----------------|---------|------------------------------------------------------------------|---------|----------|----------|
 | hostname        | text    | Hostname or IP address of the device                             | N/A     | yes      | no       |
-| macAddress      | text    | MAC address of the device                                        | N/A     | yes      | no       |
+| deviceId        | text    | Govee device identifier reported by the LAN API                  | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in sec.                            | 5       | no       | yes      |
 | minKelvin       | integer | The minimum color temperature that the light supports in Kelvin. | N/A     | no       | yes      |
 | maxKelvin       | integer | The maximum color temperature that the light supports in Kelvin. | N/A     | no       | yes      |
+
+The `deviceId` parameter contains the eight-byte device identifier returned by the Govee LAN API, not the device's six-byte network interface MAC address.
+The deprecated `macAddress` parameter remains supported as a fallback for existing Things.
+The LAN API discovery response does not include the device's network interface MAC address.
+When possible, the binding resolves that address from the device's IP address and exposes it as the `mac` Thing property so other bindings can correlate the device.
 
 ## Channels
 
@@ -211,7 +216,7 @@ configuration:
   deviceType: H6159
   wifiSoftwareVersion: 1.02.11
   hostname: 192.168.162.233
-  macAddress: 33:5F:60:74:F4:08:66:21
+  deviceId: 33:5F:60:74:F4:08:66:21
   wifiHardwareVersion: 1.00.10
   refreshInterval: 5
   productName: H6159 RGB Light Strip

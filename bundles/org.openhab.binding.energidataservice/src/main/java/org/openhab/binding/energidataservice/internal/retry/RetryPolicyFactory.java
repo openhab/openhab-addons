@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.energidataservice.internal.exception.DataServiceException;
+import org.openhab.binding.energidataservice.internal.exception.DataServiceRateLimitException;
 import org.openhab.binding.energidataservice.internal.retry.strategy.ExponentialBackoff;
 import org.openhab.binding.energidataservice.internal.retry.strategy.FixedTime;
 import org.openhab.binding.energidataservice.internal.retry.strategy.Linear;
@@ -40,16 +41,20 @@ public class RetryPolicyFactory {
      * @return retry strategy
      */
     public static RetryStrategy fromThrowable(Throwable e) {
-        if (e instanceof DataServiceException dse) {
-            switch (dse.getHttpStatus()) {
-                case HttpStatus.TOO_MANY_REQUESTS_429:
-                    return new ExponentialBackoff().withMinimum(Duration.ofMinutes(30));
-                default:
-                    return new ExponentialBackoff().withMinimum(Duration.ofMinutes(1)).withJitter(0.2);
-            }
-        }
+        ExponentialBackoff strategy = switch (e) {
+            case DataServiceRateLimitException rle ->
+                    new ExponentialBackoff()
+                            .withMinimum(rle.getRetryAfter());
 
-        return new ExponentialBackoff().withMinimum(Duration.ofMinutes(1)).withJitter(0.2);
+            case DataServiceException dse when dse.getHttpStatus() == HttpStatus.TOO_MANY_REQUESTS_429 ->
+                    new ExponentialBackoff()
+                            .withMinimum(Duration.ofMinutes(30));
+
+            default -> new ExponentialBackoff()
+                        .withMinimum(Duration.ofMinutes(1));
+        };
+
+        return strategy.withJitter(0.2);
     }
 
     /**

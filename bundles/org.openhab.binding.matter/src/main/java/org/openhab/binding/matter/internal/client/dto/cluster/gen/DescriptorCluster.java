@@ -40,7 +40,7 @@ public class DescriptorCluster extends BaseCluster {
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This is a list of device types and corresponding revisions declaring endpoint conformance (see Section 9.5.5.1,
-     * “DeviceTypeStruct Type”). At least one device type entry shall be present.
+     * "DeviceTypeStruct Type"). At least one device type entry shall be present.
      * An endpoint shall conform to all device types listed in the DeviceTypeList. A cluster instance that is in common
      * for more than one device type in the DeviceTypeList shall be supported as a shared cluster instance on the
      * endpoint.

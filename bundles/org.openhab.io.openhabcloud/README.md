@@ -305,7 +305,7 @@ rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
     .withTag('Motion Tag')
     .withTitle('Motion Detected')
     .withReferenceId('motion-id-1234')
-    .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
+    .withMediaAttachmentUrl('https://apartment.my/camera-snapshot.jpg')
     .addActionButton('Turn on the light', 'command:Apartment_Light:ON')
     .send();
 }).build('Motion Detected Notification');
@@ -366,7 +366,7 @@ rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
     .withTag('Motion Tag')
     .withTitle('Motion Detected')
     .withReferenceId('motion-id-1234')
-    .withMediaAttachment('item:Apartment_Camera_Snapshot')
+    .withMediaAttachmentUrl('item:Apartment_Camera_Snapshot')
     .addActionButton('Turn on the light', 'command:Apartment_Light:ON')
     .send();
 }).build('Motion Detected Notification');

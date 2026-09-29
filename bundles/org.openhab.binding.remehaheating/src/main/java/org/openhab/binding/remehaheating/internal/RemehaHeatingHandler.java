@@ -42,10 +42,10 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link RemehaHeatingHandler} handles communication with Remeha Home heating systems.
- * 
+ *
  * This handler manages the connection to the Remeha API, authenticates using OAuth2 PKCE flow,
  * and provides access to heating system data including temperatures, water pressure, and DHW controls.
- * 
+ *
  * Supported features:
  * - Room and outdoor temperature monitoring
  * - Target temperature control
@@ -63,6 +63,8 @@ public class RemehaHeatingHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private @Nullable RemehaApiClient apiClient;
     private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable String cachedClimateZoneId;
+    private @Nullable String cachedHotWaterZoneId;
 
     public RemehaHeatingHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -71,11 +73,11 @@ public class RemehaHeatingHandler extends BaseThingHandler {
 
     /**
      * Handles commands sent to the binding channels.
-     * 
+     *
      * Supported commands:
      * - RefreshType: Updates all channel states from API
-     * - DecimalType on targetTemperature: Sets new target room temperature
-     * - StringType on dhwMode: Changes DHW mode (anti-frost/schedule/continuous-comfort)
+     * - QuantityType/DecimalType on target-temperature: Sets new target room temperature
+     * - StringType on dhw-mode: Changes DHW mode (anti-frost/schedule/continuous-comfort)
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -143,12 +145,14 @@ public class RemehaHeatingHandler extends BaseThingHandler {
 
     /**
      * Cleans up resources when the handler is disposed.
-     * Stops the refresh job.
+     * Stops the refresh job and the HTTP client.
      */
     @Override
     public void dispose() {
         stopRefreshJob();
         apiClient = null;
+        cachedClimateZoneId = null;
+        cachedHotWaterZoneId = null;
         try {
             if (httpClient.isStarted()) {
                 httpClient.stop();
@@ -161,7 +165,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
 
     /**
      * Starts the periodic data refresh job.
-     * 
+     *
      * @param intervalSeconds Refresh interval in seconds
      */
     private void startRefreshJob(int intervalSeconds) {
@@ -181,13 +185,9 @@ public class RemehaHeatingHandler extends BaseThingHandler {
 
     /**
      * Fetches latest data from Remeha API and updates all channel states.
-     * 
-     * Updates the following channels:
-     * - Room and outdoor temperatures
-     * - Target temperature
-     * - DHW temperature, target, mode, and status
-     * - Water pressure and pressure OK status
-     * - System error status
+     *
+     * If the dashboard request fails, the handler attempts re-authentication before
+     * setting the thing status to OFFLINE.
      */
     private void updateData() {
         RemehaApiClient client = apiClient;
@@ -204,48 +204,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
             }
 
             updateStatus(ThingStatus.ONLINE);
-
-            JsonArray appliances = dashboard.getAsJsonArray("appliances");
-            if (appliances != null && appliances.size() > 0) {
-                JsonObject appliance = appliances.get(0).getAsJsonObject();
-
-                // Update channels with proper units
-                double pressure = appliance.get("waterPressure").getAsDouble();
-                logger.debug("Updating water pressure: {} bar", pressure);
-                updateState(CHANNEL_WATER_PRESSURE, new QuantityType<>(pressure, Units.BAR));
-                updateState(CHANNEL_STATUS, new StringType(appliance.get("errorStatus").getAsString()));
-                updateState(CHANNEL_WATER_PRESSURE_OK, OnOffType.from(appliance.get("waterPressureOK").getAsBoolean()));
-
-                JsonObject outdoorInfo = appliance.getAsJsonObject("outdoorTemperatureInformation");
-                if (outdoorInfo != null) {
-                    double temp = outdoorInfo.get("internetOutdoorTemperature").getAsDouble();
-                    updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(temp, SIUnits.CELSIUS));
-                }
-
-                // Climate zones
-                JsonArray climateZones = appliance.getAsJsonArray("climateZones");
-                if (climateZones != null && climateZones.size() > 0) {
-                    JsonObject zone = climateZones.get(0).getAsJsonObject();
-                    double roomTemp = zone.get("roomTemperature").getAsDouble();
-                    double targetTemp = zone.get("setPoint").getAsDouble();
-                    updateState(CHANNEL_ROOM_TEMPERATURE, new QuantityType<>(roomTemp, SIUnits.CELSIUS));
-                    updateState(CHANNEL_TARGET_TEMPERATURE, new QuantityType<>(targetTemp, SIUnits.CELSIUS));
-                }
-
-                // Hot water zones
-                JsonArray hotWaterZones = appliance.getAsJsonArray("hotWaterZones");
-                if (hotWaterZones != null && hotWaterZones.size() > 0) {
-                    JsonObject zone = hotWaterZones.get(0).getAsJsonObject();
-                    double dhwTemp = zone.get("dhwTemperature").getAsDouble();
-                    double dhwTarget = zone.get("targetSetpoint").getAsDouble();
-                    String dhwMode = zone.get("dhwZoneMode").getAsString();
-                    String dhwStatus = zone.get("dhwStatus").getAsString();
-                    updateState(CHANNEL_DHW_TEMPERATURE, new QuantityType<>(dhwTemp, SIUnits.CELSIUS));
-                    updateState(CHANNEL_DHW_TARGET, new QuantityType<>(dhwTarget, SIUnits.CELSIUS));
-                    updateState(CHANNEL_DHW_MODE, new StringType(dhwMode));
-                    updateState(CHANNEL_DHW_STATUS, new StringType(dhwStatus));
-                }
-            }
+            updateChannelsFromDashboard(dashboard);
         } catch (IllegalStateException | NullPointerException e) {
             logger.debug("Error updating data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -254,96 +213,121 @@ public class RemehaHeatingHandler extends BaseThingHandler {
     }
 
     /**
+     * Updates all channel states from the dashboard JSON data and caches zone IDs.
+     *
+     * @param dashboard the dashboard JSON response
+     */
+    private void updateChannelsFromDashboard(JsonObject dashboard) {
+        JsonArray appliances = dashboard.getAsJsonArray("appliances");
+        if (appliances == null || appliances.isEmpty()) {
+            return;
+        }
+
+        JsonObject appliance = appliances.get(0).getAsJsonObject();
+
+        double pressure = appliance.get("waterPressure").getAsDouble();
+        updateState(CHANNEL_WATER_PRESSURE, new QuantityType<>(pressure, Units.BAR));
+        updateState(CHANNEL_STATUS, new StringType(appliance.get("errorStatus").getAsString()));
+        updateState(CHANNEL_WATER_PRESSURE_OK, OnOffType.from(appliance.get("waterPressureOK").getAsBoolean()));
+
+        JsonObject outdoorInfo = appliance.getAsJsonObject("outdoorTemperatureInformation");
+        if (outdoorInfo != null && outdoorInfo.has("internetOutdoorTemperature")) {
+            double temp = outdoorInfo.get("internetOutdoorTemperature").getAsDouble();
+            updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(temp, SIUnits.CELSIUS));
+        }
+
+        // Climate zones
+        JsonArray climateZones = appliance.getAsJsonArray("climateZones");
+        if (climateZones != null && !climateZones.isEmpty()) {
+            JsonObject zone = climateZones.get(0).getAsJsonObject();
+            double roomTemp = zone.get("roomTemperature").getAsDouble();
+            double targetTemp = zone.get("setPoint").getAsDouble();
+            updateState(CHANNEL_ROOM_TEMPERATURE, new QuantityType<>(roomTemp, SIUnits.CELSIUS));
+            updateState(CHANNEL_TARGET_TEMPERATURE, new QuantityType<>(targetTemp, SIUnits.CELSIUS));
+
+            // Cache climate zone ID
+            if (zone.has("climateZoneId")) {
+                cachedClimateZoneId = zone.get("climateZoneId").getAsString();
+            }
+        }
+
+        // Hot water zones
+        JsonArray hotWaterZones = appliance.getAsJsonArray("hotWaterZones");
+        if (hotWaterZones != null && !hotWaterZones.isEmpty()) {
+            JsonObject zone = hotWaterZones.get(0).getAsJsonObject();
+            double dhwTemp = zone.get("dhwTemperature").getAsDouble();
+            double dhwTarget = zone.get("targetSetpoint").getAsDouble();
+            String dhwMode = zone.get("dhwZoneMode").getAsString();
+            String dhwStatus = zone.get("dhwStatus").getAsString();
+            updateState(CHANNEL_DHW_TEMPERATURE, new QuantityType<>(dhwTemp, SIUnits.CELSIUS));
+            updateState(CHANNEL_DHW_TARGET, new QuantityType<>(dhwTarget, SIUnits.CELSIUS));
+            updateState(CHANNEL_DHW_MODE, new StringType(dhwMode));
+            updateState(CHANNEL_DHW_STATUS, new StringType(dhwStatus));
+
+            // Cache hot water zone ID
+            if (zone.has("hotWaterZoneId")) {
+                cachedHotWaterZoneId = zone.get("hotWaterZoneId").getAsString();
+            }
+        }
+    }
+
+    /**
      * Sets the target room temperature via API.
-     * 
+     *
      * @param temperature Target temperature in Celsius
      */
     private void setTargetTemperature(double temperature) {
         RemehaApiClient client = apiClient;
-        if (client != null) {
-            String climateZoneId = getClimateZoneId();
-            if (climateZoneId != null) {
-                if (!client.setTemperature(climateZoneId, temperature)) {
-                    logger.debug("Failed to set target temperature");
-                }
+        if (client == null) {
+            return;
+        }
+
+        String climateZoneId = cachedClimateZoneId;
+        if (climateZoneId == null) {
+            logger.debug("Climate zone ID not cached, fetching from dashboard");
+            JsonObject dashboard = client.getDashboard();
+            if (dashboard != null) {
+                updateChannelsFromDashboard(dashboard);
+                climateZoneId = cachedClimateZoneId;
             }
+        }
+        if (climateZoneId == null) {
+            logger.debug("Climate zone ID not available, cannot set temperature");
+            return;
+        }
+
+        if (!client.setTemperature(climateZoneId, temperature)) {
+            logger.debug("Failed to set target temperature to {}", temperature);
         }
     }
 
     /**
      * Sets the DHW (Domestic Hot Water) mode via API.
-     * 
+     *
      * @param mode DHW mode: "anti-frost", "schedule", or "continuous-comfort"
      */
     private void setDhwMode(String mode) {
         RemehaApiClient client = apiClient;
-        if (client != null) {
-            String hotWaterZoneId = getHotWaterZoneId();
-            if (hotWaterZoneId != null) {
-                if (!client.setDhwMode(hotWaterZoneId, mode)) {
-                    logger.debug("Failed to set DHW mode");
-                }
-            }
-        }
-    }
-
-    /**
-     * Retrieves the climate zone ID from the dashboard data.
-     * Used for temperature control API calls.
-     * 
-     * @return Climate zone ID or null if not available
-     */
-    private @Nullable String getClimateZoneId() {
-        RemehaApiClient client = apiClient;
         if (client == null) {
-            return null;
+            return;
         }
 
-        try {
+        String hotWaterZoneId = cachedHotWaterZoneId;
+        if (hotWaterZoneId == null) {
+            logger.debug("Hot water zone ID not cached, fetching from dashboard");
             JsonObject dashboard = client.getDashboard();
             if (dashboard != null) {
-                JsonArray appliances = dashboard.getAsJsonArray("appliances");
-                if (appliances != null && appliances.size() > 0) {
-                    JsonObject appliance = appliances.get(0).getAsJsonObject();
-                    JsonArray climateZones = appliance.getAsJsonArray("climateZones");
-                    if (climateZones != null && climateZones.size() > 0) {
-                        return climateZones.get(0).getAsJsonObject().get("climateZoneId").getAsString();
-                    }
-                }
+                updateChannelsFromDashboard(dashboard);
+                hotWaterZoneId = cachedHotWaterZoneId;
             }
-        } catch (IllegalStateException | NullPointerException e) {
-            logger.debug("Error getting climate zone ID: {}", e.getMessage());
         }
-        return null;
-    }
-
-    /**
-     * Retrieves the hot water zone ID from the dashboard data.
-     * Used for DHW control API calls.
-     * 
-     * @return Hot water zone ID or null if not available
-     */
-    private @Nullable String getHotWaterZoneId() {
-        RemehaApiClient client = apiClient;
-        if (client == null) {
-            return null;
+        if (hotWaterZoneId == null) {
+            logger.debug("Hot water zone ID not available, cannot set DHW mode");
+            return;
         }
 
-        try {
-            JsonObject dashboard = client.getDashboard();
-            if (dashboard != null) {
-                JsonArray appliances = dashboard.getAsJsonArray("appliances");
-                if (appliances != null && appliances.size() > 0) {
-                    JsonObject appliance = appliances.get(0).getAsJsonObject();
-                    JsonArray hotWaterZones = appliance.getAsJsonArray("hotWaterZones");
-                    if (hotWaterZones != null && hotWaterZones.size() > 0) {
-                        return hotWaterZones.get(0).getAsJsonObject().get("hotWaterZoneId").getAsString();
-                    }
-                }
-            }
-        } catch (IllegalStateException | NullPointerException e) {
-            logger.debug("Error getting hot water zone ID: {}", e.getMessage());
+        if (!client.setDhwMode(hotWaterZoneId, mode)) {
+            logger.debug("Failed to set DHW mode to {}", mode);
         }
-        return null;
     }
 }

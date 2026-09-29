@@ -33,11 +33,11 @@
 			<channel id="bypassReady" typeId="bypassReady"/>
 			<channel id="inhibitReady" typeId="inhibitReady"/>
 			<channel id="allZonesClosed" typeId="allZonesClosed"/>
-			<channel id="command" typeId="command"/>
+			<channel id="command" typeId="partitionCommand"/>
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -192,7 +192,7 @@
 		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="command">
+	<channel-type id="partitionCommand">
 		<item-type>String</item-type>
 		<label>Partition Command</label>
 		<description>Send command</description>

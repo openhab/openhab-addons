@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -72,7 +73,9 @@ public class ElectroluxGroupAPI {
     private final HttpClient httpClient;
     private final ElectroluxApplianceBridgeConfiguration configuration;
     private String accessToken = "";
-    private Instant tokenExpiry = Instant.MAX;
+    // Force a token refresh on the first API call after startup, so the (possibly rotated) refresh token is validated
+    // with a clean token request instead of relying on an empty-Bearer request that returns 401.
+    private Instant tokenExpiry = Instant.MIN;
     private final TokenUpdateListener tokenUpdateListener;
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
@@ -347,7 +350,8 @@ public class ElectroluxGroupAPI {
             ContentResponse httpResponse;
             httpResponse = request.send();
             if (httpResponse.getStatus() != HttpStatus.OK_200) {
-                throw new ElectroluxApplianceException("Failed to refresh tokens" + httpResponse.getContentAsString());
+                throw new ElectroluxApplianceException("Failed to refresh tokens, HTTP status: "
+                        + httpResponse.getStatus() + ", response: " + httpResponse.getContentAsString());
             }
             json = httpResponse.getContentAsString();
             logger.trace("Tokens: {}", json);
@@ -360,7 +364,17 @@ public class ElectroluxGroupAPI {
             logger.debug("Token expires in: {}s", expiresIn);
             this.tokenExpiry = Instant.now().plusSeconds(expiresIn);
             logger.debug("Token expires: {}", this.tokenExpiry);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException e) {
+            throw new ElectroluxApplianceException(e);
+        } catch (ExecutionException e) {
+            // The Electrolux token endpoint returns HTTP 401 without a WWW-Authenticate header (a violation of
+            // RFC 7235), which makes Jetty throw an HttpResponseException wrapped in an ExecutionException instead of
+            // returning the response. Extract the status from the cause so a 401 can be reported explicitly.
+            if (e.getCause() instanceof HttpResponseException httpResponseException
+                    && httpResponseException.getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                throw new ElectroluxApplianceException(
+                        "Failed to refresh token, refresh token is invalid or expired (HTTP 401)");
+            }
             throw new ElectroluxApplianceException(e);
         }
     }
@@ -386,10 +400,20 @@ public class ElectroluxGroupAPI {
                     }
                 } catch (TimeoutException e) {
                     logger.debug("TimeoutException error in get: {}", e.getMessage());
+                } catch (ExecutionException e) {
+                    // A 401 is thrown as an HttpResponseException because the API omits the WWW-Authenticate
+                    // header. Refresh the token so the next retry uses a valid access token.
+                    if (e.getCause() instanceof HttpResponseException httpResponseException
+                            && httpResponseException.getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                        logger.debug("getFromApi unauthorized (HTTP 401), refreshing token");
+                        refreshToken();
+                    } else {
+                        logger.debug("ExecutionException error in get: {}", e.getMessage());
+                    }
                 }
             }
             throw new ElectroluxApplianceException("Failed to fetch from API!");
-        } catch (JsonSyntaxException | ElectroluxApplianceException | ExecutionException e) {
+        } catch (JsonSyntaxException | ElectroluxApplianceException e) {
             throw new ElectroluxApplianceException(e);
         }
     }
@@ -440,9 +464,19 @@ public class ElectroluxGroupAPI {
                     }
                 } catch (TimeoutException | InterruptedException e) {
                     logger.warn("{}", getLocalizedText("error.electroluxappliance.api.get-timeout"));
+                } catch (ExecutionException e) {
+                    // A 401 is thrown as an HttpResponseException because the API omits the WWW-Authenticate
+                    // header. Refresh the token so the next retry uses a valid access token.
+                    if (e.getCause() instanceof HttpResponseException httpResponseException
+                            && httpResponseException.getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                        logger.debug("sendCommand unauthorized (HTTP 401), refreshing token");
+                        refreshToken();
+                    } else {
+                        logger.debug("ExecutionException error in sendCommand: {}", e.getMessage());
+                    }
                 }
             }
-        } catch (JsonSyntaxException | ElectroluxApplianceException | ExecutionException e) {
+        } catch (JsonSyntaxException | ElectroluxApplianceException e) {
             throw new ElectroluxApplianceException(e);
         }
         return false;

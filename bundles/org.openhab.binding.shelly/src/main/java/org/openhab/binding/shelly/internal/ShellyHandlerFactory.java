@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.shelly.internal;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.DEFAULT_LOCAL_PORT;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api2.Shelly2RpcSocket;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyLightHandler;
@@ -33,7 +35,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyRelayHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.net.HttpServiceUtil;
@@ -66,7 +68,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final Shelly1CoapServer coapServer;
     private final ShellyThingTable thingTable;
     private final WebSocketClient webSocketClient;
-    private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
+    private final ShellyBindingRuntimeConfig bindingConfig;
+    private final LocationProvider locationProvider;
 
     /**
      * Activate the bundle: save properties
@@ -79,10 +82,12 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     public ShellyHandlerFactory(@Reference NetworkAddressService networkAddressService,
             @Reference ShellyTranslationProvider translationProvider, @Reference ShellyThingTable thingTable,
             @Reference HttpClientFactory httpClientFactory, @Reference WebSocketFactory webSocketFactory,
-            ComponentContext componentContext, Map<String, Object> configProperties) {
+            @Reference LocationProvider locationProvider, ComponentContext componentContext,
+            Map<String, Object> configProperties) {
         super.activate(componentContext);
         this.messages = translationProvider;
         this.thingTable = thingTable;
+        this.locationProvider = locationProvider;
         WebSocketClient client = Shelly2RpcSocket.createWebSocketClient(webSocketFactory, "shelly2api");
         this.webSocketClient = client;
         try {
@@ -92,23 +97,14 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             throw new ComponentException("Failed to activate: Unable to start WebSocket client: " + e.getMessage(), e);
         }
 
-        bindingConfig.updateFromProperties(configProperties);
-        String localIP = bindingConfig.localIP;
-        if (localIP.isEmpty()) {
-            localIP = ShellyUtils.getString(networkAddressService.getPrimaryIpv4HostAddress());
-        }
-        if (localIP.isEmpty()) {
-            logger.warn("{}", messages.get("message.init.noipaddress"));
-        }
-
+        ShellyBindingConfiguration rawConfig = ShellyBindingConfiguration.fromProperties(configProperties);
         this.httpClient = httpClientFactory.getCommonHttpClient();
         int httpPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
-        if (httpPort == -1) {
-            httpPort = 8080;
+        logger.debug("Using OH HTTP port {}", httpPort != -1 ? httpPort : DEFAULT_LOCAL_PORT);
+        this.bindingConfig = new ShellyBindingRuntimeConfig(rawConfig, httpPort, networkAddressService);
+        if (bindingConfig.getLocalIP().isBlank()) {
+            logger.error("{}", messages.get("init.noipaddress"));
         }
-        logger.debug("Using OH HTTP port {}", httpPort);
-        bindingConfig.localIP = localIP;
-        bindingConfig.httpPort = httpPort;
 
         this.coapServer = new Shelly1CoapServer();
         this.thingTable.startDiscoveryService(bundleContext);
@@ -137,22 +133,22 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("{}: Create new thing of type {} using ShellyProtectedHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyProtectedHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
-                    webSocketClient);
+                    webSocketClient, locationProvider);
         } else if (GROUP_LIGHT_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
-                    webSocketClient);
+                    webSocketClient, locationProvider);
         } else if (GROUP_BLU_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyBluSensorHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyBluHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
-                    webSocketClient);
+                    webSocketClient, locationProvider);
         } else if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyRelayHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyRelayHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
-                    webSocketClient);
+                    webSocketClient, locationProvider);
         }
 
         if (handler != null) {
@@ -197,7 +193,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    public ShellyBindingConfiguration getBindingConfig() {
+    public ShellyBindingRuntimeConfig getBindingConfig() {
         return bindingConfig;
     }
 

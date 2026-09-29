@@ -76,6 +76,7 @@ import com.daimler.mbcarkit.proto.Client.ClientMessage;
 import com.daimler.mbcarkit.proto.VehicleCommands.AuxheatStart;
 import com.daimler.mbcarkit.proto.VehicleCommands.AuxheatStop;
 import com.daimler.mbcarkit.proto.VehicleCommands.ChargeProgramConfigure;
+import com.daimler.mbcarkit.proto.VehicleCommands.ChargingConfigure;
 import com.daimler.mbcarkit.proto.VehicleCommands.CommandRequest;
 import com.daimler.mbcarkit.proto.VehicleCommands.DoorsLock;
 import com.daimler.mbcarkit.proto.VehicleCommands.DoorsUnlock;
@@ -131,6 +132,9 @@ public class VehicleHandler extends BaseThingHandler {
     private int ignitionState = -1;
     private boolean chargingState = false;
     private int selectedChargeProgram = -1;
+    // True once a chargePrograms list was received; false means max-soc must be read/written
+    // via the flat maxSoc / ChargingConfigure fallback (e.g. MB-BEV-CLA)
+    private boolean hasChargePrograms = false;
     private int activeTemperaturePoint = -1;
     private Map<Integer, QuantityType<Temperature>> temperaturePointsStorage = new HashMap<>();
     private JSONObject chargeGroupValueStorage = new JSONObject();
@@ -425,6 +429,27 @@ public class VehicleHandler extends BaseThingHandler {
                 }
                 break; // position group
             case GROUP_CHARGE:
+                if (OH_CHANNEL_MAX_SOC.equals(channel) && !hasChargePrograms) {
+                    /**
+                     * Vehicle doesn't report a chargePrograms list (e.g. MB-BEV-CLA) - set max-soc
+                     * directly via ChargingConfigure, which needs no charge program selection, instead of
+                     * ChargeProgramConfigure.
+                     */
+                    int flatMaxSocToSelect;
+                    if (command instanceof QuantityType<?> quantityTypeCommand) {
+                        flatMaxSocToSelect = quantityTypeCommand.intValue();
+                    } else if (command instanceof DecimalType decimalTypeCommand) {
+                        flatMaxSocToSelect = decimalTypeCommand.intValue();
+                    } else {
+                        logger.trace("Cannot handle max-soc command {}", command);
+                        return;
+                    }
+                    Int32Value maxSocValue = Int32Value.newBuilder().setValue(flatMaxSocToSelect).build();
+                    ChargingConfigure cc = ChargingConfigure.newBuilder().setMaxSoc(maxSocValue).build();
+                    CommandRequest cr = crBuilder.setChargingConfigure(cc).build();
+                    localAccountHandler.sendCommand(createCM(cr));
+                    break;
+                }
                 if (!supports(MB_KEY_COMMAND_CHARGE_PROGRAM_CONFIGURE)) {
                     logger.trace("Charge Program Configure not supported");
                     return;
@@ -906,6 +931,7 @@ public class VehicleHandler extends BaseThingHandler {
                     ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_CHARGE, OH_CHANNEL_PROGRAM);
                     mmcop.setCommandOptions(cuid, commandOptions);
                     mmsop.setStateOptions(cuid, stateOptions);
+                    hasChargePrograms = true;
                 } else {
                     logger.trace("No Charge Program property available for {}", thing.getThingTypeUID());
                 }
@@ -926,29 +952,49 @@ public class VehicleHandler extends BaseThingHandler {
                     selectedChargeProgram = ChargeProgram.DEFAULT_CHARGE_PROGRAM_VALUE;
                 }
             }
-            if (selectedChargeProgram != -1 && !chargeGroupValueStorage.isEmpty()) {
-                if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
-                    ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
-                            new DecimalType(selectedChargeProgram));
-                    updateChannel(programMap);
-                    JSONObject chargeProgramValues = chargeGroupValueStorage
-                            .getJSONObject(Integer.toString(selectedChargeProgram));
-                    int maxSocToSelect = chargeProgramValues.getInt(Constants.MAX_SOC_KEY);
+            if (hasChargePrograms) {
+                if (selectedChargeProgram != -1 && !chargeGroupValueStorage.isEmpty()) {
+                    if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
+                        ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
+                                new DecimalType(selectedChargeProgram));
+                        updateChannel(programMap);
+                        JSONObject chargeProgramValues = chargeGroupValueStorage
+                                .getJSONObject(Integer.toString(selectedChargeProgram));
+                        int maxSocToSelect = chargeProgramValues.getInt(Constants.MAX_SOC_KEY);
+                        ChannelStateMap maxSocMap = new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
+                                QuantityType.valueOf(maxSocToSelect, Units.PERCENT));
+                        updateChannel(maxSocMap);
+                        socChanged.set(true);
+                        boolean autoUnlockToSelect = chargeProgramValues.getBoolean(Constants.AUTO_UNLOCK_KEY);
+                        ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
+                                OnOffType.from(autoUnlockToSelect));
+                        updateChannel(autoUnlockMap);
+                    } else {
+                        logger.trace("Charge Program index {} not found in {}", selectedChargeProgram,
+                                chargeGroupValueStorage);
+                    }
+                } else {
+                    logger.trace("Either Charge Program index {} not valid or charge programs not supported {} ",
+                            selectedChargeProgram, chargeGroupValueStorage);
+                }
+            } else {
+                /**
+                 * Fallback: vehicle doesn't report a chargePrograms list (e.g. MB-BEV-CLA) - read the
+                 * flat maxSoc attribute directly and derive command options from maxSocLowerLimit/UpperLimit
+                 * instead of the static XML option list.
+                 */
+                VehicleAttributeStatus maxSocVas = atts.get(MB_KEY_MAX_SOC);
+                if (maxSocVas != null && !Utils.isNil(maxSocVas)) {
+                    int maxSocToSelect = (int) maxSocVas.getIntValue();
                     ChannelStateMap maxSocMap = new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
                             QuantityType.valueOf(maxSocToSelect, Units.PERCENT));
                     updateChannel(maxSocMap);
                     socChanged.set(true);
-                    boolean autoUnlockToSelect = chargeProgramValues.getBoolean(Constants.AUTO_UNLOCK_KEY);
-                    ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
-                            OnOffType.from(autoUnlockToSelect));
-                    updateChannel(autoUnlockMap);
                 } else {
-                    logger.trace("Charge Program index {} not found in {}", selectedChargeProgram,
-                            chargeGroupValueStorage);
+                    logger.trace("No chargePrograms and no flat maxSoc attribute found for {}",
+                            thing.getThingTypeUID());
                 }
-            } else {
-                logger.trace("Either Charge Program index {} not valid or charge programs not supported {} ",
-                        selectedChargeProgram, chargeGroupValueStorage);
+                updateMaxSocCommandOptions(atts);
             }
         }
 
@@ -993,6 +1039,40 @@ public class VehicleHandler extends BaseThingHandler {
         if (localAccountHandler != null) {
             localAccountHandler.keepAlive(config.vin, ignitionState == 4 || chargingState);
         }
+    }
+
+    /**
+     * For vehicles without a chargePrograms list, derive the max-soc command options from the
+     * vehicle-reported maxSocLowerLimit/maxSocUpperLimit instead of the static option list in
+     * charge-channel-types.xml. Options are offered in 10 % steps within the reported bounds.
+     */
+    private void updateMaxSocCommandOptions(Map<String, VehicleAttributeStatus> atts) {
+        VehicleAttributeStatus lowerLimitVas = atts.get(MB_KEY_MAX_SOC_LOWER_LIMIT);
+        VehicleAttributeStatus upperLimitVas = atts.get(MB_KEY_MAX_SOC_UPPER_LIMIT);
+        if (lowerLimitVas == null || upperLimitVas == null || Utils.isNil(lowerLimitVas)
+                || Utils.isNil(upperLimitVas)) {
+            return;
+        }
+        int lowerLimit = (int) lowerLimitVas.getIntValue();
+        int upperLimit = (int) upperLimitVas.getIntValue();
+        if (lowerLimit <= 0 || upperLimit <= 0 || lowerLimit > upperLimit) {
+            logger.trace("Ignoring implausible max-soc limits [{}, {}]", lowerLimit, upperLimit);
+            return;
+        }
+        List<CommandOption> commandOptions = new ArrayList<>();
+        List<StateOption> stateOptions = new ArrayList<>();
+        int step = (lowerLimit / 10) * 10;
+        if (step < lowerLimit) {
+            step += 10;
+        }
+        for (; step <= upperLimit; step += 10) {
+            String label = step + " %";
+            commandOptions.add(new CommandOption(label, label));
+            stateOptions.add(new StateOption(label, label));
+        }
+        ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_CHARGE, OH_CHANNEL_MAX_SOC);
+        mmcop.setCommandOptions(cuid, commandOptions);
+        mmsop.setStateOptions(cuid, stateOptions);
     }
 
     private void energyUpdate() {

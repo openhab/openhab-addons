@@ -15,7 +15,6 @@ package org.openhab.transform.jinja.internal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -95,9 +94,7 @@ public class JinjaTransformationService implements TransformationService {
                 return node.decimalValue();
             case OBJECT: {
                 Map<String, @Nullable Object> result = new HashMap<>();
-                Iterator<Entry<String, JsonNode>> it = node.fields();
-                while (it.hasNext()) {
-                    Entry<String, JsonNode> field = it.next();
+                for (Entry<String, JsonNode> field : node.properties()) {
                     result.put(field.getKey(), toObject(field.getValue()));
                 }
                 return result;

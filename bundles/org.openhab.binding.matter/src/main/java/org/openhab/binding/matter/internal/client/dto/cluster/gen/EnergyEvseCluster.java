@@ -63,9 +63,9 @@ public class EnergyEvseCluster extends BaseCluster {
      * as communicated between the EVSE and the vehicle through the pilot signal.
      * The State attribute shall change when the EVSE detects change of condition of the EV (plugged in or unplugged,
      * whether the vehicle is asking for demand or not, and if it is charging or discharging).
-     * &gt; [!NOTE]
-     * &gt; SessionEnding is not really a state but a transition. However, the transition period may take a few seconds
-     * and is useful for some clean up purposes.
+     * > [!NOTE]
+     * > NOTE: SessionEnding is not really a state but a transition. However, the transition period may take a few
+     * seconds and is useful for some clean up purposes.
      * The Fault state is used to indicate that the FaultState attribute is not NoError.
      * A null value shall indicate that the state cannot be determined.
      */
@@ -117,20 +117,19 @@ public class EnergyEvseCluster extends BaseCluster {
      * the battery, such as temperature and state of charge.
      * The attribute can be initially set using the EnableCharging command or by adjusting the UserMaximumChargeCurrent
      * attribute.
-     * This attribute value shall be the minimum of:
-     * - CircuitCapacity - Electrician’s installation setting
-     * - CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in)
-     * - MaximumChargeCurrent field in the EnableCharging command
-     * - UserMaximumChargeCurrent attribute
+     * > [!NOTE]
+     * > This attribute value shall be the minimum of: - CircuitCapacity - Electrician's installation setting -
+     * CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in) - MaximumChargeCurrent field in the
+     * EnableCharging command - UserMaximumChargeCurrent attribute
      */
     public BigInteger maximumChargeCurrent; // 7 amperage-mA R V
     /**
      * Indicates the maximum current that can be received by the EVSE from the EV.
      * This attribute can be set using the EnableDischarging command.
-     * This attribute value shall be the minimum of:
-     * - CircuitCapacity - Electrician’s installation setting
-     * - CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in)
-     * - MaximumDischargeCurrent field in the EnableDischarging command
+     * > [!NOTE]
+     * > This attribute value shall be the minimum of: - CircuitCapacity - Electrician's installation setting -
+     * CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in) - MaximumDischargeCurrent field in
+     * the EnableDischarging command
      */
     public BigInteger maximumDischargeCurrent; // 8 amperage-mA R V
     /**
@@ -138,8 +137,7 @@ public class EnergyEvseCluster extends BaseCluster {
      * charging rate. This may be desirable if the home owner has a solar PV or battery storage system which may only be
      * able to deliver a limited amount of power. The consumer can manually control how much they allow the EV to take.
      * This attribute value shall be limited by the EVSE to be in the range of:
-     * MinimumChargeCurrent &lt;&#x3D; UserMaximumChargeCurrent &lt;&#x3D; MaximumChargeCurrent where
-     * MinimumChargeCurrent and MaximumChargeCurrent are the values received in the EnableCharging command.
+     * where MinimumChargeCurrent and MaximumChargeCurrent are the values received in the EnableCharging command.
      * Its default value SHOULD be initialized to the same as the CircuitCapacity attribute. This value shall be
      * persisted across reboots to ensure it does not cause charging issues during temporary power failures.
      */
@@ -191,13 +189,12 @@ public class EnergyEvseCluster extends BaseCluster {
      * This is value is stored in km per kWh multiplied by a scaling factor of 1000.
      * A null value indicates that the EV efficiency is unknown and the NextChargeRequiredEnergy attribute cannot be
      * converted from Wh to miles or km.
-     * To convert from Wh into Range:
-     * AddedRange (km) &#x3D; AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) AddedRange (Miles) &#x3D;
-     * AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x 0.6213
-     * Example:
-     * ApproxEVEfficiency (km/kWh x 1000): 4800 (i.e. 4.8km/kWh x 1000) AddedEnergy (Wh): 10,000
-     * AddedRange (km) &#x3D; 10,000 x 4800 / 1,000,000 &#x3D; 48 km AddedRange (Miles) &#x3D; AddedEnergy (Wh) x
-     * ApproxEVEfficiency (km/kWh x 1000) x 0.6213 &#x3D; 29.82 Miles
+     * > [!NOTE]
+     * > To convert from Wh into Range: AddedRange (km) = AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000)
+     * AddedRange (Miles) = AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x 0.6213 Example: ApproxEVEfficiency
+     * (km/kWh x 1000): 4800 (i.e. 4.8km/kWh x 1000) AddedEnergy (Wh): 10,000 AddedRange (km) = 10,000 x 4800 /
+     * 1,000,000 = 48 km AddedRange (Miles) = AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x 0.6213 = 29.82
+     * Miles
      */
     public Integer approximateEvEfficiency; // 39 uint16 RW VM
     /**
@@ -413,9 +410,10 @@ public class EnergyEvseCluster extends BaseCluster {
      * local generation (solar PV) into account to provide the cheapest and cleanest energy to the EV.
      * The optimization strategy is not defined here, however in simple terms, the AddedEnergy requirement can be
      * fulfilled by knowing the charging Power (W) and the time needed to charge.
-     * To compute the Charging Time: Required Energy (Wh) &#x3D; Power (W) x ChargingTime (s) / 3600
-     * Therefore: ChargingTime (s) &#x3D; (3600 x RequiredEnergy (wH)) / Power (W)
-     * To compute the charging time: Charging StartTime &#x3D; TargetTimeMinutesPastMidnight - ChargingTime
+     * > [!NOTE]
+     * > To compute the Charging Time: Required Energy (Wh) = Power (W) x ChargingTime (s) / 3600 Therefore:
+     * ChargingTime (s) = (3600 x RequiredEnergy (wH)) / Power (W) To compute the charging time: Charging StartTime =
+     * TargetTimeMinutesPastMidnight - ChargingTime
      */
     public static class ChargingTargetStruct {
         /**
@@ -465,10 +463,10 @@ public class EnergyEvseCluster extends BaseCluster {
          * vehicle stops demanding charge (i.e. it is full). Therefore the maximum value should be set based on typical
          * battery size of the vehicles on the market (e.g. 70000Wh), however this is up to the client to carefully
          * choose a value.
-         * &gt; [!NOTE]
-         * &gt; If the EVSE can obtain the Battery Capacity of the vehicle, it SHOULD NOT limit this AddedEnergy value
-         * to the Battery Capacity of the vehicle, since the EV may also require energy for heating and cooling of the
-         * battery during charging, or for heating or cooling the cabin.
+         * > [!NOTE]
+         * > NOTE: If the EVSE can obtain the Battery Capacity of the vehicle, it SHOULD NOT limit this AddedEnergy
+         * value to the Battery Capacity of the vehicle, since the EV may also require energy for heating and cooling of
+         * the battery during charging, or for heating or cooling the cabin.
          */
         public BigInteger addedEnergy; // energy-mWh
 
@@ -644,15 +642,15 @@ public class EnergyEvseCluster extends BaseCluster {
         /**
          * 
          * Since some EVSEs cannot obtain the SoC from the vehicle, some EV charging solutions allow the consumer to
-         * specify a daily charging target (for adding energy to the EV’s battery). This feature allows the consumer to
+         * specify a daily charging target (for adding energy to the EV's battery). This feature allows the consumer to
          * specify how many miles or km of additional range they need for their typical daily commute. This range
          * requirement can be converted into a daily energy demand with a target charging completion time.
          * The EVSE itself can use this information (or may allow a controller such as an EMS) to compute an optimized
-         * charging schedule.
+         * charging schedule. For example, an optimizer may be able to use the Commodity Price cluster to determine the
+         * cheapest and lowest GHG based charging schedule for the vehicle.
          * An EVSE device which includes a Device Energy Management device with the Device Energy Management cluster PFR
-         * (Power Forecast Reporting) feature can use the charging preferences information to produce its power
-         * forecast.
-         * EVSE devices that support the Device Energy Management cluster’s FA feature can have their charging profiles
+         * (PowerForecastReporting) feature can use the charging preferences information to produce its power forecast.
+         * EVSE devices that support the Device Energy Management cluster's FA feature can have their charging profiles
          * set by a controller device such as an EMS. For example, if the EVSE advertises a simple power forecast which
          * allows the EMS to adjust over a wide range of power and time durations, then the EVSE may allow the EMS to
          * propose a revised optimized forecast (which is the charging profile). For example, a solar PV ESA may also
@@ -696,7 +694,7 @@ public class EnergyEvseCluster extends BaseCluster {
          * to the home or grid.
          * The charging and discharging may be controlled by a home Energy Management System (EMS) using the Device
          * Energy Management cluster of the associated Device Energy Management device. For example, an EMS may use the
-         * PA (Power Adjustment) feature to continually adjust the charge/discharge current to/from the EV so as to
+         * PA (PowerAdjustment) feature to continually adjust the charge/discharge current to/from the EV so as to
          * minimise the energy flow from/to the grid as the demand in the home and the solar supply to the home both
          * fluctuate.
          */

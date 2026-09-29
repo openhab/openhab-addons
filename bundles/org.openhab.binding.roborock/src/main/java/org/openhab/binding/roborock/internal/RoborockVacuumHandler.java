@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,14 +60,17 @@ import org.openhab.binding.roborock.internal.api.enums.RobotCapabilities;
 import org.openhab.binding.roborock.internal.api.enums.StatusType;
 import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
 import org.openhab.binding.roborock.internal.map.RRMapData;
+import org.openhab.binding.roborock.internal.map.RRMapData.MapPoint;
 import org.openhab.binding.roborock.internal.map.RRMapParser;
 import org.openhab.binding.roborock.internal.map.RRMapRenderer;
+import org.openhab.binding.roborock.internal.map.RoomAtRobotResolver;
 import org.openhab.binding.roborock.internal.transport.CloudMqttTransport;
 import org.openhab.binding.roborock.internal.transport.LocalDirectTransport;
 import org.openhab.binding.roborock.internal.transport.RoborockCommandTransport;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.RequestCorrelationTracker;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -88,6 +92,7 @@ import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -119,6 +124,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RoborockVacuumHandler.class);
 
+    private static final String ROOM_NAME_NOT_FOUND = "Not found";
+
     private @Nullable RoborockAccountHandler bridgeHandler;
     private final SchedulerTask initTask;
     private final SchedulerTask pollTask;
@@ -126,10 +133,15 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private final RoborockStateDescriptionOptionProvider stateDescriptionProvider;
     private String token = "";
     private Rooms[] homeRooms = new Rooms[0];
+    private Map<Integer, String> segmentRoomNames = Map.of();
+    private final Object currentRoomLock = new Object();
     private String rrHomeId = "";
     private String localKey = "";
     private String localIP = "";
     private String endpointPrefix = "";
+    private boolean b01 = false;
+    private boolean q7 = false;
+    private boolean q10 = false;
     private final byte[] nonce = new byte[16];
     private boolean hasChannelStructure;
     private RoborockCommunicationMode communicationMode = RoborockCommunicationMode.CLOUD;
@@ -144,7 +156,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private boolean cloudMapRefreshDisabledLogged;
     private boolean cloudMetadataRefreshDisabledLogged;
     private volatile boolean vacuumChannelOn;
-    private @Nullable Integer lastKnownStateId;
+    private volatile @Nullable Integer lastKnownStateId;
+    private volatile @Nullable RRMapData lastParsedMapData;
+    private final Set<Integer> reportedUnknownStateIds = ConcurrentHashMap.newKeySet();
     private final Gson gson = new Gson();
     private final SecureRandom secureRandom = new SecureRandom();
     protected RoborockVacuumConfiguration config = new RoborockVacuumConfiguration();
@@ -218,28 +232,70 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 }
                 return;
             }
+            if (channelUID.getId().equals(CHANNEL_DP_COMMAND)) {
+                String jsonPayload = command.toString();
+                try {
+                    JsonElement parsed = JsonParser.parseString(jsonPayload);
+                    if (parsed.isJsonObject()) {
+                        Map<String, Object> dpsMap = new HashMap<>();
+                        for (Map.Entry<String, JsonElement> e : parsed.getAsJsonObject().entrySet()) {
+                            dpsMap.put(e.getKey(), e.getValue());
+                        }
+                        if (!dpsMap.isEmpty()) {
+                            sendQ10DpCommand(dpsMap);
+                            logger.debug("Successfully forwarded DP command map to device: {}", jsonPayload);
+                        } else {
+                            logger.warn("Received empty or invalid DP payload.");
+                        }
+                        logger.warn("Received non-object DP payload (expected JSON object): {}", jsonPayload);
+                    }
+                } catch (JsonSyntaxException e) {
+                    logger.warn("Failed to parse incoming DP payload. {}", e.getMessage());
+                }
+                return;
+            }
             if (channelUID.getId().equals(CHANNEL_VACUUM)) {
                 if (command instanceof OnOffType) {
-                    if (command.equals(OnOffType.ON)) {
-                        sendRPCCommand(COMMAND_APP_START);
-                        return;
+                    if (q10) {
+                        if (command.equals(OnOffType.ON)) {
+                            sendQ10DpCommand(Map.of("201", Map.of("cmd", 1)));
+                        } else {
+                            sendQ10DpCommand(Map.of("206", 0));
+                        }
                     } else {
-                        sendRPCCommand(COMMAND_APP_STOP);
-                        return;
+                        if (command.equals(OnOffType.ON)) {
+                            sendRPCCommand(COMMAND_APP_START);
+                            return;
+                        } else {
+                            sendRPCCommand(COMMAND_APP_STOP);
+                            return;
+                        }
                     }
+                    return;
                 }
             }
             if (channelUID.getId().equals(CHANNEL_CONTROL) && command instanceof StringType) {
-                if ("vacuum".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_START);
-                } else if ("spot".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_SPOT);
-                } else if ("pause".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_PAUSE);
-                } else if ("dock".equals(command.toString())) {
-                    sendRPCCommand(COMMAND_APP_CHARGE);
+                if (q10) {
+                    switch (command.toString()) {
+                        case "vacuum" -> sendQ10DpCommand(Map.of("201", Map.of("cmd", 1)));
+                        // Q10 has no separate spot mode observed in captures — treat as full clean
+                        case "spot" -> sendQ10DpCommand(Map.of("201", Map.of("cmd", 1)));
+                        case "pause" -> sendQ10DpCommand(Map.of("204", 0));
+                        case "dock" -> sendQ10DpCommand(Map.of("202", 5));
+                        default -> logger.warn("Q10 command {} not recognised", command.toString());
+                    }
                 } else {
-                    logger.warn("Command {} not recognised", command.toString());
+                    if ("vacuum".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_START);
+                    } else if ("spot".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_SPOT);
+                    } else if ("pause".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_PAUSE);
+                    } else if ("dock".equals(command.toString())) {
+                        sendRPCCommand(COMMAND_APP_CHARGE);
+                    } else {
+                        logger.warn("Command {} not recognised", command.toString());
+                    }
                 }
                 return;
             }
@@ -250,12 +306,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
 
             if (channelUID.getId().equals(CHANNEL_FAN_POWER)) {
-                sendRPCCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
+                if (q10) {
+                    sendQ10DpCommand(Map.of("123", Integer.parseInt(command.toString())));
+                } else {
+                    sendRPCCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
+                }
                 return;
             }
 
             if (channelUID.getId().equals(RobotCapabilities.WATERBOX_MODE.getChannel())) {
-                sendRPCCommand(COMMAND_SET_WATERBOX_MODE, "[" + command.toString() + "]");
+                if (q10) {
+                    sendQ10DpCommand(Map.of("124", Integer.parseInt(command.toString())));
+                } else {
+                    sendRPCCommand(COMMAND_SET_WATERBOX_MODE, "[" + command.toString() + "]");
+                }
                 return;
             }
             if (channelUID.getId().equals(RobotCapabilities.MOP_MODE.getChannel())) {
@@ -264,18 +328,34 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             }
             if (channelUID.getId().equals(RobotCapabilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
                     && !command.toString().contentEquals("-")) {
-                sendRPCCommand(COMMAND_START_SEGMENT, "[" + command.toString() + "]");
+                if (q10) {
+                    try {
+                        // Room IDs arrive as a comma-separated string or single integer
+                        List<Integer> roomIds = java.util.Arrays.stream(command.toString().split(",")).map(String::trim)
+                                .filter(s -> !s.isEmpty()).map(Integer::parseInt).toList();
+                        // Note: "clean_paramters" is a typo in the Q10 protocol — do not correct it
+                        sendQ10DpCommand(Map.of("201", Map.of("cmd", 2, "clean_paramters", roomIds)));
+                    } catch (NumberFormatException e) {
+                        logger.warn("Invalid Q10 room id list '{}': {}", command, e.getMessage());
+                    }
+                } else {
+                    sendRPCCommand(COMMAND_START_SEGMENT, "[" + command.toString() + "]");
+                }
                 updateState(RobotCapabilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
                 return;
             }
             if (channelUID.getId().equals(CHANNEL_FAN_CONTROL) && command instanceof DecimalType) {
-                if (Integer.valueOf(command.toString()) > 0) {
+                if (Integer.parseInt(command.toString()) > 0) {
                     sendRPCCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
                 }
                 return;
             }
             if (channelUID.getId().equals(CHANNEL_CONSUMABLE_RESET)) {
-                sendRPCCommand(COMMAND_CONSUMABLES_RESET, "[" + command.toString() + "]");
+                String consumable = command.toString();
+                if (!"none".equals(consumable)) {
+                    consumable = consumable.replace('-', '_');
+                    sendRPCCommand(COMMAND_CONSUMABLES_RESET, gson.toJson(List.of(consumable)));
+                }
                 updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
             }
 
@@ -318,6 +398,8 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         lastMapPollTimestamp = 0;
         vacuumChannelOn = false;
         lastKnownStateId = null;
+        lastParsedMapData = null;
+        clearSegmentRoomNames();
         cloudMapRefreshDisabledLogged = false;
         cloudMetadataRefreshDisabledLogged = false;
         mapUpdateDeduplicator.reset();
@@ -328,19 +410,47 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             return;
         }
         bridgeHandler = accountHandler;
-        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce);
+        b01 = isB01Device();
+        cloudTransport = new CloudMqttTransport(accountHandler, config.duid, nonce, b01, q7, q10);
         LocalDirectTransport localDirectTransport = new LocalDirectTransport();
         localDirectTransport.setMessageConsumer(this::handleMessage);
         directTransport = localDirectTransport;
         refreshTransportContext();
         hasChannelStructure = false;
         applyCloudOnlyCapabilityPolicies();
-
         initTask.setNamePrefix(getThing().getUID().getId());
         pollTask.setNamePrefix(getThing().getUID().getId());
         statusPollTask.setNamePrefix(getThing().getUID().getId());
         updateStatus(ThingStatus.UNKNOWN);
         initTask.schedule(5);
+    }
+
+    private boolean isB01Device() {
+        q7 = false;
+        q10 = false;
+        String protocol = getThing().getProperties().getOrDefault(THING_PROPERTY_PROTOCOL, "");
+        if (!"B01".equalsIgnoreCase(protocol)) {
+            return false;
+        }
+        b01 = true;
+        String name = getThing().getProperties().getOrDefault(THING_PROPERTY_DEVICE_NAME, "");
+        String nameUpper = name.toUpperCase(java.util.Locale.ROOT);
+        if (nameUpper.contains("Q7")) {
+            q7 = true;
+        } else if (nameUpper.contains("Q10")) {
+            q10 = true;
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_DP_COMMAND);
+            Channel channel = thing.getChannel(channelUID);
+            if (channel == null) {
+                logger.debug("Adding channel for DP commands, on device {}", getThing().getUID());
+                ThingBuilder thingBuilder = editThing();
+                channel = ChannelBuilder.create(channelUID, CoreItemFactory.STRING).withLabel("Execute DP Command")
+                        .withType(new ChannelTypeUID(BINDING_ID, "dpcommand")).build();
+                thingBuilder.withChannel(channel);
+                updateThing(thingBuilder.build());
+            }
+        }
+        return true;
     }
 
     private synchronized void scheduleNextPoll(long initialDelaySeconds) {
@@ -430,9 +540,15 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 if (localKey.isEmpty()) {
                     localKey = devices[i].localKey;
                     refreshTransportContext();
+                    if (q10) {
+                        sendQ10DpCommand(Map.of("102", Map.of("cmd", 1)));
+                    }
+
                 }
                 if (devices[i].online) {
-                    sendAllMqttCommands();
+                    if (!q10) {
+                        sendAllMqttCommands();
+                    }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.comm-error.vac-offline");
@@ -441,61 +557,97 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Helper to check whether the parent bridge handler exists and is currently ONLINE.
+     */
+    private boolean isBridgeSessionValid() {
+        RoborockAccountHandler localBridgeHandler = bridgeHandler;
+        return localBridgeHandler != null && localBridgeHandler.getThing().getStatus() == ThingStatus.ONLINE;
+    }
+
     private void pollData() {
         RoborockAccountHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler != null) {
-            applyCloudOnlyCapabilityPolicies();
-            boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
-            HomeData homeData = localBridgeHandler.getHomeData();
-            if (homeData != null && homeData.result != null) {
-                homeRooms = homeData.result.rooms;
-                Devices devices[] = homeData.result.devices;
-                updateDevice(devices);
-                Devices receivedDevices[] = homeData.result.receivedDevices;
-                updateDevice(receivedDevices);
-            }
-
-            if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
-                String routinesResponse = localBridgeHandler.getRoutines(config.duid);
-                List<StateOption> options = new ArrayList<>();
-                JsonObject parsedRoutines = routinesResponse != null && !routinesResponse.isEmpty()
-                        ? JsonParser.parseString(routinesResponse).getAsJsonObject()
-                        : null;
-                if (parsedRoutines != null && parsedRoutines.get("result").isJsonArray()
-                        && parsedRoutines.get("result").getAsJsonArray().size() > 0
-                        && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
-                    JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
-                    Map<String, Object> routines = new HashMap<>();
-                    for (int i = 0; i < routinesArray.size(); ++i) {
-                        JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
-                        routines.put(routinesJsonObject.get("id").getAsString(),
-                                routinesJsonObject.get("name").getAsString());
-                        options.add(new StateOption(routinesJsonObject.get("id").getAsString(),
-                                routinesJsonObject.get("name").getAsString()));
-                    }
-                    updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
-                    stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE),
-                            options);
-                } else {
-                    logger.debug("Routines not supported for device {}", config.duid);
-                    supportsRoutines = false;
-                }
-            } else if (supportsRoutines && !isCloudMetadataRefreshAllowed()) {
-                disableRoutinesState("cloudMetadataRefresh=off in direct communication mode");
-            }
-
-            if (cloudOnlyRefreshDue) {
-                lastCloudOnlyPollTimestamp = System.currentTimeMillis();
-            }
-
-            lastSuccessfulPollTimestamp = System.currentTimeMillis();
-            scheduleNextPoll(-1);
-
-            updateStatus(ThingStatus.ONLINE);
-        } else {
+        if (localBridgeHandler == null || !isBridgeSessionValid()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }
+
+        applyCloudOnlyCapabilityPolicies();
+        boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
+
+        @Nullable
+        HomeData homeData = localBridgeHandler.getHomeData();
+
+        if (homeData == null) {
+            logger.debug("pollData() received null homeData for {}. API fetch failed or token expired.", config.duid);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API fetch failed");
+
+            if (isBridgeSessionValid()) {
+                scheduleNextPoll(config.getRefreshIntervalSeconds());
+            }
+            return;
+        }
+
+        if (!isBridgeSessionValid()) {
+            return;
+        }
+
+        if (homeData.result != null) {
+            homeRooms = homeData.result.rooms != null ? homeData.result.rooms : new Rooms[0];
+
+            Devices[] devices = homeData.result.devices;
+            if (devices != null) {
+                updateDevice(devices);
+            }
+
+            Devices[] receivedDevices = homeData.result.receivedDevices;
+            if (receivedDevices != null) {
+                updateDevice(receivedDevices);
+            }
+        }
+
+        if (supportsRoutines && isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
+            String routinesResponse = localBridgeHandler.getRoutines(config.duid);
+
+            if (!isBridgeSessionValid()) {
+                return;
+            }
+
+            List<StateOption> options = new ArrayList<>();
+            JsonObject parsedRoutines = (routinesResponse != null && !routinesResponse.isEmpty())
+                    ? JsonParser.parseString(routinesResponse).getAsJsonObject()
+                    : null;
+
+            if (parsedRoutines != null && parsedRoutines.has("result") && parsedRoutines.get("result").isJsonArray()
+                    && !parsedRoutines.get("result").getAsJsonArray().isEmpty()
+                    && parsedRoutines.get("result").getAsJsonArray().get(0).isJsonObject()) {
+
+                JsonArray routinesArray = parsedRoutines.get("result").getAsJsonArray();
+                Map<String, Object> routines = new HashMap<>();
+                for (int i = 0; i < routinesArray.size(); ++i) {
+                    JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
+                    routines.put(routinesJsonObject.get("id").getAsString(),
+                            routinesJsonObject.get("name").getAsString());
+                    options.add(new StateOption(routinesJsonObject.get("id").getAsString(),
+                            routinesJsonObject.get("name").getAsString()));
+                }
+                updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
+                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_ROUTINE), options);
+            } else {
+                logger.debug("Routines not supported for device {}", config.duid);
+                supportsRoutines = false;
+            }
+        } else if (supportsRoutines && !isCloudMetadataRefreshAllowed()) {
+            disableRoutinesState("cloudMetadataRefresh=off in direct communication mode");
+        }
+
+        if (cloudOnlyRefreshDue) {
+            lastCloudOnlyPollTimestamp = System.currentTimeMillis();
+        }
+
+        lastSuccessfulPollTimestamp = System.currentTimeMillis();
+        scheduleNextPoll(-1);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private void pollStatusOnly() {
@@ -521,21 +673,23 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             boolean cloudOnlyRefreshDue = isCloudOnlyRefreshDue();
             registerRequest("getStatus", sendRPCCommand(COMMAND_GET_STATUS));
             registerRequest("getConsumable", sendRPCCommand(COMMAND_GET_CONSUMABLE));
-            registerRequest("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
             registerRequest("getCleanSummary", sendRPCCommand(COMMAND_GET_CLEAN_SUMMARY));
-            registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
-            if (isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
-                registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
-            } else if (!isCloudMetadataRefreshAllowed()) {
-                disableRoomMappingState("cloudMetadataRefresh=off in direct communication mode");
+            if (!b01) {
+                registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
+                registerRequest("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
+                if (isCloudMetadataRefreshAllowed() && cloudOnlyRefreshDue) {
+                    registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
+                } else if (!isCloudMetadataRefreshAllowed()) {
+                    disableRoomMappingState("cloudMetadataRefresh=off in direct communication mode");
+                }
+                registerRequest("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
+                registerRequest("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
+                registerRequest("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
+                registerRequest("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
+                registerRequest("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
+                registerRequest("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
+                registerRequest("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
             }
-            registerRequest("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
-            registerRequest("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
-            registerRequest("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
-            registerRequest("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
-            registerRequest("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
-            registerRequest("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
-            registerRequest("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
             requestMapRefreshIfDue(cloudOnlyRefreshDue, "periodic poll cycle");
         } catch (UnsupportedEncodingException e) {
             logger.warn("Failed to send MQTT commands due to unsupported encoding: {}", e.getMessage());
@@ -575,98 +729,28 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             JsonElement rpcPayload = extractRpcPayload(responseJson);
             if (rpcPayload != null && rpcPayload.isJsonPrimitive()) {
                 String jsonString = rpcPayload.getAsString();
-                if (!jsonString.endsWith("\"result\":[\"ok\"]}") && !jsonString.endsWith("\"result\":[]}")
-                        && JsonParser.parseString(jsonString).getAsJsonObject().has("id")
-                        && JsonParser.parseString(jsonString).getAsJsonObject().has("result")) {
-                    int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
-                    String methodName = requestCorrelationTracker.findMethodByRequestId(messageId);
 
-                    if (methodName == null) {
-                        logger.trace("Received response {} for unknown or already handled message ID: {}", response,
-                                messageId);
-                        return;
+                // B01 responses have a different envelope shape — normalise to V1 before dispatching
+                if (b01) {
+                    String normalised = normaliseB01Response(jsonString);
+                    if (normalised != null) {
+                        dispatchNormalisedResponse(normalised);
                     }
-
-                    switch (methodName) {
-                        case "getStatus":
-                        case COMMAND_GET_STATUS:
-                            handleGetStatus(jsonString);
-                            break;
-                        case "getConsumable":
-                        case COMMAND_GET_CONSUMABLE:
-                            handleGetConsumables(jsonString);
-                            break;
-                        case "getRoomMapping":
-                        case COMMAND_GET_ROOM_MAPPING:
-                            handleGetRoomMapping(jsonString);
-                            break;
-                        case "getNetworkInfo":
-                        case COMMAND_GET_NETWORK_INFO:
-                            handleGetNetworkInfo(jsonString);
-                            break;
-                        case "getCleanRecord":
-                        case COMMAND_GET_CLEAN_RECORD:
-                            handleGetCleanRecord(jsonString);
-                            break;
-                        case "getCleanSummary":
-                        case COMMAND_GET_CLEAN_SUMMARY:
-                            handleGetCleanSummary(jsonString);
-                            break;
-                        case "getDndTimer":
-                        case COMMAND_GET_DND_TIMER:
-                            handleGetDndTimer(jsonString);
-                            break;
-                        case "getSegmentStatus":
-                        case COMMAND_GET_SEGMENT_STATUS:
-                            handleGetSegmentStatus(jsonString);
-                            break;
-                        case "getMapStatus":
-                        case COMMAND_GET_MAP_STATUS:
-                            handleGetMapStatus(jsonString);
-                            break;
-                        case "getLedStatus":
-                        case COMMAND_GET_LED_STATUS:
-                            handleGetLedStatus(jsonString);
-                            break;
-                        case "getCarpetMode":
-                        case COMMAND_GET_CARPET_MODE:
-                            handleGetCarpetMode(jsonString);
-                            break;
-                        case "getFwFeatures":
-                        case COMMAND_GET_FW_FEATURES:
-                            handleGetFwFeatures(jsonString);
-                            break;
-                        case "getMultiMapsList":
-                        case COMMAND_GET_MULTI_MAP_LIST:
-                            handleGetMultiMapsList(jsonString);
-                            break;
-                        case "getCustomizeCleanMode":
-                        case COMMAND_GET_CUSTOMIZE_CLEAN_MODE:
-                            handleGetCustomizeCleanMode(jsonString);
-                            break;
-                        default:
-                            logger.debug("No handler for method: {}", methodName);
-                            break;
-                    }
-                    requestCorrelationTracker.removeByRequestId(messageId);
-                }
-            } else {
-                // handle live updates ie any one (or more of values of dps)
-                // "dps":{"121":8,"122":100,"123":104,"124":203,"125":75,"126":63,"127":50,"128":0,"133":1,"134":0}
-                JsonElement dpsElement = responseJson.get("dps");
-                if (dpsElement != null && dpsElement.isJsonObject()) {
-                    JsonObject dpsJsonObject = dpsElement.getAsJsonObject();
-                    if (dpsJsonObject.has("121")) {
-                        int stateInt = dpsJsonObject.get("121").getAsInt();
-                        updateStateIdAndRequestStatusIfChanged(stateInt, true);
-                    } else if (dpsJsonObject.has("122")) {
-                        int battery = dpsJsonObject.get("122").getAsInt();
-                        updateState(CHANNEL_BATTERY, new DecimalType(battery));
-                    }
+                } else {
+                    dispatchNormalisedResponse(jsonString);
+                    return;
                 }
             }
+
+            // Flat DP push handler — runs for all B01 devices on every frame.
+            // Q10 frames can carry both an RPC result (dps.10001) and flat shadow DPs
+            // simultaneously, so this block runs after the RPC block rather than as an else branch.
+            JsonElement dpsElement = responseJson.get("dps");
+            if (dpsElement != null && dpsElement.isJsonObject()) {
+                handleFlatDpPush(dpsElement.getAsJsonObject());
+            }
         } catch (JsonSyntaxException e) {
-            // Occasionally get non-JSON returned from the Roborock MQTT server
+            logger.trace("Ignored non-JSON or malformed message from device: {}", e.getMessage());
         }
     }
 
@@ -697,36 +781,22 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_MAP_PRESENT, OnOffType.from(1 == getStatus.result[0].mapPresent));
             updateStateIdAndRequestStatusIfChanged(getStatus.result[0].state, false);
 
-            OnOffType vacuum = OnOffType.OFF;
             StatusType state = StatusType.getType(getStatus.result[0].state);
-            String control;
-            switch (state) {
-                case ZONE:
-                case ROOM:
-                case CLEANING:
-                case RETURNING:
-                    control = "vacuum";
-                    vacuum = OnOffType.ON;
-                    break;
-                case CHARGING:
-                case CHARGING_ERROR:
-                case DOCKING:
-                case FULL:
-                    control = "dock";
-                    break;
-                case SLEEPING:
-                case PAUSED:
-                case IDLE:
-                    control = "pause";
-                    break;
-                case SPOTCLEAN:
-                    control = "spot";
-                    vacuum = OnOffType.ON;
-                    break;
-                default:
-                    control = "undef";
-                    break;
-            }
+            warnOnceAboutUnknownState(getStatus.result[0].state, state);
+
+            OnOffType vacuum = switch (state) {
+                case ZONE, ROOM, CLEANING, RETURNING, SPOTCLEAN -> OnOffType.ON;
+                default -> OnOffType.OFF;
+            };
+
+            String control = switch (state) {
+                case ZONE, ROOM, CLEANING, RETURNING -> "vacuum";
+                case CHARGING, CHARGING_ERROR, DOCKING, FULL -> "dock";
+                case SLEEPING, PAUSED, IDLE -> "pause";
+                case SPOTCLEAN -> "spot";
+                default -> "undef";
+            };
+
             if ("undef".equals(control)) {
                 updateState(CHANNEL_CONTROL, UnDefType.UNDEF);
             } else {
@@ -814,14 +884,18 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 JsonArray rooms = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
                 if (rooms.size() > 0) {
                     JsonArray mappedRoom = new JsonArray();
-                    String name = "Not found";
+                    Map<Integer, String> resolvedSegmentNames = new HashMap<>();
                     for (JsonElement roomE : rooms) {
                         JsonArray room = roomE.getAsJsonArray();
+                        String name = ROOM_NAME_NOT_FOUND;
                         for (int i = 0; i < homeRooms.length; i++) {
                             if (room.get(1).getAsString().equals(Integer.toString(homeRooms[i].id))) {
                                 name = homeRooms[i].name;
                                 break;
                             }
+                        }
+                        if (!ROOM_NAME_NOT_FOUND.equals(name)) {
+                            putResolvedSegmentName(resolvedSegmentNames, room, name);
                         }
                         room.set(1, new JsonPrimitive(name));
                         if (room.size() == 3) {
@@ -829,12 +903,32 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         }
                         mappedRoom.add(room);
                     }
+                    installSegmentRoomNames(resolvedSegmentNames);
                     updateState(cmd.getChannel(), new StringType(mappedRoom.toString()));
                 } else {
+                    clearSegmentRoomNames();
                     updateState(cmd.getChannel(), new StringType(response));
                 }
                 break;
             }
+        }
+    }
+
+    void installSegmentRoomNames(Map<Integer, String> resolvedSegmentNames) {
+        synchronized (currentRoomLock) {
+            segmentRoomNames = Map.copyOf(resolvedSegmentNames);
+            RRMapData mapData = lastParsedMapData;
+            if (mapData != null) {
+                updateCurrentRoomState(mapData);
+            }
+        }
+    }
+
+    private void putResolvedSegmentName(Map<Integer, String> target, JsonArray room, String name) {
+        try {
+            target.put(room.get(0).getAsInt(), name);
+        } catch (ClassCastException | IllegalStateException | NumberFormatException e) {
+            logger.debug("Could not parse room-mapping segment id from entry '{}': {}", room, e.getMessage());
         }
     }
 
@@ -852,121 +946,101 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void handleGetCleanRecord(String response) {
-        if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray()
-                && JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray().size() > 0
-                && JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0)
-                        .isJsonArray()) {
-            JsonArray historyData = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray()
-                    .get(0).getAsJsonArray();
-            Map<String, Object> historyRecord = new HashMap<>();
-            for (int i = 0; i < historyData.size(); ++i) {
-                try {
-                    BigInteger value = historyData.get(i).getAsBigInteger();
-                    switch (i) {
-                        case 0:
-                            DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(value.longValue()));
-                            historyRecord.put("begin", begin.format(null));
-                            updateState(CHANNEL_HISTORY_START_TIME, begin);
-                            break;
-                        case 1:
-                            DateTimeType end = new DateTimeType(Instant.ofEpochSecond(value.longValue()));
-                            historyRecord.put("end", end.format(null));
-                            updateState(CHANNEL_HISTORY_END_TIME, end);
-                            break;
-                        case 2:
-                            long duration = TimeUnit.SECONDS.toMinutes(value.intValue());
-                            historyRecord.put("duration", duration);
-                            updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
-                            break;
-                        case 3:
-                            historyRecord.put("area", value);
-                            updateState(CHANNEL_HISTORY_AREA, new QuantityType<>(value, SIUnits.SQUARE_METRE));
-                            break;
-                        case 4:
-                            historyRecord.put("error", value.intValue());
-                            updateState(CHANNEL_HISTORY_ERROR, new DecimalType(value.intValue()));
-                            break;
-                        case 5:
-                            historyRecord.put("complete", value.intValue());
-                            updateState(CHANNEL_HISTORY_FINISH, new DecimalType(value.intValue()));
-                            break;
-                        case 6:
-                            historyRecord.put("startType", value.intValue());
-                            break;
-                        case 7:
-                            historyRecord.put("cleanType", value.intValue());
-                            break;
-                        case 8:
-                            historyRecord.put("finishReason", value.intValue());
-                            updateState(CHANNEL_HISTORY_FINISHREASON, new DecimalType(value.intValue()));
-                            break;
+        if (!response.isEmpty()) {
+            String safeResponse = response;
+            JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
+            if (responseObj.get("result").isJsonArray()
+                    && responseObj.getAsJsonObject().get("result").getAsJsonArray().size() > 0
+                    && responseObj.get("result").getAsJsonArray().get(0).isJsonArray()) {
+                JsonArray historyData = responseObj.get("result").getAsJsonArray().get(0).getAsJsonArray();
+                Map<String, Object> historyRecord = new HashMap<>();
+                for (int i = 0; i < historyData.size(); ++i) {
+                    try {
+                        BigInteger value = historyData.get(i).getAsBigInteger();
+                        switch (i) {
+                            case 0 -> {
+                                DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(value.longValue()));
+                                historyRecord.put("begin", begin.format(null));
+                                updateState(CHANNEL_HISTORY_START_TIME, begin);
+                            }
+                            case 1 -> {
+                                DateTimeType end = new DateTimeType(Instant.ofEpochSecond(value.longValue()));
+                                historyRecord.put("end", end.format(null));
+                                updateState(CHANNEL_HISTORY_END_TIME, end);
+                            }
+                            case 2 -> {
+                                long duration = TimeUnit.SECONDS.toMinutes(value.intValue());
+                                historyRecord.put("duration", duration);
+                                updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
+                            }
+                            case 3 -> {
+                                historyRecord.put("area", value);
+                                updateState(CHANNEL_HISTORY_AREA, new QuantityType<>(value, SIUnits.SQUARE_METRE));
+                            }
+                            case 4 -> {
+                                historyRecord.put("error", value.intValue());
+                                updateState(CHANNEL_HISTORY_ERROR, new DecimalType(value.intValue()));
+                            }
+                            case 5 -> {
+                                historyRecord.put("complete", value.intValue());
+                                updateState(CHANNEL_HISTORY_FINISH, new DecimalType(value.intValue()));
+                            }
+                            case 6 -> historyRecord.put("startType", value.intValue());
+                            case 7 -> historyRecord.put("cleanType", value.intValue());
+                            case 8 -> {
+                                historyRecord.put("finishReason", value.intValue());
+                                updateState(CHANNEL_HISTORY_FINISHREASON, new DecimalType(value.intValue()));
+                            }
+                        }
+                    } catch (ClassCastException | NumberFormatException | IllegalStateException e) {
+                        logger.trace("Failed to parse clean record entry: {}", e.getMessage());
                     }
-                } catch (ClassCastException | NumberFormatException | IllegalStateException e) {
                 }
-            }
-            updateState(CHANNEL_HISTORY_RECORD, new StringType(gson.toJson(historyRecord)));
-        } else {
-            GetCleanRecord getCleanRecord = gson.fromJson(response, GetCleanRecord.class);
-            Map<String, Object> historyRecord = new HashMap<>();
-            if (getCleanRecord != null) {
-                DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result[0].begin));
-                historyRecord.put("begin", begin.format(null));
-                updateState(CHANNEL_HISTORY_START_TIME, begin);
-                DateTimeType end = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result[0].end));
-                historyRecord.put("end", end.format(null));
-                updateState(CHANNEL_HISTORY_END_TIME, end);
-                long duration = TimeUnit.SECONDS.toMinutes(getCleanRecord.result[0].duration);
-                historyRecord.put("duration", duration);
-                updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
-                historyRecord.put("area", getCleanRecord.result[0].cleanedArea);
-                updateState(CHANNEL_HISTORY_AREA,
-                        new QuantityType<>(getCleanRecord.result[0].cleanedArea / 1000000D, SIUnits.SQUARE_METRE));
-                historyRecord.put("error", getCleanRecord.result[0].error);
-                updateState(CHANNEL_HISTORY_ERROR, new DecimalType(getCleanRecord.result[0].error));
-                historyRecord.put("complete", getCleanRecord.result[0].complete);
-                updateState(CHANNEL_HISTORY_FINISH, new DecimalType(getCleanRecord.result[0].complete));
-                historyRecord.put("finish_reason", getCleanRecord.result[0].finishReason);
-                updateState(CHANNEL_HISTORY_FINISHREASON, new DecimalType(getCleanRecord.result[0].finishReason));
-                historyRecord.put("dust_collection_status", getCleanRecord.result[0].dustCollectionStatus);
-                updateState(CHANNEL_HISTORY_DUSTCOLLECTION,
-                        new DecimalType(getCleanRecord.result[0].dustCollectionStatus));
                 updateState(CHANNEL_HISTORY_RECORD, new StringType(gson.toJson(historyRecord)));
+            } else {
+                GetCleanRecord getCleanRecord = gson.fromJson(response, GetCleanRecord.class);
+                Map<String, Object> historyRecord = new HashMap<>();
+                if (getCleanRecord != null) {
+                    DateTimeType begin = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result[0].begin));
+                    historyRecord.put("begin", begin.format(null));
+                    updateState(CHANNEL_HISTORY_START_TIME, begin);
+                    DateTimeType end = new DateTimeType(Instant.ofEpochSecond(getCleanRecord.result[0].end));
+                    historyRecord.put("end", end.format(null));
+                    updateState(CHANNEL_HISTORY_END_TIME, end);
+                    long duration = TimeUnit.SECONDS.toMinutes(getCleanRecord.result[0].duration);
+                    historyRecord.put("duration", duration);
+                    updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
+                    historyRecord.put("area", getCleanRecord.result[0].cleanedArea);
+                    updateState(CHANNEL_HISTORY_AREA,
+                            new QuantityType<>(getCleanRecord.result[0].cleanedArea / 1000000D, SIUnits.SQUARE_METRE));
+                    historyRecord.put("error", getCleanRecord.result[0].error);
+                    updateState(CHANNEL_HISTORY_ERROR, new DecimalType(getCleanRecord.result[0].error));
+                    historyRecord.put("complete", getCleanRecord.result[0].complete);
+                    updateState(CHANNEL_HISTORY_FINISH, new DecimalType(getCleanRecord.result[0].complete));
+                    historyRecord.put("finish_reason", getCleanRecord.result[0].finishReason);
+                    updateState(CHANNEL_HISTORY_FINISHREASON, new DecimalType(getCleanRecord.result[0].finishReason));
+                    historyRecord.put("dust_collection_status", getCleanRecord.result[0].dustCollectionStatus);
+                    updateState(CHANNEL_HISTORY_DUSTCOLLECTION,
+                            new DecimalType(getCleanRecord.result[0].dustCollectionStatus));
+                    updateState(CHANNEL_HISTORY_RECORD, new StringType(gson.toJson(historyRecord)));
+                }
             }
         }
     }
 
     private void handleGetCleanSummary(String response) {
-        if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray()) {
-            JsonArray historyData = JsonParser.parseString(response).getAsJsonObject().get("result").getAsJsonArray();
-            updateState(CHANNEL_HISTORY_TOTALTIME,
-                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), Units.MINUTE));
-            updateState(CHANNEL_HISTORY_TOTALAREA,
-                    new QuantityType<>(historyData.get(1).getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
-            updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
-            if (historyData.get(3).getAsJsonArray().size() > 0) {
-                String lastClean = historyData.get(3).getAsJsonArray().get(0).getAsString();
-                if (!lastClean.equals(lastHistoryID)) {
-                    lastHistoryID = lastClean;
-                    try {
-                        registerRequest("getCleanRecord",
-                                sendRPCCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
-                    } catch (UnsupportedEncodingException e) {
-                        // Shouldn't occur
-                    }
-                }
-            }
-        } else {
-            JsonObject cleanSummary = JsonParser.parseString(response).getAsJsonObject().get("result")
-                    .getAsJsonObject();
-            updateState(CHANNEL_HISTORY_TOTALTIME, new QuantityType<>(
-                    TimeUnit.SECONDS.toMinutes(cleanSummary.get("clean_time").getAsLong()), Units.MINUTE));
-            updateState(CHANNEL_HISTORY_TOTALAREA,
-                    new QuantityType<>(cleanSummary.get("clean_area").getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
-            updateState(CHANNEL_HISTORY_COUNT, new DecimalType(cleanSummary.get("clean_count").getAsLong()));
-            if (cleanSummary.has("records") && cleanSummary.get("records").isJsonArray()) {
-                JsonArray cleanSummaryRecords = cleanSummary.get("records").getAsJsonArray();
-                if (!cleanSummaryRecords.isEmpty()) {
-                    String lastClean = cleanSummaryRecords.get(0).getAsString();
+        if (!response.isEmpty()) {
+            String safeResponse = response;
+            JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
+            if (responseObj.get("result").isJsonArray()) {
+                JsonArray historyData = responseObj.get("result").getAsJsonArray();
+                updateState(CHANNEL_HISTORY_TOTALTIME,
+                        new QuantityType<>(TimeUnit.SECONDS.toMinutes(historyData.get(0).getAsLong()), Units.MINUTE));
+                updateState(CHANNEL_HISTORY_TOTALAREA,
+                        new QuantityType<>(historyData.get(1).getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
+                updateState(CHANNEL_HISTORY_COUNT, new DecimalType(historyData.get(2).toString()));
+                if (!b01 && historyData.get(3).getAsJsonArray().size() > 0) {
+                    String lastClean = historyData.get(3).getAsJsonArray().get(0).getAsString();
                     if (!lastClean.equals(lastHistoryID)) {
                         lastHistoryID = lastClean;
                         try {
@@ -974,6 +1048,28 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                                     sendRPCCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
                         } catch (UnsupportedEncodingException e) {
                             // Shouldn't occur
+                        }
+                    }
+                }
+            } else {
+                JsonObject cleanSummary = responseObj.get("result").getAsJsonObject();
+                updateState(CHANNEL_HISTORY_TOTALTIME, new QuantityType<>(
+                        TimeUnit.SECONDS.toMinutes(cleanSummary.get("clean_time").getAsLong()), Units.MINUTE));
+                updateState(CHANNEL_HISTORY_TOTALAREA, new QuantityType<>(
+                        cleanSummary.get("clean_area").getAsDouble() / 1000000D, SIUnits.SQUARE_METRE));
+                updateState(CHANNEL_HISTORY_COUNT, new DecimalType(cleanSummary.get("clean_count").getAsLong()));
+                if (!b01 && cleanSummary.has("records") && cleanSummary.get("records").isJsonArray()) {
+                    JsonArray cleanSummaryRecords = cleanSummary.get("records").getAsJsonArray();
+                    if (!cleanSummaryRecords.isEmpty()) {
+                        String lastClean = cleanSummaryRecords.get(0).getAsString();
+                        if (!lastClean.equals(lastHistoryID)) {
+                            lastHistoryID = lastClean;
+                            try {
+                                registerRequest("getCleanRecord",
+                                        sendRPCCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
+                            } catch (UnsupportedEncodingException e) {
+                                // Shouldn't occur
+                            }
                         }
                     }
                 }
@@ -986,54 +1082,66 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         if (getDndTimer != null) {
             updateState(CHANNEL_DND_FUNCTION, new DecimalType(getDndTimer.result[0].enabled));
             updateState(CHANNEL_DND_START, new StringType(
-                    String.format("%02d:%02d", getDndTimer.result[0].startHour, getDndTimer.result[0].startMinute)));
+                    "%02d:%02d".formatted(getDndTimer.result[0].startHour, getDndTimer.result[0].startMinute)));
             updateState(CHANNEL_DND_END, new StringType(
-                    String.format("%02d:%02d", getDndTimer.result[0].endHour, getDndTimer.result[0].endMinute)));
+                    "%02d:%02d".formatted(getDndTimer.result[0].endHour, getDndTimer.result[0].endMinute)));
         }
     }
 
     private void handleGetSegmentStatus(String response) {
-        if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray() && JsonParser
-                .parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
-            JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result")
-                    .getAsJsonArray();
-            String stat = getSegmentStatus.get(0).getAsString();
-            if (!"OK".equals(stat)) {
-                updateState(RobotCapabilities.SEGMENT_STATUS.getChannel(), OnOffType.from(1 == Integer.parseInt(stat)));
+        if (!response.isEmpty()) {
+            String safeResponse = response;
+            JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
+            if (responseObj.get("result").isJsonArray()
+                    && responseObj.get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
+                JsonArray getSegmentStatus = responseObj.get("result").getAsJsonArray();
+                String stat = getSegmentStatus.get(0).getAsString();
+                if (!"OK".equals(stat)) {
+                    updateState(RobotCapabilities.SEGMENT_STATUS.getChannel(),
+                            OnOffType.from(1 == Integer.parseInt(stat)));
+                }
             }
         }
     }
 
     private void handleGetMapStatus(String response) {
-        if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray() && JsonParser
-                .parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
-            JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result")
-                    .getAsJsonArray();
-            try {
-                String stat = getSegmentStatus.get(0).getAsString();
-                if (!"OK".equals(stat)) {
-                    updateState(RobotCapabilities.MAP_STATUS.getChannel(), OnOffType.from(1 == Integer.parseInt(stat)));
+        if (!response.isEmpty()) {
+            String safeResponse = response;
+            JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
+            if (responseObj.get("result").isJsonArray()
+                    && responseObj.get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
+                JsonArray getSegmentStatus = responseObj.getAsJsonObject().get("result").getAsJsonArray();
+                try {
+                    String stat = getSegmentStatus.get(0).getAsString();
+                    if (!"OK".equals(stat)) {
+                        updateState(RobotCapabilities.MAP_STATUS.getChannel(),
+                                OnOffType.from(1 == Integer.parseInt(stat)));
+                    }
+                } catch (ClassCastException | IllegalStateException e) {
+                    logger.debug("Could not update numeric channel {} with '{}': {}",
+                            RobotCapabilities.MAP_STATUS.getChannel(), response, e.getMessage());
                 }
-            } catch (ClassCastException | IllegalStateException e) {
-                logger.debug("Could not update numeric channel {} with '{}': {}",
-                        RobotCapabilities.MAP_STATUS.getChannel(), response, e.getMessage());
             }
         }
     }
 
     private void handleGetLedStatus(String response) {
-        if (JsonParser.parseString(response).getAsJsonObject().get("result").isJsonArray() && JsonParser
-                .parseString(response).getAsJsonObject().get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
-            JsonArray getSegmentStatus = JsonParser.parseString(response).getAsJsonObject().get("result")
-                    .getAsJsonArray();
-            try {
-                String stat = getSegmentStatus.get(0).getAsString();
-                if (!"OK".equals(stat)) {
-                    updateState(RobotCapabilities.LED_STATUS.getChannel(), OnOffType.from(1 == Integer.parseInt(stat)));
+        if (!response.isEmpty()) {
+            String safeResponse = response;
+            JsonObject responseObj = JsonParser.parseString(safeResponse).getAsJsonObject();
+            if (responseObj.get("result").isJsonArray()
+                    && responseObj.get("result").getAsJsonArray().get(0).isJsonPrimitive()) {
+                JsonArray getSegmentStatus = responseObj.get("result").getAsJsonArray();
+                try {
+                    String stat = getSegmentStatus.get(0).getAsString();
+                    if (!"OK".equals(stat)) {
+                        updateState(RobotCapabilities.LED_STATUS.getChannel(),
+                                OnOffType.from(1 == Integer.parseInt(stat)));
+                    }
+                } catch (ClassCastException | IllegalStateException e) {
+                    logger.debug("Could not update numeric channel {} with '{}': {}",
+                            RobotCapabilities.LED_STATUS.getChannel(), response, e.getMessage());
                 }
-            } catch (ClassCastException | IllegalStateException e) {
-                logger.debug("Could not update numeric channel {} with '{}': {}",
-                        RobotCapabilities.LED_STATUS.getChannel(), response, e.getMessage());
             }
         }
     }
@@ -1071,7 +1179,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void handleGetMap(int requestId, byte[] mapPayload) {
+    void handleGetMap(int requestId, byte[] mapPayload) {
         String methodName = requestCorrelationTracker.findMethodByRequestId(requestId);
         CompletableFuture<byte[]> pendingDownload = pendingRrMapDownloads.remove(Integer.valueOf(requestId));
         if (pendingDownload != null) {
@@ -1084,18 +1192,97 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
 
         try {
-            RRMapData mapData = rrMapParser.parse(mapPayload);
-            byte[] pngBytes = rrMapRenderer.renderAsPng(mapData);
-            if (mapUpdateDeduplicator.shouldPublish(pngBytes)) {
-                updateState(CHANNEL_VACUUM_MAP, new RawType(pngBytes, "image/png"));
-            } else {
-                logger.trace("Suppressing duplicate map image update for request id {}", requestId);
+            RRMapData mapData;
+            try {
+                mapData = rrMapParser.parse(mapPayload);
+            } catch (RoborockException e) {
+                logger.debug("Failed to parse map payload for request id {}: {}", requestId, e.getMessage());
+                invalidateMapDerivedState();
+                return;
             }
-        } catch (RoborockException e) {
-            logger.debug("Failed to parse map payload for request id {}: {}", requestId, e.getMessage());
+            synchronized (currentRoomLock) {
+                lastParsedMapData = mapData;
+                updateCurrentRoomState(mapData);
+            }
+            try {
+                byte[] pngBytes = rrMapRenderer.renderAsPng(mapData);
+                if (mapUpdateDeduplicator.shouldPublish(pngBytes)) {
+                    updateState(CHANNEL_VACUUM_MAP, new RawType(pngBytes, "image/png"));
+                } else {
+                    logger.trace("Suppressing duplicate map image update for request id {}", requestId);
+                }
+            } catch (RoborockException e) {
+                logger.debug("Failed to render map image for request id {}: {}", requestId, e.getMessage());
+            }
         } finally {
             requestCorrelationTracker.removeByRequestId(requestId);
         }
+    }
+
+    /** Caller must hold {@link #currentRoomLock}: the segment table is read unguarded here. */
+    private void updateCurrentRoomState(RRMapData mapData) {
+        State roomState = resolveRoomStateFromMap(mapData, isAtDock(), segmentRoomNames);
+        if (roomState != null) {
+            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), roomState);
+        }
+    }
+
+    /** Caller must hold {@link #currentRoomLock}: cached map and segment table are read as a pair. */
+    private void updateCurrentRoomStateFromDock() {
+        updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(),
+                resolveDockRoomState(lastParsedMapData, segmentRoomNames));
+    }
+
+    static @Nullable State resolveRoomStateFromMap(RRMapData mapData, boolean atDock,
+            Map<Integer, String> segmentRoomNames) {
+        if (atDock) {
+            return resolveDockRoomState(mapData, segmentRoomNames);
+        }
+        MapPoint position = robotPosition(mapData);
+        return position == null ? UnDefType.UNDEF : roomStateAt(mapData, position, segmentRoomNames);
+    }
+
+    static State resolveDockRoomState(@Nullable RRMapData mapData, Map<Integer, String> segmentRoomNames) {
+        if (mapData == null) {
+            return UnDefType.UNDEF;
+        }
+        MapPoint dockPosition = dockPosition(mapData);
+        State dockRoomState = dockPosition == null ? null : roomStateAt(mapData, dockPosition, segmentRoomNames);
+        return dockRoomState == null ? UnDefType.UNDEF : dockRoomState;
+    }
+
+    static boolean hasJustDocked(@Nullable Integer previousStateId, int newStateId) {
+        if (!StatusType.getType(newStateId).isAtDock()) {
+            return false;
+        }
+        return previousStateId == null || !StatusType.getType(previousStateId.intValue()).isAtDock();
+    }
+
+    private static @Nullable State roomStateAt(RRMapData mapData, MapPoint position,
+            Map<Integer, String> segmentRoomNames) {
+        Optional<Integer> segmentId = RoomAtRobotResolver.resolveSegmentId(mapData, position.x(), position.y());
+        if (segmentId.isEmpty()) {
+            return null;
+        }
+        String roomName = segmentRoomNames.get(segmentId.get());
+        return roomName != null ? new StringType(roomName) : UnDefType.UNDEF;
+    }
+
+    private static @Nullable MapPoint dockPosition(RRMapData mapData) {
+        Integer chargerX = mapData.chargerX();
+        Integer chargerY = mapData.chargerY();
+        return chargerX == null || chargerY == null ? null : new MapPoint(chargerX.intValue(), chargerY.intValue());
+    }
+
+    private static @Nullable MapPoint robotPosition(RRMapData mapData) {
+        Integer robotX = mapData.robotX();
+        Integer robotY = mapData.robotY();
+        return robotX == null || robotY == null ? null : new MapPoint(robotX.intValue(), robotY.intValue());
+    }
+
+    private boolean isAtDock() {
+        Integer stateId = lastKnownStateId;
+        return stateId != null && StatusType.getType(stateId.intValue()).isAtDock();
     }
 
     public @Nullable String downloadRrMap(@Nullable String requestedDirectory) {
@@ -1219,7 +1406,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void registerRequest(String methodName, int requestId) {
+    void registerRequest(String methodName, int requestId) {
         if (requestId == REQUEST_ID_SYNC_DIRECT_COMPLETED) {
             if (logger.isTraceEnabled()) {
                 logger.trace(
@@ -1235,7 +1422,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         methodName);
             }
             if ("getMap".equals(methodName)) {
-                setMapStateUndefinedAndResetDeduplicator();
+                invalidateMapDerivedState();
             }
             return;
         }
@@ -1243,7 +1430,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             logger.debug("Skipping request registration for method '{}' due to invalid request id {}", methodName,
                     requestId);
             if ("getMap".equals(methodName)) {
-                setMapStateUndefinedAndResetDeduplicator();
+                invalidateMapDerivedState();
             }
             return;
         }
@@ -1289,10 +1476,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     thingBuilder.withChannel(channel);
                     cnt++;
                 } else {
-                    logger.debug("ChannelType {} not found (Unexpected). Available types:",
+                    logger.trace("ChannelType {} not found (Unexpected). Available types:",
                             capability.getChannelType());
                     for (ChannelType ct : channelTypeRegistry.getChannelTypes()) {
-                        logger.debug("Available channelType: '{}' '{}' '{}'", ct.getUID(), ct.toString(),
+                        logger.trace("Available channelType: '{}' '{}' '{}'", ct.getUID(), ct.toString(),
                                 ct.getConfigDescriptionURI());
                     }
                 }
@@ -1376,7 +1563,596 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         if (dpsJson.has("101")) {
             return dpsJson.get("101");
         }
+        // B01 protocol responses arrive on dps.10001
+        if (dpsJson.has("10001")) {
+            return dpsJson.get("10001");
+        }
         return null;
+    }
+
+    /**
+     * Dispatches a normalised (V1-shaped) JSON response string to the appropriate handleGet* method
+     * based on the request correlation tracker.
+     */
+    private void dispatchNormalisedResponse(String jsonString) {
+        if (jsonString.endsWith("\"result\":[\"ok\"]}") || jsonString.endsWith("\"result\":[]}")) {
+            return;
+        }
+
+        JsonObject obj = JsonParser.parseString(jsonString).getAsJsonObject();
+        if (obj.has("id") && obj.has("result")) {
+            int messageId = obj.get("id").getAsInt();
+            String methodName = requestCorrelationTracker.findMethodByRequestId(messageId);
+            if (methodName == null) {
+                logger.trace("Received response for unknown or already handled message ID: {}", messageId);
+                return;
+            }
+
+            switch (methodName) {
+                case "getStatus", COMMAND_GET_STATUS -> handleGetStatus(jsonString);
+                case "getConsumable", COMMAND_GET_CONSUMABLE -> handleGetConsumables(jsonString);
+                case "getRoomMapping", COMMAND_GET_ROOM_MAPPING -> handleGetRoomMapping(jsonString);
+                case "getNetworkInfo", COMMAND_GET_NETWORK_INFO -> handleGetNetworkInfo(jsonString);
+                case "getCleanRecord", COMMAND_GET_CLEAN_RECORD -> handleGetCleanRecord(jsonString);
+                case "getCleanSummary", COMMAND_GET_CLEAN_SUMMARY -> handleGetCleanSummary(jsonString);
+                case "getDndTimer", COMMAND_GET_DND_TIMER -> handleGetDndTimer(jsonString);
+                case "getSegmentStatus", COMMAND_GET_SEGMENT_STATUS -> handleGetSegmentStatus(jsonString);
+                case "getMapStatus", COMMAND_GET_MAP_STATUS -> handleGetMapStatus(jsonString);
+                case "getLedStatus", COMMAND_GET_LED_STATUS -> handleGetLedStatus(jsonString);
+                case "getCarpetMode", COMMAND_GET_CARPET_MODE -> handleGetCarpetMode(jsonString);
+                case "getFwFeatures", COMMAND_GET_FW_FEATURES -> handleGetFwFeatures(jsonString);
+                case "getMultiMapsList", COMMAND_GET_MULTI_MAP_LIST -> handleGetMultiMapsList(jsonString);
+                case "getCustomizeCleanMode", COMMAND_GET_CUSTOMIZE_CLEAN_MODE ->
+                    handleGetCustomizeCleanMode(jsonString);
+                default -> logger.debug("No handler for method: {}", methodName);
+            }
+            requestCorrelationTracker.removeByRequestId(messageId);
+        }
+    }
+
+    /**
+     * Sends a Q10 native DP command by writing raw data-points directly to the device,
+     * bypassing the RPC method/msgId envelope used by V1 and Q7.
+     *
+     * @param dps the data-point map to publish, e.g. {@code {"201": {"cmd":1}}}
+     */
+    private void sendQ10DpCommand(Map<String, Object> dps) {
+        RoborockAccountHandler localBridge = bridgeHandler;
+        if (localBridge == null) {
+            logger.debug("Q10 DP command skipped: no bridge handler");
+            return;
+        }
+        localBridge.sendB01DpCommand(config.duid, localKey, dps);
+    }
+
+    /**
+     * Handles unsolicited flat DP pushes from B01 devices.
+     *
+     * <p>
+     * For Q7, only DPs 121 (state) and 122 (battery) are expected at the root.
+     * For Q10, a richer set of DPs is pushed (121–127, 136–139, 141, 142) alongside
+     * a nested {@code 101} object containing map, carpet, network, and settings data.
+     *
+     * <p>
+     * Each DP is checked independently — a single push frame can carry any
+     * combination of them simultaneously.
+     *
+     * Handles unsolicited flat DP pushes from B01 devices.
+     *
+     * <p>
+     * Top-level DP mappings for Q10 (from Q10ShadowDataService.applyQ10ShadowDpPayload):
+     * 
+     * <pre>
+     *   121 = status (vacuum state ID)
+     *   122 = battery
+     *   123 = fan_power
+     *   124 = water_box_mode
+     *   125 = main_brush_life   (consumable remaining life)
+     *   126 = side_brush_life   (consumable remaining life)
+     *   127 = filter_life       (consumable remaining life)
+     *   136 = clean_times       (number of cleans completed)
+     *   137 = clean_mode        (current cleaning mode)
+     *   138 = clean_task_type   (type of cleaning task)
+     *   139 = back_type         (return-to-dock trigger type)
+     *   141 = cleaning_progress (0–100%)
+     *   142 = fleeing_goods     (obstacle avoidance active flag)
+     * </pre>
+     * 
+     */
+    private void handleFlatDpPush(JsonObject dpsRoot) {
+        // DP 121 — vacuum state ID
+        if (dpsRoot.has("121")) {
+            int stateInt = dpsRoot.get("121").getAsInt();
+            boolean statusArrivesUnrequested = q10;
+            updateStateIdAndRequestStatusIfChanged(stateInt, !statusArrivesUnrequested);
+        }
+
+        // DP 122 — battery %
+        if (dpsRoot.has("122")) {
+            updateState(CHANNEL_BATTERY, new DecimalType(dpsRoot.get("122").getAsInt()));
+        }
+
+        // DP 123 — fan/suction power
+        if (dpsRoot.has("123")) {
+            int fanPower = dpsRoot.get("123").getAsInt();
+            updateState(CHANNEL_FAN_POWER, new DecimalType(fanPower));
+            updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(fanPower).getId()));
+        }
+
+        // DP 124 — water level
+        if (dpsRoot.has("124") && deviceCapabilities.containsKey(RobotCapabilities.WATERBOX_MODE)) {
+            updateState(RobotCapabilities.WATERBOX_MODE.getChannel(), new DecimalType(dpsRoot.get("124").getAsInt()));
+        }
+
+        // DP 125 — main brush use time in s
+        if (dpsRoot.has("125")) {
+            int brushSecs = 3600 * dpsRoot.get("125").getAsInt();
+            updateState(CHANNEL_CONSUMABLE_MAIN_TIME, new QuantityType<>(
+                    ConsumablesType.remainingHours(brushSecs, ConsumablesType.MAIN_BRUSH), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_MAIN_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(brushSecs, ConsumablesType.MAIN_BRUSH)));
+        }
+
+        // DP 126 — side brush use time in s
+        if (dpsRoot.has("126")) {
+            int sideBrushSecs = 3600 * dpsRoot.get("126").getAsInt();
+            updateState(CHANNEL_CONSUMABLE_SIDE_TIME, new QuantityType<>(
+                    ConsumablesType.remainingHours(sideBrushSecs, ConsumablesType.SIDE_BRUSH), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_SIDE_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(sideBrushSecs, ConsumablesType.SIDE_BRUSH)));
+        }
+
+        // DP 127 — filter use time in s
+        if (dpsRoot.has("127")) {
+            int filterSecs = 3600 * dpsRoot.get("127").getAsInt();
+            updateState(CHANNEL_CONSUMABLE_FILTER_TIME,
+                    new QuantityType<>(ConsumablesType.remainingHours(filterSecs, ConsumablesType.FILTER), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_FILTER_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(filterSecs, ConsumablesType.FILTER)));
+        }
+
+        // DP 136 — clean_times: number of cleaning passes completed in this task
+        if (dpsRoot.has("136")) {
+            logger.debug("Q10 dp136 clean_times: {}", dpsRoot.get("136").getAsInt());
+        }
+
+        // DP 137 — clean_mode: current cleaning mode integer
+        if (dpsRoot.has("137")) {
+            logger.debug("Q10 dp137 clean_mode: {}", dpsRoot.get("137").getAsInt());
+        }
+
+        // DP 138 — clean_task_type: type of cleaning task currently running
+        if (dpsRoot.has("138")) {
+            logger.debug("Q10 dp138 clean_task_type: {}", dpsRoot.get("138").getAsInt());
+        }
+
+        // DP 139 — back_type: what triggered the return-to-dock (e.g. finished, low battery)
+        if (dpsRoot.has("139")) {
+            logger.debug("Q10 dp139 back_type: {}", dpsRoot.get("139").getAsInt());
+        }
+
+        // DP 141 — cleaning_progress: 0–100% completion of current task
+        if (dpsRoot.has("141") && deviceCapabilities.containsKey(RobotCapabilities.CLEAN_PERCENT)) {
+            updateState(CHANNEL_CLEAN_PERCENT, new DecimalType(dpsRoot.get("141").getAsInt()));
+        }
+
+        // DP 142 — fleeing_goods: obstacle avoidance active (0=inactive, non-zero=active)
+        if (dpsRoot.has("142")) {
+            logger.debug("Q10 dp142 fleeing_goods: {}", dpsRoot.get("142").getAsInt());
+        }
+
+        // DP 101 — nested object containing map, carpet, network, settings, and live metrics
+        JsonElement dp101Element = dpsRoot.get("101");
+        if (dp101Element != null && dp101Element.isJsonObject()) {
+            handleQ10Dp101(dp101Element.getAsJsonObject());
+        }
+    }
+
+    /**
+     * Handles the Q10's nested {@code dps.101} object, which carries live metrics,
+     * map metadata, carpet zones, network info, consumables, and settings sub-keys.
+     *
+     * <p>
+     * Sub-key mappings (from Q10ShadowDataService.applyQ10ShadowDpPayload commonMap):
+     * *
+     * 
+     * <pre>
+     * 6   = clean_time       7   = clean_area       25  = quiet_is_open
+     * 26  = volume           29  = total_clean_area  30  = total_clean_count
+     * 31  = total_clean_time 32  = local timer blob  33  = not-disturb data
+     * 36  = voice_language   37  = dust_switch       40  = mop_state
+     * 45  = auto_boost       47  = child_lock        50  = dust_setting
+     * 51  = map_save_switch  52  = clean record list 53  = recent_clean_record
+     * 55  = command ack      57  = virtual walls     59  = customized cleaning flag
+     * 60  = multi_map_switch 61  = map list         65  = carpet zones
+     * 67  = sensor_dirty_time 76  = carpet_clean_type 78 = clean_path_preference
+     * 79  = time zone        80  = custom setting mode 81  = network info
+     * 83  = robot_type       86  = laser obstacle   87  = cleaning_progress
+     * 88  = ground_clean     90  = fault code       91  = current room IDs
+     * 92  = disturb settings 93  = timer_type       96  = add_clean_state
+     * 98  = easycard points  100 = threshold points 103 = cliff points
+     * 104 = breakpoint_clean 105 = valley_point_charging  106 = valley charging time
+     * 112 = ultra_high_suction_mode 113 = deep_mop_preference 207 = user_plan
+     * </pre>
+     */
+    private void handleQ10Dp101(JsonObject dp101) {
+        // Sub-key 6 — clean_time: current session clean time in seconds
+        if (dp101.has("6")) {
+            updateState(CHANNEL_CLEAN_TIME,
+                    new QuantityType<>(TimeUnit.SECONDS.toMinutes(dp101.get("6").getAsLong()), Units.MINUTE));
+        }
+
+        // Sub-key 7 — clean_area: current session clean area in cm²; convert to m²
+        if (dp101.has("7")) {
+            long areaMm2 = dp101.get("7").getAsLong() * 10000L;
+            updateState(CHANNEL_CLEAN_AREA, new QuantityType<>(areaMm2 / 1000000D, SIUnits.SQUARE_METRE));
+        }
+
+        // Sub-key 25 — quiet_is_open: Quiet Is Open (DND Mode)
+        if (dp101.has("25")) {
+            updateState(CHANNEL_DND_ENABLED, OnOffType.from(1 == dp101.get("25").getAsInt()));
+        }
+
+        // Sub-key 29 — total_clean_area: lifetime total clean area in m²
+        if (dp101.has("29")) {
+            long totalArea = dp101.get("29").getAsLong();
+            updateState(CHANNEL_HISTORY_TOTALAREA, new QuantityType<>(totalArea, SIUnits.SQUARE_METRE));
+        }
+
+        // Sub-key 30 — total_clean_count: lifetime total clean cycles
+        if (dp101.has("30")) {
+            updateState(CHANNEL_HISTORY_COUNT, new DecimalType(dp101.get("30").getAsLong()));
+        }
+
+        // Sub-key 31 — total_clean_time: lifetime total clean time in minutes
+        if (dp101.has("31")) {
+            updateState(CHANNEL_HISTORY_TOTALTIME, new QuantityType<>(dp101.get("31").getAsLong(), Units.MINUTE));
+        }
+
+        // Sub-key 67 — sensor_dirty_time: sensor consumable seconds used
+        if (dp101.has("67")) {
+            int sensorSecs = 3600 * dp101.get("67").getAsInt();
+            updateState(CHANNEL_CONSUMABLE_SENSOR_TIME,
+                    new QuantityType<>(ConsumablesType.remainingHours(sensorSecs, ConsumablesType.SENSOR), Units.HOUR));
+            updateState(CHANNEL_CONSUMABLE_SENSOR_PERC,
+                    new DecimalType(ConsumablesType.remainingPercent(sensorSecs, ConsumablesType.SENSOR)));
+        }
+
+        // Sub-key 87 — cleaning_progress: 0–100% completion of current task
+        if (dp101.has("87") && deviceCapabilities.containsKey(RobotCapabilities.CLEAN_PERCENT)) {
+            updateState(CHANNEL_CLEAN_PERCENT, new DecimalType(dp101.get("87").getAsInt()));
+        }
+
+        // Sub-key 90 — fault: current error/fault code
+        if (dp101.has("90")) {
+            int errorCode = dp101.get("90").getAsInt();
+            updateState(CHANNEL_ERROR_CODE, new StringType(VacuumErrorType.getType(errorCode).getDescription()));
+            updateState(CHANNEL_ERROR_ID, new DecimalType(errorCode));
+        }
+
+        // Sub-key 81 — network info: {wifiName, ipAdress, mac, signal}
+        // Note: Q10 uses "wifiName"/"ipAdress" (with typo) rather than "ssid"/"ip"
+        if (dp101.has("81") && dp101.get("81").isJsonObject()) {
+            JsonObject net = dp101.get("81").getAsJsonObject();
+            if (net.has("wifiName"))
+                updateState(CHANNEL_SSID, new StringType(net.get("wifiName").getAsString()));
+            if (net.has("mac"))
+                updateState(CHANNEL_BSSID, new StringType(net.get("mac").getAsString()));
+            if (net.has("signal"))
+                updateState(CHANNEL_RSSI, new DecimalType(net.get("signal").getAsInt()));
+            if (net.has("ipAdress") && localIP.isEmpty()) {
+                localIP = net.get("ipAdress").getAsString();
+                refreshTransportContext();
+            }
+        }
+
+        // Sub-key 61 — map list: {data:[...]}
+        if (dp101.has("61") && dp101.get("61").isJsonObject()) {
+            JsonObject mapList = dp101.get("61").getAsJsonObject();
+            if (mapList.has("data") && mapList.get("data").isJsonArray()) {
+                logger.debug("Q10 dp101.61 map list push: {} maps", mapList.get("data").getAsJsonArray().size());
+                // TODO: trigger map list refresh if multi-map capability is present
+            }
+        }
+
+        // Sub-key 65 — carpet zones: {data:[...]}
+        if (dp101.has("65") && dp101.get("65").isJsonObject()) {
+            JsonObject carpets = dp101.get("65").getAsJsonObject();
+            if (carpets.has("data") && carpets.get("data").isJsonArray()) {
+                logger.debug("Q10 dp101.65 carpet zone push: {} zones", carpets.get("data").getAsJsonArray().size());
+            }
+        }
+
+        // Sub-key 52 — clean record list: {op:"list", data:[...]} or {op:"select", result:1}
+        if (dp101.has("52") && dp101.get("52").isJsonObject()) {
+            JsonObject dp52 = dp101.get("52").getAsJsonObject();
+            String op = dp52.has("op") ? dp52.get("op").getAsString() : "";
+            if ("list".equals(op) && dp52.has("data") && dp52.get("data").isJsonArray()) {
+                logger.debug("Q10 dp101.52 clean record list push: {} records",
+                        dp52.get("data").getAsJsonArray().size());
+                // TODO: parse and apply cleaning history records
+            }
+        }
+
+        // Sub-key 55 — command ack: base64 [cmd_byte, result_byte]; result=0x00 means success
+        if (dp101.has("55")) {
+            try {
+                byte[] ackBytes = java.util.Base64.getDecoder().decode(dp101.get("55").getAsString());
+                if (ackBytes.length >= 2) {
+                    logger.debug("Q10 dp101.55 command ack: cmd={} result={}", ackBytes[0] & 0xFF, ackBytes[1] & 0xFF);
+                }
+            } catch (IllegalArgumentException e) {
+                logger.trace("Q10 dp101.55 ack decode failed: {}", e.getMessage());
+            }
+        }
+
+        // Sub-keys logged at trace — known but no channel mapping yet
+        if (dp101.has("26"))
+            logger.trace("Q10 dp101.26 volume: {}", dp101.get("26"));
+        if (dp101.has("32")) {
+            try {
+                byte[] b = java.util.Base64.getDecoder().decode(dp101.get("32").getAsString());
+                int timerCount = b.length >= 2 ? b[1] & 0xFF : 0;
+                logger.debug("Q10 dp101.32 TIMER: version={} timerCount={} (full schedule has {} bytes)",
+                        b.length >= 1 ? b[0] & 0xFF : 0, timerCount, b.length);
+            } catch (IllegalArgumentException e) {
+                logger.trace("Q10 dp101.32 TIMER decode failed: {}", e.getMessage());
+            }
+        }
+        if (dp101.has("33"))
+            logger.trace("Q10 dp101.33 dnd_data_blob: {}", dp101.get("33"));
+        if (dp101.has("36"))
+            logger.trace("Q10 dp101.36 voice_language: {}", dp101.get("36"));
+        if (dp101.has("37"))
+            logger.trace("Q10 dp101.37 dust_switch: {}", dp101.get("37"));
+        if (dp101.has("40"))
+            logger.trace("Q10 dp101.40 mop_state: {}", dp101.get("40"));
+        if (dp101.has("45"))
+            logger.trace("Q10 dp101.45 carpet_boost: {}", dp101.get("45"));
+        if (dp101.has("47"))
+            logger.trace("Q10 dp101.47 child_lock: {}", dp101.get("47"));
+        if (dp101.has("50"))
+            logger.trace("Q10 dp101.50 dust_setting: {}", dp101.get("50"));
+        if (dp101.has("51"))
+            logger.trace("Q10 dp101.51 map_save_switch: {}", dp101.get("51"));
+        if (dp101.has("53"))
+            logger.trace("Q10 dp101.53 recent_clean_record: {}", dp101.get("53"));
+        if (dp101.has("57"))
+            logger.trace("Q10 dp101.57 virtual_walls_blob: {}", dp101.get("57"));
+        if (dp101.has("59"))
+            logger.trace("Q10 dp101.59 customized_clean_flag: {}", dp101.get("59"));
+        if (dp101.has("60"))
+            logger.trace("Q10 dp101.60 multi_map_switch: {}", dp101.get("60"));
+        if (dp101.has("76"))
+            logger.trace("Q10 dp101.76 carpet_clean_type: {}", dp101.get("76"));
+        if (dp101.has("79"))
+            logger.trace("Q10 dp101.79 time_zone: {}", dp101.get("79"));
+        if (dp101.has("80"))
+            logger.trace("Q10 dp101.80 custom_setting_mode: {}", dp101.get("80"));
+        if (dp101.has("83"))
+            logger.trace("Q10 dp101.83 robot_type: {}", dp101.get("83"));
+        if (dp101.has("86"))
+            logger.trace("Q10 dp101.86 line_laser_obstacle_avoidance: {}", dp101.get("86"));
+        if (dp101.has("88"))
+            logger.trace("Q10 dp101.88 ground_clean: {}", dp101.get("88"));
+        if (dp101.has("92"))
+            logger.trace("Q10 dp101.92 disturb_settings: {}", dp101.get("92"));
+        if (dp101.has("93"))
+            logger.trace("Q10 dp101.93 timer_type: {}", dp101.get("93"));
+        if (dp101.has("96"))
+            logger.trace("Q10 dp101.96 add_clean_state: {}", dp101.get("96"));
+        if (dp101.has("98"))
+            logger.trace("Q10 dp101.98 easycard_points: {}", dp101.get("98"));
+        if (dp101.has("100"))
+            logger.trace("Q10 dp101.100 threshold_points: {}", dp101.get("100"));
+        if (dp101.has("103"))
+            logger.trace("Q10 dp101.103 cliff_points: {}", dp101.get("103"));
+        if (dp101.has("104"))
+            logger.trace("Q10 dp101.104 breakpoint_clean: {}", dp101.get("104"));
+        if (dp101.has("105"))
+            logger.trace("Q10 dp101.105 valley_point_charging: {}", dp101.get("105"));
+        if (dp101.has("106"))
+            logger.trace("Q10 dp101.106 valley_charging_time: {}", dp101.get("106"));
+        if (dp101.has("108"))
+            logger.trace("Q10 dp101.108 voice_version: {}", dp101.get("108"));
+        if (dp101.has("109"))
+            logger.trace("Q10 dp101.109 robot_country_code: {}", dp101.get("109"));
+        if (dp101.has("112"))
+            logger.trace("Q10 dp101.112 ultra_high_suction_mode: {}", dp101.get("112"));
+        if (dp101.has("113"))
+            logger.trace("Q10 dp101.113 deep_mop_preference: {}", dp101.get("113"));
+        if (dp101.has("207"))
+            logger.trace("Q10 dp101.207 user_plan: {}", dp101.get("207"));
+
+        // All remaining sub-keys logged at trace for identification from captures
+        Set<String> handledKeys = Set.of("6", "7", "25", "26", "29", "30", "31", "32", "33", "36", "37", "40", "45",
+                "47", "50", "51", "52", "53", "55", "57", "59", "60", "61", "65", "67", "76", "78", "79", "80", "81",
+                "83", "86", "87", "88", "90", "92", "93", "96", "98", "100", "103", "104", "105", "106", "108", "109",
+                "112", "113", "207");
+        for (Map.Entry<String, JsonElement> entry : dp101.entrySet()) {
+            if (!handledKeys.contains(entry.getKey())) {
+                logger.trace("Q10 dp101 unhandled sub-key {}: {}", entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    /**
+     * Converts a B01 response envelope into the V1 shape expected by all handleGet* methods,
+     * so no downstream handler needs to be aware of the protocol difference.
+     *
+     * <p>
+     * B01 shape: {@code {"msgId":"12345", "code":0, "method":"prop.get", "data":{...}}}
+     * <p>
+     * V1 shape varies by method — see inline comments for each case.
+     *
+     * @return normalised V1-shaped JSON string, or {@code null} if the response is an error or unparseable
+     */
+    @Nullable
+    private String normaliseB01Response(String jsonString) {
+        try {
+            JsonObject b01 = JsonParser.parseString(jsonString).getAsJsonObject();
+
+            // Error response — log and discard
+            if (b01.has("code") && b01.get("code").getAsInt() != 0) {
+                logger.debug("B01 error response (code={}): {}", b01.get("code").getAsInt(), jsonString);
+                return null;
+            }
+
+            // msgId is a string in B01 echoing back the int id we sent in the request
+            int id = 0;
+            if (b01.has("msgId")) {
+                try {
+                    id = (int) Long.parseLong(b01.get("msgId").getAsString());
+                } catch (NumberFormatException e) {
+                    logger.debug("Could not parse B01 msgId as int: {}", b01.get("msgId"));
+                }
+            }
+
+            String method = b01.has("method") ? b01.get("method").getAsString() : "";
+            JsonObject data = b01.has("data") && b01.get("data").isJsonObject() ? b01.get("data").getAsJsonObject()
+                    : new JsonObject();
+
+            // prop.post is a device-initiated shadow push — handled via handleFlatDpPush, not here.
+            if ("prop.post".equals(method)) {
+                logger.debug("B01 prop.post received — skipping RPC normalisation path");
+                return null;
+            }
+
+            JsonObject v1 = new JsonObject();
+            v1.addProperty("id", id);
+
+            switch (method) {
+                case "prop.get" -> {
+                    if (data.has("main_brush")) {
+                        renameField(data, "main_brush", "main_brush_work_time");
+                        renameField(data, "side_brush", "side_brush_work_time");
+                        renameField(data, "hypa", "filter_work_time");
+                        renameField(data, "main_sensor", "sensor_dirty_time");
+                        JsonArray consumableResult = new JsonArray();
+                        consumableResult.add(data);
+                        v1.add("result", consumableResult);
+                    } else {
+                        renameField(data, "status", "state");
+                        renameField(data, "wind", "fan_power");
+                        renameField(data, "water", "water_box_mode");
+                        if (data.has("sweep_type") && !data.has("mode")) {
+                            renameField(data, "sweep_type", "mop_mode");
+                        } else {
+                            renameField(data, "mode", "mop_mode");
+                        }
+                        renameField(data, "quantity", "battery");
+                        renameField(data, "fault", "error_code");
+                        renameField(data, "tank_state", "water_box_status");
+                        renameField(data, "charge_state", "charge_status");
+                        renameField(data, "repeat_state", "repeat");
+                        renameField(data, "dust_action", "auto_dust_collection");
+                        renameField(data, "cleaning_time", "clean_time");
+                        if (data.has("cleaning_area")) {
+                            data.addProperty("clean_area", data.get("cleaning_area").getAsLong() * 10000L);
+                            data.remove("cleaning_area");
+                        }
+                        renameField(data, "multi_floor", "switch_map_mode");
+                        renameField(data, "clean_path_preference", "corner_clean_mode");
+                        JsonArray statusResult = new JsonArray();
+                        statusResult.add(data);
+                        v1.add("result", statusResult);
+                    }
+                }
+
+                case "service.get_consumable" -> {
+                    renameField(data, "main_brush", "main_brush_work_time");
+                    renameField(data, "side_brush", "side_brush_work_time");
+                    renameField(data, "filter", "filter_work_time");
+                    renameField(data, "sensor", "sensor_dirty_time");
+                    JsonArray consumableResult = new JsonArray();
+                    consumableResult.add(data);
+                    v1.add("result", consumableResult);
+                }
+
+                case "service.get_record_list" -> {
+                    JsonObject summaryResult = new JsonObject();
+                    summaryResult.addProperty("clean_time",
+                            data.has("total_time") ? data.get("total_time").getAsLong() : 0);
+                    summaryResult.addProperty("clean_area",
+                            data.has("total_area") ? data.get("total_area").getAsLong() * 10000L : 0);
+                    summaryResult.addProperty("clean_count",
+                            data.has("total_count") ? data.get("total_count").getAsLong() : 0);
+                    v1.add("result", summaryResult);
+
+                    if (data.has("record_list") && data.get("record_list").isJsonArray()) {
+                        JsonArray recordList = data.get("record_list").getAsJsonArray();
+                        if (!recordList.isEmpty()) {
+                            JsonElement lastEntry = recordList.asList().getLast();
+                            if (lastEntry.isJsonObject() && lastEntry.getAsJsonObject().has("detail")) {
+                                try {
+                                    JsonObject detail = JsonParser
+                                            .parseString(lastEntry.getAsJsonObject().get("detail").getAsString())
+                                            .getAsJsonObject();
+                                    JsonObject rec = new JsonObject();
+                                    long startTime = detail.has("record_start_time")
+                                            ? detail.get("record_start_time").getAsLong()
+                                            : 0;
+                                    long useTime = detail.has("record_use_time")
+                                            ? detail.get("record_use_time").getAsLong()
+                                            : 0;
+                                    rec.addProperty("begin", startTime);
+                                    rec.addProperty("end", startTime + useTime);
+                                    rec.addProperty("duration", useTime);
+                                    rec.addProperty("cleaned_area",
+                                            detail.has("record_clean_area")
+                                                    ? detail.get("record_clean_area").getAsLong() * 10000L
+                                                    : 0);
+                                    rec.addProperty("error",
+                                            detail.has("record_faultcode") ? detail.get("record_faultcode").getAsInt()
+                                                    : 0);
+                                    rec.addProperty("complete",
+                                            detail.has("record_task_status")
+                                                    ? detail.get("record_task_status").getAsInt()
+                                                    : 0);
+                                    rec.addProperty("finish_reason",
+                                            detail.has("record_task_status")
+                                                    ? detail.get("record_task_status").getAsInt()
+                                                    : 0);
+                                    JsonArray recResult = new JsonArray();
+                                    recResult.add(rec);
+                                    JsonObject cleanRecordV1 = new JsonObject();
+                                    cleanRecordV1.addProperty("id", id);
+                                    cleanRecordV1.add("result", recResult);
+                                    handleGetCleanRecord(gson.toJson(cleanRecordV1));
+                                } catch (Exception e) {
+                                    logger.debug("Failed to synthesise B01 clean record: {}", e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                case "prop.set", "service.set_room_clean", "service.start_recharge", "service.find_device",
+                        "service.reset_consumable", "201", "202", "204", "206" -> {
+                    JsonArray ack = new JsonArray();
+                    ack.add("ok");
+                    v1.add("result", ack);
+                }
+
+                default -> {
+                    logger.debug("B01 normalise: unhandled method '{}', wrapping data as-is", method);
+                    JsonArray defaultResult = new JsonArray();
+                    defaultResult.add(data);
+                    v1.add("result", defaultResult);
+                }
+            }
+            return gson.toJson(v1);
+        } catch (Exception e) {
+            logger.debug("Failed to normalise B01 response: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private void renameField(JsonObject obj, String from, String to) {
+        if (obj.has(from)) {
+            obj.add(to, obj.get(from));
+            obj.remove(from);
+        }
     }
 
     private boolean shouldPreRegisterForDirectResponseHandling(String method) {
@@ -1392,10 +2168,15 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void updateStateIdAndRequestStatusIfChanged(int stateId, boolean triggerImmediateStatusQuery) {
-        @Nullable
-        Integer previousStateId = lastKnownStateId;
         updateState(CHANNEL_STATE_ID, new DecimalType(stateId));
-        lastKnownStateId = stateId;
+        Integer previousStateId;
+        synchronized (currentRoomLock) {
+            previousStateId = lastKnownStateId;
+            lastKnownStateId = stateId;
+            if (hasJustDocked(previousStateId, stateId)) {
+                updateCurrentRoomStateFromDock();
+            }
+        }
         if (triggerImmediateStatusQuery && VacuumRefreshPolicy.shouldRequestImmediateStatus(previousStateId, stateId)) {
             requestImmediateStatusUpdate("state-id changed from " + previousStateId + " to " + stateId);
         }
@@ -1407,6 +2188,16 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             registerRequest("getStatus", sendRPCCommand(COMMAND_GET_STATUS));
         } catch (UnsupportedEncodingException e) {
             logger.debug("UnsupportedEncodingException while requesting immediate status, {}", e.getMessage());
+        }
+    }
+
+    private void warnOnceAboutUnknownState(int rawStateId, StatusType resolved) {
+        if (resolved != StatusType.UNKNOWN || rawStateId == StatusType.UNKNOWN.getId()) {
+            return;
+        }
+        if (reportedUnknownStateIds.add(Integer.valueOf(rawStateId))) {
+            logger.warn("{}: Unknown robot status id {}, leaving channel '{}' unresolved. Please report this id.",
+                    config.duid, rawStateId, RobotCapabilities.CURRENT_ROOM.getChannel());
         }
     }
 
@@ -1478,9 +2269,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void disableMapState(String reason) {
-        if (thing.getChannel(CHANNEL_VACUUM_MAP) != null) {
-            setMapStateUndefinedAndResetDeduplicator();
-        }
+        invalidateMapDerivedState();
         if (!cloudMapRefreshDisabledLogged) {
             logger.info("Cloud map refresh disabled for {}: {}. Channel '{}' is set to UNDEF.", config.duid, reason,
                     CHANNEL_VACUUM_MAP);
@@ -1500,6 +2289,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void disableRoomMappingState(String reason) {
         updateChannelStateIfExists(RobotCapabilities.ROOM_MAPPING.getChannel(), UnDefType.UNDEF);
+        clearSegmentRoomNames();
         if (!cloudMetadataRefreshDisabledLogged) {
             logger.info(
                     "Cloud metadata refresh disabled for {}: {}. Channels '{}' and '{}' are set to UNDEF when available.",
@@ -1514,9 +2304,20 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void setMapStateUndefinedAndResetDeduplicator() {
-        updateState(CHANNEL_VACUUM_MAP, UnDefType.UNDEF);
+    private void invalidateMapDerivedState() {
+        updateChannelStateIfExists(CHANNEL_VACUUM_MAP, UnDefType.UNDEF);
         mapUpdateDeduplicator.reset();
+        synchronized (currentRoomLock) {
+            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), UnDefType.UNDEF);
+            lastParsedMapData = null;
+        }
+    }
+
+    private void clearSegmentRoomNames() {
+        synchronized (currentRoomLock) {
+            segmentRoomNames = Map.of();
+            updateChannelStateIfExists(RobotCapabilities.CURRENT_ROOM.getChannel(), UnDefType.UNDEF);
+        }
     }
 
     private void refreshTransportContext() {

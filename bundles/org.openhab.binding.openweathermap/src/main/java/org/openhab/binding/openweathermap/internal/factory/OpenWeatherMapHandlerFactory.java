@@ -28,6 +28,7 @@ import org.openhab.binding.openweathermap.internal.discovery.OpenWeatherMapDisco
 import org.openhab.binding.openweathermap.internal.handler.AbstractOpenWeatherMapHandler;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAirPollutionHandler;
+import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapOneCallForecastHandler;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapOneCallHandler;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapOneCallHistoryHandler;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapWeatherAndForecastHandler;
@@ -102,6 +103,8 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
             return new OpenWeatherMapOneCallHandler(thing);
         } else if (THING_TYPE_ONECALL_HISTORY.equals(thingTypeUID)) {
             return new OpenWeatherMapOneCallHistoryHandler(thing);
+        } else if (THING_TYPE_ONECALL_FORECAST.equals(thingTypeUID)) {
+            return new OpenWeatherMapOneCallForecastHandler(thing);
         }
 
         return null;

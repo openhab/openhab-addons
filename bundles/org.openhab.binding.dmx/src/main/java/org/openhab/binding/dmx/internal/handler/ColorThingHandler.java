@@ -42,6 +42,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,17 +134,19 @@ public class ColorThingHandler extends DmxThingHandler {
                     }
                 } else if (command instanceof HSBType hsbCommand) {
                     logger.trace("adding color fade to channels in thing {}", this.thing.getUID());
-                    targetValueSet.addValue(hsbCommand.getRed());
-                    targetValueSet.addValue(hsbCommand.getGreen());
-                    targetValueSet.addValue(hsbCommand.getBlue());
+                    PercentType[] hsbRgb = ColorUtil.hsbToRgbPercent(hsbCommand);
+                    targetValueSet.addValue(hsbRgb[0]);
+                    targetValueSet.addValue(hsbRgb[1]);
+                    targetValueSet.addValue(hsbRgb[2]);
                 } else if ((command instanceof PercentType) || (command instanceof DecimalType)) {
                     logger.trace("adding brightness fade to channels in thing {}", this.thing.getUID());
                     PercentType brightness = (command instanceof PercentType percentCommand) ? percentCommand
                             : Util.toPercentValue(((DecimalType) command).intValue());
                     HSBType targetColor = new HSBType(currentColor.getHue(), currentColor.getSaturation(), brightness);
-                    targetValueSet.addValue(targetColor.getRed());
-                    targetValueSet.addValue(targetColor.getGreen());
-                    targetValueSet.addValue(targetColor.getBlue());
+                    PercentType[] targetRgb = ColorUtil.hsbToRgbPercent(targetColor);
+                    targetValueSet.addValue(targetRgb[0]);
+                    targetValueSet.addValue(targetRgb[1]);
+                    targetValueSet.addValue(targetRgb[2]);
                 } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
                     if (isDimming && increaseDecreaseCommand.equals(IncreaseDecreaseType.INCREASE)) {
                         logger.trace("stopping fade in thing {}", this.thing.getUID());
@@ -160,9 +163,10 @@ public class ColorThingHandler extends DmxThingHandler {
                             targetColor = new HSBType(currentColor.getHue(), currentColor.getSaturation(),
                                     PercentType.ZERO);
                         }
-                        targetValueSet.addValue(targetColor.getRed());
-                        targetValueSet.addValue(targetColor.getGreen());
-                        targetValueSet.addValue(targetColor.getBlue());
+                        PercentType[] dimRgb = ColorUtil.hsbToRgbPercent(targetColor);
+                        targetValueSet.addValue(dimRgb[0]);
+                        targetValueSet.addValue(dimRgb[1]);
+                        targetValueSet.addValue(dimRgb[2]);
                         targetValueSet.setFadeTime(dimTime);
                         isDimming = true;
                     }

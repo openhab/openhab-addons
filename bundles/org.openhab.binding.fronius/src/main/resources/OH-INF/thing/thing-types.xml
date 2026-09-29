@@ -38,6 +38,8 @@
 			<channel id="powerflowchannelppv" typeId="pPv"/>
 			<channel id="powerflowautonomy" typeId="powerflow_rel_autonomy"/>
 			<channel id="powerflowselfconsumption" typeId="powerflow_rel_selfconsumption"/>
+			<channel id="powerflowbackupmode" typeId="backupMode"/>
+			<channel id="powerflowbatterystandby" typeId="batteryStandby"/>
 			<channel id="powerflowinverterpower" typeId="inverterPower"/>
 			<channel id="powerflowinvertersoc" typeId="inverterSoc"/>
 			<channel id="powerflowinverter1power" typeId="inverter1Power"/>
@@ -45,7 +47,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -94,13 +96,34 @@
 			<channel id="timestamp" typeId="batteryTimestamp">
 				<label>Timestamp</label>
 			</channel>
+			<channel id="socMin" typeId="batterySocMin"/>
+			<channel id="socMax" typeId="batterySocMax"/>
+			<channel id="backupReservedCapacity" typeId="backupReservedCapacity"/>
+			<channel id="backupCriticalSoc" typeId="backupCriticalSoc"/>
+			<channel id="chargeFromGrid" typeId="chargeFromGrid"/>
+			<channel id="calibration" typeId="batteryCalibration"/>
+			<channel id="nightPreservationLimit" typeId="nightPreservationLimit"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="deviceId" type="integer">
 				<label>Device ID</label>
 				<description>Specific device identifier</description>
 				<default>0</default>
+			</parameter>
+			<parameter name="batterySettingsRefreshInterval" type="integer" min="0" unit="min">
+				<label>Battery Settings Refresh Interval</label>
+				<description>Specifies the interval in minutes at which the battery settings channels are read from the
+					inverter's
+					config API. Reading them requires a login, therefore the interval should be kept high. Set to 0 to disable
+					reading
+					the battery settings from the inverter.</description>
+				<default>5</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -369,7 +392,25 @@
 		<item-type>Number</item-type>
 		<label>Status Code</label>
 		<description>Current device status code</description>
-		<state pattern="%d" readOnly="true"></state>
+		<state pattern="%d" readOnly="true">
+			<options>
+				<option value="0">Startup</option>
+				<option value="1">Startup</option>
+				<option value="2">Startup</option>
+				<option value="3">Startup</option>
+				<option value="4">Startup</option>
+				<option value="5">Startup</option>
+				<option value="6">Startup</option>
+				<option value="7">Running</option>
+				<option value="8">Standby</option>
+				<option value="9">Bootloading</option>
+				<option value="10">Error</option>
+				<option value="11">Idle</option>
+				<option value="12">Ready</option>
+				<option value="13">Sleeping</option>
+				<option value="255">Unknown</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="pGrid">
@@ -464,6 +505,18 @@
 		<description>Inverter 1 State of Charge - DEPRECATED. Please use inverterSoc channel instead</description>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="backupMode">
+		<item-type>Switch</item-type>
+		<label>Backup Mode</label>
+		<description>Whether the inverter is currently operating in backup power mode (island operation)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryStandby">
+		<item-type>Switch</item-type>
+		<label>Battery Standby</label>
+		<description>Whether the battery is currently in standby</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<!-- Battery specific channel-types -->
 	<channel-type id="batteryMaximumCapacity">
@@ -519,6 +572,52 @@
 		<label>Battery Enabled</label>
 		<description>Enable flag for the battery controller</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batterySocMin">
+		<item-type>Number:Dimensionless</item-type>
+		<label>SoC Minimum</label>
+		<description>Minimum state of charge of the battery (writable, requires battery control)</description>
+		<state pattern="%d %%" min="0" max="100" step="1"/>
+	</channel-type>
+	<channel-type id="batterySocMax">
+		<item-type>Number:Dimensionless</item-type>
+		<label>SoC Maximum</label>
+		<description>Maximum state of charge of the battery (writable, requires battery control)</description>
+		<state pattern="%d %%" min="0" max="100" step="1"/>
+	</channel-type>
+	<channel-type id="backupReservedCapacity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Backup Reserved Capacity</label>
+		<description>Reserved battery capacity for backup power. The battery is not discharged below this state of
+			charge
+			during normal operation (writable, requires battery control)</description>
+		<state pattern="%d %%" min="10" max="95" step="1"/>
+	</channel-type>
+	<channel-type id="backupCriticalSoc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Backup Critical SoC</label>
+		<description>State of charge at which the inverter warns about the battery running low in backup power mode
+			(writable,
+			requires battery control)</description>
+		<state pattern="%d %%" min="0" max="100" step="1"/>
+	</channel-type>
+	<channel-type id="chargeFromGrid">
+		<item-type>Switch</item-type>
+		<label>Charge from Grid</label>
+		<description>Whether charging the battery from the grid is allowed (writable, requires battery control)</description>
+	</channel-type>
+	<channel-type id="batteryCalibration">
+		<item-type>Switch</item-type>
+		<label>Calibration</label>
+		<description>Whether the battery is currently performing a calibration charge (requires battery control)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="nightPreservationLimit">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Night Preservation Limit</label>
+		<description>State of charge preserved over night to keep the battery system operational (requires battery
+			control)</description>
+		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 
@@ -605,6 +704,5 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-
 
 </thing:thing-descriptions>

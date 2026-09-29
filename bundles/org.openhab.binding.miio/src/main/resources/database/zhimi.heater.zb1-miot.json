@@ -41,7 +41,7 @@
 						},
 						{
 							"value": "1",
-							"label": "NTC\tConnect Error"
+							"label": "NTC Connect Error"
 						},
 						{
 							"value": "2",
@@ -59,7 +59,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"No Error\",\"1\"\u003d\"NTC\tConnect Error\",\"2\"\u003d\"High Temperature Alarm\",\"3\"\u003d\"EEPROM Error\",\"4\"\u003d\"Multi Errors\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Error\",\"1\"\u003d\"NTC Connect Error\",\"2\"\u003d\"High Temperature Alarm\",\"3\"\u003d\"EEPROM Error\",\"4\"\u003d\"Multi Errors\"]`"
 			},
 			{
 				"property": "target-temperature",

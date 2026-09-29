@@ -28,6 +28,7 @@ import org.openhab.binding.smartthings.internal.SmartthingsHandlerFactory;
 import org.openhab.binding.smartthings.internal.converter.SmartthingsConverter;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -73,6 +74,9 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof State state && state instanceof OpenClosedType) {
+            return;
+        }
         Bridge bridge = getBridge();
 
         // Check if the bridge has not been initialized yet
@@ -166,7 +170,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
 
     @Override
     public void initialize() {
-        config = getThing().getConfiguration().as(SmartthingsThingConfig.class);
+        config = getConfigAs(SmartthingsThingConfig.class);
         if (!validateConfig(config)) {
             return;
         }
@@ -208,9 +212,10 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         converterClassName.append(converterName.substring(1));
         converterClassName.append("Converter");
         try {
-            Constructor<?> constr = Class.forName(converterClassName.toString()).getDeclaredConstructor(Thing.class);
+            Constructor<?> constr = Class.forName(converterClassName.toString())
+                    .getDeclaredConstructor(SmartthingsThingConfig.class, String.class);
             constr.setAccessible(true);
-            return (SmartthingsConverter) constr.newInstance(thing);
+            return (SmartthingsConverter) constr.newInstance(config, thing.getThingTypeUID().getId());
         } catch (ClassNotFoundException e) {
             // Most of the time there is no channel specific converter, the default converter is all that is needed.
             logger.trace("No Custom converter exists for {} ({})", converterName, converterClassName);

@@ -94,12 +94,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 /**
  * {@link ApiBridgeHandler} is the handler for a Netatmo API and connects it to the framework.
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Jacob Laursen - Refactored to use standard OAuth2 implementation
+ * @author Martin Littkovsky - Keep HTTP status and raw error code for unclassified errors
  */
 @NonNullByDefault
 public class ApiBridgeHandler extends BaseBridgeHandler {
@@ -352,13 +356,22 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
             NetatmoException exception;
             try {
-                exception = new NetatmoException(deserializer.deserialize(ApiError.class, responseBody));
-            } catch (NetatmoException e) {
-                if (statusCode == Code.TOO_MANY_REQUESTS) {
-                    exception = new NetatmoException(statusCode.getMessage());
+                ApiError apiError = deserializer.deserialize(ApiError.class, responseBody);
+                if (ServiceError.UNKNOWN.equals(apiError.getCode())) {
+                    // HttpStatus.getCode() returns null for non-standard status codes (e.g. 520-527), so pass
+                    // response.getStatus() rather than statusCode
+                    exception = new NetatmoException(apiError, response.getStatus(), extractRawErrorCode(responseBody));
                 } else {
-                    exception = new NetatmoException(
-                            "Error deserializing error: %s".formatted(statusCode.getMessage()));
+                    exception = new NetatmoException(apiError);
+                }
+            } catch (NetatmoException e) {
+                String statusText = statusCode == null ? null : statusCode.getMessage();
+                String statusMessage = "%s(HTTP %s)".formatted(statusText == null ? "" : statusText + " ",
+                        Integer.toString(response.getStatus()));
+                if (statusCode == Code.TOO_MANY_REQUESTS) {
+                    exception = new NetatmoException(statusMessage);
+                } else {
+                    exception = new NetatmoException("Error deserializing error: %s".formatted(statusMessage));
                 }
             }
             if (statusCode == Code.TOO_MANY_REQUESTS) {
@@ -391,6 +404,29 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             }
             prepareReconnection("@text/request-time-out", null, e.getMessage());
             throw new NetatmoException("%s: \"%s\"".formatted(e.getClass().getName(), e.getMessage()));
+        }
+    }
+
+    /**
+     * Recovers the raw error code that {@link ApiError} discards when classifying it into a {@link ServiceError}.
+     */
+    static @Nullable String extractRawErrorCode(String responseBody) {
+        try {
+            JsonElement root = JsonParser.parseString(responseBody);
+            if (!root.isJsonObject()) {
+                return null;
+            }
+            JsonElement errorElement = root.getAsJsonObject().get("error");
+            if (errorElement == null || !errorElement.isJsonObject()) {
+                return null;
+            }
+            JsonElement code = errorElement.getAsJsonObject().get("code");
+            if (code == null || !code.isJsonPrimitive()) {
+                return null;
+            }
+            return code.getAsString();
+        } catch (JsonParseException e) {
+            return null;
         }
     }
 

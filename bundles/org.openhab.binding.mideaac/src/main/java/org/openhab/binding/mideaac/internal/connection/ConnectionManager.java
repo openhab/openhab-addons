@@ -271,8 +271,10 @@ public class ConnectionManager {
                     } else {
                         throw new MideaAuthenticationException("Invalid Key. Correct Key in configuration.");
                     }
-                } else if (Arrays.equals(new String("ERROR").getBytes(StandardCharsets.US_ASCII), response)) {
-                    throw new MideaAuthenticationException("Authentication failed!");
+                } else if (response.length == 13 && Arrays.equals("ERROR".getBytes(StandardCharsets.US_ASCII),
+                        Arrays.copyOfRange(response, 8, 13))) {
+                    throw new MideaAuthenticationException(
+                            "Authentication failed - check tokenKeyMethod if first time");
                 } else {
                     logger.debug("Authentication reponse unexpected data length ({} instead of 72)!", response.length);
                     throw new MideaAuthenticationException("Unexpected authentication response length");

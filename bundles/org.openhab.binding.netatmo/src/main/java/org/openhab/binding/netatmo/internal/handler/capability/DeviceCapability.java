@@ -19,7 +19,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 
 /**
- * The {@link DeviceCapability} takes care of handling properties for netatmo devices
+ * The {@link DeviceCapability} takes care of handling properties for Netatmo devices
  *
  * @author Gaël L'hopital - Initial contribution
  *

@@ -53,7 +53,7 @@ public class ZoneUpdate2 {
      **/
     private Boolean disabled = false;
 
-    @Schema(required = true)
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private Integer id;
 
     /**

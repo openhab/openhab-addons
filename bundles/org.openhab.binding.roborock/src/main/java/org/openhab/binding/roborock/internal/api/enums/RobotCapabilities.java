@@ -36,6 +36,7 @@ public enum RobotCapabilities {
     SEGMENT_STATUS("", "status#segment-status", "roborock:segment-status", COMMAND_GET_SEGMENT_STATUS),
     MAP_STATUS("", "status#map-status", "roborock:map-status", COMMAND_GET_MAP_STATUS),
     LED_STATUS("", "status#led-status", "roborock:led-status", COMMAND_GET_LED_STATUS),
+    CURRENT_ROOM("", "status#current-room", "roborock:current-room", ""),
     CARPET_MODE("", "info#carpet-mode", "roborock:carpet-mode", COMMAND_GET_CARPET_MODE),
     FW_FEATURES("", "info#fw-features", "roborock:fw-features", COMMAND_GET_FW_FEATURES),
     ROOM_MAPPING("", "info#room-mapping", "roborock:room-mapping", COMMAND_GET_ROOM_MAPPING),

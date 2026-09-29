@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol;
 
+import java.util.Arrays;
+import java.util.Locale;
+
 /**
  * Enum for the schedule type of the battery control.
  *
@@ -21,5 +24,21 @@ public enum ScheduleType {
     CHARGE_MIN,
     CHARGE_MAX,
     DISCHARGE_MIN,
-    DISCHARGE_MAX
+    DISCHARGE_MAX;
+
+    /**
+     * Like {@link #valueOf(String)}, but case-insensitive and with an error message listing the valid values.
+     *
+     * @param value the name of the schedule type
+     * @return the schedule type
+     * @throws IllegalArgumentException when the value is not a valid schedule type
+     */
+    public static ScheduleType parse(String value) {
+        try {
+            return valueOf(value.strip().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "Invalid schedule type '" + value + "', valid values are: " + Arrays.toString(values()));
+        }
+    }
 }

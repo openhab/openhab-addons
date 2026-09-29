@@ -40,10 +40,11 @@ public final class MiIoBindingConstants {
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
     public static final ThingTypeUID THING_TYPE_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "unsupported");
+    public static final ThingTypeUID THING_TYPE_CLOUD = new ThingTypeUID(BINDING_ID, "cloud");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_MIIO, THING_TYPE_BASIC, THING_TYPE_LUMI, THING_TYPE_GATEWAY,
-                    THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED).collect(Collectors.toSet()));
+                    THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED, THING_TYPE_CLOUD).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> NONGENERIC_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_BASIC, THING_TYPE_LUMI, THING_TYPE_GATEWAY, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED)
@@ -109,6 +110,11 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_HISTORY_RECORD = "cleaning#last_clean_record";
     public static final String CHANNEL_VACUUM_MAP = "cleaning#map";
 
+    public static final String CHANNEL_LOGIN_IMAGE = "login-image";
+    public static final String CHANNEL_CAPTCHA_RESPONSE = "captcha-response";
+    public static final String CHANNEL_TWOFA = "two-fa";
+    public static final String CHANNEL_TRIGGER_LOGIN = "trigger-login";
+
     public static final String PROPERTY_HOST_IP = "host";
     public static final String PROPERTY_DID = "deviceId";
     public static final String PROPERTY_TOKEN = "token";
@@ -116,6 +122,16 @@ public final class MiIoBindingConstants {
     public static final String PROPERTY_REFRESH_INTERVAL = "refreshInterval";
     public static final String PROPERTY_TIMEOUT = "timeout";
     public static final String PROPERTY_CLOUDSERVER = "cloudServer";
+
+    public static final String CONFIG_USERNAME = "username";
+    public static final String CONFIG_PASSWORD = "password";
+    public static final String CONFIG_COUNTRY = "country";
+    public static final String CONFIG_CLIENT_ID = "client-id";
+    public static final String CONFIG_USER_ID = "user-id";
+    public static final String CONFIG_SERVICE_TOKEN = "service-token";
+    public static final String CONFIG_SSECURITY = "ssecurity";
+    public static final String CONFIG_LOGIN_METHOD = "login-method";
+    public static final String CONFIG_CLOUD_DISCOVERY_MODE = "cloud-discovery-mode";
 
     public static final Set<String> PERSISTENT_CHANNELS = Collections.unmodifiableSet(
             Stream.of(CHANNEL_COMMAND, CHANNEL_RPC, CHANNEL_SSID, CHANNEL_BSSID, CHANNEL_RSSI, CHANNEL_LIFE)

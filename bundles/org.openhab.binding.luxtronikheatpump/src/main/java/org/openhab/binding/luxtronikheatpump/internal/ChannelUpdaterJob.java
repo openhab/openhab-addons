@@ -59,7 +59,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
         this.translationProvider = translationProvider;
         this.handler = handler;
         this.thing = handler.getThing();
-        this.config = this.thing.getConfiguration().as(LuxtronikHeatpumpConfiguration.class);
+        this.config = handler.getConfigAs(LuxtronikHeatpumpConfiguration.class);
     }
 
     public Thing getThing() {

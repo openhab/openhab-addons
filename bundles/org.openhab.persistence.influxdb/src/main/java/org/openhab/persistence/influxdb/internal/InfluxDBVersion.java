@@ -23,5 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum InfluxDBVersion {
     V1,
     V2,
+    V3,
     UNKNOWN
 }

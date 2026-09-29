@@ -27,30 +27,31 @@ registered to your account.
 
 ### `account` Bridge
 
-| Parameter  | Required | Description                                                      |
-|------------|----------|------------------------------------------------------------------|
-| `username` | No       | Bluelink account email (not required for EU region)              |
-| `password` | Yes      | Bluelink account password (for EU: refresh token)                |
-| `pin`      | No       | Bluelink service PIN (required for lock/unlock commands)         |
-| `region`   | No       | Country code (`US`, `CA`, or `EU`), autodetected if absent       |
-| `brand`    | No       | One of `hyundai`, `kia`, `genesis` (required for CA and EU)      |
+| Parameter  | Required | Description                                                                          |
+|------------|----------|--------------------------------------------------------------------------------------|
+| `username` | Yes      | Bluelink account email                                                               |
+| `password` | Yes      | Bluelink account password                                                            |
+| `pin`      | No       | Bluelink service PIN (required for lock/unlock commands, not required for EU region) |
+| `region`   | No       | Country code (`US`, `CA`, or `EU`), autodetected if absent                           |
+| `brand`    | No       | One of `hyundai`, `kia`, `genesis` (required for CA and EU)                          |
 
 #### EU Region Notes
 
-The EU region uses an OAuth2 refresh token instead of username/password authentication.
-Put your refresh token in the `password` field.
-A refresh token is typically valid for 180 days, after which you will need to provide a new one.
-The following script may be used to obtain a refresh token: [RustyDust/bluelink_refresh_token](https://github.com/RustyDust/bluelink_refresh_token).
+For the EU region, log in with your account email and password.
+Refresh tokens are no longer supported, as new ones cannot be obtained since August 2026.
+If you used a refresh token before, enter your account email and password instead.
 
-The `username` field is not required for EU.
+Both legacy and newer CCS2/CCU-based vehicles are supported in the EU region.
+
+The `pin` field is not required for the EU region.
 
 ### `vehicle` Thing
 
-| Parameter              | Required | Default | Description                                       |
-|------------------------|----------|---------|---------------------------------------------------|
-| `vin`                  | Yes      | -       | Vehicle Identification Number (VIN)               |
-| `refreshInterval`      | No       | 30      | Status refresh interval in minutes (cached)       |
-| `forceRefreshInterval` | No       | 240     | Status refresh interval in minutes (from vehicle) |
+| Parameter              | Required | Default | Description                                                                                 |
+|------------------------|----------|---------|---------------------------------------------------------------------------------------------|
+| `vin`                  | Yes      | -       | Vehicle Identification Number (VIN)                                                         |
+| `refreshInterval`      | No       | 30      | Status refresh interval in minutes (cached)                                                 |
+| `forceRefreshInterval` | No       | 240     | Status refresh interval in minutes (from vehicle), set to 0 to disable refresh from vehicle |
 
 The `refreshInterval` parameter controls how often cached data is fetched from Kia/Hyundai servers.
 In contrast, `forceRefreshInterval` controls fetching of data from the vehicle.
@@ -65,6 +66,7 @@ Vehicle things support the following actions.
 
 | Action             | Parameters                                                 | Description                                                |
 |--------------------|------------------------------------------------------------|------------------------------------------------------------|
+| refresh()          | -                                                          | Fetch cached data from the servers and update channels     |
 | forceRefresh()     | -                                                          | Fetch up-to-date data from the vehicle and update channels |
 | climateStart()     | temperature, heated features, defrost, engine run duration | Start climate control                                      |
 | climateStop()      | -                                                          | Stop climate control                                       |

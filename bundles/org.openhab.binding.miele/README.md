@@ -366,7 +366,7 @@ See oven.
 | failure             | Switch               | Read       | Signals failure, check appliance for details                         |
 | switch              | Switch               | Write      | Switch the appliance on or off                                       |
 | target              | Number:Temperature   | Read       | Temperature of the selected program (10 °C = cold)                   |
-| spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance               |
+| spinningspeed       | Number:Frequency     | Read       | Spinning speed of the currently running program on the appliance     |
 | energyConsumption   | Number:Energy        | Read       | Energy consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance  |
 | laundryWeight       | Number:Mass          | Read       | Weight of the laundry inside the appliance                           |
@@ -471,7 +471,7 @@ Number WashingMachine_RawState                                {channel="miele:wa
 String WashingMachine_Program "Program [%s]"                  {channel="miele:washingmachine:home:washingmachine:program"}
 String WashingMachine_Phase "Phase [%s]"                      {channel="miele:washingmachine:home:washingmachine:phase"}
 Number:Temperature WashingMachine_Temperature <temperature>   {channel="miele:washingmachine:home:washingmachine:target"}
-String WashingMachine_SpinningSpeed                           {channel="miele:washingmachine:home:washingmachine:spinningspeed"}
+Number:Frequency WashingMachine_SpinningSpeed                 {channel="miele:washingmachine:home:washingmachine:spinningspeed", unit="rpm"}
 Number:Time WashingMachine_ElapsedTime "Elapsed time" <time>  {channel="miele:washingmachine:home:washingmachine:elapsed"}
 Number:Time WashingMachine_FinishTime "Remaining time" <time> {channel="miele:washingmachine:home:washingmachine:finish"}
 Number:Energy WashingMachine_EnergyConsumption                {channel="miele:washingmachine:home:washingmachine:energyConsumption"}

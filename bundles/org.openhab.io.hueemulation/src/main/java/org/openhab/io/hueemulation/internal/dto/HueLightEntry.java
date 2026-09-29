@@ -36,6 +36,9 @@ import com.google.gson.JsonSerializer;
  */
 @NonNullByDefault
 public class HueLightEntry {
+
+    public static final String DEFAULT_ARCHETYPE = "unknownarchetype";
+
     public AbstractHueState state = new AbstractHueState();
     public final String type;
     public final String modelid;
@@ -46,7 +49,6 @@ public class HueLightEntry {
     public final @Nullable String luminaireuniqueid = null;
     public final @Nullable String swconfigid;
     public final @Nullable String productid;
-    public @Nullable Boolean friendsOfHue = true;
     public final @Nullable String colorGamut;
     public @Nullable Boolean hascolor = null;
 
@@ -58,12 +60,16 @@ public class HueLightEntry {
     public transient @Nullable HueStateChange lastHueChange = null;
 
     public static class Config {
-        public final String archetype = "classicbulb";
+        public final String archetype;
         public final String function = "functional";
         public final String direction = "omnidirectional";
+
+        public Config(String archetype) {
+            this.archetype = archetype;
+        }
     }
 
-    public Config config = new Config();
+    public Config config = new Config("classicbulb");
 
     public static class Streaming {
         public boolean renderer = false;
@@ -146,20 +152,16 @@ public class HueLightEntry {
                 break;
             case SwitchType:
             default:
-                /**
-                 * Pretend to be an OSRAM plug, there is no native Philips Hue plug on the market.
-                 * Those are supported by most of the external apps and Alexa.
-                 */
-                this.type = "On/off light";
-                this.modelid = "Plug 01";
+                this.type = "On/Off plug-in unit";
+                this.modelid = "LOM001";
                 this.colorGamut = null;
-                this.manufacturername = "OSRAM";
-                this.productname = "On/Off plug";
-                this.swconfigid = null;
-                this.swversion = "V1.04.12";
-                this.productid = null;
+                this.manufacturername = "Signify Netherlands B.V.";
+                this.swconfigid = "0CF38B30";
+                this.swversion = "1.145.2";
+                this.productid = "SmartPlug_OnOff_v01-00_01";
                 this.hascolor = false;
-                this.friendsOfHue = null;
+                this.productname = "Hue smart plug";
+                this.capabilities.certified = true;
                 break;
         }
 

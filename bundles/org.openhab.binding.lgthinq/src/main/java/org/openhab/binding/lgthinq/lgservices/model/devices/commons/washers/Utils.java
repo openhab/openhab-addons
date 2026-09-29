@@ -32,7 +32,7 @@ public class Utils {
     public static Map<String, CourseDefinition> getGenericCourseDefinitions(JsonNode courseNode, CourseType type,
             String notSelectedCourseKey) {
         Map<String, CourseDefinition> coursesDef = new HashMap<>();
-        courseNode.fields().forEachRemaining(e -> {
+        courseNode.properties().forEach(e -> {
             CourseDefinition cd = new CourseDefinition();
             JsonNode thisCourseNode = e.getValue();
             cd.setCourseName(thisCourseNode.path("_comment").textValue());

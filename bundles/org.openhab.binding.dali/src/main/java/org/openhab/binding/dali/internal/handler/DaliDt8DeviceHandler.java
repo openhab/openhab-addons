@@ -35,6 +35,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +135,7 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     throw new DaliException("unknown device type");
                 }
                 if (command instanceof HSBType hsbCommand) {
-                    PercentType[] rgb = hsbCommand.toRGB();
+                    PercentType[] rgb = ColorUtil.hsbToRgbPercent(hsbCommand);
                     final int r = (int) (254 * (rgb[0].floatValue() / 100));
                     final int g = (int) (254 * (rgb[1].floatValue() / 100));
                     final int b = (int) (254 * (rgb[2].floatValue() / 100));

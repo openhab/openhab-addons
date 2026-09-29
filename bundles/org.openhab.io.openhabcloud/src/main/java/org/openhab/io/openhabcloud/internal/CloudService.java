@@ -35,6 +35,8 @@ import org.openhab.core.events.EventPublisher;
 import org.openhab.core.events.EventSubscriber;
 import org.openhab.core.id.InstanceUUID;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.io.rest.Webhook;
+import org.openhab.core.io.rest.WebhookService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -50,7 +52,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.TypeParser;
 import org.openhab.core.util.StringUtils;
 import org.openhab.io.openhabcloud.NotificationAction;
-import org.openhab.io.openhabcloud.WebhookService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -328,16 +329,17 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     @Override
-    public CompletableFuture<String> requestWebhook(String localPath) {
-        CompletableFuture<String> future = new CompletableFuture<>();
+    public CompletableFuture<Webhook> requestWebhook(String localPath) {
+        CompletableFuture<Webhook> future = new CompletableFuture<>();
         if (localPath.isBlank() || !localPath.startsWith("/")) {
             future.completeExceptionally(new IllegalArgumentException("localPath must start with '/'"));
             return future;
         }
-        if (cloudClient != null && cloudClient.isConnected()) {
-            cloudClient.registerWebhook(localPath, future);
+        CloudClient client = cloudClient;
+        if (client != null) {
+            client.registerWebhook(localPath, future);
         } else {
-            future.completeExceptionally(new IllegalStateException("Cloud connector is not connected"));
+            future.completeExceptionally(new IllegalStateException("Cloud connector is not initialized"));
         }
         return future;
     }
@@ -349,10 +351,11 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             future.completeExceptionally(new IllegalArgumentException("localPath must start with '/'"));
             return future;
         }
-        if (cloudClient != null && cloudClient.isConnected()) {
-            cloudClient.removeWebhook(localPath, future);
+        CloudClient client = cloudClient;
+        if (client != null) {
+            client.removeWebhook(localPath, future);
         } else {
-            future.completeExceptionally(new IllegalStateException("Cloud connector is not connected"));
+            future.completeExceptionally(new IllegalStateException("Cloud connector is not initialized"));
         }
         return future;
     }

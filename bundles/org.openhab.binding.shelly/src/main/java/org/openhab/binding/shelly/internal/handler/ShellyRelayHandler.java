@@ -25,9 +25,10 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
-import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -62,9 +63,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      * @param httpClient to connect to the openHAB HTTP API
      */
     public ShellyRelayHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
-        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
+            final ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable,
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient,
+            final LocationProvider locationProvider) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient,
+                locationProvider);
     }
 
     @Override
@@ -135,13 +138,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
                 api.setAutoTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 break;
-            case CHANNEL_EMETER_RESETTOTAL:
-                String id = substringAfter(groupName, CHANNEL_GROUP_METER);
-                int mIdx = id.isEmpty() ? 0 : Integer.parseInt(id) - 1;
-                logger.debug("{}: Reset Meter Totals for meter {}", thingName, mIdx + 1);
-                api.resetMeterTotal(mIdx); // currently there is only 1 emdata component
-                updateChannel(groupName, CHANNEL_EMETER_RESETTOTAL, OnOffType.OFF);
-                break;
+
         }
         return true;
     }
@@ -188,16 +185,20 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     }
 
     private void updateBrightnessChannel(int lightId, OnOffType power, int brightness) throws ShellyApiException {
-        updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", power);
+        String group = profile.getControlGroup(lightId);
+        int actualBrightness = brightness;
         if (brightness > 0) {
-            api.setBrightness(lightId, brightness, config.brightnessAutoOn);
+            api.setBrightness(lightId, brightness, config.getBrightnessAutoOn());
         } else {
-            api.setLightTurn(lightId, power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
-            if (brightness >= 0) { // ignore -1
-                updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Value",
-                        toQuantityType((double) (power == OnOffType.ON ? brightness : 0), DIGITS_NONE, Units.PERCENT));
+            ShellyShortLightStatus light = api.setLightTurn(lightId,
+                    power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
+            if (brightness < 0) { // blind Switch command, brightness unknown -> use the device-reported value
+                actualBrightness = getInteger(light.brightness);
             }
         }
+        // single Percent update only; a linked Switch item still gets a correct ON/OFF state via core's conversion
+        updateChannel(group, CHANNEL_BRIGHTNESS + "$Value",
+                toQuantityType((double) (power == OnOffType.ON ? actualBrightness : 0), DIGITS_NONE, Units.PERCENT));
     }
 
     @Override
@@ -230,8 +231,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 if ((command == UpDownType.UP && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_OPEN))
                         || (command == UpDownType.DOWN
                                 && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_CLOSE))) {
-                    logger.debug("{}: Roller is already in requested position ({}), ignore command {}", thingName,
-                            getString(rstatus.state), command);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("{}: Roller is already in requested position ({}), ignore command {}", thingName,
+                                getString(rstatus.state), command);
+                    }
                     requestUpdates(1, false);
                     return;
                 }
@@ -240,10 +243,12 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             if (command == UpDownType.UP || command == OnOffType.ON
                     || ((command instanceof DecimalType decimalCommand) && (decimalCommand.intValue() == 100))) {
                 logger.debug("{}: Open roller", thingName);
-                int shpos = profile.getRollerFav(config.favoriteUP - 1);
+                int shpos = profile.getRollerFav(config.getFavoriteUP() - 1);
                 if (shpos > 0) {
-                    logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName, config.favoriteUP,
-                            shpos);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName,
+                                config.getFavoriteUP(), shpos);
+                    }
                     api.setRollerPos(index, shpos);
                     position = shpos;
                 } else {
@@ -252,11 +257,13 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             } else if (command == UpDownType.DOWN || command == OnOffType.OFF
                     || ((command instanceof DecimalType decimalCommand) && (decimalCommand.intValue() == 0))) {
                 logger.debug("{}: Closing roller", thingName);
-                int shpos = profile.getRollerFav(config.favoriteDOWN - 1);
+                int shpos = profile.getRollerFav(config.getFavoriteDOWN() - 1);
                 if (shpos > 0) {
                     // use favorite position
-                    logger.debug("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
-                            config.favoriteDOWN, shpos);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
+                                config.getFavoriteDOWN(), shpos);
+                    }
                     api.setRollerPos(index, shpos);
                     position = shpos;
                 } else {
@@ -264,10 +271,14 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
             }
         } else if (command == StopMoveType.STOP) {
-            logger.debug("{}: Stop roller", thingName);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: Stop roller", thingName);
+            }
             api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_STOP);
         } else {
-            logger.debug("{}: Set roller to position {}", thingName, command);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: Set roller to position {}", thingName, command);
+            }
             if (command instanceof PercentType percentCommand) {
                 position = percentCommand.intValue();
             } else if (command instanceof DecimalType decimalCommand) {
@@ -283,7 +294,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             position = isControl ? SHELLY_MAX_ROLLER_POS - position : position;
             validateRange("roller position", position, SHELLY_MIN_ROLLER_POS, SHELLY_MAX_ROLLER_POS);
 
-            logger.debug("{}: Changing roller position to {}", thingName, position);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: Changing roller position to {}", thingName, position);
+            }
             api.setRollerPos(index, position);
         }
     }
@@ -327,6 +340,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             }
 
             if (!profile.isRoller) {
+                if (status.relays == null) {
+                    return updated;
+                }
                 logger.trace("{}: Updating {} relay(s)", thingName, profile.numRelays);
                 for (int i = 0; i < status.relays.size(); i++) {
                     createRelayChannels(status.relays.get(i), i);
@@ -334,6 +350,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
             } else {
                 // Check for Relay in Roller Mode
+                if (status.rollers == null) {
+                    return updated;
+                }
                 logger.trace("{}: Updating {} rollers", thingName, profile.numRollers);
                 for (int i = 0; i < profile.numRollers; i++) {
                     ShellyRollerStatus roller = status.rollers.get(i);

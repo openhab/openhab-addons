@@ -39,6 +39,7 @@ import org.openhab.binding.tuya.internal.cloud.dto.DeviceSchema;
 import org.openhab.binding.tuya.internal.cloud.dto.FactoryInformation;
 import org.openhab.binding.tuya.internal.cloud.dto.Login;
 import org.openhab.binding.tuya.internal.cloud.dto.ResultResponse;
+import org.openhab.binding.tuya.internal.cloud.dto.SubDeviceInfo;
 import org.openhab.binding.tuya.internal.cloud.dto.Token;
 import org.openhab.binding.tuya.internal.config.ProjectConfiguration;
 import org.openhab.binding.tuya.internal.util.CryptoUtil;
@@ -53,6 +54,7 @@ import com.google.gson.reflect.TypeToken;
  * The {@link TuyaOpenAPI} is an implementation of the Tuya OpenApi specification
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Maciej Jarzebowski - Add sub-device retrieval
  */
 @NonNullByDefault
 public class TuyaOpenAPI {
@@ -161,6 +163,17 @@ public class TuyaOpenAPI {
     public CompletableFuture<DeviceSchema> getDeviceSchema(String deviceId) {
         return request(HttpMethod.GET, "/v1.1/devices/" + deviceId + "/specifications", Map.of(), null)
                 .thenCompose(s -> processResponse(s, DeviceSchema.class));
+    }
+
+    /**
+     * Retrieves the devices connected through the given gateway.
+     *
+     * @param deviceId the device id of the gateway
+     * @return the sub-devices, an empty list if the device is not a gateway
+     */
+    public CompletableFuture<List<SubDeviceInfo>> getSubDevices(String deviceId) {
+        return request(HttpMethod.GET, "/v1.0/devices/" + deviceId + "/sub-devices", Map.of(), null).thenCompose(
+                s -> processResponse(s, TypeToken.getParameterized(List.class, SubDeviceInfo.class).getType()));
     }
 
     public CompletableFuture<Boolean> sendCommand(String deviceId, CommandRequest command) {

@@ -149,7 +149,7 @@ public class BoschSslUtil {
 
     private X509Certificate generateClientCertificate(KeyPair keyPair)
             throws GeneralSecurityException, OperatorCreationException {
-        final String dirName = "CN=" + getBoschShcClientId() + ", O=openHAB, L=None, ST=None, C=None";
+        final String dirName = "CN=" + getBoschShcClientId() + ", O=openHAB, L=None, ST=None";
         logger.debug("Creating a new self signed certificate: {}", dirName);
         final Instant now = Instant.now();
         final Date notBefore = Date.from(now);

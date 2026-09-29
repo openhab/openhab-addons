@@ -1,0 +1,26 @@
+{
+  viewer {
+    home(id: \"%s\") {
+      production(
+        resolution: %s
+        last: %s
+        %s
+      ) {
+        edges {
+          cursor
+          node {
+            from
+            to
+            production
+            productionUnit
+          }
+        }
+        pageInfo {
+          hasPreviousPage
+          startCursor
+          count
+        }
+      }
+    }
+  }
+}

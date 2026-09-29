@@ -54,8 +54,8 @@ public class ContentControlCluster extends BaseCluster {
     /**
      * This attribute shall provide the collection of ratings that are currently valid for this media device. The items
      * should honor the metadata of the on-demand content (e.g. Movie) rating system for one country or region where the
-     * media device has been provisioned. For example, for the MPAA system, RatingName may be one value out of
-     * &quot;G&quot;, &quot;PG&quot;, &quot;PG-13&quot;, &quot;R&quot;, &quot;NC-17&quot;.
+     * media device has been provisioned. For example, for the MPAA system, RatingName may be one value out of "G",
+     * "PG", "PG-13", "R", "NC-17".
      * The media device shall have a way to determine which rating system applies for the on-demand content and then
      * populate this attribute. For example, it can do it through examining the Location attribute in the Basic
      * Information cluster, and then determining which rating system applies.
@@ -179,16 +179,16 @@ public class ContentControlCluster extends BaseCluster {
         public Integer blockChannelIndex; // uint16
         /**
          * This field shall indicate the channel major number value (for example, using ATSC format). When the channel
-         * number is expressed as a string, such as &quot;13.1&quot; or &quot;256&quot;, the major number would be 13 or
-         * 256, respectively. This field is required but shall be set to 0 for channels such as over-the-top channels
-         * that are not represented by a major or minor number.
+         * number is expressed as a string, such as "13.1" or "256", the major number would be 13 or 256, respectively.
+         * This field is required but shall be set to 0 for channels such as over-the-top channels that are not
+         * represented by a major or minor number.
          */
         public Integer majorNumber; // uint16
         /**
          * This field shall indicate the channel minor number value (for example, using ATSC format). When the channel
-         * number is expressed as a string, such as &quot;13.1&quot; or &quot;256&quot;, the minor number would be 1 or
-         * 0, respectively. This field is required but shall be set to 0 for channels such as over-the-top channels that
-         * are not represented by a major or minor number.
+         * number is expressed as a string, such as "13.1" or "256", the minor number would be 1 or 0, respectively.
+         * This field is required but shall be set to 0 for channels such as over-the-top channels that are not
+         * represented by a major or minor number.
          */
         public Integer minorNumber; // uint16
         /**
@@ -215,8 +215,8 @@ public class ContentControlCluster extends BaseCluster {
          */
         public Integer catalogVendorId; // uint16
         /**
-         * This field shall indicate the application identifier, expressed as a string, such as &quot;PruneVideo&quot;
-         * or &quot;Company X&quot;. This field shall be unique within a catalog.
+         * This field shall indicate the application identifier, expressed as a string, such as "PruneVideo" or "Company
+         * X". This field shall be unique within a catalog.
          */
         public String applicationId; // string
 
@@ -603,9 +603,9 @@ public class ContentControlCluster extends BaseCluster {
      * Upon receipt of the SetBlockContentTimeWindow command, the media device shall check if the TimeWindowIndex field
      * passed in this command is NULL. If the TimeWindowIndex field is NULL, the media device shall check if there is an
      * entry in the BlockContentTimeWindow attribute which matches with the TimePeriod and DayOfWeek fields passed in
-     * this command. * If Yes, then a response with TimeWindowAlreadyExist error status shall be returned. * If No, then
-     * the media device shall assign one unique index for this time window and add it into the BlockContentTimeWindow
-     * list attribute.
+     * this command. If Yes, then a response with TimeWindowAlreadyExist error status shall be returned. If No, then the
+     * media device shall assign one unique index for this time window and add it into the BlockContentTimeWindow list
+     * attribute.
      * If the TimeWindowIndex field is not NULL and presents in the BlockContentTimeWindow attribute, the media device
      * shall replace the original time window with the new time window passed in this command.
      */

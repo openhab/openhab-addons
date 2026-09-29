@@ -72,7 +72,8 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
 
         public void addThing(Thing thing) {
             if (isTrain(thing)) {
-                int position = thing.getConfiguration().as(DeutscheBahnTrainConfiguration.class).position;
+                int position = DeutscheBahnTimetableHandler.getThingConfig(thing,
+                        DeutscheBahnTrainConfiguration.class).position;
                 this.maxPosition = Math.max(this.maxPosition, position);
                 List<Thing> thingsAtPosition = this.thingsPerPosition.get(position);
                 if (thingsAtPosition == null) {
@@ -106,6 +107,14 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DeutscheBahnTimetableHandler.class);
     private @Nullable TimetableLoader loader;
+
+    private static <T> T getThingConfig(Thing thing, Class<T> configurationClass) {
+        ThingHandler handler = thing.getHandler();
+        if (handler instanceof DeutscheBahnTrainHandler trainHandler) {
+            return trainHandler.getConfigAs(configurationClass);
+        }
+        return thing.getConfiguration().as(configurationClass);
+    }
 
     private final TimetablesV1ApiFactory timetablesV1ApiFactory;
 

@@ -1,0 +1,94 @@
+Manage files in the openHAB static-asset folder (`$OPENHAB_CONF/html`,
+served at `/static/*` by the Main UI). Use this to upload plan-page
+background images, custom widget icons, CSS overrides, or any other
+asset that a Main UI component references by URL — and to discover or
+clean up what's already there.
+
+This tool is action-dispatched: pass `action` plus the args that action
+needs. Every call requires an administrator-scoped bearer token; the
+bundle verifies this by probing an admin-gated REST endpoint with the
+session token before touching the filesystem.
+
+ACTIONS
+
+- `list` — enumerate files under the static folder. Optional
+  `pathPrefix` (e.g. "plans/") scopes the listing to a subdirectory.
+  Optional `recursive` (default true) walks subdirectories. Returns
+  `{files: [{path, url, sizeBytes, lastModified, mimeType}], total,
+  root}`. Hidden files (names starting with `.`) are skipped.
+
+- `get` — read one file. Required: `path` (relative,
+  e.g. "plans/floor-1.png"). Optional `encoding`: defaults to `utf8`
+  for textual MIME types (`css`, `js`, `html`, `json`, `txt`, `md`,
+  `svg`) and `base64` for everything else. Override only when you
+  know what you're doing. Returns `{path, url, viewUrl, sizeBytes,
+  mimeType, encoding, content}`.
+
+- `put` — upload or overwrite one file. Required: `path`, `content`.
+  Optional `encoding` (default `base64`) tells the server how to decode
+  `content`. Optional `overwrite` (default `false`) — `put` refuses to
+  clobber an existing file unless you explicitly opt in, so an agent
+  doesn't silently nuke a hand-curated asset. Per-call upload cap is
+  10 MB; larger files fail fast with a structured error. The response
+  is minimal by default — `{success, action, path, url, viewUrl,
+  sizeBytes}` — and pass `responseDetail: "full"` to also get
+  `mimeType` and `lastModified`.
+
+- `delete` — remove one file. Required: `path`. Returns
+  `{success, action, path}`. Parent directories left empty by the
+  delete are pruned automatically up to (but not including) the
+  `html` root, so no empty subtree is left behind.
+
+PATH RULES
+
+Paths are relative to `$OPENHAB_CONF/html`. The following are rejected
+before any filesystem call:
+
+- absolute paths (leading `/` or `\`)
+- `..` segments (path traversal)
+- segments starting with `.` (hidden files / dotfiles)
+- null bytes
+
+After normalization the resolved path must still be under the
+canonicalized root — symlinks pointing outside the folder are
+rejected. Subdirectories are fine: `plans/floor-1.png`,
+`icons/blinds.svg`, `css/custom.css` all work and the parent
+directories are created on `put` as needed.
+
+EXTENSION WHITELIST
+
+Allowed: `png`, `jpg`, `jpeg`, `gif`, `webp`, `svg`, `ico`, `css`,
+`js`, `html`, `htm`, `json`, `txt`, `md`. Anything else (PDFs,
+executables, archives, etc.) is rejected with a structured error.
+
+XSS WARNING: `html`, `htm`, `svg`, and `js` files served from
+`/static/` execute in the browser context of any user viewing the Main
+UI. Don't upload an `.html` file just because the agent thinks the
+user wants one — confirm with the user first if the content isn't a
+straightforward static asset (a custom widget icon, a floor plan, a
+small CSS tweak). SVGs with embedded scripts have the same risk.
+
+URL CONVENTIONS
+
+Files at `<path>` are reachable at `/static/<path>` (relative) or
+`http://<host>:<port>/static/<path>` (absolute). The `put` response
+includes both `url` (relative — what you paste into a widget config
+like `oh-plan-page`'s `imageUrl`) and `viewUrl` (absolute — what you
+hand to a browser-automation MCP tool to verify the upload landed).
+
+TYPICAL FLOWS
+
+- "Use this floor plan I just uploaded as the background of a new
+  plan page": call `put` with the PNG bytes (base64), then pass the
+  returned `url` as `imageUrl` on a new `oh-plan-page` via
+  `manage_ui_component(action='create', namespace='ui:page', ...)`.
+
+- "What images do I already have for plans?": call
+  `list` with `pathPrefix: "plans/"`.
+
+- "Replace the existing custom CSS with this update": call
+  `get` with `path: "css/custom.css"` to read the current file, then
+  `put` with `overwrite: true` to write the new version.
+
+- "Delete the test floor plan you uploaded earlier": call
+  `delete` with the path returned earlier.

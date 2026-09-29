@@ -15,7 +15,7 @@ package org.openhab.voice.mactts.internal;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.tts.Voice;
 
 /**
  * Implementation of the Voice interface for macOS
@@ -129,11 +129,11 @@ public class MacTTSVoice implements Voice {
         Locale locale;
 
         if (variant != null) {
-            locale = new Locale(language, country, variant);
+            locale = Locale.of(language, country, variant);
         } else if (country != null) {
-            locale = new Locale(language, country);
+            locale = Locale.of(language, country);
         } else {
-            locale = new Locale(language);
+            locale = Locale.of(language);
         }
 
         return locale;

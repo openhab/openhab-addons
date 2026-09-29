@@ -16,16 +16,17 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
@@ -57,6 +58,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
  * @author Christoph Sommer - Added support for color temperature
+ * @author Leo Siepel - Made authentication non-blocking
  */
 @NonNullByDefault
 public class FritzAhaWebInterface {
@@ -88,78 +90,137 @@ public class FritzAhaWebInterface {
      * Shared instance of HTTP client for asynchronous calls
      */
     private final HttpClient httpClient;
+    private final Object authenticationLock = new Object();
     /**
      * Current session ID
      */
-    private @Nullable String sid;
+    private volatile @Nullable String sid;
+    private volatile boolean disposed;
+    private @Nullable CompletableFuture<Boolean> authentication;
 
     /**
      * This method authenticates with the FRITZ!OS Web Interface and updates the session ID accordingly
      */
-    public void authenticate() {
-        sid = null;
+    public CompletableFuture<Boolean> authenticate() {
+        CompletableFuture<Boolean> currentAuthentication;
+        synchronized (authenticationLock) {
+            if (disposed) {
+                return CompletableFuture.completedFuture(false);
+            }
+            if (sid != null) {
+                return CompletableFuture.completedFuture(true);
+            }
+            CompletableFuture<Boolean> ongoingAuthentication = authentication;
+            if (ongoingAuthentication != null) {
+                return ongoingAuthentication;
+            }
+            currentAuthentication = new CompletableFuture<>();
+            authentication = currentAuthentication;
+        }
         String localPassword = config.password;
         if (localPassword == null || localPassword.trim().isEmpty()) {
-            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            completeAuthentication(currentAuthentication, null, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Please configure the password.");
-            return;
+            return currentAuthentication;
         }
-        String loginXml = syncGet(getURL(WEBSERVICE_PATH, addSID("")));
-        if (loginXml == null) {
-            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "FRITZ!Box does not respond.");
-            return;
-        }
+        requestLoginPage(currentAuthentication, getURL(WEBSERVICE_PATH),
+                loginXml -> processInitialLoginResponse(currentAuthentication, loginXml));
+        return currentAuthentication;
+    }
+
+    private void processInitialLoginResponse(CompletableFuture<Boolean> currentAuthentication, String loginXml) {
         Matcher sidmatch = SID_PATTERN.matcher(loginXml);
         if (!sidmatch.find()) {
-            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            completeAuthentication(currentAuthentication, null, ThingStatusDetail.COMMUNICATION_ERROR,
                     "FRITZ!Box does not respond with SID.");
             return;
         }
         String localSid = sidmatch.group(1);
         Matcher accmatch = ACCESS_PATTERN.matcher(loginXml);
-        if (accmatch.find()) {
-            if ("2".equals(accmatch.group(1))) {
-                sid = localSid;
-                handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
-                return;
-            }
+        if (accmatch.find() && "2".equals(accmatch.group(1))) {
+            completeAuthentication(currentAuthentication, localSid, ThingStatusDetail.NONE, null);
+            return;
         }
         Matcher challengematch = CHALLENGE_PATTERN.matcher(loginXml);
         if (!challengematch.find()) {
-            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            completeAuthentication(currentAuthentication, null, ThingStatusDetail.COMMUNICATION_ERROR,
                     "FRITZ!Box does not respond with challenge for authentication.");
             return;
         }
         String challenge = challengematch.group(1);
         String response = createResponse(challenge);
         String localUser = config.user;
-        loginXml = syncGet(getURL(WEBSERVICE_PATH,
-                (localUser == null || localUser.isEmpty() ? "" : ("username=" + localUser + "&")) + "response="
-                        + response));
-        if (loginXml == null) {
-            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "FRITZ!Box does not respond.");
-            return;
-        }
-        sidmatch = SID_PATTERN.matcher(loginXml);
+        requestLoginPage(currentAuthentication,
+                getURL(WEBSERVICE_PATH,
+                        (localUser == null || localUser.isEmpty() ? "" : ("username=" + localUser + "&")) + "response="
+                                + response),
+                authenticatedLoginXml -> processAuthenticatedLoginResponse(currentAuthentication, authenticatedLoginXml,
+                        localUser));
+    }
+
+    private void processAuthenticatedLoginResponse(CompletableFuture<Boolean> currentAuthentication, String loginXml,
+            @Nullable String localUser) {
+        Matcher sidmatch = SID_PATTERN.matcher(loginXml);
         if (!sidmatch.find()) {
-            handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            completeAuthentication(currentAuthentication, null, ThingStatusDetail.COMMUNICATION_ERROR,
                     "FRITZ!Box does not respond with SID.");
             return;
         }
-        localSid = sidmatch.group(1);
-        accmatch = ACCESS_PATTERN.matcher(loginXml);
-        if (accmatch.find()) {
-            if ("2".equals(accmatch.group(1))) {
-                sid = localSid;
-                handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+        String localSid = sidmatch.group(1);
+        Matcher accmatch = ACCESS_PATTERN.matcher(loginXml);
+        if (accmatch.find() && "2".equals(accmatch.group(1))) {
+            completeAuthentication(currentAuthentication, localSid, ThingStatusDetail.NONE, null);
+            return;
+        }
+        completeAuthentication(currentAuthentication, null, ThingStatusDetail.CONFIGURATION_ERROR, "User "
+                + (localUser == null ? "" : localUser) + " has no access to FRITZ!Box home automation functions.");
+    }
+
+    private void requestLoginPage(CompletableFuture<Boolean> currentAuthentication, String url,
+            Consumer<String> responseConsumer) {
+        try {
+            httpClient.newRequest(url).timeout(config.syncTimeout, TimeUnit.MILLISECONDS).method(HttpMethod.GET)
+                    .send(new BufferingResponseListener() {
+                        @Override
+                        public void onComplete(@NonNullByDefault({}) Result result) {
+                            String content = getContentAsString();
+                            if (result.isSucceeded() && result.getResponse().getStatus() == 200 && content != null) {
+                                logger.debug("Authentication GET response complete");
+                                try {
+                                    responseConsumer.accept(content);
+                                } catch (RuntimeException e) {
+                                    logger.debug("Failed to process authentication response", e);
+                                    completeAuthentication(currentAuthentication, null,
+                                            ThingStatusDetail.COMMUNICATION_ERROR,
+                                            "FRITZ!Box returned an invalid authentication response.");
+                                }
+                            } else {
+                                logger.debug("Authentication GET response failed", result.getFailure());
+                                completeAuthentication(currentAuthentication, null,
+                                        ThingStatusDetail.COMMUNICATION_ERROR, "FRITZ!Box does not respond.");
+                            }
+                        }
+                    });
+        } catch (RuntimeException e) {
+            logger.debug("Authentication GET request failed", e);
+            completeAuthentication(currentAuthentication, null, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "FRITZ!Box does not respond.");
+        }
+    }
+
+    private void completeAuthentication(CompletableFuture<Boolean> currentAuthentication, @Nullable String newSid,
+            ThingStatusDetail statusDetail, @Nullable String description) {
+        synchronized (authenticationLock) {
+            if (!currentAuthentication.equals(authentication) || disposed) {
+                currentAuthentication.complete(false);
                 return;
             }
+            sid = newSid;
+            boolean authenticated = newSid != null;
+            handler.setStatusInfo(authenticated ? ThingStatus.ONLINE : ThingStatus.OFFLINE, statusDetail, description);
+            currentAuthentication.complete(authenticated);
+            authentication = null;
         }
-        handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User "
-                + (localUser == null ? "" : localUser) + " has no access to FRITZ!Box home automation functions.");
-        return;
     }
 
     /**
@@ -204,8 +265,19 @@ public class FritzAhaWebInterface {
         this.config = config;
         this.handler = handler;
         this.httpClient = httpClient;
-        authenticate();
-        logger.debug("Starting with SID {}", sid);
+    }
+
+    public void dispose() {
+        CompletableFuture<Boolean> currentAuthentication;
+        synchronized (authenticationLock) {
+            disposed = true;
+            sid = null;
+            currentAuthentication = authentication;
+            authentication = null;
+        }
+        if (currentAuthentication != null) {
+            currentAuthentication.complete(false);
+        }
     }
 
     /**
@@ -230,33 +302,11 @@ public class FritzAhaWebInterface {
     }
 
     public String addSID(String path) {
-        if (sid == null) {
+        String currentSid = sid;
+        if (currentSid == null) {
             return path;
         } else {
-            return (path.isEmpty() ? "" : path + "&") + "sid=" + sid;
-        }
-    }
-
-    /**
-     * Sends a HTTP GET request using the synchronous client
-     *
-     * @param path Path of the requested resource
-     * @return response
-     */
-    public @Nullable String syncGet(String path) {
-        try {
-            ContentResponse contentResponse = httpClient.newRequest(path)
-                    .timeout(config.syncTimeout, TimeUnit.MILLISECONDS).method(HttpMethod.GET).send();
-            String content = contentResponse.getContentAsString();
-            logger.debug("GET response complete: {}", content);
-            return content;
-        } catch (ExecutionException | TimeoutException e) {
-            logger.debug("GET response failed: {}", e.getLocalizedMessage(), e);
-            return null;
-        } catch (InterruptedException e) {
-            logger.debug("GET response interrupted: {}", e.getLocalizedMessage(), e);
-            Thread.currentThread().interrupt();
-            return null;
+            return (path.isEmpty() ? "" : path + "&") + "sid=" + currentSid;
         }
     }
 
@@ -268,12 +318,14 @@ public class FritzAhaWebInterface {
      * @param callback Callback to handle the response with
      */
     public FritzAhaContentExchange asyncGet(String path, String args, FritzAhaCallback callback) {
-        if (!isAuthenticated()) {
-            authenticate();
-        }
         FritzAhaContentExchange getExchange = new FritzAhaContentExchange(callback);
-        httpClient.newRequest(getURL(path, addSID(args))).method(HttpMethod.GET).onResponseSuccess(getExchange)
-                .onResponseFailure(getExchange).send(getExchange);
+        authenticate().thenAccept(authenticated -> {
+            if (authenticated && !disposed) {
+                httpClient.newRequest(getURL(path, addSID(args))).timeout(config.asyncTimeout, TimeUnit.MILLISECONDS)
+                        .method(HttpMethod.GET).onResponseSuccess(getExchange).onResponseFailure(getExchange)
+                        .send(getExchange);
+            }
+        });
         return getExchange;
     }
 
@@ -289,14 +341,21 @@ public class FritzAhaWebInterface {
      * @param callback Callback to handle the response with
      */
     public FritzAhaContentExchange asyncPost(String path, String args, FritzAhaCallback callback) {
-        if (!isAuthenticated()) {
-            authenticate();
-        }
         FritzAhaContentExchange postExchange = new FritzAhaContentExchange(callback);
-        httpClient.newRequest(getURL(path)).timeout(config.asyncTimeout, TimeUnit.MILLISECONDS).method(HttpMethod.POST)
-                .onResponseSuccess(postExchange).onResponseFailure(postExchange)
-                .content(new StringContentProvider(addSID(args), StandardCharsets.UTF_8)).send(postExchange);
+        authenticate().thenAccept(authenticated -> {
+            if (authenticated && !disposed) {
+                httpClient.newRequest(getURL(path)).timeout(config.asyncTimeout, TimeUnit.MILLISECONDS)
+                        .method(HttpMethod.POST).onResponseSuccess(postExchange).onResponseFailure(postExchange)
+                        .content(new StringContentProvider(addSID(args), StandardCharsets.UTF_8)).send(postExchange);
+            }
+        });
         return postExchange;
+    }
+
+    public void invalidateAuthentication() {
+        synchronized (authenticationLock) {
+            sid = null;
+        }
     }
 
     public FritzAhaContentExchange applyTemplate(String ain) {

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bondhome.internal.api;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,7 +49,7 @@ public class BondDevice {
     public @Nullable String template;
     // A list of the available actions
     @Expose(serialize = false, deserialize = true)
-    public List<BondDeviceAction> actions = Arrays.asList(BondDeviceAction.TURN_ON);
+    public List<BondDeviceAction> actions = new ArrayList<>(List.of(BondDeviceAction.TURN_ON));
     // The current hash of the properties object
     @Expose(serialize = false, deserialize = true)
     public @Nullable BondHash properties;

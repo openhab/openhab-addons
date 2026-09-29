@@ -12,7 +12,9 @@
  */
 package org.openhab.io.hueemulation.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.io.hueemulation.internal.StateUtils;
 
 /**
  * Hue API state object
@@ -21,9 +23,9 @@ import org.openhab.core.library.types.PercentType;
  * @author David Graeff - "extended color light bulbs" support
  *
  */
+@NonNullByDefault
 public class HueStateBulb extends HueStatePlug {
-    // https://github.com/openhab/openhab-addons/issues/2881
-    // Apparently the maximum brightness is 254
+
     public static final int MAX_BRI = 254;
     public int bri = 0;
 
@@ -47,16 +49,15 @@ public class HueStateBulb extends HueStatePlug {
      */
     public HueStateBulb(PercentType brightness, boolean on) {
         super(on);
-        this.bri = Math.max(1, (int) (brightness.intValue() * MAX_BRI / 100.0 + 0.5));
+        this.bri = StateUtils.hueBrightnessFromPercentType(brightness);
     }
 
     public PercentType toBrightnessType() {
-        int bri = this.bri * 100 / MAX_BRI;
-
-        if (!this.on) {
-            bri = 0;
+        if (this.on) {
+            return StateUtils.percentTypeFromHueBrightness(this.bri);
+        } else {
+            return PercentType.ZERO;
         }
-        return new PercentType(bri);
     }
 
     @Override

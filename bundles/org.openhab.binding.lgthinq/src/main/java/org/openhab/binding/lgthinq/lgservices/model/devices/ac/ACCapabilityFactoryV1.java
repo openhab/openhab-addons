@@ -45,7 +45,7 @@ public class ACCapabilityFactoryV1 extends AbstractACCapabilityFactory {
     @Override
     protected Map<String, String> extractFeatureOptions(JsonNode optionsNode) {
         Map<String, String> options = new HashMap<>();
-        optionsNode.fields().forEachRemaining(o -> {
+        optionsNode.properties().forEach(o -> {
             options.put(o.getKey(), o.getValue().asText());
         });
         return options;

@@ -50,9 +50,10 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ### Battery Thing Configuration
 
-| Parameter  | Description                                        |
-|------------|----------------------------------------------------|
-| `deviceId` | The identifier of your battery device (Default: 0) |
+| Parameter                        | Description                                                                                                                                                                                    |
+|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `deviceId`                       | The identifier of your battery device (Default: 0)                                                                                                                                             |
+| `batterySettingsRefreshInterval` | The interval in minutes at which the battery settings channels are read from the inverter's config API. Reading them requires a login, therefore the interval should be kept high. Set to 0 to disable reading the battery settings from the inverter. (Default: 5) |
 
 ### Meter Thing Configuration
 
@@ -100,6 +101,8 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `powerflowinvertersoc`               | Number:Dimensionless     | Current state of charge of the battery connected to the inverter in percent.                                      |
 | `powerflowinverter1power`            | Number:Power             | Current power of inverter 1, null if not running (+ produce/export, - consume/import) - DEPRECATED                |
 | `powerflowinverter1soc`              | Number:Dimensionless     | Current state of charge of inverter 1 in percent - DEPRECATED                                                     |
+| `powerflowbackupmode`                | Switch                   | Whether the inverter is currently operating in backup power mode (island operation), read-only                    |
+| `powerflowbatterystandby`            | Switch                   | Whether the battery is currently in standby, read-only                                                            |
 
 ### `battery` Thing Channels
 
@@ -114,6 +117,18 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `enable`           | Number                   | Enable flag for the battery controller |
 | `temperature`      | Number:Temperature       | Cell temperature                       |
 | `timestamp`        | DateTime                 | Timestamp of the last measurement      |
+| `socMin`                 | Number:Dimensionless | Minimum state of charge of the battery in percent (writable, requires battery control)                                              |
+| `socMax`                 | Number:Dimensionless | Maximum state of charge of the battery in percent (writable, requires battery control)                                              |
+| `backupReservedCapacity` | Number:Dimensionless | Reserved battery capacity for backup power; not discharged below in normal operation (writable, requires battery control)           |
+| `backupCriticalSoc`      | Number:Dimensionless | State of charge at which the inverter warns about the battery running low in backup power mode (writable, requires battery control) |
+| `chargeFromGrid`         | Switch               | Whether charging the battery from the grid is allowed (writable, requires battery control)                                          |
+| `calibration`            | Switch               | Whether the battery is currently performing a calibration charge (read-only, requires battery control)                              |
+| `nightPreservationLimit` | Number:Dimensionless | State of charge preserved over night to keep the battery system operational (read-only, requires battery control)                   |
+
+The battery settings channels (`socMin`, `socMax`, `backupReservedCapacity`, `backupCriticalSoc`, `chargeFromGrid`, `calibration` and `nightPreservationLimit`) require the username and password to be configured in the bridge, see [Actions](#actions).
+They read from and write to the inverter's settings through its config API.
+Since reading these settings requires a login to the inverter, they are not part of the fast polling cycle, but refreshed every `batterySettingsRefreshInterval` minutes (and after each write), so changes made through the inverter's web UI show up with a delay.
+Commands sent to the writable channels are applied to the inverter immediately.
 
 ### `meter` Thing Channels
 
@@ -178,8 +193,10 @@ Battery control uses the battery management's time-dependent battery control set
 Please note that user-specified time of use plans cannot be used together with battery control, as battery control will override the user-specified time of use settings.
 :::
 
-The `powerinverter` Thing provides actions to control the battery charging and discharging behaviour of hybrid inverters, such as Symo Gen24 Plus, if username and password are provided in the bridge configuration.
+The `battery` Thing provides actions to control the battery charging and discharging behaviour of hybrid inverters, such as Symo Gen24 Plus, if username and password are provided in the bridge configuration.
 The inverter must have the battery time of use plan settings available in the web interface.
+
+For backward compatibility, the actions can also be retrieved through the `powerinverter` Thing, but this is deprecated - please retrieve them through the `battery` Thing instead.
 
 You can retrieve the actions as follows:
 
@@ -188,7 +205,7 @@ You can retrieve the actions as follows:
 ::: tab DSL
 
 ```java
-val froniusInverterActions = getActions("fronius", "fronius:powerinverter:mybridge:myinverter")
+val froniusBatteryActions = getActions("fronius", "fronius:battery:mybridge:mybattery")
 ```
 
 :::
@@ -196,7 +213,7 @@ val froniusInverterActions = getActions("fronius", "fronius:powerinverter:mybrid
 ::: tab JS
 
 ```javascript
-var froniusInverterActions = actions.thingActions('fronius', 'fronius:powerinverter:mybridge:myinverter');
+var froniusBatteryActions = actions.thingActions('fronius', 'fronius:battery:mybridge:mybattery');
 ```
 
 :::
@@ -206,10 +223,10 @@ var froniusInverterActions = actions.thingActions('fronius', 'fronius:powerinver
 In JRuby, the action methods are attached to the Thing object.
 
 ```rb
-my_inverter = things["fronius:powerinverter:mybridge:myinverter"]
+my_battery = things["fronius:battery:mybridge:mybattery"]
 
 # call some actions
-my_inverter.prevent_battery_charging
+my_battery.prevent_battery_charging
 ```
 
 :::
@@ -227,6 +244,8 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `addHoldBatteryChargeSchedule(LocalTime from, LocalTime until)`: Add a schedule to prevent the battery from discharging in the specified time range.
 - `addHoldBatteryChargeSchedule(ZonedDateTime from, ZonedDateTime until)`: Add a schedule to prevent the battery from discharging in the specified time range.
 - `forceBatteryCharging(QuantityType<Power> power)`: Force the battery to charge with the specified power (removes all battery control schedules first and applies all the time).
+- `limitBatteryCharging(QuantityType<Power> power)`: Limit the battery charging power to at most the specified power (removes all battery control schedules first and applies all the time).
+- `limitBatteryDischarging(QuantityType<Power> power)`: Limit the battery discharging power to at most the specified power (removes all battery control schedules first and applies all the time).
 - `addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `preventBatteryCharging()`: Prevent the battery from charging (removes all battery control schedules first and applies all the time).
@@ -237,8 +256,15 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `addForcedBatteryDischargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to discharge with the specified power in the specified time range.
 - `addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power)`: Add a custom schedule with the specified type and power in the specified time range.
 - `addSchedule(ZonedDateTime from, ZonedDateTime until, ScheduleType scheduleType, QuantityType<Power> power)`: Add a custom schedule with the specified type and power in the specified time range.
+- `addBatteryChargingLimitSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to limit the battery charging power to at most the specified power in the specified time range.
+- `addBatteryChargingLimitSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to limit the battery charging power to at most the specified power in the specified time range.
+- `addBatteryDischargingLimitSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to limit the battery discharging power to at most the specified power in the specified time range.
+- `addBatteryDischargingLimitSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to limit the battery discharging power to at most the specified power in the specified time range.
 - `setBackupReservedBatteryCapacity(int percent)`: Set the reserved battery capacity for backup power.
 - `setBackupReservedBatteryCapacity(PercentType percent)`: Set the reserved battery capacity for backup power.
+
+All `add...Schedule` actions accept an optional trailing `weekdays` string parameter to restrict the schedule to specific weekdays, e.g. `addHoldBatteryChargeSchedule(from, until, "MON,TUE,SAT")`.
+Weekdays are given as a comma-separated list of three-letter English weekday abbreviations or full names (e.g. `"MON,TUE"` or `"MONDAY,TUESDAY"`); omitting the parameter or passing `null` or an empty string applies the schedule to all days.
 
 The `ScheduleType` enum has the following members:
 
@@ -259,22 +285,22 @@ All methods return a boolean value indicating whether the action was successful.
 ::: tab JS
 
 ```javascript
-var froniusInverterActions = actions.thingActions('fronius', 'fronius:powerinverter:mybridge:myinverter');
+var froniusBatteryActions = actions.thingActions('fronius', 'fronius:battery:mybridge:mybattery');
 
-froniusInverterActions.resetBatteryControl();
-froniusInverterActions.holdBatteryCharge();
-froniusInverterActions.forceBatteryCharging(Quantity('5 kW'));
+froniusBatteryActions.resetBatteryControl();
+froniusBatteryActions.holdBatteryCharge();
+froniusBatteryActions.forceBatteryCharging(Quantity('5 kW'));
 
-froniusInverterActions.resetBatteryControl();
-froniusInverterActions.addHoldBatteryChargeSchedule(time.toZDT('18:00'), time.toZDT('22:00'));
-froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('22:00'), time.toZDT('23:59'), Quantity('5 kW'));
-froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('00:00'), time.toZDT('06:00'), Quantity('5 kW'));
-froniusInverterActions.addForcedBatteryDischargingSchedule(time.toZDT('07:00'), time.toZDT('09:00'));
-froniusInverterActions.addPreventBatteryChargingSchedule(time.toZDT('09:00'), time.toZDT('12:00'));
+froniusBatteryActions.resetBatteryControl();
+froniusBatteryActions.addHoldBatteryChargeSchedule(time.toZDT('18:00'), time.toZDT('22:00'));
+froniusBatteryActions.addForcedBatteryChargingSchedule(time.toZDT('22:00'), time.toZDT('23:59'), Quantity('5 kW'));
+froniusBatteryActions.addForcedBatteryChargingSchedule(time.toZDT('00:00'), time.toZDT('06:00'), Quantity('5 kW'));
+froniusBatteryActions.addForcedBatteryDischargingSchedule(time.toZDT('07:00'), time.toZDT('09:00'));
+froniusBatteryActions.addPreventBatteryChargingSchedule(time.toZDT('09:00'), time.toZDT('12:00'));
 
-froniusInverterActions.addSchedule(time.toZDT('10:00'), time.toZDT('11:00'), 'DISCHARGE_MAX', Quantity('500 W'));
+froniusBatteryActions.addSchedule(time.toZDT('10:00'), time.toZDT('11:00'), 'DISCHARGE_MAX', Quantity('500 W'));
 
-froniusInverterActions.setBackupReservedBatteryCapacity(50);
+froniusBatteryActions.setBackupReservedBatteryCapacity(50);
 ```
 
 :::
@@ -282,22 +308,22 @@ froniusInverterActions.setBackupReservedBatteryCapacity(50);
 ::: tab JRuby
 
 ```rb
-inverter = things["fronius:powerinverter:mybridge:myinverter"]
+battery = things["fronius:battery:mybridge:mybattery"]
 
-inverter.reset_battery_control
-inverter.hold_battery_charge
-inverter.force_battery_charging(5 | "kW")
+battery.reset_battery_control
+battery.hold_battery_charge
+battery.force_battery_charging(5 | "kW")
 
-inverter.reset_battery_control
-inverter.add_hold_battery_charge_schedule(LocalTime.parse("18:00"), LocalTime.parse("22:00"))
-inverter.add_forced_battery_charging_schedule(LocalTime.parse("22:00"), LocalTime.parse("23:59"), 5 | "kW")
-inverter.add_forced_battery_charging_schedule(LocalTime.parse("00:00"), LocalTime.parse("06:00"), 5 | "kW")
-inverter.add_forced_battery_discharging_schedule(LocalTime.parse("07:00"), LocalTime.parse("09:00"))
-inverter.add_prevent_battery_charging_schedule(LocalTime.parse("09:00"), LocalTime.parse("12:00"))
+battery.reset_battery_control
+battery.add_hold_battery_charge_schedule(LocalTime.parse("18:00"), LocalTime.parse("22:00"))
+battery.add_forced_battery_charging_schedule(LocalTime.parse("22:00"), LocalTime.parse("23:59"), 5 | "kW")
+battery.add_forced_battery_charging_schedule(LocalTime.parse("00:00"), LocalTime.parse("06:00"), 5 | "kW")
+battery.add_forced_battery_discharging_schedule(LocalTime.parse("07:00"), LocalTime.parse("09:00"))
+battery.add_prevent_battery_charging_schedule(LocalTime.parse("09:00"), LocalTime.parse("12:00"))
 
-inverter.add_schedule(LocalTime.parse("10:00"), LocalTime.parse("11:00"), 'DISCHARGE_MAX', 500 | "W")
+battery.add_schedule(LocalTime.parse("10:00"), LocalTime.parse("11:00"), 'DISCHARGE_MAX', 500 | "W")
 
-inverter.set_backup_reserved_battery_capacity(50)
+battery.set_backup_reserved_battery_capacity(50)
 ```
 
 :::

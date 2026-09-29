@@ -218,6 +218,16 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
     protected void updateProperties() {
         // fill canSend and canReceive capabilities
         Map<String, Object> modelProperties = gateway().model().getPropertiesFor(config.id);
+        addCapabilities(config.id);
+        TreeMap<String, String> handlerProperties = new TreeMap<>(editProperties());
+        modelProperties.forEach((key, value) -> {
+            handlerProperties.put(key, value.toString());
+        });
+        updateProperties(handlerProperties);
+    }
+
+    protected void addCapabilities(String id) {
+        Map<String, Object> modelProperties = gateway().model().getPropertiesFor(id);
         Object canReceiveCapabilities = modelProperties.get(CAPABILITIES_KEY_CAN_RECEIVE);
         if (canReceiveCapabilities instanceof JSONArray jsonArray) {
             jsonArray.forEach(capability -> {
@@ -234,12 +244,6 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                 }
             });
         }
-
-        TreeMap<String, String> handlerProperties = new TreeMap<>(editProperties());
-        modelProperties.forEach((key, value) -> {
-            handlerProperties.put(key, value.toString());
-        });
-        updateProperties(handlerProperties);
     }
 
     /**

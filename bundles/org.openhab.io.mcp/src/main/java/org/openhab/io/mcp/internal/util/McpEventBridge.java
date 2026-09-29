@@ -78,20 +78,16 @@ public class McpEventBridge implements EventSubscriber {
         try {
             if (event instanceof ItemStateChangedEvent e) {
                 String uri = "openhab://item/" + e.getItemName();
-                logger.debug("Event: item state changed → {}", uri);
                 subscriptions.recordIfWatched(e.getItemName(), String.valueOf(e.getItemState()),
                         String.valueOf(e.getOldItemState()), Instant.now());
                 notifyUpdated(uri);
             } else if (event instanceof ItemAddedEvent || event instanceof ItemRemovedEvent) {
-                logger.debug("Event: item added/removed → list_changed");
                 server.notifyResourcesListChanged();
             } else if (event instanceof ThingStatusInfoChangedEvent e) {
                 String uri = "openhab://thing/" + e.getThingUID();
-                logger.debug("Event: thing status changed → {}", uri);
                 notifyUpdated(uri);
             } else if (event instanceof RuleStatusInfoEvent e) {
                 String uri = "openhab://rule/" + e.getRuleId();
-                logger.debug("Event: rule status changed → {}", uri);
                 notifyUpdated(uri);
             }
         } catch (RuntimeException e) {

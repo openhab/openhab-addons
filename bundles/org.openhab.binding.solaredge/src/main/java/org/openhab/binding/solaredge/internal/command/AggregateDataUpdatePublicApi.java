@@ -90,8 +90,9 @@ public class AggregateDataUpdatePublicApi extends AbstractCommand implements Sol
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
-        logger.debug("onComplete()");
+    protected void handleResponse(@Nullable Result result) {
+        logger.debug("[AggregateDataUpdatePublicApi] onComplete()");
+        logger.trace("URL: {}", getURL());
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
             if (retries++ < MAX_RETRIES) {

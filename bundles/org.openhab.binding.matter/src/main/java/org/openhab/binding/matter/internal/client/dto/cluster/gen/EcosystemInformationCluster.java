@@ -70,7 +70,7 @@ public class EcosystemInformationCluster extends BaseCluster {
 
     public static class EcosystemDeviceStruct {
         /**
-         * This field shall indicate the device’s name, which is provided externally if the user consents. (For example,
+         * This field shall indicate the device's name, which is provided externally if the user consents. (For example,
          * provided by the user in an ecosystem specific interface.)
          */
         public String deviceName; // string
@@ -80,14 +80,16 @@ public class EcosystemInformationCluster extends BaseCluster {
         public BigInteger deviceNameLastEdit; // epoch-us
         /**
          * This field shall indicate the endpoint this EcosystemDeviceStruct is associated with on this Bridge.
-         * This field shall be present and set to a valid endpoint if the device is accessible through the bridge.
+         * This field shall be present if the device is accessible through the bridge. If present, this field shall be
+         * set to a valid endpoint.
          */
         public Integer bridgedEndpoint; // endpoint-no
         /**
          * This field shall indicate the endpoint this EcosystemDeviceStruct is associated with on the original device
-         * represented by this bridge’s Bridged Node. If this bridge is receiving the device from another bridge, then
-         * the OriginalEndpoint field value would be the same on both bridges. This field shall be present and set to a
-         * valid endpoint on the original device if that device is a Matter device.
+         * represented by this bridge's Bridged Node. If this bridge is receiving the device from another bridge, then
+         * the OriginalEndpoint field value would be the same on both bridges. This field shall be present if the
+         * original device is a Matter device. If present, this field shall be set to a valid endpoint on the original
+         * device.
          */
         public Integer originalEndpoint; // endpoint-no
         /**
@@ -103,9 +105,9 @@ public class EcosystemInformationCluster extends BaseCluster {
         public List<String> uniqueLocationIDs; // list
         /**
          * This field shall indicate the timestamp of when the UniqueLocationIDs was last modified.
-         * &gt; [!NOTE]
-         * &gt; If multiple server instances update the UniqueLocationIDs field at the same time, it is possible one of
-         * the updates will be missed. This is considered an acceptable limitation to reduce the complexity of the
+         * > [!NOTE]
+         * > NOTE: If multiple server instances update the UniqueLocationIDs field at the same time, it is possible one
+         * of the updates will be missed. This is considered an acceptable limitation to reduce the complexity of the
          * design. Since this is meant to be provided from user input, it is unlikely these signals would be happening
          * at one time.
          */
@@ -149,8 +151,8 @@ public class EcosystemInformationCluster extends BaseCluster {
         /**
          * This field shall indicate the location (e.g. living room, driveway) and associated metadata that is provided
          * externally if the user consents. (For example, provided by the user in an ecosystem specific interface.)
-         * &quot;Location&quot; in this context is typically used by the user’s grouping into rooms, areas or other
-         * logical groupings of how devices are used. So a device might be part of multiple such &quot;Locations&quot;s.
+         * "Location" in this context is typically used by the user's grouping into rooms, areas or other logical
+         * groupings of how devices are used. So a device might be part of multiple such "Locations"s.
          */
         public Locationdesc locationDescriptor; // locationdesc
         /**

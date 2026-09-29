@@ -14,6 +14,8 @@ package org.openhab.io.mcp.internal.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,10 +35,10 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Serves the MCP server's OAuth 2.1 discovery documents under the {@code /mcp} prefix
- * so they route through the Cloud webhook when one is registered (same proxy path as
- * the MCP traffic itself). All three URIs are served unauthenticated so clients can
- * discover them before obtaining a token.
+ * Serves the MCP server's OAuth 2.1 discovery documents, unauthenticated so clients can
+ * read them before they have a token. Each document is published twice: under
+ * {@code /mcp} so it routes through the webhook, and at the RFC 8414 / RFC 9728 location
+ * off the server root.
  *
  * @author Dan Cunningham - Initial contribution
  */
@@ -46,10 +48,18 @@ public class OAuthMetadataServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final String TOKEN_PROXY_PATH = OAuthTokenProxyServlet.PATH;
     private static final String MCP_LOCAL_PATH = "/mcp";
+    /** Bundle id the webhook connector stamps on requests it forwards. */
+    private static final String WEBHOOK_SOURCE = "org.openhab.io.openhabcloud";
     public static final String PATH_PROTECTED_RESOURCE = MCP_LOCAL_PATH + "/.well-known/oauth-protected-resource";
     public static final String PATH_AUTH_SERVER = MCP_LOCAL_PATH + "/.well-known/oauth-authorization-server";
     /** OIDC-flavoured alias of the AS metadata — same doc, different URL. */
     public static final String PATH_AUTH_SERVER_OIDC = MCP_LOCAL_PATH + "/.well-known/openid-configuration";
+    /** RFC 9728 location — the well-known segment sits between host and path. */
+    public static final String PATH_ROOT_PROTECTED_RESOURCE = "/.well-known/oauth-protected-resource" + MCP_LOCAL_PATH;
+    /** RFC 8414 location. */
+    public static final String PATH_ROOT_AUTH_SERVER = "/.well-known/oauth-authorization-server" + MCP_LOCAL_PATH;
+    /** OIDC-flavoured alias of {@link #PATH_ROOT_AUTH_SERVER}. */
+    public static final String PATH_ROOT_AUTH_SERVER_OIDC = "/.well-known/openid-configuration" + MCP_LOCAL_PATH;
 
     private final Logger logger = LoggerFactory.getLogger(OAuthMetadataServlet.class);
     private final ObjectMapper jackson = McpToolUtils.jackson();
@@ -65,9 +75,10 @@ public class OAuthMetadataServlet extends HttpServlet {
         UrlContext ctx = resolveUrlContext(request);
 
         Map<String, Object> body;
-        if (PATH_PROTECTED_RESOURCE.equals(path)) {
+        if (PATH_PROTECTED_RESOURCE.equals(path) || PATH_ROOT_PROTECTED_RESOURCE.equals(path)) {
             body = protectedResourceMetadata(ctx);
-        } else if (PATH_AUTH_SERVER.equals(path) || PATH_AUTH_SERVER_OIDC.equals(path)) {
+        } else if (PATH_AUTH_SERVER.equals(path) || PATH_AUTH_SERVER_OIDC.equals(path)
+                || PATH_ROOT_AUTH_SERVER.equals(path) || PATH_ROOT_AUTH_SERVER_OIDC.equals(path)) {
             body = authorizationServerMetadata(ctx);
             if (ctx.authorizationEndpoint == null) {
                 logger.debug("OAuth AS metadata served with null authorization_endpoint — "
@@ -121,22 +132,22 @@ public class OAuthMetadataServlet extends HttpServlet {
         return doc;
     }
 
-    /**
-     * Per-request URL context. Prefers hook URLs when a Cloud hook is registered;
-     * otherwise derives a base URL from the request (with forwarded-host validation
-     * against {@link HttpServletRequest#getServerName()} to prevent Host-header
-     * injection).
-     */
     UrlContext resolveUrlContext(HttpServletRequest request) {
-        McpCloudWebhookService hook = cloudWebhook;
+        return resolveUrlContext(request, cloudWebhook);
+    }
+
+    /**
+     * Per-request URL context. Clients reject metadata whose {@code resource} doesn't
+     * match the URL they requested, so we advertise the route the request came in on:
+     * webhook URLs for forwarded requests, request-derived URLs for everything else.
+     */
+    static UrlContext resolveUrlContext(HttpServletRequest request, @Nullable McpCloudWebhookService hook) {
         if (hook != null) {
             String mcpHookUrl = hook.getPublicUrl();
-            if (mcpHookUrl != null) {
+            if (mcpHookUrl != null && isWebhook(request)) {
                 String browserBase = hook.deriveBrowserBaseUrl();
-                // The Cloud prepends the registered local path (/mcp) when forwarding,
-                // so we advertise sub-paths WITHOUT the /mcp prefix — the Cloud adds
-                // it on the way in and our servlets (all mounted under /mcp/*) see
-                // the full /mcp/<thing>.
+                // The webhook prepends /mcp when forwarding, so advertise sub-paths
+                // without that prefix.
                 return new UrlContext(mcpHookUrl, mcpHookUrl,
                         browserBase != null ? browserBase + "/auth/authorize" : null,
                         mcpHookUrl + stripMcpPrefix(TOKEN_PROXY_PATH),
@@ -146,6 +157,48 @@ public class OAuthMetadataServlet extends HttpServlet {
         String base = resolveExternalBase(request);
         return new UrlContext(base + MCP_LOCAL_PATH, base + MCP_LOCAL_PATH, base + "/auth/authorize",
                 base + TOKEN_PROXY_PATH, base + OAuthRegisterServlet.PATH);
+    }
+
+    /**
+     * Whether this request was forwarded by the webhook rather than sent to us directly.
+     * The connector stamps its bundle id on requests it forwards, but a client could send
+     * that header too, so we only trust it from loopback — the connector always forwards
+     * to localhost. Host can't be used to tell the two apart because a self-hosted cloud
+     * may share a hostname with the direct route.
+     */
+    static boolean isWebhook(HttpServletRequest request) {
+        if (!isLoopback(request.getRemoteAddr())) {
+            return false;
+        }
+        String source = headerOrNull(request, "x-openhab-source");
+        return source != null && source.contains(WEBHOOK_SOURCE);
+    }
+
+    private static boolean isLoopback(@Nullable String remoteAddr) {
+        if (remoteAddr == null || remoteAddr.isBlank()) {
+            return false;
+        }
+        try {
+            return InetAddress.getByName(remoteAddr).isLoopbackAddress();
+        } catch (UnknownHostException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Absolute URL of this request's protected-resource metadata, for the RFC 9728
+     * {@code WWW-Authenticate} challenge. Must be absolute — strict clients discard a
+     * challenge carrying a bare path.
+     */
+    public static String protectedResourceMetadataUrl(HttpServletRequest request,
+            @Nullable McpCloudWebhookService hook) {
+        if (hook != null) {
+            String mcpHookUrl = hook.getPublicUrl();
+            if (mcpHookUrl != null && isWebhook(request)) {
+                return mcpHookUrl + stripMcpPrefix(PATH_PROTECTED_RESOURCE);
+            }
+        }
+        return resolveExternalBase(request) + PATH_PROTECTED_RESOURCE;
     }
 
     private static String stripMcpPrefix(String localPath) {

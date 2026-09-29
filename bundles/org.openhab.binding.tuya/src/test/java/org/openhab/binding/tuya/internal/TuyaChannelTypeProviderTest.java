@@ -15,10 +15,13 @@ package org.openhab.binding.tuya.internal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.BINDING_ID;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -68,6 +71,35 @@ public class TuyaChannelTypeProviderTest {
     @AfterEach
     public void tearDown() {
         TuyaSchemaDB.cache.remove(PRODUCT_ID);
+    }
+
+    @Test
+    public void replacedSchemaInvalidatesCachedChannelType() {
+        SchemaDp fault = new SchemaDp();
+        fault.type = "raw";
+        fault.readOnly = Boolean.TRUE;
+        putDp("fault", fault);
+
+        TuyaChannelTypeProvider provider = new TuyaChannelTypeProvider(localizationServiceMock);
+        ChannelTypeUID uid = new ChannelTypeUID(BINDING_ID, PRODUCT_ID + "_fault");
+        ChannelType before = provider.getChannelType(uid, null);
+        assertNotNull(before);
+        assertEquals("String", before.getItemType());
+        assertSame(before, provider.getChannelType(uid, null));
+        assertEquals(List.of(before), provider.getChannelTypes(null));
+
+        // TuyaSchemaDB.put stores a new map, generated channel types of the old one are stale
+        SchemaDp bitmapFault = new SchemaDp();
+        bitmapFault.type = "bitmap";
+        bitmapFault.readOnly = Boolean.TRUE;
+        TuyaSchemaDB.cache.put(PRODUCT_ID, new ConcurrentHashMap<>(Map.of("fault", bitmapFault)));
+
+        ChannelType after = provider.getChannelType(uid, Locale.GERMAN);
+        assertNotNull(after);
+        assertEquals("Number", after.getItemType());
+        ChannelType afterDefault = provider.getChannelType(uid, null);
+        assertNotNull(afterDefault);
+        assertEquals("Number", afterDefault.getItemType());
     }
 
     @Test

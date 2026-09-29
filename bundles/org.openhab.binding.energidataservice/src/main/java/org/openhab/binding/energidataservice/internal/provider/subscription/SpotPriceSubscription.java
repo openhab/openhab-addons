@@ -27,10 +27,12 @@ import org.eclipse.jdt.annotation.Nullable;
 public class SpotPriceSubscription implements ElectricityPriceSubscription {
     private final String priceArea;
     private final Currency currency;
+    private final boolean hourlyAverage;
 
-    private SpotPriceSubscription(String priceArea, Currency currency) {
+    private SpotPriceSubscription(String priceArea, Currency currency, boolean hourlyAverage) {
         this.priceArea = priceArea;
         this.currency = currency;
+        this.hourlyAverage = hourlyAverage;
     }
 
     @Override
@@ -42,7 +44,8 @@ public class SpotPriceSubscription implements ElectricityPriceSubscription {
             return false;
         }
 
-        return this.priceArea.equals(other.priceArea) && this.currency.equals(other.currency);
+        return this.priceArea.equals(other.priceArea) && this.currency.equals(other.currency)
+                && this.hourlyAverage == other.hourlyAverage;
     }
 
     @Override
@@ -52,7 +55,8 @@ public class SpotPriceSubscription implements ElectricityPriceSubscription {
 
     @Override
     public String toString() {
-        return "SpotPriceSubscription: PriceArea=" + priceArea + ", Currency=" + currency;
+        return "SpotPriceSubscription: PriceArea=" + priceArea + ", Currency=" + currency + ", HourlyAverage="
+                + hourlyAverage;
     }
 
     public String getPriceArea() {
@@ -63,7 +67,15 @@ public class SpotPriceSubscription implements ElectricityPriceSubscription {
         return currency;
     }
 
+    public boolean isHourlyAverage() {
+        return hourlyAverage;
+    }
+
     public static SpotPriceSubscription of(String priceArea, Currency currency) {
-        return new SpotPriceSubscription(priceArea, currency);
+        return new SpotPriceSubscription(priceArea, currency, false);
+    }
+
+    public static SpotPriceSubscription of(String priceArea, Currency currency, boolean hourlySpotPrices) {
+        return new SpotPriceSubscription(priceArea, currency, hourlySpotPrices);
     }
 }

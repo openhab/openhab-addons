@@ -312,6 +312,17 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="pm25">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>Particulate Matter (PM2.5)</label>
+		<description>Current particulate matter (PM2.5) concentration</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>

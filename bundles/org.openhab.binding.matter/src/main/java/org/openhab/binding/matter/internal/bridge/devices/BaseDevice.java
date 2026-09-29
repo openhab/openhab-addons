@@ -91,12 +91,12 @@ public abstract class BaseDevice implements StateChangeListener {
 
     @Override
     public void stateChanged(Item item, State oldState, State newState) {
-        logger.debug("{} state changed from {} to {}", item.getName(), oldState, newState);
-        updateState(item, newState);
     }
 
     @Override
     public void stateUpdated(Item item, State state) {
+        logger.debug("{} state updated to {}", item.getName(), state);
+        updateState(item, state);
     }
 
     public BridgedEndpoint activateBridgedEndpoint() {

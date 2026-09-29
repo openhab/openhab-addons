@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,30 +28,28 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SensorInfo {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SensorInfo.class);
 
-    public Optional<Double> indoortemp = Optional.empty();
-    public Optional<Double> indoorhumidity = Optional.empty();
-    public Optional<Double> outdoortemp = Optional.empty();
-    public Optional<Double> compressorfrequency = Optional.empty();
+    public @Nullable Double indoortemp;
+    public @Nullable Double indoorhumidity;
+    public @Nullable Double outdoortemp;
+    public @Nullable Double compressorfrequency;
 
     private SensorInfo() {
     }
 
     public static SensorInfo parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
+        Logger logger = LoggerFactory.getLogger(SensorInfo.class);
+        logger.trace("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 
         SensorInfo info = new SensorInfo();
-        info.indoortemp = Optional.ofNullable(responseMap.get("htemp")).flatMap(value -> InfoParser.parseDouble(value));
-        info.indoorhumidity = Optional.ofNullable(responseMap.get("hhum"))
-                .flatMap(value -> InfoParser.parseDouble(value));
-        info.outdoortemp = Optional.ofNullable(responseMap.get("otemp"))
-                .flatMap(value -> InfoParser.parseDouble(value));
-        info.compressorfrequency = Optional.ofNullable(responseMap.get("cmpfreq"))
-                .flatMap(value -> InfoParser.parseDouble(value));
-
+        info.indoortemp = Optional.ofNullable(responseMap.get("htemp")).flatMap(InfoParser::parseDouble).orElse(null);
+        info.indoorhumidity = Optional.ofNullable(responseMap.get("hhum")).flatMap(InfoParser::parseDouble)
+                .orElse(null);
+        info.outdoortemp = Optional.ofNullable(responseMap.get("otemp")).flatMap(InfoParser::parseDouble).orElse(null);
+        info.compressorfrequency = Optional.ofNullable(responseMap.get("cmpfreq")).flatMap(InfoParser::parseDouble)
+                .orElse(null);
         return info;
     }
 }

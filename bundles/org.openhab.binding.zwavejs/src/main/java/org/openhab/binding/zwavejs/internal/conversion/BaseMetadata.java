@@ -71,6 +71,8 @@ public abstract class BaseMetadata {
             Map.entry("Minutes", "min"), //
             Map.entry("seconds", "s"), //
             Map.entry("Seconds", "s"), //
+            Map.entry("kVar", "kvar"), //
+            Map.entry("kVarh", "kvarh"), //
             Map.entry("fahrenheit", "°F"), //
             Map.entry("min/sec", ""), // special case ZUI sends min/sec as unit, but is actually dimensionless
             Map.entry("°(C/F)", ""), // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
@@ -126,6 +128,7 @@ public abstract class BaseMetadata {
         this.min = value.metadata.min;
         this.max = value.metadata.max;
         this.id = generateChannelId(value);
+        this.value = value.value;
 
         this.label = normalizeLabel(value.metadata.label, value.endpoint, value.propertyName);
         this.description = value.metadata.description != null ? value.metadata.description : null;
@@ -138,7 +141,6 @@ public abstract class BaseMetadata {
             logger.warn("Node {}, unable to parse unitSymbol '{}', please file a bug report", nodeId, unitSymbol);
         }
         this.optionList = value.metadata.states;
-        this.value = value.value;
         this.isAdvanced = isAdvanced(value.commandClass, value.propertyName, value.propertyKey);
 
         if (writable) {

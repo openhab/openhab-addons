@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth.bluez.internal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,8 +40,8 @@ public class DeviceManagerWrapper {
         this.deviceManager = deviceManager;
     }
 
-    @SuppressWarnings("null")
     public synchronized Collection<BluetoothAdapter> scanForBluetoothAdapters() {
+        DeviceManager deviceManager = this.deviceManager;
         if (deviceManager != null) {
             return deviceManager.scanForBluetoothAdapters();
         } else {
@@ -49,11 +50,11 @@ public class DeviceManagerWrapper {
     }
 
     public synchronized @Nullable BluetoothAdapter getAdapter(BluetoothAddress address) {
-        DeviceManager devMgr = deviceManager;
-        if (devMgr != null) {
+        DeviceManager deviceManager = this.deviceManager;
+        if (deviceManager != null) {
             // we don't use `deviceManager.getAdapter` here since it might perform a scan if the adapter is missing.
             String addr = address.toString();
-            List<BluetoothAdapter> adapters = devMgr.getAdapters();
+            List<BluetoothAdapter> adapters = deviceManager.getAdapters();
             if (adapters != null) {
                 for (BluetoothAdapter btAdapter : adapters) {
                     String btAddr = btAdapter.getAddress();
@@ -66,8 +67,8 @@ public class DeviceManagerWrapper {
         return null;
     }
 
-    @SuppressWarnings("null")
     public synchronized List<BluetoothDevice> getDevices(BluetoothAdapter adapter) {
+        DeviceManager deviceManager = this.deviceManager;
         if (deviceManager != null) {
             return deviceManager.getDevices(adapter.getAddress(), true);
         } else {
@@ -76,8 +77,47 @@ public class DeviceManagerWrapper {
     }
 
     void setLazyScan(boolean lazyScan) {
+        DeviceManager deviceManager = this.deviceManager;
         if (deviceManager != null) {
             deviceManager.setLazyScan(lazyScan);
+        }
+    }
+
+    /**
+     * Registers a listener invoked with a device's DBus object path when BlueZ removes that device
+     * object (ObjectManager InterfacesRemoved). Lets the binding invalidate its own cached state for
+     * a device when the underlying BlueZ object disappears.
+     */
+    public synchronized void registerDeviceRemovedListener(Consumer<String> listener) {
+        DeviceManager deviceManager = this.deviceManager;
+        if (deviceManager != null) {
+            deviceManager.registerDeviceRemovedListener(listener);
+        }
+    }
+
+    /**
+     * Registers a listener invoked with an adapter's DBus object path when BlueZ removes that adapter
+     * object (ObjectManager InterfacesRemoved), e.g. a USB dongle being unplugged. Lets the binding
+     * invalidate its cached adapter proxy and the devices found through it.
+     */
+    public synchronized void registerAdapterRemovedListener(Consumer<String> listener) {
+        DeviceManager deviceManager = this.deviceManager;
+        if (deviceManager != null) {
+            deviceManager.registerAdapterRemovedListener(listener);
+        }
+    }
+
+    public synchronized void unregisterDeviceRemovedListener(Consumer<String> listener) {
+        DeviceManager deviceManager = this.deviceManager;
+        if (deviceManager != null) {
+            deviceManager.unregisterDeviceRemovedListener(listener);
+        }
+    }
+
+    public synchronized void unregisterAdapterRemovedListener(Consumer<String> listener) {
+        DeviceManager deviceManager = this.deviceManager;
+        if (deviceManager != null) {
+            deviceManager.unregisterAdapterRemovedListener(listener);
         }
     }
 }

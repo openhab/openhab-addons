@@ -31,8 +31,8 @@ import org.openhab.binding.shelly.internal.api.ShellyDiscoveryInterface;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiClient;
-import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -109,8 +109,27 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         unregisterDeviceDiscoveryService();
     }
 
+    /**
+     * Probes a Shelly device at the given address and builds a {@link DiscoveryResult}.
+     *
+     * <p>
+     * For Gen1 devices the {@code /shelly} endpoint (no auth) is queried first to obtain the hardware
+     * model string. If the subsequent {@code /settings} call returns HTTP 401 (auth required), the model
+     * obtained from {@code /shelly} is used to resolve the correct {@link ThingTypeUID} via the device-type
+     * map. This ensures that an auth-protected Gen1 device is discovered with its proper type (e.g.
+     * {@code shelly:shellyflood}) rather than falling back to {@code shelly:shellyunknown}.
+     *
+     * @param gen2 {@code true} for Gen2/3/4 devices (RPC/WebSocket), {@code false} for Gen1 (HTTP/CoAP)
+     * @param hostname mDNS hostname of the device (used as thing realm and log prefix)
+     * @param ipAddress IP address of the device
+     * @param bindingConfig current binding-wide runtime configuration
+     * @param httpClient HTTP client for API calls
+     * @param messages translation provider for channel labels
+     * @param thingTable registry of all known Things (used for deduplication)
+     * @return a populated {@link DiscoveryResult}, or {@code null} if the device cannot be identified
+     */
     public static @Nullable DiscoveryResult createResult(boolean gen2, String hostname, String ipAddress,
-            ShellyBindingConfiguration bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages,
+            ShellyBindingRuntimeConfig bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages,
             ShellyThingTable thingTable) {
         Logger logger = LoggerFactory.getLogger(ShellyBasicDiscoveryService.class);
         ThingUID thingUID = null;
@@ -127,19 +146,20 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         Map<String, String> properties = new HashMap<>();
 
         try {
-            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
+            ShellyApiConfiguration config = new ShellyApiConfiguration(bindingConfig, hostname, ipAddress);
             if (gen2) {
                 api = new Shelly2ApiClient(name, config, httpClient);
             } else {
                 api = new Shelly1HttpApi(name, config, httpClient);
             }
-            api.initialize(name, config);
+            api.initialize();
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
             model = getString(devInfo.type);
             auth = getBool(devInfo.auth);
             if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
-                config.realm = name = getString(devInfo.hostname);
+                name = getString(devInfo.hostname);
+                config.setRealm(name);
             }
 
             thingType = name.contains("-") ? substringBeforeLast(name, "-") : name;
@@ -153,8 +173,18 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         } catch (ShellyApiException e) {
             ShellyApiResult result = e.getApiResult();
             if (result.isHttpAccessUnauthorized()) {
-                // create shellyunknown thing - will be changed during thing initialization with valid credentials
-                thingUID = ShellyThingCreator.getThingUIDForUnknown(name, model, mode);
+                ThingTypeUID knownType = ShellyThingCreator.getThingTypeUID(name, model, mode);
+                if (!THING_TYPE_SHELLYUNKNOWN.equals(knownType)) {
+                    logger.debug(
+                            "{}: Device requires authentication, but model '{}' from the unauthenticated /shelly response resolves to {}",
+                            name, model, knownType.getId());
+                    thingUID = ShellyThingCreator.getThingUID(name, model, mode);
+                } else {
+                    logger.debug(
+                            "{}: Device requires authentication and model '{}' could not be resolved, creating as {}",
+                            name, model, THING_TYPE_SHELLYUNKNOWN.getId());
+                    thingUID = ShellyThingCreator.getThingUIDForUnknown(name, model, mode);
+                }
             } else {
                 if (e.getCause() instanceof IllegalArgumentException) {
                     logger.debug("{}: Unable to discover device", name, e);
@@ -189,17 +219,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         }
 
         return null;
-    }
-
-    public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String address,
-            String realm) {
-        ShellyThingConfiguration config = new ShellyThingConfiguration();
-        config.realm = realm; // mDNS service name or hostname provided by /shelly
-        config.deviceIp = address;
-        config.userId = getString(bindingConfig.defaultUserId);
-        config.password = getString(bindingConfig.defaultPassword);
-        config.localIp = getString(bindingConfig.localIP);
-        return config;
     }
 
     private static void addProperty(Map<String, String> properties, String key, @Nullable String value) {

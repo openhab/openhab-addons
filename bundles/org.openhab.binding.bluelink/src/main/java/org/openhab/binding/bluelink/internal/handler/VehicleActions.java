@@ -48,6 +48,14 @@ public class VehicleActions implements ThingActions {
         return handler;
     }
 
+    @RuleAction(label = "@text/action.refresh.label", description = "@text/action.refresh.desc")
+    public void refresh() {
+        final BluelinkVehicleHandler hnd = handler;
+        if (hnd != null) {
+            hnd.refreshVehicleStatus(false);
+        }
+    }
+
     @RuleAction(label = "@text/action.force-refresh.label", description = "@text/action.force-refresh.desc")
     public void forceRefresh() {
         final BluelinkVehicleHandler hnd = handler;
@@ -147,6 +155,14 @@ public class VehicleActions implements ThingActions {
             return hnd != null && hnd.climateStop();
         } catch (final BluelinkApiException e) {
             return false;
+        }
+    }
+
+    public static void refresh(final @Nullable ThingActions actions) {
+        if (actions instanceof VehicleActions va) {
+            va.refresh();
+        } else {
+            throw new IllegalArgumentException("expected VehicleActions");
         }
     }
 

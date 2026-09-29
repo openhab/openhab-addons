@@ -47,6 +47,7 @@ import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.mac.MacResolver;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -156,8 +157,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
             ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
             HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle,
-            ManagedThingProvider managedThingProvider, HomekitMdnsDiscoveryParticipant discoveryParticipant) {
-        super(thing, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
+            ManagedThingProvider managedThingProvider, HomekitMdnsDiscoveryParticipant discoveryParticipant,
+            MacResolver macResolver) {
+        super(thing, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant, macResolver);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
         this.managedThingProvider = managedThingProvider;
@@ -166,7 +168,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     /**
      * Converts an openHAB Command to a suitable object for writing to a HomeKit characteristic.
      * It handles various conversions including unit conversion, clamping to min/max values,
-     * and converting specific types like OnOffType and OpenClosedType to boolean.
+     * and converting specific types like OnOffType to boolean.
      *
      * @param command the command to convert
      * @param channel the channel for which the command is being converted
@@ -183,8 +185,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 object = new PercentType(100 - percent.intValue());
             } else if (object instanceof OnOffType onOff) {
                 object = onOff == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
-            } else if (object instanceof OpenClosedType openClosed) {
-                object = openClosed == OpenClosedType.OPEN ? PercentType.HUNDRED : PercentType.ZERO;
             } else if (object instanceof UpDownType upDown) {
                 object = upDown == UpDownType.UP ? PercentType.HUNDRED : PercentType.ZERO;
             }
@@ -249,11 +249,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         // convert on/off to boolean
         if (object instanceof OnOffType onOff) {
             object = Boolean.valueOf(onOff == OnOffType.ON);
-        }
-
-        // convert open/closed to boolean
-        if (object instanceof OpenClosedType openClosed) {
-            object = Boolean.valueOf(openClosed == OpenClosedType.OPEN);
         }
 
         // convert datetime to string
@@ -788,6 +783,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         final Long aid = getAccessoryId();
         if (aid == null) {
+            logger.debug("{} accessory has no ID", thing.getUID());
+            return;
+        }
+        final List<Service> services = accessory.services;
+        if (services == null) {
+            logger.debug("{} accessory has no services", thing.getUID());
             return;
         }
 
@@ -796,40 +797,66 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             if (CHANNEL_SNAPSHOT.equals(channelUID.getId())) {
                 continue; // skip camera snapshot channel
             }
-            if (isLinked(channelUID)) {
-                Long iid = 0L;
-                boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
-                if (checkChannelLinkByIID && channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
+            if (!isLinked(channelUID)) {
+                continue; // skip non-linked channels
+            }
+            Long channelIID = null;
+            boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
+            if (checkChannelLinkByIID) {
+                if (channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
                     try {
-                        iid = Long.parseLong(iidProperty);
+                        channelIID = Long.parseLong(iidProperty);
                     } catch (NumberFormatException e) {
                         continue; // error will already have been logged elsewhere
                     }
+                } else {
+                    continue; // error will already have been logged elsewhere
                 }
+            }
 
-                nestedLoops: // break marker for nested loops below
-                for (Service service : accessory.services) {
-                    for (Characteristic characteristic : service.characteristics) {
-                        if ((checkChannelLinkByIID && iid.equals(characteristic.iid))
-                                || LIGHT_MODEL_RELEVANT_TYPES.contains(characteristic.getCharacteristicType())) {
-                            Characteristic entry = new Characteristic();
+            boolean iidMatched = false;
+            for (Service service : services) {
+                final List<Characteristic> characteristics = service.characteristics;
+                if (characteristics == null) {
+                    continue;
+                }
+                for (Characteristic characteristic : characteristics) {
+                    if (characteristic.iid == null) {
+                        continue;
+                    }
+                    if (checkChannelLinkByIID ? characteristic.iid.equals(channelIID)
+                            : requiredByLightModel(characteristic)) {
+                        String key = AID_IID_FORMAT.formatted(aid, characteristic.iid);
+                        Characteristic entry = new Characteristic();
+                        entry.aid = aid;
+                        entry.iid = characteristic.iid;
+                        polledCharacteristics.put(key, entry);
+                        if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
+                            entry = new Characteristic();
                             entry.aid = aid;
                             entry.iid = characteristic.iid;
-                            polledCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
-                            if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
-                                entry = new Characteristic();
-                                entry.aid = aid;
-                                entry.iid = characteristic.iid;
-                                eventedCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
-                            }
-                            if (checkChannelLinkByIID) {
-                                break nestedLoops; // unique match found; continue to next channel
-                            }
+                            eventedCharacteristics.put(key, entry);
+                        }
+                        if (checkChannelLinkByIID) {
+                            iidMatched = true;
+                            break; // unique IID match found; break inner loop; continue to next channel
                         }
                     }
                 }
+                if (iidMatched) {
+                    break; // unique IID match found; continue to next channel
+                }
             }
         }
+    }
+
+    /**
+     * Helper that returns true if the light model requires the given characteristic type.
+     */
+    private boolean requiredByLightModel(Characteristic characteristic) {
+        return characteristic.type instanceof String characteristicType
+                ? LIGHT_MODEL_RELEVANT_TYPES.contains(Characteristic.getCharacteristicType(characteristicType))
+                : false;
     }
 
     /**
@@ -1303,7 +1330,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     "@text/status.migrating-accessory-to-bridge-failed");
             return;
         }
-        discoveryParticipant.suppressId(uniqueId, true); // suppress re-discovery of existing (now old) thing
+        String mac = thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+        discoveryParticipant.setTypeMapping(true, uniqueId, mac); // enable mDNS thing type mapping
         logger.info("Successfully auto-migrated {} to {} with {}", oldThing.getUID(), newBridge.getUID(),
                 newThing.getUID());
     }

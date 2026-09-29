@@ -82,9 +82,22 @@ class RoborockVacuumHandlerConsumableWriterTest {
         assertTrue(handleGetStatusBody.contains("CHANNEL_BATTERY"),
                 "handleGetStatus should continue writing battery channel from live status data");
         assertTrue(
-                source.contains("dpsJsonObject.has(\"122\")")
-                        && source.contains("updateState(CHANNEL_BATTERY, new DecimalType(battery));"),
+                source.contains("dpsRoot.has(\"122\")") && source
+                        .contains("updateState(CHANNEL_BATTERY, new DecimalType(dpsRoot.get(\"122\").getAsInt()));"),
                 "handleMessage should continue writing battery channel from live DPS updates");
+    }
+
+    @Test
+    void handleCommandFormatsConsumableResetAsJsonArrayAndNormalizesHyphens() throws IOException {
+        String source = Files.readString(HANDLER_PATH);
+        String handleCommandBody = extractMethodBody(source,
+                "public void handleCommand\\(ChannelUID channelUID, Command command\\)");
+
+        assertTrue(handleCommandBody.contains("consumable.replace('-', '_')"),
+                "handleCommand must normalize legacy hyphenated consumable identifiers to underscores to prevent regressions of #21461");
+
+        assertTrue(handleCommandBody.contains("gson.toJson(List.of("),
+                "handleCommand must serialize the consumable reset parameter as a JSON array to prevent regressions of #21461");
     }
 
     private static String extractMethodBody(String source, String methodSignatureRegex) {

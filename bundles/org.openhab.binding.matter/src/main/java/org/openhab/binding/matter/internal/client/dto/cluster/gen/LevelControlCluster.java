@@ -49,7 +49,7 @@ public class LevelControlCluster extends BaseCluster {
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * Indicates the current level of this device. The meaning of &#x27;level&#x27; is device dependent.
+     * Indicates the current level of this device. The meaning of 'level' is device dependent.
      * Changes to this attribute shall only be marked as reportable in the following cases:
      * - At most once per second, or
      * - At the end of the movement/transition, or
@@ -70,10 +70,16 @@ public class LevelControlCluster extends BaseCluster {
     public Integer remainingTime; // 1 uint16 R V
     /**
      * Indicates the minimum value of CurrentLevel that is capable of being assigned.
+     * > [!NOTE]
+     * > NOTE: This value is constrained by all lighting device types to 1, and its Conformance is Mandatory. As such,
+     * when the Lighting feature is supported this value shall be 1.
      */
     public Integer minLevel; // 2 uint8 R V
     /**
      * Indicates the maximum value of CurrentLevel that is capable of being assigned.
+     * > [!NOTE]
+     * > NOTE: This value is constrained by all lighting device types to 254, and its Conformance is Mandatory. As such,
+     * when the Lighting feature is supported this value shall be 254.
      */
     public Integer maxLevel; // 3 uint8 R V
     /**
@@ -225,17 +231,17 @@ public class LevelControlCluster extends BaseCluster {
          * 
          * This feature supports an interface for controlling the level of a light source.
          * For the CurrentLevel attribute:
-         * A value of 0x00 shall NOT be used.
-         * A value of 0x01 shall indicate the minimum level that can be attained on a device.
-         * A value of 0xFE shall indicate the maximum level that can be attained on a device.
-         * A value of null shall represent an undefined value.
-         * All other values are application specific gradations from the minimum to the maximum level.
+         * - A value of 0x00 shall NOT be used.
+         * - A value of 0x01 shall indicate the minimum level that can be attained on a device.
+         * - A value of 0xFE shall indicate the maximum level that can be attained on a device.
+         * - A value of null shall represent an undefined value.
+         * - All other values are application specific gradations from the minimum to the maximum level.
          */
         public boolean lighting;
         /**
          * 
-         * &gt; [!NOTE]
-         * &gt; The Frequency feature is provisional.
+         * > [!NOTE]
+         * > NOTE: The Frequency feature is provisional.
          */
         public boolean frequency;
 
@@ -255,6 +261,9 @@ public class LevelControlCluster extends BaseCluster {
     }
 
     // commands
+    /**
+     * This command will move the device to the specified level.
+     */
     public static ClusterCommand moveToLevel(Integer level, Integer transitionTime, OptionsBitmap optionsMask,
             OptionsBitmap optionsOverride) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -273,6 +282,9 @@ public class LevelControlCluster extends BaseCluster {
         return new ClusterCommand("moveToLevel", map);
     }
 
+    /**
+     * This command will move the device using the specified values.
+     */
     public static ClusterCommand move(MoveModeEnum moveMode, Integer rate, OptionsBitmap optionsMask,
             OptionsBitmap optionsOverride) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -291,6 +303,9 @@ public class LevelControlCluster extends BaseCluster {
         return new ClusterCommand("move", map);
     }
 
+    /**
+     * This command will do a relative step change of the device using the specified values.
+     */
     public static ClusterCommand step(StepModeEnum stepMode, Integer stepSize, Integer transitionTime,
             OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -312,6 +327,9 @@ public class LevelControlCluster extends BaseCluster {
         return new ClusterCommand("step", map);
     }
 
+    /**
+     * This command will stop the actions of various other commands that are still in progress.
+     */
     public static ClusterCommand stop(OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (optionsMask != null) {
@@ -391,6 +409,9 @@ public class LevelControlCluster extends BaseCluster {
         return new ClusterCommand("stopWithOnOff", map);
     }
 
+    /**
+     * This command will cause the device to change the current frequency to the requested value.
+     */
     public static ClusterCommand moveToClosestFrequency(Integer frequency) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (frequency != null) {

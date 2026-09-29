@@ -28,11 +28,11 @@ If you don't specify any path on the server, the binding will behave as if the h
 
 The binding will adapt to the content type of the returned content to support different formats for getting data both from local and cloud installations.
 
-| Name              | Hostname                                                        | Content-Type                 | Parser |
-|-------------------|-----------------------------------------------------------------|------------------------------|--------|
-| API               | Hostnames without any path (e.g., `https://api.airgradient.com/`) | application/json             | JSON parser for the AirGradient API, correct paths will be appended to the calls |
-| Local OpenMetrics | Hostnames with path (e.g., `http://192.168.x.x/metrics`)          | application/openmetrics-text | OpenMetrics parser |
-| Local Web         | Hostnames with path (e.g., `http://192.168.x.x/measures/current`) | application/json             | JSON parser for the AirGradient API, as if you returned the value of sendToServer() payload |
+| Name              | Hostname                                                          | Content-Type                 | Parser                                                                                                  |
+|-------------------|-------------------------------------------------------------------|------------------------------|---------------------------------------------------------------------------------------------------------|
+| API               | Hostnames without any path (e.g., `https://api.airgradient.com/`) | application/json             | JSON parser for the AirGradient API, correct paths will be appended to the calls                        |
+| Local OpenMetrics | Hostnames with path (e.g., `http://192.168.x.x/metrics`)          | application/openmetrics-text | OpenMetrics parser                                                                                      |
+| Local Web         | Hostnames with path (e.g., `http://192.168.x.x/measures/current`) | application/json             | JSON parser for the AirGradient API, as if you returned the value of sendToServer() payload             |
 | Local Prometheus  | Hostnames with path (e.g., `http://192.168.x.x/measures`)         | text/plain                   | Prometheus parser for [Prometheus format](https://prometheus.io/docs/instrumenting/exposition_formats/) |
 
 ### AirGradient API
@@ -51,17 +51,17 @@ To add a location, you need to know the location ID. To get the location ID, you
 
 ### `API` Thing Configuration
 
-| Name            | Type    | Description                           | Default                      | Required | Advanced |
-|-----------------|---------|---------------------------------------|------------------------------|----------|----------|
-| token           | text    | Token to access the device            | N/A                          | yes      | no       |
+| Name            | Type    | Description                           | Default                        | Required | Advanced |
+|-----------------|---------|---------------------------------------|--------------------------------|----------|----------|
+| token           | text    | Token to access the device            | N/A                            | yes      | no       |
 | hostname        | text    | Hostname or IP address of the API     | `https://api.airgradient.com/` | no       | yes      |
-| refreshInterval | integer | Interval the device is polled in sec. | 600                          | no       | yes      |
+| refreshInterval | integer | Interval the device is polled in sec. | 600                            | no       | yes      |
 
 ### `Location` Thing Configuration
 
-| Name            | Type    | Description                                                       | Default | Required | Advanced |
-|-----------------|---------|-------------------------------------------------------------------|---------|----------|----------|
-| location        | text    | A number identifying the location id in the AirGradient Dashboard | N/A     | yes      | no       |
+| Name     | Type | Description                                                       | Default | Required | Advanced |
+|----------|------|-------------------------------------------------------------------|---------|----------|----------|
+| location | text | A number identifying the location id in the AirGradient Dashboard | N/A     | yes      | no       |
 
 ## Channels
 
@@ -70,7 +70,7 @@ For more information about the data in the channels, please refer to the [models
 | Channel            | Type                 | Read/Write | Description                                                                      |
 |--------------------|----------------------|------------|----------------------------------------------------------------------------------|
 | pm01               | Number:Density       | Read       | Particulate Matter 1 (0.001mm)                                                   |
-| pm02               | Number:Density       | Read       | Particulate Matter 2 (0.002mm)                                                   |
+| pm02               | Number:Density       | Read       | Particulate Matter 2.5 (0.0025mm)                                                |
 | pm10               | Number:Density       | Read       | Particulate Matter 10 (0.01mm)                                                   |
 | pm003-count        | Number:Dimensionless | Read       | The number of particles with a diameter beyond 0.3 microns in 1 deciliter of air |
 | rco2               | Number:Density       | Read       | Carbon dioxide PPM                                                               |
@@ -85,21 +85,39 @@ For more information about the data in the channels, please refer to the [models
 Some configuration channels are only available for local devices (for cloud devices use the AirGradient dashboard to configure these instead).
 These configuration settings needs AirGradient firmware on the sensor of version 3.1.1 or later.
 
-| Channel               | Type                 | Read/Write | Description                                                                      |
-|-----------------------|----------------------|------------|----------------------------------------------------------------------------------|
-| country-code          | String               | Read/Write | The ALPHA-2 Country code used for the device                                     |
-| pm-standard           | String               | Read/Write | Standard used for Parts per Million measurements (us-aqi or ugm3)                |
-| abc-days              | Number:Days          | Read/Write | Co2 calibration automatic baseline calibration days                              |
-| tvoc-learning-offset  | Number:Dimensionless | Read/Write | Time constant of long-term estimator for offset.                                 |
-| nox-learning-offset   | Number:Dimensionless | Read/Write | Time constant of long-term estimator for offset.                                 |
-| mqtt-broker-url       | String               | Read/Write | MQTT Broker URL                                                                  |
-| temperature-unit      | String               | Read/Write | Temperature unit used on the display                                             |
-| configuration-control | String               | Read/Write | Where the unit is configured from (local/cloud/both)                             |
-| post-to-cloud         | Switch               | Read/Write | Send data to the AirGradient cloud                                               |
-| led-bar-brightness    | Number:Dimensionless | Read/Write | Brightness of the LED bar                                                        |
-| display-brightness    | Number:Dimensionless | Read/Write | Brightness of the display                                                        |
-| model                 | String               | Read/Write | The model of the device (can be changed e.g. if you change sensors)              |
-| led-bar-test          | String               | Write      | Trigger test of LED bar                                                          |
+| Channel               | Type                 | Read/Write | Description                                                         |
+|-----------------------|----------------------|------------|---------------------------------------------------------------------|
+| country-code          | String               | Read/Write | The ALPHA-2 Country code used for the device                        |
+| pm-standard           | String               | Read/Write | Standard used for Parts per Million measurements (us-aqi or ugm3)   |
+| abc-days              | Number:Days          | Read/Write | Co2 calibration automatic baseline calibration days                 |
+| tvoc-learning-offset  | Number:Dimensionless | Read/Write | Time constant of long-term estimator for offset.                    |
+| nox-learning-offset   | Number:Dimensionless | Read/Write | Time constant of long-term estimator for offset.                    |
+| mqtt-broker-url       | String               | Read/Write | MQTT Broker URL                                                     |
+| temperature-unit      | String               | Read/Write | Temperature unit used on the display                                |
+| configuration-control | String               | Read/Write | Where the unit is configured from (local/cloud/both)                |
+| post-to-cloud         | Switch               | Read/Write | Send data to the AirGradient cloud                                  |
+| led-bar-brightness    | Number:Dimensionless | Read/Write | Brightness of the LED bar                                           |
+| display-brightness    | Number:Dimensionless | Read/Write | Brightness of the display                                           |
+| model                 | String               | Read/Write | The model of the device (can be changed e.g. if you change sensors) |
+| led-bar-test          | String               | Write      | Trigger test of LED bar                                             |
+
+The following additional measurement channels are added dynamically, depending on the device model and firmware version.
+
+| Channel          | Type                 | Read/Write | Description                                                   |
+|------------------|----------------------|------------|---------------------------------------------------------------|
+| pm01-standard    | Number:Density       | Read       | PM1.0 concentration (standard particle)                       |
+| pm02-standard    | Number:Density       | Read       | PM2.5 concentration (standard particle)                       |
+| pm10-standard    | Number:Density       | Read       | PM10 concentration (standard particle)                        |
+| pm005-count      | Number:Dimensionless | Read       | Particle count for particles >= 0.5 microns per deciliter air |
+| pm01-count       | Number:Dimensionless | Read       | Particle count for particles >= 1.0 microns per deciliter air |
+| pm02-count       | Number:Dimensionless | Read       | Particle count for particles >= 2.5 microns per deciliter air |
+| pm50-count       | Number:Dimensionless | Read       | Particle count for particles >= 5.0 microns per deciliter air |
+| pm10-count       | Number:Dimensionless | Read       | Particle count for particles >= 10 microns per deciliter air  |
+| pm02-compensated | Number:Density       | Read       | PM2.5 concentration with correction applied                   |
+| tvoc-index       | Number:Dimensionless | Read       | TVOC index value                                              |
+| tvoc-raw         | Number:Dimensionless | Read       | Raw TVOC value                                                |
+| nox-index        | Number:Dimensionless | Read       | NOx index value                                               |
+| nox-raw          | Number:Dimensionless | Read       | Raw NOx value                                                 |
 
 ## Full Example
 
@@ -114,6 +132,6 @@ Bridge airgradient:airgradient-api:home "My Home" [ token="abc123...." ] {
 ### Item Configuration
 
 ```java
-Number:Density      AirGradient_Location_PM2        "%.0f kg/m³"                         <density>       {channel="airgradient:location:654321:pm2"}"
+Number:Density      AirGradient_Location_PM2        "%.0f kg/m³"                         <density>       {channel="airgradient:location:654321:pm02"}"
 Number:Temperature  AirGradient_Location_PM2        "Temperature [%.1f °C]"              <temperature>   {channel="airgradient:location:654321:atmp"}"
 ```

@@ -12,18 +12,14 @@
  */
 package org.openhab.binding.freeathome.internal.type;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.storage.StorageService;
+import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
-import org.openhab.core.thing.type.ChannelTypeUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  *
@@ -32,34 +28,16 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(service = { FreeAtHomeChannelTypeProvider.class, ChannelTypeProvider.class })
 @NonNullByDefault
-public class FreeAtHomeChannelTypeProviderImpl implements FreeAtHomeChannelTypeProvider {
+public class FreeAtHomeChannelTypeProviderImpl extends AbstractStorageBasedTypeProvider
+        implements FreeAtHomeChannelTypeProvider {
 
-    private final Map<ChannelTypeUID, ChannelType> channelTypesByUID = new HashMap<>();
-
-    @Override
-    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        Collection<ChannelType> result = new ArrayList<>();
-
-        for (ChannelTypeUID uid : channelTypesByUID.keySet()) {
-            ChannelType channelType = channelTypesByUID.get(uid);
-
-            if (channelType != null) {
-                result.add(channelType);
-            }
-        }
-
-        return result;
+    @Activate
+    public FreeAtHomeChannelTypeProviderImpl(@Reference StorageService storageService) {
+        super(storageService);
     }
 
     @Override
-    public @Nullable ChannelType getChannelType(@Nullable ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        return channelTypesByUID.get(channelTypeUID);
-    }
-
-    @Override
-    public void addChannelType(@Nullable ChannelType channelType) {
-        if (channelType != null) {
-            channelTypesByUID.put(channelType.getUID(), channelType);
-        }
+    public void addChannelType(ChannelType channelType) {
+        putChannelType(channelType);
     }
 }

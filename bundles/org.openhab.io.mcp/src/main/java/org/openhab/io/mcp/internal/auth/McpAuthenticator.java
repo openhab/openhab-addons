@@ -24,6 +24,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.core.auth.Authentication;
 import org.openhab.core.auth.AuthenticationException;
 import org.openhab.core.auth.UserApiTokenCredentials;
 import org.openhab.core.auth.UserRegistry;
@@ -74,31 +75,38 @@ public class McpAuthenticator {
     }
 
     /**
-     * @return {@code true} if the request carries a valid bearer token.
+     * Validates the bearer token on the incoming request and resolves the authenticated user when possible.
+     *
+     * @return the authenticated user's name on success (empty string when the token was accepted but no
+     *         username could be resolved — currently the JWT path), or {@code null} on failure.
      */
-    public boolean authenticate(HttpServletRequest request) {
+    public @Nullable String authenticate(HttpServletRequest request) {
         String path = request.getRequestURI();
         String token = extractToken(request);
         if (token == null) {
             logger.debug("Auth reject: {} {} — no Authorization/X-OPENHAB-TOKEN header", request.getMethod(), path);
-            return false;
+            return null;
         }
         String tokenShape = token.length() > 8 ? token.substring(0, 8) + "…(" + token.length() + ")" : "…";
         if (token.startsWith(OH_TOKEN_PREFIX)) {
             try {
-                userRegistry.authenticate(new UserApiTokenCredentials(token));
-                logger.debug("Auth accept: {} {} — oh.* token {}", request.getMethod(), path, tokenShape);
-                return true;
+                Authentication auth = userRegistry.authenticate(new UserApiTokenCredentials(token));
+                String username = auth.getUsername();
+                logger.debug("Auth accept: {} {} — oh.* token {} (user={})", request.getMethod(), path, tokenShape,
+                        username);
+                return username;
             } catch (AuthenticationException e) {
                 logger.debug("Auth reject: {} {} — oh.* token {} rejected by UserRegistry: {}", request.getMethod(),
                         path, tokenShape, e.getMessage());
-                return false;
+                return null;
             }
         }
         boolean ok = verifyViaRest(token);
         logger.debug("Auth {}: {} {} — JWT {} via REST probe", ok ? "accept" : "reject", request.getMethod(), path,
                 tokenShape);
-        return ok;
+        // JWT path: core accepted the token but we don't have the username locally. Return empty string to
+        // signal "authenticated, user unknown" so callers can distinguish from "rejected" (null).
+        return ok ? "" : null;
     }
 
     /**

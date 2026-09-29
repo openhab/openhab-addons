@@ -15,8 +15,8 @@ package org.openhab.binding.smartthings.internal.converter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsThingConfig;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
@@ -35,8 +35,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class SmartthingsDefaultConverter extends SmartthingsConverter {
 
-    public SmartthingsDefaultConverter(Thing thing) {
-        super(thing);
+    public SmartthingsDefaultConverter(SmartthingsThingConfig config, String thingTypeId) {
+        super(config, thingTypeId);
     }
 
     @Override

@@ -7,24 +7,28 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.2.0-SNAPSHOT</version>
+    <version>5.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.snmp</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: SNMP Binding</name>
 
+  <properties>
+    <bnd.importpackage>org.snmp4j.agent.audit;resolution:=optional</bnd.importpackage>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
-      <version>3.8.2</version>
+      <version>3.13.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j-unix-transport</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.2</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

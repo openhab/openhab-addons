@@ -150,6 +150,10 @@ public class WindowCoveringDevice extends BaseDevice {
     @Override
     public void updateState(Item item, State state) {
         int currentPercent = itemStateToPercent(state);
+        // movement is finished once the position stops arriving, so an update that repeats the position is not one
+        if (currentPercent == lastCurrentPercent) {
+            return;
+        }
         try {
             // check if this is matter initiated or openHAB initiated, if openHAB we will fake the target position so
             // operation direction is correct
@@ -162,7 +166,11 @@ public class WindowCoveringDevice extends BaseDevice {
             }
             setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
                     WindowCoveringCluster.ATTRIBUTE_CURRENT_POSITION_LIFT_PERCENT100THS, currentPercent * 100).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Could not set state", e);
+            return;
+        } catch (ExecutionException e) {
             logger.debug("Could not set state", e);
             return;
         }
@@ -209,7 +217,10 @@ public class WindowCoveringDevice extends BaseDevice {
             setEndpointState(WindowCoveringCluster.CLUSTER_PREFIX,
                     WindowCoveringCluster.ATTRIBUTE_TARGET_POSITION_LIFT_PERCENT100THS, currentPercent * 100).get();
             lastTargetPercent = null;
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Could not set target state", e);
+        } catch (ExecutionException e) {
             logger.debug("Could not set target state", e);
         }
     }

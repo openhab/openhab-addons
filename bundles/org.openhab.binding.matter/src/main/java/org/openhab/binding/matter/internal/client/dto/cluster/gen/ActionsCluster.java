@@ -52,13 +52,13 @@ public class ActionsCluster extends BaseCluster {
      * - When used without suffix, it shall provide information about the various actions which the cluster provides.
      * - Example: SetupURL could take the value of example://Actions or https://domain.example/Matter/bridgev1/Actions
      * for this generic case (access generic info how to use actions provided by this cluster).
-     * - When used with a suffix of &quot;/?a&#x3D;&quot; and the decimal value of ActionID for one of the actions, it
-     * may provide information about that particular action. This could be a deeplink to manufacturer-app/website
-     * (associated somehow to the server node) with the information/edit-screen for this action so that the user can
-     * view and update details of the action, e.g. edit the scene, or change the wake-up experience time period.
-     * - Example of SetupURL with suffix added: example://Actions/?a&#x3D;12345 or
-     * https://domain.example/Matter/bridgev1/Actions/?a&#x3D;12345 for linking to specific info/editing of the action
-     * with ActionID 0x3039.
+     * - When used with a suffix of "/?a=" and the decimal value of ActionID for one of the actions, it may provide
+     * information about that particular action. This could be a deeplink to manufacturer-app/website (associated
+     * somehow to the server node) with the information/edit-screen for this action so that the user can view and update
+     * details of the action, e.g. edit the scene, or change the wake-up experience time period.
+     * - Example of SetupURL with suffix added: example://Actions/?a=12345 or
+     * https://domain.example/Matter/bridgev1/Actions/?a=12345 for linking to specific info/editing of the action with
+     * ActionID 0x3039.
      */
     public String setupUrl; // 2 string R V
 
@@ -69,8 +69,8 @@ public class ActionsCluster extends BaseCluster {
      * It provides feedback to the client about the progress of the action.
      * Example: When InstantActionWithTransition is invoked (with an InvokeID data field), two StateChanged events will
      * be generated:
-     * - one when the transition starts (NewState&#x3D;Active)
-     * - one when the transition completed (NewState&#x3D;Inactive)
+     * - one when the transition starts (NewState=Active)
+     * - one when the transition completed (NewState=Inactive)
      */
     public static class StateChanged {
         /**
@@ -101,15 +101,15 @@ public class ActionsCluster extends BaseCluster {
      * Example: When InstantActionWithTransition is invoked (with an InvokeID data field), and another controller
      * changes the state of one or more of the involved endpoints during the transition, thus interrupting the
      * transition triggered by the action, two events would be generated:
-     * - StateChanged when the transition starts (NewState&#x3D;Active)
-     * - ActionFailed when the interrupting command occurs (NewState&#x3D;Inactive, Error&#x3D;interrupted)
-     * Example: When InstantActionWithTransition is invoked (with an InvokeID data field &#x3D; 1), and the same client
-     * invokes an InstantAction with (the same or another ActionId and) InvokeID &#x3D; 2, and this second command
-     * interrupts the transition triggered by the first command, these events would be generated:
-     * - StateChanged (InvokeID&#x3D;1, NewState&#x3D;Active) when the transition starts
-     * - ActionFailed (InvokeID&#x3D;2, NewState&#x3D;Inactive, Error&#x3D;interrupted) when the second command
-     * interrupts the transition
-     * - StateChanged (InvokeID&#x3D;2, NewState&#x3D;Inactive) upon the execution of the action for the second command
+     * - StateChanged when the transition starts (NewState=Active)
+     * - ActionFailed when the interrupting command occurs (NewState=Inactive, Error=interrupted)
+     * Example: When InstantActionWithTransition is invoked (with an InvokeID data field = 1), and the same client
+     * invokes an InstantAction with (the same or another ActionId and) InvokeID = 2, and this second command interrupts
+     * the transition triggered by the first command, these events would be generated:
+     * - StateChanged (InvokeID=1, NewState=Active) when the transition starts
+     * - ActionFailed (InvokeID=2, NewState=Inactive, Error=interrupted) when the second command interrupts the
+     * transition
+     * - StateChanged (InvokeID=2, NewState=Inactive) upon the execution of the action for the second command
      */
     public static class ActionFailed {
         /**
@@ -148,8 +148,8 @@ public class ActionsCluster extends BaseCluster {
         public Integer actionId; // uint16
         /**
          * This field shall indicate the name (as assigned by the user or automatically by the server) associated with
-         * this action. This can be used for identifying the action to the user by the client. Example: &quot;my
-         * colorful scene&quot;.
+         * this action. This can be used for identifying the action to the user by the client. Example: "my colorful
+         * scene".
          */
         public String name; // string
         /**
@@ -164,7 +164,7 @@ public class ActionsCluster extends BaseCluster {
          */
         public Integer endpointListId; // uint16
         /**
-         * This field is a bitmap which shall be used to indicate which of the cluster’s commands are supported for this
+         * This field is a bitmap which shall be used to indicate which of the cluster's commands are supported for this
          * particular action, with a bit set to 1 for each supported command according to the table below. Other bits
          * shall be set to 0.
          */
@@ -197,7 +197,7 @@ public class ActionsCluster extends BaseCluster {
         /**
          * This field shall indicate the name (as assigned by the user or automatically by the server) associated with
          * the set of endpoints in this list. This can be used for identifying the action to the user by the client.
-         * Example: &quot;living room&quot;.
+         * Example: "living room".
          */
         public String name; // string
         /**
@@ -328,7 +328,7 @@ public class ActionsCluster extends BaseCluster {
 
     // Bitmaps
     /**
-     * Note - The bit allocation of this bitmap shall follow the ID’s of the Commands of this cluster.
+     * Note - The bit allocation of this bitmap shall follow the ID's of the Commands of this cluster.
      */
     public static class CommandBits {
         public boolean instantAction;
@@ -374,8 +374,8 @@ public class ActionsCluster extends BaseCluster {
     // commands
     /**
      * This command is used to trigger an instantaneous action.
-     * This command triggers an action (state change) on the involved endpoints, in a &quot;fire and forget&quot;
-     * manner. Afterwards, the action’s state shall be Inactive.
+     * This command triggers an action (state change) on the involved endpoints, in a "fire and forget" manner.
+     * Afterwards, the action's state shall be Inactive.
      * Example: recall a scene on a number of lights.
      */
     public static ClusterCommand instantAction(Integer actionId, Integer invokeId) {
@@ -395,8 +395,8 @@ public class ActionsCluster extends BaseCluster {
      * gradual transition SHOULD take place from the old to the new state over this time period. However, the exact
      * transition is manufacturer dependent.
      * This command triggers an action (state change) on the involved endpoints, with a specified time to transition
-     * from the current state to the new state. During the transition, the action’s state shall be Active. Afterwards,
-     * the action’s state shall be Inactive.
+     * from the current state to the new state. During the transition, the action's state shall be Active. Afterwards,
+     * the action's state shall be Inactive.
      * Example: recall a scene on a number of lights, with a specified transition time.
      */
     public static ClusterCommand instantActionWithTransition(Integer actionId, Integer invokeId,
@@ -416,7 +416,7 @@ public class ActionsCluster extends BaseCluster {
 
     /**
      * This command is used to trigger the commencement of an action.
-     * This command triggers the commencement of an action on the involved endpoints. Afterwards, the action’s state
+     * This command triggers the commencement of an action on the involved endpoints. Afterwards, the action's state
      * shall be Active.
      * Example: start a dynamic lighting pattern (such as gradually rotating the colors around the setpoints of the
      * scene) on a set of lights.
@@ -436,11 +436,11 @@ public class ActionsCluster extends BaseCluster {
 
     /**
      * This command is used to trigger the commencement of an action with a duration.
-     * This command triggers the commencement of an action on the involved endpoints, and shall change the action’s
-     * state to Active. After the specified Duration, the action will stop, and the action’s state shall change to
+     * This command triggers the commencement of an action on the involved endpoints, and shall change the action's
+     * state to Active. After the specified Duration, the action will stop, and the action's state shall change to
      * Inactive.
      * Example: start a dynamic lighting pattern (such as gradually rotating the colors around the setpoints of the
-     * scene) on a set of lights for 1 hour (Duration&#x3D;3600).
+     * scene) on a set of lights for 1 hour (Duration=3600).
      */
     public static ClusterCommand startActionWithDuration(Integer actionId, Integer invokeId, Integer duration) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -458,7 +458,7 @@ public class ActionsCluster extends BaseCluster {
 
     /**
      * This command is used to stop an action.
-     * This command stops the ongoing action on the involved endpoints. Afterwards, the action’s state shall be
+     * This command stops the ongoing action on the involved endpoints. Afterwards, the action's state shall be
      * Inactive.
      * Example: stop a dynamic lighting pattern which was previously started with StartAction.
      */
@@ -475,7 +475,7 @@ public class ActionsCluster extends BaseCluster {
 
     /**
      * This command is used to pause an action.
-     * This command pauses an ongoing action, and shall change the action’s state to Paused.
+     * This command pauses an ongoing action, and shall change the action's state to Paused.
      * Example: pause a dynamic lighting effect (the lights stay at their current color) which was previously started
      * with StartAction.
      */
@@ -492,10 +492,9 @@ public class ActionsCluster extends BaseCluster {
 
     /**
      * This command is used to pause an action with a duration.
-     * This command pauses an ongoing action, and shall change the action’s state to Paused. After the specified
-     * Duration, the ongoing action will be automatically resumed. which shall change the action’s state to Active.
-     * Example: pause a dynamic lighting effect (the lights stay at their current color) for 10 minutes
-     * (Duration&#x3D;600).
+     * This command pauses an ongoing action, and shall change the action's state to Paused. After the specified
+     * Duration, the ongoing action will be automatically resumed. which shall change the action's state to Active.
+     * Example: pause a dynamic lighting effect (the lights stay at their current color) for 10 minutes (Duration=600).
      * The difference between Pause/Resume and Disable/Enable is on the one hand semantic (the former is more of a
      * transitionary nature while the latter is more permanent) and on the other hand these can be implemented slightly
      * differently in the implementation of the action (e.g. a Pause would be automatically resumed after some hours or
@@ -517,11 +516,11 @@ public class ActionsCluster extends BaseCluster {
 
     /**
      * This command is used to resume an action.
-     * This command resumes a previously paused action, and shall change the action’s state to Active.
+     * This command resumes a previously paused action, and shall change the action's state to Active.
      * The difference between ResumeAction and StartAction is that ResumeAction will continue the action from the state
      * where it was paused, while StartAction will start the action from the beginning.
-     * Example: resume a dynamic lighting effect (the lights&#x27; colors will change gradually, continuing from the
-     * point they were paused).
+     * Example: resume a dynamic lighting effect (the lights' colors will change gradually, continuing from the point
+     * they were paused).
      */
     public static ClusterCommand resumeAction(Integer actionId, Integer invokeId) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -536,7 +535,7 @@ public class ActionsCluster extends BaseCluster {
 
     /**
      * This command is used to enable an action.
-     * This command enables a certain action or automation. Afterwards, the action’s state shall be Active.
+     * This command enables a certain action or automation. Afterwards, the action's state shall be Active.
      * Example: enable a motion sensor to control the lights in an area.
      */
     public static ClusterCommand enableAction(Integer actionId, Integer invokeId) {
@@ -552,11 +551,11 @@ public class ActionsCluster extends BaseCluster {
 
     /**
      * This command is used to enable an action with a duration.
-     * This command enables a certain action or automation, and shall change the action’s state to be Active. After the
-     * specified Duration, the action or automation will stop, and the action’s state shall change to Disabled.
-     * Example: enable a &quot;presence mimicking&quot; behavior for the lights in your home during a vacation; the
-     * Duration field is used to indicated the length of your absence from home. After that period, the presence
-     * mimicking behavior will no longer control these lights.
+     * This command enables a certain action or automation, and shall change the action's state to be Active. After the
+     * specified Duration, the action or automation will stop, and the action's state shall change to Disabled.
+     * Example: enable a "presence mimicking" behavior for the lights in your home during a vacation; the Duration field
+     * is used to indicated the length of your absence from home. After that period, the presence mimicking behavior
+     * will no longer control these lights.
      */
     public static ClusterCommand enableActionWithDuration(Integer actionId, Integer invokeId, Integer duration) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -574,7 +573,7 @@ public class ActionsCluster extends BaseCluster {
 
     /**
      * This command is used to disable an action.
-     * This command disables a certain action or automation, and shall change the action’s state to Inactive.
+     * This command disables a certain action or automation, and shall change the action's state to Inactive.
      * Example: disable a motion sensor to no longer control the lights in an area.
      */
     public static ClusterCommand disableAction(Integer actionId, Integer invokeId) {
@@ -590,13 +589,13 @@ public class ActionsCluster extends BaseCluster {
 
     /**
      * This command is used to disable an action with a duration.
-     * This command disables a certain action or automation, and shall change the action’s state to Disabled. After the
-     * specified Duration, the action or automation will re-start, and the action’s state shall change to either
-     * Inactive or Active, depending on the actions (see Section 9.14.8.4, “Example 4: Wake-up routine” and Section
-     * 9.14.8.6, “Example 6: Alarm system”).
-     * Example: disable a &quot;wakeup&quot; experience for a period of 1 week when going on holiday (to prevent them
-     * from turning on in the morning while you’re not at home). After this period, the wakeup experience will control
-     * the lights as before.
+     * This command disables a certain action or automation, and shall change the action's state to Disabled. After the
+     * specified Duration, the action or automation will re-start, and the action's state shall change to either
+     * Inactive or Active, depending on the actions (see Section 9.14.8.4, "Example 4: Wake-up routine" and Section
+     * 9.14.8.6, "Example 6: Alarm system").
+     * Example: disable a "wakeup" experience for a period of 1 week when going on holiday (to prevent them from turning
+     * on in the morning while you're not at home). After this period, the wakeup experience will control the lights as
+     * before.
      */
     public static ClusterCommand disableActionWithDuration(Integer actionId, Integer invokeId, Integer duration) {
         Map<String, Object> map = new LinkedHashMap<>();

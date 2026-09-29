@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.amazondashbutton.internal.pcap;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.openhab.core.common.ThreadPoolManager;
 import org.pcap4j.core.PcapNetworkInterface;
@@ -97,7 +95,7 @@ public class PcapNetworkInterfaceService {
      */
     public Set<PcapNetworkInterfaceWrapper> getNetworkInterfaces() {
         synchronized (pcapNetworkInterfaces) {
-            return Collections.unmodifiableSet(pcapNetworkInterfaces.stream().collect(Collectors.toSet()));
+            return Set.copyOf(pcapNetworkInterfaces);
         }
     }
 

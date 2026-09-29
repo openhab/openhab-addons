@@ -34,7 +34,6 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class DeviceUtil {
-    private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
     private static final String TEMPERATURE_UNDEFINED = "32768";
     private static final String TEMPERATURE_COLD = "-32760";
     private static final String TEXT_PREFIX = "miele.";
@@ -45,20 +44,6 @@ public class DeviceUtil {
             Map.entry("10", "idle"), Map.entry("11", "rinse-hold"), Map.entry("12", "service"),
             Map.entry("13", "super-freezing"), Map.entry("14", "super-cooling"), Map.entry("15", "super-heating"),
             Map.entry("144", "default"), Map.entry("145", "locked"), Map.entry("255", "not-connected"));
-
-    /**
-     * Convert byte array to hex representation.
-     */
-    public static String bytesToHex(byte[] bytes) {
-        byte[] hexChars = new byte[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-        }
-
-        return new String(hexChars, StandardCharsets.UTF_8);
-    }
 
     /**
      * Convert string consisting of 8 bit characters to byte array.

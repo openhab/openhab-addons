@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="io:yamlcomposer">
+
+		<parameter name="maxLineWidth" type="integer" min="20">
+			<label>Maximum Line Width</label>
+			<description>Maximum line length before text wrapping occurs.</description>
+			<default>80</default>
+		</parameter>
+
+		<parameter name="splitLines" type="boolean">
+			<label>Split Long Lines</label>
+			<description>Split long string scalar lines that exceed the maximum line width.</description>
+			<default>true</default>
+		</parameter>
+
+		<parameter name="sectionSpacing" type="integer" min="0" max="5">
+			<label>Section and Entity Spacing</label>
+			<description>Number of blank lines to inject before top-level section keys and individual entities (0 to disable).</description>
+			<default>1</default>
+		</parameter>
+
+	</config-description>
+</config-description:config-descriptions>

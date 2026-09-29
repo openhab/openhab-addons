@@ -30,4 +30,5 @@ public class RenaultConfiguration {
     public int refreshInterval = 10;
     public int updateDelay = 30;
     public String kamereonApiKey = "YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J";
+    public String gigyaApiKey = "";
 }

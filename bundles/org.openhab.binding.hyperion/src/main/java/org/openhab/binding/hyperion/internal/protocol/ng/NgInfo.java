@@ -40,6 +40,9 @@ public class NgInfo {
     @SerializedName("effects")
     private List<Effect> effects = null;
 
+    @SerializedName("instance")
+    private List<InstanceInfo> instance = null;
+
     public List<Component> getComponents() {
         return components;
     }
@@ -74,5 +77,9 @@ public class NgInfo {
 
     public List<Effect> getEffects() {
         return effects;
+    }
+
+    public List<InstanceInfo> getInstance() {
+        return instance;
     }
 }

@@ -187,6 +187,27 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_THERMOSTAT_RUNNINGMODE = "thermostat-runningmode";
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGMODE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_THERMOSTAT_RUNNINGMODE);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEAT = "thermostat-runningstate-heat";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_HEAT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEAT);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOL = "thermostat-runningstate-cool";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_COOL = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOL);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FAN = "thermostat-runningstate-fan";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_FAN = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FAN);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2 = "thermostat-runningstate-heatstage2";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_HEATSTAGE2);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2 = "thermostat-runningstate-coolstage2";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_COOLSTAGE2);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE2 = "thermostat-runningstate-fanstage2";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_FANSTAGE2 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE2);
+    public static final String CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE3 = "thermostat-runningstate-fanstage3";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_RUNNINGSTATE_FANSTAGE3 = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_THERMOSTAT_RUNNINGSTATE_FANSTAGE3);
     public static final String CHANNEL_ID_THERMOSTAT_HEATING_DEMAND = "thermostat-heatingdemand";
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_HEATING_DEMAND = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_THERMOSTAT_HEATING_DEMAND);
@@ -211,6 +232,24 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_WINDOWCOVERING_LIFT = "windowcovering-lift";
     public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_LIFT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_WINDOWCOVERING_LIFT);
+    public static final String CHANNEL_ID_VALVE_STATE = "valve-state";
+    public static final ChannelTypeUID CHANNEL_VALVE_STATE = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_STATE);
+    public static final String CHANNEL_ID_VALVE_CURRENT_STATE = "valve-current-state";
+    public static final ChannelTypeUID CHANNEL_VALVE_CURRENT_STATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_CURRENT_STATE);
+    public static final String CHANNEL_ID_VALVE_TARGET_STATE = "valve-target-state";
+    public static final ChannelTypeUID CHANNEL_VALVE_TARGET_STATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_TARGET_STATE);
+    public static final String CHANNEL_ID_VALVE_LEVEL = "valve-level";
+    public static final ChannelTypeUID CHANNEL_VALVE_LEVEL = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_LEVEL);
+    public static final String CHANNEL_ID_VALVE_DURATION = "valve-duration";
+    public static final ChannelTypeUID CHANNEL_VALVE_DURATION = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_DURATION);
+    public static final String CHANNEL_ID_VALVE_CLOSE_TIME = "valve-close-time";
+    public static final ChannelTypeUID CHANNEL_VALVE_CLOSE_TIME = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_VALVE_CLOSE_TIME);
+    public static final String CHANNEL_ID_VALVE_FAULT = "valve-fault";
+    public static final ChannelTypeUID CHANNEL_VALVE_FAULT = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_VALVE_FAULT);
     public static final String CHANNEL_ID_FANCONTROL_PERCENT = "fancontrol-percent";
     public static final ChannelTypeUID CHANNEL_FANCONTROL_PERCENT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_FANCONTROL_PERCENT);
@@ -235,6 +274,9 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_BOOLEANSTATE_STATEVALUE = "booleanstate-statevalue";
     public static final ChannelTypeUID CHANNEL_BOOLEANSTATE_STATEVALUE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_BOOLEANSTATE_STATEVALUE);
+    public static final String CHANNEL_ID_CONTACT_STATEVALUE = "contact-statevalue";
+    public static final ChannelTypeUID CHANNEL_CONTACT_STATEVALUE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_CONTACT_STATEVALUE);
     public static final String CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE = "otasoftwareupdaterequestor-updateavailable";
     public static final ChannelTypeUID CHANNEL_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE = new ChannelTypeUID(
             BINDING_ID, CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE);

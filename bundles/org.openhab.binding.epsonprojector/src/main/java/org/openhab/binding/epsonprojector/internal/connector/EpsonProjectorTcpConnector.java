@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.epsonprojector.internal.EpsonProjectorException;
+import org.openhab.binding.epsonprojector.internal.EpsonProjectorPasswordException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,19 +35,21 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
-    private static final String ESC_VP_HANDSHAKE = "ESC/VP.net\u0010\u0003\u0000\u0000\u0000\u0000";
+    private static final String ESC_VP_REQUEST_COMMON = "ESC/VP.net\u0010\u0003\u0000\u0000\u0000";
 
     private final Logger logger = LoggerFactory.getLogger(EpsonProjectorTcpConnector.class);
     private final String ip;
     private final int port;
+    private final String password;
 
     private @Nullable Socket socket = null;
     private @Nullable InputStream in = null;
     private @Nullable OutputStream out = null;
 
-    public EpsonProjectorTcpConnector(String ip, int port) {
+    public EpsonProjectorTcpConnector(String ip, int port, String password) {
         this.ip = ip;
         this.port = port;
+        this.password = password;
     }
 
     @Override
@@ -64,11 +67,16 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
 
         // Projectors with built in Ethernet listen on 3629, we must send the handshake to initialize the connection
         if (port == DEFAULT_PORT) {
-            try {
-                String response = sendMessage(ESC_VP_HANDSHAKE, 5000);
-                logger.debug("Response to initialisation of ESC/VP.net is: {}", response);
-            } catch (EpsonProjectorException e) {
-                logger.debug("Error within initialisation of ESC/VP.net: {}", e.getMessage());
+            final String response = sendMessage(createEscVpRequest(), 5000);
+            logger.debug("Response to initialisation of ESC/VP.net is: {}", response);
+
+            if (response.length() == 16) {
+                if (response.charAt(14) == '\u0041') {
+                    throw new EpsonProjectorPasswordException(
+                            "No password provided, but device requires authentication");
+                } else if (response.charAt(14) == '\u0043') {
+                    throw new EpsonProjectorPasswordException("Authentication error, wrong password provided?");
+                }
             }
         }
     }
@@ -192,5 +200,16 @@ public class EpsonProjectorTcpConnector implements EpsonProjectorConnector {
             }
         }
         return resp;
+    }
+
+    private String createEscVpRequest() {
+        if (password.isBlank()) {
+            // connect request + no header follows (16 bytes)
+            return ESC_VP_REQUEST_COMMON + "\u0000";
+        } else {
+            // connect request + header follows + password header + password present + password padded (34 bytes)
+            return ESC_VP_REQUEST_COMMON + "\u0001\u0001\u0001"
+                    + String.format("%-16s", password).replace(' ', '\u0000');
+        }
     }
 }

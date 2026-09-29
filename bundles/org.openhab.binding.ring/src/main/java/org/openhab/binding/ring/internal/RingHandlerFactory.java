@@ -116,7 +116,7 @@ public class RingHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_STICKUPCAM)) {
             return new StickupcamHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(THING_TYPE_OTHERDEVICE)) {
-            return new OtherDeviceHandler(thing);
+            return new OtherDeviceHandler(thing, timeZoneProvider);
         }
         return null;
     }

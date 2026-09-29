@@ -56,7 +56,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
     public Boolean updatePossible; // 1 bool R V
     /**
      * This field shall reflect the current state of the OTA Requestor with regards to obtaining software updates. See
-     * Section 11.20.7.4.2, “UpdateStateEnum Type” for possible values.
+     * Section 11.20.7.4.2, "UpdateStateEnum Type" for possible values.
      * This field SHOULD be updated in a timely manner whenever OTA Requestor internal state updates.
      */
     public UpdateStateEnum updateState; // 2 UpdateStateEnum R V
@@ -284,8 +284,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
      * If the accessing fabric index is 0, this command shall fail with an UNSUPPORTED_ACCESS status code.
      */
     public static ClusterCommand announceOtaProvider(BigInteger providerNodeId, Integer vendorId,
-            AnnouncementReasonEnum announcementReason, OctetString metadataForNode, Integer endpoint,
-            Integer fabricIndex) {
+            AnnouncementReasonEnum announcementReason, OctetString metadataForNode, Integer endpoint) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (providerNodeId != null) {
             map.put("providerNodeId", providerNodeId);
@@ -301,9 +300,6 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         }
         if (endpoint != null) {
             map.put("endpoint", endpoint);
-        }
-        if (fabricIndex != null) {
-            map.put("fabricIndex", fabricIndex);
         }
         return new ClusterCommand("announceOtaProvider", map);
     }

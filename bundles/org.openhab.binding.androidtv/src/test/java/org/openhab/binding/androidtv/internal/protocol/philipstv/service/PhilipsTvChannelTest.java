@@ -18,7 +18,6 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.androidtv.internal.AndroidTVBindingConstants.CHANNEL_TV_CHANNEL;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,7 +57,7 @@ public class PhilipsTvChannelTest {
     static final String TEST_CHANNEL = "NPO 2";
 
     private void testPhilipsTVChannelParsing(String channel, Command command, String ccid) throws IOException {
-        Map<String, String> availableTvChannels = Collections.emptyMap();
+        Map<String, String> availableTvChannels = Map.of();
 
         TvChannelService tvChannelService = new TvChannelService(handler, connectionManager);
         tvChannelService.handleCommand(channel, command);

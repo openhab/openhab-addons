@@ -933,7 +933,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
     }
 
     @Override
-    public void executeThermostat(String thermostatId, int overruleTemp, int overruleTime) {
+    public void executeThermostat(String thermostatId, long overruleTemp, long overruleTime) {
         PrintWriter out = nhcOut;
         if (out != null) {
             String overruletimeString = String.format("%1$02d:%2$02d", overruleTime / 60, overruleTime % 60);

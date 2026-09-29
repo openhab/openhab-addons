@@ -196,11 +196,10 @@ public class OnOffCluster extends BaseCluster {
         public boolean lighting;
         /**
          * 
-         * When this feature is supported, the device exposing this server cluster exhibits &quot;dead front&quot;
-         * behavior when the &quot;OnOff&quot; attribute is FALSE (Off). This &quot;dead front&quot; behavior includes:
+         * When this feature is supported, the device exposing this server cluster exhibits "dead front" behavior when
+         * the "OnOff" attribute is FALSE (Off). This "dead front" behavior includes:
          * - clusters other than this cluster that are also exposed may respond with failures to Invoke and Write
-         * interactions. Such failure responses when in a &quot;dead front&quot; shall be with an INVALID_IN_STATE
-         * status code.
+         * interactions. Such failure responses when in a "dead front" shall be with an INVALID_IN_STATE status code.
          * - clusters other than this cluster may change the values of their attributes to best-effort values, due to
          * the actual values not being defined or available in this state. Device type specifications that require
          * support for the DF feature SHOULD define what these best-effort values are.
@@ -209,16 +208,14 @@ public class OnOffCluster extends BaseCluster {
          * - Event generation logic for clusters other than this cluster is unchanged (noting possible use of
          * best-effort attribute values as in the preceding bullets).
          * When this feature is supported and the OnOff attribute changes from TRUE to FALSE (e.g. when receiving an Off
-         * Command, or due to a manual interaction on the device), it shall start executing this &quot;dead front&quot;
-         * behavior.
+         * Command, or due to a manual interaction on the device), it shall start executing this "dead front" behavior.
          * When this feature is supported and the OnOff attribute changes from FALSE to TRUE (e.g. when receiving an On
-         * Command, or due to a manual interaction on the device), it shall stop executing this &quot;dead front&quot;
-         * behavior.
-         * When this feature is supported, and any change of the &quot;dead front&quot; state leads to changes in
-         * attributes of other clusters due to the &quot;dead front&quot; feature, these attribute changes shall NOT be
-         * skipped or omitted from the usual processing associated with attribute changes. For example, if an attribute
-         * changes from value 4 to null on &quot;dead front&quot; behavior due to an Off command being received, this
-         * change shall be processed for reporting and subscriptions.
+         * Command, or due to a manual interaction on the device), it shall stop executing this "dead front" behavior.
+         * When this feature is supported, and any change of the "dead front" state leads to changes in attributes of
+         * other clusters due to the "dead front" feature, these attribute changes shall NOT be skipped or omitted from
+         * the usual processing associated with attribute changes. For example, if an attribute changes from value 4 to
+         * null on "dead front" behavior due to an Off command being received, this change shall be processed for
+         * reporting and subscriptions.
          */
         public boolean deadFrontBehavior;
         /**
@@ -247,14 +244,23 @@ public class OnOffCluster extends BaseCluster {
     }
 
     // commands
+    /**
+     * This command allows devices to be turned off.
+     */
     public static ClusterCommand off() {
         return new ClusterCommand("off");
     }
 
+    /**
+     * This command allows devices to be turned on.
+     */
     public static ClusterCommand on() {
         return new ClusterCommand("on");
     }
 
+    /**
+     * This command allows devices to be toggled.
+     */
     public static ClusterCommand toggle() {
         return new ClusterCommand("toggle");
     }

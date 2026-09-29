@@ -16,8 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
-import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +33,11 @@ public class ShellyBluHandler extends ShellyBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(ShellyBluHandler.class);
 
     public ShellyBluHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
-            final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
-        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
+            final ShellyBindingRuntimeConfig bindingConfig, final ShellyThingTable thingTable,
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient,
+            final LocationProvider locationProvider) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient,
+                locationProvider);
     }
 
     @Override

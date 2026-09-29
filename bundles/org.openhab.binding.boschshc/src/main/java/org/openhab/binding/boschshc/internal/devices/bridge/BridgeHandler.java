@@ -20,7 +20,6 @@ import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -375,7 +374,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         @Nullable
         BoschHttpClient localHttpClient = this.httpClient;
         if (localHttpClient == null) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         try {
@@ -386,7 +385,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             // check HTTP status code
             if (!HttpStatus.getCode(contentResponse.getStatus()).isSuccess()) {
                 logger.debug("Request devices failed with status code: {}", contentResponse.getStatus());
-                return Collections.emptyList();
+                return List.of();
             }
 
             String content = contentResponse.getContentAsString();
@@ -396,10 +395,10 @@ public class BridgeHandler extends BaseBridgeHandler {
             Type collectionType = new TypeToken<ArrayList<Device>>() {
             }.getType();
             List<Device> nullableDevices = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, collectionType);
-            return nullableDevices != null ? nullableDevices : Collections.emptyList();
+            return nullableDevices != null ? nullableDevices : List.of();
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Request devices failed because of {}!", e.getMessage(), e);
-            return Collections.emptyList();
+            return List.of();
         }
     }
 
@@ -429,7 +428,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             }.getType();
             List<UserDefinedState> nullableUserStates = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content,
                     collectionType);
-            return nullableUserStates != null ? nullableUserStates : Collections.emptyList();
+            return nullableUserStates != null ? nullableUserStates : List.of();
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Request user-defined states failed because of {}!", e.getMessage(), e);
             return List.of();

@@ -28,10 +28,11 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link HandlerSecurityPanelController} is responsible for the Alexa.PowerControllerInterface
+ * The {@link HandlerSecurityPanelController} is responsible for the Alexa.SecurityPanelController interface
  *
  * @author Lukas Knoeller - Initial contribution
  * @author Michael Geramb - Initial contribution
@@ -84,11 +85,14 @@ public class HandlerSecurityPanelController extends AbstractInterfaceHandler {
         Boolean fireAlarmValue = null;
         Boolean waterAlarmValue = null;
         for (JsonObject state : stateList) {
-            String propertyValue = state.get("value").getAsJsonObject().get("value").getAsString();
+            String propertyValue = readValue(state);
+            if (propertyValue == null) {
+                continue;
+            }
             String propertyName = state.get("name").getAsString();
             if (ARM_STATE.propertyName.equals(propertyName)) {
                 if (armStateValue == null) {
-                    armStateValue = state.get("value").getAsString();
+                    armStateValue = propertyValue;
                 }
             } else if (BURGLARY_ALARM.propertyName.equals(propertyName)) {
                 if (burglaryAlarmValue == null) {
@@ -119,6 +123,18 @@ public class HandlerSecurityPanelController extends AbstractInterfaceHandler {
                 : (fireAlarmValue ? OpenClosedType.CLOSED : OpenClosedType.OPEN));
         smartHomeDeviceHandler.updateState(WATER_ALARM.channelId, waterAlarmValue == null ? UnDefType.UNDEF
                 : (waterAlarmValue ? OpenClosedType.CLOSED : OpenClosedType.OPEN));
+    }
+
+    private static @Nullable String readValue(JsonObject state) {
+        JsonElement value = state.get("value");
+        if (value == null || value.isJsonNull()) {
+            return null;
+        }
+        if (value.isJsonObject()) {
+            JsonElement inner = value.getAsJsonObject().get("value");
+            return inner == null || inner.isJsonNull() ? null : inner.getAsString();
+        }
+        return value.getAsString();
     }
 
     @Override

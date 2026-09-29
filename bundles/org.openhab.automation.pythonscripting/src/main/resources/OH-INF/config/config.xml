@@ -75,6 +75,14 @@
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="lockAcquisitionTimeout" type="integer" min="1" max="120" step="1" groupName="system">
+			<label>Engine Lock Acquisition Timeout</label>
+			<description>The script engines must be reserved only for a specific thread before executing a script. This setting
+				decides how many seconds the system will try to acquire the engine lock before giving up. If you have long running
+				scripts that might be triggered faster than they can finish, you might want to use a high value.</description>
+			<default>5</default>
+			<advanced>true</advanced>
+		</parameter>
 
 		<!-- Debugger -->
 		<parameter name="debuggerEnabled" type="boolean" required="true" groupName="debugger">

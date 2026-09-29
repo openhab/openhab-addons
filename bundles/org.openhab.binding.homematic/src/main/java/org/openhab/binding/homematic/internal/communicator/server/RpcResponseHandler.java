@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.parser.DeleteDevicesParser;
 import org.openhab.binding.homematic.internal.communicator.parser.EventParser;
@@ -33,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public abstract class RpcResponseHandler<T> {
     private final Logger logger = LoggerFactory.getLogger(RpcResponseHandler.class);
 
@@ -46,8 +48,10 @@ public abstract class RpcResponseHandler<T> {
     /**
      * Returns a valid result of the method called by the Homematic gateway.
      */
-    public T handleMethodCall(String methodName, Object[] responseData) throws IOException {
-        if (RPC_METHODNAME_EVENT.equals(methodName)) {
+    public T handleMethodCall(@Nullable String methodName, Object @Nullable [] responseData) throws IOException {
+        if (responseData == null) {
+            return getEmptyEventListResult();
+        } else if (RPC_METHODNAME_EVENT.equals(methodName)) {
             return handleEvent(responseData);
         } else if (RPC_METHODNAME_LIST_DEVICES.equals(methodName) || RPC_METHODNAME_UPDATE_DEVICE.equals(methodName)) {
             return getEmptyArrayResult();
@@ -95,7 +99,10 @@ public abstract class RpcResponseHandler<T> {
     private T handleEvent(Object[] message) throws IOException {
         EventParser eventParser = new EventParser();
         HmDatapointInfo dpInfo = eventParser.parse(message);
-        listener.eventReceived(dpInfo, eventParser.getValue());
+        Object value = eventParser.getValue();
+        if (value != null) {
+            listener.eventReceived(dpInfo, value);
+        }
         return getEmptyStringResult();
     }
 

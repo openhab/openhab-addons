@@ -105,7 +105,7 @@ public class IhcConnectionPool {
 
                 @Override
                 public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                    logger.trace("Trusting server cert: {}", certs[0].getIssuerDN());
+                    logger.trace("Trusting server cert: {}", certs[0].getIssuerX500Principal().getName());
                 }
             } };
 

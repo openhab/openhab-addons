@@ -27,8 +27,8 @@ import org.openhab.binding.smartmeter.connectors.ConnectorBase;
 @NonNullByDefault
 public class MockMeterReaderConnector extends ConnectorBase<Object> {
 
-    private boolean applyRetry;
-    private Supplier<Object> readNextSupplier;
+    private final boolean applyRetry;
+    private final Supplier<Object> readNextSupplier;
 
     protected MockMeterReaderConnector(String portName, boolean applyRetry, Supplier<Object> readNextSupplier) {
         super(portName);

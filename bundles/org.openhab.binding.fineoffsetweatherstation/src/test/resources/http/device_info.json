@@ -1,0 +1,19 @@
+{
+  "sensorType": "1",
+  "rf_freq": "1",
+  "AFC": "0",
+  "ntp_server": "pool.ntp.org",
+  "tz_auto": "0",
+  "tz_name": "Europe/Berlin",
+  "tz_index": "39",
+  "dst_stat": "1",
+  "radcompensation": "0",
+  "date": "2026-06-09T17:46",
+  "upgrade": "0",
+  "apAuto": "1",
+  "newVersion": "0",
+  "curr_msg": "Current version:V1.4.7",
+  "apName": "GW1200A-WIFI05B8",
+  "APpwd": "",
+  "time": "20"
+}

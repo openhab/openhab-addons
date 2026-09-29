@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
@@ -31,13 +33,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
-public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
+@NonNullByDefault
+public class DisplayOptionsParser extends CommonRpcParser<@Nullable Object, @Nullable Void> {
     private final Logger logger = LoggerFactory.getLogger(DisplayOptionsParser.class);
     private static final String[] ON_OFF = new String[] { "ON", "OFF" };
     private static final int IDX_NOT_FOUND = -1;
     private HmChannel channel;
-    private String text;
+    private @Nullable String text;
     private int beep = 0;
     private int backlight = 0;
     private int unit = 0;
@@ -48,7 +50,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     }
 
     @Override
-    public Void parse(Object value) throws IOException {
+    public @Nullable Void parse(@Nullable Object value) throws IOException {
         String valueString = toString(value);
         String optionsString = valueString == null ? null : valueString.replace(" ", "");
         if (optionsString != null) {
@@ -79,18 +81,16 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
                 logger.debug("Remote control '{}' supports these symbols: {}", deviceAddress, symbols);
             }
 
-            if (options != null) {
-                for (String parameter : options) {
-                    logger.debug("Parsing remote control option '{}'", parameter);
-                    beep = getIntParameter(availableBeepOptions, beep, parameter, DATAPOINT_NAME_BEEP, deviceAddress);
-                    backlight = getIntParameter(availableBacklightOptions, backlight, parameter,
-                            DATAPOINT_NAME_BACKLIGHT, deviceAddress);
-                    unit = getIntParameter(availableUnitOptions, unit, parameter, DATAPOINT_NAME_UNIT, deviceAddress);
+            for (String parameter : options) {
+                logger.debug("Parsing remote control option '{}'", parameter);
+                beep = getIntParameter(availableBeepOptions, beep, parameter, DATAPOINT_NAME_BEEP, deviceAddress);
+                backlight = getIntParameter(availableBacklightOptions, backlight, parameter, DATAPOINT_NAME_BACKLIGHT,
+                        deviceAddress);
+                unit = getIntParameter(availableUnitOptions, unit, parameter, DATAPOINT_NAME_UNIT, deviceAddress);
 
-                    if (findInArray(availableSymbols, parameter) != IDX_NOT_FOUND) {
-                        logger.debug("Symbol '{}' found for remote control '{}'", parameter, deviceAddress);
-                        symbols.add(parameter);
-                    }
+                if (findInArray(availableSymbols, parameter) != IDX_NOT_FOUND) {
+                    logger.debug("Symbol '{}' found for remote control '{}'", parameter, deviceAddress);
+                    symbols.add(parameter);
                 }
             }
         }
@@ -124,8 +124,8 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     private String[] getAvailableOptions(HmChannel channel, String datapointName) {
         HmDatapointInfo dpInfo = HmDatapointInfo.createValuesInfo(channel, datapointName);
         HmDatapoint dp = channel.getDatapoint(dpInfo);
-        if (dp != null) {
-            String[] dpOpts = dp.getOptions();
+        String[] dpOpts = dp != null ? dp.getOptions() : null;
+        if (dpOpts != null) {
             String[] options = new String[dpOpts.length - 1];
             options = Arrays.copyOfRange(dpOpts, 1, dpOpts.length);
             for (String onOffString : ON_OFF) {
@@ -170,7 +170,7 @@ public class DisplayOptionsParser extends CommonRpcParser<Object, Void> {
     /**
      * Returns the parsed text.
      */
-    public String getText() {
+    public @Nullable String getText() {
         return text;
     }
 

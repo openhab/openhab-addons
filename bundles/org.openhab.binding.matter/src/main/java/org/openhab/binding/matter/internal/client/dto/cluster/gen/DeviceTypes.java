@@ -29,11 +29,18 @@ public class DeviceTypes {
         DEVICE_MAPPING.put(14, "Aggregator");
         DEVICE_MAPPING.put(45, "AirPurifier");
         DEVICE_MAPPING.put(44, "AirQualitySensor");
+        DEVICE_MAPPING.put(321, "AudioDoorbell");
         DEVICE_MAPPING.put(40, "BasicVideoPlayer");
         DEVICE_MAPPING.put(24, "BatteryStorage");
         DEVICE_MAPPING.put(19, "BridgedNode");
+        DEVICE_MAPPING.put(327, "CameraController");
+        DEVICE_MAPPING.put(322, "Camera");
         DEVICE_MAPPING.put(41, "CastingVideoClient");
         DEVICE_MAPPING.put(35, "CastingVideoPlayer");
+        DEVICE_MAPPING.put(326, "Chime");
+        DEVICE_MAPPING.put(574, "ClosureController");
+        DEVICE_MAPPING.put(560, "Closure");
+        DEVICE_MAPPING.put(561, "ClosurePanel");
         DEVICE_MAPPING.put(261, "ColorDimmerSwitch");
         DEVICE_MAPPING.put(268, "ColorTemperatureLight");
         DEVICE_MAPPING.put(21, "ContactSensor");
@@ -48,19 +55,27 @@ public class DeviceTypes {
         DEVICE_MAPPING.put(117, "Dishwasher");
         DEVICE_MAPPING.put(11, "DoorLockController");
         DEVICE_MAPPING.put(10, "DoorLock");
+        DEVICE_MAPPING.put(328, "Doorbell");
+        DEVICE_MAPPING.put(1299, "ElectricalEnergyTariff");
+        DEVICE_MAPPING.put(1300, "ElectricalMeter");
         DEVICE_MAPPING.put(1296, "ElectricalSensor");
+        DEVICE_MAPPING.put(1297, "ElectricalUtilityMeter");
         DEVICE_MAPPING.put(1292, "EnergyEvse");
         DEVICE_MAPPING.put(269, "ExtendedColorLight");
         DEVICE_MAPPING.put(122, "ExtractorHood");
         DEVICE_MAPPING.put(43, "Fan");
+        DEVICE_MAPPING.put(324, "FloodlightCamera");
         DEVICE_MAPPING.put(774, "FlowSensor");
         DEVICE_MAPPING.put(15, "GenericSwitch");
         DEVICE_MAPPING.put(777, "HeatPump");
         DEVICE_MAPPING.put(775, "HumiditySensor");
+        DEVICE_MAPPING.put(320, "Intercom");
+        DEVICE_MAPPING.put(64, "IrrigationSystem");
         DEVICE_MAPPING.put(304, "JointFabricAdministrator");
         DEVICE_MAPPING.put(124, "LaundryDryer");
         DEVICE_MAPPING.put(115, "LaundryWasher");
         DEVICE_MAPPING.put(262, "LightSensor");
+        DEVICE_MAPPING.put(1298, "MeterReferencePoint");
         DEVICE_MAPPING.put(121, "MicrowaveOven");
         DEVICE_MAPPING.put(39, "ModeSelect");
         DEVICE_MAPPING.put(272, "MountedDimmableLoadControl");
@@ -85,12 +100,16 @@ public class DeviceTypes {
         DEVICE_MAPPING.put(22, "RootNode");
         DEVICE_MAPPING.put(25, "SecondaryNetworkInterface");
         DEVICE_MAPPING.put(118, "SmokeCoAlarm");
+        DEVICE_MAPPING.put(325, "SnapshotCamera");
+        DEVICE_MAPPING.put(69, "SoilSensor");
         DEVICE_MAPPING.put(23, "SolarPower");
         DEVICE_MAPPING.put(34, "Speaker");
         DEVICE_MAPPING.put(113, "TemperatureControlledCabinet");
         DEVICE_MAPPING.put(770, "TemperatureSensor");
         DEVICE_MAPPING.put(778, "ThermostatController");
         DEVICE_MAPPING.put(769, "Thermostat");
+        DEVICE_MAPPING.put(145, "ThreadBorderRouter");
+        DEVICE_MAPPING.put(323, "VideoDoorbell");
         DEVICE_MAPPING.put(42, "VideoRemoteControl");
         DEVICE_MAPPING.put(65, "WaterFreezeDetector");
         DEVICE_MAPPING.put(1295, "WaterHeater");
@@ -101,12 +120,12 @@ public class DeviceTypes {
     }
     /**
      * This device type aggregates endpoints as a collection. Clusters on the endpoint indicating this device type
-     * provide functionality for the collection of descendant endpoints present in the PartsList of the endpoint’s
+     * provide functionality for the collection of descendant endpoints present in the PartsList of the endpoint's
      * descriptor, for example the Actions cluster.
      * The purpose of this device type is to aggregate functionality for a collection of endpoints. The definition of
      * the collection or functionality is not defined here.
-     * When using this device type as a collection of bridged nodes, please see the &quot;Bridge&quot; section in the
-     * System Model specification.
+     * When using this device type as a collection of bridged nodes, please see the "Bridge" section in the System Model
+     * specification.
      **/
     public static final Integer AGGREGATOR = 14;
     /**
@@ -122,6 +141,11 @@ public class DeviceTypes {
      **/
     public static final Integer AIR_QUALITY_SENSOR = 44;
     /**
+     * An Audio Doorbell device is composed in all cases with a generic switch to provide a doorbell with Audio only
+     * streaming.
+     **/
+    public static final Integer AUDIO_DOORBELL = 321;
+    /**
      * This defines conformance to the Basic Video Player device type.
      * A Video Player (either Basic or Casting) represents a device that is able to play media to a physical output or
      * to a display screen which is part of the device.
@@ -130,7 +154,7 @@ public class DeviceTypes {
      * is used for these functions).
      * For example, a Basic Video Player can be a traditional TV device a physical media playback device such as a DVD
      * Player, or a device that provides input to another device like a TV or computer monitor.
-     * See Section 10.1, “Video Player Architecture” for additional Basic Video Player requirements relating to Video
+     * See Section 10.1, "Video Player Architecture" for additional Basic Video Player requirements relating to Video
      * Player device endpoint composition, commissioning, feature representation in clusters, and UI context.
      **/
     public static final Integer BASIC_VIDEO_PLAYER = 40;
@@ -143,11 +167,20 @@ public class DeviceTypes {
      **/
     public static final Integer BATTERY_STORAGE = 24;
     /**
-     * This defines conformance for a Bridged Node root endpoint. This endpoint is akin to a &quot;read me first&quot;
-     * endpoint that describes itself and any other endpoints that make up the Bridged Node. A Bridged Node endpoint
-     * represents a device on a foreign network, but is not the root endpoint of the bridge itself.
+     * This defines conformance for a Bridged Node root endpoint. This endpoint is akin to a "read me first" endpoint
+     * that describes itself and any other endpoints that make up the Bridged Node. A Bridged Node endpoint represents a
+     * device on a foreign network, but is not the root endpoint of the bridge itself.
      **/
     public static final Integer BRIDGED_NODE = 19;
+    /**
+     * A Camera controller device is a device that provides interfaces for controlling and managing camera devices.
+     **/
+    public static final Integer CAMERA_CONTROLLER = 327;
+    /**
+     * A Camera device is a camera that provides interfaces for controlling and transporting captured media, such as
+     * Audio, Video or Snapshots.
+     **/
+    public static final Integer CAMERA = 322;
     /**
      * This defines conformance to the Casting Video Client device type.
      * A Casting Video Client is a client that can launch content on a Casting Video Player, for example, a Smart
@@ -162,10 +195,39 @@ public class DeviceTypes {
      * input), and is able to launch content.
      * For example, a Casting Video Player can be a smart TV device, a TV Set Top Box, or a content streaming device
      * that provides input to another device like a TV or computer monitor.
-     * See Section 10.1, “Video Player Architecture” for additional Casting Video Player requirements relating to Video
+     * See Section 10.1, "Video Player Architecture" for additional Casting Video Player requirements relating to Video
      * Player device endpoint composition, commissioning, feature representation in clusters, and UI context.
      **/
     public static final Integer CASTING_VIDEO_PLAYER = 35;
+    /**
+     * A Chime device is a device which can play from a range of pre installed sounds and is typically used with a
+     * Doorbell, Audio Doorbell, or Video Doorbell.
+     **/
+    public static final Integer CHIME = 326;
+    /**
+     * A Closure Controller is capable of controlling a Closure.
+     **/
+    public static final Integer CLOSURE_CONTROLLER = 574;
+    /**
+     * A Closure is an element that seals an opening (such as a window, door, cabinet, wall, facade, ceiling, or roof).
+     * It may contain one or more instances of a Closure Panel device type on separate child endpoints of the Closure
+     * parent. Each Closure Panel is a sub-component of a Closure, capable of some change in state, primarily through a
+     * movement.
+     * All the common characteristics of a Closure are gathered within Closure Control Cluster. Moving parts or other
+     * physical aspects of the device are exposed using Closure Dimension Cluster.
+     **/
+    public static final Integer CLOSURE = 560;
+    /**
+     * A Closure Panel shall ONLY exist as a part (child) of a Closure device type. It represents a single panel aspect
+     * (e.g. position of a blind, tilt of slats, etc) within that Closure.
+     * This panel can be used to express the following:
+     * - Translation : panel translates along one axis
+     * - Rotation : panel rotates around an axis of rotation
+     * - Modulation : panel modifies its aspect to modulate a flow
+     * A Closure Panel shall use exactly one semantic tag from the ClosurePanel namespace (0x45) in the TagList
+     * attribute of the Descriptor cluster to describe the spatial aspect of the dimension, e.g., "Lift", "Tilt", etc.
+     **/
+    public static final Integer CLOSURE_PANEL = 561;
     /**
      * A Color Dimmer Switch is a controller device that, when bound to a lighting device such as an Extended Color
      * Light, is capable of being used to adjust the color of the light being emitted.
@@ -224,11 +286,11 @@ public class DeviceTypes {
      * Plug-In Unit, and is marked as a superset of this device type (since Matter 1.4.2). For devices intended to be
      * mounted permanently, the Mounted Dimmable Load Control device type shall be used, with the Dimmable Plug-In Unit
      * device type optionally added to the DeviceTypeList of the Descriptor cluster in addition to the Mounted Dimmable
-     * Load Control device type (see [ref_MountedDimmableLoadControlServerGuidance]).
+     * Load Control device type (see Mounted Dimmable Load Control server guidance section).
      * Before Matter 1.4, mounted dimmable load control units typically used the Dimmable Plug-In Unit device type.
      * Clients can encounter devices which were made before or after these specification updates. Therefore, clients
      * SHOULD use the following heuristic to distinguish the type of physical device based on the device type revision
-     * found on an endpoint (&quot;--&quot; means the device type is not listed).
+     * found on an endpoint ("--" means the device type is not listed).
      **/
     public static final Integer DIMMABLE_PLUG_IN_UNIT = 267;
     /**
@@ -252,9 +314,27 @@ public class DeviceTypes {
      **/
     public static final Integer DOOR_LOCK = 10;
     /**
+     * A Doorbell device is a switch which when pressed usually causes a Chime to activate.
+     **/
+    public static final Integer DOORBELL = 328;
+    /**
+     * A Electrical Energy Tariff is a device that defines a tariff for the consumption or production of electrical
+     * energy.
+     **/
+    public static final Integer ELECTRICAL_ENERGY_TARIFF = 1299;
+    /**
+     * An Electrical Meter device meters the electrical energy being imported and/or exported for billing purposes.
+     **/
+    public static final Integer ELECTRICAL_METER = 1300;
+    /**
      * An Electrical Sensor device measures the electrical power and/or energy being imported and/or exported.
      **/
     public static final Integer ELECTRICAL_SENSOR = 1296;
+    /**
+     * An Electrical Utility Meter device provides utility account information, as well as optional details about
+     * tariffs and metering.
+     **/
+    public static final Integer ELECTRICAL_UTILITY_METER = 1297;
     /**
      * An EVSE (Electric Vehicle Supply Equipment) is a device that allows an EV (Electric Vehicle) to be connected to
      * the mains electricity supply to allow it to be charged (or discharged in case of Vehicle to Grid / Vehicle to
@@ -271,7 +351,7 @@ public class DeviceTypes {
     public static final Integer EXTENDED_COLOR_LIGHT = 269;
     /**
      * An Extractor Hood is a device that is generally installed above a cooking surface in residential kitchens. An
-     * Extractor Hood’s primary purpose is to reduce odors that arise during the cooking process by either extracting
+     * Extractor Hood's primary purpose is to reduce odors that arise during the cooking process by either extracting
      * the air above the cooking surface or by recirculating and filtering it. It may also contain a light for
      * illuminating the cooking surface.
      * Extractor Hoods may also be known by the following names:
@@ -287,6 +367,11 @@ public class DeviceTypes {
      * A Fan device is typically standalone or mounted on a ceiling or wall and is used to circulate air in a room.
      **/
     public static final Integer FAN = 43;
+    /**
+     * A Floodlight Camera device is a composite device which combines a camera and a light, primarily used in security
+     * use cases.
+     **/
+    public static final Integer FLOODLIGHT_CAMERA = 324;
     /**
      * A Flow Sensor device measures and reports the flow rate of a fluid.
      **/
@@ -307,6 +392,21 @@ public class DeviceTypes {
      * A humidity sensor (in most cases a Relative humidity sensor) reports humidity measurements.
      **/
     public static final Integer HUMIDITY_SENSOR = 775;
+    /**
+     * An Intercom is a device which provides two-way on demand communication facilities between devices.
+     * Examples include but are not limited to:
+     * - Room to room systems in a house
+     * - Entry door to individual units in a multi-tenant building
+     **/
+    public static final Integer INTERCOM = 320;
+    /**
+     * This defines conformance to the Irrigation System device type. An irrigation system is used to control a group of
+     * irrigation zones to water landscape. Irrigation systems are also commonly referred to as "Sprinkler Controllers"
+     * since they are often used in residential and commercial settings to control and schedule in-ground sprinkler
+     * systems for lawns. A physical irrigation system typically has a set of electrical terminals to which in-ground
+     * water valves are connected so that the system can actuate them.
+     **/
+    public static final Integer IRRIGATION_SYSTEM = 64;
     /**
      * A Joint Fabric Administrator device provides capabilities to manage the Joint Fabric Datastore and issue an ICAC
      * signed by the Joint Fabric Anchor Root CA.
@@ -331,6 +431,10 @@ public class DeviceTypes {
      **/
     public static final Integer LIGHT_SENSOR = 262;
     /**
+     * A Meter Reference Point device provides details about tariffs and metering.
+     **/
+    public static final Integer METER_REFERENCE_POINT = 1298;
+    /**
      * This defines conformance to the Microwave Oven device type.
      * A Microwave Oven is a device with the primary function of heating foods and beverages using a magnetron.
      **/
@@ -346,11 +450,11 @@ public class DeviceTypes {
      * This device type is intended for any wall-mounted or hardwired dimmer-capable load controller, while Dimmable
      * Plug-In Unit is intended only for dimmer-capable smart plugs that are not permanently connected, and which can be
      * unplugged from their power source.
-     * &gt; [!NOTE]
-     * &gt; Since this device type was added in Matter 1.4, for endpoints using this device type it is recommended to
+     * > [!NOTE]
+     * > NOTE: Since this device type was added in Matter 1.4, for endpoints using this device type it is recommended to
      * add the subset device type Dimmable Plug-In Unit to the DeviceTypeList of the Descriptor cluster on the same
-     * endpoint for backward compatibility with existing clients. See [ref_MountedDimmablePlugInUnitClientGuidance] for
-     * client guidance with these two device types.
+     * endpoint for backward compatibility with existing clients. See Dimmable Plug-In Unit client guidance for
+     * additional information, regarding the inclusion of these two device types.
      **/
     public static final Integer MOUNTED_DIMMABLE_LOAD_CONTROL = 272;
     /**
@@ -359,24 +463,25 @@ public class DeviceTypes {
      * This device type is intended for any wall-mounted or hardwired load controller, while On/Off Plug-in Unit is
      * intended only for smart plugs and other power switching devices that are not permanently connected, and which can
      * be unplugged from their power source.
-     * &gt; [!NOTE]
-     * &gt; Since this device type was added in Matter 1.4, for endpoints using this device type it is recommended to
+     * > [!NOTE]
+     * > NOTE: Since this device type was added in Matter 1.4, for endpoints using this device type it is recommended to
      * add the subset device type On/Off Plug-in Unit to the DeviceTypeList of the Descriptor cluster on the same
-     * endpoint for backward compatibility with existing clients. See [ref_MountedOnOffClientGuidance] for client
-     * guidance with these two device types.
+     * endpoint for backward compatibility with existing clients. See On/Off Plug-in Unit client guidance for additional
+     * information, regarding the inclusion of these two device types.
      **/
     public static final Integer MOUNTED_ON_OFF_CONTROL = 271;
     /**
      * A Network Infrastructure Manager provides interfaces that allow for the management of the Wi-Fi, Thread, and
-     * Ethernet networks underlying a Matter deployment, realizing the Star Network Topology described in [MatterCore].
+     * Ethernet networks underlying a Matter deployment, realizing the Star Network Topology described in
+     * [[MatterCore]](#ref_MatterCore).
      * Examples of physical devices that implement the Matter Network Infrastructure Manager device type include Wi-Fi
      * gateway routers.
      * Relevant hardware and software requirements for Network Infrastructure Manager devices are defined in Section
-     * 15.3.6, “Other Requirements” and within the clusters mandated by this device type.
+     * 15.3.6, "Other Requirements" and within the clusters mandated by this device type.
      * A Network Infrastructure Manager device may be managed by a service associated with the device vendor, for
      * example, an Internet Service Provider. Sometimes this managing service will have policies that require the use of
-     * the Managed Device feature of the Access Control Cluster (see Section 15.3.5.1, “Access Control MNGD
-     * Conformance”). Consequently, Commissioners of this device type should be aware of this feature and its use.
+     * the Managed Device feature of the Access Control Cluster (see Section 15.3.5.1, "ManagedAclAllowed Condition").
+     * Consequently, Commissioners of this device type should be aware of this feature and its use.
      **/
     public static final Integer NETWORK_INFRASTRUCTURE_MANAGER = 144;
     /**
@@ -402,11 +507,11 @@ public class DeviceTypes {
      * and is marked as superset of this device type (since Matter 1.4.2). For devices intended to be mounted
      * permanently, the Mounted On/Off Control device type shall be used, with the On/Off Plug-In Unit device type
      * optionally added in the DeviceTypeList of the Descriptor cluster in addition to the On/Off Plug-In Unit device
-     * type (see [ref_MountedOnOffControlServerGuidance]).
+     * type (see Mounted On/Off Control server guidance section).
      * Before Matter 1.4, mounted units typically used the On/Off Plug-In Unit device type. Clients can encounter
      * devices which were made before or after these specification updates. Therefore, clients SHOULD use the following
-     * heuristic to distinguish the type of physical device based on the device type revision found on an endpoint
-     * (&quot;--&quot; means the device type is not listed).
+     * heuristic to distinguish the type of physical device based on the device type revision found on an endpoint ("--"
+     * means the device type is not listed).
      **/
     public static final Integer ON_OFF_PLUG_IN_UNIT = 266;
     /**
@@ -429,8 +534,8 @@ public class DeviceTypes {
      **/
     public static final Integer OVEN = 123;
     /**
-    * 
-    **/
+     * A Power Source device type provides information about the source of power.
+     **/
     public static final Integer POWER_SOURCE = 17;
     /**
      * A Pressure Sensor device measures and reports the pressure of a fluid.
@@ -466,7 +571,7 @@ public class DeviceTypes {
     public static final Integer ROOM_AIR_CONDITIONER = 114;
     /**
      * This defines conformance for a root node endpoint (see System Model specification). This endpoint is akin to a
-     * &quot;read me first&quot; endpoint that describes itself and the other endpoints that make up the node.
+     * "read me first" endpoint that describes itself and the other endpoints that make up the node.
      * - Device types with Endpoint scope shall NOT be supported on the same endpoint as this device type.
      * - Clusters with an Application role shall NOT be supported on the same endpoint as this device type.
      * - Other device types with Node scope may be supported on the same endpoint as this device type.
@@ -491,6 +596,15 @@ public class DeviceTypes {
      * report humidity levels, temperature levels, and contamination levels.
      **/
     public static final Integer SMOKE_CO_ALARM = 118;
+    /**
+     * A Snapshot Camera device is a camera which can only support retrieving still images on-demand via the Capture
+     * Snapshot command in the Camera AV Stream Management cluster.
+     **/
+    public static final Integer SNAPSHOT_CAMERA = 325;
+    /**
+     * A Soil Sensor device reports measurements of soil values, such as moisture and (optionally) temperature.
+     **/
+    public static final Integer SOIL_SENSOR = 69;
     /**
      * A Solar Power device is a device that allows a solar panel array, which can optionally be comprised of a set
      * parallel strings of solar panels, and its associated controller and, if appropriate, inverter, to be monitored
@@ -532,6 +646,21 @@ public class DeviceTypes {
      * handler) or is capable of including a mechanism to control a heating or cooling unit directly.
      **/
     public static final Integer THERMOSTAT = 769;
+    /**
+     * A Thread Border Router device type provides interfaces for querying and configuring the associated Thread
+     * network.
+     * Instances of physical devices categorized as Thread Border Routers encompass standalone Thread Border Routers,
+     * conventional application devices like smart speakers, media streamers, and lighting fixtures equipped with a
+     * Thread Border Router, as well as Wi-Fi Routers incorporating Thread Border Router functionality.
+     * The necessary hardware and software prerequisites are detailed within the clusters that are mandated by this
+     * device type.
+     **/
+    public static final Integer THREAD_BORDER_ROUTER = 145;
+    /**
+     * A Video Doorbell device is a composite device which combines a camera and a switch to provide a doorbell with
+     * Video and Audio streaming.
+     **/
+    public static final Integer VIDEO_DOORBELL = 323;
     /**
      * This defines conformance to the Video Remote Control device type.
      * A Video Remote Control is a client that can control a Video Player, for example, a traditional universal remote

@@ -37,6 +37,11 @@
     <Class name="org.openhab.core.model.script.actions.Log"/>
     <Bug pattern="SLF4J_FORMAT_SHOULD_BE_CONST"/>
   </Match>
+  <!-- BufferedLogger intentionally accepts dynamic SLF4J templates, so the format string cannot be constant -->
+  <Match>
+    <Class name="org.openhab.io.yamlcomposer.internal.BufferedLogger"/>
+    <Bug pattern="SLF4J_FORMAT_SHOULD_BE_CONST"/>
+  </Match>
   <Match>
     <Bug pattern="SLF4J_UNKNOWN_ARRAY"/>
   </Match>

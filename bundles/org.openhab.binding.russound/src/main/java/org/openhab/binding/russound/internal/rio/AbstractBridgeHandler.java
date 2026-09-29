@@ -231,7 +231,7 @@ public abstract class AbstractBridgeHandler<E extends AbstractRioProtocol> exten
      *
      * @author Tim Roberts
      */
-    private class IdName {
+    private static class IdName {
         @SuppressWarnings("unused")
         private final int id;
         @SuppressWarnings("unused")

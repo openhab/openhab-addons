@@ -92,6 +92,37 @@ public enum StatusType {
         return description;
     }
 
+    private enum DockPosition {
+        ON_THE_DOCK,
+        HEADING_THERE,
+        AWAY_FROM_IT,
+        NOT_DERIVABLE
+    }
+
+    private DockPosition dockPosition() {
+        return switch (this) {
+            case CHARGING, CHARGING_ERROR, FULL, EMPTYING_BIN, WASHING_MOP, WASHING_MOP2, UPDATING, ATTACH_MOP,
+                    DETACH_MOP, AIR_DRYING_STOPPED ->
+                DockPosition.ON_THE_DOCK;
+
+            case RETURNING, DOCKING, GOING_WASH_MOP, BACK_TO_DOCK_WASHING_DUSTER -> DockPosition.HEADING_THERE;
+
+            case CLEANING, SPOTCLEAN, GOTO, ZONE, ROOM, MANUAL, REMOTE, MAPPING, PATROL, EGG_ATTACK, STATUS_MOPPING,
+                    CLEAN_MOP_MOPPING, SEGMENT_MOPPING, SEGMENT_CLEAN_MOP_MOPPING, ZONED_MOPPING,
+                    ZONED_CLEAN_MOP_MOPPING ->
+                DockPosition.AWAY_FROM_IT;
+
+            case UNKNOWN, INITIATING, SLEEPING, IDLE, PAUSED, ERROR, SHUTTING_DOWN, IN_CALL, OFFLINE, LOCKED,
+                    CLEAN_MOP_CLEANING, SEGMENT_CLEAN_MOP_CLEANING, ZONED_CLEAN_MOP_CLEANING ->
+                DockPosition.NOT_DERIVABLE;
+        };
+    }
+
+    /** Whether the robot physically sits on its charging dock in this state. */
+    public boolean isAtDock() {
+        return dockPosition() == DockPosition.ON_THE_DOCK;
+    }
+
     @Override
     public String toString() {
         return "Status " + Integer.toString(id) + ": " + description;

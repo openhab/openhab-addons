@@ -17,10 +17,10 @@ import java.math.BigDecimal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsThingConfig;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -39,8 +39,8 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsHue100Converter.class);
 
-    public SmartthingsHue100Converter(Thing thing) {
-        super(thing);
+    public SmartthingsHue100Converter(SmartthingsThingConfig config, String thingTypeId) {
+        super(config, thingTypeId);
     }
 
     @Override

@@ -13,6 +13,9 @@
 package org.openhab.binding.hue.internal.api.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ErrorType;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * DTO for CLIP 2 communication errors.
@@ -21,9 +24,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Error {
+    private @SerializedName("error_code") @NonNullByDefault({}) String errorCode;
     private @NonNullByDefault({}) String description;
 
     public String getDescription() {
         return description;
+    }
+
+    public ErrorType getErrorType() {
+        return ErrorType.of(errorCode);
     }
 }

@@ -29,8 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -75,7 +73,7 @@ class BoschShcCommandExtensionTest {
     void execute() {
         // only sanity checks, content is tested with the functions called by execute
         Console consoleMock = mock(Console.class);
-        when(thingRegistry.getAll()).thenReturn(Collections.emptyList());
+        when(thingRegistry.getAll()).thenReturn(List.of());
 
         fixture.execute(new String[] {}, consoleMock);
         verify(consoleMock, times(5)).printUsage(any());
@@ -138,7 +136,7 @@ class BoschShcCommandExtensionTest {
     @Test
     void printBridgeInfo() throws BoschSHCException, ExecutionException, InterruptedException, TimeoutException {
         // no bridge
-        when(thingRegistry.getAll()).thenReturn(Collections.emptyList());
+        when(thingRegistry.getAll()).thenReturn(List.of());
         assertThat(fixture.buildBridgeInfo(), is(""));
 
         // one bridge
@@ -153,7 +151,7 @@ class BoschShcCommandExtensionTest {
         when(mockBridgeHandler.getPublicInformation()).thenReturn(publicInformation);
         Thing mockBridgeThing = mock(Thing.class);
         when(mockBridgeThing.getHandler()).thenReturn(mockBridgeHandler);
-        when(thingRegistry.getAll()).thenReturn(Collections.singletonList(mockBridgeThing));
+        when(thingRegistry.getAll()).thenReturn(List.of(mockBridgeThing));
         assertThat(fixture.buildBridgeInfo(),
                 allOf(containsString("Bridge: TestLabel"), containsString("access possible: false"),
                         containsString("SHC Generation: Gen-T"), containsString("IP Address: 1.2.3.4")));
@@ -170,7 +168,7 @@ class BoschShcCommandExtensionTest {
         when(mockBridgeHandler2.getPublicInformation()).thenReturn(publicInformation2);
         Thing mockBridgeThing2 = mock(Thing.class);
         when(mockBridgeThing2.getHandler()).thenReturn(mockBridgeHandler2);
-        when(thingRegistry.getAll()).thenReturn(Arrays.asList(mockBridgeThing, mockBridgeThing2));
+        when(thingRegistry.getAll()).thenReturn(List.of(mockBridgeThing, mockBridgeThing2));
         assertThat(fixture.buildBridgeInfo(),
                 allOf(containsString("Bridge: TestLabel"), containsString("access possible: false"),
                         containsString("SHC Generation: Gen-T"), containsString("IP Address: 1.2.3.4"),
@@ -181,7 +179,7 @@ class BoschShcCommandExtensionTest {
     @Test
     void printDeviceInfo() throws InterruptedException {
         // no bridge
-        when(thingRegistry.getAll()).thenReturn(Collections.emptyList());
+        when(thingRegistry.getAll()).thenReturn(List.of());
         assertThat(fixture.buildDeviceInfo(), is(""));
 
         // One bridge, No device
@@ -189,20 +187,20 @@ class BoschShcCommandExtensionTest {
         Thing mockBridgeThing = mock(Thing.class);
         when(mockBridgeThing.getLabel()).thenReturn("TestLabel");
         when(mockBridgeThing.getHandler()).thenReturn(mockBridgeHandler);
-        when(thingRegistry.getAll()).thenReturn(Collections.singletonList(mockBridgeThing));
+        when(thingRegistry.getAll()).thenReturn(List.of(mockBridgeThing));
         assertThat(fixture.buildDeviceInfo(), allOf(containsString("thing: TestLabel"), containsString("devices (0)")));
 
         // One bridge, One UNsupported device
         Device mockShcDevice = mock(Device.class);
         mockShcDevice.deviceModel = "";
-        mockShcDevice.deviceServiceIds = Collections.emptyList();
+        mockShcDevice.deviceServiceIds = List.of();
         when(mockBridgeHandler.getDevices()).thenReturn(List.of(mockShcDevice));
         assertThat(fixture.buildDeviceInfo(), allOf(containsString("thing: TestLabel"), containsString("devices (1)"),
                 containsString("!UNSUPPORTED!")));
 
         // One bridge, One supported device
         mockShcDevice.deviceModel = "TWINGUARD";
-        mockShcDevice.deviceServiceIds = Collections.emptyList();
+        mockShcDevice.deviceServiceIds = List.of();
         when(mockBridgeHandler.getDevices()).thenReturn(List.of(mockShcDevice));
         assertThat(fixture.buildDeviceInfo(), allOf(containsString("thing: TestLabel"), containsString("devices (1)"),
                 containsString("TWINGUARD -> twinguard")));

@@ -16,8 +16,9 @@
 
 		<config-description>
 			<parameter name="path" type="text" required="true">
-				<context>serial-port</context>
 				<label>Path</label>
+				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Path to the EnOcean gateway</description>
 			</parameter>
 			<parameter name="espVersion" type="text" required="true">

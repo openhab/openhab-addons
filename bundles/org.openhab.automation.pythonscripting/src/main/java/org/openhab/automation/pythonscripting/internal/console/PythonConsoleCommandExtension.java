@@ -229,7 +229,7 @@ public class PythonConsoleCommandExtension extends AbstractConsoleCommandExtensi
                     + PythonScriptEngineConfiguration.PYTHON_TYPINGS_PATH + "'.")) {
                 return;
             }
-            new TypingCmd(new TypingCmd.Logger(console)).build();
+            new TypingCmd(new TypingCmd.Logger(console), scriptEngineManager).build();
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
@@ -243,7 +243,7 @@ public class PythonConsoleCommandExtension extends AbstractConsoleCommandExtensi
             console.println("Unknown pip action '" + args[1] + "'");
             console.printUsage(getPipUsage());
         } else {
-            ArrayList<String> params = new ArrayList<String>(Arrays.asList(args));
+            List<String> params = new ArrayList<>(Arrays.asList(args));
 
             if (PIP_UNINSTALL.equals(args[0]) && args.length >= 2) {
                 if (!confirmAction(console, "You are uninstalling python modules.")) {
@@ -286,7 +286,7 @@ public class PythonConsoleCommandExtension extends AbstractConsoleCommandExtensi
      * including any injected required modules.
      */
     private @Nullable Object executePython(Console console, EngineEvalFunction process, boolean withFullContext) {
-        String scriptIdentifier = "python-console-" + UUID.randomUUID().toString();
+        String scriptIdentifier = "pythonscripting-cli-" + UUID.randomUUID().toString();
         ScriptEngine engine = null;
 
         try {

@@ -68,7 +68,7 @@ public class Cm11aBridgeHandler extends BaseBridgeHandler implements ReceivedDat
     @Override
     public void initialize() {
         // Get serial port number from config
-        cm11aConfig = getThing().getConfiguration().as(Cm11aConfig.class);
+        cm11aConfig = getConfigAs(Cm11aConfig.class);
         logger.trace("********* cm11a initialize started *********");
 
         // Verify the configuration is valid

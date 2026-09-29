@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - Home Connect Direct</title>
+    <link rel="stylesheet" href="${assetPath}/css/pico.blue.min.css">
+    <link rel="stylesheet" href="${assetPath}/css/homeconnectdirect.css">
+    <script src="${assetPath}/js/homeconnectdirect.js"></script>
+    <link rel="icon" href="${assetPath}/favicon/favicon.svg" type="image/svg+xml" sizes="any">
+    <link rel="icon" href="${assetPath}/favicon/128x128.png" type="image/png" sizes="128x128">
+    <script>
+        globalThis.servletPath = '${servletPath}';
+    </script>
+</head>
+<body>
+    <main class="container">
+        <article class="login-container">
+            <header><strong>Login: Home Connect Direct Console</strong></header>
+            <form onsubmit="login(event)">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" autocomplete="off" required>
+                <input type="hidden" id="csrf_token" value="${csrfToken}">
+                <small id="error-msg" class="error hidden-by-default">Invalid password</small>
+                <button type="submit">Login</button>
+            </form>
+        </article>
+    </main>
+</body>
+</html>

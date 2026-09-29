@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class EvccBridgeConfiguration {
     public String host = "";
-    public int pollInterval = 30;
     public int port = 7070;
     public String scheme = "http";
 }

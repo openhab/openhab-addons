@@ -122,8 +122,8 @@ public class RollerShutterCapability {
             this.isMovingDown = false;
             return;
         }
-        this.isMovingUp = isUpDownInverted ? position > cachedPosition : position < cachedPosition;
-        this.isMovingDown = isUpDownInverted ? position < cachedPosition : position > cachedPosition;
+        this.isMovingUp = isUpDownInverted ? position < cachedPosition : position > cachedPosition;
+        this.isMovingDown = isUpDownInverted ? position > cachedPosition : position < cachedPosition;
         this.cachedPosition = position;
     }
 

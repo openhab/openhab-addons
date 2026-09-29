@@ -20,6 +20,7 @@ import org.openhab.binding.tibber.internal.handler.TibberHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.scheduler.CronScheduler;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -35,6 +36,8 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Stian Kjoglum - Initial contribution
  * @author Bernd Weymann - Use HttpClientFactory, CronScheduler and TimeZoneProvider
+ * @author Bernd Weymann - Add StorageService for history persistence
+ * @author Bernd Weymann - Add history channel group
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.tibber", service = ThingHandlerFactory.class)
@@ -42,13 +45,15 @@ public class TibberHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpFactory;
     private final CronScheduler cron;
     private final TimeZoneProvider timeZoneProvider;
+    private final StorageService storageService;
 
     @Activate
     public TibberHandlerFactory(final @Reference HttpClientFactory httpFactory, final @Reference CronScheduler cron,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference TimeZoneProvider timeZoneProvider, final @Reference StorageService storageService) {
         this.httpFactory = httpFactory;
         this.cron = cron;
         this.timeZoneProvider = timeZoneProvider;
+        this.storageService = storageService;
     }
 
     @Override
@@ -60,7 +65,8 @@ public class TibberHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(TIBBER_THING_TYPE)) {
-            return new TibberHandler(thing, httpFactory.getCommonHttpClient(), cron, bundleContext, timeZoneProvider);
+            return new TibberHandler(thing, httpFactory.getCommonHttpClient(), cron, bundleContext, timeZoneProvider,
+                    storageService);
         } else {
             return null;
         }

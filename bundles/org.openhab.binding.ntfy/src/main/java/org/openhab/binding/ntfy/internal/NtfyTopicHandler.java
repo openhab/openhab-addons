@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ntfy.internal.action.NtfyActions;
+import org.openhab.binding.ntfy.action.NtfyActions;
 import org.openhab.binding.ntfy.internal.models.BaseEvent;
 import org.openhab.binding.ntfy.internal.models.MessageEvent;
 import org.openhab.binding.ntfy.internal.network.NtfyMessage;

@@ -16,7 +16,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -161,7 +160,7 @@ public class EnergiDataServiceCommandExtension extends AbstractConsoleCommandExt
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage(SUBCMD_UPDATE + " ["
+        return List.of(buildCommandUsage(SUBCMD_UPDATE + " ["
                 + String.join("|", Stream.of(PriceComponent.values()).map(PriceComponent::toString).toList())
                 + "] <StartDate> [<EndDate>]", "Update time series in requested period"));
     }

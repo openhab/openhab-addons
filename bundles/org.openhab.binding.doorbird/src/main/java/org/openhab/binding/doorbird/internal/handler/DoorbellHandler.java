@@ -43,6 +43,7 @@ import org.openhab.binding.doorbird.internal.api.SipStatus;
 import org.openhab.binding.doorbird.internal.audio.DoorbirdAudioSink;
 import org.openhab.binding.doorbird.internal.config.DoorbellConfiguration;
 import org.openhab.binding.doorbird.internal.listener.DoorbirdUdpListener;
+import org.openhab.binding.doorbird.internal.servlet.DoorbirdHTTPServlet;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DateTimeType;
@@ -101,11 +102,14 @@ public class DoorbellHandler extends BaseThingHandler {
     private @Nullable ServiceRegistration<AudioSink> audioSinkRegistration;
 
     private final HttpClient httpClient;
+    private final DoorbirdHTTPServlet callbackServlet;
 
-    public DoorbellHandler(Thing thing, HttpClient httpClient, BundleContext bundleContext) {
+    public DoorbellHandler(Thing thing, HttpClient httpClient, BundleContext bundleContext,
+            DoorbirdHTTPServlet callbackServlet) {
         super(thing);
         this.httpClient = httpClient;
         this.bundleContext = bundleContext;
+        this.callbackServlet = callbackServlet;
         udpListener = new DoorbirdUdpListener(this);
     }
 
@@ -133,11 +137,19 @@ public class DoorbellHandler extends BaseThingHandler {
         startImageRefreshJob();
         startUDPListenerJob();
         startAudioSink();
+
+        callbackServlet.registerHandler(thing.getUID(), this);
+        String thingUid = thing.getUID().getAsString();
+        logger.info("Doorbird webhook URLs configured for device {}:", thingUid);
+        logger.info("  Doorbell event: /doorbird/{}/doorbell", thingUid);
+        logger.info("  Motion event:   /doorbird/{}/motion", thingUid);
+
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void dispose() {
+        callbackServlet.unregisterHandler(thing.getUID());
         stopUDPListenerJob();
         stopImageRefreshJob();
         stopDoorbellOffJob();

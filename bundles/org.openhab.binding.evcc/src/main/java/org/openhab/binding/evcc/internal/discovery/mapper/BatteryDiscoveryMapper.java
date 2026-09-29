@@ -15,7 +15,6 @@ package org.openhab.binding.evcc.internal.discovery.mapper;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.StreamSupport;
@@ -49,8 +48,7 @@ public class BatteryDiscoveryMapper implements EvccDiscoveryMapper {
                 .flatMap(deviceArray -> StreamSupport.stream(deviceArray.spliterator(), false))
                 .filter(JsonElement::isJsonObject).map(JsonElement::getAsJsonObject).map(battery -> {
                     int index = counter.getAndIncrement();
-                    String title = battery.has(JSON_KEY_TITLE)
-                            ? battery.get(JSON_KEY_TITLE).getAsString().toLowerCase(Locale.ROOT)
+                    String title = battery.has(JSON_KEY_TITLE) ? battery.get(JSON_KEY_TITLE).getAsString()
                             : JSON_KEY_BATTERY + index;
 
                     ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_BATTERY,

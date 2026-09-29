@@ -17,7 +17,6 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.Connecti
 import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVBindingConstants.*;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
@@ -123,7 +122,7 @@ public class TvChannelService implements PhilipsTVService {
         } catch (InvalidFormatException e) {
             logger.debug("TV Channels loading failed: {}", e.getMessage(), e);
         }
-        return Collections.emptyMap();
+        return Map.of();
     }
 
     private String getCurrentTvChannel() throws IOException {

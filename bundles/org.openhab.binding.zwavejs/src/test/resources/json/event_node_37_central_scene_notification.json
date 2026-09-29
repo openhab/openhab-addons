@@ -1,0 +1,18 @@
+{
+    "type": "event",
+    "event": {
+        "source": "node",
+        "event": "value notification",
+        "nodeId": 37,
+        "args": {
+            "commandClassName": "Central Scene",
+            "commandClass": 91,
+            "property": "scene",
+            "propertyKey": "001",
+            "endpoint": 0,
+            "value": 2,
+            "propertyName": "scene",
+            "ccVersion": 3
+        }
+    }
+}

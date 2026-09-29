@@ -66,8 +66,8 @@ public class SecurityTest {
     @Test
     public void testencryptIamPassword() {
         // Cloud provider appkey is used to encrypt
-        CloudProvider cloudProvider = new CloudProvider("MSmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "", "", "",
-                "", "", "");
+        CloudProvider cloudProvider = new CloudProvider("SmartHome", "ac21b9f9cbfe4ca5a88562ef25e2b768", "", "", "", "",
+                "", "");
         Security security = new Security(cloudProvider);
 
         String loginId = "39c5f83c-63d0-4b4b-8f44-2823699857cd";

@@ -27,9 +27,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -103,6 +105,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
     private @Nullable ScheduledFuture<?> reinitializationFuture1;
     private @Nullable ScheduledFuture<?> reinitializationFuture2;
     private @Nullable ScheduledFuture<?> reinitializationFuture3;
+    private final AtomicReference<@Nullable Future<?>> initializationFuture = new AtomicReference<>();
+    private volatile long initializationGeneration;
     private boolean ignoreEventSourceClosedEvent;
     private @Nullable String programOptionsDelayedUpdate;
 
@@ -135,6 +139,8 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     @Override
     public void initialize() {
+        // Mark a new initialization generation; any previously scheduled or running init task becomes stale.
+        final long generation = ++initializationGeneration;
         if (getBridgeHandler().isEmpty()) {
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
@@ -143,23 +149,44 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             accessible.set(false);
         } else {
             updateStatus(UNKNOWN);
-            scheduler.submit(() -> {
+            initializationFuture.set(scheduler.submit(() -> {
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 refreshThingStatus(); // set ONLINE / OFFLINE
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 updateSelectedProgramStateDescription();
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 updateChannels();
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 registerEventListener();
+                if (isStaleInitialization(generation)) {
+                    return;
+                }
                 scheduleOfflineMonitor1();
                 scheduleOfflineMonitor2();
-            });
+            }));
         }
+    }
+
+    /**
+     * Returns {@code true} if the init task that captured {@code generation} has been superseded by a later
+     * {@link #initialize()} or stopped by {@link #teardown(boolean)}. Used to skip work and rescheduling after
+     * the handler was disposed or reinitialized.
+     */
+    private boolean isStaleInitialization(long generation) {
+        return generation != initializationGeneration;
     }
 
     @Override
     public void dispose() {
-        stopRetryRegistering();
-        stopOfflineMonitor1();
-        stopOfflineMonitor2();
-        unregisterEventListener(true);
+        teardown(true);
     }
 
     @Override
@@ -170,11 +197,33 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
 
     private void reinitialize() {
         logger.debug("Reinitialize thing handler ({}). haId={}", getThingLabel(), getThingHaId());
+        teardown(false);
+        initialize();
+    }
+
+    /**
+     * Stop all asynchronous work performed by this handler.
+     *
+     * @param immediate if {@code true} the event listener is unregistered immediately (used during
+     *            {@link #dispose()}); if {@code false} a graceful unregistration is performed (used
+     *            during {@link #reinitialize()}).
+     */
+    private void teardown(boolean immediate) {
+        // Invalidate the current init generation so a running/queued init task stops at its next checkpoint.
+        initializationGeneration++;
+        cancelInitialization();
         stopRetryRegistering();
         stopOfflineMonitor1();
         stopOfflineMonitor2();
-        unregisterEventListener();
-        initialize();
+        unregisterEventListener(immediate);
+    }
+
+    private void cancelInitialization() {
+        Future<?> future = initializationFuture.getAndSet(null);
+        if (future != null) {
+            // graceful cancel: do not interrupt a running task, only prevent a queued one from starting
+            future.cancel(false);
+        }
     }
 
     /**
@@ -1008,6 +1057,17 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 .ifPresent(channel -> updateState(channel.getUID(), new PercentType(event.getValueAsInt())));
     }
 
+    protected EventHandler defaultStringEventHandler(String channelId) {
+        return event -> getLinkedChannel(channelId).ifPresent(channel -> {
+            String value = event.getValue();
+            if (value != null) {
+                updateState(channel.getUID(), new StringType(value));
+            } else {
+                updateState(channel.getUID(), UnDefType.UNDEF);
+            }
+        });
+    }
+
     protected ChannelUpdateHandler defaultDoorStateChannelUpdateHandler() {
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();
@@ -1427,13 +1487,17 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         Map.of(CHANNEL_WASHER_TEMPERATURE, OPTION_WASHER_TEMPERATURE, CHANNEL_WASHER_SPIN_SPEED,
                 OPTION_WASHER_SPIN_SPEED, CHANNEL_WASHER_IDOS1_LEVEL, OPTION_WASHER_IDOS_1_DOSING_LEVEL,
                 CHANNEL_WASHER_IDOS2_LEVEL, OPTION_WASHER_IDOS_2_DOSING_LEVEL, CHANNEL_DRYER_DRYING_TARGET,
-                OPTION_DRYER_DRYING_TARGET)
+                OPTION_DRYER_DRYING_TARGET, CHANNEL_CLEANING_MODE_STATE, OPTION_CLEANING_MODE,
+                CHANNEL_SUCTION_POWER_STATE, OPTION_SUCTION_POWER, CHANNEL_WATER_FLOW_RATE_STATE,
+                OPTION_WATER_FLOW_RATE, CHANNEL_CLEANING_PASSES_STATE, OPTION_CLEANING_PASSES,
+                CHANNEL_CLEANING_SPEED_STATE, OPTION_CLEANING_SPEED)
                 .forEach((channel, option) -> setStringChannelFromOption(channel, options, option, UnDefType.UNDEF));
 
         Map.of(CHANNEL_WASHER_IDOS1, OPTION_WASHER_IDOS_1_ACTIVE, CHANNEL_WASHER_IDOS2, OPTION_WASHER_IDOS_2_ACTIVE,
                 CHANNEL_WASHER_LESS_IRONING, OPTION_WASHER_LESS_IRONING, CHANNEL_WASHER_PRE_WASH,
                 OPTION_WASHER_PRE_WASH, CHANNEL_WASHER_SOAK, OPTION_WASHER_SOAK, CHANNEL_WASHER_RINSE_HOLD,
-                OPTION_WASHER_RINSE_HOLD)
+                OPTION_WASHER_RINSE_HOLD, CHANNEL_CARPET_BOOST, OPTION_CARPET_BOOST, CHANNEL_MOP_EXTENSION,
+                OPTION_MOP_EXTENSION)
                 .forEach((channel, option) -> setOnOffChannelFromOption(channel, options, option, OnOffType.OFF));
 
         setStringChannelFromOption(CHANNEL_HOOD_INTENSIVE_LEVEL, options, OPTION_HOOD_INTENSIVE_LEVEL,

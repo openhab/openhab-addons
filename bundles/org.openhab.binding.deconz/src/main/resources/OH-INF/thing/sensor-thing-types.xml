@@ -172,6 +172,20 @@
 		<config-description-ref uri="thing-type:deconz:sensor"/>
 	</thing-type>
 
+	<thing-type id="particulatemattersensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Particulate Matter Sensor</label>
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
+		<channels>
+			<channel typeId="pm25" id="pm25"/>
+			<channel typeId="last_updated" id="last_updated"/>
+		</channels>
+		<representation-property>uid</representation-property>
+		<config-description-ref uri="thing-type:deconz:sensor"/>
+	</thing-type>
+
 	<thing-type id="powersensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz"/>

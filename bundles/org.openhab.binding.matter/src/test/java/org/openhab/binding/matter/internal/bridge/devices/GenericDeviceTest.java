@@ -111,16 +111,16 @@ class GenericDeviceTest {
     }
 
     @Test
-    void testLevelToPercent() {
-        assertEquals(0, ValueUtils.levelToPercent(0).intValue());
-        assertEquals(50, ValueUtils.levelToPercent(127).intValue());
-        assertEquals(100, ValueUtils.levelToPercent(254).intValue());
+    void testLevelToPercentWhenOn() {
+        assertEquals(1, ValueUtils.levelToPercentWhenOn(1).intValue());
+        assertEquals(50, ValueUtils.levelToPercentWhenOn(128).intValue());
+        assertEquals(100, ValueUtils.levelToPercentWhenOn(254).intValue());
     }
 
     @Test
     void testPercentToLevel() {
-        assertEquals(0, ValueUtils.percentToLevel(new PercentType(0)));
-        assertEquals(127, ValueUtils.percentToLevel(new PercentType(50)));
+        assertEquals(1, ValueUtils.percentToLevel(new PercentType(0)));
+        assertEquals(128, ValueUtils.percentToLevel(new PercentType(50)));
         assertEquals(254, ValueUtils.percentToLevel(new PercentType(100)));
     }
 

@@ -30,11 +30,13 @@ import org.openhab.binding.pegelonline.internal.util.FileReader;
 import org.openhab.binding.pegelonline.internal.utils.Utils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
@@ -345,6 +347,22 @@ class PegelTest {
         state = callback.getState("pegelonline:station:test:warning");
         assertTrue(state instanceof DecimalType);
         assertEquals(HQ_EXTREME, ((DecimalType) state).intValue(), "HQ extreme");
+
+        // water levels can be reported below zero and use the lowest entry of the warning map
+        callback.clearStates();
+        handler = getConfiguredHandler(callback, -10);
+        handler.initialize();
+        handler.performMeasurement();
+        state = callback.getState("pegelonline:station:test:warning");
+        assertTrue(state instanceof DecimalType);
+        assertEquals(NO_WARNING, ((DecimalType) state).intValue(), "Negative level");
+
+        // REFRESH re-evaluates the cached measurement instead of querying the API
+        callback.clearStates();
+        handler.handleCommand(new ChannelUID(handler.getThing().getUID(), WARNING_CHANNEL), RefreshType.REFRESH);
+        state = callback.getState("pegelonline:station:test:warning");
+        assertTrue(state instanceof DecimalType);
+        assertEquals(NO_WARNING, ((DecimalType) state).intValue(), "Negative level after refresh");
     }
 
     private PegelOnlineHandler getConfiguredHandler(CallbackMock callback, int levelSimulation) {

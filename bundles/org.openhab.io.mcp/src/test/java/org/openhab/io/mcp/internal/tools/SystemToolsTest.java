@@ -176,6 +176,27 @@ class SystemToolsTest {
     }
 
     @Test
+    void getSystemInfoReturnsCurrentDateTime() throws Exception {
+        when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of());
+        when(Objects.requireNonNull(thingRegistry).getAll()).thenReturn(List.of());
+        when(Objects.requireNonNull(ruleRegistry).getAll()).thenReturn(List.of());
+
+        try (MockedStatic<OpenHAB> openHABMock = mockStatic(OpenHAB.class)) {
+            openHABMock.when(OpenHAB::getVersion).thenReturn("5.2.0");
+
+            CallToolResult result = tools().handleGetSystemInfo(createRequest(Map.of()));
+            Map<String, Object> parsed = parseResult(result);
+            assertNotNull(parsed.get("currentDateTime"));
+            assertNotNull(parsed.get("timeZone"));
+            assertNotNull(parsed.get("utcOffset"));
+            assertNotNull(parsed.get("epochMillis"));
+            // ISO local date-time, e.g. "2026-05-24T05:47:17.123"
+            assertTrue(((String) parsed.get("currentDateTime")).matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*"),
+                    "currentDateTime should be ISO-8601, got: " + parsed.get("currentDateTime"));
+        }
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     void getSystemInfoReturnsBindingList() throws Exception {
         when(Objects.requireNonNull(itemRegistry).getItems()).thenReturn(List.of());

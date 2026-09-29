@@ -78,26 +78,26 @@ public class RollerShutterCapabilityTest {
 
     @Test
     public void testSetPositionNormal() {
-        // Not inverted: position increases = moving down, decreases = moving up
-        capability.setPosition(10, false); // from 0 to 10: moving down
-        assertTrue(capability.isMovingDown());
-        assertFalse(capability.isMovingUp());
-        capability.setPosition(5, false); // from 10 to 5: moving up
+        // Not inverted: position increases = moving up, decreases = moving down
+        capability.setPosition(10, false); // from 0 to 10: moving up
         assertTrue(capability.isMovingUp());
         assertFalse(capability.isMovingDown());
+        capability.setPosition(5, false); // from 10 to 5: moving down
+        assertTrue(capability.isMovingDown());
+        assertFalse(capability.isMovingUp());
         capability.setPosition(5, false); // no change
         assertFalse(capability.isMoving());
     }
 
     @Test
     public void testSetPositionInverted() {
-        // Inverted: position increases = moving up, decreases = moving down
-        capability.setPosition(10, true); // from 0 to 10: moving up
-        assertTrue(capability.isMovingUp());
-        assertFalse(capability.isMovingDown());
-        capability.setPosition(5, true); // from 10 to 5: moving down
+        // Inverted: position increases = moving down, decreases = moving up
+        capability.setPosition(10, true); // from 0 to 10: moving down
         assertTrue(capability.isMovingDown());
         assertFalse(capability.isMovingUp());
+        capability.setPosition(5, true); // from 10 to 5: moving up
+        assertTrue(capability.isMovingUp());
+        assertFalse(capability.isMovingDown());
         capability.setPosition(5, true); // no change
         assertFalse(capability.isMoving());
     }

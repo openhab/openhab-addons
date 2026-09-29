@@ -169,6 +169,12 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_STATE, getStringType(s.valueStr));
                 break;
             case "1103": // roller_0: S, rollerPos, 0-100, unknown -1
+                if (isRollerMoving(sensorUpdates)) {
+                    // The device can't report the live position while moving and instead keeps
+                    // sending the pre-move position, which would otherwise flip the channel back
+                    // and forth between the old and new position on every CoIoT update.
+                    break;
+                }
                 int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min((int) value, SHELLY_MAX_ROLLER_POS));
                 logger.debug("{}: CoAP update roller position: control={}, position={}", thingName,
                         SHELLY_MAX_ROLLER_POS - pos, pos);
@@ -203,12 +209,17 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
             case "3201": // sensor_1: T, extTemp, C, -55/125; unknown 999
             case "3301": // sensor_2: T, extTemp, C, -55/125; unknown 999
                 int idx = getExtTempId(sen.id);
-                if (idx >= 0 && value != SHELLY_API_INVTEMP) {
-                    // H&T, Fllod, DW only have 1 channel, 1/1PM with Addon have up to to 3 sensors
+                if (idx >= 0) {
+                    // H&T, Flood, DW only have 1 channel; 1/1PM with Addon have up to 3 sensors
                     String channel = profile.isSensor ? CHANNEL_SENSOR_TEMP : CHANNEL_SENSOR_TEMP + idx;
-                    // Some devices report values = -999 or 99 during fw update
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR, channel,
-                            toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    if (value == SHELLY_API_INVTEMP) {
+                        // Sensor present but reading invalid: publish UNDEF so the cache doesn't
+                        // block the next valid reading when the sensor recovers.
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, channel, UnDefType.UNDEF);
+                    } else {
+                        updateChannel(updates, CHANNEL_GROUP_SENSOR, channel,
+                                toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
+                    }
                 } else {
                     logger.debug("{}: Unable to get extSensorId {} from {}/{}", thingName, sen.id, sen.type, sen.desc);
                 }
@@ -405,6 +416,19 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 processed = false;
         }
         return processed;
+    }
+
+    /**
+     * Roller position ("1103") is only accurate once the roller has stopped; look up the roller state
+     * ("1102") from the same CoIoT update batch to tell whether it's currently moving.
+     */
+    private boolean isRollerMoving(List<CoIotSensor> sensorUpdates) {
+        for (CoIotSensor update : sensorUpdates) {
+            if ("1102".equals(update.id)) {
+                return !SHELLY_ALWD_ROLLER_TURN_STOP.equalsIgnoreCase(update.valueStr);
+            }
+        }
+        return false;
     }
 
     @Override

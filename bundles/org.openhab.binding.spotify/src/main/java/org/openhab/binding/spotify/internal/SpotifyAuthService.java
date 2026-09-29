@@ -31,11 +31,13 @@ import javax.servlet.http.HttpServlet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
+import org.openhab.core.config.core.ConfigParser;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
@@ -56,6 +58,7 @@ public class SpotifyAuthService {
     private static final String TEMPLATE_PLAYER = TEMPLATE_PATH + "player.html";
     private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
     private static final String ERROR_UKNOWN_BRIDGE = "Returned 'state' by doesn't match any Bridges. Has the bridge been removed?";
+    private static final String CONFIG_FORCE_HTTPS = "forceHttps";
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyAuthService.class);
 
@@ -63,11 +66,13 @@ public class SpotifyAuthService {
 
     private @NonNullByDefault({}) HttpService httpService;
     private @NonNullByDefault({}) BundleContext bundleContext;
+    private volatile boolean forceHttps;
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
         try {
             bundleContext = componentContext.getBundleContext();
+            forceHttps = ConfigParser.valueAsOrElse(properties.get(CONFIG_FORCE_HTTPS), Boolean.class, false);
             httpService.registerServlet(SPOTIFY_ALIAS, createServlet(), new Hashtable<>(),
                     httpService.createDefaultHttpContext());
             httpService.registerResources(SPOTIFY_ALIAS + SPOTIFY_IMG_ALIAS, "web", null);
@@ -76,10 +81,24 @@ public class SpotifyAuthService {
         }
     }
 
+    @Modified
+    protected void modified(Map<String, Object> properties) {
+        forceHttps = ConfigParser.valueAsOrElse(properties.get(CONFIG_FORCE_HTTPS), Boolean.class, false);
+    }
+
     @Deactivate
     protected void deactivate(ComponentContext componentContext) {
         httpService.unregister(SPOTIFY_ALIAS);
         httpService.unregister(SPOTIFY_ALIAS + SPOTIFY_IMG_ALIAS);
+    }
+
+    /**
+     * @return true if the redirect_uri scheme should always be forced to https, regardless of what the received
+     *         request or its headers indicate. Useful when openHAB is reachable through a reverse proxy that does
+     *         not identify itself through any of the headers this binding recognizes.
+     */
+    public boolean isForceHttps() {
+        return forceHttps;
     }
 
     /**

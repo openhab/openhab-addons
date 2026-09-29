@@ -38,8 +38,8 @@ public class WledState {
     public PresetState[] presetState = new PresetState[1];
 
     public class JsonResponse {
-        public List<String> effects = new ArrayList<>();
-        public List<String> palettes = new ArrayList<>();
+        public @Nullable List<String> effects = new ArrayList<>();
+        public @Nullable List<String> palettes = new ArrayList<>();
     }
 
     public void unpackJsonObjects() {

@@ -20,6 +20,7 @@ Here is a product picture of how this Weather Station looks like:
 ![WH2650](doc/WH2650.png)
 
 This binding works offline by [implementing the wire protocol](https://oss.ecowitt.net/uploads/20260112/TCP%20API%20Interface%20Communication%20Protocol%20V1.7.0.pdf) of the WiFi gateway device.
+Gateways that additionally expose the [Ecowitt HTTP API](https://oss.ecowitt.net/uploads/20260114/HTTP%20API%20interface%20Protocol%20(Generic)-(V1.0.6-2026-1-14)%20.pdf) are used via that API instead, which is selected automatically during discovery (see [Protocol](#protocol)).
 
 ## Discussion
 
@@ -68,6 +69,10 @@ If you have any issues or feedback, please feel free to [get in touch via the co
   - WH68 - 4-in-1 weather station - Solar-powered sensor for wind speed & direction, solar radiation & light
   - WH80 - 6-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature & humidity
   - WH90 - 7-in-1 weather station - Ultrasonic sensor for wind speed & direction, solar radiation & light, temperature, humidity and haptic rainfall Sensor
+  - WS85 - Sensor for wind speed & direction and rainfall
+  - WH54 - Liquid depth sensor (LDS)
+  - WN20 - Rain Gauge Mini
+  - WN38 - Black globe temperature sensor
 
 ### Unsupported Devices
 
@@ -94,9 +99,22 @@ This binding support discovery of Fine Offset gateway devices by sending a broad
 |------------------|---------|----------------------------------------------------------------------------------------------|---------|----------|----------|
 | ip               | text    | The Hostname or IP address of the device                                                     | N/A     | yes      | no       |
 | port             | integer | The network port of the gateway                                                              | 45000   | yes      | no       |
-| protocol         | text    | The protocol to use for communicating with the gateway, valid values are: `DEFAULT` or `ELV` | DEFAULT | no       | no       |
+| protocol         | text    | The protocol to use, see [Protocol](#protocol): `DEFAULT`, `ELV` or `HTTP_ECOWITT`           | DEFAULT | no       | no       |
 | pollingInterval  | integer | Polling period for refreshing the data in seconds                                            | 16      | yes      | yes      |
 | discoverInterval | integer | Interval in seconds to fetch registered sensors, battery status and signal strength          | 900     | yes      | yes      |
+
+#### Protocol
+
+| Value          | Description                                                                                                                       |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `DEFAULT`      | The TCP binary protocol (port 45000), used by most Fine Offset gateways.                                                          |
+| `ELV`          | The TCP binary protocol variant used by ELV devices (e.g. WS980).                                                                 |
+| `HTTP_ECOWITT` | The Ecowitt HTTP API (port 80). It reports more data (e.g. the _feels like_ temperature, a piezo _raining_ indicator and solar radiation in W/m²) and is preferred automatically during discovery when the gateway answers `get_version` with `"platform": "ecowitt"`. |
+
+Discovery probes the HTTP API first and falls back to the TCP protocols.
+Values reported by the HTTP API in the unit configured on the gateway (e.g. °F, inHg, mph) are normalized to the binding's units, so the channels are identical regardless of the transport or the gateway's display settings.
+A few channels are only available via the HTTP API and therefore only appear on gateways using the `HTTP_ECOWITT` protocol: `temperature-feels-like`, `vapor-pressure-deficit`, `irradiation-solar`, `piezo-rain-state`, `rain-24-hours` and `piezo-rain-24-hours`.
+As far as WS85 sensor type and similar models, like WS80 and WH90, the `batteryLevel` channel is only available via the HTTP API.
 
 ### `sensor` Thing Configuration
 
@@ -156,6 +174,21 @@ Valid sensors:
 - WH35_CH7
 - WH35_CH8
 - WH90
+- WS85
+- WH51_CH9
+- WH51_CH10
+- WH51_CH11
+- WH51_CH12
+- WH51_CH13
+- WH51_CH14
+- WH51_CH15
+- WH51_CH16
+- WH54_CH1
+- WH54_CH2
+- WH54_CH3
+- WH54_CH4
+- WN20
+- WN38
 
 ## Channels
 
@@ -168,16 +201,20 @@ Valid sensors:
 | temperature-dew-point                 | Number:Temperature   | R          | Dew Point                                      |
 | temperature-wind-chill                | Number:Temperature   | R          | Perceived Temperature                          |
 | temperature-heat-index                | Number:Temperature   | R          | Heat Index                                     |
+| temperature-black-globe               | Number:Temperature   | R          | Black Globe Temperature                        |
+| temperature-wet-bulb-globe            | Number:Temperature   | R          | Wet Bulb Globe Temperature                     |
 | humidity-indoor                       | Number:Dimensionless | R          | Humidity Inside                                |
 | humidity-outdoor                      | Number:Dimensionless | R          | Humidity Outside                               |
 | pressure-absolute                     | Number:Pressure      | R          | Absolute Pressure                              |
 | pressure-relative                     | Number:Pressure      | R          | Relative Pressure                              |
 | direction-wind                        | Number:Angle         | R          | Wind Direction                                 |
+| direction-wind-avg-10min              | Number:Angle         | R          | Wind Direction (10-Minute Average)             |
 | speed-wind                            | Number:Speed         | R          | Wind Speed                                     |
 | speed-gust                            | Number:Speed         | R          | Gust Speed                                     |
 | rain-event                            | Number:Length        | R          | Amount of Rainfall At the last Rain            |
 | rain-rate                             | Number:Speed         | R          | Rainfall Rate                                  |
 | rain-hour                             | Number:Length        | R          | Rainfall Current Hour                          |
+| rain-24-hours                         | Number:Length        | R          | Rainfall Last 24 Hours                         |
 | rain-day                              | Number:Length        | R          | Rainfall Today                                 |
 | rain-week                             | Number:Length        | R          | Rainfall this Week                             |
 | rain-month                            | Number:Length        | R          | Rainfall this Month                            |
@@ -282,6 +319,7 @@ Valid sensors:
 | piezo-rain-rate                       | Number:Speed         | R          | Piezo - Rainfall Rate                          |
 | piezo-rain-event                      | Number:Length        | R          | Piezo - Amount of Rainfall At the last Rain    |
 | piezo-rain-hour                       | Number:Length        | R          | Piezo - Rainfall Current Hour                  |
+| piezo-rain-24-hours                   | Number:Length        | R          | Piezo - Rainfall Last 24 Hours                 |
 | piezo-rain-day                        | Number:Length        | R          | Piezo - Rainfall Today                         |
 | piezo-rain-week                       | Number:Length        | R          | Piezo - Rainfall this Week                     |
 | piezo-rain-month                      | Number:Length        | R          | Piezo - Rainfall this Month                    |
@@ -299,6 +337,29 @@ Especially the channels `temperature-dew-point` or `temperature-wind-chill` are 
 | batteryLevel   | Number                   | R          | The sensors battery level   |
 | batteryVoltage | Number:ElectricPotential | R          | The sensors battery voltage |
 | lowBattery     | Switch                   | R          | The sensors battery status  |
+
+## Deprecated channels
+
+Discrete add-on sensors (WH31, WH51, WH41, WH55, WH57, WH34, WH35, WH45, WH25) now expose their measured values
+directly on their own sensor Thing, alongside the signal and battery channels. The corresponding dynamic channels on
+the gateway (bridge) Thing are still created and updated for backwards compatibility, but are **deprecated**: their
+description carries a translatable note naming the full `ChannelUID` of the equivalent channel on the sensor Thing.
+For example, when a WH51 soil-moisture sensor is configured as `WH51_CH1` under a gateway with id `3906700515`:
+
+```text
+(deprecated — this value is now also available on the sensor Thing as channel: fineoffsetweatherstation:sensor:3906700515:WH51_CH1:moisture-soil-channel)
+```
+
+When no matching sensor Thing is yet configured in openHAB, the note reads:
+
+```text
+(deprecated — this value is now also available on the sensor Thing)
+```
+
+Prefer linking your items to the channels on the sensor Thing; the gateway-side duplicates may be removed in a future release.
+
+This does not affect the main outdoor array (WH24/WH65/WH69/WH68/WH80/WH90/WS85), the rain group, or the aggregate
+`common_list` values — those remain gateway-only.
 
 ## Full Example
 
@@ -333,21 +394,21 @@ Switch BatteryStatusWH65 "Low Battery WH65" <LowBattery> (WH65) ["Energy", "LowB
 Group gOutdoor "Outdoor" ["Location"]
 Number:Temperature        weather_temperature_outdoor  "Outdoor Temperature"                 <Temperature> (gOutdoor) ["Measurement", "Temperature"] { channel="fineoffsetweatherstation:gateway:3906700515:temperature-outdoor" }
 Number:Temperature        weather_temperature_indoor   "Inside temperature"                  <Temperature>            ["Measurement", "Temperature"]  { channel="fineoffsetweatherstation:gateway:3906700515:temperature-indoor" }
-Number:Dimensionless      weather_humidity_indoor      "Humidity inside"                     <Humidity>               ["Measurement", "Humidity"]     { channel="fineoffsetweatherstation:gateway:3906700515:humidity-indoor" }
-Number:Pressure           weather_pressure_absolute    "Absolute pressure"                   <Pressure>    (gOutdoor) ["Measurement", "Pressure"]     { channel="fineoffsetweatherstation:gateway:3906700515:pressure-absolute" }
-Number:Pressure           weather_pressure_relative    "Relative pressure"                   <Pressure>    (gOutdoor) ["Measurement", "Pressure"]     { channel="fineoffsetweatherstation:gateway:3906700515:pressure-relative" }
-Number:Dimensionless      weather_humidity_outdoor     "Humidity outside"                    <Humidity>    (gOutdoor) ["Measurement", "Humidity"]     { channel="fineoffsetweatherstation:gateway:3906700515:humidity-outdoor" }
+Number:Dimensionless      weather_humidity_indoor      "Humidity inside"                     <Humidity>               ["Measurement", "Humidity"]     { unit="%", channel="fineoffsetweatherstation:gateway:3906700515:humidity-indoor" }
+Number:Pressure           weather_pressure_absolute    "Absolute pressure"                   <Pressure>    (gOutdoor) ["Measurement", "Pressure"]     { unit="hPa", channel="fineoffsetweatherstation:gateway:3906700515:pressure-absolute" }
+Number:Pressure           weather_pressure_relative    "Relative pressure"                   <Pressure>    (gOutdoor) ["Measurement", "Pressure"]     { unit="hPa", channel="fineoffsetweatherstation:gateway:3906700515:pressure-relative" }
+Number:Dimensionless      weather_humidity_outdoor     "Humidity outside"                    <Humidity>    (gOutdoor) ["Measurement", "Humidity"]     { unit="%", channel="fineoffsetweatherstation:gateway:3906700515:humidity-outdoor" }
 Number:Angle              weather_direction_wind       "Wind direction"                      <Wind>        (gOutdoor) ["Measurement", "Wind"]         { channel="fineoffsetweatherstation:gateway:3906700515:direction-wind" }
 Number:Speed              weather_speed_wind           "Wind speed"                          <Wind>        (gOutdoor) ["Measurement", "Wind"]         { channel="fineoffsetweatherstation:gateway:3906700515:speed-wind" }
 Number:Speed              weather_speed_gust           "Gust speed"                          <Wind>        (gOutdoor) ["Measurement", "Wind"]         { channel="fineoffsetweatherstation:gateway:3906700515:speed-gust" }
 Number:Illuminance        weather_illumination         "Light intensity"                     <Sun>         (gOutdoor) ["Measurement", "Light"]        { channel="fineoffsetweatherstation:gateway:3906700515:illumination" }
-Number:Intensity          weather_irradiation_uv       "UV radiation"                        <Sun>         (gOutdoor) ["Measurement", "Light"]        { channel="fineoffsetweatherstation:gateway:3906700515:irradiation-uv" }
+Number:Intensity          weather_irradiation_uv       "UV radiation"                        <Sun>         (gOutdoor) ["Measurement", "Light"]        { unit="mW/m²", channel="fineoffsetweatherstation:gateway:3906700515:irradiation-uv" }
 Number:Dimensionless      weather_uv_index             "UV Index"                            <Sun>         (gOutdoor) ["Measurement", "Light"]        { channel="fineoffsetweatherstation:gateway:3906700515:uv-index" }
 Number:Speed              weather_max_day              "Maximum wind speed today"            <Wind>        (gOutdoor) ["Measurement", "Wind"]         { channel="fineoffsetweatherstation:gateway:3906700515:wind-max-day" }
-Number:Speed              weather_rain_rate            "Rainfall rate"                       <Rain>        (gOutdoor) ["Measurement", "Rain"]         { channel="fineoffsetweatherstation:gateway:3906700515:rain-rate" }
-Number:Length             weather_rain_day             "Rainfall today"                      <Rain>        (gOutdoor) ["Measurement", "Rain"]         { channel="fineoffsetweatherstation:gateway:3906700515:rain-day" }
-Number:Length             weather_rain_week            "Rainfall this week"                  <Rain>        (gOutdoor) ["Measurement", "Rain"]         { channel="fineoffsetweatherstation:gateway:3906700515:rain-week" }
-Number:Length             weather_rain_month           "Rainfall this month"                 <Rain>        (gOutdoor) ["Measurement", "Rain"]         { channel="fineoffsetweatherstation:gateway:3906700515:rain-month" }
-Number:Length             weather_rain_year            "Rainfall this year "                 <Rain>        (gOutdoor) ["Measurement", "Rain"]         { channel="fineoffsetweatherstation:gateway:3906700515:rain-year" }
-Number:Length             weather_rain_event           "Amount of rainfall at the last rain" <Rain>        (gOutdoor) ["Measurement", "Rain"]         { channel="fineoffsetweatherstation:gateway:3906700515:rain-event" }
+Number:Speed              weather_rain_rate            "Rainfall rate"                       <Rain>        (gOutdoor) ["Measurement", "Rain"]         { unit="mm/h", channel="fineoffsetweatherstation:gateway:3906700515:rain-rate" }
+Number:Length             weather_rain_day             "Rainfall today"                      <Rain>        (gOutdoor) ["Measurement", "Rain"]         { unit="mm", channel="fineoffsetweatherstation:gateway:3906700515:rain-day" }
+Number:Length             weather_rain_week            "Rainfall this week"                  <Rain>        (gOutdoor) ["Measurement", "Rain"]         { unit="mm", channel="fineoffsetweatherstation:gateway:3906700515:rain-week" }
+Number:Length             weather_rain_month           "Rainfall this month"                 <Rain>        (gOutdoor) ["Measurement", "Rain"]         { unit="mm", channel="fineoffsetweatherstation:gateway:3906700515:rain-month" }
+Number:Length             weather_rain_year            "Rainfall this year "                 <Rain>        (gOutdoor) ["Measurement", "Rain"]         { unit="mm", channel="fineoffsetweatherstation:gateway:3906700515:rain-year" }
+Number:Length             weather_rain_event           "Amount of rainfall at the last rain" <Rain>        (gOutdoor) ["Measurement", "Rain"]         { unit="mm", channel="fineoffsetweatherstation:gateway:3906700515:rain-event" }
 ```

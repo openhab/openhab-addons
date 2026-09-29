@@ -16,6 +16,7 @@ import static org.openhab.binding.homematic.internal.misc.HomematicConstants.VIR
 
 import java.util.HashSet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Reitler - Initial contribution
  */
+@NonNullByDefault
 public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     private final Logger logger = LoggerFactory.getLogger(ButtonVirtualDatapointHandler.class);
 
@@ -48,7 +50,7 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
     public void initialize(HmDevice device) {
         for (HmChannel channel : device.getChannels()) {
             if (channel.hasPressDatapoint()) {
-                HmDatapoint dp = addDatapoint(device, channel.getNumber(), getName(), HmValueType.STRING, null, false);
+                HmDatapoint dp = addDatapoint(channel, getName(), HmValueType.STRING, null, false);
                 dp.setTrigger(true);
                 dp.setOptions(new String[] { CommonTriggerEvents.SHORT_PRESSED, CommonTriggerEvents.LONG_PRESSED,
                         LONG_REPEATED_EVENT, LONG_RELEASED_EVENT });
@@ -63,9 +65,17 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
 
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
+        handleEvent(dp);
+    }
+
+    // Separated to be accessible for unit test
+    public void handleEvent(HmDatapoint dp) {
         HmChannel channel = dp.getChannel();
         String deviceSerial = channel.getDevice().getAddress();
         HmDatapoint vdp = getVirtualDatapoint(channel);
+        if (vdp == null) {
+            return;
+        }
         int usPos = dp.getName().indexOf("_");
         String pressType = usPos == -1 ? dp.getName() : dp.getName().substring(usPos + 1);
         boolean usesLongStart = devicesUsingLongStartEvent.contains(deviceSerial);

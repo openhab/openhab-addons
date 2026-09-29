@@ -216,14 +216,7 @@ See [libraries](#libraries) for more information.
 
 ### `console`
 
-The JS Scripting binding supports the standard `console` object for logging.
-Script logging is enabled by default at the `INFO` level (messages from `console.debug` and `console.trace` won't be displayed), but can be configured using the [openHAB console](https://www.openhab.org/docs/administration/console.html):
-
-```text
-log:set DEBUG org.openhab.automation.jsscripting
-log:set TRACE org.openhab.automation.jsscripting
-log:set DEFAULT org.openhab.automation.jsscripting
-```
+The JavaScript Scripting add-on supports the standard `console` object for logging.
 
 The default logger name consists of the prefix `org.openhab.automation.jsscripting` and the script’s individual part `.file.<filename>`, `.rule.<ruleUID>`, or `.transformation.<transformationUID>`.
 This logger name can be changed by assigning a new string to the `loggerName` property of the console:
@@ -233,7 +226,7 @@ console.loggerName = 'org.openhab.custom';
 ```
 
 Please be aware that messages do not appear in the logs if the logger name does not start with `org.openhab`.
-This behaviour is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring a setting for each logger prefix in `$OPENHAB_USERDATA/etc/log4j2.xml` (on openHABian: `/srv/openhab-userdata/etc/log4j2.xml`).
+This behavior is due to [log4j2](https://logging.apache.org/log4j/2.x/) requiring a setting for each logger prefix in `$OPENHAB_USERDATA/etc/log4j2.xml` (on openHABian: `/srv/openhab-userdata/etc/log4j2.xml`).
 
 Supported logging functions include:
 
@@ -246,6 +239,14 @@ Supported logging functions include:
 
 Where `obj1 ... objN` is a list of JavaScript objects to output.
 The string representations of each of these objects are appended together in the order listed and output.
+
+Script logging is enabled by default at the `INFO` level (messages from `console.debug` and `console.trace` won't be displayed), but can be configured using the [openHAB console](https://www.openhab.org/docs/administration/console.html), e.g.:
+
+```text
+log:set DEBUG org.openhab.automation.jsscripting.rule.ruleUID
+log:set TRACE org.openhab.automation.jsscripting.file.filename.js
+log:set DEFAULT org.openhab.automation.jsscripting
+```
 
 See <https://developer.mozilla.org/en-US/docs/Web/API/console> for more information about console logging.
 
@@ -1610,11 +1611,60 @@ Follow these steps to create your own library (it's called a CommonJS module):
 1. After you've installed it with `npm`, you can continue development of the library inside `node_modules`.
 1. As you might have already noticed, the JavaScript Scripting add-on is reloading a script as soon as one of its dependencies changes.
    When developing a library inside `node_modules`, this can cause regular reloads.
-   To avoid this situation, you can disable dependency tracking in the JavaScript Scripting add-on settings (you need to tick "show advanced" for the setting to come up).
+   To avoid this situation, you can disable dependency tracking in the JavaScript Scripting add-on settings (you need to tick _Show advanced_ for the setting to come up).
 
 It is also possible to upload your library to [npm](https://npmjs.com) to share it with other users.
 
 If you want to get some advanced information, you can read [this blog post](https://bugfender.com/blog/how-to-create-an-npm-package/) or just google it.
+
+### Debugging
+
+The JavaScript Scripting add-on provides built-in debugger support for `.js` scripts from `automation/js` in the user configuration directory.
+This allows attaching any debugger compatible with the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/), e.g., [Visual Studio Code](https://code.visualstudio.com/docs/nodejs/nodejs-debugging) or [Chrome DevTools](https://developers.google.com/web/tools/chrome-devtools/javascript).
+
+Debugger support has to be enabled in the JavaScript Scripting add-on settings (you need to tick _Show advanced_ for the setting to come up).
+The debugger will listen on port 9229 by default, but this can be changed in the settings.
+Please note: A restart of openHAB is required to apply the changes.
+
+::: warning
+Enabling debugger support will allow any system on your local network to attach to the debugger and execute arbitrary code in your openHAB instance.
+Only enable debugger support if you need it and you trust all systems on your local network,
+or consider using a firewall to restrict access to the debugger port to only trusted systems, or use SSH tunneling to access the debugger port from a remote system.
+:::
+
+#### VS Code
+
+To debug a script in VS Code, you need to create a launch configuration in `.vscode/launch.json` in your workspace folder:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to openHAB JavaScript Scripting",
+      // openHAB server address
+      "address": "127.0.0.1",
+      "port": 9229,
+      // path to scripts on the VS Code host (your machine)
+      "localRoot": "${workspaceFolder}/automation/js", // assumes your workspace folder is the openHAB user configuration directory
+      // path to scripts on the openHAB server
+      "remoteRoot": "/etc/openhab/automation/js", // Linux default, on Docker use /openhab/conf/automation/js
+      "restart": true,
+      "continueOnAttach": true
+    }
+  ]
+}
+```
+
+Make sure to adjust the `address`, `localRoot` and `remoteRoot` values to your environment.
+
+::: tip Note
+Docker users need to expose the debugger port to the host machine by adding `-p 9229:9229` to the `docker run` command.
+:::
+
+Finally, add breakpoints in your script and attach the debugger in the _Run and Debug_ view in VS Code.
 
 ### @runtime
 

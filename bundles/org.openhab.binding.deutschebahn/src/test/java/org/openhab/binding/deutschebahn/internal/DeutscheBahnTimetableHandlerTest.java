@@ -63,6 +63,12 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         return config;
     }
 
+    private static DeutscheBahnTrainConfiguration createTrainConfig(int position) {
+        final DeutscheBahnTrainConfiguration trainConfig = new DeutscheBahnTrainConfiguration();
+        trainConfig.position = position;
+        return trainConfig;
+    }
+
     private static Bridge mockBridge(String trainFilter) {
         final Bridge bridge = mock(Bridge.class);
         when(bridge.getUID()).thenReturn(new ThingUID(DeutscheBahnBindingConstants.TIMETABLE_TYPE, "timetable"));
@@ -72,9 +78,18 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         things.add(DeutscheBahnTrainHandlerTest.mockThing(1));
         things.add(DeutscheBahnTrainHandlerTest.mockThing(2));
         things.add(DeutscheBahnTrainHandlerTest.mockThing(3));
-        when(things.get(0).getHandler()).thenReturn(mock(DeutscheBahnTrainHandler.class));
-        when(things.get(1).getHandler()).thenReturn(mock(DeutscheBahnTrainHandler.class));
-        when(things.get(2).getHandler()).thenReturn(mock(DeutscheBahnTrainHandler.class));
+
+        DeutscheBahnTrainHandler trainHandler1 = mock(DeutscheBahnTrainHandler.class);
+        DeutscheBahnTrainHandler trainHandler2 = mock(DeutscheBahnTrainHandler.class);
+        DeutscheBahnTrainHandler trainHandler3 = mock(DeutscheBahnTrainHandler.class);
+
+        when(things.get(0).getHandler()).thenReturn(trainHandler1);
+        when(things.get(1).getHandler()).thenReturn(trainHandler2);
+        when(things.get(2).getHandler()).thenReturn(trainHandler3);
+
+        when(trainHandler1.getConfigAs(DeutscheBahnTrainConfiguration.class)).thenReturn(createTrainConfig(1));
+        when(trainHandler2.getConfigAs(DeutscheBahnTrainConfiguration.class)).thenReturn(createTrainConfig(2));
+        when(trainHandler3.getConfigAs(DeutscheBahnTrainConfiguration.class)).thenReturn(createTrainConfig(3));
 
         when(bridge.getThings()).thenReturn(things);
 

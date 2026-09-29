@@ -13,15 +13,15 @@
 package org.openhab.binding.zwavejs.internal.type;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.BINDING_ID;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,14 +29,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
 import org.openhab.binding.zwavejs.internal.DataUtil;
+import org.openhab.binding.zwavejs.internal.api.dto.MetadataType;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
+import org.openhab.binding.zwavejs.internal.api.dto.Value;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 import org.openhab.binding.zwavejs.internal.handler.mock.ZwaveJSChannelTypeInMemmoryProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
 import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.StateDescription;
@@ -54,12 +56,7 @@ public class ZwaveJSTypeGeneratorTest {
 
     @BeforeEach
     public void setup() {
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
-        Thing thing = mock(Thing.class);
-        when(thing.getUID()).thenReturn(new ThingUID(BindingConstants.BINDING_ID, "test-thing"));
-        when(thing.getBridgeUID()).thenReturn(new ThingUID(BindingConstants.BINDING_ID, "test-bridge"));
-        when(thingRegistry.get(any())).thenReturn(thing);
-        provider = new ZwaveJSTypeGeneratorImpl(channelTypeProvider, configDescriptionProvider, thingRegistry);
+        provider = new ZwaveJSTypeGeneratorImpl(channelTypeProvider, configDescriptionProvider);
     }
 
     private Channel getChannel(String store, int nodeId, String channelId) throws IOException {
@@ -73,6 +70,26 @@ public class ZwaveJSTypeGeneratorTest {
                 new ThingUID(BINDING_ID, "test-bridge", "test-thing"), Objects.requireNonNull(node),
                 configurationAsChannels);
         return Objects.requireNonNull(results.channels.get(channelId));
+    }
+
+    @Test
+    public void testConfigDescriptionUsesThingUID() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+        ThingUID thingUID = new ThingUID(BINDING_ID, "node", "test-bridge", "kitchen");
+
+        Objects.requireNonNull(provider).generate(thingUID, Objects.requireNonNull(node), false);
+
+        assertNotNull(configDescriptionProvider.getConfigDescription(URI.create("thing:" + thingUID), null));
+    }
+
+    @Test
+    public void testConfigDescriptionUsesDefaultNodeThingUID() throws IOException {
+        Node node = DataUtil.getNodeFromStore("store_4.json", 7);
+        ThingUID thingUID = new ThingUID(BINDING_ID, "node", "test-bridge", "node7");
+
+        Objects.requireNonNull(provider).generate(thingUID, Objects.requireNonNull(node), false);
+
+        assertNotNull(configDescriptionProvider.getConfigDescription(URI.create("thing:" + thingUID), null));
     }
 
     @Test
@@ -322,6 +339,22 @@ public class ZwaveJSTypeGeneratorTest {
 
         assertNotNull(type);
         assertEquals("Color", type.getItemType());
+    }
+
+    @Test
+    public void testReadOnlyColorSemanticTags() throws IOException {
+        Node node = Objects.requireNonNull(DataUtil.getNodeFromStore("store_4.json", 44));
+        Value colorValue = node.values.stream().filter(value -> value.metadata.type == MetadataType.COLOR).findFirst()
+                .orElseThrow();
+        colorValue.metadata.writeable = false;
+
+        ZwaveJSTypeGeneratorResult results = Objects.requireNonNull(provider)
+                .generate(new ThingUID(BINDING_ID, "test-bridge", "test-thing"), node, false);
+        Channel channel = Objects.requireNonNull(results.channels.get("color-switch-hex-color"));
+        ChannelType type = Objects.requireNonNull(
+                channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null));
+
+        assertEquals(Set.of(Point.STATUS.getName(), Property.COLOR.getName()), type.getTags());
     }
 
     @Test

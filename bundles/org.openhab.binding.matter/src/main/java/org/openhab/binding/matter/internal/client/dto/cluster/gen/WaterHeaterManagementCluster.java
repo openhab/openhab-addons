@@ -58,16 +58,16 @@ public class WaterHeaterManagementCluster extends BaseCluster {
      * Indicates the estimated heat energy needed to raise the water temperature to the target setpoint. This can be
      * computed by taking the specific heat capacity of water (4182 J/kg °C) and by knowing the current temperature of
      * the water, the tank volume and target temperature.
-     * For example, if the target temperature was 60°C, the current temperature was 20°C and the tank volume was 100L:
-     * Mass of water &#x3D; 1kg per Litre Total Mass &#x3D; 100 x 1kg &#x3D; 100kg Δ Temperature &#x3D; (target
-     * temperature - current temperature) &#x3D; (60°C - 20°C) &#x3D; 40°C
-     * Energy required to heat the water to 60°C &#x3D; 4182 x 40 x 100 &#x3D; 16,728,000 J
-     * Converting Joules in to Wh of heat (divide by 3600): &#x3D; 16,728,000 J / 3600 &#x3D; 4647 Wh (4.65kWh)
+     * > [!NOTE]
+     * > For example, if the target temperature was 60°C, the current temperature was 20°C and the tank volume was 100L:
+     * Mass of water = 1kg per Litre Total Mass = 100 x 1kg = 100kg Δ Temperature = (target temperature - current
+     * temperature) = (60°C - 20°C) = 40°C Energy required to heat the water to 60°C = 4182 x 40 x 100 = 16,728,000 J
+     * Converting Joules in to Wh of heat (divide by 3600): = 16,728,000 J / 3600 = 4647 Wh (4.65kWh)
      * If the TankPercent feature is supported, then this estimate shall also take into account the percentage of the
      * water in the tank which is already hot.
-     * &gt; [!NOTE]
-     * &gt; The electrical energy required to heat the water depends on the heating system used to heat the water. For
-     * example, a direct electric immersion heating element can be close to 100% efficient, so the electrical energy
+     * > [!NOTE]
+     * > NOTE: The electrical energy required to heat the water depends on the heating system used to heat the water.
+     * For example, a direct electric immersion heating element can be close to 100% efficient, so the electrical energy
      * needed to heat the hot water is nearly the same as the EstimatedHeatEnergyRequired. However some forms of
      * heating, such as an air-source heat pump which extracts heat from ambient air, requires much less electrical
      * energy to heat hot water. Heat pumps can be produce 3kWh of heat output for 1kWh of electrical energy input. The
@@ -85,17 +85,16 @@ public class WaterHeaterManagementCluster extends BaseCluster {
      * percentage by taking into account the temperature values of each probe to determine the height of the hot water.
      * However it might be possible with a single temperature probe to estimate how much hot water is left using a
      * simpler algorithm:
-     * For example, if the target temperature was 60°C, the CurrentTemperature was 40°C from a single temperature probe
-     * measuring the average water temperature and the temperature of incoming cold water (COLD_WATER_TEMP) was assumed
-     * to be 20°C:
-     * TankPercentage &#x3D; int(((current temperature - COLD_WATER_TEMP) / (target temperature - COLD_WATER_TEMP)) *
-     * 100) TankPercentage &#x3D; min( max(TankPercentage,0), 100)
-     * TankPercentage &#x3D; 50%
+     * > [!NOTE]
+     * > For example, if the target temperature was 60°C, the CurrentTemperature was 40°C from a single temperature
+     * probe measuring the average water temperature and the temperature of incoming cold water (COLD_WATER_TEMP) was
+     * assumed to be 20°C: TankPercentage = int(((current temperature - COLD_WATER_TEMP) / (target temperature -
+     * COLD_WATER_TEMP)) * 100) TankPercentage = min( max(TankPercentage,0), 100) TankPercentage = 50%
      */
     public Integer tankPercentage; // 4 percent R V
     /**
      * Indicates whether the Boost, as triggered by a Boost command, is currently Active or Inactive.
-     * See Section 9.5.8.1, “Boost Command” and Section 9.5.8.2, “CancelBoost Command” for more details.
+     * See Section 9.5.8.1, "Boost Command" and Section 9.5.8.2, "CancelBoost Command" for more details.
      */
     public BoostStateEnum boostState; // 5 BoostStateEnum R V
 

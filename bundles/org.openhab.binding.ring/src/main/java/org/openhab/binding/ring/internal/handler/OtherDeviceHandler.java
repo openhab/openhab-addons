@@ -15,16 +15,23 @@ package org.openhab.binding.ring.internal.handler;
 import static org.openhab.binding.ring.RingBindingConstants.*;
 import static org.openhab.binding.ring.internal.ApiConstants.*;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.ring.internal.RingAccount;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.OtherDevice;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -46,13 +53,16 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class OtherDeviceHandler extends RingDeviceHandler {
     private int lastBattery = -1;
+    private long lastSnapshotTimestamp = -1;
+    private TimeZoneProvider timeZoneProvider;
     private boolean batterySupport = false;
     private boolean openDoorSupport = false;
 
     private final Gson gson = new Gson();
 
-    public OtherDeviceHandler(Thing thing) {
+    public OtherDeviceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -72,10 +82,31 @@ public class OtherDeviceHandler extends RingDeviceHandler {
                     logger.debug("Adding channel for opendoor, on device {}", getThing().getUID());
                     ThingBuilder thingBuilder = editThing();
                     channel = ChannelBuilder.create(channelUID, CoreItemFactory.SWITCH).withLabel("Open Door")
-                            .withType(new ChannelTypeUID(BINDING_ID, "opendoor")).build();
+                            .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_OPEN_DOOR)).build();
                     thingBuilder.withChannel(channel);
                     updateThing(thingBuilder.build());
                 }
+
+                channelUID = new ChannelUID(getThing().getUID(), CHANNEL_EVENT_CREATED_AT);
+                if (thing.getChannel(channelUID) == null) {
+                    logger.debug("Adding channel for event date/time, on device {}", getThing().getUID());
+                    ThingBuilder thingBuilder = editThing();
+                    channel = ChannelBuilder.create(channelUID, CoreItemFactory.DATETIME).withLabel("Event DateTime")
+                            .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_CREATED_AT)).build();
+                    thingBuilder.withChannel(channel);
+                    updateThing(thingBuilder.build());
+                }
+
+                channelUID = new ChannelUID(getThing().getUID(), CHANNEL_EVENT_KIND);
+                if (thing.getChannel(channelUID) == null) {
+                    logger.debug("Adding channel for event kind, on device {}", getThing().getUID());
+                    ThingBuilder thingBuilder = editThing();
+                    channel = ChannelBuilder.create(channelUID, CoreItemFactory.STRING).withLabel("Event Type")
+                            .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_KIND)).build();
+                    thingBuilder.withChannel(channel);
+                    updateThing(thingBuilder.build());
+                }
+
             }
         }
     }
@@ -106,7 +137,8 @@ public class OtherDeviceHandler extends RingDeviceHandler {
     protected void minuteTick() {
         logger.debug("OtherDeviceHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
-            initialize();
+            logger.debug("Device data is not yet available for {}. Skipping tick.", getThing().getUID().getId());
+            return;
         }
 
         if (batterySupport) {
@@ -121,6 +153,34 @@ public class OtherDeviceHandler extends RingDeviceHandler {
                         deviceTO.health.batteryPercentage, lastBattery);
 
             }
+        }
+    }
+
+    public void forceSnapshotUpdate(@Nullable String snapshotUrl) {
+        logger.debug("Forcing snapshot update for Device {}", getThing().getUID().getId());
+        byte[] snapshot = new byte[0];
+
+        if (snapshotUrl != null && !snapshotUrl.isEmpty()) {
+            logger.debug("Attempting to download instant snapshot from FCM payload URL");
+            if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof RingAccount account) {
+                snapshot = account.downloadDirectSnapshot(snapshotUrl);
+            }
+        }
+
+        if (snapshot.length == 0) {
+            logger.debug("Instant snapshot unavailable, falling back to camera API request");
+            snapshot = getSnapshot();
+        }
+
+        if (snapshot.length > 0) {
+            long timestamp = getSnapshotTimestamp();
+            lastSnapshotTimestamp = timestamp > 0 ? timestamp : System.currentTimeMillis();
+
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT);
+            updateState(channelUID, new RawType(snapshot, "image/jpeg"));
+
+            channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT_TIMESTAMP);
+            updateState(channelUID, new DateTimeType(Instant.ofEpochMilli(timestamp)));
         }
     }
 
