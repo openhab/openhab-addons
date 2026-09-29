@@ -106,10 +106,6 @@ public class WaterHeaterEntity implements EntityType {
                 CommandMapper.onOffCustom(command, getType(), "turn_away_mode_on", "turn_away_mode_off", entityId);
             case "temperature" ->
                 CommandMapper.onDecimal(command, getType(), "set_temperature", "temperature", entityId);
-            case "target_temp_high" ->
-                CommandMapper.onDecimal(command, getType(), "set_temperature", "temperature_high", entityId);
-            case "target_temp_low" ->
-                CommandMapper.onDecimal(command, getType(), "set_temperature", "temperature_low", entityId);
             default -> Optional.empty();
         };
     }
