@@ -83,9 +83,13 @@ public class PhilipsAirBindingConstants {
     public static final String PROPERTY_DEV_TYPE = "deviceType";
     public static final String PROPERTY_MANUFACTURER = "manufacturer";
     public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_PRE_FILTER_TYPE = "preFilterType";
+    public static final String PROPERTY_HEPA_FILTER_TYPE = "hepaFilterType";
+    public static final String PROPERTY_CARBON_FILTER_TYPE = "carbonFilterType";
 
     // List of all Channel groups
     public static final String CONTROLS = "controls";
+    public static final String CONTROLS_UI = "controls-ui";
     public static final String SENSORS = "sensors";
     public static final String FILTERS = "filters";
 
@@ -141,6 +145,16 @@ public class PhilipsAirBindingConstants {
      * Current minutes left to turn off
      */
     public static final String TIMER_COUNTDOWN = "timer-remaining";
+
+    /**
+     * Total volatile organic compounds level
+     */
+    public static final String TVOC = "tvoc";
+
+    /**
+     * Wi-Fi signal strength
+     */
+    public static final String RSSI = "rssi";
 
     /**
      * Current humidity

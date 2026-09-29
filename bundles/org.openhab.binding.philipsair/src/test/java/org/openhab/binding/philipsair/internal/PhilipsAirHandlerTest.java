@@ -101,6 +101,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
+    private @Mock @NonNullByDefault({}) PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
     private @Mock @NonNullByDefault({}) Request request;
     private @Mock @NonNullByDefault({}) ContentResponse response;
 
@@ -145,7 +146,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
             thingBuilder.withChannel(ChannelBuilder.create(channelUID, parts[1]).build());
             when(callback.isChannelLinked(channelUID)).thenReturn(true);
         }
-        PhilipsAirHandler handler = new PhilipsAirHandler(thingBuilder.build(), httpClient);
+        PhilipsAirHandler handler = new PhilipsAirHandler(thingBuilder.build(), httpClient, stateDescriptionProvider);
         handler.setCallback(callback);
         this.handler = handler;
         return handler;
@@ -369,6 +370,25 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @Test
+    public void tvocAndRssiValues() {
+        PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
+        PhilipsAirPurifierDataDTO data = GSON.fromJson("{\"tvoc\":3,\"rssi\":-50}", PhilipsAirPurifierDataDTO.class);
+
+        assertEquals(3, handler.getValue(new ChannelUID(THING_UID, "sensors#tvoc"), data, null, null));
+        assertEquals(new QuantityType<>(-50, Units.DECIBEL_MILLIWATTS),
+                handler.getValue(new ChannelUID(THING_UID, "sensors#rssi"), data, null, null));
+    }
+
+    @Test
+    public void displayedIndexIsPassedAsReported() {
+        PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
+        ChannelUID channelUID = new ChannelUID(THING_UID, "controls-ui#displayed-index");
+
+        assertEquals("PM2.5", handler.getValue(channelUID,
+                GSON.fromJson("{\"ddp\":\"PM2.5\"}", PhilipsAirPurifierDataDTO.class), null, null));
+    }
+
+    @Test
     public void missingValuesAreNull() {
         PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
         PhilipsAirPurifierDataDTO data = GSON.fromJson("{}", PhilipsAirPurifierDataDTO.class);
@@ -377,7 +397,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
                 "controls#timer", "controls-ui#button-light", "controls-ui#light-level", "controls-ui#displayed-index",
                 "sensors#air-quality-threshold", "sensors#humidity", "sensors#temperature", "sensors#water-level",
                 "controls#target-humidity", "controls#function", "controls#timer-remaining", "sensors#pm25",
-                "sensors#allergen-index", "sensors#error-code")) {
+                "sensors#allergen-index", "sensors#error-code", "sensors#tvoc", "sensors#rssi")) {
             assertNull(handler.getValue(new ChannelUID(THING_UID, channel), data, null, null), channel);
         }
         PhilipsAirPurifierFiltersDTO filters = GSON.fromJson("{}", PhilipsAirPurifierFiltersDTO.class);
@@ -404,6 +424,18 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         commandDto = handler.prepareCommandData("light-level", DecimalType.valueOf("25"));
         assertEquals("{\"aqil\":25}", GSON.toJson(commandDto));
+
+        commandDto = handler.prepareCommandData("light-level", DecimalType.valueOf("30"));
+        assertEquals("{\"aqil\":25}", GSON.toJson(commandDto));
+
+        commandDto = handler.prepareCommandData("light-level", new QuantityType<>(63, Units.PERCENT));
+        assertEquals("{\"aqil\":75}", GSON.toJson(commandDto));
+
+        commandDto = handler.prepareCommandData("light-level", DecimalType.valueOf("150"));
+        assertEquals("{\"aqil\":100}", GSON.toJson(commandDto));
+
+        commandDto = handler.prepareCommandData("light-level", DecimalType.valueOf("-10"));
+        assertEquals("{\"aqil\":0}", GSON.toJson(commandDto));
 
         commandDto = handler.prepareCommandData("child-lock", OnOffType.ON);
         assertEquals("{\"cl\":true}", GSON.toJson(commandDto));

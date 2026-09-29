@@ -16,7 +16,9 @@ import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants
 import static org.openhab.core.thing.Thing.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -56,6 +58,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +74,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Marcel Verpaalen - Add optional channels reported by the device
  * @author Marcel Verpaalen - Release the connection on dispose
  * @author Marcel Verpaalen - Execute commands asynchronously
+ * @author Marcel Verpaalen - Model specific displayed index and threshold options
  *
  */
 @NonNullByDefault
@@ -79,8 +83,25 @@ public class PhilipsAirHandler extends BaseThingHandler {
      * Channels only supported by some models (e.g. humidifiers), mapped to their channel group. They are added to the
      * thing once the device reports the corresponding value.
      */
-    private static final Map<String, String> OPTIONAL_CHANNELS = Map.of(HUMIDITY_SETPOINT, CONTROLS, FUNCTION, CONTROLS,
-            HUMIDITY, SENSORS, TEMPERATURE, SENSORS, WATER_LEVEL, SENSORS, WICKS_FILTER, FILTERS);
+    private static final Map<String, String> OPTIONAL_CHANNELS = Map.of(AUTO_TIMEOFF, CONTROLS, TIMER_COUNTDOWN,
+            CONTROLS, HUMIDITY_SETPOINT, CONTROLS, FUNCTION, CONTROLS, HUMIDITY, SENSORS, TEMPERATURE, SENSORS,
+            WATER_LEVEL, SENSORS, TVOC, SENSORS, RSSI, SENSORS, WICKS_FILTER, FILTERS);
+    /**
+     * Model id prefixes of the devices that can show the gas (TVOC) index on the display, as offered by the Philips
+     * app.
+     */
+    private static final List<String> GAS_INDEX_MODELS = List.of("AC45", "AC6675", "AC56", "MS3", "MS4");
+    private static final String DISPLAYED_INDEX_ALLERGEN = "0";
+    private static final String DISPLAYED_INDEX_PM25 = "1";
+    private static final String DISPLAYED_INDEX_GAS = "2";
+    /**
+     * The air quality notification thresholds (good, fair, poor, very poor) as offered by the Philips app. The AC4373
+     * and AC4375 use other values, which they expect as text.
+     */
+    private static final List<String> THRESHOLD_LABELS = List.of("Good", "Fair", "Poor", "Very poor");
+    private static final List<Integer> THRESHOLDS = List.of(1, 4, 7, 10);
+    private static final List<Integer> TEXT_THRESHOLDS = List.of(13, 19, 29, 40);
+    private static final List<String> TEXT_THRESHOLD_MODELS = List.of("AC4373", "AC4375");
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
     private final Object connectionLock = new Object();
@@ -97,10 +118,14 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private CompletableFuture<@Nullable Void> commandQueue = CompletableFuture.completedFuture(null);
     private PhilipsAirConfiguration config;
     private final HttpClient httpClient;
+    private final PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
+    private boolean modelOptionsSet;
 
-    public PhilipsAirHandler(Thing thing, HttpClient httpClient) {
+    public PhilipsAirHandler(Thing thing, HttpClient httpClient,
+            PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider) {
         super(thing);
         this.httpClient = httpClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
         this.config = loadConfiguration();
     }
 
@@ -174,7 +199,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 if (intCommand == null) {
                     return null;
                 }
-                data.setLightLevel(intCommand);
+                data.setLightLevel(toLightLevel(intCommand));
                 break;
             case DISPLAYED_INDEX:
                 if (stringCommand == null) {
@@ -223,7 +248,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 if (intCommand == null) {
                     return null;
                 }
-                data.setAqit(intCommand);
+                if (hasTextThresholds(deviceInfo)) {
+                    data.setAqit(intCommand.toString());
+                } else {
+                    data.setAqit(intCommand);
+                }
                 break;
             case HUMIDITY_SETPOINT:
                 if (intCommand == null) {
@@ -257,6 +286,15 @@ public class PhilipsAirHandler extends BaseThingHandler {
         return null;
     }
 
+    /**
+     * The device only supports the light levels 0, 25, 50, 75 and 100 %, so other values are rounded to the nearest
+     * supported level.
+     */
+    private static int toLightLevel(int percent) {
+        int clamped = Math.max(0, Math.min(100, percent));
+        return Math.round(clamped / 25f) * 25;
+    }
+
     @Override
     public void initialize() {
         PhilipsAirConfiguration config = loadConfiguration();
@@ -270,6 +308,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
         synchronized (connectionLock) {
             disposed = false;
         }
+        modelOptionsSet = false;
         int refreshInterval = config.getRefreshInterval();
         logger.debug("Start refresh job for {} at interval {} sec.", thing.getUID(), refreshInterval);
         // the first run creates the connection, as the HTTP key exchange may block
@@ -396,6 +435,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
             if (received && connection != null) {
                 updateDeviceConfiguration(connection);
                 addOptionalChannels();
+                setModelOptions();
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -453,8 +493,18 @@ public class PhilipsAirHandler extends BaseThingHandler {
             updateConfiguration(configuration);
         }
         PhilipsAirPurifierDeviceDTO deviceInfo = this.deviceInfo;
-        if (deviceInfo != null) {
-            updateProperties(fillDeviceProperties(deviceInfo, editProperties()));
+        PhilipsAirPurifierFiltersDTO filters = this.filters;
+        if (deviceInfo != null || filters != null) {
+            Map<String, String> properties = editProperties();
+            if (deviceInfo != null) {
+                fillDeviceProperties(deviceInfo, properties);
+            }
+            if (filters != null) {
+                putIfNotNull(properties, PROPERTY_PRE_FILTER_TYPE, filters.getPreFilterType());
+                putIfNotNull(properties, PROPERTY_HEPA_FILTER_TYPE, filters.getHepaFilterType());
+                putIfNotNull(properties, PROPERTY_CARBON_FILTER_TYPE, filters.getCarbonFilterType());
+            }
+            updateProperties(properties);
         }
     }
 
@@ -487,6 +537,66 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Limits the options of the displayed index and the air quality notification threshold to the values the model
+     * supports. This is decided once after the device reported its status, as a single report may lack optional
+     * fields.
+     */
+    private void setModelOptions() {
+        if (modelOptionsSet) {
+            return;
+        }
+        modelOptionsSet = true;
+        PhilipsAirPurifierDeviceDTO deviceInfo = this.deviceInfo;
+
+        List<StateOption> indexOptions = new ArrayList<>(
+                List.of(new StateOption(DISPLAYED_INDEX_ALLERGEN, "Allergen Index"),
+                        new StateOption(DISPLAYED_INDEX_PM25, "PM2.5")));
+        if (supportsGasIndex(deviceInfo, currentData)) {
+            indexOptions.add(new StateOption(DISPLAYED_INDEX_GAS, "Gas"));
+        }
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CONTROLS_UI, DISPLAYED_INDEX),
+                indexOptions);
+
+        List<Integer> thresholds = hasTextThresholds(deviceInfo) ? TEXT_THRESHOLDS : THRESHOLDS;
+        List<StateOption> thresholdOptions = new ArrayList<>();
+        for (int i = 0; i < thresholds.size(); i++) {
+            thresholdOptions.add(new StateOption(thresholds.get(i).toString(), THRESHOLD_LABELS.get(i)));
+        }
+        stateDescriptionProvider.setStateOptions(
+                new ChannelUID(thing.getUID(), SENSORS, AIR_QUALITY_NOTIFICATION_THRESHOLD), thresholdOptions);
+        logger.debug("Options of {}: displayed index {}, threshold {}", thing.getUID(), indexOptions, thresholdOptions);
+    }
+
+    static boolean supportsGasIndex(@Nullable PhilipsAirPurifierDeviceDTO deviceInfo,
+            @Nullable PhilipsAirPurifierDataDTO data) {
+        String model = getModel(deviceInfo);
+        if (model != null && GAS_INDEX_MODELS.stream().anyMatch(model::startsWith)) {
+            return true;
+        }
+        // models unknown to the Philips app are recognized by their gas sensor
+        return data != null && data.getTvoc() != null;
+    }
+
+    static boolean hasTextThresholds(@Nullable PhilipsAirPurifierDeviceDTO deviceInfo) {
+        String model = getModel(deviceInfo);
+        return model != null && TEXT_THRESHOLD_MODELS.stream().anyMatch(model::startsWith);
+    }
+
+    /**
+     * @return the upper case model id, or the device type if the device reports no model id
+     */
+    private static @Nullable String getModel(@Nullable PhilipsAirPurifierDeviceDTO deviceInfo) {
+        if (deviceInfo == null) {
+            return null;
+        }
+        String model = deviceInfo.getModelId();
+        if (model == null || model.isBlank()) {
+            model = deviceInfo.getType();
+        }
+        return model != null ? model.toUpperCase(Locale.ROOT) : null;
+    }
+
     private static boolean isReported(String channelId, @Nullable PhilipsAirPurifierDataDTO data,
             @Nullable PhilipsAirPurifierFiltersDTO filters) {
         if (WICKS_FILTER.equals(channelId)) {
@@ -496,11 +606,15 @@ public class PhilipsAirHandler extends BaseThingHandler {
             return false;
         }
         return switch (channelId) {
+            case AUTO_TIMEOFF -> data.getTimer() != null;
+            case TIMER_COUNTDOWN -> data.getTimerLeft() != null;
             case HUMIDITY_SETPOINT -> data.getHumiditySetpoint() != null;
             case FUNCTION -> data.getFunction() != null;
             case HUMIDITY -> data.getHumidity() != null;
             case TEMPERATURE -> data.getTemperature() != null;
             case WATER_LEVEL -> data.getWaterLevel() != null;
+            case TVOC -> data.getTvoc() != null;
+            case RSSI -> data.getRssi() != null;
             default -> false;
         };
     }
@@ -593,6 +707,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
                     return data.getFunction();
                 case WATER_LEVEL:
                     return toPercent(data.getWaterLevel());
+                case TVOC:
+                    return data.getTvoc();
+                case RSSI:
+                    Integer rssi = data.getRssi();
+                    return rssi != null ? new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS) : null;
             }
         }
 
@@ -632,15 +751,12 @@ public class PhilipsAirHandler extends BaseThingHandler {
         return config;
     }
 
-    private static Map<String, String> fillDeviceProperties(PhilipsAirPurifierDeviceDTO device,
-            Map<String, String> properties) {
+    private static void fillDeviceProperties(PhilipsAirPurifierDeviceDTO device, Map<String, String> properties) {
         properties.put(PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
         // a null value would make updateProperties persist the thing on every update
         putIfNotNull(properties, PROPERTY_MODEL_ID, device.getModelId());
         putIfNotNull(properties, PROPERTY_FIRMWARE_VERSION, device.getSoftwareVersion());
         putIfNotNull(properties, PhilipsAirBindingConstants.PROPERTY_NAME, device.getName());
-
-        return properties;
     }
 
     private static void putIfNotNull(Map<String, String> properties, String key, @Nullable String value) {

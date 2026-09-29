@@ -63,15 +63,16 @@
 	<channel-type id="displayed-index">
 		<item-type>String</item-type>
 		<label>Displayed Index</label>
-		<description>Display PM2.5 index or Allergen Index</description>
+		<description>Index shown on the display</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false" pattern="%s">
 			<options>
+				<option value="0">Allergen Index</option>
 				<option value="1">PM2.5</option>
-				<option value="0">Allergen</option>
+				<option value="2">Gas</option>
 			</options>
 		</state>
 	</channel-type>
@@ -117,7 +118,7 @@
 	</channel-type>
 
 	<channel-type id="pm25">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>PM 2.5 particles pollution level</description>
 		<tags>
@@ -136,15 +137,43 @@
 		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
+	<channel-type id="tvoc">
+		<item-type>Number</item-type>
+		<label>TVOC</label>
+		<description>Total volatile organic compounds level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="rssi" advanced="true">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Signal Strength</label>
+		<description>Wi-Fi signal strength</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
 	<channel-type id="air-quality-threshold">
 		<item-type>Number</item-type>
 		<label>Air Quality Threshold</label>
-		<description>Air quality index at which the device notifies</description>
+		<description>Air quality level at which the Philips app sends a notification</description>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>AirQuality</tag>
 		</tags>
-		<state pattern="%d"/>
+		<state pattern="%d">
+			<options>
+				<option value="1">Good</option>
+				<option value="4">Fair</option>
+				<option value="7">Poor</option>
+				<option value="10">Very poor</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="error-code">
 		<item-type>String</item-type>
@@ -204,7 +233,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<category>Humidity</category>
@@ -215,7 +244,7 @@
 		<state readOnly="true" pattern="%.1f %unit%" min="0" max="100"/>
 	</channel-type>
 	<channel-type id="target-humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity Setpoint</label>
 		<description>Humidity setpoint</description>
 		<category>Humidity</category>

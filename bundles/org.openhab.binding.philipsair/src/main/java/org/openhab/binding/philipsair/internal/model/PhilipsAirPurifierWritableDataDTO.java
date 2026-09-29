@@ -14,6 +14,7 @@ package org.openhab.binding.philipsair.internal.model;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -46,9 +47,10 @@ public class PhilipsAirPurifierWritableDataDTO {
     @SerializedName("mode")
     @Expose
     private @Nullable String mode;
+    // most models use a number, the AC4373 and AC4375 a text
     @SerializedName("aqit")
     @Expose
-    private @Nullable Integer aqit;
+    private @Nullable JsonPrimitive aqit;
     @SerializedName("ddp")
     @Expose
     private @Nullable String displayIndex;
@@ -116,11 +118,23 @@ public class PhilipsAirPurifierWritableDataDTO {
     }
 
     public @Nullable Integer getAqit() {
-        return aqit;
+        JsonPrimitive aqit = this.aqit;
+        if (aqit == null) {
+            return null;
+        }
+        try {
+            return aqit.getAsInt();
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     public void setAqit(int aqit) {
-        this.aqit = aqit;
+        this.aqit = new JsonPrimitive(aqit);
+    }
+
+    public void setAqit(String aqit) {
+        this.aqit = new JsonPrimitive(aqit);
     }
 
     public @Nullable String getDisplayIndex() {

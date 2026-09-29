@@ -66,6 +66,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
     private @Mock @NonNullByDefault({}) PhilipsAirAPIConnection connection;
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
+    private @Mock @NonNullByDefault({}) PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
 
     private final CountDownLatch connectionCreated = new CountDownLatch(1);
     private final CountDownLatch releaseConnection = new CountDownLatch(1);
@@ -78,7 +79,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         config.put(PhilipsAirConfiguration.CONFIG_HOST, "1.1.1.1");
         Thing thing = ThingBuilder.create(THING_TYPE_COAP, THING_UID).withConfiguration(config)
                 .withChannel(ChannelBuilder.create(POWER_CHANNEL, "Switch").build()).build();
-        handler = new PhilipsAirHandler(thing, httpClient) {
+        handler = new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider) {
             @Override
             PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
                 connectionCreated.countDown();

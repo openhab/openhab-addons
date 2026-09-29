@@ -122,22 +122,26 @@ The channels are organized in the groups `controls`, `controls-ui`, `sensors` an
 | controls      | function              | String               | RW         | Function: `P` (purification), `PH` (purification and humidification)                    |
 | controls-ui   | button-light          | Switch               | RW         | Button light                                                                             |
 | controls-ui   | light-level           | Number:Dimensionless | RW         | Display light level (0, 25, 50, 75, 100 %)                                               |
-| controls-ui   | displayed-index       | String               | RW         | Index shown on the display: `1` (PM2.5), `0` (allergen index)                            |
+| controls-ui   | displayed-index       | String               | RW         | Index shown on the display: `0` (allergen index), `1` (PM2.5), `2` (gas, only offered on models with a gas sensor) |
 | sensors       | pm25                  | Number:Density       | R          | PM2.5 particle concentration                                                             |
 | sensors       | allergen-index        | Number               | R          | Allergen index                                                                           |
-| sensors       | air-quality-threshold | Number               | RW         | Air quality index at which the device notifies                                           |
+| sensors       | air-quality-threshold | Number               | RW         | Air quality level at which the Philips app sends a notification: `1` (good), `4` (fair), `7` (poor), `10` (very poor); on the AC4373 and AC4375 `13`, `19`, `29`, `40` |
 | sensors       | error-code            | String               | R          | Error code, e.g. `0` (no error), `49408` (no water), `32768` (water tank open), `49155` (clean pre-filter) |
 | sensors       | humidity              | Number:Dimensionless | R          | Current humidity, corrected by `humidityOffset`                                          |
 | sensors       | temperature           | Number:Temperature   | R          | Current temperature, corrected by `temperatureOffset`                                    |
 | sensors       | water-level           | Number:Dimensionless | R          | Water tank level                                                                         |
+| sensors       | tvoc                  | Number               | R          | Total volatile organic compounds (TVOC) level                                            |
+| sensors       | rssi                  | Number:Power         | R          | Wi-Fi signal strength (advanced)                                                         |
 | filters       | pre-filter-life       | Number:Time          | R          | Time until the pre-filter needs to be cleaned                                            |
 | filters       | hepa-filter-life      | Number:Time          | R          | Remaining lifetime of the HEPA filter                                                    |
 | filters       | carbon-filter-life    | Number:Time          | R          | Remaining lifetime of the active carbon filter                                           |
 | filters       | wick-filter-life      | Number:Time          | R          | Remaining lifetime of the humidifier wick                                                |
 
 The channels `target-humidity`, `function`, `humidity`, `temperature`, `water-level` and `wick-filter-life` are only available on models with a humidifier or the corresponding sensors.
-The `ac2729` and `ac3829-10` thing types always have them.
+The channels `timer` and `timer-remaining` are only available on models with a switch-off timer.
+The `ac2729` and `ac3829-10` thing types always have these channels.
 For the other thing types, in particular `universal` and `coap`, they are added automatically once the device reports the corresponding value.
+The channels `tvoc` and `rssi` are added the same way on all thing types, as only some models report them.
 
 ## Thing Properties
 
@@ -150,6 +154,9 @@ For the other thing types, in particular `universal` and `coap`, they are added 
 | deviceType      | Device type reported during discovery                                 |
 | manufacturer    | Manufacturer reported during discovery                                |
 | macAddress      | MAC address of the device, reported during UPnP discovery             |
+| preFilterType   | Type code of the pre-filter, if reported by the device                |
+| hepaFilterType  | Type code of the HEPA filter, e.g. `A3`, if reported by the device    |
+| carbonFilterType | Type code of the active carbon filter, e.g. `C7`, if reported by the device |
 
 The properties `deviceType`, `manufacturer` and `macAddress` are only set on discovered things.
 

@@ -18,10 +18,7 @@
 			<channel id="power" typeId="power"/>
 			<channel id="fan-speed" typeId="fan-speed"/>
 			<channel id="mode" typeId="mode"/>
-			<channel id="timer" typeId="timer"/>
-			<channel id="timer-remaining" typeId="timer-remaining"/>
 			<channel id="child-lock" typeId="child-lock"/>
-
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="controls-adv">

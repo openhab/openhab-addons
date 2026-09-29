@@ -38,10 +38,13 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.philipsair", service = ThingHandlerFactory.class)
 public class PhilipsAirHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
+    private final PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate
-    public PhilipsAirHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public PhilipsAirHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class PhilipsAirHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
-            return new PhilipsAirHandler(thing, httpClient);
+            return new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider);
         }
         return null;
     }

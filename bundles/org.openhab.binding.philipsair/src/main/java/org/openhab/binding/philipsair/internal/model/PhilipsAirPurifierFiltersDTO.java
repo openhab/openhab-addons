@@ -47,6 +47,21 @@ public class PhilipsAirPurifierFiltersDTO {
     @Nullable
     Integer wickFilter;
 
+    @SerializedName("fltt0")
+    @Expose
+    @Nullable
+    String preFilterType;
+
+    @SerializedName("fltt1")
+    @Expose
+    @Nullable
+    String hepaFilterType;
+
+    @SerializedName("fltt2")
+    @Expose
+    @Nullable
+    String carbonFilterType;
+
     public @Nullable Integer getPreFilter() {
         return preFilter;
     }
@@ -77,5 +92,17 @@ public class PhilipsAirPurifierFiltersDTO {
 
     public void setWickFilter(@Nullable Integer wickFilter) {
         this.wickFilter = wickFilter;
+    }
+
+    public @Nullable String getPreFilterType() {
+        return preFilterType;
+    }
+
+    public @Nullable String getHepaFilterType() {
+        return hepaFilterType;
+    }
+
+    public @Nullable String getCarbonFilterType() {
+        return carbonFilterType;
     }
 }

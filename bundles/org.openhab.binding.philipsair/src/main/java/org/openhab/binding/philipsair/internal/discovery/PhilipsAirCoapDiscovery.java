@@ -83,8 +83,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     private final NetworkAddressService networkAddressService;
 
     @Activate
-    public PhilipsAirCoapDiscovery(@Reference NetworkAddressService networkAddressService,
-            Map<String, Object> configProperties) {
+    public PhilipsAirCoapDiscovery(@Reference NetworkAddressService networkAddressService) {
         super(DISCOVERY_TIME);
 
         CoapConfig.register();
@@ -141,6 +140,11 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         this.networkAddressService = networkAddressService;
         this.client = new CoapClient();
         this.client.setEndpoint(endpoint);
+    }
+
+    @Override
+    @Activate
+    protected void activate(@Nullable Map<String, Object> configProperties) {
         super.activate(configProperties);
     }
 

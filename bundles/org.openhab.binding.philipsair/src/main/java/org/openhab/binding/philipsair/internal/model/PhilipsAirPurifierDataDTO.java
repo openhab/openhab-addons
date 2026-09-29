@@ -46,6 +46,12 @@ public class PhilipsAirPurifierDataDTO extends PhilipsAirPurifierWritableDataDTO
     @SerializedName("wl")
     @Expose
     private @Nullable Integer waterLevel;
+    @SerializedName("tvoc")
+    @Expose
+    private @Nullable Integer tvoc;
+    @SerializedName("rssi")
+    @Expose
+    private @Nullable Integer rssi;
 
     public @Nullable Integer getTimerLeft() {
         return timerLeft;
@@ -101,5 +107,21 @@ public class PhilipsAirPurifierDataDTO extends PhilipsAirPurifierWritableDataDTO
 
     public void setWaterLevel(@Nullable Integer waterLevel) {
         this.waterLevel = waterLevel;
+    }
+
+    public @Nullable Integer getTvoc() {
+        return tvoc;
+    }
+
+    public void setTvoc(@Nullable Integer tvoc) {
+        this.tvoc = tvoc;
+    }
+
+    public @Nullable Integer getRssi() {
+        return rssi;
+    }
+
+    public void setRssi(@Nullable Integer rssi) {
+        this.rssi = rssi;
     }
 }
