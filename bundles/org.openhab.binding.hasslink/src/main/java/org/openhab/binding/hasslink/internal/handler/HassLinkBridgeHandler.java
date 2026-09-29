@@ -172,7 +172,8 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        restBaseUri = wsUri.toString().replaceFirst("^ws", "http").replaceFirst("/api/websocket$", ""); // IPv6 compatible
+        restBaseUri = wsUri.toString().replaceFirst("^ws", "http").replaceFirst("/api/websocket$", ""); // IPv6
+                                                                                                        // compatible
         accessToken = config.token;
 
         HomeAssistantWebSocketClient newClient = new HomeAssistantWebSocketClient(
@@ -530,6 +531,7 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
 
     @Override
     public void onEntitiesSnapshot(List<EntityState> entities) {
+        lastKnownStates.clear();
         for (EntityState state : entities) {
             dispatchState(state);
         }
