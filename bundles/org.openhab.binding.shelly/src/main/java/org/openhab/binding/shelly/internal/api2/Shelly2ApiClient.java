@@ -113,8 +113,6 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * {@link Shelly2ApiClient} Low level part of the RPC API
  *
@@ -1474,9 +1472,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             // the color component always sits at settings.lights[0]
             updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
-
-        logger.debug("updateRGBWStatus() id={}, value={}, channelUpdate={}", idx, new Gson().toJson(value),
-                channelUpdate);
 
         return channelUpdate ? ShellyComponents.updateRGBW(value, getThing()) : false;
     }
