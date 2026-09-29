@@ -199,7 +199,12 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
     private void stopConnection() {
         stopRegistryPolling();
         registry.clear();
+        lastKnownStates.clear();
+        imageCache.clear();
         haConfig = null;
+        rawHaConfig = null;
+        restBaseUri = "";
+        accessToken = "";
         HomeAssistantWebSocketClient localClient = client;
         if (localClient != null) {
             localClient.stop();
