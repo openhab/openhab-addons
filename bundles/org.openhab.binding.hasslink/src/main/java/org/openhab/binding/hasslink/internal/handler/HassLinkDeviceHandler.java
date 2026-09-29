@@ -385,6 +385,8 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
 
     /**
      * Resolves all raw candidate entity IDs from the configuration before filtering (pre-filter).
+     * Glob patterns (e.g. "sensor.*bed*") in config.entityIds are matched and expanded
+     * against the entity registry using HassLinkEntityFilter.
      */
     private Set<String> getAllConfiguredEntityIds(HassLinkBridgeHandler bridgeHandler,
             HassLinkDeviceConfiguration config) {
@@ -394,9 +396,22 @@ public class HassLinkDeviceHandler extends BaseThingHandler {
             rawEntityIds.addAll(bridgeHandler.getEntitiesForDevice(deviceId.trim()));
         }
 
-        for (String entityId : config.entityIds) {
-            if (!entityId.isBlank()) {
-                rawEntityIds.add(entityId.trim());
+        Set<String> registryEntities = bridgeHandler.getRegistry().getEntities().stream()
+                .map(EntityRegistryEntry::entityId).collect(Collectors.toSet());
+
+        for (String entityIdOrPattern : config.entityIds) {
+            if (entityIdOrPattern.isBlank()) {
+                continue;
+            }
+            String trimmed = entityIdOrPattern.trim();
+            if (trimmed.contains("*") || trimmed.contains("?")) {
+                for (String knownEntityId : registryEntities) {
+                    if (HassLinkEntityFilter.matchesGlobOrEquals(trimmed, knownEntityId)) {
+                        rawEntityIds.add(knownEntityId);
+                    }
+                }
+            } else {
+                rawEntityIds.add(trimmed);
             }
         }
 
