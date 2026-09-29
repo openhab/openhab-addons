@@ -439,7 +439,8 @@ public class PhilipsAirHandler extends BaseThingHandler {
         logger.trace("Update data for {}", thing.getUID());
         synchronized (updateLock) {
             boolean received;
-            String error = "@text/offline.communication-error.no-response";
+            @Nullable
+            String error = null;
             try {
                 received = requestData(connection);
             } catch (PhilipsAirAPIException | JsonSyntaxException e) {
@@ -457,8 +458,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                logger.debug("No data received for {}: {}", thing.getUID(), error);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+                logger.debug("No data received for {}: {}", thing.getUID(), error != null ? error : "no status");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        error != null ? error : "@text/offline.communication-error.no-response");
             }
         }
     }

@@ -64,30 +64,35 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private static final String RESOURCE_PATH_CONTROL = "/sys/dev/control";
     private static final int COAP_PORT = 5683;
     private static final long TIMEOUT = 25000;
-    private static final int MAX_REREGISTER_ATTEMPTS = 6;
-    private static final long MIN_REREGISTER_AFTER_MS = 30000;
+    private static final long PING_TIMEOUT = 5000;
+    private static final int MAX_MID = 0xFFFF;
+    private static final long MIN_PING_AFTER_MS = 30000;
     private static final long MIN_STALE_AFTER_MS = 60000;
 
     private final Gson gson = new Gson();
-    private final long reregisterAfterMs;
+    private final long pingAfterMs;
     private final long staleAfterMs;
 
     private String host = "";
     private final CoapClient client = new CoapClient();
+    // pings the device with a shorter timeout than the commands, as it is done from the periodic connection check
+    private final CoapClient pingClient = new CoapClient();
     private final CoapEndpoint endpoint;
     private volatile long counter = 1;
     // commands are only serialized with each other, so they never wait for the observe relation to be (re)established
     private final Object commandLock = new Object();
     private boolean hasSync = false;
     private long syncCounter = 0;
-    private volatile int attempt = 0;
     private volatile @Nullable Consumer<PhilipsAirAPIConnection> listener;
     private volatile @Nullable CoapObserveRelation observe = null;
     private volatile @Nullable String lastJson = null;
     // the scheme of the last status, commands are sent in the classic scheme until the device reported its status
     private volatile CoapKeyScheme keyScheme = CoapKeyScheme.CLASSIC;
-    private volatile long lastUpdated = 0L; // epoch ms of last valid JSON
-    // MID of the last valid notification, written by the Californium thread
+    // epoch ms of the last valid JSON or answer to a ping
+    private volatile long lastContact = 0L;
+    // set when the device did not answer, as it may have lost the observe relation when it comes back
+    private volatile boolean deviceMissed = false;
+    // The highest MID of the notifications and of the observe requests sent. Written by the Californium thread.
     private volatile int mid;
 
     /**
@@ -105,7 +110,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             logger.debug("Host is empty, cannot start COAP connection");
         }
         long refreshIntervalMs = TimeUnit.SECONDS.toMillis(config.getRefreshInterval());
-        reregisterAfterMs = Math.max(refreshIntervalMs, MIN_REREGISTER_AFTER_MS);
+        pingAfterMs = Math.max(refreshIntervalMs, MIN_PING_AFTER_MS);
         staleAfterMs = Math.max(2 * refreshIntervalMs, MIN_STALE_AFTER_MS);
 
         // a copy, as the standard configuration is shared with the other bindings using Californium
@@ -121,35 +126,43 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         }
         client.setEndpoint(endpoint);
         client.setTimeout(TIMEOUT);
+        pingClient.setEndpoint(endpoint);
+        pingClient.setTimeout(PING_TIMEOUT);
         logger.debug("PhilipsAirCoapAPIConnection initialized using host {}", host);
     }
 
     /**
-     * Establishes the observe relation, or re-registers it when the device has not sent a notification recently. The
-     * relation itself is asynchronous; only the counter sync before a new relation waits for the device.
+     * Establishes the observe relation, or checks the device when it has not been heard from recently. The relation
+     * itself is asynchronous; only the counter sync before a new relation and the ping wait for the device.
      */
     @Override
     public synchronized void ensureConnected() {
         if (listener == null) {
             return;
         }
-        final long sinceLastUpdate = System.currentTimeMillis() - lastUpdated;
         final CoapObserveRelation currentObserve = this.observe;
         if (currentObserve != null && !currentObserve.isCanceled()) {
-            if (sinceLastUpdate < reregisterAfterMs) {
+            final long sinceLastContact = System.currentTimeMillis() - lastContact;
+            if (sinceLastContact < pingAfterMs) {
                 return;
             }
-            if (attempt < MAX_REREGISTER_ATTEMPTS) {
-                attempt++;
-                logger.debug("No update from {} for {}ms, re-register #{}: {}", host, sinceLastUpdate, attempt,
-                        currentObserve.reregister());
+            // A device in standby only pushes changes and does not answer a status request, so the silence is only a
+            // failure if the device does not answer a ping either
+            if (!pingDevice()) {
+                // Californium cancels the relation when the device does not answer its registration, which restarts it
+                deviceMissed = true;
+                logger.debug("No contact with {} for {}ms", host, sinceLastContact);
                 return;
             }
-            logger.debug("No update from {} after {} re-registrations, restarting observe", host, attempt);
+            if (!deviceMissed) {
+                return;
+            }
+            // the device may have lost the relation while it was away
+            deviceMissed = false;
+            logger.debug("{} answers again, restarting observe", host);
             currentObserve.proactiveCancel();
             this.observe = null;
         }
-        attempt = 0;
         startObserve();
     }
 
@@ -169,14 +182,14 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             request.setURI(uri);
             request.setType(Type.CON);
             request.setObserve();
-            // Workaround for the deduplication of the device: a MID far from the last one seen in a notification is
-            // replaced by the one following it.
+            // Workaround for the deduplication of the device: once it sent a notification, the request continues
+            // after the highest MID seen, instead of the MID Californium would assign. A MID is never used twice.
             int lastMid = this.mid;
-            if (lastMid > 0 && Math.abs(lastMid - request.getMID()) > 100) {
-                logger.debug("Different MIDs in request and responses: {} & {}", request.getMID(), lastMid + 1);
-                request.setMID(lastMid + 1);
-            } else {
-                logger.debug("MIDs in sync: request {}, last response {}", request.getMID(), lastMid);
+            if (lastMid > 0) {
+                int requestMid = lastMid % MAX_MID + 1;
+                request.setMID(requestMid);
+                this.mid = requestMid;
+                logger.debug("Observe request MID {}, following the MID {}", requestMid, lastMid);
             }
 
             logger.debug("Start Observe request {}", uri);
@@ -202,6 +215,50 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         }
     }
 
+    /**
+     * Checks that the device is reachable with a counter sync, which it also answers in standby. A device only pushes
+     * its status when something changed, so its last status is still valid as long as it answers.
+     *
+     * @return true if the device answered
+     */
+    boolean pingDevice() {
+        String response = requestSync();
+        if (response == null || response.length() < 8) {
+            logger.debug("No answer to the ping of {}", host);
+            return false;
+        }
+        try {
+            counter = Long.parseUnsignedLong(response.substring(0, 8), 16);
+        } catch (NumberFormatException e) {
+            logger.debug("Invalid answer to the ping of {}: '{}'", host, response);
+            return false;
+        }
+        lastContact = System.currentTimeMillis();
+        logger.debug("{} answered the ping, counter {}", host, counter);
+        return true;
+    }
+
+    /**
+     * @return the answer of the device to the counter sync, or null if it did not answer
+     */
+    @Nullable
+    String requestSync() {
+        try {
+            String response = post(pingClient, host, COAP_PORT, RESOURCE_PATH_SYNC, String.format("%08X", counter));
+            return response.isEmpty() ? null : response;
+        } catch (ConnectorException | IOException e) {
+            logger.debug("Error while pinging {}: {}", host, e.getMessage());
+            return null;
+        } catch (RuntimeException e) {
+            // Californium wraps the interruption while waiting for the response
+            if (e.getCause() instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+                return null;
+            }
+            throw e;
+        }
+    }
+
     private void processCoapResponse(String uri, @Nullable CoapResponse response) {
         if (response != null) {
             if (!response.isSuccess()) {
@@ -211,7 +268,11 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             String content = response.getResponseText();
             if (content != null) {
                 if (processNotification(content, uri)) {
-                    this.mid = response.advanced().getMID();
+                    int notificationMid = response.advanced().getMID();
+                    // a MID is only replaced by a later one, so restarts do not use the MID of an earlier request again
+                    if (((notificationMid - this.mid) & MAX_MID) < MAX_MID / 2) {
+                        this.mid = notificationMid;
+                    }
                 }
             } else {
                 logger.debug("Response content null for {}", response.advanced());
@@ -233,8 +294,9 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         }
         logger.debug("Status from {}: {}", host, resp);
         lastJson = resp;
-        lastUpdated = System.currentTimeMillis();
-        attempt = 0;
+        lastContact = System.currentTimeMillis();
+        // the relation delivers, so the device did not lose it
+        deviceMissed = false;
         Consumer<PhilipsAirAPIConnection> listener = this.listener;
         if (listener != null) {
             listener.accept(this);
@@ -299,7 +361,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
      */
     private @Nullable String currentStatus() {
         String json = lastJson;
-        return json != null && System.currentTimeMillis() - lastUpdated < staleAfterMs ? json : null;
+        return json != null && System.currentTimeMillis() - lastContact < staleAfterMs ? json : null;
     }
 
     @Override
@@ -316,6 +378,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             this.observe = null;
         }
         client.shutdown();
+        pingClient.shutdown();
         endpoint.destroy();
         logger.debug("PhilipsAirCoapAPIConnection for {} disposed", host);
     }

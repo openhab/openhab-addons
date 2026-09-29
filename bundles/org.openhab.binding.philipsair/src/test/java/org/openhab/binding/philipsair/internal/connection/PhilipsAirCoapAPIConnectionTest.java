@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.californium.core.config.CoapConfig;
 import org.eclipse.californium.elements.config.Configuration;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -115,6 +116,43 @@ public class PhilipsAirCoapAPIConnectionTest {
 
         assertTrue(notifications.isEmpty());
         assertNull(connection.getAirPurifierStatus("127.0.0.1"));
+    }
+
+    /**
+     * Creates a connection of which the device answers the counter sync with the given content.
+     */
+    private PhilipsAirCoapAPIConnection connectionAnswering(@Nullable String answer) {
+        PhilipsAirConfiguration config = new PhilipsAirConfiguration();
+        config.setHost("127.0.0.1");
+        return new PhilipsAirCoapAPIConnection(config, notifications::add) {
+            @Override
+            @Nullable
+            String requestSync() {
+                return answer;
+            }
+        };
+    }
+
+    @Test
+    public void deviceAnsweringTheSyncIsReachable() {
+        PhilipsAirCoapAPIConnection standby = connectionAnswering("0000002A");
+        try {
+            assertTrue(standby.pingDevice());
+        } finally {
+            standby.dispose();
+        }
+    }
+
+    @Test
+    public void deviceWithoutValidSyncAnswerIsNotReachable() {
+        for (String answer : new String[] { "", "0000", "zzzzzzzz", null }) {
+            PhilipsAirCoapAPIConnection silent = connectionAnswering(answer);
+            try {
+                assertFalse(silent.pingDevice());
+            } finally {
+                silent.dispose();
+            }
+        }
     }
 
     @Test
