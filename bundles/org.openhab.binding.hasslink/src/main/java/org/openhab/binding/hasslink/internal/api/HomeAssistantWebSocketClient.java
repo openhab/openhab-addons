@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -464,11 +465,11 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
             return;
         }
         if (id == pendingDeviceRegistryId) {
-            listener.onDeviceRegistrySnapshot(toJsonObjectList(result));
+            toJsonObjectList(result).ifPresent(listener::onDeviceRegistrySnapshot);
             return;
         }
         if (id == pendingEntityRegistryId) {
-            listener.onEntityRegistrySnapshot(toJsonObjectList(result));
+            toJsonObjectList(result).ifPresent(listener::onEntityRegistrySnapshot);
             return;
         }
         ResultError error = result.error;
@@ -523,13 +524,13 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
         listener.onEntitiesSnapshot(entities);
     }
 
-    private List<JsonObject> toJsonObjectList(ResultMessage result) {
+    private Optional<List<JsonObject>> toJsonObjectList(ResultMessage result) {
         JsonElement resultData = result.result;
         if (!result.success || resultData == null || !resultData.isJsonArray()) {
             ResultError error = result.error;
             logger.warn("Failed to retrieve Home Assistant registry: {}",
                     error != null ? error.message : "unknown error");
-            return List.of();
+            return Optional.empty();
         }
         List<JsonObject> entries = new ArrayList<>();
         for (JsonElement element : resultData.getAsJsonArray()) {
@@ -537,7 +538,7 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
                 entries.add(element.getAsJsonObject());
             }
         }
-        return entries;
+        return Optional.of(entries);
     }
 
     private void scheduleReconnect() {
