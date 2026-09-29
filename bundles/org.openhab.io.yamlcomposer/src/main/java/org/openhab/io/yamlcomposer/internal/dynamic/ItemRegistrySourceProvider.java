@@ -100,7 +100,7 @@ public class ItemRegistrySourceProvider implements DynamicSourceProvider<Item>, 
 
     @Override
     public void allItemsChanged(Collection<String> oldItemNames) {
-        // Bulk reset/reload notification handler
+        onChangeListener.accept(new EntityChange(SOURCE_NAME, null, null));
     }
 
     @Deactivate
