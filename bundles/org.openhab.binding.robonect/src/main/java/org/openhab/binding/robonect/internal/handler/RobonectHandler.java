@@ -143,6 +143,7 @@ public class RobonectHandler extends BaseThingHandler {
     private RobonectClient robonectClient;
     private final @Nullable RobonectPushServlet pushServlet;
     private boolean ajaxUiScraping;
+    private boolean useUnofficialApi;
 
     private static final Set<String> JOB_TIMER_LABELS = Set.of("Auftrag", "Job", "Travail", "Ordine", "Jobb");
     private static final Set<String> END_OF_DAY_LABELS = Set.of("Feierabend", "End of day", "Fin de journée de travail",
@@ -154,7 +155,8 @@ public class RobonectHandler extends BaseThingHandler {
     private static final Pattern WIRE_CHANNEL_PATTERN = Pattern.compile("wire-sensor-\\d+-.+");
     private static final Pattern PUSH_TRIGGER_CHANNEL_PATTERN = Pattern
             .compile("push-trigger-(\\d+)-(name|enter|leave)");
-    private static final Pattern REMOTE_CHANNEL_PATTERN = Pattern.compile("remote-([1-5])-(name|distance|proportion)");
+    private static final Pattern REMOTE_CHANNEL_PATTERN = Pattern
+            .compile("remote-([1-5])-(name|distance|proportion|visible|path|corridor-cut)");
 
     public RobonectHandler(Thing thing, HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
         this(thing, httpClientFactory, timeZoneProvider, null);
@@ -276,6 +278,10 @@ public class RobonectHandler extends BaseThingHandler {
         }
         int remoteStart = Integer.parseInt(matcher.group(1));
         String setting = matcher.group(2);
+        if (setting.equals("visible") || setting.equals("path") || setting.equals("corridor-cut")) {
+            updateRemoteViaWebInterface(remoteStart, setting, command);
+            return;
+        }
         String name = null;
         Integer distance = null;
         Integer proportion = null;
@@ -315,6 +321,54 @@ public class RobonectHandler extends BaseThingHandler {
         if (result.isSuccessful()) {
             refreshRemoteInfo();
         }
+    }
+
+    /** Updates a setting supported only by the web interface endpoint. */
+    private void updateRemoteViaWebInterface(int remoteStart, String setting, Command command) {
+        if (!useUnofficialApi) {
+            logger.warn("Cannot update remote start {} {} because the unofficial API is disabled", remoteStart,
+                    setting);
+            return;
+        }
+        if ((setting.equals("visible") || setting.equals("corridor-cut")) && !(command instanceof OnOffType)
+                || setting.equals("path") && !(command instanceof DecimalType)) {
+            return;
+        }
+
+        RemoteInfo info = robonectClient.getRemoteInfo();
+        Remote remote = switch (remoteStart) {
+            case 1 -> info.getRemoteStart1();
+            case 2 -> info.getRemoteStart2();
+            case 3 -> info.getRemoteStart3();
+            case 4 -> info.getRemoteStart4();
+            case 5 -> info.getRemoteStart5();
+            default -> null;
+        };
+        if (!info.isSuccessful() || remote == null || remote.getName() == null || remote.getProportion() == null
+                || remote.getDistance() == null || remote.getPath() == null || remote.getVisible() == null
+                || remote.getCorridorcut() == null) {
+            logger.debug("Cannot update remote start {} because its current settings are incomplete", remoteStart);
+            return;
+        }
+
+        boolean visible = remote.getVisible();
+        boolean corridorCut = remote.getCorridorcut();
+        int path = remote.getPath();
+        if (setting.equals("visible")) {
+            visible = command == OnOffType.ON;
+        } else if (setting.equals("corridor-cut")) {
+            corridorCut = command == OnOffType.ON;
+        } else {
+            try {
+                path = ((DecimalType) command).toBigDecimal().intValueExact();
+            } catch (ArithmeticException e) {
+                logger.debug("Ignoring non-integer remote start path value");
+                return;
+            }
+        }
+        robonectClient.updateRemoteStartViaWebInterface(remoteStart, remote.getName(), remote.getProportion(),
+                remote.getDistance(), path, visible, corridorCut);
+        refreshRemoteInfo();
     }
 
     /** Updates a single setting for a configurable timer. */
@@ -1464,6 +1518,7 @@ public class RobonectHandler extends BaseThingHandler {
     public void initialize() {
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
         ajaxUiScraping = robonectConfig.isAjaxUiScraping();
+        useUnofficialApi = robonectConfig.isUseUnofficialApi();
         RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
                 robonectConfig.getPassword());
 

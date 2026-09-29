@@ -64,6 +64,7 @@ import org.openhab.binding.robonect.internal.model.cmd.NameCommand;
 import org.openhab.binding.robonect.internal.model.cmd.PortalCommand;
 import org.openhab.binding.robonect.internal.model.cmd.PushCommand;
 import org.openhab.binding.robonect.internal.model.cmd.RemoteCommand;
+import org.openhab.binding.robonect.internal.model.cmd.RemoteWebCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand;
 import org.openhab.binding.robonect.internal.model.cmd.ServiceCommand.Operation;
 import org.openhab.binding.robonect.internal.model.cmd.StartCommand;
@@ -91,6 +92,8 @@ public class RobonectClient {
     private final Logger logger = LoggerFactory.getLogger(RobonectClient.class);
 
     private final String baseUrl;
+
+    private final String webBaseUrl;
 
     private final String ajaxUrl;
 
@@ -244,6 +247,7 @@ public class RobonectClient {
     public RobonectClient(HttpClient httpClient, RobonectEndpoint endpoint) {
         this.httpClient = httpClient;
         this.baseUrl = "http://" + endpoint.getIpAddress() + "/json";
+        this.webBaseUrl = "http://" + endpoint.getIpAddress();
         this.ajaxUrl = "http://" + endpoint.getIpAddress() + "/ajax";
         this.parser = new ModelParser();
 
@@ -254,7 +258,7 @@ public class RobonectClient {
 
     private void addPreemptiveAuthentication(HttpClient httpClient, RobonectEndpoint endpoint) {
         AuthenticationStore auth = httpClient.getAuthenticationStore();
-        URI uri = URI.create(baseUrl);
+        URI uri = URI.create(baseUrl).resolve("/");
         auth.addAuthenticationResult(
                 new BasicResult(HttpHeader.AUTHORIZATION, uri, "Basic " + Base64.getEncoder().encodeToString(
                         (endpoint.getUser() + ":" + endpoint.getPassword()).getBytes(StandardCharsets.ISO_8859_1))));
@@ -408,6 +412,14 @@ public class RobonectClient {
      */
     public RemoteInfo getRemoteInfo() {
         return parser.parse(sendCommand(new RemoteCommand()), RemoteInfo.class);
+    }
+
+    /** Saves remote-start settings through the web interface's unofficial API. */
+    public void updateRemoteStartViaWebInterface(int remoteStart, String name, int proportion, int distance, int path,
+            boolean visible, boolean corridorCut) {
+        sendCommand(
+                new RemoteWebCommand(webBaseUrl, remoteStart, name, proportion, distance, path, visible, corridorCut),
+                webBaseUrl);
     }
 
     /** Updates one or more values of a remote-start point. */

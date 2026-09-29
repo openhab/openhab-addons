@@ -260,6 +260,12 @@
 				<default>false</default>
 				<description>Read additional job and end-of-day status from the localized Robonect web interface.</description>
 			</parameter>
+			<parameter name="useUnofficialApi" type="boolean" required="false">
+				<label>Use Unofficial Web Interface API</label>
+				<default>false</default>
+				<description>Allow changing remote-start visibility, path, and corridor cut through the unofficial Robonect web
+					interface API.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -334,7 +340,7 @@
 	<channel-type id="driveMotorPowerType">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Drive Motor Power</label>
-		<state readOnly="true" pattern="%d %%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="driveMotorSpeedType">
@@ -400,22 +406,22 @@
 	<channel-type id="remoteSwitchType">
 		<item-type>Switch</item-type>
 		<label>Remote Start Switch</label>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="remotePathType">
 		<item-type>Number</item-type>
 		<label>Remote Start Path</label>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="remoteProportionType">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Remote Start Proportion</label>
-		<state readOnly="false" pattern="%d %%"/>
+		<state min="0" max="100" step="1" readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="remoteDistanceType">
 		<item-type>Number:Length</item-type>
 		<label>Remote Start Distance</label>
-		<state readOnly="false" pattern="%d %unit%"/>
+		<state min="0" max="300" step="1" readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="wireSensorLabelType">
@@ -426,7 +432,7 @@
 	<channel-type id="wireSensorQualityType">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Boundary Wire Sensor Quality</label>
-		<state readOnly="true" pattern="%d %%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="wireSensorValueType">
 		<item-type>Number</item-type>
@@ -606,14 +612,14 @@
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>
 		</tags>
-		<state readOnly="true" pattern="%d %%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="blades-quality">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Blade Quality</label>
 		<description>The quality of the blades</description>
-		<state readOnly="true" pattern="%d %%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="blades-usage-hours">
@@ -664,7 +670,7 @@
 	<channel-type id="batteryChargeType">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Charge</label>
-		<state readOnly="true" pattern="%d %%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="doorSwitchType">

@@ -38,6 +38,8 @@ public class RobonectConfig {
 
     private boolean ajaxUiScraping;
 
+    private boolean useUnofficialApi;
+
     public String getHost() {
         return host;
     }
@@ -72,5 +74,9 @@ public class RobonectConfig {
 
     public boolean isAjaxUiScraping() {
         return ajaxUiScraping;
+    }
+
+    public boolean isUseUnofficialApi() {
+        return useUnofficialApi;
     }
 }
