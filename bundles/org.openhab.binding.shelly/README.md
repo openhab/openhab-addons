@@ -1129,12 +1129,12 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention               |
 |         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention               |
 | meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                                 |
-|         | energyHistMin1    | Number             | yes       |          | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
-|         | energyHistMin2    | Number             | yes       |          | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
-|         | energyHistMin3    | Number             | yes       |          | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
-|         | energyAvgLast3Min | Number             | yes       |          | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
 |         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                                    |
-|         | lastUpdate        | DateTime           | yes       |          | Timestamp of the last measurement                                                                  |
+|         | energyHistMin1    | Number             | yes       | yes      | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number             | yes       | yes      | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number             | yes       | yes      | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number             | yes       | yes      | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | lastUpdate        | DateTime           | yes       | yes      | Timestamp of the last measurement                                                                  |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
@@ -1149,12 +1149,12 @@ totalEnergy might reset on restart depending on device type and firmware version
 |         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
 | white   | brightness        | Multiple (*) | r/w       |          | Main dimming control according to openHAB Light Control Convention                                 |
 | meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts                                                                 |
-|         | energyHistMin1    | Number       | yes       |          | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
-|         | energyHistMin2    | Number       | yes       |          | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
-|         | energyHistMin3    | Number       | yes       |          | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
-|         | energyAvgLast3Min | Number       | yes       |          | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
 |         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                                                    |
-|         | lastUpdate        | DateTime     | yes       |          | Timestamp of the last measurement                                                                  |
+|         | energyHistMin1    | Number       | yes       | yes      | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number       | yes       | yes      | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number       | yes       | yes      | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number       | yes       | yes      | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | lastUpdate        | DateTime     | yes       | yes      | Timestamp of the last measurement                                                                  |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
@@ -1180,12 +1180,12 @@ totalEnergy might reset on restart depending on device type and firmware version
 |         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention     |
 |         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention     |
 | meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                       |
-|         | energyHistMin1    | Number             | yes       |          | Total energy consumed during the previous minute, minute -1 (Wh)                         |
-|         | energyHistMin2    | Number             | yes       |          | Total energy consumed during minute -2 (Wh)                                              |
-|         | energyHistMin3    | Number             | yes       |          | Total energy consumed during minute -3 (Wh)                                              |
-|         | energyAvgLast3Min | Number             | yes       |          | Average energy per minute over minutes -1 to -3 (Wh)                                     |
 |         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                          |
-|         | lastUpdate        | DateTime           | yes       |          | Timestamp of the last measurement                                                        |
+|         | energyHistMin1    | Number             | yes       | yes      | Total energy consumed during the previous minute, minute -1 (Wh)                         |
+|         | energyHistMin2    | Number             | yes       | yes      | Total energy consumed during minute -2 (Wh)                                              |
+|         | energyHistMin3    | Number             | yes       | yes      | Total energy consumed during minute -3 (Wh)                                              |
+|         | energyAvgLast3Min | Number             | yes       | yes      | Average energy per minute over minutes -1 to -3 (Wh)                                     |
+|         | lastUpdate        | DateTime           | yes       | yes      | Timestamp of the last measurement                                                        |
 
 ### Shelly Duo RGBW Color Bulb (thing-type: shellycolorbulb)
 
@@ -1206,12 +1206,12 @@ totalEnergy might reset on restart depending on device type and firmware version
 |         | effect            | Number       | r/w       |          | Puts the light into effect mode: 0..3                                  |
 |         |                   |              |           |          | 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash                |
 | meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts                                     |
-|         | energyHistMin1    | Number       | yes       |          | Total energy consumed during the previous minute, minute -1 (Wh)       |
-|         | energyHistMin2    | Number       | yes       |          | Total energy consumed during minute -2 (Wh)                            |
-|         | energyHistMin3    | Number       | yes       |          | Total energy consumed during minute -3 (Wh)                            |
-|         | energyAvgLast3Min | Number       | yes       |          | Average energy per minute over minutes -1 to -3 (Wh)                   |
 |         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                        |
-|         | lastUpdate        | DateTime     | yes       |          | Timestamp of the last measurement                                      |
+|         | energyHistMin1    | Number       | yes       | yes      | Total energy consumed during the previous minute, minute -1 (Wh)       |
+|         | energyHistMin2    | Number       | yes       | yes      | Total energy consumed during minute -2 (Wh)                            |
+|         | energyHistMin3    | Number       | yes       | yes      | Total energy consumed during minute -3 (Wh)                            |
+|         | energyAvgLast3Min | Number       | yes       | yes      | Average energy per minute over minutes -1 to -3 (Wh)                   |
+|         | lastUpdate        | DateTime     | yes       | yes      | Timestamp of the last measurement                                      |
 
 ### Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 
@@ -1230,42 +1230,48 @@ totalEnergy might reset on restart depending on device type and firmware version
 |         | gain              | Dimmer       | r/w       | yes      | Gain setting: 0..100%     or 0..100                                                                |
 |         | effect            | Number       | r/w       |          | Puts the light into effect mode: 0..3 0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash      |
 | meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts                                                                 |
-|         | energyHistMin1    | Number       | yes       |          | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
-|         | energyHistMin2    | Number       | yes       |          | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
-|         | energyHistMin3    | Number       | yes       |          | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
-|         | energyAvgLast3Min | Number       | yes       |          | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
 |         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                                                    |
-|         | lastUpdate        | DateTime     | yes       |          | Timestamp of the last measurement                                                                  |
+|         | energyHistMin1    | Number       | yes       | yes      | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number       | yes       | yes      | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number       | yes       | yes      | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number       | yes       | yes      | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | lastUpdate        | DateTime     | yes       | yes      | Timestamp of the last measurement                                                                  |
 
 `Note`:
 totalEnergy might reset on restart depending on device type and firmware version
 
 ### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-white)
 
-| Group    | Channel      | Type         | read-only | Advanced | Description                                                                 |
-| -------- | ------------ | ------------ | --------- | -------- | --------------------------------------------------------------------------- |
-| control  | input        | Switch       | yes       |          | State of Input                                                              |
-| light1   | brightness   | Multiple (*) | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention |
-|          | button       | Trigger      | yes       |          | Event trigger, see section Button Events                                    |
-|          | autoOn       | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds      |
-|          | autoOff      | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds      |
-|          | timerActive  | Switch       | yes       |          | ON: An auto-on/off timer is active                                          |
-| light2   | brightness   | Multiple (*) | r/w       |          | Light 2: Main dimming control according to openHAB Light Control Convention |
-|          | button       | Trigger      | yes       |          | Event trigger, see section Button Events                                    |
-|          | autoOn       | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds      |
-|          | autoOff      | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds      |
-|          | timerActive  | Switch       | yes       |          | ON: An auto-on/off timer is active                                          |
-| light3   | brightness   | Multiple (*) | r/w       |          | Light 3: Main dimming control according to openHAB Light Control Convention |
-|          | button       | Trigger      | yes       |          | Event trigger, see section Button Events                                    |
-|          | autoOn       | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds      |
-|          | autoOff      | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds      |
-|          | timerActive  | Switch       | yes       |          | ON: An auto-on/off timer is active                                          |
-| light4   | brightness   | Multiple (*) | r/w       |          | Light 4: Main dimming control according to openHAB Light Control Convention |
-|          | button       | Trigger      | yes       |          | Event trigger, see section Button Events                                    |
-|          | autoOn       | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds      |
-|          | autoOff      | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds      |
-|          | timerActive  | Switch       | yes       |          | ON: An auto-on/off timer is active                                          |
-| meter    | currentPower | Number       | yes       |          | Current power consumption in Watts (all channels)                           |
+| Group   | Channel           | Type         | read-only | Advanced | Description                                                                                        |
+|---------|-------------------|--------------|-----------|----------|----------------------------------------------------------------------------------------------------|
+| control | input             | Switch       | yes       |          | State of Input                                                                                     |
+| light1  | brightness        | Multiple (*) | r/w       |          | Light 1: Main dimming control according to openHAB Light Control Convention                        |
+|         | button            | Trigger      | yes       |          | Event trigger, see section Button Events                                                           |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| light2  | brightness        | Multiple (*) | r/w       |          | Light 2: Main dimming control according to openHAB Light Control Convention                        |
+|         | button            | Trigger      | yes       |          | Event trigger, see section Button Events                                                           |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| light3  | brightness        | Multiple (*) | r/w       |          | Light 3: Main dimming control according to openHAB Light Control Convention                        |
+|         | button            | Trigger      | yes       |          | Event trigger, see section Button Events                                                           |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| light4  | brightness        | Multiple (*) | r/w       |          | Light 4: Main dimming control according to openHAB Light Control Convention                        |
+|         | button            | Trigger      | yes       |          | Event trigger, see section Button Events                                                           |
+|         | autoOn            | Number       | r/w       |          | Sets a timer to turn the device ON after every OFF command; in seconds                             |
+|         | autoOff           | Number       | r/w       |          | Sets a timer to turn the device OFF after every ON command; in seconds                             |
+|         | timerActive       | Switch       | yes       |          | ON: An auto-on/off timer is active                                                                 |
+| meter   | currentPower      | Number       | yes       |          | Current power consumption in Watts (all channels)                                                  |
+|         | totalEnergy       | Number       | yes       |          | Total energy consumption in kWh                                                                    |
+|         | energyHistMin1    | Number       | yes       | yes      | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|         | energyHistMin2    | Number       | yes       | yes      | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|         | energyHistMin3    | Number       | yes       | yes      | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|         | energyAvgLast3Min | Number       | yes       | yes      | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|         | lastUpdate        | DateTime     | yes       | yes      | Timestamp of the last measurement                                                                  |
 
 `Note`:
 channel1..channel4 are deprecated, use light1..light4 instead (same channels, without the button trigger).
@@ -1296,12 +1302,12 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
 |         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
 | meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                   |
-|         | energyHistMin1    | Number             | yes       |          | Total energy consumed during the previous minute, minute -1 (Wh)                     |
-|         | energyHistMin2    | Number             | yes       |          | Total energy consumed during minute -2 (Wh)                                          |
-|         | energyHistMin3    | Number             | yes       |          | Total energy consumed during minute -3 (Wh)                                          |
-|         | energyAvgLast3Min | Number             | yes       |          | Average energy per minute over minutes -1 to -3 (Wh)                                 |
 |         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                      |
-|         | lastUpdate        | DateTime           | yes       |          | Timestamp of the last measurement                                                    |
+|         | energyHistMin1    | Number             | yes       | yes      | Total energy consumed during the previous minute, minute -1 (Wh)                     |
+|         | energyHistMin2    | Number             | yes       | yes      | Total energy consumed during minute -2 (Wh)                                          |
+|         | energyHistMin3    | Number             | yes       | yes      | Total energy consumed during minute -3 (Wh)                                          |
+|         | energyAvgLast3Min | Number             | yes       | yes      | Average energy per minute over minutes -1 to -3 (Wh)                                 |
+|         | lastUpdate        | DateTime           | yes       | yes      | Timestamp of the last measurement                                                    |
 
 The Duo Bulb Gen3 is a tunable-white (CCT) bulb only, like the Gen1 Shelly Duo - it has no RGB color output.
 It has power metering hardware and reports current power and energy consumption.
@@ -1322,12 +1328,12 @@ It has power metering hardware and reports current power and energy consumption.
 |         | temperature-pct   | Multiple (*)       | r/w       |          | Main color temperature percent control according to openHAB Light Control Convention |
 |         | temperature       | Number:Temperature | r/w       | yes      | Absolute color temperature (K) control according to openHAB Light Control Convention |
 | meter   | currentPower      | Number             | yes       |          | Current power consumption in Watts                                                   |
-|         | energyHistMin1    | Number             | yes       |          | Total energy consumed during the previous minute, minute -1 (Wh)                     |
-|         | energyHistMin2    | Number             | yes       |          | Total energy consumed during minute -2 (Wh)                                          |
-|         | energyHistMin3    | Number             | yes       |          | Total energy consumed during minute -3 (Wh)                                          |
-|         | energyAvgLast3Min | Number             | yes       |          | Average energy per minute over minutes -1 to -3 (Wh)                                 |
 |         | totalEnergy       | Number             | yes       |          | Total energy consumption in kWh                                                      |
-|         | lastUpdate        | DateTime           | yes       |          | Timestamp of the last measurement                                                    |
+|         | energyHistMin1    | Number             | yes       | yes      | Total energy consumed during the previous minute, minute -1 (Wh)                     |
+|         | energyHistMin2    | Number             | yes       | yes      | Total energy consumed during minute -2 (Wh)                                          |
+|         | energyHistMin3    | Number             | yes       | yes      | Total energy consumed during minute -3 (Wh)                                          |
+|         | energyAvgLast3Min | Number             | yes       | yes      | Average energy per minute over minutes -1 to -3 (Wh)                                 |
+|         | lastUpdate        | DateTime           | yes       | yes      | Timestamp of the last measurement                                                    |
 
 The Multicolor Bulb Gen3 has both full RGB color output and a tunable white (CCT) mode, like the Gen1 Shelly Color Bulb, but the two modes share the same LEDs: only one is active at a time, and there is no dedicated `mode` channel.
 Sending a color (`color#hsb`, `color#red`/`green`/`blue` switches to color mode; sending `white#temperature`, or `white#temperature-pct` switches back to white mode.
