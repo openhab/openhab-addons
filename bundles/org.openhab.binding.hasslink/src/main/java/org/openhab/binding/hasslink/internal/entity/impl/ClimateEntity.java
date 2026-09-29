@@ -124,6 +124,7 @@ public class ClimateEntity implements EntityType {
                 .putString("fan_mode") //
                 .putString("preset_mode") //
                 .putString("swing_mode") //
+                .putString("swing_horizontal_mode") //
                 .build();
     }
 
