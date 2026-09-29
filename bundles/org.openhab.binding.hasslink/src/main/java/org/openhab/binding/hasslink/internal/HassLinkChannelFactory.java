@@ -255,7 +255,10 @@ public class HassLinkChannelFactory {
                 }
 
                 ChannelBuilder builder = ChannelBuilder.create(channel.getUID(), channel.getAcceptedItemType())
-                        .withType(channel.getChannelTypeUID()).withKind(channel.getKind()).withLabel(newLabel)
+                        .withType(channel.getChannelTypeUID()) //
+                        .withKind(channel.getKind()) //
+                        .withLabel(newLabel) //
+                        .withAutoUpdatePolicy(channel.getAutoUpdatePolicy()) //
                         .withConfiguration(channel.getConfiguration());
 
                 String description = channel.getDescription();
