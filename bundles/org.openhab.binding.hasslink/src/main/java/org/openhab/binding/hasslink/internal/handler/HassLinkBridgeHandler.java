@@ -172,7 +172,7 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
         }
 
         updateStatus(ThingStatus.UNKNOWN);
-        restBaseUri = (config.secure ? "https" : "http") + "://" + config.host + ":" + config.port;
+        restBaseUri = wsUri.toString().replaceFirst("^ws", "http").replaceFirst("/api/websocket$", ""); // IPv6 compatible
         accessToken = config.token;
 
         HomeAssistantWebSocketClient newClient = new HomeAssistantWebSocketClient(
