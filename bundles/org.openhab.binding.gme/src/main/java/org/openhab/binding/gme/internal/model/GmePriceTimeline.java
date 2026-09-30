@@ -26,7 +26,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Utility methods for mapping GME hourly entries onto a real timeline.
+ * Utility methods for mapping GME market intervals onto a real timeline.
  *
  * @author Andrea Riela - Initial contribution
  */
@@ -37,32 +37,52 @@ public final class GmePriceTimeline {
     }
 
     public static ZonedDateTime getStartTime(GmePriceEntry entry, ZoneId zoneId) {
-        return entry.flowDate().atStartOfDay(zoneId).plusHours(entry.hour() - 1L);
+        int period = getPeriodIndex(entry);
+        long offsetMinutes = (long) (period - 1) * entry.granularity().minutes();
+        return entry.flowDate().atStartOfDay(zoneId).plusMinutes(offsetMinutes);
+    }
+
+    public static int getExpectedPeriods(LocalDate date, ZoneId zoneId, GmeGranularity granularity) {
+        Instant start = date.atStartOfDay(zoneId).toInstant();
+        Instant end = date.plusDays(1).atStartOfDay(zoneId).toInstant();
+        long minutes = Duration.between(start, end).toMinutes();
+        return Math.toIntExact(minutes / granularity.minutes());
     }
 
     public static int getExpectedHours(LocalDate date, ZoneId zoneId) {
-        Instant start = date.atStartOfDay(zoneId).toInstant();
-        Instant end = date.plusDays(1).atStartOfDay(zoneId).toInstant();
-        return Math.toIntExact(Duration.between(start, end).toHours());
+        return getExpectedPeriods(date, zoneId, GmeGranularity.PT60);
     }
 
     public static boolean isCompleteDailySet(List<GmePriceEntry> prices, LocalDate date, ZoneId zoneId) {
-        int expectedHours = getExpectedHours(date, zoneId);
+        return isCompleteDailySet(prices, date, zoneId, GmeGranularity.PT60);
+    }
 
-        if (prices.size() != expectedHours) {
+    public static boolean isCompleteDailySet(List<GmePriceEntry> prices, LocalDate date, ZoneId zoneId,
+            GmeGranularity granularity) {
+        int expectedPeriods = getExpectedPeriods(date, zoneId, granularity);
+        if (prices.size() != expectedPeriods) {
             return false;
         }
 
-        Set<Integer> hours = new HashSet<>();
-
+        Set<Integer> periods = new HashSet<>();
         for (GmePriceEntry entry : prices) {
-            if (!date.equals(entry.flowDate()) || entry.hour() < 1 || entry.hour() > expectedHours
-                    || !hours.add(entry.hour())) {
+            if (!date.equals(entry.flowDate()) || entry.granularity() != granularity) {
+                return false;
+            }
+
+            int period;
+            try {
+                period = getPeriodIndex(entry);
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
+
+            if (period < 1 || period > expectedPeriods || !periods.add(period)) {
                 return false;
             }
         }
 
-        return hours.size() == expectedHours;
+        return periods.size() == expectedPeriods;
     }
 
     public static Optional<GmePriceEntry> findCurrentPrice(List<GmePriceEntry> prices, Instant now, ZoneId zoneId) {
@@ -72,13 +92,8 @@ public final class GmePriceTimeline {
         for (int i = 0; i < timeline.size(); i++) {
             GmePriceEntry entry = timeline.get(i);
             Instant start = getStartTime(entry, zoneId).toInstant();
-
-            Instant end;
-            if (i + 1 < timeline.size()) {
-                end = getStartTime(timeline.get(i + 1), zoneId).toInstant();
-            } else {
-                end = start.plusSeconds(3600);
-            }
+            Instant end = i + 1 < timeline.size() ? getStartTime(timeline.get(i + 1), zoneId).toInstant()
+                    : start.plus(entry.granularity().duration());
 
             if (!now.isBefore(start) && now.isBefore(end)) {
                 return Optional.of(entry);
@@ -91,5 +106,15 @@ public final class GmePriceTimeline {
     public static Optional<GmePriceEntry> findNextPrice(List<GmePriceEntry> prices, Instant now, ZoneId zoneId) {
         return prices.stream().filter(entry -> getStartTime(entry, zoneId).toInstant().isAfter(now))
                 .min(Comparator.comparing(entry -> getStartTime(entry, zoneId)));
+    }
+
+    private static int getPeriodIndex(GmePriceEntry entry) {
+        if (entry.period() > 0) {
+            return entry.period();
+        }
+        if (entry.granularity() == GmeGranularity.PT60) {
+            return entry.hour();
+        }
+        throw new IllegalArgumentException("Missing GME flow period for " + entry.granularity());
     }
 }
