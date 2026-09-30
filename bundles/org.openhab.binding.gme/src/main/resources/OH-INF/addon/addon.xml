@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>Gme Binding</name>
-	<description>This is the binding for Gme.</description>
+	<name>GME Binding</name>
+	<description>Provides electricity market prices from the Italian Gestore dei Mercati Energetici (GME).</description>
 
 </addon:addon>
