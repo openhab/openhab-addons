@@ -26,5 +26,6 @@ public class GmeApiConfiguration {
     public String password = "";
     public String initialPasswordChangedAt = "";
     public String marketZone = "";
+    public String granularity = "PT60";
     public int refreshInterval = 60;
 }
