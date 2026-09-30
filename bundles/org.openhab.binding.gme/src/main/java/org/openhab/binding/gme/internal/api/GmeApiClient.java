@@ -37,6 +37,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.gme.internal.model.GmeAuthResponse;
+import org.openhab.binding.gme.internal.model.GmeGranularity;
 import org.openhab.binding.gme.internal.model.GmePriceEntry;
 import org.openhab.binding.gme.internal.model.GmeRequestDataResponse;
 
@@ -103,11 +104,16 @@ public class GmeApiClient {
      */
     public List<GmePriceEntry> requestMarketPrices(LocalDate date, String token)
             throws InterruptedException, TimeoutException, ExecutionException, IOException {
+        return requestMarketPrices(date, token, GmeGranularity.PT60);
+    }
+
+    public List<GmePriceEntry> requestMarketPrices(LocalDate date, String token, GmeGranularity granularity)
+            throws InterruptedException, TimeoutException, ExecutionException, IOException {
         String dateValue = date.format(GME_DATE_FORMAT);
 
         Map<String, Object> bodyObject = Map.of("Platform", "PublicMarketResults", "Segment", "MGP", "DataName",
                 "ME_ZonalPrices", "IntervalStart", dateValue, "IntervalEnd", dateValue, "Attributes",
-                Map.of("GranularityType", "PT60"));
+                Map.of("GranularityType", granularity.apiValue()));
 
         String body = gson.toJson(bodyObject);
 
@@ -138,7 +144,7 @@ public class GmeApiClient {
             throw new IllegalStateException("GME RequestData returned no content");
         }
 
-        return parseMarketPriceContentResponse(contentResponse);
+        return parseMarketPriceContentResponse(contentResponse, granularity);
     }
 
     /**
@@ -184,6 +190,11 @@ public class GmeApiClient {
     }
 
     static List<GmePriceEntry> parseMarketPriceContentResponse(String contentResponse) throws IOException {
+        return parseMarketPriceContentResponse(contentResponse, GmeGranularity.PT60);
+    }
+
+    static List<GmePriceEntry> parseMarketPriceContentResponse(String contentResponse, GmeGranularity granularity)
+            throws IOException {
         byte[] zipData = Base64.getDecoder().decode(contentResponse);
 
         try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(zipData), StandardCharsets.UTF_8)) {
@@ -191,7 +202,7 @@ public class GmeApiClient {
             while ((entry = zip.getNextEntry()) != null) {
                 if (!entry.isDirectory() && entry.getName().endsWith(".json")) {
                     List<GmePriceEntry> entries = GmePriceDataParser
-                            .parse(new InputStreamReader(zip, StandardCharsets.UTF_8));
+                            .parse(new InputStreamReader(zip, StandardCharsets.UTF_8), granularity);
 
                     return entries.stream().filter(price -> "MGP".equals(price.market())).toList();
                 }
