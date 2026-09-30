@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.gme.internal.model.GmeGranularity;
 import org.openhab.binding.gme.internal.model.GmePriceEntry;
 
 /**
@@ -41,7 +42,7 @@ class GmePriceDataParserTest {
                   "Market":"MGP",
                   "Zone":"PUN",
                   "Price":"198.020000",
-                  "Period":"0"
+                  "Period":"1"
                 }]
                 """;
 
@@ -55,7 +56,27 @@ class GmePriceDataParserTest {
         assertEquals("PUN", entry.zone());
         assertEquals(new BigDecimal("198.020000"), entry.priceMWh());
         assertEquals(new BigDecimal("0.198020000"), entry.priceKWh());
-        assertEquals(0, entry.period());
+        assertEquals(1, entry.period());
+        assertEquals(GmeGranularity.PT60, entry.granularity());
+    }
+
+    @Test
+    void preservesRequestedQuarterHourGranularity() {
+        String json = """
+                [{
+                  "FlowDate":"20260910",
+                  "Hour":"1",
+                  "Market":"MGP",
+                  "Zone":"PUN",
+                  "Price":"198.020000",
+                  "Period":"2"
+                }]
+                """;
+
+        GmePriceEntry entry = GmePriceDataParser.parse(new StringReader(json), GmeGranularity.PT15).getFirst();
+
+        assertEquals(2, entry.period());
+        assertEquals(GmeGranularity.PT15, entry.granularity());
     }
 
     @Test
