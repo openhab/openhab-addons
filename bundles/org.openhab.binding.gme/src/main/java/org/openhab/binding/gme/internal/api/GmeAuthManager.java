@@ -20,6 +20,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.gme.internal.model.GmeGranularity;
 import org.openhab.binding.gme.internal.model.GmePriceEntry;
 
 /**
@@ -55,10 +56,15 @@ public class GmeAuthManager {
 
     public List<GmePriceEntry> requestMarketPrices(LocalDate date)
             throws InterruptedException, TimeoutException, ExecutionException, IOException {
+        return requestMarketPrices(date, GmeGranularity.PT60);
+    }
+
+    public List<GmePriceEntry> requestMarketPrices(LocalDate date, GmeGranularity granularity)
+            throws InterruptedException, TimeoutException, ExecutionException, IOException {
         String currentToken = getToken();
 
         try {
-            return apiClient.requestMarketPrices(date, currentToken);
+            return apiClient.requestMarketPrices(date, currentToken, granularity);
         } catch (GmeApiException e) {
             if (!e.isAuthenticationError()) {
                 throw e;
@@ -67,7 +73,7 @@ public class GmeAuthManager {
             invalidateToken();
 
             String newToken = getToken();
-            return apiClient.requestMarketPrices(date, newToken);
+            return apiClient.requestMarketPrices(date, newToken, granularity);
         }
     }
 
