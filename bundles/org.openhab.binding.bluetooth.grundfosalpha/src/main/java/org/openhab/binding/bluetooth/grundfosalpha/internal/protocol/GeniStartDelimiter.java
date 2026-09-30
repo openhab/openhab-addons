@@ -15,20 +15,22 @@ package org.openhab.binding.bluetooth.grundfosalpha.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This defines the start delimiters for different kinds of messages.
+ * GENI frame start delimiters identifying data replies, messages and requests.
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public enum MessageStartDelimiter {
+public enum GeniStartDelimiter {
     Reply((byte) 0x24),
+    /**
+     * Data message for which no reply is expected.
+     */
     Message((byte) 0x26),
-    Request((byte) 0x27),
-    Echo((byte) 0x30);
+    Request((byte) 0x27);
 
     private final byte value;
 
-    MessageStartDelimiter(byte value) {
+    GeniStartDelimiter(byte value) {
         this.value = value;
     }
 
