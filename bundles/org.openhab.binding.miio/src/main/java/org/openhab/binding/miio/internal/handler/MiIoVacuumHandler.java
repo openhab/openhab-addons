@@ -349,8 +349,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         safeUpdateState(CHANNEL_DND_ENABLED, statusInfo.getDndEnabled());
 
         if (statusInfo.getErrorCode() != null) {
-            updateState(CHANNEL_ERROR_CODE,
-                    new StringType(VacuumErrorType.getType(statusInfo.getErrorCode()).getDescription()));
+            updateState(CHANNEL_ERROR_CODE, new StringType(
+                    VacuumErrorType.getType(statusInfo.getErrorCode(), configuration.model).getDescription()));
             safeUpdateState(CHANNEL_ERROR_ID, statusInfo.getErrorCode());
         }
 

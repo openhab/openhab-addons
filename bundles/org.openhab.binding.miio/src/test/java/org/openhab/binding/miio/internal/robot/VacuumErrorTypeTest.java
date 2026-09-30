@@ -30,8 +30,37 @@ public class VacuumErrorTypeTest {
         assertEquals(VacuumErrorType.ERROR00, VacuumErrorType.getType(0));
         assertEquals(VacuumErrorType.ERROR23, VacuumErrorType.getType(23));
         assertEquals("Check the clean water tank", VacuumErrorType.getType(38).getDescription());
-        assertEquals("Dock error", VacuumErrorType.getType(126).getDescription());
         assertEquals(VacuumErrorType.ERROR254, VacuumErrorType.getType(254));
+    }
+
+    @Test
+    public void errorCode29IsModelSpecificTest() {
+        // S7 family: manual lists "Cannot cross carpet"
+        assertEquals(VacuumErrorType.ERROR29_CARPET, VacuumErrorType.getType(29, "roborock.vacuum.a15"));
+        assertEquals(VacuumErrorType.ERROR29_CARPET, VacuumErrorType.getType(29, "roborock.vacuum.a14"));
+        assertEquals(VacuumErrorType.ERROR29_CARPET, VacuumErrorType.getType(29, "roborock.vacuum.a15v3"));
+        // newer models: suspected pet waste
+        assertEquals(VacuumErrorType.ERROR29, VacuumErrorType.getType(29, "roborock.vacuum.a38"));
+        assertEquals(VacuumErrorType.ERROR29, VacuumErrorType.getType(29, "roborock.vacuum.a150"));
+        assertEquals(VacuumErrorType.ERROR29, VacuumErrorType.getType(29, ""));
+        assertEquals("Suspected pet waste found", VacuumErrorType.getType(29).getDescription());
+        assertEquals("Unable to cross carpet", VacuumErrorType.getType(29, "roborock.vacuum.a15").getDescription());
+    }
+
+    @Test
+    public void modelDoesNotChangeOtherCodesTest() {
+        assertEquals(VacuumErrorType.ERROR10, VacuumErrorType.getType(10, "roborock.vacuum.a15"));
+        assertEquals(VacuumErrorType.ERROR32, VacuumErrorType.getType(32, "roborock.vacuum.a15"));
+        assertEquals(VacuumErrorType.ERROR32, VacuumErrorType.getType(32, "roborock.vacuum.a38"));
+        assertEquals(VacuumErrorType.ERROR33, VacuumErrorType.getType(33, "roborock.vacuum.a15"));
+        assertEquals(VacuumErrorType.ERROR255, VacuumErrorType.getType(100, "roborock.vacuum.a15"));
+    }
+
+    @Test
+    public void dockErrorCodesTest() {
+        assertEquals("Dock fan error", VacuumErrorType.getType(126).getDescription());
+        assertEquals("Air pump switch error", VacuumErrorType.getType(134).getDescription());
+        assertEquals("Solenoid valve error", VacuumErrorType.getType(150).getDescription());
     }
 
     @Test
