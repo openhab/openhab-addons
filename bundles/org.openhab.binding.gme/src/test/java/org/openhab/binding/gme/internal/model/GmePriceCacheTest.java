@@ -111,7 +111,8 @@ class GmePriceCacheTest {
         List<GmePriceEntry> prices = new ArrayList<>();
 
         for (int hour = 1; hour <= hours; hour++) {
-            prices.add(new GmePriceEntry(date, hour, "MGP", "PUN", new BigDecimal("100.000000"), 0, GmeGranularity.PT60, null));
+            prices.add(new GmePriceEntry(date, hour, "MGP", "PUN", new BigDecimal("100.000000"), 0, GmeGranularity.PT60,
+                    null));
         }
 
         return prices;
