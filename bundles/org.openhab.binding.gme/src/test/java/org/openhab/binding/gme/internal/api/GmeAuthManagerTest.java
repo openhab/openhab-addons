@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.gme.internal.model.GmeGranularity;
 import org.openhab.binding.gme.internal.model.GmePriceEntry;
 
 @NonNullByDefault
@@ -33,7 +34,8 @@ class GmeAuthManagerTest {
     void retriesOnceAfterAuthenticationError() throws Exception {
         GmeApiClient apiClient = mock(GmeApiClient.class);
 
-        GmePriceEntry entry = new GmePriceEntry(DATE, 1, "MGP", "PUN", new java.math.BigDecimal("200.000000"), 0, null);
+        GmePriceEntry entry = new GmePriceEntry(DATE, 1, "MGP", "PUN", new java.math.BigDecimal("200.000000"), 0,
+                GmeGranularity.PT60, null);
 
         when(apiClient.authenticate("user", "password")).thenReturn("token-1", "token-2");
         when(apiClient.requestPun(DATE, "token-1")).thenThrow(new GmeApiException("Unauthorized", 401));
