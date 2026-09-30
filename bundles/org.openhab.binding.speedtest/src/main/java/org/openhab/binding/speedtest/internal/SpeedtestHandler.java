@@ -384,6 +384,10 @@ public class SpeedtestHandler extends BaseThingHandler {
                 server = tmpCont.getServer().getName() + " (" + tmpCont.getServer().getId().toString() + ") "
                         + tmpCont.getServer().getLocation();
                 updateChannels();
+
+                if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
