@@ -15,10 +15,12 @@ package org.openhab.binding.gme.internal.model;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Base64;
 import java.util.HexFormat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,7 +36,9 @@ import org.openhab.core.storage.Storage;
 public final class GmeCredentialTracker {
 
     private static final String STORAGE_CREDENTIAL_FINGERPRINT = "credentialFingerprint";
+    private static final String STORAGE_CREDENTIAL_SALT = "credentialSalt";
     private static final String STORAGE_PASSWORD_CHANGED_AT = "passwordChangedAt";
+    private static final int SALT_LENGTH = 32;
 
     private final Storage<String> storage;
     private final ZoneId zoneId;
@@ -60,9 +64,24 @@ public final class GmeCredentialTracker {
      */
     public Instant updateAfterSuccessfulAuthentication(String username, String password,
             String initialPasswordChangedAt) {
-        String fingerprint = credentialFingerprint(username, password);
         String storedFingerprint = storage.get(STORAGE_CREDENTIAL_FINGERPRINT);
+        String storedSalt = storage.get(STORAGE_CREDENTIAL_SALT);
         Instant storedChangedAt = getChangedAt();
+
+        boolean legacyFingerprintWithoutSalt = storedFingerprint != null && storedSalt == null;
+
+        String salt = storedSalt;
+        if (salt == null || salt.isBlank()) {
+            salt = generateSalt();
+            storage.put(STORAGE_CREDENTIAL_SALT, salt);
+        }
+
+        String fingerprint = credentialFingerprint(username, password, salt);
+
+        if (legacyFingerprintWithoutSalt && storedChangedAt != null) {
+            storage.put(STORAGE_CREDENTIAL_FINGERPRINT, fingerprint);
+            return storedChangedAt;
+        }
 
         if (fingerprint.equals(storedFingerprint) && storedChangedAt != null) {
             return storedChangedAt;
@@ -102,9 +121,16 @@ public final class GmeCredentialTracker {
         }
     }
 
-    private String credentialFingerprint(String username, String password) {
+    private String generateSalt() {
+        byte[] salt = new byte[SALT_LENGTH];
+        new SecureRandom().nextBytes(salt);
+        return Base64.getEncoder().encodeToString(salt);
+    }
+
+    private String credentialFingerprint(String username, String password, String salt) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.update(Base64.getDecoder().decode(salt));
             byte[] hash = digest.digest((username + "\0" + password).getBytes(StandardCharsets.UTF_8));
             return HexFormat.of().formatHex(hash);
         } catch (NoSuchAlgorithmException e) {

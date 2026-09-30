@@ -63,12 +63,15 @@ class GmeCredentialTrackerTest {
         firstTracker.updateAfterSuccessfulAuthentication("user", "password", "");
 
         ArgumentCaptor<String> fingerprint = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> salt = ArgumentCaptor.forClass(String.class);
         verify(storage).put(eq("credentialFingerprint"), fingerprint.capture());
+        verify(storage).put(eq("credentialSalt"), salt.capture());
 
         reset(storage);
 
         Instant originalChangedAt = Instant.parse("2026-08-01T10:00:00Z");
         when(storage.get("credentialFingerprint")).thenReturn(fingerprint.getValue());
+        when(storage.get("credentialSalt")).thenReturn(salt.getValue());
         when(storage.get("passwordChangedAt")).thenReturn(originalChangedAt.toString());
 
         GmeCredentialTracker restartedTracker = tracker(storage);
@@ -86,11 +89,14 @@ class GmeCredentialTrackerTest {
         firstTracker.updateAfterSuccessfulAuthentication("user", "old-password", "");
 
         ArgumentCaptor<String> fingerprint = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> salt = ArgumentCaptor.forClass(String.class);
         verify(storage).put(eq("credentialFingerprint"), fingerprint.capture());
+        verify(storage).put(eq("credentialSalt"), salt.capture());
 
         reset(storage);
 
         when(storage.get("credentialFingerprint")).thenReturn(fingerprint.getValue());
+        when(storage.get("credentialSalt")).thenReturn(salt.getValue());
         when(storage.get("passwordChangedAt")).thenReturn("2026-08-01T10:00:00Z");
 
         GmeCredentialTracker tracker = tracker(storage);
@@ -98,6 +104,24 @@ class GmeCredentialTrackerTest {
 
         assertEquals(NOW, changedAt);
         verify(storage).put("passwordChangedAt", NOW.toString());
+    }
+
+    @Test
+    void preservesChangeTimeWhenMigratingLegacyUnsaltedFingerprint() {
+        Storage<String> storage = mock(Storage.class);
+        Instant originalChangedAt = Instant.parse("2026-08-01T10:00:00Z");
+
+        when(storage.get("credentialFingerprint")).thenReturn("legacy-unsalted-fingerprint");
+        when(storage.get("credentialSalt")).thenReturn(null);
+        when(storage.get("passwordChangedAt")).thenReturn(originalChangedAt.toString());
+
+        GmeCredentialTracker tracker = tracker(storage);
+        Instant changedAt = tracker.updateAfterSuccessfulAuthentication("user", "password", "");
+
+        assertEquals(originalChangedAt, changedAt);
+        verify(storage).put(eq("credentialSalt"), anyString());
+        verify(storage).put(eq("credentialFingerprint"), anyString());
+        verify(storage, never()).put(eq("passwordChangedAt"), anyString());
     }
 
     @Test
