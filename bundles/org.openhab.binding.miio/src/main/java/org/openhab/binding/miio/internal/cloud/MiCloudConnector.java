@@ -389,24 +389,28 @@ public class MiCloudConnector {
             final ContentResponse response = request.send();
             if (response.getStatus() >= HttpStatus.BAD_REQUEST_400
                     && response.getStatus() < HttpStatus.INTERNAL_SERVER_ERROR_500) {
-                this.serviceToken = "";
-                // Notify listeners that authentication was rejected so callers can re-authenticate.
-                // Only fire once when transitioning away from ONLINE to avoid repeated callbacks.
-                if (loginState == CloudLoginState.ONLINE) {
-                    updateLoginState(CloudLoginState.ACCESS_DENIED);
-                }
+                handleAuthenticationRejected();
             }
             return response.getContentAsString();
-        } catch (HttpResponseException e) {
-            serviceToken = "";
-            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
-            loginFailedCounter++;
-            throw new MiCloudException("Error while executing request: " + e.getMessage(), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             loginFailedCounter++;
             throw new MiCloudException("Request interrupted: " + e.getMessage(), e);
-        } catch (TimeoutException | ExecutionException | IOException e) {
+        } catch (ExecutionException e) {
+            // Jetty's authentication protocol handler fails a 401 without WWW-Authenticate header with an
+            // HttpResponseException, which send() delivers wrapped in an ExecutionException.
+            if (e.getCause() instanceof HttpResponseException hre) {
+                int status = hre.getResponse().getStatus();
+                if (status == HttpStatus.UNAUTHORIZED_401 || status == HttpStatus.FORBIDDEN_403) {
+                    logger.debug("Xiaomi cloud rejected the service token for request to {} (HTTP {})", url, status);
+                    handleAuthenticationRejected();
+                    throw new MiCloudException("Xiaomi cloud rejected the service token (HTTP " + status + ")", e);
+                }
+            }
+            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
+            loginFailedCounter++;
+            throw new MiCloudException("Error while executing request: " + e.getMessage(), e);
+        } catch (TimeoutException | IOException e) {
             logger.debug("Error while executing request to {} :{}", url, e.getMessage());
             loginFailedCounter++;
             throw new MiCloudException("Error while executing request: " + e.getMessage(), e);
@@ -414,6 +418,15 @@ public class MiCloudConnector {
             logger.debug("Error while decrypting response of request to {} :{}", url, e.getMessage(), e);
             loginFailedCounter++;
             throw new MiCloudException("Error decrypting response: " + e.getMessage(), e);
+        }
+    }
+
+    private void handleAuthenticationRejected() {
+        serviceToken = "";
+        // Notify listeners that authentication was rejected so callers can re-authenticate.
+        // Only fire once when transitioning away from ONLINE to avoid repeated callbacks.
+        if (loginState == CloudLoginState.ONLINE) {
+            updateLoginState(CloudLoginState.ACCESS_DENIED);
         }
     }
 
