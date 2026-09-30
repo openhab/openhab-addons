@@ -2613,6 +2613,10 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | zigbee_channel             | String               | Zigbee Channel                           |            |
 | lumi_bind                  | String               | Lumi_bind info                           |            |
 | doorbell_push              | String               | Doorbell Push                            |            |
+| fm_power                   | Switch               | FM Radio Power                           | Starts or stops the FM (internet) radio. Experimental, please provide feedback on the community forum. |
+| fm_volume                  | Dimmer               | FM Radio Volume                          | Experimental, please provide feedback on the community forum. |
+| fm_status                  | String               | FM Radio Status                          | Experimental, please provide feedback on the community forum. |
+| fm_program                 | Number               | FM Radio Program                         | Id of the current radio program. Experimental, please provide feedback on the community forum. |
 
 ### Mi smart Home Gateway Hub v1 (<a name="lumi-gateway-v1">lumi.gateway.v1</a>) Channels
 
@@ -2623,6 +2627,10 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | gatewayVol                 | Number               | Gateway Volume                           |            |
 | alarmingVol                | Number               | Alarming Volume                          |            |
 | doorbellPush               | String               | Doorbell Push                            |            |
+| fmPower                    | Switch               | FM Radio Power                           | Starts or stops the FM (internet) radio. Experimental, please provide feedback on the community forum. |
+| fmVolume                   | Dimmer               | FM Radio Volume                          | Experimental, please provide feedback on the community forum. |
+| fmStatus                   | String               | FM Radio Status                          | Experimental, please provide feedback on the community forum. |
+| fmProgram                  | Number               | FM Radio Program                         | Id of the current radio program. Experimental, please provide feedback on the community forum. |
 
 ### Mi smart Home GatewayHub v2 (<a name="lumi-gateway-v2">lumi.gateway.v2</a>) Channels
 
@@ -2633,6 +2641,10 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | gatewayVol                 | Number               | Gateway Volume                           |            |
 | alarmingVol                | Number               | Alarming Volume                          |            |
 | doorbellPush               | String               | Doorbell Push                            |            |
+| fmPower                    | Switch               | FM Radio Power                           | Starts or stops the FM (internet) radio. Experimental, please provide feedback on the community forum. |
+| fmVolume                   | Dimmer               | FM Radio Volume                          | Experimental, please provide feedback on the community forum. |
+| fmStatus                   | String               | FM Radio Status                          | Experimental, please provide feedback on the community forum. |
+| fmProgram                  | Number               | FM Radio Program                         | Id of the current radio program. Experimental, please provide feedback on the community forum. |
 
 ### Mi smart Home Gateway Hub v3 (<a name="lumi-gateway-v3">lumi.gateway.v3</a>) Channels
 
@@ -2643,6 +2655,10 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | gatewayVol                 | Number               | Gateway Volume                           |            |
 | alarmingVol                | Number               | Alarming Volume                          |            |
 | doorbellPush               | String               | Doorbell Push                            |            |
+| fmPower                    | Switch               | FM Radio Power                           | Starts or stops the FM (internet) radio. Experimental, please provide feedback on the community forum. |
+| fmVolume                   | Dimmer               | FM Radio Volume                          | Experimental, please provide feedback on the community forum. |
+| fmStatus                   | String               | FM Radio Status                          | Experimental, please provide feedback on the community forum. |
+| fmProgram                  | Number               | FM Radio Program                         | Id of the current radio program. Experimental, please provide feedback on the community forum. |
 
 ### Aqara LED Light Bulb (Tunable White) (<a name="lumi-light-aqcn02">lumi.light.aqcn02</a>) Channels
 
@@ -9188,6 +9204,10 @@ String language "Voice prompt Language" (G_gateway) {channel="miio:gateway:gatew
 String zigbee_channel "Zigbee Channel" (G_gateway) {channel="miio:gateway:gateway:zigbee_channel"}
 String lumi_bind "Lumi_bind info" (G_gateway) {channel="miio:gateway:gateway:lumi_bind"}
 String doorbell_push "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:doorbell_push"}
+Switch fm_power "FM Radio Power" (G_gateway) {channel="miio:gateway:gateway:fm_power"}
+Dimmer fm_volume "FM Radio Volume" (G_gateway) {channel="miio:gateway:gateway:fm_volume"}
+String fm_status "FM Radio Status" (G_gateway) {channel="miio:gateway:gateway:fm_status"}
+Number fm_program "FM Radio Program" (G_gateway) {channel="miio:gateway:gateway:fm_program"}
 ```
 
 ### Mi smart Home Gateway Hub v1 (lumi.gateway.v1) item file lines
@@ -9201,6 +9221,10 @@ Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:gateway:gateway:
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:gateway:gateway:gatewayVol"}
 Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:gateway:gateway:alarmingVol"}
 String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:doorbellPush"}
+Switch fmPower "FM Radio Power" (G_gateway) {channel="miio:gateway:gateway:fmPower"}
+Dimmer fmVolume "FM Radio Volume" (G_gateway) {channel="miio:gateway:gateway:fmVolume"}
+String fmStatus "FM Radio Status" (G_gateway) {channel="miio:gateway:gateway:fmStatus"}
+Number fmProgram "FM Radio Program" (G_gateway) {channel="miio:gateway:gateway:fmProgram"}
 ```
 
 ### Mi smart Home GatewayHub v2 (lumi.gateway.v2) item file lines
@@ -9214,6 +9238,10 @@ Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:gateway:gateway:
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:gateway:gateway:gatewayVol"}
 Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:gateway:gateway:alarmingVol"}
 String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:doorbellPush"}
+Switch fmPower "FM Radio Power" (G_gateway) {channel="miio:gateway:gateway:fmPower"}
+Dimmer fmVolume "FM Radio Volume" (G_gateway) {channel="miio:gateway:gateway:fmVolume"}
+String fmStatus "FM Radio Status" (G_gateway) {channel="miio:gateway:gateway:fmStatus"}
+Number fmProgram "FM Radio Program" (G_gateway) {channel="miio:gateway:gateway:fmProgram"}
 ```
 
 ### Mi smart Home Gateway Hub v3 (lumi.gateway.v3) item file lines
@@ -9227,6 +9255,10 @@ Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:gateway:gateway:
 Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:gateway:gateway:gatewayVol"}
 Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:gateway:gateway:alarmingVol"}
 String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:doorbellPush"}
+Switch fmPower "FM Radio Power" (G_gateway) {channel="miio:gateway:gateway:fmPower"}
+Dimmer fmVolume "FM Radio Volume" (G_gateway) {channel="miio:gateway:gateway:fmVolume"}
+String fmStatus "FM Radio Status" (G_gateway) {channel="miio:gateway:gateway:fmStatus"}
+Number fmProgram "FM Radio Program" (G_gateway) {channel="miio:gateway:gateway:fmProgram"}
 ```
 
 ### Aqara LED Light Bulb (Tunable White) (lumi.light.aqcn02) item file lines
