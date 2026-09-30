@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.gme.internal.model.GmeGranularity;
 import org.openhab.binding.gme.internal.model.GmePriceEntry;
 import org.openhab.binding.gme.internal.model.GmePriceEntryMapper;
 import org.openhab.binding.gme.internal.model.GmePriceEntryRaw;
@@ -38,6 +39,10 @@ public final class GmePriceDataParser {
     }
 
     public static List<GmePriceEntry> parse(Reader reader) {
+        return parse(reader, GmeGranularity.PT60);
+    }
+
+    public static List<GmePriceEntry> parse(Reader reader, GmeGranularity granularity) {
         JsonElement root = JsonParser.parseReader(reader);
 
         if (!root.isJsonArray()) {
@@ -58,7 +63,7 @@ public final class GmePriceDataParser {
                     getRequiredString(object, "Zone"), getRequiredString(object, "Price"),
                     getRequiredString(object, "Period"), getOptionalString(object, "Notes"));
 
-            GmePriceEntryMapper.map(raw).ifPresent(entries::add);
+            GmePriceEntryMapper.map(raw, granularity).ifPresent(entries::add);
         }
 
         return entries;
