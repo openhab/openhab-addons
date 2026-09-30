@@ -65,10 +65,15 @@ public class GmePriceCache {
     }
 
     public synchronized boolean promoteTomorrowToToday(LocalDate currentDate, ZoneId zoneId) {
+        return promoteTomorrowToToday(currentDate, zoneId, GmeGranularity.PT60);
+    }
+
+    public synchronized boolean promoteTomorrowToToday(LocalDate currentDate, ZoneId zoneId,
+            GmeGranularity granularity) {
         LocalDate cachedTomorrowDate = tomorrowDate;
 
         if (!currentDate.equals(cachedTomorrowDate)
-                || !GmePriceTimeline.isCompleteDailySet(tomorrowPrices, currentDate, zoneId)) {
+                || !GmePriceTimeline.isCompleteDailySet(tomorrowPrices, currentDate, zoneId, granularity)) {
             return false;
         }
 
@@ -77,5 +82,14 @@ public class GmePriceCache {
         clearTomorrow();
 
         return true;
+    }
+
+    public synchronized boolean hasTodayGranularity(GmeGranularity granularity) {
+        return !todayPrices.isEmpty() && todayPrices.stream().allMatch(price -> price.granularity() == granularity);
+    }
+
+    public synchronized boolean hasTomorrowGranularity(GmeGranularity granularity) {
+        return !tomorrowPrices.isEmpty()
+                && tomorrowPrices.stream().allMatch(price -> price.granularity() == granularity);
     }
 }
