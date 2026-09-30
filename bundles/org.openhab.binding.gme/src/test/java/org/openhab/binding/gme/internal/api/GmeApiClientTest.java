@@ -24,6 +24,7 @@ import java.util.zip.ZipOutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.gme.internal.model.GmeGranularity;
 import org.openhab.binding.gme.internal.model.GmePriceEntry;
 
 @NonNullByDefault
@@ -39,7 +40,7 @@ class GmeApiClientTest {
                     "Market":"MGP",
                     "Zone":"PUN",
                     "Price":"198.020000",
-                    "Period":"0"
+                    "Period":"1"
                   },
                   {
                     "FlowDate":"20260910",
@@ -47,7 +48,7 @@ class GmeApiClientTest {
                     "Market":"MGP",
                     "Zone":"NORD",
                     "Price":"190.000000",
-                    "Period":"0"
+                    "Period":"1"
                   },
                   {
                     "FlowDate":"20260910",
@@ -55,19 +56,21 @@ class GmeApiClientTest {
                     "Market":"MI-A1",
                     "Zone":"PUN",
                     "Price":"180.000000",
-                    "Period":"0"
+                    "Period":"1"
                   }
                 ]
                 """;
 
         String contentResponse = zipAndEncode(json);
 
-        List<GmePriceEntry> entries = GmeApiClient.parsePunContentResponse(contentResponse);
+        List<GmePriceEntry> entries = GmeApiClient.parseMarketPriceContentResponse(contentResponse, GmeGranularity.PT15)
+                .stream().filter(price -> "PUN".equals(price.zone())).toList();
 
         assertEquals(1, entries.size());
         assertEquals("MGP", entries.getFirst().market());
         assertEquals("PUN", entries.getFirst().zone());
         assertEquals(1, entries.getFirst().hour());
+        assertEquals(GmeGranularity.PT15, entries.getFirst().granularity());
     }
 
     private static String zipAndEncode(String json) throws IOException {
