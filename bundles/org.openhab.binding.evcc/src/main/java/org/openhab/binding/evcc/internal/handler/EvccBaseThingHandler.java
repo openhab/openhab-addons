@@ -32,6 +32,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,14 +58,18 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * The {@link EvccBaseThingHandler} is responsible for building a base class with common methods for the thing handlers
@@ -72,39 +79,32 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public abstract class EvccBaseThingHandler extends BaseThingHandler implements EvccThingLifecycleAware {
 
-    private final Logger logger = LoggerFactory.getLogger(EvccBaseThingHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(EvccBaseThingHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
     private final Gson gson = new Gson();
     protected String type = "";
     protected @Nullable EvccBridgeHandler bridgeHandler;
-    protected boolean isInitialized = false;
     protected String endpoint = "";
     protected String smartCostType = "";
+    // Guarded together with dispose() by synchronizing on `this`; see isDisposed() javadoc
+    // in EvccThingLifecycleAware for why this must be checked-and-acted-upon atomically by
+    // any caller that dispatches updates to this handler from another thread.
+    private volatile boolean disposed = false;
 
     public EvccBaseThingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
         this.channelTypeRegistry = channelTypeRegistry;
     }
 
-    protected void commonInitialize(JsonObject state) {
-        List<Channel> channels = new ArrayList<>(getThing().getChannels());
-        Set<String> validChannelIds = extractValidChannelIds(state);
-        if (syncThingChannels(channels, state, validChannelIds)) {
-            if (!channels.isEmpty()) {
-                updateThing(editThing().withChannels(channels).build());
-            }
-        }
-
-        updateStatus(ThingStatus.ONLINE);
-        isInitialized = true;
-        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> handler.register(this),
-                () -> logger.error("No bridgeHandler present when initializing the thing"));
-        // Initialize all channels to UNDEF first to avoid stale data
-        getThing().getChannels().forEach(channel -> {
-            updateState(channel.getUID(), UnDefType.UNDEF);
-        });
-    }
-
+    /**
+     * Get a property value from the Thing configuration or properties.
+     *
+     * Attempts to retrieve the value from the Thing's configuration first.
+     * For property index and vehicle ID, falls back to Thing properties with defaults.
+     *
+     * @param propertyName The name of the property to retrieve
+     * @return The property value as a string, or empty string if not found
+     */
     protected String getPropertyOrConfigValue(String propertyName) {
         Object value = thing.getConfiguration().get(propertyName);
         if (value instanceof String s) {
@@ -120,8 +120,15 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
+    /**
+     * Initialize the Thing handler.
+     *
+     * Sets status to UNKNOWN and attempts to locate and store the bridge handler.
+     * If bridge is not available or not an EvccBridgeHandler, sets status to OFFLINE.
+     */
     @Override
     public void initialize() {
+        disposed = false;
         updateStatus(ThingStatus.UNKNOWN);
         if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof EvccBridgeHandler handler) {
             bridgeHandler = handler;
@@ -130,16 +137,42 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
+    /**
+     * Dispose of the Thing handler.
+     *
+     * Unregisters this handler from the bridge handler to stop receiving updates.
+     * Called when the handler is being removed or deactivated.
+     *
+     * Synchronizes on {@code this} - the same monitor used by callers dispatching updates to
+     * this handler (see {@link EvccThingLifecycleAware#isDisposed()}) - so that disposal is
+     * atomic with respect to any update currently in flight or about to be dispatched.
+     */
     @Override
     public void dispose() {
-        Optional.ofNullable(bridgeHandler).ifPresent(handler -> handler.unregister(this));
-        isInitialized = false;
+        synchronized (this) {
+            disposed = true;
+            Optional.ofNullable(bridgeHandler).ifPresent(handler -> handler.unregister(this));
+        }
     }
 
     @Override
+    public boolean isDisposed() {
+        return disposed;
+    }
+
+    /**
+     * Handle incoming commands from the openHAB framework.
+     *
+     * Supports REFRESH commands which re-query the cached state and update the channel.
+     * Other commands are ignored by the base implementation.
+     *
+     * @param channelUID The channel that received the command
+     * @param command The command to handle (typically RefreshType.REFRESH)
+     */
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            String key = Utils.getKeyFromChannelUID(channelUID);
+            String key = getKeyFromChannelUID(channelUID);
             Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
                 JsonObject jsonState = getStateFromCachedState(handler.getCachedEvccState());
                 if (!jsonState.isEmpty()) {
@@ -156,6 +189,78 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
+    /**
+     * Handle partial updates from the websocket.
+     *
+     * Base implementation processes primitives, objects, and arrays:
+     * - Primitives update a single channel
+     * - Objects iterate entries and update individual channels
+     * - Arrays iterate elements and update numbered channels
+     *
+     * Handlers should override this method to provide specialized handling for their message structure.
+     * Updates Thing status to ONLINE on successful processing.
+     *
+     * @param key The update key (channel identifier)
+     * @param value The update value (primitive, object, or array)
+     */
+    @Override
+    public void handleUpdate(String key, JsonElement value) {
+        if (value.isJsonPrimitive()) {
+            String thingKey = getThingKey(key);
+            ChannelUID channelUID = channelUID(thingKey);
+            resolveAndUpdateState(channelUID, key, value);
+        } else {
+            if (value instanceof JsonObject object) {
+                for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
+                    String subkey = entry.getKey();
+                    JsonElement val = entry.getValue();
+                    String thingKey = getThingKey(key + Utils.capitalizeFirstLetter(subkey));
+                    ChannelUID channelUID = channelUID(thingKey);
+                    resolveAndUpdateState(channelUID, key + Utils.capitalizeFirstLetter(subkey), val);
+                }
+            } else if (value instanceof JsonArray array) {
+                for (int i = 0; i < array.size(); i++) {
+                    if (array.get(i) instanceof JsonPrimitive primitive) {
+                        String thingKey = getThingKey(key + (i + 1));
+                        ChannelUID channelUID = channelUID(thingKey);
+                        resolveAndUpdateState(channelUID, key + (i + 1), primitive);
+                    }
+                }
+            }
+        }
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    /**
+     * Apply an already-normalized update. The router calls this for routes that carry a state transformer;
+     * the members already map directly to channel keys, so they are applied without prefixing.
+     *
+     * @param normalized The normalized update whose members map directly to channel keys
+     */
+    @Override
+    public void applyNormalizedUpdate(JsonObject normalized) {
+        updateOnlyPresentChannels(normalized);
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    /**
+     * Get the handler type identifier.
+     *
+     * @return The type string (e.g., "battery", "pv", "loadpoint")
+     */
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Get the item type for a channel from the ChannelTypeRegistry.
+     *
+     * Queries the registry for the channel type definition and returns the item type.
+     *
+     * @param channelTypeUID The channel type to look up
+     * @return The item type (e.g., "Number", "String") or "Unknown" if not found
+     */
     private String getItemType(ChannelTypeUID channelTypeUID) {
         ChannelType channelType = channelTypeRegistry.getChannelType(channelTypeUID);
         if (null != channelType) {
@@ -165,6 +270,16 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         return "Unknown";
     }
 
+    /**
+     * Create a Channel for the specified Thing key and value.
+     *
+     * Looks up the channel type definition and constructs a Channel with proper configuration.
+     * Logs unknown channel types asynchronously for debugging.
+     *
+     * @param thingKey The channel identifier (e.g., "power", "soc")
+     * @param value The sample value (used for unknown channel logging)
+     * @return The created Channel, or null if channel type is unknown or already exists
+     */
     @Nullable
     protected Channel createChannel(String thingKey, JsonElement value) {
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, thingKey);
@@ -183,11 +298,16 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         return null;
     }
 
-    private String getChannelLabel(String thingKey) {
+    protected String getChannelLabel(String thingKey) {
         @Nullable
         String tmp = Optional.ofNullable(bridgeHandler).map(handler -> {
             String labelKey = "channel-type.evcc." + thingKey + ".label";
-            BundleContext ctx = FrameworkUtil.getBundle(EvccBridgeHandler.class).getBundleContext();
+            @Nullable
+            Bundle bundle = FrameworkUtil.getBundle(EvccBridgeHandler.class);
+            if (bundle == null || bundle.getBundleContext() == null) {
+                return thingKey;
+            }
+            BundleContext ctx = bundle.getBundleContext();
             TranslationProvider tp = handler.getI18nProvider();
             Locale locale = handler.getLocaleProvider().getLocale();
             return tp.getText(ctx.getBundle(), labelKey, thingKey, locale);
@@ -207,8 +327,12 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         return (type + "-" + Utils.sanitizeChannelID(key));
     }
 
+    public void createChannelsAndSetStatesFromApiResponse(JsonObject jsonState) {
+        updateStatesFromApiResponse(jsonState);
+    }
+
     public void updateStatesFromApiResponse(JsonObject jsonState) {
-        if (!isInitialized || jsonState.isEmpty()) {
+        if (jsonState.isEmpty()) {
             return;
         }
         Set<String> validChannelIds = extractValidChannelIds(jsonState);
@@ -216,11 +340,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         boolean channelsChanged = syncThingChannels(channels, jsonState, validChannelIds);
         if (channelsChanged) {
             updateThing(editThing().withChannels(channels).build());
-            updateStatus(ThingStatus.ONLINE);
-            return;
         }
         updateChannelStates(getThing().getChannels(), jsonState, validChannelIds);
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private Set<String> extractValidChannelIds(JsonObject jsonState) {
@@ -232,15 +353,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     private boolean syncThingChannels(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {
         boolean channelsChanged = addNonExistingChannels(channels, jsonState);
 
-        if (JSON_KEY_FORECAST.equals(type)) {
-            return channelsChanged;
-        }
-        boolean removed = channels.removeIf(c -> {
-            String id = c.getUID().getId();
-            return !validChannelIds.contains(id) && !isLinked(c.getUID());
-        });
-
-        return channelsChanged || removed;
+        // Never remove channels on partial updates - they may reappear in future messages
+        // or be unlinked channels that should be preserved
+        return channelsChanged;
     }
 
     private boolean addNonExistingChannels(List<Channel> channels, JsonObject jsonState) {
@@ -271,6 +386,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     private void updateChannelStates(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {
+        Set<String> excludedFromReset = getChannelIdsExcludedFromReset();
         for (Channel channel : channels) {
             ChannelUID uid = channel.getUID();
             String id = uid.getId();
@@ -282,13 +398,26 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 if (value != null) {
                     resolveAndUpdateState(uid, id, value);
                 }
-            } else {
+            } else if (!excludedFromReset.contains(id)) {
                 // else set channel state to UNDEF if channel is linked
                 if (isLinked(uid)) {
                     updateState(uid, UnDefType.UNDEF);
                 }
             }
         }
+    }
+
+    /**
+     * Channel IDs that must not be reset to {@link UnDefType#UNDEF} by {@link #updateChannelStates}
+     * even though they are absent from the JSON object passed to {@link #updateStatesFromApiResponse}.
+     * <p>
+     * This is needed for channels whose state is derived and published separately (e.g. from a
+     * {@link org.openhab.core.types.TimeSeries}) rather than resolved directly from a matching JSON key.
+     *
+     * @return the set of channel IDs to exclude from the UNDEF reset, empty by default
+     */
+    protected Set<String> getChannelIdsExcludedFromReset() {
+        return Set.of();
     }
 
     protected void resolveAndUpdateState(ChannelUID channelUID, String key, JsonElement value) {
@@ -298,13 +427,150 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
+    /**
+     * Updates only the channels present in the provided JSON state without setting UNDEF for missing channels.
+     * This method is intended for partial updates from websocket messages where missing fields should preserve
+     * their current values rather than being reset to UNDEF.
+     * 
+     * Also creates channel definitions for any new fields encountered that don't yet have channels.
+     *
+     * @param partialState The partial JSON state containing only the fields to update
+     */
+    protected void updateOnlyPresentChannels(JsonObject partialState) {
+        logger.trace("updateOnlyPresentChannels called with {} entries", partialState.size());
+
+        // First, sync any new channels that may not exist yet
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        boolean channelsChanged = false;
+
+        for (Map.Entry<String, JsonElement> entry : partialState.entrySet()) {
+            String key = entry.getKey();
+            JsonElement value = entry.getValue();
+            if (value.isJsonPrimitive()) {
+                String thingKey = getThingKey(key);
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), thingKey);
+                Channel existingChannel = getThing().getChannel(channelUID);
+                if (existingChannel == null) {
+                    @Nullable
+                    Channel newChannel = createChannel(thingKey, value);
+                    if (null != newChannel) {
+                        logger.debug("Created new channel: {}", thingKey);
+                        channels.add(newChannel);
+                        channelsChanged = true;
+                    }
+                }
+            }
+        }
+
+        if (channelsChanged) {
+            logger.debug("Updating thing with {} new channels", channels.size());
+            channels.sort(Comparator.comparing(c -> c.getUID().getId()));
+            updateThing(editThing().withChannels(channels).build());
+        }
+
+        // Then update all present channels
+        for (Map.Entry<String, JsonElement> entry : partialState.entrySet()) {
+            String key = entry.getKey();
+            JsonElement value = entry.getValue();
+            String thingKey = getThingKey(key);
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), thingKey);
+            logger.trace("Processing update for key '{}' (channel '{}'), checking if linked...", key, thingKey);
+            try {
+                if (isLinked(channelUID)) {
+                    logger.trace("Updating linked channel {}", thingKey);
+                    resolveAndUpdateState(channelUID, key, value);
+                } else {
+                    logger.trace("Channel {} not linked, skipping update", thingKey);
+                }
+            } catch (IllegalStateException e) {
+                logger.debug("Handler disposed while processing channel {}", thingKey);
+            } catch (Exception e) {
+                logger.error("Unexpected error updating channel {}: {}", thingKey, e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * Safely extracts an element from an indexed array with bounds checking.
+     *
+     * @param array The array to extract from
+     * @param index The index to extract
+     * @return The element at index, or empty JsonObject if out of bounds or not an object
+     */
+    @Nullable
+    protected JsonObject extractFromIndexedArray(JsonArray array, int index) {
+        if (index >= 0 && index < array.size() && array.get(index).isJsonObject()) {
+            return array.get(index).getAsJsonObject();
+        }
+        return null;
+    }
+
+    /**
+     * Safely extracts an object from a map with key existence check.
+     *
+     * @param map The map to extract from
+     * @param key The key to look up
+     * @return The object at key, or null if not found or not an object
+     */
+    @Nullable
+    protected JsonObject extractFromObjectMap(JsonObject map, String key) {
+        if (map.has(key) && map.get(key).isJsonObject()) {
+            return map.get(key).getAsJsonObject();
+        }
+        return null;
+    }
+
     protected void performApiRequest(String url, String method, JsonElement payload) {
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             HttpMethod httpMethod = HttpMethod.valueOf(method);
-            handler.enqueueRequest(url, httpMethod, payload, this::checkResponse, error -> {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            });
+            handler.requestQueue.enqueueRequest(url, httpMethod, payload, this::checkResponse,
+                    error -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
         });
+    }
+
+    protected @Nullable JsonElement performApiReadRequest(String url) {
+        EvccBridgeHandler currentBridgeHandler = bridgeHandler;
+        if (currentBridgeHandler == null) {
+            return null;
+        }
+
+        CountDownLatch completion = new CountDownLatch(1);
+        AtomicReference<@Nullable JsonElement> responseBody = new AtomicReference<>();
+        AtomicReference<@Nullable Exception> errorRef = new AtomicReference<>();
+
+        currentBridgeHandler.requestQueue.enqueueRequest(url, HttpMethod.GET, JsonNull.INSTANCE, response -> {
+            try {
+                responseBody.set(gson.fromJson(response.getContentAsString(), JsonElement.class));
+            } catch (Exception e) {
+                errorRef.set(e);
+            } finally {
+                completion.countDown();
+            }
+        }, error -> {
+            errorRef.set(error);
+            completion.countDown();
+        });
+
+        try {
+            if (!completion.await(6, TimeUnit.SECONDS)) {
+                logger.debug("Timed out reading evcc API response from {}", url);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return null;
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while reading evcc API response from {}", url, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return null;
+        }
+
+        Exception error = errorRef.get();
+        if (error != null) {
+            logger.debug("Failed to read evcc API response from {}", url, error);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return null;
+        }
+        return responseBody.get();
     }
 
     private void checkResponse(ContentResponse response) {
@@ -331,6 +597,10 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
+    private ChannelUID channelUID(String id) {
+        return new ChannelUID(getThing().getUID(), id);
+    }
+
     @Override
     public void bridgeStatusChanged(ThingStatusInfo statusInfo) {
         switch (statusInfo.getStatus()) {
@@ -341,17 +611,13 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED);
                 break;
             case ONLINE:
-                if (!isInitialized) {
-                    Bridge bridge = getBridge();
-                    if (bridge == null) {
-                        break;
-                    }
-                    logger.debug("Bridge {} is ONLINE again, initialize evcc {} again...", bridge.getUID(),
-                            getThing().getUID().getId());
-                    initialize();
-                } else {
-                    updateStatus(ThingStatus.ONLINE);
+                Bridge bridge = getBridge();
+                if (bridge == null) {
+                    break;
                 }
+                logger.debug("Bridge {} is ONLINE again, initialize evcc {} again...", bridge.getUID(),
+                        getThing().getUID().getId());
+                initialize();
                 break;
             default:
                 break;

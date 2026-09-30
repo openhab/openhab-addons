@@ -770,9 +770,12 @@ public class ShellyChannelDefinitions {
         // null, so a device actually has a power meter iff at least one of these fields is populated.
         // Per-meter reset is only meaningful when each meter has its own resettable counter component
         // (Switch/PM1/EM1Data). 3EM's emdata:0 aggregates all phases, so it resets at the device level only.
+        // The Duo/Multicolor Bulb G3's CCT/RGBCCT components have no ResetCounters RPC at all (Shelly's
+        // API only exposes it on Switch/PM1/EM1/Cover/Light), so the channel would just 404 if offered.
         boolean hasMeterData = always || emeter.total != null || emeter.totalReturned != null || hasMinute1
                 || hasMinute2 || hasMinute3;
-        addChannel(thing, newChannels, !profile.is3EM && hasMeterData, group, CHANNEL_EMETER_RESETTOTAL);
+        addChannel(thing, newChannels, !profile.is3EM && !profile.isDuo && hasMeterData, group,
+                CHANNEL_EMETER_RESETTOTAL);
         addChannel(thing, newChannels, hasMeterData, group, CHANNEL_LAST_UPDATE);
         return newChannels;
     }

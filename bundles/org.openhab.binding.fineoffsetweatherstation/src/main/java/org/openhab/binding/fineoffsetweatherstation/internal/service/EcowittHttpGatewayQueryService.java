@@ -84,10 +84,10 @@ public class EcowittHttpGatewayQueryService extends GatewayQueryService {
     }
 
     @Override
-    public Collection<MeasuredValue> getMeasuredValues() {
+    public @Nullable Collection<MeasuredValue> getMeasuredValues() {
         String response = get("get_livedata_info");
         if (response == null) {
-            return List.of();
+            return null;
         }
         return parser.parseLiveData(response);
     }

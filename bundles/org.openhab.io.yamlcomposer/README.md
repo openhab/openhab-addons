@@ -307,6 +307,16 @@ The resulting YAML contains:
 
 This final compiled YAML is written to `OPENHAB_CONF/yaml/composed/`, where openHAB loads it as Things, Items, Metadata, and other configuration elements as defined by the Core YAML Configuration structure.
 
+## Output Formatting Options
+
+YAML Composer can be configured in openHAB settings (`io:yamlcomposer`) to customize the output structure of generated YAML files:
+
+| Configuration Option                              | Type              | Default | Description                                                                                                      |
+|---------------------------------------------------|-------------------|---------|------------------------------------------------------------------------------------------------------------------|
+| **Maximum Line Width** (`maxLineWidth`)           | Integer (min: 20) | `80`    | Maximum line length before text wrapping occurs in the output document.                                          |
+| **Split Long Lines** (`splitLines`)               | Boolean           | `true`  | When enabled, long string scalar lines exceeding the maximum line width are split across multiple lines.         |
+| **Section and Entity Spacing** (`sectionSpacing`) | Integer (min: 0)  | `1`     | Number of blank lines injected before top-level section keys and individual entities (`0` disables blank lines). |
+
 ## Hidden Keys
 
 Keys beginning with a dot (`.`) are treated as hidden. They:

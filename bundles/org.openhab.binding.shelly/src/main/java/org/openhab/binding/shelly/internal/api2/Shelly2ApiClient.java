@@ -1460,6 +1460,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                 // clear stale CCT temperature so it doesn't linger while the device is in RGB mode
                 status.lights.get(0).temp = null;
             }
+            updateComponentMeter(status, 0, rgbcctValue.apower, rgbcctValue.aenergy, null, null, channelUpdate);
             // trigger the immediate WS-push color update only while the device is actually in RGB mode;
             // the white/CCT push below (applyLightStatus -> updateLightMode) always runs regardless of mode
             return applyLightStatus(status, 0, rgbcctValue.output, rgbcctValue.brightness,
@@ -1468,6 +1469,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (cctValue == null) {
             return false;
         }
+        updateComponentMeter(status, 0, cctValue.apower, cctValue.aenergy, null, null, channelUpdate);
         return applyLightStatus(status, 0, cctValue.output, cctValue.brightness, null, null, cctValue.ct, channelUpdate,
                 false);
     }

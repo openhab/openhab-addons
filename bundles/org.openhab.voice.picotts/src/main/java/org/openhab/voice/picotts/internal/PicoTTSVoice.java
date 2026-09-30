@@ -15,7 +15,7 @@ package org.openhab.voice.picotts.internal;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.voice.Voice;
+import org.openhab.core.voice.tts.Voice;
 
 /**
  * Implementation of the Voice interface for PicoTTS

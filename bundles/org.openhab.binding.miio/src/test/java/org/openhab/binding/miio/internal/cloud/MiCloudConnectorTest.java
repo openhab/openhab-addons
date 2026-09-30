@@ -35,7 +35,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.miio.internal.cloud.MiCloudConnector.CloudLoginState;
 
 /**
- * Test case for the authentication rejection handling of {@link MiCloudConnector}
+ * Test case for {@link MiCloudConnector}
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -109,5 +109,13 @@ public class MiCloudConnectorTest {
 
         assertEquals("servicetoken", connector.getServiceToken());
         verify(listener, never()).onStatusUpdated(any(), anyString());
+    }
+
+    @Test
+    public void testMapUrlRequestData() {
+        assertEquals("{\"model\":\"roborock.vacuum.a08\",\"obj_name\":\"roboroommap/1234567/2\"}",
+                MiCloudConnector.buildMapUrlRequestData("roboroommap%2F1234567%2F2", "roborock.vacuum.a08"));
+        assertEquals("{\"obj_name\":\"robomap/1234567/0\"}",
+                MiCloudConnector.buildMapUrlRequestData("robomap/1234567/0", ""));
     }
 }

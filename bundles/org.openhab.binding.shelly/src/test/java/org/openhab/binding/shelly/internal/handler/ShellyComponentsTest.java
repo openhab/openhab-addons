@@ -561,6 +561,28 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void gen1DuoBulbGetsMeterChannelsButNoResetTotal() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYDUO);
+        profile.numMeters = 1;
+        ShellySettingsMeter m0 = new ShellySettingsMeter();
+        m0.isValid = true;
+        m0.power = 0.0;
+        m0.total = 125.0;
+        m0.counters = new Double[] { 0.0, 0.0, 0.0 };
+
+        ShellySettingsStatus status = statusWithMeters(m0);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateMeters(handler, status);
+
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_METER), eq(CHANNEL_METER_CURRENTWATTS),
+                any(State.class));
+        verify(handler, atLeastOnce()).updateChannel(eq(CHANNEL_GROUP_METER), eq(CHANNEL_METER_TOTALKWH),
+                any(State.class));
+        verify(handler, never()).updateChannel(anyString(), eq(CHANNEL_EMETER_RESETTOTAL), any(State.class));
+    }
+
+    @Test
     void updateMetersNumMetersZeroRemovesObsoleteMeterChannels() {
         ShellyDeviceProfile profile = simpleRelayProfile(0);
         ShellySettingsMeter m0 = new ShellySettingsMeter();

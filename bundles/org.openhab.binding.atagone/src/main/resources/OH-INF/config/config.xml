@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:atagone:thermostat">
+		<parameter name="hostname" type="text" required="true">
+			<context>network-address</context>
+			<label>Hostname</label>
+			<description>IP address or hostname of the ATAG ONE thermostat.</description>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65535">
+			<label>Port</label>
+			<description>Local API port (default 10000).</description>
+			<default>10000</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" unit="s" min="10" max="3600">
+			<label>Refresh Interval</label>
+			<description>How often the thermostat is polled (seconds).</description>
+			<default>30</default>
+		</parameter>
+		<parameter name="clientId" type="text">
+			<label>Client ID</label>
+			<description>Stable pseudo-MAC used to identify this binding to the thermostat. Auto-generated on first pairing —
+				leave blank.</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

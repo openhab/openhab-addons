@@ -33,6 +33,7 @@
 /bundles/org.openhab.binding.argoclima/ @mbronk
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.asuswrt/ @wildcs
+/bundles/org.openhab.binding.atagone/ @Ltty
 /bundles/org.openhab.binding.atlona/ @mlobstein
 /bundles/org.openhab.binding.atmofrance/ @clinique
 /bundles/org.openhab.binding.autelis/ @digitaldan
