@@ -43,14 +43,11 @@ public final class CalDavConfiguration {
                 || !Set.of("AUTO", "FULL", "ETAG", "SYNC_TOKEN").contains(c.syncMode) || !c.readOnly) {
             throw new IllegalArgumentException("Invalid account settings; calendar writes are not supported");
         }
-        if (!c.calendarHome.isBlank()) {
-            CalDavUris.resolve(URI.create(c.url), c.calendarHome);
-        }
     }
 
     public static URI validate(CalendarConfiguration c, AccountConfiguration a) {
-        if (c.path.isBlank() || c.calendarId.isBlank() || c.maxEvents < 1 || c.maxEvents > 50000
-                || c.rangeStartOffset > c.rangeEndOffset || !Set.of("TODAY", "NOW").contains(c.rangeAnchor)) {
+        if (c.path.isBlank() || c.maxEvents < 1 || c.maxEvents > 50000 || c.rangeStartOffset > c.rangeEndOffset
+                || !Set.of("TODAY", "NOW").contains(c.rangeAnchor)) {
             throw new IllegalArgumentException("Invalid calendar settings");
         }
         return CalDavUris.resolve(URI.create(a.url), c.path);

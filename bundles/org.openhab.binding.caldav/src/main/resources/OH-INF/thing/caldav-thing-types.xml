@@ -7,6 +7,7 @@
 	<bridge-type id="account">
 		<label>@text/thing-type.caldav.account.label</label>
 		<description>@text/thing-type.caldav.account.description</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter-group name="connection">
@@ -71,10 +72,6 @@
 					<option value="DIRECT">@text/config.account.discoveryMode.option.DIRECT</option>
 				</options>
 			</parameter>
-			<parameter name="calendarHome" type="text" required="false" groupName="discovery">
-				<label>@text/config.account.calendarHome.label</label>
-				<description>@text/config.account.calendarHome.description</description>
-			</parameter>
 
 			<parameter name="refreshInterval" type="integer" min="30" required="true" groupName="synchronization">
 				<label>@text/config.account.refreshInterval.label</label>
@@ -122,6 +119,7 @@
 
 		<label>@text/thing-type.caldav.calendar.label</label>
 		<description>@text/thing-type.caldav.calendar.description</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="events" typeId="events"/>
@@ -150,15 +148,6 @@
 			<parameter name="path" type="text" required="true" groupName="calendar">
 				<label>@text/config.calendar.path.label</label>
 				<description>@text/config.calendar.path.description</description>
-			</parameter>
-			<parameter name="calendarId" type="text" required="true" groupName="calendar">
-				<label>@text/config.calendar.calendarId.label</label>
-				<description>@text/config.calendar.calendarId.description</description>
-			</parameter>
-			<parameter name="enabled" type="boolean" required="true" groupName="calendar">
-				<label>@text/config.calendar.enabled.label</label>
-				<description>@text/config.calendar.enabled.description</description>
-				<default>true</default>
 			</parameter>
 
 			<parameter name="rangeAnchor" type="text" required="true" groupName="range">

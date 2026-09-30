@@ -125,8 +125,8 @@ class CalendarHandlerTest {
 
     private static Thing thing() {
         return ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), "test")
-                .withConfiguration(new Configuration(Map.of("path", "https://example.org/calendar/", "calendarId",
-                        "calendar", "rangeStartOffset", -1, "rangeEndOffset", 1)))
+                .withConfiguration(new Configuration(
+                        Map.of("path", "https://example.org/calendar/", "rangeStartOffset", -1, "rangeEndOffset", 1)))
                 .build();
     }
 

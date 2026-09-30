@@ -104,10 +104,6 @@ public class CalendarHandler extends BaseThingHandler {
             configuration = initial;
             clearEvents();
             cacheIdentity = "";
-            if (!initial.enabled) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED);
-                return;
-            }
             set("sync#status", new StringType("ERROR"));
             set("sync#error", new StringType("Waiting for account synchronization"));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -137,7 +133,7 @@ public class CalendarHandler extends BaseThingHandler {
     public void bridgeConnectionFailed(BooleanSupplier accountValid) {
         synchronized (lifecycle) {
             CalendarConfiguration configured = configuration;
-            if (!active || !accountValid.getAsBoolean() || configured == null || !configured.enabled) {
+            if (!active || !accountValid.getAsBoolean() || configured == null) {
                 return;
             }
             set("sync#status", new StringType("ERROR"));
@@ -165,7 +161,7 @@ public class CalendarHandler extends BaseThingHandler {
         CalendarConfiguration config;
         synchronized (lifecycle) {
             CalendarConfiguration configured = configuration;
-            if (!active || configured == null || !configured.enabled) {
+            if (!active || configured == null) {
                 return;
             }
             current = generation;
@@ -364,7 +360,7 @@ public class CalendarHandler extends BaseThingHandler {
         CalendarConfiguration config;
         synchronized (lifecycle) {
             CalendarConfiguration configured = configuration;
-            if (!active || current != generation || configured == null || !configured.enabled || synchronizedOnce) {
+            if (!active || current != generation || configured == null || synchronizedOnce) {
                 return;
             }
             config = configured;

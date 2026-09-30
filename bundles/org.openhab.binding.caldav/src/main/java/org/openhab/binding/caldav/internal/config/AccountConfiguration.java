@@ -21,7 +21,6 @@ public class AccountConfiguration {
     public String password = "";
     public String authType = "AUTO";
     public String discoveryMode = "AUTO";
-    public String calendarHome = "";
     public int refreshInterval = 300;
     public int requestTimeout = 30;
     public boolean verifyCertificate = true;

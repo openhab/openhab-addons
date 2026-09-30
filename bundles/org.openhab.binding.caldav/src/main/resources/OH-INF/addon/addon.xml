@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>@text/addon.caldav.name</name>
-	<description>@text/addon.caldav.description</description>
+	<name>CalDAV Binding</name>
+	<description>Connects openHAB directly to CalDAV servers and exposes calendar events from configurable time ranges.</description>
 	<connection>hybrid</connection>
 </addon:addon>

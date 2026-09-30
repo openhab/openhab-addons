@@ -59,6 +59,16 @@ class CalendarRecurrenceTest {
     }
 
     @Test
+    void knownTimezoneWorksWithoutVtimezone() {
+        String data = "BEGIN:VCALENDAR\nVERSION:2.0\n"
+                + event("DTSTART;TZID=Europe/Bratislava:20260919T030000\nDURATION:PT1H\n") + "END:VCALENDAR\n";
+        var events = ICalendarParser.parse(data, WINDOW, ZoneId.of("UTC"), false);
+        assertEquals(1, events.size());
+        assertEquals("2026-09-19T01:00:00Z", Objects.requireNonNull(events.getFirst().start()).toInstant().toString());
+        assertEquals("2026-09-19T02:00:00Z", Objects.requireNonNull(events.getFirst().end()).toInstant().toString());
+    }
+
+    @Test
     void timezoneRecurrenceKeepsWallClockAcrossDst() {
         var events = parse(event(
                 "DTSTART;TZID=Europe/Berlin:20260328T090000\nDTEND;TZID=Europe/Berlin:20260328T100000\nRRULE:FREQ=DAILY;COUNT=3\n"));

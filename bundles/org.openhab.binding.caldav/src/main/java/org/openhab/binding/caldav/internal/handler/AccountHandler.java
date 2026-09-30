@@ -28,7 +28,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.caldav.internal.client.CalDavClient;
 import org.openhab.binding.caldav.internal.client.CalDavHttpException;
-import org.openhab.binding.caldav.internal.client.CalDavUris;
 import org.openhab.binding.caldav.internal.client.CalendarCollection;
 import org.openhab.binding.caldav.internal.client.CalendarDiscoveryParser;
 import org.openhab.binding.caldav.internal.config.AccountConfiguration;
@@ -51,6 +50,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Coordinated lifecycle and recovery
+ * @author Andreas Vilippus - On-demand collection discovery
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler {
@@ -61,6 +61,7 @@ public class AccountHandler extends BaseBridgeHandler {
     private final HttpClientFactory httpFactory;
     private final Object lifecycle = new Object();
     private @Nullable Session session;
+    private @Nullable CalDavDiscoveryService discoveryService;
     private @Nullable ScheduledFuture<?> job;
     private final List<Consumer<List<CalendarCollection>>> discovery = new ArrayList<>();
 
@@ -99,7 +100,12 @@ public class AccountHandler extends BaseBridgeHandler {
             Session next = new Session(configuration, http);
             synchronized (lifecycle) {
                 session = next;
-                job = scheduler.schedule(() -> poll(next), 0, TimeUnit.SECONDS);
+                CalDavDiscoveryService service = discoveryService;
+                if (service != null) {
+                    service.startScan();
+                } else {
+                    job = scheduler.schedule(() -> poll(next), 0, TimeUnit.SECONDS);
+                }
             }
         } catch (IllegalArgumentException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid account configuration");
@@ -140,6 +146,24 @@ public class AccountHandler extends BaseBridgeHandler {
         }
     }
 
+    public void registerDiscoveryService(CalDavDiscoveryService service) {
+        synchronized (lifecycle) {
+            discoveryService = service;
+            Session current = session;
+            if (current != null && current.valid) {
+                service.startScan();
+            }
+        }
+    }
+
+    public void unregisterDiscoveryService(CalDavDiscoveryService service) {
+        synchronized (lifecycle) {
+            if (service.equals(discoveryService)) {
+                discoveryService = null;
+            }
+        }
+    }
+
     public void discover(Consumer<List<CalendarCollection>> callback) {
         synchronized (lifecycle) {
             if (session == null) {
@@ -151,52 +175,30 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     private void poll(Session current) {
+        List<Consumer<List<CalendarCollection>>> callbacks;
         synchronized (lifecycle) {
             if (!current.equals(session) || !current.valid || current.running) {
                 return;
             }
             current.running = true;
+            // Requests arriving during this poll stay queued for the next run.
+            callbacks = List.copyOf(discovery);
+            discovery.clear();
         }
         try {
             if (!current.http.isStarted()) {
                 current.http.start();
             }
-            URI base = URI.create(current.configuration.url);
-            List<CalendarCollection> collections;
-            if ("DIRECT".equals(current.configuration.discoveryMode)) {
-                URI home = current.configuration.calendarHome.isBlank() ? base
-                        : CalDavUris.resolve(base, current.configuration.calendarHome);
-                collections = CalendarDiscoveryParser
-                        .collections(current.client.request("PROPFIND", home, COLLECTIONS, "1"), home);
-            } else {
-                URI principal = CalendarDiscoveryParser
-                        .currentUserPrincipal(current.client.request("PROPFIND", base, PRINCIPAL, "0"), base);
-                List<URI> homes = CalendarDiscoveryParser
-                        .calendarHomes(current.client.request("PROPFIND", principal, HOME, "0"), principal);
-                Map<URI, CalendarCollection> discovered = new LinkedHashMap<>();
-                for (URI home : homes) {
-                    if (!current.valid || Thread.currentThread().isInterrupted()) {
-                        return;
-                    }
-                    for (CalendarCollection collection : CalendarDiscoveryParser
-                            .collections(current.client.request("PROPFIND", home, COLLECTIONS, "1"), home)) {
-                        discovered.putIfAbsent(collection.uri(), collection);
-                    }
-                }
-                collections = List.copyOf(discovered.values());
-            }
+            List<CalendarCollection> collections = callbacks.isEmpty() ? List.of() : discoverCollections(current);
             if (!current.valid) {
                 return;
             }
-            List<Consumer<List<CalendarCollection>>> callbacks;
             synchronized (lifecycle) {
                 if (!current.equals(session)) {
                     return;
                 }
                 updateStatus(ThingStatus.ONLINE);
                 current.failures = 0;
-                callbacks = List.copyOf(discovery);
-                discovery.clear();
             }
             for (var callback : callbacks) {
                 if (!current.valid) {
@@ -241,6 +243,29 @@ public class AccountHandler extends BaseBridgeHandler {
         }
     }
 
+    private List<CalendarCollection> discoverCollections(Session current) throws Exception {
+        URI base = URI.create(current.configuration.url);
+        if ("DIRECT".equals(current.configuration.discoveryMode)) {
+            return CalendarDiscoveryParser.collections(current.client.request("PROPFIND", base, COLLECTIONS, "1"),
+                    base);
+        }
+        URI principal = CalendarDiscoveryParser
+                .currentUserPrincipal(current.client.request("PROPFIND", base, PRINCIPAL, "0"), base);
+        List<URI> homes = CalendarDiscoveryParser
+                .calendarHomes(current.client.request("PROPFIND", principal, HOME, "0"), principal);
+        Map<URI, CalendarCollection> discovered = new LinkedHashMap<>();
+        for (URI home : homes) {
+            if (!current.valid || Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException();
+            }
+            for (CalendarCollection collection : CalendarDiscoveryParser
+                    .collections(current.client.request("PROPFIND", home, COLLECTIONS, "1"), home)) {
+                discovered.putIfAbsent(collection.uri(), collection);
+            }
+        }
+        return List.copyOf(discovered.values());
+    }
+
     private void failed(Session current, ThingStatusDetail detail, Exception error) {
         synchronized (lifecycle) {
             if (!current.equals(session) || !current.valid) {
@@ -248,7 +273,6 @@ public class AccountHandler extends BaseBridgeHandler {
             }
             current.failures = Math.min(6, current.failures + 1);
             updateStatus(ThingStatus.OFFLINE, detail, "CalDAV account connection failed");
-            discovery.clear();
         }
         for (var thing : getThing().getThings()) {
             if (!current.valid) {

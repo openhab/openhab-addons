@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.caldav.internal.client.CalDavHttpException;
 import org.openhab.binding.caldav.internal.client.CalendarReport;
 import org.openhab.binding.caldav.internal.client.DavResponse;
@@ -137,7 +138,7 @@ public final class CalendarSynchronizer {
         }
         Map<String, CachedResource> resources = new HashMap<>(previous.resources());
         for (var resource : response.resources()) {
-            if (resource.status() == 404) {
+            if (resource.status() == HttpStatus.NOT_FOUND_404) {
                 resources.remove(resource.href());
                 continue;
             }
@@ -152,7 +153,7 @@ public final class CalendarSynchronizer {
         try {
             return transport.request("GET", URI.create(href), "", "0");
         } catch (CalDavHttpException e) {
-            if (e.statusCode() == 404) {
+            if (e.statusCode() == HttpStatus.NOT_FOUND_404) {
                 throw new IOException("Calendar resource changed during synchronization", e);
             }
             throw e;
@@ -205,7 +206,7 @@ public final class CalendarSynchronizer {
     }
 
     private static void requireSuccess(DavResponse.Resource resource) throws IOException {
-        if (resource.status() != 200) {
+        if (resource.status() != HttpStatus.OK_200) {
             throw new IOException("Incomplete calendar resource listing");
         }
     }

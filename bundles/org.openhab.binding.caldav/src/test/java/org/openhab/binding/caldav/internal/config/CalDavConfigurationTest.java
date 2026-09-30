@@ -14,6 +14,7 @@ package org.openhab.binding.caldav.internal.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.net.URI;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,6 +27,29 @@ import org.junit.jupiter.api.Test;
  */
 @NonNullByDefault
 class CalDavConfigurationTest {
+    @Test
+    void acceptsPathOnlyCalendarConfiguration() {
+        AccountConfiguration account = new AccountConfiguration();
+        account.url = "https://caldav.example.test/caldav/";
+        for (String path : List.of("family/", "https://caldav.example.test/caldav/family/")) {
+            CalendarConfiguration calendar = new CalendarConfiguration();
+            calendar.path = path;
+            assertEquals(URI.create("https://caldav.example.test/caldav/family/"),
+                    CalDavConfiguration.validate(calendar, account));
+        }
+    }
+
+    @Test
+    void rejectsBlankCalendarPath() {
+        AccountConfiguration account = new AccountConfiguration();
+        account.url = "https://caldav.example.test/caldav/";
+        for (String path : List.of("", " ")) {
+            CalendarConfiguration calendar = new CalendarConfiguration();
+            calendar.path = path;
+            assertThrows(IllegalArgumentException.class, () -> CalDavConfiguration.validate(calendar, account));
+        }
+    }
+
     @Test
     void acceptsAnonymousAndCompleteCredentialsForEveryAuthType() {
         for (String authType : List.of("AUTO", "BASIC", "DIGEST")) {

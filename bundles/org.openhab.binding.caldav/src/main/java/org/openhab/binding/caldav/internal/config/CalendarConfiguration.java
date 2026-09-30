@@ -17,8 +17,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class CalendarConfiguration {
     public String path = "";
-    public String calendarId = "";
-    public boolean enabled = true;
     public String rangeAnchor = "TODAY";
     public int rangeStartOffset = 0;
     public int rangeEndOffset = 6;
