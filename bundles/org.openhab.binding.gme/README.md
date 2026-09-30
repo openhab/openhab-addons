@@ -1,95 +1,270 @@
-# Gme Binding
+# GME Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+The GME binding integrates openHAB with the electricity market data services provided by the Italian Gestore dei Mercati Energetici (GME).
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
+It provides access to Italian day-ahead electricity market prices, including national PUN prices and zonal prices.
 
-_Put each sentence in a separate line to improve readability of diffs._
+The binding provides hourly price time series together with current, next, average, minimum and maximum price information.
+
+It can be used for energy monitoring and automation scenarios such as load shifting, battery charging optimisation and photovoltaic self-consumption strategies.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The binding supports the following Thing types:
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+| Thing Type UID | Type | Description |
+|----------------|------|-------------|
+| `gme:api` | Bridge | Connection to a GME API account and common API configuration |
+| `gme:pun` | Thing | PUN and zonal electricity market prices |
 
-## Discovery
-
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```properties
-# Configuration for the Gme Binding
-#
-# Default secret key for the pairing of the Gme Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+The `gme:pun` Thing must be associated with a `gme:api` Bridge.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+### `gme:api` Bridge Configuration
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The API Bridge manages authentication with GME and configuration shared by the price Things.
 
-### `sample` Thing Configuration
+| Name | Type | Description | Default | Required | Advanced |
+|------|------|-------------|---------|----------|----------|
+| `username` | text | Username for the GME API | N/A | yes | no |
+| `password` | text | Password for the GME API | N/A | yes | no |
+| `initialPasswordChangedAt` | text | Optional initial password change date in `YYYY-MM-DD` format | N/A | no | yes |
+| `marketZone` | text | Italian electricity market zone used for zonal prices | N/A | no | no |
+| `refreshInterval` | integer | Market data refresh interval in minutes | 60 | no | yes |
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+The following market zones are supported:
+
+| Value | Market Zone |
+|-------|-------------|
+| `NORD` | Northern Italy |
+| `CNOR` | Central-Northern Italy |
+| `CSUD` | Central-Southern Italy |
+| `SUD` | Southern Italy |
+| `CALA` | Calabria |
+| `SICI` | Sicily |
+| `SARD` | Sardinia |
+
+The configured market zone affects only zonal price channels.
+
+National PUN price channels are independent of the selected market zone.
+
+### Password Tracking
+
+GME API passwords have a limited validity period.
+
+The Bridge tracks the age of the configured password and exposes its estimated expiry through dedicated channels.
+
+The password itself is never copied into the binding storage for this purpose.
+
+Instead, the binding stores a SHA-256 fingerprint of the credentials and uses it to detect a credential change after a successful GME authentication.
+
+When the binding is configured for the first time, `initialPasswordChangedAt` can optionally be used to provide the actual change date of an already existing GME password.
+
+For example:
+
+```text
+2026-08-15
+```
+
+If this parameter is omitted during the first successful authentication, the current date and time are used as the initial password change time.
+
+After tracking has been initialised, changing the GME password does not require updating `initialPasswordChangedAt`.
+
+A successfully authenticated password change is detected automatically and starts a new password validity period.
+
+An authentication failure does not change the stored password change date.
+
+### `gme:pun` Thing Configuration
+
+The PUN Thing does not require additional configuration.
+
+It obtains authentication, refresh interval and market zone information from its parent `gme:api` Bridge.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+### `gme:api` Bridge Channels
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Channel | Type | Read/Write | Description |
+|---------|------|------------|-------------|
+| `password-last-changed` | DateTime | R | Date and time when the current password was first observed or successfully changed |
+| `password-expiry` | DateTime | R | Estimated expiry date and time of the current GME API password |
+| `password-days-remaining` | Number | R | Estimated number of days remaining before password expiry |
+| `password-status` | String | R | Password lifecycle status: `OK`, `CHANGE_SOON` or `EXPIRED` |
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+The password status becomes `CHANGE_SOON` after five months.
+
+The estimated password expiry is six months after the tracked password change date.
+
+### `gme:pun` Price Channels
+
+| Channel | Type | Read/Write | Description |
+|---------|------|------------|-------------|
+| `current-price` | Number:EnergyPrice | R | Current hourly PUN price |
+| `next-price` | Number:EnergyPrice | R | Next hourly PUN price |
+| `today-prices` | Number:EnergyPrice | R | Today's PUN prices as an hourly time series |
+| `tomorrow-prices` | Number:EnergyPrice | R | Tomorrow's PUN prices as an hourly time series |
+| `today-zonal-prices` | Number:EnergyPrice | R | Today's prices for the configured market zone as an hourly time series |
+| `tomorrow-zonal-prices` | Number:EnergyPrice | R | Tomorrow's prices for the configured market zone as an hourly time series |
+| `today-average` | Number:EnergyPrice | R | Average PUN price for today |
+| `today-min` | Number:EnergyPrice | R | Minimum PUN price for today |
+| `today-max` | Number:EnergyPrice | R | Maximum PUN price for today |
+| `today-min-time` | DateTime | R | Start time of today's minimum-price period |
+| `today-max-time` | DateTime | R | Start time of today's maximum-price period |
+| `tomorrow-average` | Number:EnergyPrice | R | Average PUN price for tomorrow |
+| `tomorrow-min` | Number:EnergyPrice | R | Minimum PUN price for tomorrow |
+| `tomorrow-max` | Number:EnergyPrice | R | Maximum PUN price for tomorrow |
+| `tomorrow-min-time` | DateTime | R | Start time of tomorrow's minimum-price period |
+| `tomorrow-max-time` | DateTime | R | Start time of tomorrow's maximum-price period |
+| `tomorrow-available` | Switch | R | Indicates whether tomorrow's market data are available |
+| `last-update` | DateTime | R | Time of the most recent successful market data update |
+
+Energy prices are exposed as `Number:EnergyPrice` values in `EUR/kWh`.
+
+Hourly price channels also provide openHAB time series data.
+
+The binding handles Italian daylight-saving-time transitions, including market days containing 23, 24 or 25 hourly periods.
+
+## Authentication
+
+The binding authenticates against the GME API using the username and password configured on the Bridge.
+
+The authentication token is cached and reused for subsequent API requests.
+
+If GME rejects a request because the token is no longer valid, the binding invalidates the cached token, authenticates again and retries the request once.
 
 ## Full Example
-
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
 
 ### Thing Configuration
 
 ```java
-Example thing configuration goes here.
+Bridge gme:api:account "GME API Account" [
+    username="your_username",
+    password="your_password",
+    initialPasswordChangedAt="2026-08-15",
+    marketZone="NORD",
+    refreshInterval=60
+]
+
+Thing gme:pun:account:pun "GME Electricity Prices"
 ```
+
+The `initialPasswordChangedAt` parameter can be omitted once password tracking has already been initialised.
 
 ### Item Configuration
 
 ```java
-Example item configuration goes here.
+Number:EnergyPrice GME_CurrentPrice "Current PUN [%.6f %unit%]" {
+    channel="gme:pun:account:pun:current-price"
+}
+
+Number:EnergyPrice GME_NextPrice "Next PUN [%.6f %unit%]" {
+    channel="gme:pun:account:pun:next-price"
+}
+
+Number:EnergyPrice GME_TodayAverage "Today's Average [%.6f %unit%]" {
+    channel="gme:pun:account:pun:today-average"
+}
+
+Number:EnergyPrice GME_TodayMinimum "Today's Minimum [%.6f %unit%]" {
+    channel="gme:pun:account:pun:today-min"
+}
+
+Number:EnergyPrice GME_TodayMaximum "Today's Maximum [%.6f %unit%]" {
+    channel="gme:pun:account:pun:today-max"
+}
+
+DateTime GME_TodayMinimumTime "Today's Minimum Time [%1$tH:%1$tM]" {
+    channel="gme:pun:account:pun:today-min-time"
+}
+
+DateTime GME_TodayMaximumTime "Today's Maximum Time [%1$tH:%1$tM]" {
+    channel="gme:pun:account:pun:today-max-time"
+}
+
+Switch GME_TomorrowAvailable "Tomorrow Available" {
+    channel="gme:pun:account:pun:tomorrow-available"
+}
+
+DateTime GME_LastUpdate "Last Update [%1$td/%1$tm/%1$tY %1$tH:%1$tM]" {
+    channel="gme:pun:account:pun:last-update"
+}
+
+DateTime GME_PasswordLastChanged "GME Password Last Changed [%1$td/%1$tm/%1$tY]" {
+    channel="gme:api:account:password-last-changed"
+}
+
+DateTime GME_PasswordExpiry "GME Password Expiry [%1$td/%1$tm/%1$tY]" {
+    channel="gme:api:account:password-expiry"
+}
+
+Number GME_PasswordDaysRemaining "GME Password Days Remaining [%d]" {
+    channel="gme:api:account:password-days-remaining"
+}
+
+String GME_PasswordStatus "GME Password Status [%s]" {
+    channel="gme:api:account:password-status"
+}
 ```
 
-### Sitemap Configuration
+## Automation Examples
 
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
+The market price channels can be used in openHAB rules to implement energy-aware automations.
+
+Typical use cases include:
+
+- scheduling flexible electrical loads during lower-price periods
+- displaying current and future electricity prices on dashboards
+- combining market prices with photovoltaic production forecasts
+- selecting favourable battery charging periods
+- delaying discretionary loads when the current price is high
+- notifying the user before the GME API password expires
+
+## Technical Details
+
+The binding uses a Bridge-based architecture.
+
+```text
+GME API Account Bridge
+          |
+          +--- PUN Price Thing
 ```
 
-## Any custom content here!
+The Bridge is responsible for:
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+- API authentication
+- authentication token lifecycle
+- credential change tracking
+- common configuration
+
+The PUN Thing is responsible for:
+
+- market data retrieval
+- PUN price processing
+- zonal price processing
+- daily statistics
+- hourly time series generation
+- market data caching
+
+Market data are interpreted using the `Europe/Rome` time zone.
+
+## Testing
+
+The binding includes automated tests for:
+
+- API authentication
+- token invalidation and authentication retry
+- GME market data parsing
+- price cache behaviour
+- PUN time series generation
+- daylight-saving-time transitions
+- password age calculation
+- credential fingerprint tracking
+- credential change detection
+- initial password date handling
+
+The binding tests can be executed with:
+
+```shell
+./mvnw -pl :org.openhab.binding.gme -am test
+```
