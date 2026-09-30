@@ -251,11 +251,14 @@ public class GmePunHandler extends BaseThingHandler {
          * or belongs to a different date, ensure that the normal API retry job
          * is armed.
          */
+        GmeGranularity granularity = getGranularity();
+
         boolean tomorrowPunMissing = !tomorrow.equals(priceCache.getTomorrowDate())
-                || priceCache.getTomorrowPrices().isEmpty();
+                || priceCache.getTomorrowPrices().isEmpty() || !priceCache.hasTomorrowGranularity(granularity);
 
         boolean tomorrowZonalMissing = !marketZone.isBlank() && (!tomorrow.equals(zonalPriceCache.getTomorrowDate())
-                || zonalPriceCache.getTomorrowPrices().isEmpty());
+                || zonalPriceCache.getTomorrowPrices().isEmpty()
+                || !zonalPriceCache.hasTomorrowGranularity(granularity));
 
         if (tomorrowPunMissing || tomorrowZonalMissing) {
             logger.debug("Tomorrow dataset for {} is missing or stale; ensuring API retry is scheduled", tomorrow);
