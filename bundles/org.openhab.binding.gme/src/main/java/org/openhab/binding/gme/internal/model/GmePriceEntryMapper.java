@@ -34,6 +34,10 @@ public final class GmePriceEntryMapper {
     }
 
     public static Optional<GmePriceEntry> map(GmePriceEntryRaw raw) {
+        return map(raw, GmeGranularity.PT60);
+    }
+
+    public static Optional<GmePriceEntry> map(GmePriceEntryRaw raw, GmeGranularity granularity) {
         if ("Auction cancelled".equalsIgnoreCase(raw.notes())) {
             return Optional.empty();
         }
@@ -48,8 +52,8 @@ public final class GmePriceEntryMapper {
                 throw new IllegalArgumentException("Invalid GME hour: " + hour);
             }
 
-            return Optional
-                    .of(new GmePriceEntry(flowDate, hour, raw.market(), raw.zone(), priceMWh, period, raw.notes()));
+            return Optional.of(
+                    new GmePriceEntry(flowDate, hour, raw.market(), raw.zone(), priceMWh, period, granularity, raw.notes()));
         } catch (NumberFormatException | DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid GME price entry", e);
         }
