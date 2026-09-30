@@ -345,8 +345,7 @@ public class GmePunHandler extends BaseThingHandler {
                 }
 
                 boolean tomorrowPunMissing = !tomorrow.equals(priceCache.getTomorrowDate())
-                        || priceCache.getTomorrowPrices().isEmpty()
-                        || !priceCache.hasTomorrowGranularity(granularity);
+                        || priceCache.getTomorrowPrices().isEmpty() || !priceCache.hasTomorrowGranularity(granularity);
 
                 boolean tomorrowZonalMissing = !marketZone.isBlank()
                         && (!tomorrow.equals(zonalPriceCache.getTomorrowDate())
