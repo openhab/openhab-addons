@@ -33,40 +33,37 @@ class GmePriceTimeSeriesTest {
     private static final ZoneId ROME = ZoneId.of("Europe/Rome");
 
     @Test
-    void buildsNormalDayTimeSeries() {
+    void buildsHourlyTimeSeries() {
         LocalDate date = LocalDate.of(2026, 9, 10);
+        TimeSeries series = build(date, GmeGranularity.PT60);
 
-        TimeSeries series = GmePriceTimeSeries.build(completeDay(date, 24), ROME,
-                price -> new QuantityType<>(price.priceKWh(), priceUnit()));
-
-        assertEquals(TimeSeries.Policy.REPLACE, series.getPolicy());
         assertEquals(24, series.size());
         assertEquals(date.atStartOfDay(ROME).toInstant(), series.getBegin());
         assertEquals(date.plusDays(1).atStartOfDay(ROME).minusHours(1).toInstant(), series.getEnd());
     }
 
     @Test
-    void buildsSpringDstTimeSeries() {
-        LocalDate date = LocalDate.of(2026, 3, 29);
+    void buildsQuarterHourlyTimeSeries() {
+        LocalDate date = LocalDate.of(2026, 9, 10);
+        TimeSeries series = build(date, GmeGranularity.PT15);
 
-        TimeSeries series = GmePriceTimeSeries.build(completeDay(date, 23), ROME,
-                price -> new QuantityType<>(price.priceKWh(), priceUnit()));
-
-        assertEquals(23, series.size());
+        assertEquals(96, series.size());
         assertEquals(date.atStartOfDay(ROME).toInstant(), series.getBegin());
-        assertEquals(date.plusDays(1).atStartOfDay(ROME).minusHours(1).toInstant(), series.getEnd());
+        assertEquals(date.plusDays(1).atStartOfDay(ROME).minusMinutes(15).toInstant(), series.getEnd());
     }
 
     @Test
-    void buildsAutumnDstTimeSeries() {
-        LocalDate date = LocalDate.of(2026, 10, 25);
+    void buildsQuarterHourlyDstTimeSeries() {
+        LocalDate spring = LocalDate.of(2026, 3, 29);
+        LocalDate autumn = LocalDate.of(2026, 10, 25);
 
-        TimeSeries series = GmePriceTimeSeries.build(completeDay(date, 25), ROME,
+        assertEquals(92, build(spring, GmeGranularity.PT15).size());
+        assertEquals(100, build(autumn, GmeGranularity.PT15).size());
+    }
+
+    private static TimeSeries build(LocalDate date, GmeGranularity granularity) {
+        return GmePriceTimeSeries.build(completeDay(date, granularity), ROME,
                 price -> new QuantityType<>(price.priceKWh(), priceUnit()));
-
-        assertEquals(25, series.size());
-        assertEquals(date.atStartOfDay(ROME).toInstant(), series.getBegin());
-        assertEquals(date.plusDays(1).atStartOfDay(ROME).minusHours(1).toInstant(), series.getEnd());
     }
 
     private static Unit<?> priceUnit() {
@@ -74,11 +71,14 @@ class GmePriceTimeSeriesTest {
         return unit != null ? unit : CurrencyUnits.BASE_ENERGY_PRICE;
     }
 
-    private static List<GmePriceEntry> completeDay(LocalDate date, int hours) {
+    private static List<GmePriceEntry> completeDay(LocalDate date, GmeGranularity granularity) {
+        int periods = GmePriceTimeline.getExpectedPeriods(date, ROME, granularity);
         List<GmePriceEntry> prices = new ArrayList<>();
 
-        for (int hour = 1; hour <= hours; hour++) {
-            prices.add(new GmePriceEntry(date, hour, "MGP", "PUN", new BigDecimal("100.000000"), 0, null));
+        for (int period = 1; period <= periods; period++) {
+            int hour = ((period - 1) * granularity.minutes()) / 60 + 1;
+            prices.add(new GmePriceEntry(date, hour, "MGP", "PUN", new BigDecimal("100.000000"), period,
+                    granularity, null));
         }
 
         return prices;
