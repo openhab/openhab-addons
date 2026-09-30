@@ -4,7 +4,7 @@ The GME binding integrates openHAB with the electricity market data services pro
 
 It provides access to Italian day-ahead electricity market prices, including national PUN prices and zonal prices.
 
-The binding provides hourly price time series together with current, next, average, minimum and maximum price information.
+The binding provides configurable 60, 30 or 15-minute price time series together with current, next, average, minimum and maximum price information.
 
 It can be used for energy monitoring and automation scenarios such as load shifting, battery charging optimisation and photovoltaic self-consumption strategies.
 
@@ -31,6 +31,7 @@ The API Bridge manages authentication with GME and configuration shared by the p
 | `password` | text | Password for the GME API | N/A | yes | no |
 | `initialPasswordChangedAt` | text | Optional initial password change date in `YYYY-MM-DD` format | N/A | no | yes |
 | `marketZone` | text | Italian electricity market zone used for zonal prices | N/A | no | no |
+| `granularity` | text | GME MGP market granularity: `PT60`, `PT30` or `PT15` | `PT60` | no | no |
 | `refreshInterval` | integer | Market data refresh interval in minutes | 60 | no | yes |
 
 The following market zones are supported:
@@ -48,6 +49,8 @@ The following market zones are supported:
 The configured market zone affects only zonal price channels.
 
 National PUN price channels are independent of the selected market zone.
+
+The `granularity` setting controls the market time unit requested from GME. `PT60` is the default and preserves hourly behaviour. `PT30` and `PT15` expose half-hourly and quarter-hourly MGP data respectively. GME supports these granularities for MGP data from 1 October 2025.
 
 ### Password Tracking
 
@@ -79,7 +82,7 @@ An authentication failure does not change the stored password change date.
 
 The PUN Thing does not require additional configuration.
 
-It obtains authentication, refresh interval and market zone information from its parent `gme:api` Bridge.
+It obtains authentication, refresh interval, market zone and market granularity information from its parent `gme:api` Bridge.
 
 ## Channels
 
@@ -100,12 +103,12 @@ The estimated password expiry is six months after the tracked password change da
 
 | Channel | Type | Read/Write | Description |
 |---------|------|------------|-------------|
-| `current-price` | Number:EnergyPrice | R | Current hourly PUN price |
-| `next-price` | Number:EnergyPrice | R | Next hourly PUN price |
-| `today-prices` | Number:EnergyPrice | R | Today's PUN prices as an hourly time series |
-| `tomorrow-prices` | Number:EnergyPrice | R | Tomorrow's PUN prices as an hourly time series |
-| `today-zonal-prices` | Number:EnergyPrice | R | Today's prices for the configured market zone as an hourly time series |
-| `tomorrow-zonal-prices` | Number:EnergyPrice | R | Tomorrow's prices for the configured market zone as an hourly time series |
+| `current-price` | Number:EnergyPrice | R | Current PUN price for the active market interval |
+| `next-price` | Number:EnergyPrice | R | Next PUN price for the following market interval |
+| `today-prices` | Number:EnergyPrice | R | Today's PUN prices as a time series at the configured market granularity |
+| `tomorrow-prices` | Number:EnergyPrice | R | Tomorrow's PUN prices as a time series at the configured market granularity |
+| `today-zonal-prices` | Number:EnergyPrice | R | Today's prices for the configured market zone as a time series at the configured market granularity |
+| `tomorrow-zonal-prices` | Number:EnergyPrice | R | Tomorrow's prices for the configured market zone as a time series at the configured market granularity |
 | `today-average` | Number:EnergyPrice | R | Average PUN price for today |
 | `today-min` | Number:EnergyPrice | R | Minimum PUN price for today |
 | `today-max` | Number:EnergyPrice | R | Maximum PUN price for today |
@@ -121,9 +124,9 @@ The estimated password expiry is six months after the tracked password change da
 
 Energy prices are exposed as `Number:EnergyPrice` values in `EUR/kWh`.
 
-Hourly price channels also provide openHAB time series data.
+Price channels also provide openHAB time series data.
 
-The binding handles Italian daylight-saving-time transitions, including market days containing 23, 24 or 25 hourly periods.
+The binding handles Italian daylight-saving-time transitions for every supported market granularity, including 23/24/25-hour days and 92/96/100 quarter-hour periods.
 
 ## Authentication
 
@@ -143,6 +146,7 @@ Bridge gme:api:account "GME API Account" [
     password="your_password",
     initialPasswordChangedAt="2026-08-15",
     marketZone="NORD",
+    granularity="PT60",
     refreshInterval=60
 ]
 
@@ -243,7 +247,7 @@ The PUN Thing is responsible for:
 - PUN price processing
 - zonal price processing
 - daily statistics
-- hourly time series generation
+- market-granularity time series generation
 - market data caching
 
 Market data are interpreted using the `Europe/Rome` time zone.
@@ -257,6 +261,7 @@ The binding includes automated tests for:
 - GME market data parsing
 - price cache behaviour
 - PUN time series generation
+- 15, 30 and 60-minute market granularity
 - daylight-saving-time transitions
 - password age calculation
 - credential fingerprint tracking
