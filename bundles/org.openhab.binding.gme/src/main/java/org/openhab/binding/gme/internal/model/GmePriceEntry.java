@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public record GmePriceEntry(LocalDate flowDate, int hour, String market, String zone, BigDecimal priceMWh, int period,
-        @Nullable String notes) {
+        GmeGranularity granularity, @Nullable String notes) {
 
     public BigDecimal priceKWh() {
         return priceMWh.movePointLeft(3);
