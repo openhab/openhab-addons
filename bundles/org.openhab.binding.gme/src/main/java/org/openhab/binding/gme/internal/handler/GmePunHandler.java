@@ -256,9 +256,9 @@ public class GmePunHandler extends BaseThingHandler {
         boolean tomorrowPunMissing = !tomorrow.equals(priceCache.getTomorrowDate())
                 || priceCache.getTomorrowPrices().isEmpty() || !priceCache.hasTomorrowGranularity(granularity);
 
-        boolean tomorrowZonalMissing = !marketZone.isBlank() && (!tomorrow.equals(zonalPriceCache.getTomorrowDate())
-                || zonalPriceCache.getTomorrowPrices().isEmpty()
-                || !zonalPriceCache.hasTomorrowGranularity(granularity));
+        boolean tomorrowZonalMissing = !marketZone.isBlank()
+                && (!tomorrow.equals(zonalPriceCache.getTomorrowDate()) || zonalPriceCache.getTomorrowPrices().isEmpty()
+                        || !zonalPriceCache.hasTomorrowGranularity(granularity));
 
         if (tomorrowPunMissing || tomorrowZonalMissing) {
             logger.debug("Tomorrow dataset for {} is missing or stale; ensuring API retry is scheduled", tomorrow);
@@ -297,9 +297,9 @@ public class GmePunHandler extends BaseThingHandler {
                 boolean todayPunMissing = !today.equals(priceCache.getTodayDate())
                         || priceCache.getTodayPrices().isEmpty() || !priceCache.hasTodayGranularity(granularity);
 
-                boolean todayZonalMissing = !marketZone.isBlank() && (!today.equals(zonalPriceCache.getTodayDate())
-                        || zonalPriceCache.getTodayPrices().isEmpty()
-                        || !zonalPriceCache.hasTodayGranularity(granularity));
+                boolean todayZonalMissing = !marketZone.isBlank()
+                        && (!today.equals(zonalPriceCache.getTodayDate()) || zonalPriceCache.getTodayPrices().isEmpty()
+                                || !zonalPriceCache.hasTodayGranularity(granularity));
 
                 if (todayPunMissing || todayZonalMissing) {
                     if (todayPunMissing && priceCache.promoteTomorrowToToday(today, GME_ZONE, getGranularity())) {
@@ -307,7 +307,8 @@ public class GmePunHandler extends BaseThingHandler {
                         todayPunMissing = false;
                     }
 
-                    if (todayZonalMissing && zonalPriceCache.promoteTomorrowToToday(today, GME_ZONE, getGranularity())) {
+                    if (todayZonalMissing
+                            && zonalPriceCache.promoteTomorrowToToday(today, GME_ZONE, getGranularity())) {
                         logger.debug("Promoted cached {} zonal prices for {} to today", marketZone, today);
                         todayZonalMissing = false;
                     }
@@ -330,7 +331,8 @@ public class GmePunHandler extends BaseThingHandler {
                         if (todayZonalMissing) {
                             List<GmePriceEntry> newTodayZonalPrices = filterZone(marketPrices, marketZone);
 
-                            if (GmePriceTimeline.isCompleteDailySet(newTodayZonalPrices, today, GME_ZONE, granularity)) {
+                            if (GmePriceTimeline.isCompleteDailySet(newTodayZonalPrices, today, GME_ZONE,
+                                    granularity)) {
                                 zonalPriceCache.setToday(today, newTodayZonalPrices);
                             } else {
                                 logger.warn(
@@ -360,7 +362,8 @@ public class GmePunHandler extends BaseThingHandler {
                         if (tomorrowPunMissing) {
                             List<GmePriceEntry> newTomorrowPrices = filterZone(marketPrices, "PUN");
 
-                            if (!GmePriceTimeline.isCompleteDailySet(newTomorrowPrices, tomorrow, GME_ZONE, granularity)) {
+                            if (!GmePriceTimeline.isCompleteDailySet(newTomorrowPrices, tomorrow, GME_ZONE,
+                                    granularity)) {
                                 priceCache.clearTomorrow();
                                 retryRequired = true;
 
@@ -376,7 +379,8 @@ public class GmePunHandler extends BaseThingHandler {
                         if (tomorrowZonalMissing) {
                             List<GmePriceEntry> newTomorrowZonalPrices = filterZone(marketPrices, marketZone);
 
-                            if (!GmePriceTimeline.isCompleteDailySet(newTomorrowZonalPrices, tomorrow, GME_ZONE, granularity)) {
+                            if (!GmePriceTimeline.isCompleteDailySet(newTomorrowZonalPrices, tomorrow, GME_ZONE,
+                                    granularity)) {
                                 zonalPriceCache.clearTomorrow();
                                 retryRequired = true;
 
