@@ -94,15 +94,14 @@ class GmePriceTimelineTest {
         GmePriceEntry legacy = new GmePriceEntry(date, 11, "MGP", "PUN", new BigDecimal("100.000000"), 0,
                 GmeGranularity.PT60, null);
 
-        assertEquals(ZonedDateTime.of(2026, 9, 10, 10, 0, 0, 0, ROME),
-                GmePriceTimeline.getStartTime(legacy, ROME));
+        assertEquals(ZonedDateTime.of(2026, 9, 10, 10, 0, 0, 0, ROME), GmePriceTimeline.getStartTime(legacy, ROME));
     }
 
     @Test
     void findsCurrentAndNextQuarterHourPrice() {
         LocalDate date = LocalDate.of(2026, 9, 10);
-        List<GmePriceEntry> prices = List.of(entry(date, 42, GmeGranularity.PT15),
-                entry(date, 43, GmeGranularity.PT15), entry(date, 44, GmeGranularity.PT15));
+        List<GmePriceEntry> prices = List.of(entry(date, 42, GmeGranularity.PT15), entry(date, 43, GmeGranularity.PT15),
+                entry(date, 44, GmeGranularity.PT15));
 
         Instant now = ZonedDateTime.of(2026, 9, 10, 10, 37, 0, 0, ROME).toInstant();
 
