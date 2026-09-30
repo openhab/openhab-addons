@@ -68,6 +68,15 @@ public class GmePunHandler extends BaseThingHandler {
 
     private static final ZoneId GME_ZONE = ZoneId.of("Europe/Rome");
 
+    /*
+     * Retry interval used only when tomorrow's dataset is missing or
+     * incomplete.
+     *
+     * This is intentionally independent from the normal bridge refresh
+     * interval, which may be much longer (for example 60 minutes).
+     */
+    private static final int API_RETRY_INTERVAL_MINUTES = 5;
+
     private final Logger logger = LoggerFactory.getLogger(GmePunHandler.class);
     private final AtomicBoolean refreshInProgress = new AtomicBoolean();
 
@@ -76,6 +85,7 @@ public class GmePunHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> apiRetryJob;
 
     private final GmePriceCache priceCache = new GmePriceCache();
+    private final GmePriceCache zonalPriceCache = new GmePriceCache();
 
     public GmePunHandler(Thing thing) {
         super(thing);
@@ -139,29 +149,39 @@ public class GmePunHandler extends BaseThingHandler {
         logger.debug("Scheduled local GME PUN channel refresh every minute");
     }
 
+    /**
+     * Schedule a single retry for retrieving tomorrow's dataset.
+     *
+     * The retry is one-shot rather than a repeating fixed-delay task.
+     * Immediately before executing refreshPrices(), the apiRetryJob reference
+     * is cleared. This allows refreshPrices() to schedule another retry if the
+     * dataset is still unavailable.
+     */
     private synchronized void scheduleApiRetry() {
         ScheduledFuture<?> currentJob = apiRetryJob;
-        if (currentJob != null && !currentJob.isCancelled()) {
+
+        if (currentJob != null && !currentJob.isDone() && !currentJob.isCancelled()) {
             return;
         }
 
-        GmeApiBridgeHandler currentBridgeHandler = bridgeHandler;
-        if (currentBridgeHandler == null) {
-            return;
-        }
+        apiRetryJob = scheduler.schedule(() -> {
+            synchronized (GmePunHandler.this) {
+                apiRetryJob = null;
+            }
 
-        int refreshInterval = currentBridgeHandler.getRefreshInterval();
-        apiRetryJob = scheduler.scheduleWithFixedDelay(this::refreshPrices, refreshInterval, refreshInterval,
-                TimeUnit.MINUTES);
+            logger.debug("Executing scheduled GME PUN API retry");
+            refreshPrices();
+        }, API_RETRY_INTERVAL_MINUTES, TimeUnit.MINUTES);
 
-        logger.debug("Scheduled GME PUN API retry every {} minutes", refreshInterval);
+        logger.debug("Scheduled GME PUN API retry in {} minutes", API_RETRY_INTERVAL_MINUTES);
     }
 
     private synchronized void cancelApiRetry() {
         ScheduledFuture<?> currentJob = apiRetryJob;
+        apiRetryJob = null;
+
         if (currentJob != null) {
             currentJob.cancel(false);
-            apiRetryJob = null;
         }
     }
 
@@ -177,19 +197,68 @@ public class GmePunHandler extends BaseThingHandler {
 
     private void refreshLocalState() {
         LocalDate currentDate = LocalDate.now(GME_ZONE);
+        LocalDate tomorrow = currentDate.plusDays(1);
         LocalDate loadedTodayDate = priceCache.getTodayDate();
 
-        if (!currentDate.equals(loadedTodayDate)) {
-            if (priceCache.promoteTomorrowToToday(currentDate, GME_ZONE)) {
-                logger.debug("Promoted cached PUN prices for {} to today", currentDate);
+        GmeApiBridgeHandler currentBridgeHandler = bridgeHandler;
+        String marketZone = currentBridgeHandler != null ? currentBridgeHandler.getMarketZone() : "";
 
-                updateChannels();
-                refreshPrices();
-            } else {
-                refreshPrices();
+        if (!currentDate.equals(loadedTodayDate)) {
+            boolean punPromoted = priceCache.promoteTomorrowToToday(currentDate, GME_ZONE);
+
+            boolean zonalPromoted = marketZone.isBlank()
+                    || zonalPriceCache.promoteTomorrowToToday(currentDate, GME_ZONE);
+
+            if (punPromoted) {
+                logger.debug("Promoted cached PUN prices for {} to today", currentDate);
             }
-        } else {
-            updateChannels();
+
+            if (!marketZone.isBlank() && zonalPromoted) {
+                logger.debug("Promoted cached {} zonal prices for {} to today", marketZone, currentDate);
+            }
+
+            if (punPromoted && zonalPromoted) {
+                updateChannels();
+            }
+
+            /*
+             * A date rollover requires a new "tomorrow" dataset.
+             *
+             * Arm the retry before attempting the immediate refresh so that
+             * a concurrent refresh cannot permanently lose the rollover
+             * request.
+             */
+            logger.debug("GME date rollover detected for {}; requesting new tomorrow dataset {}", currentDate,
+                    tomorrow);
+
+            scheduleApiRetry();
+            refreshPrices();
+            return;
+        }
+
+        updateChannels();
+
+        /*
+         * Defensive rollover recovery.
+         *
+         * refreshPrices() can legitimately be skipped when another refresh is
+         * already in progress. If this happens exactly at midnight, the
+         * tomorrow-to-today promotion may succeed while retrieval of the new
+         * tomorrow dataset is lost.
+         *
+         * Check the cache date on every local refresh. If tomorrow is missing
+         * or belongs to a different date, ensure that the normal API retry job
+         * is armed.
+         */
+        boolean tomorrowPunMissing = !tomorrow.equals(priceCache.getTomorrowDate())
+                || priceCache.getTomorrowPrices().isEmpty();
+
+        boolean tomorrowZonalMissing = !marketZone.isBlank() && (!tomorrow.equals(zonalPriceCache.getTomorrowDate())
+                || zonalPriceCache.getTomorrowPrices().isEmpty());
+
+        if (tomorrowPunMissing || tomorrowZonalMissing) {
+            logger.debug("Tomorrow dataset for {} is missing or stale; ensuring API retry is scheduled", tomorrow);
+            scheduleApiRetry();
         }
     }
 
@@ -214,49 +283,134 @@ public class GmePunHandler extends BaseThingHandler {
                     return;
                 }
 
+                String marketZone = currentBridgeHandler.getMarketZone();
+
                 LocalDate today = LocalDate.now(GME_ZONE);
                 LocalDate tomorrow = today.plusDays(1);
 
-                if (!today.equals(priceCache.getTodayDate()) || priceCache.getTodayPrices().isEmpty()) {
-                    if (priceCache.promoteTomorrowToToday(today, GME_ZONE)) {
+                boolean todayPunMissing = !today.equals(priceCache.getTodayDate())
+                        || priceCache.getTodayPrices().isEmpty();
+
+                boolean todayZonalMissing = !marketZone.isBlank() && (!today.equals(zonalPriceCache.getTodayDate())
+                        || zonalPriceCache.getTodayPrices().isEmpty());
+
+                if (todayPunMissing || todayZonalMissing) {
+                    if (todayPunMissing && priceCache.promoteTomorrowToToday(today, GME_ZONE)) {
                         logger.debug("Promoted cached PUN prices for {} to today", today);
-                    } else {
-                        List<GmePriceEntry> newTodayPrices = authManager.requestPun(today);
-                        if (!GmePriceTimeline.isCompleteDailySet(newTodayPrices, today, GME_ZONE)) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "GME returned an incomplete PUN price dataset for today.");
-                            return;
+                        todayPunMissing = false;
+                    }
+
+                    if (todayZonalMissing && zonalPriceCache.promoteTomorrowToToday(today, GME_ZONE)) {
+                        logger.debug("Promoted cached {} zonal prices for {} to today", marketZone, today);
+                        todayZonalMissing = false;
+                    }
+
+                    if (todayPunMissing || todayZonalMissing) {
+                        List<GmePriceEntry> marketPrices = authManager.requestMarketPrices(today);
+
+                        if (todayPunMissing) {
+                            List<GmePriceEntry> newTodayPrices = filterZone(marketPrices, "PUN");
+
+                            if (!GmePriceTimeline.isCompleteDailySet(newTodayPrices, today, GME_ZONE)) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        "GME returned an incomplete PUN price dataset for today.");
+                                return;
+                            }
+
+                            priceCache.setToday(today, newTodayPrices);
                         }
 
-                        priceCache.setToday(today, newTodayPrices);
+                        if (todayZonalMissing) {
+                            List<GmePriceEntry> newTodayZonalPrices = filterZone(marketPrices, marketZone);
+
+                            if (GmePriceTimeline.isCompleteDailySet(newTodayZonalPrices, today, GME_ZONE)) {
+                                zonalPriceCache.setToday(today, newTodayZonalPrices);
+                            } else {
+                                logger.warn(
+                                        "GME returned an incomplete {} zonal price dataset for today: received {} entries, expected {}",
+                                        marketZone, newTodayZonalPrices.size(),
+                                        GmePriceTimeline.getExpectedHours(today, GME_ZONE));
+                            }
+                        }
                     }
                 }
 
-                if (!tomorrow.equals(priceCache.getTomorrowDate()) || priceCache.getTomorrowPrices().isEmpty()) {
-                    try {
-                        List<GmePriceEntry> newTomorrowPrices = authManager.requestPun(tomorrow);
+                boolean tomorrowPunMissing = !tomorrow.equals(priceCache.getTomorrowDate())
+                        || priceCache.getTomorrowPrices().isEmpty();
 
-                        if (!GmePriceTimeline.isCompleteDailySet(newTomorrowPrices, tomorrow, GME_ZONE)) {
-                            priceCache.clearTomorrow();
+                boolean tomorrowZonalMissing = !marketZone.isBlank()
+                        && (!tomorrow.equals(zonalPriceCache.getTomorrowDate())
+                                || zonalPriceCache.getTomorrowPrices().isEmpty());
+
+                if (tomorrowPunMissing || tomorrowZonalMissing) {
+                    try {
+                        List<GmePriceEntry> marketPrices = authManager.requestMarketPrices(tomorrow);
+
+                        boolean retryRequired = false;
+
+                        if (tomorrowPunMissing) {
+                            List<GmePriceEntry> newTomorrowPrices = filterZone(marketPrices, "PUN");
+
+                            if (!GmePriceTimeline.isCompleteDailySet(newTomorrowPrices, tomorrow, GME_ZONE)) {
+                                priceCache.clearTomorrow();
+                                retryRequired = true;
+
+                                logger.debug(
+                                        "PUN price dataset for tomorrow is incomplete: received {} entries, expected {}",
+                                        newTomorrowPrices.size(),
+                                        GmePriceTimeline.getExpectedHours(tomorrow, GME_ZONE));
+                            } else {
+                                priceCache.setTomorrow(tomorrow, newTomorrowPrices);
+                            }
+                        }
+
+                        if (tomorrowZonalMissing) {
+                            List<GmePriceEntry> newTomorrowZonalPrices = filterZone(marketPrices, marketZone);
+
+                            if (!GmePriceTimeline.isCompleteDailySet(newTomorrowZonalPrices, tomorrow, GME_ZONE)) {
+                                zonalPriceCache.clearTomorrow();
+                                retryRequired = true;
+
+                                logger.debug(
+                                        "{} zonal price dataset for tomorrow is incomplete: received {} entries, expected {}",
+                                        marketZone, newTomorrowZonalPrices.size(),
+                                        GmePriceTimeline.getExpectedHours(tomorrow, GME_ZONE));
+                            } else {
+                                zonalPriceCache.setTomorrow(tomorrow, newTomorrowZonalPrices);
+                            }
+                        }
+
+                        if (retryRequired) {
                             scheduleApiRetry();
-                            logger.debug(
-                                    "PUN price dataset for tomorrow is incomplete: received {} entries, expected {}",
-                                    newTomorrowPrices.size(), GmePriceTimeline.getExpectedHours(tomorrow, GME_ZONE));
                         } else {
-                            priceCache.setTomorrow(tomorrow, newTomorrowPrices);
                             cancelApiRetry();
                         }
                     } catch (GmeApiException e) {
                         if (e.isAuthenticationError()) {
                             throw e;
                         }
-                        priceCache.clearTomorrow();
+
+                        if (tomorrowPunMissing) {
+                            priceCache.clearTomorrow();
+                        }
+
+                        if (tomorrowZonalMissing) {
+                            zonalPriceCache.clearTomorrow();
+                        }
+
                         scheduleApiRetry();
-                        logger.debug("Unable to retrieve PUN prices for tomorrow: {}", e.getMessage());
+                        logger.debug("Unable to retrieve GME prices for tomorrow: {}", e.getMessage());
                     } catch (IOException | TimeoutException | ExecutionException | IllegalStateException e) {
-                        priceCache.clearTomorrow();
+                        if (tomorrowPunMissing) {
+                            priceCache.clearTomorrow();
+                        }
+
+                        if (tomorrowZonalMissing) {
+                            zonalPriceCache.clearTomorrow();
+                        }
+
                         scheduleApiRetry();
-                        logger.debug("PUN prices for tomorrow are not available yet: {}", e.getMessage());
+                        logger.debug("GME prices for tomorrow are not available yet: {}", e.getMessage());
                     }
                 } else {
                     cancelApiRetry();
@@ -267,6 +421,12 @@ public class GmePunHandler extends BaseThingHandler {
                 logger.debug("Loaded {} PUN prices for today and {} for tomorrow", priceCache.getTodayPrices().size(),
                         priceCache.getTomorrowPrices().size());
 
+                if (!marketZone.isBlank()) {
+                    logger.debug("Loaded {} {} zonal prices for today and {} for tomorrow",
+                            zonalPriceCache.getTodayPrices().size(), marketZone,
+                            zonalPriceCache.getTomorrowPrices().size());
+                }
+
                 updateStatus(ThingStatus.ONLINE);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -274,11 +434,15 @@ public class GmePunHandler extends BaseThingHandler {
                         "GME price refresh was interrupted.");
             } catch (IOException | TimeoutException | ExecutionException | IllegalStateException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unable to retrieve GME PUN prices: " + e.getMessage());
+                        "Unable to retrieve GME prices: " + e.getMessage());
             } finally {
                 refreshInProgress.set(false);
             }
         });
+    }
+
+    private List<GmePriceEntry> filterZone(List<GmePriceEntry> prices, String zone) {
+        return prices.stream().filter(price -> zone.equals(price.zone())).toList();
     }
 
     private void updateChannels() {
@@ -312,6 +476,9 @@ public class GmePunHandler extends BaseThingHandler {
         sendPriceTimeSeries(CHANNEL_TODAY_PRICES, todayPrices);
         sendPriceTimeSeries(CHANNEL_TOMORROW_PRICES, tomorrowPrices);
 
+        sendPriceTimeSeries(CHANNEL_TODAY_ZONAL_PRICES, zonalPriceCache.getTodayPrices());
+        sendPriceTimeSeries(CHANNEL_TOMORROW_ZONAL_PRICES, zonalPriceCache.getTomorrowPrices());
+
         if (tomorrowPrices.isEmpty()) {
             updateState(CHANNEL_TOMORROW_AVAILABLE, OnOffType.OFF);
             clearTomorrowChannels();
@@ -344,6 +511,7 @@ public class GmePunHandler extends BaseThingHandler {
         BigDecimal average = total.divide(BigDecimal.valueOf(prices.size()), MathContext.DECIMAL64);
 
         GmePriceEntry minimum = prices.stream().min(Comparator.comparing(GmePriceEntry::priceKWh)).orElseThrow();
+
         GmePriceEntry maximum = prices.stream().max(Comparator.comparing(GmePriceEntry::priceKWh)).orElseThrow();
 
         updateState(averageChannel, toPriceState(average));
@@ -351,18 +519,27 @@ public class GmePunHandler extends BaseThingHandler {
         updateState(maxChannel, toPriceState(maximum.priceKWh()));
 
         updateState(minTimeChannel, new DateTimeType(GmePriceTimeline.getStartTime(minimum, GME_ZONE)));
+
         updateState(maxTimeChannel, new DateTimeType(GmePriceTimeline.getStartTime(maximum, GME_ZONE)));
     }
 
     private void sendPriceTimeSeries(String channelId, List<GmePriceEntry> prices) {
+        if (prices.isEmpty()) {
+            return;
+        }
+
+        updateState(channelId, toPriceState(prices.get(0).priceKWh()));
+
         sendTimeSeries(channelId, GmePriceTimeSeries.build(prices, GME_ZONE, price -> toPriceState(price.priceKWh())));
     }
 
     private QuantityType<?> toPriceState(BigDecimal priceKWh) {
         Unit<?> priceUnit = UnitUtils.parseUnit("EUR/kWh");
+
         if (priceUnit == null) {
             priceUnit = CurrencyUnits.BASE_ENERGY_PRICE;
         }
+
         return new QuantityType<>(priceKWh, priceUnit);
     }
 
@@ -383,5 +560,13 @@ public class GmePunHandler extends BaseThingHandler {
 
     public List<GmePriceEntry> getTomorrowPrices() {
         return priceCache.getTomorrowPrices();
+    }
+
+    public List<GmePriceEntry> getTodayZonalPrices() {
+        return zonalPriceCache.getTodayPrices();
+    }
+
+    public List<GmePriceEntry> getTomorrowZonalPrices() {
+        return zonalPriceCache.getTomorrowPrices();
     }
 }

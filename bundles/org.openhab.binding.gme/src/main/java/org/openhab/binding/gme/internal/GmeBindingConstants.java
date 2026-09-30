@@ -28,6 +28,7 @@ public class GmeBindingConstants {
     public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "api");
     public static final ThingTypeUID THING_TYPE_PUN = new ThingTypeUID(BINDING_ID, "pun");
 
+    public static final String CHANNEL_PASSWORD_LAST_CHANGED = "password-last-changed";
     public static final String CHANNEL_PASSWORD_EXPIRY = "password-expiry";
     public static final String CHANNEL_PASSWORD_DAYS_REMAINING = "password-days-remaining";
     public static final String CHANNEL_PASSWORD_STATUS = "password-status";
@@ -36,6 +37,9 @@ public class GmeBindingConstants {
     public static final String CHANNEL_NEXT_PRICE = "next-price";
     public static final String CHANNEL_TODAY_PRICES = "today-prices";
     public static final String CHANNEL_TOMORROW_PRICES = "tomorrow-prices";
+
+    public static final String CHANNEL_TODAY_ZONAL_PRICES = "today-zonal-prices";
+    public static final String CHANNEL_TOMORROW_ZONAL_PRICES = "tomorrow-zonal-prices";
 
     public static final String CHANNEL_TODAY_AVERAGE = "today-average";
     public static final String CHANNEL_TODAY_MIN = "today-min";

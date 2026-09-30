@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Cache for current and next-day GME PUN prices.
+ * Cache for current and next-day GME electricity market prices.
  *
  * @author Andrea Riela - Initial contribution
  */

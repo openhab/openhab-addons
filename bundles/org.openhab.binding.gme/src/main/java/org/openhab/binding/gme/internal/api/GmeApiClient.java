@@ -29,7 +29,9 @@ import java.util.zip.ZipInputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -63,9 +65,14 @@ public class GmeApiClient {
             throws InterruptedException, TimeoutException, ExecutionException {
         String body = gson.toJson(Map.of("Login", login, "Password", password));
 
-        ContentResponse response = httpClient.newRequest(BASE_URL + "/Auth").method(HttpMethod.POST)
-                .content(new StringContentProvider(body), "application/json")
-                .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+        ContentResponse response;
+        try {
+            response = httpClient.newRequest(BASE_URL + "/Auth").method(HttpMethod.POST)
+                    .content(new StringContentProvider(body), "application/json")
+                    .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+        } catch (ExecutionException e) {
+            throw translateHttpResponseException(e, "GME authentication");
+        }
 
         if (response.getStatus() != HttpStatus.OK_200) {
             throw new GmeApiException("GME authentication returned HTTP status " + response.getStatus(),
@@ -88,7 +95,13 @@ public class GmeApiClient {
         return token;
     }
 
-    public List<GmePriceEntry> requestPun(LocalDate date, String token)
+    /**
+     * Retrieves the complete MGP zonal price dataset for the requested day.
+     *
+     * The returned list contains PUN and all market zones. Consumers can
+     * select the required zone locally without performing another API call.
+     */
+    public List<GmePriceEntry> requestMarketPrices(LocalDate date, String token)
             throws InterruptedException, TimeoutException, ExecutionException, IOException {
         String dateValue = date.format(GME_DATE_FORMAT);
 
@@ -98,10 +111,15 @@ public class GmeApiClient {
 
         String body = gson.toJson(bodyObject);
 
-        ContentResponse response = httpClient.newRequest(BASE_URL + "/RequestData").method(HttpMethod.POST)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + token)
-                .content(new StringContentProvider(body), "application/json")
-                .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+        ContentResponse response;
+        try {
+            response = httpClient.newRequest(BASE_URL + "/RequestData").method(HttpMethod.POST)
+                    .header(HttpHeader.AUTHORIZATION, "Bearer " + token)
+                    .content(new StringContentProvider(body), "application/json")
+                    .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+        } catch (ExecutionException e) {
+            throw translateHttpResponseException(e, "GME RequestData");
+        }
 
         if (response.getStatus() != HttpStatus.OK_200) {
             throw new GmeApiException("GME RequestData returned HTTP status " + response.getStatus(),
@@ -120,10 +138,52 @@ public class GmeApiClient {
             throw new IllegalStateException("GME RequestData returned no content");
         }
 
-        return parsePunContentResponse(contentResponse);
+        return parseMarketPriceContentResponse(contentResponse);
     }
 
-    static List<GmePriceEntry> parsePunContentResponse(String contentResponse) throws IOException {
+    /**
+     * Backward-compatible helper for PUN prices.
+     */
+    public List<GmePriceEntry> requestPun(LocalDate date, String token)
+            throws InterruptedException, TimeoutException, ExecutionException, IOException {
+        return requestMarketPrices(date, token).stream().filter(price -> "PUN".equals(price.zone())).toList();
+    }
+
+    /**
+     * Helper for a specific market zone.
+     */
+    public List<GmePriceEntry> requestZonal(LocalDate date, String marketZone, String token)
+            throws InterruptedException, TimeoutException, ExecutionException, IOException {
+        return requestMarketPrices(date, token).stream().filter(price -> marketZone.equals(price.zone())).toList();
+    }
+
+    /**
+     * Jetty can fail an HTTP request before returning a ContentResponse when
+     * the remote server sends an authentication challenge that does not fully
+     * comply with the HTTP specification, for example a 401 response without
+     * a WWW-Authenticate header.
+     *
+     * In that situation send() completes exceptionally with an
+     * HttpResponseException wrapped by ExecutionException.
+     *
+     * Translate that exception into GmeApiException while preserving the HTTP
+     * status code, so GmeAuthManager can recognize 401/403 responses,
+     * invalidate the cached token and authenticate again.
+     */
+    private ExecutionException translateHttpResponseException(ExecutionException exception, String operation) {
+        Throwable cause = exception.getCause();
+
+        if (cause instanceof HttpResponseException httpResponseException) {
+            Response response = httpResponseException.getResponse();
+            int status = response.getStatus();
+
+            throw new GmeApiException(operation + " returned HTTP status " + status, status);
+        }
+
+        return exception;
+    }
+
+    static List<GmePriceEntry> parseMarketPriceContentResponse(String contentResponse) throws IOException {
         byte[] zipData = Base64.getDecoder().decode(contentResponse);
 
         try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(zipData), StandardCharsets.UTF_8)) {
@@ -133,12 +193,19 @@ public class GmeApiClient {
                     List<GmePriceEntry> entries = GmePriceDataParser
                             .parse(new InputStreamReader(zip, StandardCharsets.UTF_8));
 
-                    return entries.stream().filter(price -> "MGP".equals(price.market()))
-                            .filter(price -> "PUN".equals(price.zone())).toList();
+                    return entries.stream().filter(price -> "MGP".equals(price.market())).toList();
                 }
             }
         }
 
         throw new IllegalStateException("GME ZIP response did not contain a JSON file");
+    }
+
+    /**
+     * Kept for compatibility with existing tests and callers.
+     */
+    static List<GmePriceEntry> parsePunContentResponse(String contentResponse) throws IOException {
+        return parseMarketPriceContentResponse(contentResponse).stream().filter(price -> "PUN".equals(price.zone()))
+                .toList();
     }
 }

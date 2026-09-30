@@ -9,6 +9,10 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
+			<channel id="password-last-changed" typeId="timestamp">
+				<label>Password Last Changed</label>
+				<description>Date when the current GME API password was first observed or changed.</description>
+			</channel>
 			<channel id="password-expiry" typeId="timestamp">
 				<label>Password Expiry</label>
 				<description>Estimated expiry date of the current GME API password.</description>
@@ -33,6 +37,28 @@
 				<context>password</context>
 				<label>Password</label>
 				<description>Password for the GME API.</description>
+			</parameter>
+
+			<parameter name="initialPasswordChangedAt" type="text">
+				<label>Initial Password Change Date</label>
+				<description>Optional date when the current GME API password was changed, in YYYY-MM-DD format. This is only used to
+					initialise password age tracking when no previous tracking information exists.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="marketZone" type="text">
+				<label>Market Zone</label>
+				<description>Italian electricity market zone used to retrieve zonal market prices. PUN Index prices are national and
+					are not affected by this setting.</description>
+				<options>
+					<option value="NORD">NORD - Northern Italy</option>
+					<option value="CNOR">CNOR - Central-Northern Italy</option>
+					<option value="CSUD">CSUD - Central-Southern Italy</option>
+					<option value="SUD">SUD - Southern Italy</option>
+					<option value="CALA">CALA - Calabria</option>
+					<option value="SICI">SICI - Sicily</option>
+					<option value="SARD">SARD - Sardinia</option>
+				</options>
 			</parameter>
 
 			<parameter name="refreshInterval" type="integer" unit="min" min="1">
@@ -67,6 +93,15 @@
 			<channel id="tomorrow-prices" typeId="energy-price">
 				<label>Tomorrow's Prices</label>
 				<description>Hourly PUN prices for tomorrow as a time series.</description>
+			</channel>
+
+			<channel id="today-zonal-prices" typeId="energy-price">
+				<label>Today's Zonal Prices</label>
+				<description>Hourly prices for today for the configured GME market zone as a time series.</description>
+			</channel>
+			<channel id="tomorrow-zonal-prices" typeId="energy-price">
+				<label>Tomorrow's Zonal Prices</label>
+				<description>Hourly prices for tomorrow for the configured GME market zone as a time series.</description>
 			</channel>
 
 			<channel id="today-average" typeId="energy-price">

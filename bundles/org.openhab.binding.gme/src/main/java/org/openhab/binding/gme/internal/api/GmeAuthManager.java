@@ -53,6 +53,24 @@ public class GmeAuthManager {
         return newToken;
     }
 
+    public List<GmePriceEntry> requestMarketPrices(LocalDate date)
+            throws InterruptedException, TimeoutException, ExecutionException, IOException {
+        String currentToken = getToken();
+
+        try {
+            return apiClient.requestMarketPrices(date, currentToken);
+        } catch (GmeApiException e) {
+            if (!e.isAuthenticationError()) {
+                throw e;
+            }
+
+            invalidateToken();
+
+            String newToken = getToken();
+            return apiClient.requestMarketPrices(date, newToken);
+        }
+    }
+
     public List<GmePriceEntry> requestPun(LocalDate date)
             throws InterruptedException, TimeoutException, ExecutionException, IOException {
         String currentToken = getToken();
