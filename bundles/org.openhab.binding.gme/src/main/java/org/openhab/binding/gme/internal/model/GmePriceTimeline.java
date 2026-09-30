@@ -39,7 +39,8 @@ public final class GmePriceTimeline {
     public static ZonedDateTime getStartTime(GmePriceEntry entry, ZoneId zoneId) {
         int period = getPeriodIndex(entry);
         long offsetMinutes = (long) (period - 1) * entry.granularity().minutes();
-        return entry.flowDate().atStartOfDay(zoneId).plusMinutes(offsetMinutes);
+        Instant startOfDay = entry.flowDate().atStartOfDay(zoneId).toInstant();
+        return ZonedDateTime.ofInstant(startOfDay.plus(Duration.ofMinutes(offsetMinutes)), zoneId);
     }
 
     public static int getExpectedPeriods(LocalDate date, ZoneId zoneId, GmeGranularity granularity) {
