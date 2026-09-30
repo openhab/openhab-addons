@@ -77,8 +77,8 @@ class GmePriceTimeSeriesTest {
 
         for (int period = 1; period <= periods; period++) {
             int hour = ((period - 1) * granularity.minutes()) / 60 + 1;
-            prices.add(new GmePriceEntry(date, hour, "MGP", "PUN", new BigDecimal("100.000000"), period,
-                    granularity, null));
+            prices.add(new GmePriceEntry(date, hour, "MGP", "PUN", new BigDecimal("100.000000"), period, granularity,
+                    null));
         }
 
         return prices;
