@@ -79,6 +79,24 @@ class GmePriceCacheTest {
     }
 
     @Test
+    void promotesCompleteQuarterHourDataset() {
+        LocalDate date = LocalDate.of(2026, 9, 11);
+        GmePriceCache cache = new GmePriceCache();
+        List<GmePriceEntry> prices = new ArrayList<>();
+
+        for (int period = 1; period <= 96; period++) {
+            int hour = ((period - 1) * GmeGranularity.PT15.minutes()) / 60 + 1;
+            prices.add(new GmePriceEntry(date, hour, "MGP", "PUN", new BigDecimal("100.000000"), period,
+                    GmeGranularity.PT15, null));
+        }
+
+        cache.setTomorrow(date, prices);
+
+        assertTrue(cache.promoteTomorrowToToday(date, ROME, GmeGranularity.PT15));
+        assertEquals(96, cache.getTodayPrices().size());
+    }
+
+    @Test
     void promotesCompleteAutumnDstDataset() {
         LocalDate date = LocalDate.of(2026, 10, 25);
 
@@ -93,7 +111,7 @@ class GmePriceCacheTest {
         List<GmePriceEntry> prices = new ArrayList<>();
 
         for (int hour = 1; hour <= hours; hour++) {
-            prices.add(new GmePriceEntry(date, hour, "MGP", "PUN", new BigDecimal("100.000000"), 0, null));
+            prices.add(new GmePriceEntry(date, hour, "MGP", "PUN", new BigDecimal("100.000000"), 0, GmeGranularity.PT60, null));
         }
 
         return prices;
