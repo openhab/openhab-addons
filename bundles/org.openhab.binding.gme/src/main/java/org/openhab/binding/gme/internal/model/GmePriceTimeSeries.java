@@ -20,7 +20,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
 /**
- * Builds openHAB time series from GME price entries.
+ * Builds openHAB time series from GME market price intervals.
  *
  * @author Andrea Riela - Initial contribution
  */
