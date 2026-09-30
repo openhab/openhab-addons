@@ -63,7 +63,8 @@
 
 			<parameter name="granularity" type="text">
 				<label>Market Granularity</label>
-				<description>Granularity requested from the GME MGP market. PT60 preserves hourly pricing; PT30 and PT15 enable finer market time units.</description>
+				<description>Granularity requested from the GME MGP market. PT60 preserves hourly pricing; PT30 and PT15 enable
+					finer market time units.</description>
 				<default>PT60</default>
 				<options>
 					<option value="PT60">PT60 - 60 minutes</option>
@@ -108,11 +109,13 @@
 
 			<channel id="today-zonal-prices" typeId="energy-price">
 				<label>Today's Zonal Prices</label>
-				<description>Prices for today for the configured GME market zone at the configured GME market granularity as a time series.</description>
+				<description>Prices for today for the configured GME market zone at the configured GME market granularity as a time
+					series.</description>
 			</channel>
 			<channel id="tomorrow-zonal-prices" typeId="energy-price">
 				<label>Tomorrow's Zonal Prices</label>
-				<description>Prices for tomorrow for the configured GME market zone at the configured GME market granularity as a time series.</description>
+				<description>Prices for tomorrow for the configured GME market zone at the configured GME market granularity as a
+					time series.</description>
 			</channel>
 
 			<channel id="today-average" typeId="energy-price">
