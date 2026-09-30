@@ -61,6 +61,17 @@
 				</options>
 			</parameter>
 
+			<parameter name="granularity" type="text">
+				<label>Market Granularity</label>
+				<description>Granularity requested from the GME MGP market. PT60 preserves hourly pricing; PT30 and PT15 enable finer market time units.</description>
+				<default>PT60</default>
+				<options>
+					<option value="PT60">PT60 - 60 minutes</option>
+					<option value="PT30">PT30 - 30 minutes</option>
+					<option value="PT15">PT15 - 15 minutes</option>
+				</options>
+			</parameter>
+
 			<parameter name="refreshInterval" type="integer" unit="min" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval used to refresh market data.</description>
@@ -88,20 +99,20 @@
 			</channel>
 			<channel id="today-prices" typeId="energy-price">
 				<label>Today's Prices</label>
-				<description>Hourly PUN prices for today as a time series.</description>
+				<description>PUN prices for today at the configured GME market granularity as a time series.</description>
 			</channel>
 			<channel id="tomorrow-prices" typeId="energy-price">
 				<label>Tomorrow's Prices</label>
-				<description>Hourly PUN prices for tomorrow as a time series.</description>
+				<description>PUN prices for tomorrow at the configured GME market granularity as a time series.</description>
 			</channel>
 
 			<channel id="today-zonal-prices" typeId="energy-price">
 				<label>Today's Zonal Prices</label>
-				<description>Hourly prices for today for the configured GME market zone as a time series.</description>
+				<description>Prices for today for the configured GME market zone at the configured GME market granularity as a time series.</description>
 			</channel>
 			<channel id="tomorrow-zonal-prices" typeId="energy-price">
 				<label>Tomorrow's Zonal Prices</label>
-				<description>Hourly prices for tomorrow for the configured GME market zone as a time series.</description>
+				<description>Prices for tomorrow for the configured GME market zone at the configured GME market granularity as a time series.</description>
 			</channel>
 
 			<channel id="today-average" typeId="energy-price">
