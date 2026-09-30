@@ -52,8 +52,8 @@ public final class GmePriceEntryMapper {
                 throw new IllegalArgumentException("Invalid GME hour: " + hour);
             }
 
-            return Optional.of(
-                    new GmePriceEntry(flowDate, hour, raw.market(), raw.zone(), priceMWh, period, granularity, raw.notes()));
+            return Optional.of(new GmePriceEntry(flowDate, hour, raw.market(), raw.zone(), priceMWh, period, granularity,
+                    raw.notes()));
         } catch (NumberFormatException | DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid GME price entry", e);
         }
