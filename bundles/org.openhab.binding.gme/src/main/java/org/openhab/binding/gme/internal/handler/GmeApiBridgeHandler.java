@@ -30,6 +30,7 @@ import org.openhab.binding.gme.internal.api.GmeApiClient;
 import org.openhab.binding.gme.internal.api.GmeAuthManager;
 import org.openhab.binding.gme.internal.config.GmeApiConfiguration;
 import org.openhab.binding.gme.internal.model.GmeCredentialTracker;
+import org.openhab.binding.gme.internal.model.GmeGranularity;
 import org.openhab.binding.gme.internal.model.GmePasswordAge;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -59,6 +60,7 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
     private @Nullable GmeAuthManager authManager;
     private volatile int refreshInterval = 60;
     private volatile String marketZone = "";
+    private volatile GmeGranularity granularity = GmeGranularity.PT60;
     private @Nullable ScheduledFuture<?> passwordRefreshJob;
 
     public GmeApiBridgeHandler(Bridge bridge, HttpClient httpClient, Storage<String> storage) {
@@ -79,6 +81,13 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
         GmeApiConfiguration config = getConfigAs(GmeApiConfiguration.class);
         refreshInterval = Math.max(1, config.refreshInterval);
         marketZone = config.marketZone.trim().toUpperCase();
+
+        try {
+            granularity = GmeGranularity.fromApiValue(config.granularity);
+        } catch (IllegalArgumentException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
 
         if (!marketZone.isBlank() && !MARKET_ZONES.contains(marketZone)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -167,5 +176,9 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
 
     public String getMarketZone() {
         return marketZone;
+    }
+
+    public GmeGranularity getGranularity() {
+        return granularity;
     }
 }
