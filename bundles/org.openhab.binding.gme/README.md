@@ -32,7 +32,7 @@ The API Bridge manages authentication with GME and configuration shared by the p
 | `initialPasswordChangedAt` | text | Optional initial password change date in `YYYY-MM-DD` format | N/A | no | yes |
 | `marketZone` | text | Italian electricity market zone used for zonal prices | N/A | no | no |
 | `granularity` | text | GME MGP market granularity: `PT60`, `PT30` or `PT15` | `PT60` | no | no |
-| `refreshInterval` | integer | Market data refresh interval in minutes | 60 | no | yes |
+| `refreshInterval` | integer | Interval in minutes for refreshing the current-day market dataset from GME | 60 | no | yes |
 
 The following market zones are supported:
 
@@ -148,9 +148,9 @@ Bridge gme:api:account "GME API Account" [
     marketZone="NORD",
     granularity="PT60",
     refreshInterval=60
-]
-
-Thing gme:pun:account:pun "GME Electricity Prices"
+] {
+    Thing pun pun "GME Electricity Prices"
+}
 ```
 
 The `initialPasswordChangedAt` parameter can be omitted once password tracking has already been initialised.
