@@ -624,10 +624,15 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 continue;
             } else if (val.isJsonObject()) { // miot channel
                 val = val.getAsJsonObject().get("value");
+                if (val == null) {
+                    logger.debug("Property '{}' returned no value: {}", param, res.get(i));
+                    continue;
+                }
             }
             MiIoBasicChannel basicChannel = getChannel(param);
-            updateChannel(basicChannel, param, val);
-            markReadOnce(basicChannel);
+            if (updateChannel(basicChannel, param, val)) {
+                markReadOnce(basicChannel);
+            }
         }
     }
 
@@ -641,8 +646,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 continue;
             }
             MiIoBasicChannel basicChannel = getChannel(param);
-            updateChannel(basicChannel, param, val);
-            markReadOnce(basicChannel);
+            if (updateChannel(basicChannel, param, val)) {
+                markReadOnce(basicChannel);
+            }
         }
     }
 
@@ -655,12 +661,17 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
     }
 
-    protected void updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
+    /**
+     * Updates the channel with the received value
+     *
+     * @return true if the value was applied to the channel, false if the channel was not found or the update failed
+     */
+    protected boolean updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
         JsonElement val = value;
         deviceVariables.put(param, val);
         if (basicChannel == null) {
             logger.debug("Channel not found for {}", param);
-            return;
+            return false;
         }
         final String transformation = basicChannel.getTransformation();
         if (transformation != null) {
@@ -719,6 +730,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         } catch (IllegalArgumentException e) {
                             logger.debug("Failed updating channel '{}'. Could not convert '{}' to color",
                                     basicChannel.getChannel(), val.getAsString());
+                            return false;
                         }
                     }
                     break;
@@ -729,7 +741,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             logger.debug("Error updating {} property {} with '{}' : {}: {}", getThing().getUID(),
                     basicChannel.getChannel(), val, e.getClass().getCanonicalName(), e.getMessage());
             logger.trace("Property update error detail:", e);
+            return false;
         }
+        return true;
     }
 
     protected void quantityTypeUpdate(MiIoBasicChannel basicChannel, JsonElement val, String type) {
@@ -771,6 +785,12 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     @Override
     public void onMessageReceived(MiIoSendCommand response) {
         super.onMessageReceived(response);
+        if (response.isError()) {
+            String errorChannel = cmds.get(response.getId());
+            if (errorChannel != null && getCustomRefreshChannel(errorChannel) != null) {
+                cmds.remove(response.getId());
+            }
+        }
         if (response.isError() || (!response.getSender().isBlank()
                 && !response.getSender().contentEquals(getThing().getUID().getAsString()))) {
             logger.trace("Device {} is not processing command {} as no match. Sender id:'{}'", getThing().getUID(),
@@ -797,24 +817,27 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         logger.debug("Processing custom refresh command response for '{}' - {}", response.getMethod(),
                                 response.getResult());
                         final MiIoBasicChannel ch = getCustomRefreshChannel(channel);
+                        boolean updated = false;
                         if (ch != null) {
                             if (response.getResult().isJsonArray()) {
                                 JsonArray cmdResponse = response.getResult().getAsJsonArray();
                                 final String transformation = ch.getTransformation();
                                 if (transformation == null || transformation.isBlank()) {
                                     JsonElement response0 = cmdResponse.get(0);
-                                    updateChannel(ch, ch.getChannel(), response0.isJsonPrimitive() ? response0
+                                    updated = updateChannel(ch, ch.getChannel(), response0.isJsonPrimitive() ? response0
                                             : new JsonPrimitive(response0.toString()));
                                 } else {
-                                    updateChannel(ch, ch.getChannel(), cmdResponse);
+                                    updated = updateChannel(ch, ch.getChannel(), cmdResponse);
                                 }
                             } else {
-                                updateChannel(ch, ch.getChannel(), new JsonPrimitive(response.getResult().toString()));
+                                updated = updateChannel(ch, ch.getChannel(),
+                                        new JsonPrimitive(response.getResult().toString()));
                             }
                         }
                         cmds.remove(response.getId());
-                        // a response without result (e.g. a cloud error) does not count as read, so it is retried
-                        if (response.getResponse().has("result")) {
+                        // a failed update or a response without result (e.g. a cloud error) does not count as read, so
+                        // it is retried
+                        if (updated && response.getResponse().has("result")) {
                             markReadOnce(ch);
                         }
                     } else {

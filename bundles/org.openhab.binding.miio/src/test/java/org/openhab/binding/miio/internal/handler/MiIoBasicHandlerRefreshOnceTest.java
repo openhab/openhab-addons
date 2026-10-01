@@ -62,6 +62,9 @@ public class MiIoBasicHandlerRefreshOnceTest {
     private static final String ONCE_CHANNEL = "{\"property\":\"\",\"channel\":\"once\",\"type\":\"String\",\"refresh\":true,\"refreshInterval\":-1,"
             + "\"customRefreshCommand\":\"/v2/test/query\",\"customRefreshParameters\":{\"model\":\"test.model\"}}";
     private static final String ONCE_PROPERTY = "{\"property\":\"power\",\"channel\":\"power\",\"type\":\"String\",\"refresh\":true,\"refreshInterval\":-1}";
+    private static final String ONCE_MIOT_PROPERTY = "{\"property\":\"pwr\",\"siid\":2,\"piid\":1,\"channel\":\"power\",\"type\":\"String\",\"refresh\":true,\"refreshInterval\":-1}";
+    private static final String ONCE_NUMBER_CHANNEL = "{\"property\":\"\",\"channel\":\"num\",\"type\":\"Number\",\"refresh\":true,\"refreshInterval\":-1,"
+            + "\"customRefreshCommand\":\"/v2/test/number\"}";
     private static final String EVERY_PROPERTY = "{\"property\":\"mode\",\"channel\":\"mode\",\"type\":\"String\",\"refresh\":true}";
     private static final String EVERY_CYCLE_CHANNEL = "{\"property\":\"\",\"channel\":\"always\",\"type\":\"String\",\"refresh\":true,"
             + "\"customRefreshCommand\":\"/v2/test/always\"}";
@@ -261,6 +264,41 @@ public class MiIoBasicHandlerRefreshOnceTest {
         assertEquals(List.of("[\"power\",\"mode\"]"), handler.pollProperties(device));
         handler.respondProperties("[\"on\",\"auto\"]");
         assertEquals(List.of("[\"mode\"]"), handler.pollProperties(device));
+    }
+
+    @Test
+    public void readOnceMiotPropertyWithoutValueIsRetried() {
+        load(ONCE_MIOT_PROPERTY);
+
+        assertEquals(1, handler.pollProperties(device).size());
+        handler.respondProperties("[{\"did\":\"pwr\",\"siid\":2,\"piid\":1,\"code\":-4004}]");
+        assertEquals(1, handler.pollProperties(device).size());
+        handler.respondProperties("[{\"did\":\"pwr\",\"siid\":2,\"piid\":1,\"code\":0,\"value\":\"on\"}]");
+        assertEquals(0, handler.pollProperties(device).size());
+    }
+
+    @Test
+    public void readOnceChannelIsRetriedWhenUpdateFails() {
+        load(ONCE_NUMBER_CHANNEL);
+
+        assertEquals(List.of("/v2/test/number"), handler.poll(device));
+        handler.respond("num", "{\"code\":0,\"result\":[\"not a number\"]}");
+        assertEquals(List.of("/v2/test/number"), handler.poll(device));
+        handler.respond("num", "{\"code\":0,\"result\":[5]}");
+        assertEquals(List.of(), handler.poll(device));
+    }
+
+    @Test
+    public void errorResponseRemovesPendingCommand() {
+        load(ONCE_CHANNEL);
+
+        handler.poll(device);
+        assertEquals(1, handler.cmds.size());
+        handler.respond("once", "{\"error\":\"timeout\"}");
+        assertTrue(handler.cmds.isEmpty());
+        handler.poll(device);
+        handler.respond("once", "{\"code\":-8,\"message\":\"auth err\"}");
+        assertTrue(handler.cmds.isEmpty());
     }
 
     @Test
