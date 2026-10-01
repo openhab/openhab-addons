@@ -65,13 +65,26 @@ class DreameVacuumStatusTest {
     }
 
     @Test
-    void mapsCommonDeviceStatesWithoutGuessingModelSpecificCodes() {
+    void mapsCommonAndNewSchemaDeviceStates() {
         Map.ofEntries(Map.entry(2, "IDLE"), Map.entry(4, "ERROR"), Map.entry(7, "MOPPING"), Map.entry(11, "BUILDING"),
                 Map.entry(14, "UPGRADING"), Map.entry(15, "CLEAN_SUMMON"), Map.entry(16, "STATION_RESET"),
                 Map.entry(17, "RETURNING_INSTALL_MOP"), Map.entry(18, "RETURNING_REMOVE_MOP"))
                 .forEach((code, name) -> assertEquals(new StringType(name),
                         DreameVacuumStatus.channelUpdates(Map.of("2/1", code)).get("state")));
-        assertEquals(new StringType("UNKNOWN_19"), DreameVacuumStatus.channelUpdates(Map.of("2/1", 19)).get("state"));
+        assertEquals(new StringType("WATER_CHECK"), DreameVacuumStatus.channelUpdates(Map.of("2/1", 19)).get("state"));
+        assertEquals(new StringType("LEAVING_DOCK"),
+                DreameVacuumStatus.channelUpdates(Map.of("2/1", 122)).get("state"));
+    }
+
+    @Test
+    void mapsOldStateSchemaIndependently() {
+        Map.ofEntries(Map.entry(19, "REMOTE_CONTROL"), Map.entry(20, "CLEAN_ADD_WATER"), Map.entry(21, "MONITORING"),
+                Map.entry(23, "WASHING_PAUSED"), Map.entry(24, "AUTO_EMPTYING"), Map.entry(25, "WATER_CHECK"),
+                Map.entry(26, "SMART_CHARGING"))
+                .forEach((code, name) -> assertEquals(new StringType(name),
+                        DreameVacuumStatus.channelUpdates(Map.of("2/1", code), false).get("state")));
+        assertEquals(new StringType("UNKNOWN_22"),
+                DreameVacuumStatus.channelUpdates(Map.of("2/1", 22), false).get("state"));
     }
 
     @Test
