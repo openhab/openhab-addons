@@ -65,7 +65,7 @@ public class GmeHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_API.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
-                    String.class.getClassLoader());
+                    GmeHandlerFactory.class.getClassLoader());
             return new GmeApiBridgeHandler((Bridge) thing, httpClient, storage);
         }
 
