@@ -200,10 +200,6 @@
 								{
 									"matchValue": "2",
 									"returnValue": 1
-								},
-								{
-									"matchValue": "5",
-									"returnValue": 5
 								}
 							]
 						}
@@ -214,7 +210,7 @@
 					"Control",
 					"Light"
 				],
-				"readmeComment": "Note, currently only supporting switching to RGB, CT or Night Light mode. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
+				"readmeComment": "Note, currently only supporting switching to RGB or CT mode, use the nightlightMode channel for Night Light mode. Value mapping `[\"0\"\u003d\"Default\",\"2\"\u003d\"CT mode\",\"1\"\u003d\"RGB mode\",\"3\"\u003d\"HSV mode\",\"4\"\u003d\"Color Flow mode\",\"5\"\u003d\"Night Light mode\"]`"
 			},
 			{
 				"property": "name",
@@ -833,6 +829,10 @@
 								{
 									"matchValue": "2",
 									"returnValue": 1
+								},
+								{
+									"matchValue": "3",
+									"returnValue": 3
 								}
 							]
 						}
@@ -843,7 +843,7 @@
 					"Control",
 					"Light"
 				],
-				"readmeComment": "Note, currently only supporting switching to RGB or CT mode. Value mapping `[\"1\"\u003d\"RGB mode\",\"2\"\u003d\"CT mode\",\"3\"\u003d\"HSV mode\"]`"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"RGB mode\",\"2\"\u003d\"CT mode\",\"3\"\u003d\"HSV mode\"]`"
 			},
 			{
 				"property": "nl_br",
@@ -857,6 +857,40 @@
 					"Setpoint",
 					"Light"
 				]
+			},
+			{
+				"property": "active_mode",
+				"friendlyName": "Night Light Mode",
+				"channel": "nightlightMode",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"on",
+							"smooth",
+							500,
+							"$value$"
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "ON",
+									"returnValue": 5
+								},
+								{
+									"matchValue": "OFF",
+									"returnValue": 1
+								}
+							]
+						}
+					}
+				],
+				"category": "light",
+				"readmeComment": "Switching off returns the light to CT mode"
 			}
 		]
 	}
