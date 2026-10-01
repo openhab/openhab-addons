@@ -123,7 +123,8 @@ public class DreameVacuumHandler extends BaseThingHandler {
         stopMqtt();
         DreameVacuumConfiguration config = getConfigAs(DreameVacuumConfiguration.class);
         if (config.deviceId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device ID must be configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.device-id");
             return;
         }
         Bridge bridge = getBridge();
@@ -137,10 +138,10 @@ public class DreameVacuumHandler extends BaseThingHandler {
                 logger.trace("Vacuum discovery diagnostics: {}", DreameVacuumDiagnostics.describe(device));
                 if (!supportsMqttDiagnostics(device)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Vacuum model " + device.model() + " is discovered but has no verified protocol mapping");
+                            "@text/offline.configuration-error.vacuum-model");
                     return;
                 }
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting valid device status");
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/unknown.awaiting-device-status");
                 int currentGeneration = generation.get();
                 mapApi = account.getVacuumApi();
                 mapDevice = device;
@@ -152,7 +153,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
             }
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "No matching Dreame vacuum found in the account");
+                "@text/offline.configuration-error.vacuum-not-found");
     }
 
     static boolean supportsMqttDiagnostics(DreameDevice device) {
@@ -239,7 +240,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
                     consecutiveStatusFailures++;
                     if (consecutiveStatusFailures >= STATUS_FAILURES_BEFORE_OFFLINE) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Device status query failed; retrying on the next refresh");
+                                "@text/offline.communication-error.device-status");
                     } else {
                         logger.debug("Device status query failed once; retrying on the next refresh");
                     }
