@@ -216,6 +216,31 @@ public class ConversionsTest {
     }
 
     @Test
+    public void getJsonElementDatabaseUsagesUnchangedTest() {
+        // getJsonElement-current_program etc. (lumi.gateway): custom refresh response passed as string or object
+        String fm = "{\"current_program\":527782008,\"current_progress\":1,\"current_volume\":20,\"current_status\":\"pause\"}";
+        for (JsonElement value : new JsonElement[] { new JsonPrimitive(fm), JsonParser.parseString(fm) }) {
+            assertEquals(new JsonPrimitive(527782008), getJsonElement("current_program", value));
+            assertEquals(new JsonPrimitive("pause"), getJsonElement("current_status", value));
+            assertEquals(value, getJsonElement("gateway_status", value));
+        }
+        // a member name on an array response returns the input, as before
+        JsonElement array = JsonParser.parseString("[{\"gateway_status\":\"enable\"}]");
+        assertEquals(array, getJsonElement("gateway_status", array));
+        JsonElement text = new JsonPrimitive("ok");
+        assertEquals(text, getJsonElement("gateway_status", text));
+
+        // getDidElement (chuangmi.plug.212a01): result is keyed by the device id
+        Map<String, Object> deviceVariables = new HashMap<>();
+        deviceVariables.put("deviceId", "123456789");
+        JsonElement bleDevices = new JsonPrimitive("{\"123456789\":[{\"did\":\"blt.3.abc\",\"name\":\"Sensor\"}]}");
+        assertEquals(JsonParser.parseString("[{\"did\":\"blt.3.abc\",\"name\":\"Sensor\"}]"),
+                Conversions.execute("getDidElement", bleDevices, deviceVariables));
+        deviceVariables.put("deviceId", "987654321");
+        assertEquals(bleDevices, Conversions.execute("getDidElement", bleDevices, deviceVariables));
+    }
+
+    @Test
     public void getJsonElementPathNotFoundTest() {
         JsonElement asString = new JsonPrimitive(RECIPES);
         JsonElement asObject = JsonParser.parseString(RECIPES);
