@@ -97,6 +97,32 @@ class GmePriceCacheTest {
     }
 
     @Test
+    void rejectsCachedDatasetWhenConfiguredGranularityChanges() {
+        LocalDate date = LocalDate.of(2026, 9, 11);
+        GmePriceCache cache = new GmePriceCache();
+
+        cache.setTomorrow(date, completeDay(date, GmeGranularity.PT15));
+
+        assertTrue(cache.hasTomorrowGranularity(GmeGranularity.PT15));
+        assertFalse(cache.hasTomorrowGranularity(GmeGranularity.PT60));
+        assertFalse(cache.promoteTomorrowToToday(date, ROME, GmeGranularity.PT60));
+        assertEquals(date, cache.getTomorrowDate());
+        assertEquals(96, cache.getTomorrowPrices().size());
+    }
+
+    @Test
+    void detectsTodayGranularity() {
+        LocalDate date = LocalDate.of(2026, 9, 11);
+        GmePriceCache cache = new GmePriceCache();
+
+        cache.setToday(date, completeDay(date, GmeGranularity.PT30));
+
+        assertTrue(cache.hasTodayGranularity(GmeGranularity.PT30));
+        assertFalse(cache.hasTodayGranularity(GmeGranularity.PT15));
+        assertFalse(cache.hasTodayGranularity(GmeGranularity.PT60));
+    }
+
+    @Test
     void promotesCompleteAutumnDstDataset() {
         LocalDate date = LocalDate.of(2026, 10, 25);
 
@@ -105,6 +131,19 @@ class GmePriceCacheTest {
 
         assertTrue(cache.promoteTomorrowToToday(date, ROME));
         assertEquals(25, cache.getTodayPrices().size());
+    }
+
+    private static List<GmePriceEntry> completeDay(LocalDate date, GmeGranularity granularity) {
+        int periods = GmePriceTimeline.getExpectedPeriods(date, ROME, granularity);
+        List<GmePriceEntry> prices = new ArrayList<>();
+
+        for (int period = 1; period <= periods; period++) {
+            int hour = ((period - 1) * granularity.minutes()) / 60 + 1;
+            prices.add(new GmePriceEntry(date, hour, "MGP", "PUN", new BigDecimal("100.000000"), period, granularity,
+                    null));
+        }
+
+        return prices;
     }
 
     private static List<GmePriceEntry> completeDay(LocalDate date, int hours) {
