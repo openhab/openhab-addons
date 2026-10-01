@@ -132,7 +132,6 @@ public class SpeedtestHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        int currentInitId = ++initId;
         config = getConfigAs(SpeedtestConfiguration.class);
         pollingInterval = config.refreshInterval;
         serverID = config.serverID;
