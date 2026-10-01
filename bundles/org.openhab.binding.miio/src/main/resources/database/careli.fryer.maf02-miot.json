@@ -15,23 +15,19 @@
 					"options": [
 						{
 							"value": "air-fryer-start-cook",
-							"label": "Air Fryer Start Cook"
+							"label": "Start Cooking"
 						},
 						{
 							"value": "air-fryer-cancel-cooking",
-							"label": "Air Fryer Cancel Cooking"
+							"label": "Cancel Cooking"
 						},
 						{
 							"value": "air-fryer-pause",
-							"label": "Air Fryer Pause"
-						},
-						{
-							"value": "custom-start-custom-cook",
-							"label": "Custom Start Custom Cook"
+							"label": "Pause Cooking"
 						},
 						{
 							"value": "custom-resume-cooking",
-							"label": "Custom Resume Cooking"
+							"label": "Resume Cooking"
 						}
 					]
 				},
@@ -80,28 +76,6 @@
 					},
 					{
 						"command": "action",
-						"parameterType": "UNKNOWN",
-						"parameters": [
-							1,
-							3,
-							4,
-							5,
-							6,
-							7.0
-						],
-						"siid": 3,
-						"aiid": 1,
-						"condition": {
-							"name": "matchValue",
-							"parameters": [
-								{
-									"matchValue": "custom-start-custom-cook"
-								}
-							]
-						}
-					},
-					{
-						"command": "action",
 						"parameterType": "EMPTY",
 						"siid": 3,
 						"aiid": 2,
@@ -115,7 +89,7 @@
 						}
 					}
 				],
-				"readmeComment": "Value mapping `[\"air-fryer-start-cook\"\u003d\"Air Fryer Start Cook\",\"air-fryer-cancel-cooking\"\u003d\"Air Fryer Cancel Cooking\",\"air-fryer-pause\"\u003d\"Air Fryer Pause\",\"custom-start-custom-cook\"\u003d\"Custom Start Custom Cook\",\"custom-resume-cooking\"\u003d\"Custom Resume Cooking\"]`"
+				"readmeComment": "Value mapping `[\"air-fryer-start-cook\"\u003d\"Start Cooking\",\"air-fryer-cancel-cooking\"\u003d\"Cancel Cooking\",\"air-fryer-pause\"\u003d\"Pause Cooking\",\"custom-resume-cooking\"\u003d\"Resume Cooking\"]`"
 			},
 			{
 				"property": "status",
@@ -129,7 +103,7 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Shutdown"
+							"label": "Off"
 						},
 						{
 							"value": "1",
@@ -137,11 +111,11 @@
 						},
 						{
 							"value": "2",
-							"label": "Pause"
+							"label": "Paused"
 						},
 						{
 							"value": "3",
-							"label": "Appointment"
+							"label": "Scheduled"
 						},
 						{
 							"value": "4",
@@ -149,23 +123,23 @@
 						},
 						{
 							"value": "5",
-							"label": "Preheat "
+							"label": "Preheating"
 						},
 						{
 							"value": "6",
-							"label": "Cooked"
+							"label": "Cooking Completed"
 						},
 						{
 							"value": "7",
-							"label": "Preheat Finish"
+							"label": "Preheat Completed"
 						},
 						{
 							"value": "8",
-							"label": "Preheat Pause"
+							"label": "Preheat Paused"
 						},
 						{
 							"value": "9",
-							"label": "Pause2"
+							"label": "Paused (Basket Removed)"
 						}
 					]
 				},
@@ -174,7 +148,7 @@
 				"tags": [
 					"Status"
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Shutdown\",\"1\"\u003d\"Standby\",\"2\"\u003d\"Pause\",\"3\"\u003d\"Appointment\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Preheat \",\"6\"\u003d\"Cooked\",\"7\"\u003d\"Preheat Finish\",\"8\"\u003d\"Preheat Pause\",\"9\"\u003d\"Pause2\"]`"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Standby\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Scheduled\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Preheating\",\"6\"\u003d\"Cooking Completed\",\"7\"\u003d\"Preheat Completed\",\"8\"\u003d\"Preheat Paused\",\"9\"\u003d\"Paused (Basket Removed)\"]`"
 			},
 			{
 				"property": "fault",
@@ -226,12 +200,13 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
 				"category": "time",
 				"tags": [
-					"Setpoint"
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
@@ -278,7 +253,11 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
 			},
 			{
 				"property": "recipe-id",
@@ -299,7 +278,7 @@
 				"property": "work-time",
 				"siid": 3,
 				"piid": 3,
-				"friendlyName": "Custom - Work Time",
+				"friendlyName": "Custom - Cooking Time",
 				"channel": "work_time",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -313,16 +292,20 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
 				],
-				"category": "time"
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
 			},
 			{
 				"property": "work-temp",
 				"siid": 3,
 				"piid": 4,
-				"friendlyName": "Custom - Work Temp",
+				"friendlyName": "Custom - Cooking Temperature",
 				"channel": "work_temp",
 				"type": "Number:Temperature",
 				"unit": "celsius",
@@ -349,7 +332,7 @@
 				"property": "appoint-time",
 				"siid": 3,
 				"piid": 5,
-				"friendlyName": "Custom - Appoint Time",
+				"friendlyName": "Custom - Scheduled Start Time",
 				"channel": "appoint_time",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -363,8 +346,13 @@
 				"actions": [
 					{
 						"command": "set_properties",
-						"parameterType": "STRING"
+						"parameterType": "NUMBER"
 					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
 				]
 			},
 			{
@@ -378,23 +366,23 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Null"
+							"label": "None"
 						},
 						{
 							"value": "1",
-							"label": "Single"
+							"label": "Single Layer"
 						},
 						{
 							"value": "2",
-							"label": "Double"
+							"label": "Double Layer"
 						},
 						{
 							"value": "3",
-							"label": "Half"
+							"label": "Half Pot"
 						},
 						{
 							"value": "4",
-							"label": "Full"
+							"label": "Full Pot"
 						}
 					]
 				},
@@ -405,7 +393,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Null\",\"1\"\u003d\"Single\",\"2\"\u003d\"Double\",\"3\"\u003d\"Half\",\"4\"\u003d\"Full\"]`"
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Single Layer\",\"2\"\u003d\"Double Layer\",\"3\"\u003d\"Half Pot\",\"4\"\u003d\"Full Pot\"]`"
 			},
 			{
 				"property": "preheat-switch",
@@ -418,7 +409,7 @@
 					"options": [
 						{
 							"value": "0",
-							"label": "Null"
+							"label": "Not Set"
 						},
 						{
 							"value": "1",
@@ -437,13 +428,16 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"0\"\u003d\"Null\",\"1\"\u003d\"Off\",\"2\"\u003d\"On\"]`"
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Not Set\",\"1\"\u003d\"Off\",\"2\"\u003d\"On\"]`"
 			},
 			{
 				"property": "appoint-time-left",
 				"siid": 3,
 				"piid": 8,
-				"friendlyName": "Custom - Appoint Time Left",
+				"friendlyName": "Custom - Scheduled Start Time Left",
 				"channel": "appoint_time_left",
 				"type": "Number:Time",
 				"unit": "minutes",
@@ -451,36 +445,37 @@
 					"minimum": 0,
 					"maximum": 1440,
 					"step": 1,
-					"pattern": "%.0f %unit%"
+					"pattern": "%.0f %unit%",
+					"readOnly": true
 				},
 				"refresh": true,
-				"actions": [
-					{
-						"command": "set_properties",
-						"parameterType": "STRING"
-					}
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
 				]
 			},
 			{
 				"property": "turn-pot",
 				"siid": 3,
 				"piid": 10,
-				"friendlyName": "Custom - Turn Pot",
+				"friendlyName": "Custom - Turn Food Reminder",
 				"channel": "turn_pot",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
-							"value": "1",
-							"label": "Switch Off"
+							"value": "0",
+							"label": "Reminder On"
 						},
 						{
-							"value": "0",
-							"label": "Not Turn Pot"
+							"value": "1",
+							"label": "Reminder Off"
 						},
 						{
 							"value": "2",
-							"label": "Turn Pot"
+							"label": "Turn Food Now"
 						}
 					]
 				},
@@ -491,7 +486,10 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping `[\"1\"\u003d\"Switch Off\",\"0\"\u003d\"Not Turn Pot\",\"2\"\u003d\"Turn Pot\"]`"
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Reminder On\",\"1\"\u003d\"Reminder Off\",\"2\"\u003d\"Turn Food Now\"]`"
 			}
 		],
 		"experimental": true
