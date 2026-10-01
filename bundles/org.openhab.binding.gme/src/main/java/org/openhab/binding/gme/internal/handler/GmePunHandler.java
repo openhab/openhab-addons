@@ -20,7 +20,6 @@ import java.math.MathContext;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -249,6 +248,7 @@ public class GmePunHandler extends BaseThingHandler {
 
         GmeApiBridgeHandler currentBridgeHandler = bridgeHandler;
         String marketZone = currentBridgeHandler != null ? currentBridgeHandler.getMarketZone() : "";
+        prepareZonalCache(marketZone);
 
         if (!currentDate.equals(loadedTodayDate)) {
             boolean punPromoted = priceCache.promoteTomorrowToToday(currentDate, GME_ZONE, getGranularity());
@@ -257,10 +257,12 @@ public class GmePunHandler extends BaseThingHandler {
                     || zonalPriceCache.promoteTomorrowToToday(currentDate, GME_ZONE, getGranularity());
 
             if (punPromoted) {
+                markMarketDataUpdated();
                 logger.debug("Promoted cached PUN prices for {} to today", currentDate);
             }
 
             if (!marketZone.isBlank() && zonalPromoted) {
+                markMarketDataUpdated();
                 logger.debug("Promoted cached {} zonal prices for {} to today", marketZone, currentDate);
             }
 
@@ -354,13 +356,16 @@ public class GmePunHandler extends BaseThingHandler {
                                 || !zonalPriceCache.hasTodayGranularity(granularity));
 
                 if (todayPunMissing || todayZonalMissing) {
-                    if (todayPunMissing && priceCache.promoteTomorrowToToday(today, GME_ZONE, getGranularity())) {
+                    if (!forceRefresh && todayPunMissing
+                            && priceCache.promoteTomorrowToToday(today, GME_ZONE, getGranularity())) {
+                        markMarketDataUpdated();
                         logger.debug("Promoted cached PUN prices for {} to today", today);
                         todayPunMissing = false;
                     }
 
-                    if (todayZonalMissing
+                    if (!forceRefresh && todayZonalMissing
                             && zonalPriceCache.promoteTomorrowToToday(today, GME_ZONE, getGranularity())) {
+                        markMarketDataUpdated();
                         logger.debug("Promoted cached {} zonal prices for {} to today", marketZone, today);
                         todayZonalMissing = false;
                     }
@@ -401,11 +406,11 @@ public class GmePunHandler extends BaseThingHandler {
                     }
                 }
 
-                boolean tomorrowPunMissing = forceRefresh || !tomorrow.equals(priceCache.getTomorrowDate())
+                boolean tomorrowPunMissing = !tomorrow.equals(priceCache.getTomorrowDate())
                         || priceCache.getTomorrowPrices().isEmpty() || !priceCache.hasTomorrowGranularity(granularity);
 
                 boolean tomorrowZonalMissing = !marketZone.isBlank()
-                        && (forceRefresh || !tomorrow.equals(zonalPriceCache.getTomorrowDate())
+                        && (!tomorrow.equals(zonalPriceCache.getTomorrowDate())
                                 || zonalPriceCache.getTomorrowPrices().isEmpty()
                                 || !zonalPriceCache.hasTomorrowGranularity(granularity));
 
@@ -460,6 +465,9 @@ public class GmePunHandler extends BaseThingHandler {
                             cancelApiRetry();
                         }
                     } catch (GmeApiException e) {
+                        if (!isCurrentGeneration(generation)) {
+                            return;
+                        }
                         if (e.isAuthenticationError()) {
                             throw e;
                         }
@@ -475,6 +483,9 @@ public class GmePunHandler extends BaseThingHandler {
                         scheduleApiRetry();
                         logger.debug("Unable to retrieve GME prices for tomorrow: {}", e.getMessage());
                     } catch (IOException | TimeoutException | ExecutionException | IllegalStateException e) {
+                        if (!isCurrentGeneration(generation)) {
+                            return;
+                        }
                         if (tomorrowPunMissing) {
                             priceCache.clearTomorrow();
                         }
