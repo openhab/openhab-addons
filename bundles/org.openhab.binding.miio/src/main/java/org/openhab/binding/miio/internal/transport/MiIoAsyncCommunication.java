@@ -199,7 +199,7 @@ public class MiIoAsyncCommunication {
                 errorMsg = "Received message is not a JSON object ";
             } else {
                 needPing = false;
-                logger.trace("Received  JSON message {}", response.toString());
+                logger.trace("Received  JSON message {}", Utils.sanitizeForLog(response));
                 JsonObject resJson = response.getAsJsonObject();
                 if (resJson.has("id")) {
                     int id = resJson.get("id").getAsInt();
@@ -221,14 +221,15 @@ public class MiIoAsyncCommunication {
                 }
 
             }
-            logger.debug("{}: {}", errorMsg, decryptedResponse);
+            logger.debug("{}: {}", errorMsg, Utils.sanitizeForLog(decryptedResponse));
         } catch (MiIoCryptoException | IOException e) {
             logger.debug("Send command '{}'  -> {} (Device: {}) gave error {}", miIoSendCommand.getCommandString(), ip,
                     deviceId, e.getMessage());
             errorMsg = e.getMessage();
         } catch (JsonSyntaxException e) {
-            logger.warn("Could not parse '{}' <- {} (Device: {}) gave error {}", decryptedResponse,
-                    miIoSendCommand.getCommandString(), deviceId, e.getMessage());
+            logger.warn("Could not parse '{}' <- {} (Device: {}) gave error {}",
+                    Utils.sanitizeForLog(decryptedResponse), miIoSendCommand.getCommandString(), deviceId,
+                    e.getMessage());
             errorMsg = "Received message is invalid JSON";
         } catch (MiCloudException e) {
             logger.debug("Send command '{}'  -> cloudserver '{}' (Device: {}) gave error {}",
@@ -335,7 +336,7 @@ public class MiIoAsyncCommunication {
             pingSuccess();
         }
         String decryptedResponse = new String(MiIoCrypto.decrypt(miIoResponseMsg.getData(), token), "UTF-8").trim();
-        logger.trace("Received response from {}: {}", ip, decryptedResponse);
+        logger.trace("Received response from {}: {}", ip, Utils.sanitizeForLog(decryptedResponse));
         return decryptedResponse;
     }
 

@@ -209,10 +209,10 @@ public class MiCloudConnector {
         map.put("data", buildMapUrlRequestData(vacuumMap, model));
         try {
             String mapResponse = request(url, map);
-            logger.trace("Response: {}", mapResponse);
+            logger.trace("Response: {}", Utils.sanitizeForLog(mapResponse));
             JsonElement response = JsonParser.parseString(mapResponse);
             if (response.isJsonObject()) {
-                logger.debug("Received  JSON message {}", response);
+                logger.debug("Received  JSON message {}", Utils.sanitizeForLog(response));
                 if (response.getAsJsonObject().has("result")
                         && response.getAsJsonObject().get("result").isJsonObject()) {
                     JsonObject jo = response.getAsJsonObject().get("result").getAsJsonObject();
@@ -273,13 +273,13 @@ public class MiCloudConnector {
         try {
             response = request("/homeroom/gethome", country,
                     "{\"fg\":false,\"fetch_share\":true,\"fetch_share_dev\":true,\"limit\":300,\"app_ver\":7,\"fetch_cariot\":true}");
-            logger.trace("gethome response: {}", response);
+            logger.trace("gethome response: {}", Utils.sanitizeForLog(response));
             final JsonElement resp = JsonParser.parseString(response);
             if (resp.isJsonObject() && resp.getAsJsonObject().has("result")) {
                 return resp.getAsJsonObject().get("result").getAsJsonObject();
             }
         } catch (JsonParseException e) {
-            logger.info("{} error while parsing rooms: '{}'", e.getMessage(), response);
+            logger.info("{} error while parsing rooms: '{}'", e.getMessage(), Utils.sanitizeForLog(response));
         } catch (MiCloudException e) {
             logger.info("{}", e.getMessage());
             loginFailedCounter++;
@@ -323,7 +323,7 @@ public class MiCloudConnector {
     public String getDeviceString(String country) throws MiCloudException {
         // Let request() exceptions propagate directly; request() manages loginFailedCounter for network failures.
         String resp = request("/home/device_list_page", country, "{\"getVirtualModel\":true,\"getHuamiDevices\":1}");
-        logger.trace("Get devices response: {}", resp);
+        logger.trace("Get devices response: {}", Utils.sanitizeForLog(resp));
         if (resp.length() > 2) {
             CloudUtil.saveDeviceInfoFile(resp, country, logger);
             return resp;
@@ -551,7 +551,7 @@ public class MiCloudConnector {
         logger.trace("Xiaomi cloud response response = {}", response);
         logger.trace("Xiaomi cloud response content = {}", response.toString());
         logger.trace("Xiaomi cloud response header = {}", response.getHeaders().toString());
-        logger.trace("Xiaomi cloud response content = {}", response.getContentAsString());
+        logger.trace("Xiaomi cloud response content = {}", Utils.sanitizeForLog(response.getContentAsString()));
     }
 
     protected void informImageListeners(byte[] image) {
@@ -574,7 +574,7 @@ public class MiCloudConnector {
         request.agent(USERAGENT);
         request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
         responseStep3 = request.send();
-        logger.trace("Xiaomi login step 3 content = {}", responseStep3.getContentAsString());
+        logger.trace("Xiaomi login step 3 content = {}", Utils.sanitizeForLog(responseStep3.getContentAsString()));
         logger.trace("Xiaomi login step 3 response = {}", responseStep3);
         if (logger.isTraceEnabled()) {
             dumpCookies(location, false);

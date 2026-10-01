@@ -88,6 +88,18 @@ public class UtilsTest {
     }
 
     @Test
+    public void maskNumericLocationTest() {
+        assertEquals("{\"longitude\":***,\"latitude\":***,\"name\":\"Home\"}",
+                Utils.maskSecrets("{\"longitude\":4.9123,\"latitude\":52.3702,\"name\":\"Home\"}"));
+        assertEquals("{\"latitude\": ***, \"longitude\": ***}",
+                Utils.maskSecrets("{\"latitude\": -52.37e0, \"longitude\": -4.9}"));
+        assertEquals("{\"extra\":\"{\\\"latitude\\\":\\\"***\\\"}\"}",
+                Utils.maskSecrets("{\"extra\":\"{\\\"latitude\\\":\\\"52.3\\\"}\"}"));
+        assertEquals("{\"latitude\":\"\",\"did\":123,\"rssi\":-60,\"ver\":1.5}",
+                Utils.maskSecrets("{\"latitude\":\"\",\"did\":123,\"rssi\":-60,\"ver\":1.5}"));
+    }
+
+    @Test
     public void maskSecretsLeavesOtherTextTest() {
         for (String text : new String[] { "", "no json at all", "token: 17a8da0b48bd12902a495c8608eb8a73",
                 "{\"token\":\"\"}", "{\"token\":123,\"name\":\"x\"}", "{\"tokens\":[\"abc\"],\"mytoken\":\"abc\"}",

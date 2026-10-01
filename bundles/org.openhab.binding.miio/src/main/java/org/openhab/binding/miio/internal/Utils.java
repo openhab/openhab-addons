@@ -47,15 +47,16 @@ import com.google.gson.JsonSyntaxException;
 public final class Utils {
 
     /** Maximum number of characters of a response or other (potentially large) payload written to the log */
-    public static final int MAX_LOG_LENGTH = 2000;
+    static final int MAX_LOG_LENGTH = 2000;
 
     private static final String SECRET_KEYS = "token|bindkey|bind_key|ssecurity|serviceToken|passToken";
     private static final String LOCATION_KEYS = "longitude|latitude";
     // a Json member with a secret value; the quotes may be escaped when the Json is part of a string
     private static final Pattern SECRET_MEMBER = Pattern
             .compile("(\\\\?\"(?:" + SECRET_KEYS + ")\\\\?\"\\s*:\\s*\\\\?\")([^\"\\\\]*)", Pattern.CASE_INSENSITIVE);
-    private static final Pattern LOCATION_MEMBER = Pattern
-            .compile("(\\\\?\"(?:" + LOCATION_KEYS + ")\\\\?\"\\s*:\\s*\\\\?\")([^\"\\\\]*)", Pattern.CASE_INSENSITIVE);
+    // a Json member with a location value, which may be a quoted string or a plain number
+    private static final Pattern LOCATION_MEMBER = Pattern.compile(
+            "(\\\\?\"(?:" + LOCATION_KEYS + ")\\\\?\"\\s*:\\s*\\\\?\"?)([^\"\\\\,}\\]]*)", Pattern.CASE_INSENSITIVE);
 
     /**
      * Convert a string representation of hexadecimal to a byte array.
@@ -120,7 +121,7 @@ public final class Utils {
      * @param text the text, typically a Json response
      * @return the text with the values of the sensitive members masked
      */
-    public static String maskSecrets(String text) {
+    static String maskSecrets(String text) {
         String masked = text;
         if (masked.indexOf(':') >= 0) {
             masked = replaceValues(SECRET_MEMBER, masked, true);
@@ -148,7 +149,7 @@ public final class Utils {
      * @param maxLength maximum number of characters to keep
      * @return the (shortened) text
      */
-    public static String truncate(String text, int maxLength) {
+    static String truncate(String text, int maxLength) {
         if (text.length() <= maxLength) {
             return text;
         }
