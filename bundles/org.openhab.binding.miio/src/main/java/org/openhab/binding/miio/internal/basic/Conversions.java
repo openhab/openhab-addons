@@ -13,7 +13,11 @@
 package org.openhab.binding.miio.internal.basic;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,10 +37,12 @@ import com.google.gson.JsonPrimitive;
  * Conversion for values
  *
  * @author Marcel Verpaalen - Initial contribution
+ * @author Marcel Verpaalen - Add path and member selection to getJsonElement
  */
 @NonNullByDefault
 public class Conversions {
     private static final Logger LOGGER = LoggerFactory.getLogger(Conversions.class);
+    private static final Pattern PATH_SEGMENT = Pattern.compile("([^\\[\\]{}]*)(?:\\[(\\*|\\d{1,9})\\])?");
 
     /**
      * Converts a RGB+brightness input to a HSV value.
@@ -177,21 +183,38 @@ public class Conversions {
     }
 
     /**
-     * Returns the element from the Json response. If not found, returns the input
+     * Returns the element from the Json response. If not found, returns the input.
+     * <p>
+     * The element is first looked up as a member name of the (top level) Json object. If there is no such member, it is
+     * evaluated as a path:
+     * <ul>
+     * <li>segments are separated by a dot, e.g. {@code result.recipes}</li>
+     * <li>{@code name[n]} selects the n-th element (starting at 0) of the array {@code name}</li>
+     * <li>{@code name[*]} applies the rest of the path to every element of the array {@code name} and returns the
+     * results as an array; elements for which the path does not resolve are left out</li>
+     * <li>a last segment {@code {a,b}} returns only the listed members of an object, or of every object in an
+     * array; it must be the last segment</li>
+     * </ul>
+     * For example {@code recipes[*].{recipeID,recipeName}} turns {@code {"recipes":[{"recipeID":1,"recipeName":"A",
+     * "tips":"..."}]}} into {@code [{"recipeID":1,"recipeName":"A"}]}.
      *
-     * @param element to be found
-     * @param responseValue
-     * @return
+     * @param element name or path of the element to be found
+     * @param responseValue Json object, array or a string containing Json
+     * @return the element found or the unchanged input
      */
     private static JsonElement getJsonElement(String element, JsonElement responseValue) {
         try {
-            if (responseValue.isJsonPrimitive() || responseValue.isJsonObject()) {
-                JsonElement jsonElement = responseValue.isJsonObject() ? responseValue
-                        : JsonParser.parseString(responseValue.getAsString());
-                if (jsonElement.isJsonObject()) {
-                    JsonObject value = jsonElement.getAsJsonObject();
-                    if (value.has(element)) {
-                        return value.get(element);
+            if (responseValue.isJsonPrimitive() || responseValue.isJsonObject() || responseValue.isJsonArray()) {
+                JsonElement jsonElement = responseValue.isJsonPrimitive()
+                        ? JsonParser.parseString(responseValue.getAsString())
+                        : responseValue;
+                if (jsonElement.isJsonObject() && jsonElement.getAsJsonObject().has(element)) {
+                    return jsonElement.getAsJsonObject().get(element);
+                }
+                if (jsonElement.isJsonObject() || jsonElement.isJsonArray()) {
+                    final @Nullable JsonElement selected = selectPath(jsonElement, splitPath(element), 0);
+                    if (selected != null) {
+                        return selected;
                     }
                 }
             }
@@ -200,6 +223,98 @@ public class Conversions {
         }
         LOGGER.debug("JsonElement '{}' not found in '{}'", element, responseValue);
         return responseValue;
+    }
+
+    /**
+     * Splits a path at the dots, except for dots within braces
+     */
+    private static List<String> splitPath(String path) {
+        List<String> segments = new ArrayList<>();
+        int depth = 0;
+        int start = 0;
+        for (int i = 0; i < path.length(); i++) {
+            char c = path.charAt(i);
+            if (c == '{') {
+                depth++;
+            } else if (c == '}') {
+                depth--;
+            } else if (c == '.' && depth <= 0) {
+                segments.add(path.substring(start, i));
+                start = i + 1;
+            }
+        }
+        segments.add(path.substring(start));
+        return segments;
+    }
+
+    private static @Nullable JsonElement selectPath(JsonElement current, List<String> segments, int pos) {
+        if (pos >= segments.size()) {
+            return current;
+        }
+        final String segment = segments.get(pos);
+        if (segment.startsWith("{") && segment.endsWith("}")) {
+            if (pos != segments.size() - 1) {
+                return null;
+            }
+            return selectMembers(current, segment.substring(1, segment.length() - 1).split(","));
+        }
+        final Matcher m = PATH_SEGMENT.matcher(segment);
+        if (!m.matches()) {
+            return null;
+        }
+        JsonElement next = current;
+        final String name = m.group(1);
+        if (!name.isEmpty()) {
+            if (!next.isJsonObject() || !next.getAsJsonObject().has(name)) {
+                return null;
+            }
+            next = next.getAsJsonObject().get(name);
+        }
+        final @Nullable String index = m.group(2);
+        if (index == null) {
+            return selectPath(next, segments, pos + 1);
+        }
+        if (!next.isJsonArray()) {
+            return null;
+        }
+        final JsonArray array = next.getAsJsonArray();
+        if (!"*".equals(index)) {
+            final int i = Integer.parseInt(index);
+            return i < array.size() ? selectPath(array.get(i), segments, pos + 1) : null;
+        }
+        final JsonArray results = new JsonArray();
+        for (JsonElement item : array) {
+            final @Nullable JsonElement result = selectPath(item, segments, pos + 1);
+            if (result != null) {
+                results.add(result);
+            }
+        }
+        return results;
+    }
+
+    private static @Nullable JsonElement selectMembers(JsonElement current, String[] members) {
+        if (current.isJsonArray()) {
+            final JsonArray results = new JsonArray();
+            for (JsonElement item : current.getAsJsonArray()) {
+                final @Nullable JsonElement result = selectMembers(item, members);
+                if (result != null) {
+                    results.add(result);
+                }
+            }
+            return results;
+        }
+        if (!current.isJsonObject()) {
+            return null;
+        }
+        final JsonObject source = current.getAsJsonObject();
+        final JsonObject result = new JsonObject();
+        for (String member : members) {
+            final String name = member.trim();
+            if (source.has(name)) {
+                result.add(name, source.get(name));
+            }
+        }
+        return result.size() > 0 ? result : null;
     }
 
     public static JsonElement execute(String transformation, JsonElement value, Map<String, Object> deviceVariables) {

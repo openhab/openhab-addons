@@ -157,4 +157,70 @@ public class ConversionsTest {
         assertNotNull(resp);
         assertEquals(value, resp);
     }
+
+    private static final String RECIPES = "{\"recipes\":[{\"recipeID\":1,\"recipeName\":\"Fries\",\"tips\":\"long text\","
+            + "\"cookCommand\":{\"time\":11,\"temperature\":180}},{\"recipeID\":2,\"recipeName\":\"Pizza\",\"tips\":\"more\","
+            + "\"cookCommand\":{\"time\":15,\"temperature\":200}},{\"recipeName\":\"No id\"}],\"hasMore\":false}";
+
+    private JsonElement getJsonElement(String path, JsonElement value) {
+        return Conversions.execute("getJsonElement-" + path, value, Collections.emptyMap());
+    }
+
+    @Test
+    public void getJsonElementPathTest() {
+        // the response of a custom refresh command arrives as a string containing json
+        JsonElement asString = new JsonPrimitive(RECIPES);
+        JsonElement asObject = JsonParser.parseString(RECIPES);
+        for (JsonElement value : new JsonElement[] { asString, asObject }) {
+            assertEquals(JsonParser.parseString("false"), getJsonElement("hasMore", value));
+            assertEquals(JsonParser.parseString("[1,2]"), getJsonElement("recipes[*].recipeID", value));
+            assertEquals(JsonParser.parseString("[11,15]"), getJsonElement("recipes[*].cookCommand.time", value));
+            assertEquals(JsonParser.parseString("[\"Fries\",\"Pizza\",\"No id\"]"),
+                    getJsonElement("recipes[*].recipeName", value));
+            assertEquals(JsonParser.parseString("\"Pizza\""), getJsonElement("recipes[1].recipeName", value));
+            assertEquals(JsonParser.parseString("{\"time\":11,\"temperature\":180}"),
+                    getJsonElement("recipes[0].cookCommand", value));
+            assertEquals(JsonParser.parseString(
+                    "[{\"recipeID\":1,\"recipeName\":\"Fries\"},{\"recipeID\":2,\"recipeName\":\"Pizza\"},{\"recipeName\":\"No id\"}]"),
+                    getJsonElement("recipes[*].{recipeID,recipeName}", value));
+            // projection directly on the array
+            assertEquals(JsonParser.parseString("[{\"recipeID\":1},{\"recipeID\":2}]"),
+                    getJsonElement("recipes.{recipeID}", value));
+            assertEquals(JsonParser.parseString("{\"time\":11}"),
+                    getJsonElement("recipes[0].cookCommand.{time,notThere}", value));
+        }
+    }
+
+    @Test
+    public void getJsonElementPathOnArrayTest() {
+        JsonElement value = JsonParser.parseString("[{\"id\":1,\"name\":\"a\"},{\"id\":2,\"name\":\"b\"}]");
+        assertEquals(JsonParser.parseString("[\"a\",\"b\"]"), getJsonElement("[*].name", value));
+        assertEquals(JsonParser.parseString("2"), getJsonElement("[1].id", value));
+    }
+
+    @Test
+    public void getJsonElementExactMemberHasPrecedenceTest() {
+        // existing behavior: a member name is used as is, even if it looks like a path
+        JsonElement value = JsonParser.parseString("{\"blt.3.17q3si5345k00\":\"-54\",\"blt\":{\"3\":1}}");
+        assertEquals(new JsonPrimitive("-54"), getJsonElement("blt.3.17q3si5345k00", value));
+    }
+
+    @Test
+    public void getJsonElementPathNotFoundTest() {
+        JsonElement asString = new JsonPrimitive(RECIPES);
+        JsonElement asObject = JsonParser.parseString(RECIPES);
+        for (JsonElement value : new JsonElement[] { asString, asObject }) {
+            // the array exists, but no element has the member
+            assertEquals(JsonParser.parseString("[]"), getJsonElement("recipes[*].nothing", value));
+            assertEquals(value, getJsonElement("nothing[*].recipeID", value));
+            assertEquals(value, getJsonElement("recipes[5].recipeID", value));
+            assertEquals(value, getJsonElement("hasMore[*]", value));
+            assertEquals(value, getJsonElement("recipes.{recipeID}.x", value));
+            assertEquals(value, getJsonElement("recipes[x]", value));
+            assertEquals(value, getJsonElement("recipes[99999999999]", value));
+            assertEquals(value, getJsonElement("recipes[*", value));
+        }
+        JsonElement notJson = new JsonPrimitive("some non json value");
+        assertEquals(notJson, getJsonElement("recipes[*].recipeID", notJson));
+    }
 }
