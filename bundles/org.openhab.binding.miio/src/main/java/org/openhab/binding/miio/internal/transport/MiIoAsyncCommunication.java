@@ -185,8 +185,20 @@ public class MiIoAsyncCommunication {
                     String data = miIoSendCommand.getParams().toString();
                     logger.debug("Custom cloud request send to url '{}' with data '{}'", miIoSendCommand.getMethod(),
                             data);
-                    decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),
-                            miIoSendCommand.getCloudServer(), data);
+                    try {
+                        decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),
+                                miIoSendCommand.getCloudServer(), data);
+                    } catch (MiCloudException e) {
+                        // a failing cloud request (e.g. no cloud login) says nothing about the connection to the
+                        // device, so the device status is not changed
+                        logger.debug("Custom cloud request '{}' -> cloudserver '{}' (Device: {}) gave error {}",
+                                miIoSendCommand.getMethod(), miIoSendCommand.getCloudServer(), deviceId,
+                                e.getMessage());
+                        JsonObject errorResponse = new JsonObject();
+                        errorResponse.addProperty("error", e.getMessage());
+                        miIoSendCommand.setResponse(errorResponse);
+                        return miIoSendCommand;
+                    }
                     miIoSendCommand.setResponse(JsonParser.parseString(decryptedResponse).getAsJsonObject());
                     return miIoSendCommand;
                 }
