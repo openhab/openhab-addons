@@ -1336,22 +1336,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
     }
 
-    private void applyRgbParams(Shelly2RpcRequestParams params, ShellyLightParms parameters) {
-        if (parameters.red() != null && parameters.green() != null && parameters.blue() != null) {
-            params.rgb = new Integer[] { parameters.red(), parameters.green(), parameters.blue() };
-        }
-    }
-
-    private void applyCctParam(Shelly2RpcRequestParams params, ShellyLightParms parameters) {
-        if (parameters.colorTemp() != null) {
-            params.ct = parameters.colorTemp();
-        }
-    }
-
     @Override
     public void setLightParms(int lightIndex, ShellyLightParms parameters) throws ShellyApiException {
-        ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
+        params.id = lightIndex;
+
+        // Set on/off and brightness based on record fields
         if (parameters.onOff() != null) {
             params.on = SHELLY_API_ON.equals(parameters.onOff());
         }
@@ -1363,62 +1353,54 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             params.on = parameters.brightness() > 0;
         }
 
-        if (profile.isDuo) {
-            params.id = profile.getLightComponentId(lightIndex);
-            if (profile.isRGBCCT) {
-                setRgbcctParms(profile, params, parameters);
-            } else {
-                applyCctParam(params, parameters);
-                if (params.on == null && params.brightness == null && params.ct == null) {
-                    return; // CCT.Set requires at least one of on, brightness or ct
-                }
-                apiRequest(SHELLYRPC_METHOD_CCT_SET, params, String.class);
+        // Determine device type and method based solely on which fields are present in the record
+        boolean hasRgb = parameters.red() != null && parameters.green() != null && parameters.blue() != null;
+        boolean hasWhite = parameters.white() != null;
+        boolean hasCct = parameters.colorTemp() != null;
+        boolean hasMode = parameters.mode() != null;
+
+        // Apply color/brightness/temperature parameters
+        if (hasRgb) {
+            params.rgb = new Integer[] { parameters.red(), parameters.green(), parameters.blue() };
+        }
+        if (hasWhite) {
+            params.white = parameters.white();
+        }
+        if (hasCct) {
+            params.ct = parameters.colorTemp();
+        }
+
+        // RGBCCT device: has mode field, use RGBCCT.Set with mode parameter
+        if (hasMode) {
+            params.mode = SHELLY_MODE_COLOR.equals(parameters.mode()) ? SHELLY_RGBCCT_MODE_RGB : SHELLY_RGBCCT_MODE_CCT;
+            // Ensure params.on is set for RGBCCT.Set (required even if just changing mode/color/temp)
+            if (params.on == null) {
+                params.on = true; // Default to on if not explicitly set
             }
+            apiRequest(SHELLYRPC_METHOD_RGBCCT_SET, params, String.class);
             return;
         }
-        if (!profile.isRGBW2) {
-            throw new ShellyApiException("API call not implemented");
-        }
-        params.id = profile.getLightComponentId(lightIndex);
-        ShellyLightApiComponent tag = lightComponentTag(profile, lightIndex);
-        if (isRgbwComponent(tag)) {
-            applyRgbParams(params, parameters);
-            if (parameters.white() != null) {
-                params.white = parameters.white();
-            }
-        } else if (isRgbComponent(tag)) {
-            applyRgbParams(params, parameters);
-        } else if (isCctComponent(tag)) {
-            applyCctParam(params, parameters);
-        }
-        apiRequest(lightRpcMethods(profile, lightIndex).set(), params, String.class);
-    }
 
-    /**
-     * Single RGBCCT.Set request for the Multicolor Bulb G3: an optional mode switch (SHELLY_API_MODE) is combined with
-     * the rgb/ct values of the target mode. RGBCCT.Set requires on or brightness, so a request that only carries
-     * mode/rgb/ct repeats the current power state (the handler adds turn=on itself when autoOn is enabled).
-     */
-    private void setRgbcctParms(ShellyDeviceProfile profile, Shelly2RpcRequestParams params,
-            ShellyLightParms parameters) throws ShellyApiException {
-        boolean inColor = parameters.mode() != null ? SHELLY_MODE_COLOR.equals(parameters.mode()) : profile.inColor;
-        if (parameters.mode() != null) {
-            params.mode = inColor ? SHELLY_RGBCCT_MODE_RGB : SHELLY_RGBCCT_MODE_CCT;
+        // RGBW device: has RGB and/or white, use RGB.Set
+        if (hasRgb || hasWhite) {
+            apiRequest(SHELLYRPC_METHOD_RGB_SET, params, String.class);
+            return;
         }
-        if (inColor) {
-            applyRgbParams(params, parameters);
-        } else {
-            applyCctParam(params, parameters);
+
+        // CCT device: only has colorTemp, use CCT.Set
+        if (hasCct) {
+            // CCT.Set requires at least one of on, brightness or ct
+            if (params.on == null && params.brightness == null) {
+                return; // Nothing to do
+            }
+            apiRequest(SHELLYRPC_METHOD_CCT_SET, params, String.class);
+            return;
         }
-        if (params.on == null && params.brightness == null) {
-            List<ShellySettingsLight> lights = profile.status.lights;
-            Boolean ison = lights != null && !lights.isEmpty() ? lights.get(0).ison : null;
-            params.on = ison != null ? ison : true;
-        }
-        apiRequest(SHELLYRPC_METHOD_RGBCCT_SET, params, String.class);
-        if (parameters.mode() != null) {
-            profile.inColor = inColor;
-            profile.device.mode = parameters.mode();
+
+        // Only on/off or brightness: use the appropriate method
+        if (params.on != null || params.brightness != null) {
+            // Try RGB.Set first (most common), fallback to CCT.Set
+            apiRequest(SHELLYRPC_METHOD_RGB_SET, params, String.class);
         }
     }
 
