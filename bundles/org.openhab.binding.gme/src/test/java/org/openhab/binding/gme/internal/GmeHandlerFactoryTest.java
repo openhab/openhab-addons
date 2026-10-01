@@ -38,8 +38,8 @@ class GmeHandlerFactoryTest {
         when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
         when(bridge.getThingTypeUID()).thenReturn(GmeBindingConstants.THING_TYPE_API);
         when(bridge.getUID()).thenReturn(thingUID);
-        when(storageService.getStorage(thingUID.toString(), GmeHandlerFactory.class.getClassLoader()))
-                .thenReturn(storage);
+        doReturn(storage).when(storageService).getStorage(thingUID.toString(),
+                GmeHandlerFactory.class.getClassLoader());
 
         GmeHandlerFactory factory = new GmeHandlerFactory(httpClientFactory, storageService);
 
