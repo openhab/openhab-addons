@@ -119,9 +119,9 @@ Explicit control commands and setting changes also use the cloud HTTP API; MQTT 
 
 Unknown state codes are preserved as `UNKNOWN_<code>`.
 Device-state codes 19 and above differ between older and newer Dreame protocol variants. The binding names the values
-confirmed for the L50 protocol and preserves every other value as `UNKNOWN_<code>`. State codes 13 and 22 follow the
+confirmed for the L50 protocol and preserves every other value as `UNKNOWN_<code>`. State codes 13, 21 and 22 follow the
 [reference state mapping](https://github.com/Tasshack/dreame-vacuum/blob/dev/custom_components/dreame_vacuum/dreame/types.py),
-and community testing confirmed auto-emptying for code 22 after docking.
+and community testing confirmed washing paused for code 21 and auto-emptying for code 22.
 Values are updated independently as MQTT properties or query results arrive; missing or failed properties do not overwrite other channels.
 A query does not overwrite a newer push received for the same channel while the query was running.
 Channels remain `UNDEF` until their first valid update and are cleared when the subscription is replaced or the Thing/bridge is stopped.

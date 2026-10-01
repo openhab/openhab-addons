@@ -164,6 +164,7 @@ public final class DreameVacuumStatus {
                     case 17 -> "RETURNING_INSTALL_MOP";
                     case 18 -> "RETURNING_REMOVE_MOP";
                     case 20 -> "CLEAN_ADD_WATER";
+                    case 21 -> "WASHING_PAUSED";
                     case 22 -> "AUTO_EMPTYING";
                     default -> "UNKNOWN_" + value;
                 }));

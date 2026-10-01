@@ -58,6 +58,8 @@ class DreameVacuumStatusTest {
                 DreameVacuumStatus.channelUpdates(Map.of("2/1", 13)).get("state"));
         assertEquals(new StringType("AUTO_EMPTYING"),
                 DreameVacuumStatus.channelUpdates(Map.of("2/1", 22)).get("state"));
+        assertEquals(new StringType("WASHING_PAUSED"),
+                DreameVacuumStatus.channelUpdates(Map.of("2/1", 21)).get("state"));
         assertEquals(new StringType("CRUISING_PATH"),
                 DreameVacuumStatus.channelUpdates(Map.of("4/1", 22)).get("operating-status"));
     }
