@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.measure.Unit;
 
@@ -80,10 +81,14 @@ public class GmePunHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GmePunHandler.class);
     private final AtomicBoolean refreshInProgress = new AtomicBoolean();
+    private final AtomicLong lifecycleGeneration = new AtomicLong();
 
     private @Nullable GmeApiBridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> channelRefreshJob;
+    private @Nullable ScheduledFuture<?> apiRefreshJob;
     private @Nullable ScheduledFuture<?> apiRetryJob;
+    private @Nullable Instant lastSuccessfulMarketUpdate;
+    private String zonalCacheZone = "";
 
     private final GmePriceCache priceCache = new GmePriceCache();
     private final GmePriceCache zonalPriceCache = new GmePriceCache();
@@ -94,6 +99,7 @@ public class GmePunHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        lifecycleGeneration.incrementAndGet();
         updateStatus(ThingStatus.UNKNOWN);
 
         if (!linkBridge()) {
@@ -103,7 +109,8 @@ public class GmePunHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
             scheduleChannelRefresh();
-            refreshPrices();
+            scheduleApiRefresh();
+            refreshPrices(false);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "GME API bridge is not online.");
         }
@@ -130,11 +137,14 @@ public class GmePunHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            lifecycleGeneration.incrementAndGet();
             if (bridgeHandler != null || linkBridge()) {
                 scheduleChannelRefresh();
-                refreshPrices();
+                scheduleApiRefresh();
+                refreshPrices(false);
             }
         } else {
+            lifecycleGeneration.incrementAndGet();
             cancelJobs();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "GME API bridge is not online.");
         }
@@ -146,8 +156,35 @@ public class GmePunHandler extends BaseThingHandler {
             return;
         }
 
-        channelRefreshJob = scheduler.scheduleWithFixedDelay(this::refreshLocalState, 1, 1, TimeUnit.MINUTES);
+        long generation = lifecycleGeneration.get();
+        channelRefreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (isCurrentGeneration(generation)) {
+                refreshLocalState();
+            }
+        }, 1, 1, TimeUnit.MINUTES);
         logger.debug("Scheduled local GME PUN channel refresh every minute");
+    }
+
+    private synchronized void scheduleApiRefresh() {
+        ScheduledFuture<?> currentJob = apiRefreshJob;
+        if (currentJob != null && !currentJob.isCancelled()) {
+            return;
+        }
+
+        GmeApiBridgeHandler currentBridgeHandler = bridgeHandler;
+        if (currentBridgeHandler == null) {
+            return;
+        }
+
+        int refreshInterval = currentBridgeHandler.getRefreshInterval();
+        long generation = lifecycleGeneration.get();
+        apiRefreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (isCurrentGeneration(generation)) {
+                logger.debug("Executing scheduled GME market data refresh");
+                refreshPrices(true);
+            }
+        }, refreshInterval, refreshInterval, TimeUnit.MINUTES);
+        logger.debug("Scheduled GME market data refresh every {} minutes", refreshInterval);
     }
 
     /**
@@ -165,13 +202,16 @@ public class GmePunHandler extends BaseThingHandler {
             return;
         }
 
+        long generation = lifecycleGeneration.get();
         apiRetryJob = scheduler.schedule(() -> {
             synchronized (GmePunHandler.this) {
                 apiRetryJob = null;
             }
 
-            logger.debug("Executing scheduled GME PUN API retry");
-            refreshPrices();
+            if (isCurrentGeneration(generation)) {
+                logger.debug("Executing scheduled GME PUN API retry");
+                refreshPrices(false);
+            }
         }, API_RETRY_INTERVAL_MINUTES, TimeUnit.MINUTES);
 
         logger.debug("Scheduled GME PUN API retry in {} minutes", API_RETRY_INTERVAL_MINUTES);
@@ -191,6 +231,12 @@ public class GmePunHandler extends BaseThingHandler {
         if (currentChannelJob != null) {
             currentChannelJob.cancel(false);
             channelRefreshJob = null;
+        }
+
+        ScheduledFuture<?> currentApiRefreshJob = apiRefreshJob;
+        if (currentApiRefreshJob != null) {
+            currentApiRefreshJob.cancel(false);
+            apiRefreshJob = null;
         }
 
         cancelApiRetry();
@@ -233,7 +279,7 @@ public class GmePunHandler extends BaseThingHandler {
                     tomorrow);
 
             scheduleApiRetry();
-            refreshPrices();
+            refreshPrices(false);
             return;
         }
 
@@ -266,13 +312,17 @@ public class GmePunHandler extends BaseThingHandler {
         }
     }
 
-    private void refreshPrices() {
+    private void refreshPrices(boolean forceRefresh) {
         if (!refreshInProgress.compareAndSet(false, true)) {
             return;
         }
 
+        long generation = lifecycleGeneration.get();
         scheduler.execute(() -> {
             try {
+                if (!isCurrentGeneration(generation)) {
+                    return;
+                }
                 GmeApiBridgeHandler currentBridgeHandler = bridgeHandler;
                 if (currentBridgeHandler == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
@@ -288,17 +338,19 @@ public class GmePunHandler extends BaseThingHandler {
                 }
 
                 String marketZone = currentBridgeHandler.getMarketZone();
+                prepareZonalCache(marketZone);
 
                 LocalDate today = LocalDate.now(GME_ZONE);
                 LocalDate tomorrow = today.plusDays(1);
 
                 GmeGranularity granularity = getGranularity();
 
-                boolean todayPunMissing = !today.equals(priceCache.getTodayDate())
+                boolean todayPunMissing = forceRefresh || !today.equals(priceCache.getTodayDate())
                         || priceCache.getTodayPrices().isEmpty() || !priceCache.hasTodayGranularity(granularity);
 
                 boolean todayZonalMissing = !marketZone.isBlank()
-                        && (!today.equals(zonalPriceCache.getTodayDate()) || zonalPriceCache.getTodayPrices().isEmpty()
+                        && (forceRefresh || !today.equals(zonalPriceCache.getTodayDate())
+                                || zonalPriceCache.getTodayPrices().isEmpty()
                                 || !zonalPriceCache.hasTodayGranularity(granularity));
 
                 if (todayPunMissing || todayZonalMissing) {
@@ -315,6 +367,9 @@ public class GmePunHandler extends BaseThingHandler {
 
                     if (todayPunMissing || todayZonalMissing) {
                         List<GmePriceEntry> marketPrices = authManager.requestMarketPrices(today, granularity);
+                        if (!isCurrentGeneration(generation)) {
+                            return;
+                        }
 
                         if (todayPunMissing) {
                             List<GmePriceEntry> newTodayPrices = filterZone(marketPrices, "PUN");
@@ -326,6 +381,7 @@ public class GmePunHandler extends BaseThingHandler {
                             }
 
                             priceCache.setToday(today, newTodayPrices);
+                            markMarketDataUpdated();
                         }
 
                         if (todayZonalMissing) {
@@ -334,6 +390,7 @@ public class GmePunHandler extends BaseThingHandler {
                             if (GmePriceTimeline.isCompleteDailySet(newTodayZonalPrices, today, GME_ZONE,
                                     granularity)) {
                                 zonalPriceCache.setToday(today, newTodayZonalPrices);
+                                markMarketDataUpdated();
                             } else {
                                 logger.warn(
                                         "GME returned an incomplete {} zonal price dataset for today: received {} entries, expected {}",
@@ -344,17 +401,20 @@ public class GmePunHandler extends BaseThingHandler {
                     }
                 }
 
-                boolean tomorrowPunMissing = !tomorrow.equals(priceCache.getTomorrowDate())
+                boolean tomorrowPunMissing = forceRefresh || !tomorrow.equals(priceCache.getTomorrowDate())
                         || priceCache.getTomorrowPrices().isEmpty() || !priceCache.hasTomorrowGranularity(granularity);
 
                 boolean tomorrowZonalMissing = !marketZone.isBlank()
-                        && (!tomorrow.equals(zonalPriceCache.getTomorrowDate())
+                        && (forceRefresh || !tomorrow.equals(zonalPriceCache.getTomorrowDate())
                                 || zonalPriceCache.getTomorrowPrices().isEmpty()
                                 || !zonalPriceCache.hasTomorrowGranularity(granularity));
 
                 if (tomorrowPunMissing || tomorrowZonalMissing) {
                     try {
                         List<GmePriceEntry> marketPrices = authManager.requestMarketPrices(tomorrow, granularity);
+                        if (!isCurrentGeneration(generation)) {
+                            return;
+                        }
 
                         boolean retryRequired = false;
 
@@ -372,6 +432,7 @@ public class GmePunHandler extends BaseThingHandler {
                                         GmePriceTimeline.getExpectedPeriods(tomorrow, GME_ZONE, granularity));
                             } else {
                                 priceCache.setTomorrow(tomorrow, newTomorrowPrices);
+                                markMarketDataUpdated();
                             }
                         }
 
@@ -389,6 +450,7 @@ public class GmePunHandler extends BaseThingHandler {
                                         GmePriceTimeline.getExpectedPeriods(tomorrow, GME_ZONE, granularity));
                             } else {
                                 zonalPriceCache.setTomorrow(tomorrow, newTomorrowZonalPrices);
+                                markMarketDataUpdated();
                             }
                         }
 
@@ -428,6 +490,10 @@ public class GmePunHandler extends BaseThingHandler {
                     cancelApiRetry();
                 }
 
+                if (!isCurrentGeneration(generation)) {
+                    return;
+                }
+
                 updateChannels();
 
                 logger.debug("Loaded {} PUN prices for today and {} for tomorrow", priceCache.getTodayPrices().size(),
@@ -439,18 +505,47 @@ public class GmePunHandler extends BaseThingHandler {
                             zonalPriceCache.getTomorrowPrices().size());
                 }
 
-                updateStatus(ThingStatus.ONLINE);
+                if (isCurrentGeneration(generation)) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "GME price refresh was interrupted.");
+                if (isCurrentGeneration(generation)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "GME price refresh was interrupted.");
+                }
             } catch (IOException | TimeoutException | ExecutionException | IllegalStateException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unable to retrieve GME prices: " + e.getMessage());
+                if (isCurrentGeneration(generation)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unable to retrieve GME prices: " + e.getMessage());
+                }
             } finally {
                 refreshInProgress.set(false);
             }
         });
+    }
+
+    private boolean isCurrentGeneration(long generation) {
+        return lifecycleGeneration.get() == generation;
+    }
+
+    private void markMarketDataUpdated() {
+        lastSuccessfulMarketUpdate = Instant.now();
+    }
+
+    private void prepareZonalCache(String marketZone) {
+        if (marketZone.equals(zonalCacheZone)) {
+            return;
+        }
+
+        zonalPriceCache.clear();
+        zonalCacheZone = marketZone;
+        clearZonalChannels();
+    }
+
+    private void clearZonalChannels() {
+        updateState(CHANNEL_TODAY_ZONAL_PRICES, UnDefType.UNDEF);
+        updateState(CHANNEL_TOMORROW_ZONAL_PRICES, UnDefType.UNDEF);
     }
 
     private GmeGranularity getGranularity() {
@@ -506,7 +601,10 @@ public class GmePunHandler extends BaseThingHandler {
                     CHANNEL_TOMORROW_MIN_TIME, CHANNEL_TOMORROW_MAX_TIME);
         }
 
-        updateState(CHANNEL_LAST_UPDATE, new DateTimeType(ZonedDateTime.now(GME_ZONE)));
+        Instant lastUpdate = lastSuccessfulMarketUpdate;
+        if (lastUpdate != null) {
+            updateState(CHANNEL_LAST_UPDATE, new DateTimeType(lastUpdate));
+        }
     }
 
     private void clearTomorrowChannels() {
@@ -520,6 +618,11 @@ public class GmePunHandler extends BaseThingHandler {
     private void updateDayStatistics(List<GmePriceEntry> prices, String averageChannel, String minChannel,
             String maxChannel, String minTimeChannel, String maxTimeChannel) {
         if (prices.isEmpty()) {
+            updateState(averageChannel, UnDefType.UNDEF);
+            updateState(minChannel, UnDefType.UNDEF);
+            updateState(maxChannel, UnDefType.UNDEF);
+            updateState(minTimeChannel, UnDefType.UNDEF);
+            updateState(maxTimeChannel, UnDefType.UNDEF);
             return;
         }
 
@@ -542,6 +645,7 @@ public class GmePunHandler extends BaseThingHandler {
 
     private void sendPriceTimeSeries(String channelId, List<GmePriceEntry> prices) {
         if (prices.isEmpty()) {
+            updateState(channelId, UnDefType.UNDEF);
             return;
         }
 
@@ -566,6 +670,7 @@ public class GmePunHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        lifecycleGeneration.incrementAndGet();
         cancelJobs();
         bridgeHandler = null;
         super.dispose();
