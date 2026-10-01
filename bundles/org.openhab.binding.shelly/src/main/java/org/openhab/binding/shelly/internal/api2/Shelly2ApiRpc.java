@@ -1337,14 +1337,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void applyRgbParams(Shelly2RpcRequestParams params, ShellyLightParms parameters) {
-        if (parameters.red != null && parameters.green != null && parameters.blue != null) {
-            params.rgb = new Integer[] { parameters.red, parameters.green, parameters.blue };
+        if (parameters.red() != null && parameters.green() != null && parameters.blue() != null) {
+            params.rgb = new Integer[] { parameters.red(), parameters.green(), parameters.blue() };
         }
     }
 
     private void applyCctParam(Shelly2RpcRequestParams params, ShellyLightParms parameters) {
-        if (parameters.colorTemp != null) {
-            params.ct = parameters.colorTemp;
+        if (parameters.colorTemp() != null) {
+            params.ct = parameters.colorTemp();
         }
     }
 
@@ -1352,15 +1352,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void setLightParms(int lightIndex, ShellyLightParms parameters) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        if (parameters.onOff != null) {
-            params.on = SHELLY_API_ON.equals(parameters.onOff);
+        if (parameters.onOff() != null) {
+            params.on = SHELLY_API_ON.equals(parameters.onOff());
         }
-        if (parameters.brightness != null) {
+        if (parameters.brightness() != null) {
             // Gen2 firmware rejects/clamps brightness=0; on=false is used to turn the light off instead
-            if (parameters.brightness > 0) {
-                params.brightness = parameters.brightness;
+            if (parameters.brightness() > 0) {
+                params.brightness = parameters.brightness();
             }
-            params.on = parameters.brightness > 0;
+            params.on = parameters.brightness() > 0;
         }
 
         if (profile.isDuo) {
@@ -1383,8 +1383,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         ShellyLightApiComponent tag = lightComponentTag(profile, lightIndex);
         if (isRgbwComponent(tag)) {
             applyRgbParams(params, parameters);
-            if (parameters.white != null) {
-                params.white = parameters.white;
+            if (parameters.white() != null) {
+                params.white = parameters.white();
             }
         } else if (isRgbComponent(tag)) {
             applyRgbParams(params, parameters);
@@ -1401,8 +1401,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      */
     private void setRgbcctParms(ShellyDeviceProfile profile, Shelly2RpcRequestParams params,
             ShellyLightParms parameters) throws ShellyApiException {
-        boolean inColor = parameters.mode != null ? SHELLY_MODE_COLOR.equals(parameters.mode) : profile.inColor;
-        if (parameters.mode != null) {
+        boolean inColor = parameters.mode() != null ? SHELLY_MODE_COLOR.equals(parameters.mode()) : profile.inColor;
+        if (parameters.mode() != null) {
             params.mode = inColor ? SHELLY_RGBCCT_MODE_RGB : SHELLY_RGBCCT_MODE_CCT;
         }
         if (inColor) {
@@ -1416,9 +1416,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             params.on = ison != null ? ison : true;
         }
         apiRequest(SHELLYRPC_METHOD_RGBCCT_SET, params, String.class);
-        if (parameters.mode != null) {
+        if (parameters.mode() != null) {
             profile.inColor = inColor;
-            profile.device.mode = parameters.mode;
+            profile.device.mode = parameters.mode();
         }
     }
 

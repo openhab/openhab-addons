@@ -20,66 +20,27 @@ import org.eclipse.jdt.annotation.Nullable;
  * field set to null, and will ignore the field.
  *
  * @author Andrew Fiddian-Green - Refactored from Map<String, String> to typed parameters
+ * @param mode Light mode: "color" or "white"
+ * @param onOff On/off state, represented as "on" or "off"
+ * @param red Red color component, 0-255
+ * @param green Green color component, 0-255
+ * @param blue Blue color component, 0-255
+ * @param white White color component, 0-255
+ * @param gain Gain/saturation, 0-100
+ * @param brightness Brightness, 0-100
+ * @param effect Effect index, 0-6
+ * @param colorTemp Color temperature in Kelvin
  */
 @NonNullByDefault
-public class ShellyLightParms {
-    /**
-     * Light mode: "color" or "white"
-     */
-    @Nullable
-    public String mode;
-
-    /**
-     * On/off state, represented as "on" or "off"
-     */
-    @Nullable
-    public String onOff;
-
-    /**
-     * Red color component, 0-255
-     */
-    @Nullable
-    public Integer red;
-
-    /**
-     * Green color component, 0-255
-     */
-    @Nullable
-    public Integer green;
-
-    /**
-     * Blue color component, 0-255
-     */
-    @Nullable
-    public Integer blue;
-
-    /**
-     * White color component, 0-255
-     */
-    @Nullable
-    public Integer white;
-
-    /**
-     * Gain/saturation, 0-100
-     */
-    @Nullable
-    public Integer gain;
-
-    /**
-     * Brightness, 0-100
-     */
-    @Nullable
-    public Integer brightness;
-
-    /**
-     * Effect index, 0-6
-     */
-    @Nullable
-    public Integer effect;
-
-    /**
-     * Color temperature in Kelvin
-     */
-    @Nullable
-    public Integer colorTemp;
+public record ShellyLightParms(
+        @Nullable String mode,
+        @Nullable String onOff,
+        @Nullable Integer red,
+        @Nullable Integer green,
+        @Nullable Integer blue,
+        @Nullable Integer white,
+        @Nullable Integer gain,
+        @Nullable Integer brightness,
+        @Nullable Integer effect,
+        @Nullable Integer colorTemp) {
 }
