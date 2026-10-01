@@ -68,7 +68,7 @@ public class DreameAccountHandler extends BaseBridgeHandler {
         if (config.cloudService.isBlank() || config.username.isBlank() || config.password.isBlank()
                 || config.country.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Cloud service, username, password and country must be configured");
+                    "@text/offline.configuration-error.account-credentials");
             return;
         }
 
@@ -102,7 +102,8 @@ public class DreameAccountHandler extends BaseBridgeHandler {
                 return;
             }
             logger.debug("Cloud connection failed: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error.cloud");
         }
     }
 
