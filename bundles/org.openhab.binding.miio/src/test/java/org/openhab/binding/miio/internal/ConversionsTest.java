@@ -223,4 +223,55 @@ public class ConversionsTest {
         JsonElement notJson = new JsonPrimitive("some non json value");
         assertEquals(notJson, getJsonElement("recipes[*].recipeID", notJson));
     }
+
+    // as returned by the Mi Home cloud: the cooking data is a Json string within the recipe
+    private static final String CLOUD_RECIPES = "{\"recipes\":[{\"recipeID\":1,\"recipeName\":\"Fries\",\"recipeCommand\":"
+            + "\"{\\\"cookCommand\\\":{\\\"time\\\":11,\\\"temperature\\\":180,\\\"preHeat\\\":1},\\\"tips\\\":\\\"long text\\\"}\"},"
+            + "{\"recipeID\":2,\"recipeName\":\"Pizza\",\"recipeCommand\":"
+            + "\"{\\\"cookCommand\\\":{\\\"time\\\":15,\\\"temperature\\\":200,\\\"preHeat\\\":1},\\\"tips\\\":\\\"more\\\"}\"},"
+            + "{\"recipeID\":3,\"recipeName\":\"Broken\",\"recipeCommand\":\"{not json\"}],\"hasMore\":false}";
+
+    @Test
+    public void getJsonElementPathThroughJsonStringTest() {
+        JsonElement asString = new JsonPrimitive(CLOUD_RECIPES);
+        JsonElement asObject = JsonParser.parseString(CLOUD_RECIPES);
+        for (JsonElement value : new JsonElement[] { asString, asObject }) {
+            assertEquals(JsonParser.parseString("[11,15]"),
+                    getJsonElement("recipes[*].recipeCommand.cookCommand.time", value));
+            assertEquals(JsonParser.parseString("{\"time\":15,\"temperature\":200,\"preHeat\":1}"),
+                    getJsonElement("recipes[1].recipeCommand.cookCommand", value));
+            assertEquals(JsonParser.parseString("180"),
+                    getJsonElement("recipes[0].recipeCommand.cookCommand.temperature", value));
+            // a string at the end of the path is not parsed
+            assertEquals(JsonParser.parseString("\"{not json\""), getJsonElement("recipes[2].recipeCommand", value));
+            // a string that is not Json can not be followed
+            assertEquals(value, getJsonElement("recipes[2].recipeCommand.cookCommand", value));
+            assertEquals(value, getJsonElement("recipes[0].recipeName.x", value));
+        }
+    }
+
+    @Test
+    public void getJsonElementMembersWithPathTest() {
+        JsonElement asString = new JsonPrimitive(CLOUD_RECIPES);
+        JsonElement asObject = JsonParser.parseString(CLOUD_RECIPES);
+        for (JsonElement value : new JsonElement[] { asString, asObject }) {
+            // members of a path are named after the last segment; unresolved members are left out
+            assertEquals(JsonParser.parseString(
+                    "[{\"recipeID\":1,\"recipeName\":\"Fries\",\"time\":11,\"temperature\":180,\"preHeat\":1},"
+                            + "{\"recipeID\":2,\"recipeName\":\"Pizza\",\"time\":15,\"temperature\":200,\"preHeat\":1},"
+                            + "{\"recipeID\":3,\"recipeName\":\"Broken\"}]"),
+                    getJsonElement(
+                            "recipes[*].{recipeID,recipeName,recipeCommand.cookCommand.time,recipeCommand.cookCommand.temperature,recipeCommand.cookCommand.preHeat}",
+                            value));
+            // projection on the Json string itself
+            assertEquals(
+                    JsonParser.parseString("[{\"cookCommand\":{\"time\":11,\"temperature\":180,\"preHeat\":1}},"
+                            + "{\"cookCommand\":{\"time\":15,\"temperature\":200,\"preHeat\":1}}]"),
+                    getJsonElement("recipes[*].recipeCommand.{cookCommand}", value));
+        }
+        // nested projections in a member are not supported
+        JsonElement value = JsonParser.parseString(CLOUD_RECIPES);
+        assertEquals(JsonParser.parseString("[{\"recipeID\":1},{\"recipeID\":2},{\"recipeID\":3}]"),
+                getJsonElement("recipes[*].{recipeID,recipeCommand.{cookCommand}}", value));
+    }
 }

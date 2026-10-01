@@ -193,8 +193,12 @@ public class Conversions {
      * <li>{@code name[*]} applies the rest of the path to every element of the array {@code name} and returns the
      * results as an array; elements for which the path does not resolve are left out</li>
      * <li>a last segment {@code {a,b}} returns only the listed members of an object, or of every object in an
-     * array; it must be the last segment</li>
+     * array; it must be the last segment. A listed member can be a path (without brackets), like
+     * {@code {id,cook.time}}; it is returned with the last segment of the path as name, here {@code time}</li>
      * </ul>
+     * While following a path, a string value that contains a Json object or array (as some cloud responses have) is
+     * parsed, so that its members can be selected as well. A string at the end of the path is returned as is.
+     * <p>
      * For example {@code recipes[*].{recipeID,recipeName}} turns {@code {"recipes":[{"recipeID":1,"recipeName":"A",
      * "tips":"..."}]}} into {@code [{"recipeID":1,"recipeName":"A"}]}.
      *
@@ -247,10 +251,11 @@ public class Conversions {
         return segments;
     }
 
-    private static @Nullable JsonElement selectPath(JsonElement current, List<String> segments, int pos) {
+    private static @Nullable JsonElement selectPath(JsonElement element, List<String> segments, int pos) {
         if (pos >= segments.size()) {
-            return current;
+            return element;
         }
+        final JsonElement current = unwrapJson(element);
         final String segment = segments.get(pos);
         if (segment.startsWith("{") && segment.endsWith("}")) {
             if (pos != segments.size() - 1) {
@@ -292,7 +297,26 @@ public class Conversions {
         return results;
     }
 
-    private static @Nullable JsonElement selectMembers(JsonElement current, String[] members) {
+    /**
+     * Returns the Json contained in a string value. Any other value, or a string that is not a Json object or array,
+     * is returned unchanged.
+     */
+    private static JsonElement unwrapJson(JsonElement element) {
+        if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+            final String text = element.getAsString().trim();
+            if (text.startsWith("{") || text.startsWith("[")) {
+                try {
+                    return JsonParser.parseString(text);
+                } catch (JsonParseException e) {
+                    // not Json, keep the text
+                }
+            }
+        }
+        return element;
+    }
+
+    private static @Nullable JsonElement selectMembers(JsonElement element, String[] members) {
+        final JsonElement current = unwrapJson(element);
         if (current.isJsonArray()) {
             final JsonArray results = new JsonArray();
             for (JsonElement item : current.getAsJsonArray()) {
@@ -309,9 +333,15 @@ public class Conversions {
         final JsonObject source = current.getAsJsonObject();
         final JsonObject result = new JsonObject();
         for (String member : members) {
-            final String name = member.trim();
-            if (source.has(name)) {
-                result.add(name, source.get(name));
+            final String path = member.trim();
+            if (source.has(path)) {
+                result.add(path, source.get(path));
+            } else if (!path.contains("{") && !path.contains("}")) {
+                final List<String> segments = splitPath(path);
+                final @Nullable JsonElement value = selectPath(source, segments, 0);
+                if (value != null) {
+                    result.add(segments.get(segments.size() - 1), value);
+                }
             }
         }
         return result.size() > 0 ? result : null;
