@@ -30,6 +30,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpClient;
+import org.openhab.binding.shelly.internal.api.ShellyLightParms;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySendKeyList;
@@ -448,14 +449,47 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
-    public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
+    @Override
+    public void setLightParms(int lightIndex, ShellyLightParms parameters) throws ShellyApiException {
+        Map<String, String> parms = new HashMap<>();
+        if (parameters.mode != null) {
+            parms.put(SHELLY_API_MODE, parameters.mode);
+        }
+        if (parameters.onOff != null) {
+            parms.put(SHELLY_LIGHT_TURN, parameters.onOff);
+        }
+        if (parameters.red != null) {
+            parms.put(SHELLY_COLOR_RED, parameters.red.toString());
+        }
+        if (parameters.green != null) {
+            parms.put(SHELLY_COLOR_GREEN, parameters.green.toString());
+        }
+        if (parameters.blue != null) {
+            parms.put(SHELLY_COLOR_BLUE, parameters.blue.toString());
+        }
+        if (parameters.white != null) {
+            parms.put(SHELLY_COLOR_WHITE, parameters.white.toString());
+        }
+        if (parameters.gain != null) {
+            parms.put(SHELLY_COLOR_GAIN, parameters.gain.toString());
+        }
+        if (parameters.brightness != null) {
+            parms.put(SHELLY_COLOR_BRIGHTNESS, parameters.brightness.toString());
+        }
+        if (parameters.effect != null) {
+            parms.put(SHELLY_COLOR_EFFECT, parameters.effect.toString());
+        }
+        if (parameters.colorTemp != null) {
+            parms.put(SHELLY_COLOR_TEMP, parameters.colorTemp.toString());
+        }
+
         String url = getControlUriPrefix(lightIndex) + "?";
         int i = 0;
-        for (String key : parameters.keySet()) {
+        for (String key : parms.keySet()) {
             if (i > 0) {
                 url = url + "&";
             }
-            url = url + key + "=" + parameters.get(key);
+            url = url + key + "=" + parms.get(key);
             i++;
         }
         httpRequest(url);

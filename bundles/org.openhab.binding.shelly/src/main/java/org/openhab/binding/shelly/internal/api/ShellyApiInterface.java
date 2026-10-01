@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.shelly.internal.api;
 
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
@@ -74,7 +72,7 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
 
     void setLightParm(int lightIndex, String parm, String value) throws ShellyApiException;
 
-    void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException;
+    void setLightParms(int lightIndex, ShellyLightParms parameters) throws ShellyApiException;
 
     ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException;
 

@@ -47,6 +47,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api.ShellyLightParms;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
@@ -1335,37 +1336,31 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
     }
 
-    private void applyRgbParams(Shelly2RpcRequestParams params, Map<String, String> parameters) {
-        String red = parameters.get(SHELLY_COLOR_RED);
-        String green = parameters.get(SHELLY_COLOR_GREEN);
-        String blue = parameters.get(SHELLY_COLOR_BLUE);
-        if (red != null && green != null && blue != null) {
-            params.rgb = new Integer[] { Integer.parseInt(red), Integer.parseInt(green), Integer.parseInt(blue) };
+    private void applyRgbParams(Shelly2RpcRequestParams params, ShellyLightParms parameters) {
+        if (parameters.red != null && parameters.green != null && parameters.blue != null) {
+            params.rgb = new Integer[] { parameters.red, parameters.green, parameters.blue };
         }
     }
 
-    private void applyCctParam(Shelly2RpcRequestParams params, Map<String, String> parameters) {
-        String ct = parameters.get(SHELLY_COLOR_TEMP);
-        if (ct != null) {
-            params.ct = Integer.parseInt(ct);
+    private void applyCctParam(Shelly2RpcRequestParams params, ShellyLightParms parameters) {
+        if (parameters.colorTemp != null) {
+            params.ct = parameters.colorTemp;
         }
     }
 
     @Override
-    public void setLightParms(int lightIndex, Map<String, String> parameters) throws ShellyApiException {
+    public void setLightParms(int lightIndex, ShellyLightParms parameters) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
-        if (parameters.containsKey(SHELLY_LIGHT_TURN)) {
-            params.on = SHELLY_API_ON.equals(parameters.get(SHELLY_LIGHT_TURN));
+        if (parameters.onOff != null) {
+            params.on = SHELLY_API_ON.equals(parameters.onOff);
         }
-        String brightnessStr = parameters.get(SHELLY_COLOR_BRIGHTNESS);
-        if (brightnessStr != null) {
+        if (parameters.brightness != null) {
             // Gen2 firmware rejects/clamps brightness=0; on=false is used to turn the light off instead
-            int b = Integer.parseInt(brightnessStr);
-            if (b > 0) {
-                params.brightness = b;
+            if (parameters.brightness > 0) {
+                params.brightness = parameters.brightness;
             }
-            params.on = b > 0;
+            params.on = parameters.brightness > 0;
         }
 
         if (profile.isDuo) {
@@ -1388,9 +1383,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         ShellyLightApiComponent tag = lightComponentTag(profile, lightIndex);
         if (isRgbwComponent(tag)) {
             applyRgbParams(params, parameters);
-            String white = parameters.get(SHELLY_COLOR_WHITE);
-            if (white != null) {
-                params.white = Integer.parseInt(white);
+            if (parameters.white != null) {
+                params.white = parameters.white;
             }
         } else if (isRgbComponent(tag)) {
             applyRgbParams(params, parameters);
@@ -1406,10 +1400,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * mode/rgb/ct repeats the current power state (the handler adds turn=on itself when autoOn is enabled).
      */
     private void setRgbcctParms(ShellyDeviceProfile profile, Shelly2RpcRequestParams params,
-            Map<String, String> parameters) throws ShellyApiException {
-        String mode = parameters.get(SHELLY_API_MODE);
-        boolean inColor = mode != null ? SHELLY_MODE_COLOR.equals(mode) : profile.inColor;
-        if (mode != null) {
+            ShellyLightParms parameters) throws ShellyApiException {
+        boolean inColor = parameters.mode != null ? SHELLY_MODE_COLOR.equals(parameters.mode) : profile.inColor;
+        if (parameters.mode != null) {
             params.mode = inColor ? SHELLY_RGBCCT_MODE_RGB : SHELLY_RGBCCT_MODE_CCT;
         }
         if (inColor) {
@@ -1423,9 +1416,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             params.on = ison != null ? ison : true;
         }
         apiRequest(SHELLYRPC_METHOD_RGBCCT_SET, params, String.class);
-        if (mode != null) {
+        if (parameters.mode != null) {
             profile.inColor = inColor;
-            profile.device.mode = mode;
+            profile.device.mode = parameters.mode;
         }
     }
 
