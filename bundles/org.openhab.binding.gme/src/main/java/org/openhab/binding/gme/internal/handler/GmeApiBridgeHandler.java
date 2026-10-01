@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,6 +63,7 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
     private volatile String marketZone = "";
     private volatile GmeGranularity granularity = GmeGranularity.PT60;
     private @Nullable ScheduledFuture<?> passwordRefreshJob;
+    private final AtomicLong lifecycleGeneration = new AtomicLong();
 
     public GmeApiBridgeHandler(Bridge bridge, HttpClient httpClient, Storage<String> storage) {
         this(bridge, httpClient, storage, Clock.system(GME_ZONE));
@@ -76,6 +78,7 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        long generation = lifecycleGeneration.incrementAndGet();
         cancelPasswordRefresh();
 
         GmeApiConfiguration config = getConfigAs(GmeApiConfiguration.class);
@@ -105,22 +108,34 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
 
         scheduler.execute(() -> {
             GmeAuthManager manager = new GmeAuthManager(apiClient, config.username, config.password);
-            authManager = manager;
 
             try {
                 manager.getToken();
+                if (!isCurrentGeneration(generation)) {
+                    return;
+                }
+
+                authManager = manager;
                 credentialTracker.updateAfterSuccessfulAuthentication(config.username, config.password,
                         config.initialPasswordChangedAt);
+                if (!isCurrentGeneration(generation)) {
+                    return;
+                }
+
                 updatePasswordChannels();
-                schedulePasswordRefresh();
+                schedulePasswordRefresh(generation);
                 updateStatus(ThingStatus.ONLINE);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "GME authentication was interrupted.");
+                if (isCurrentGeneration(generation)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "GME authentication was interrupted.");
+                }
             } catch (TimeoutException | ExecutionException | IllegalStateException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "GME authentication failed: " + e.getMessage());
+                if (isCurrentGeneration(generation)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "GME authentication failed: " + e.getMessage());
+                }
             }
         });
     }
@@ -138,9 +153,17 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
         updateState(CHANNEL_PASSWORD_STATUS, new StringType(passwordAge.getStatus(changedAt).name()));
     }
 
-    private void schedulePasswordRefresh() {
+    private void schedulePasswordRefresh(long generation) {
         cancelPasswordRefresh();
-        passwordRefreshJob = scheduler.scheduleWithFixedDelay(this::updatePasswordChannels, 1, 1, TimeUnit.HOURS);
+        passwordRefreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (isCurrentGeneration(generation)) {
+                updatePasswordChannels();
+            }
+        }, 1, 1, TimeUnit.HOURS);
+    }
+
+    private boolean isCurrentGeneration(long generation) {
+        return lifecycleGeneration.get() == generation;
     }
 
     private void cancelPasswordRefresh() {
@@ -153,6 +176,7 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        lifecycleGeneration.incrementAndGet();
         cancelPasswordRefresh();
         authManager = null;
         super.dispose();
