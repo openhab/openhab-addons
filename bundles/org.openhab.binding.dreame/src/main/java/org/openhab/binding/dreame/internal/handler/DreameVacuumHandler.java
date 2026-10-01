@@ -214,7 +214,8 @@ public class DreameVacuumHandler extends BaseThingHandler {
         try {
             DreameVacuumProperties properties = api.getVacuumProperties(device,
                     () -> generation.get() == currentGeneration);
-            Map<String, State> updates = DreameVacuumStatus.channelUpdates(properties);
+            Map<String, State> updates = DreameVacuumStatus.channelUpdates(properties,
+                    DreameVacuumCapabilities.usesNewStateSchema(device));
             if (updates.isEmpty()) {
                 throw new DreameCloudException("Vacuum returned no valid status properties");
             }
@@ -553,7 +554,9 @@ public class DreameVacuumHandler extends BaseThingHandler {
         if (!active || generation.get() != currentGeneration || connectionGeneration != currentConnection) {
             return;
         }
-        Map<String, State> updates = DreameVacuumStatus.channelUpdates(properties);
+        DreameDevice device = mapDevice;
+        Map<String, State> updates = DreameVacuumStatus.channelUpdates(properties,
+                device == null || DreameVacuumCapabilities.usesNewStateSchema(device));
         availableProperties.addAll(properties.keySet());
         if (!updates.isEmpty()) {
             updates.forEach(this::publishState);

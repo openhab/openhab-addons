@@ -13,6 +13,8 @@
 package org.openhab.binding.dreame.internal.model;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -424,6 +426,27 @@ public final class DreameVacuumCapabilities {
             dreame.vacuum.r9551
                         """.strip().split("\\R")));
 
+    // State-schema capabilities synchronized with Tasshack/dreame-vacuum DEVICE_INFO at commit
+    // 8556ef85132c3d73a5288dd00738636392dac633.
+    private static final Set<String> OLD_STATE_MODELS = prefixedModels("""
+            p2008 p2009 p2027 p2028 p2028a p2029 p2036 p2041 p2041o p2114a p2114o p2140 p2140a p2140o
+            p2140p p2140q p2148o p2149o p2150a p2150b p2150o p2156o p2157 p2187 p2259 r2104 r2205 r2209
+            r2210 r2211o r2216o r2228 r2228d r2228o r2228z r2232a r2232b r2232c r2232d r2233 r2240 r2243
+            r2246 r2247 r2250 r2251a r2251o r2254 r2257o r2260 r2312 r2312a r2322 r2328 r2380 r2380r r2388
+            r2458a r2458h r2459a r2459h r2459k r2459r r2463r r2471 r2478r r2478v r2567a r2567r r2569c
+            r2569r r2570
+            """);
+
+    private static final Map<String, Integer> NEW_STATE_MIN_FIRMWARE = Map.ofEntries(
+            Map.entry("dreame.vacuum.r2253", 1051), Map.entry("dreame.vacuum.r2263", 1051),
+            Map.entry("dreame.vacuum.r2273", 1051), Map.entry("dreame.vacuum.r2273a", 1051),
+            Map.entry("dreame.vacuum.r2313", 1019), Map.entry("dreame.vacuum.r2316", 1019),
+            Map.entry("dreame.vacuum.r2316p", 1019), Map.entry("dreame.vacuum.r2317", 1114),
+            Map.entry("dreame.vacuum.r2332", 5), Map.entry("dreame.vacuum.r2355", 1019),
+            Map.entry("dreame.vacuum.r2360", 1019), Map.entry("dreame.vacuum.r2360w", 1019),
+            Map.entry("dreame.vacuum.r2367", 5), Map.entry("dreame.vacuum.r2386", 1114),
+            Map.entry("dreame.vacuum.r2398", 1019), Map.entry("dreame.vacuum.r2421", 1019));
+
     private DreameVacuumCapabilities() {
     }
 
@@ -433,5 +456,32 @@ public final class DreameVacuumCapabilities {
 
     public static boolean isSupported(String model) {
         return SUPPORTED_MODELS.contains(model);
+    }
+
+    public static boolean usesNewStateSchema(DreameDevice device) {
+        String model = device.model();
+        if (OLD_STATE_MODELS.contains(model)) {
+            return false;
+        }
+        Integer minimum = NEW_STATE_MIN_FIRMWARE.get(model);
+        return minimum == null || firmwareBuild(device.version()) >= minimum;
+    }
+
+    private static Set<String> prefixedModels(String models) {
+        Set<String> result = new HashSet<>();
+        for (String model : models.strip().split("\\s+")) {
+            result.add("dreame.vacuum." + model);
+        }
+        return Set.copyOf(result);
+    }
+
+    private static int firmwareBuild(String version) {
+        int separator = version.lastIndexOf('_');
+        String build = separator >= 0 ? version.substring(separator + 1) : version;
+        try {
+            return Integer.parseInt(build);
+        } catch (NumberFormatException e) {
+            return 1;
+        }
     }
 }

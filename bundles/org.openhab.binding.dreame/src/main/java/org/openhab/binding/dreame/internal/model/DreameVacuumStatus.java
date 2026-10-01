@@ -47,6 +47,10 @@ public final class DreameVacuumStatus {
     }
 
     public static Map<String, State> channelUpdates(Map<String, Integer> properties) {
+        return channelUpdates(properties, true);
+    }
+
+    public static Map<String, State> channelUpdates(Map<String, Integer> properties, boolean newStateSchema) {
         Map<String, State> updates = new LinkedHashMap<>();
         properties.forEach((address, value) -> {
             switch (address) {
@@ -144,30 +148,7 @@ public final class DreameVacuumStatus {
                 case "18/2" -> updates.put("mop-pad-time-left", new QuantityType<>(value, Units.HOUR));
                 case "20/1" -> updates.put("detergent-left", new QuantityType<>(value, Units.PERCENT));
                 case "20/2" -> updates.put("detergent-time-left", new QuantityType<>(value, Units.DAY));
-                case "2/1" -> updates.put("state", new StringType(switch (value) {
-                    case 1 -> "CLEANING";
-                    case 2 -> "IDLE";
-                    case 3 -> "PAUSED";
-                    case 4 -> "ERROR";
-                    case 5 -> "RETURNING";
-                    case 6 -> "CHARGING";
-                    case 7 -> "MOPPING";
-                    case 8 -> "DRYING";
-                    case 9 -> "WASHING";
-                    case 10 -> "RETURNING_TO_WASHING";
-                    case 11 -> "BUILDING";
-                    case 12 -> "SWEEPING_AND_MOPPING";
-                    case 13 -> "CHARGING_COMPLETED";
-                    case 14 -> "UPGRADING";
-                    case 15 -> "CLEAN_SUMMON";
-                    case 16 -> "STATION_RESET";
-                    case 17 -> "RETURNING_INSTALL_MOP";
-                    case 18 -> "RETURNING_REMOVE_MOP";
-                    case 20 -> "CLEAN_ADD_WATER";
-                    case 21 -> "WASHING_PAUSED";
-                    case 22 -> "AUTO_EMPTYING";
-                    default -> "UNKNOWN_" + value;
-                }));
+                case "2/1" -> updates.put("state", new StringType(state(value, newStateSchema)));
                 case "4/1" -> updates.put("operating-status", new StringType(switch (value) {
                     case 0 -> "IDLE";
                     case 1 -> "PAUSED";
@@ -218,8 +199,106 @@ public final class DreameVacuumStatus {
         return updates;
     }
 
+    private static String state(int value, boolean newStateSchema) {
+        return switch (value) {
+            case 1 -> "CLEANING";
+            case 2 -> "IDLE";
+            case 3 -> "PAUSED";
+            case 4 -> "ERROR";
+            case 5 -> "RETURNING";
+            case 6 -> "CHARGING";
+            case 7 -> "MOPPING";
+            case 8 -> "DRYING";
+            case 9 -> "WASHING";
+            case 10 -> "RETURNING_TO_WASHING";
+            case 11 -> "BUILDING";
+            case 12 -> "SWEEPING_AND_MOPPING";
+            case 13 -> "CHARGING_COMPLETED";
+            case 14 -> "UPGRADING";
+            case 15 -> "CLEAN_SUMMON";
+            case 16 -> "STATION_RESET";
+            case 17 -> "RETURNING_INSTALL_MOP";
+            case 18 -> "RETURNING_REMOVE_MOP";
+            default -> newStateSchema ? newState(value) : oldState(value);
+        };
+    }
+
+    private static String newState(int value) {
+        return switch (value) {
+            case 19 -> "WATER_CHECK";
+            case 20 -> "CLEAN_ADD_WATER";
+            case 21 -> "WASHING_PAUSED";
+            case 22 -> "AUTO_EMPTYING";
+            case 23 -> "REMOTE_CONTROL";
+            case 24 -> "SMART_CHARGING";
+            case 25 -> "SECOND_CLEANING";
+            case 26 -> "HUMAN_FOLLOWING";
+            case 27 -> "SPOT_CLEANING";
+            case 28 -> "RETURNING_AUTO_EMPTY";
+            case 29 -> "WAITING_FOR_TASK";
+            case 30 -> "STATION_CLEANING";
+            case 31 -> "RETURNING_TO_DRAIN";
+            case 32 -> "DRAINING";
+            case 33 -> "AUTO_WATER_DRAINING";
+            case 34 -> "EMPTYING";
+            case 35 -> "DUST_BAG_DRYING";
+            case 36 -> "DUST_BAG_DRYING_PAUSED";
+            case 37 -> "HEADING_TO_EXTRA_CLEANING";
+            case 38 -> "EXTRA_CLEANING";
+            case 95 -> "FINDING_PET_PAUSED";
+            case 96 -> "FINDING_PET";
+            case 97 -> "SHORTCUT";
+            case 98 -> "MONITORING";
+            case 99 -> "MONITORING_PAUSED";
+            case 101 -> "INITIAL_DEEP_CLEANING";
+            case 102 -> "INITIAL_DEEP_CLEANING_PAUSED";
+            case 103 -> "SANITIZING";
+            case 104 -> "SANITIZING_WITH_DRY";
+            case 105 -> "CHANGING_MOP";
+            case 106 -> "CHANGING_MOP_PAUSED";
+            case 107 -> "FLOOR_MAINTAINING";
+            case 108 -> "FLOOR_MAINTAINING_PAUSED";
+            case 109 -> "REMOTE_PICKUP";
+            case 113 -> "ARRANGING_ITEMS";
+            case 114 -> "PET_GUARDING";
+            case 115 -> "PET_GUARDING_PAUSED";
+            case 116 -> "INSTALLING_MOP";
+            case 117 -> "UNINSTALLING_MOP";
+            case 118 -> "INTELLIGENT_RECHARGING";
+            case 120 -> "ASSISTED_CLEANING";
+            case 121 -> "ENTERING_DOCK";
+            case 122 -> "LEAVING_DOCK";
+            case 140 -> "NAVIGATING_TO_CLIMBER";
+            case 141 -> "DOCKING_TO_CLIMBER";
+            case 142 -> "CLIMBER_DOCKED";
+            case 143 -> "CLIMBER_NAVIGATING";
+            case 144 -> "CLIMBING_STAIRS";
+            case 145 -> "CLIMBING_STAIRS_COMPLETED";
+            case 146 -> "CLIMBER_AT_DOCK";
+            case 147 -> "CLIMBER_LEAVING_DOCK";
+            default -> "UNKNOWN_" + value;
+        };
+    }
+
+    private static String oldState(int value) {
+        return switch (value) {
+            case 19 -> "REMOTE_CONTROL";
+            case 20 -> "CLEAN_ADD_WATER";
+            case 21 -> "MONITORING";
+            case 23 -> "WASHING_PAUSED";
+            case 24 -> "AUTO_EMPTYING";
+            case 25 -> "WATER_CHECK";
+            case 26 -> "SMART_CHARGING";
+            default -> "UNKNOWN_" + value;
+        };
+    }
+
     public static Map<String, State> channelUpdates(DreameVacuumProperties properties) {
-        Map<String, State> updates = new LinkedHashMap<>(channelUpdates(properties.numeric()));
+        return channelUpdates(properties, true);
+    }
+
+    public static Map<String, State> channelUpdates(DreameVacuumProperties properties, boolean newStateSchema) {
+        Map<String, State> updates = new LinkedHashMap<>(channelUpdates(properties.numeric(), newStateSchema));
         String autoSwitch = properties.text().get("4/50");
         if (autoSwitch == null) {
             return updates;
