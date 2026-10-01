@@ -123,6 +123,23 @@ class GmePriceCacheTest {
     }
 
     @Test
+    void clearsBothCachedDays() {
+        LocalDate today = LocalDate.of(2026, 9, 11);
+        LocalDate tomorrow = today.plusDays(1);
+
+        GmePriceCache cache = new GmePriceCache();
+        cache.setToday(today, completeDay(today, GmeGranularity.PT60));
+        cache.setTomorrow(tomorrow, completeDay(tomorrow, GmeGranularity.PT60));
+
+        cache.clear();
+
+        assertNull(cache.getTodayDate());
+        assertNull(cache.getTomorrowDate());
+        assertTrue(cache.getTodayPrices().isEmpty());
+        assertTrue(cache.getTomorrowPrices().isEmpty());
+    }
+
+    @Test
     void promotesCompleteAutumnDstDataset() {
         LocalDate date = LocalDate.of(2026, 10, 25);
 
