@@ -490,6 +490,26 @@
 					"Control"
 				],
 				"readmeComment": "Value mapping `[\"0\"\u003d\"Reminder On\",\"1\"\u003d\"Reminder Off\",\"2\"\u003d\"Turn Food Now\"]`"
+			},
+			{
+				"property": "",
+				"friendlyName": "Recipes",
+				"channel": "recipes",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"refreshInterval": -1,
+				"customRefreshCommand": "/v2/recipes/query",
+				"customRefreshParameters": {
+					"vendor": "careli",
+					"deviceType": "fryer",
+					"model": "careli.fryer.maf02"
+				},
+				"transformation": "getJsonElement-recipes[*].{recipeID,recipeName,recipeCommand.cookCommand.time,recipeCommand.cookCommand.temperature,recipeCommand.cookCommand.preHeat}",
+				"actions": [],
+				"readmeComment": "List of the Mi Home cloud recipes as JSON, with for each recipe the recipeID, recipeName, time (minutes), temperature (degrees Celsius) and preHeat. Requires the cloud server to be set. The list is read once, send a refresh command to read it again."
 			}
 		],
 		"experimental": true
