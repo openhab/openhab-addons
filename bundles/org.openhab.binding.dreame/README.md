@@ -120,9 +120,9 @@ Explicit control commands and setting changes also use the cloud HTTP API; MQTT 
 Unknown state codes are preserved as `UNKNOWN_<code>`.
 Device-state codes 19 and above differ between older and newer Dreame protocol variants. The binding selects the state
 schema from the model and, for transitional models, the firmware build using the `NEW_STATE` capability in the
-[reference device database](https://github.com/Tasshack/dreame-vacuum/blob/master/custom_components/dreame_vacuum/dreame/const.py).
+[reference device database](https://github.com/Tasshack/dreame-vacuum/blob/8556ef85132c3d73a5288dd00738636392dac633/custom_components/dreame_vacuum/dreame/const.py).
 The corresponding old and new state tables follow the
-[reference state mapping](https://github.com/Tasshack/dreame-vacuum/blob/master/custom_components/dreame_vacuum/dreame/types.py).
+[reference state mapping](https://github.com/Tasshack/dreame-vacuum/blob/8556ef85132c3d73a5288dd00738636392dac633/custom_components/dreame_vacuum/dreame/types.py).
 Unknown models use the new schema, while unmapped values remain visible as `UNKNOWN_<code>`.
 Values are updated independently as MQTT properties or query results arrive; missing or failed properties do not overwrite other channels.
 A query does not overwrite a newer push received for the same channel while the query was running.
