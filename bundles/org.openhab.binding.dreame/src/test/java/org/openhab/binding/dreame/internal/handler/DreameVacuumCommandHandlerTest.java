@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
 
@@ -148,6 +149,7 @@ class DreameVacuumCommandHandlerTest {
         ChannelUID genius = new ChannelUID(f.uid, "clean-genius");
         ChannelUID route = new ChannelUID(f.uid, "cleaning-route");
         ChannelUID drying = new ChannelUID(f.uid, "drying-time");
+        f.handler.receiveProperties(1, 1, Map.of("4/40", 2, "4/50", 1));
         f.handler.handleCommand(genius, new StringType("deep"));
         f.handler.handleCommand(route, new StringType("quick"));
         f.handler.handleCommand(drying, new StringType("3h"));

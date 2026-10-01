@@ -106,7 +106,7 @@ public final class DreameVacuumMapState {
             }
             RoomInfo cachedRooms = savedRooms;
             if (incoming.roomNames.isEmpty() && cachedRooms != null && savedRoomsMapId != null
-                    && incoming.mapId == savedRoomsMapId) {
+                    && (incoming.mapId == savedRoomsMapId || roomSegmentsMatch(incoming, cachedRooms.names))) {
                 incoming = withRoomNames(incoming, cachedRooms.names, cachedRooms.diagnostic);
             }
             Frame base = current;
@@ -174,7 +174,7 @@ public final class DreameVacuumMapState {
             savedRoomsMapId = selected.mapId;
             savedRooms = new RoomInfo(selected.roomNames, selected.roomMetadata);
             Frame live = current;
-            if (live == null || selected.mapId != live.mapId) {
+            if (live == null || selected.mapId != live.mapId && !roomSegmentsMatch(live, selected.roomNames)) {
                 diagnostic = "map-list-room-metadata-cached/map=" + selected.mapId + "/rooms="
                         + selected.roomNames.size();
                 return null;
@@ -203,6 +203,17 @@ public final class DreameVacuumMapState {
         return new Frame(frame.mapId, frame.frameId, frame.type, frame.grid, frame.left, frame.top, frame.width,
                 frame.height, frame.robotX, frame.robotY, frame.robotAngle, frame.dockX, frame.dockY, frame.pixels,
                 frame.version3, frame.frameMap, frame.path, names, metadata);
+    }
+
+    private static boolean roomSegmentsMatch(Frame frame, Map<Integer, String> names) {
+        TreeSet<Integer> segments = new TreeSet<>();
+        for (byte value : frame.pixels) {
+            int room = room(frame, value & 0xFF);
+            if (room > 0 && room < 61) {
+                segments.add(room);
+            }
+        }
+        return !segments.isEmpty() && segments.equals(new TreeSet<>(names.keySet()));
     }
 
     private static @Nullable Frame decode(String encoded) throws DataFormatException {

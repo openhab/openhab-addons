@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dreame.internal.model.DreameVacuumCapabilities;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -86,7 +87,7 @@ public final class DreameVacuumMapImage {
     }
 
     private static @Nullable String stringPropertyFromMessage(byte[] payload, String model, int propertyId) {
-        if (!"dreame.vacuum.r9445d".equals(model) || payload.length > 65536) {
+        if (!DreameVacuumCapabilities.isSupported(model) || payload.length > 65536) {
             return null;
         }
         String json = new String(payload, StandardCharsets.UTF_8);

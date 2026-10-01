@@ -23,6 +23,7 @@ import java.util.zip.Inflater;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
+import org.openhab.binding.dreame.internal.model.DreameVacuumCapabilities;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -81,11 +82,9 @@ public final class DreameVacuumDiagnostics {
                     if (params.get(i) instanceof JsonObject parameter) {
                         String service = address(parameter.get("siid"));
                         String property = address(parameter.get("piid"));
-                        String numericValue = "dreame.vacuum.r9445d".equals(model)
-                                && "properties_changed".equals(knownMethod)
-                                        ? statusValue(service, property, parameter)
-                                                + mapMetadata(service, property, parameter)
-                                        : "";
+                        String numericValue = isSupportedModel(model) && "properties_changed".equals(knownMethod)
+                                ? statusValue(service, property, parameter) + mapMetadata(service, property, parameter)
+                                : "";
                         addresses.add("siid=" + service + "/piid=" + property + "/type="
                                 + valueType(parameter.get("value")) + numericValue);
                     }
@@ -99,9 +98,9 @@ public final class DreameVacuumDiagnostics {
         }
     }
 
-    /** Returns only validated numeric property updates for the tested vacuum model. */
+    /** Returns only validated numeric property updates for mapped vacuum models. */
     public static Map<String, Integer> readProperties(byte[] payload, String model) {
-        if (!"dreame.vacuum.r9445d".equals(model) || payload.length == 0 || payload.length > MAX_BYTES) {
+        if (!isSupportedModel(model) || payload.length == 0 || payload.length > MAX_BYTES) {
             return Map.of();
         }
         String json = new String(payload, StandardCharsets.UTF_8);
@@ -134,6 +133,10 @@ public final class DreameVacuumDiagnostics {
         } catch (RuntimeException e) {
             return Map.of();
         }
+    }
+
+    private static boolean isSupportedModel(String model) {
+        return DreameVacuumCapabilities.isSupported(model);
     }
 
     /** Parses successful results from an explicit vacuum property request. */
@@ -251,7 +254,7 @@ public final class DreameVacuumDiagnostics {
             case "2/2", "4/23" -> 65535;
             case "4/2", "4/3", "9/1", "10/1", "11/2", "12/2", "12/3", "12/4", "16/2", "18/2", "20/2" ->
                 Integer.MAX_VALUE;
-            case "2/1", "3/2", "4/1", "4/4", "4/5", "4/7", "4/25" -> 255;
+            case "2/1", "3/2", "4/1", "4/4", "4/5", "4/7", "4/25", "4/40", "15/3" -> 255;
             default -> -1;
         };
         if (maximum < 0 || parameter.has("code") && boundedInteger(parameter.get("code"), 0) == null) {

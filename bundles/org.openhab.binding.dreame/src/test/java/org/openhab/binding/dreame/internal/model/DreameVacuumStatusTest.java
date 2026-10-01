@@ -21,7 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dreame.internal.util.DreameVacuumDiagnostics;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 
 /**
  * Covers the observed L50 transitions and rejects unsafe or unrelated property values.
@@ -49,12 +52,65 @@ class DreameVacuumStatusTest {
 
     @Test
     void namesNewlyObservedDockStatesWithoutChangingOtherStatusFields() {
+        assertEquals(new StringType("RETURNING_TO_WASHING"),
+                DreameVacuumStatus.channelUpdates(Map.of("2/1", 10)).get("state"));
         assertEquals(new StringType("CHARGING_COMPLETED"),
                 DreameVacuumStatus.channelUpdates(Map.of("2/1", 13)).get("state"));
         assertEquals(new StringType("AUTO_EMPTYING"),
                 DreameVacuumStatus.channelUpdates(Map.of("2/1", 22)).get("state"));
-        assertEquals(new StringType("UNKNOWN_22"),
+        assertEquals(new StringType("CRUISING_PATH"),
                 DreameVacuumStatus.channelUpdates(Map.of("4/1", 22)).get("operating-status"));
+    }
+
+    @Test
+    void mapsCommonDeviceStatesWithoutGuessingModelSpecificCodes() {
+        Map.ofEntries(Map.entry(2, "IDLE"), Map.entry(4, "ERROR"), Map.entry(7, "MOPPING"), Map.entry(11, "BUILDING"),
+                Map.entry(14, "UPGRADING"), Map.entry(15, "CLEAN_SUMMON"), Map.entry(16, "STATION_RESET"),
+                Map.entry(17, "RETURNING_INSTALL_MOP"), Map.entry(18, "RETURNING_REMOVE_MOP"))
+                .forEach((code, name) -> assertEquals(new StringType(name),
+                        DreameVacuumStatus.channelUpdates(Map.of("2/1", code)).get("state")));
+        assertEquals(new StringType("UNKNOWN_19"), DreameVacuumStatus.channelUpdates(Map.of("2/1", 19)).get("state"));
+    }
+
+    @Test
+    void mapsReferenceOperatingStatuses() {
+        Map.ofEntries(Map.entry(0, "IDLE"), Map.entry(4, "PARTIAL_CLEANING"), Map.entry(5, "FOLLOW_WALL"),
+                Map.entry(7, "OTA"), Map.entry(8, "FCT"), Map.entry(9, "WIFI_SETUP"), Map.entry(10, "POWER_OFF"),
+                Map.entry(11, "FACTORY"), Map.entry(12, "ERROR"), Map.entry(13, "REMOTE_CONTROL"),
+                Map.entry(15, "SELF_REPAIR"), Map.entry(16, "FACTORY_FUNCTION_TEST"), Map.entry(17, "STANDBY"),
+                Map.entry(19, "ZONE_CLEANING"), Map.entry(20, "SPOT_CLEANING"), Map.entry(21, "FAST_MAPPING"),
+                Map.entry(22, "CRUISING_PATH"), Map.entry(23, "CRUISING_POINT"), Map.entry(24, "SUMMON_CLEAN"),
+                Map.entry(25, "SHORTCUT"), Map.entry(26, "PERSON_FOLLOW"), Map.entry(27, "PET_GUARDING"),
+                Map.entry(28, "AUTO_ARRANGEMENT"), Map.entry(29, "SMART_ARRANGEMENT"),
+                Map.entry(30, "ZONED_ARRANGEMENT"), Map.entry(1501, "WATER_CHECK"))
+                .forEach((code, name) -> assertEquals(new StringType(name),
+                        DreameVacuumStatus.channelUpdates(Map.of("4/1", code)).get("operating-status")));
+    }
+
+    @Test
+    void mapsPausedAndExtendedTaskStatuses() {
+        Map.ofEntries(Map.entry(6, "AUTO_CLEANING_PAUSED"), Map.entry(8, "ROOM_CLEANING_PAUSED"),
+                Map.entry(11, "DOCKING_PAUSED"), Map.entry(18, "ZONE_DOCKING_PAUSED"), Map.entry(20, "CRUISING_PATH"),
+                Map.entry(27, "STATION_CLEANING"), Map.entry(30, "PET_FINDING"),
+                Map.entry(31, "AUTO_CLEANING_WASHING_PAUSED"), Map.entry(34, "PICKING_UP_ITEM"),
+                Map.entry(38, "REMOTE_PICKUP_IDENTIFYING"), Map.entry(41, "REMOTE_PICKUP_IN_PROGRESS"),
+                Map.entry(44, "PLACING_ITEM_PAUSED"))
+                .forEach((code, name) -> assertEquals(new StringType(name),
+                        DreameVacuumStatus.channelUpdates(Map.of("4/7", code)).get("task-status")));
+    }
+
+    @Test
+    void mapsCompletedChargingAndDryMopReturn() {
+        assertEquals(new StringType("CHARGING_COMPLETED"),
+                DreameVacuumStatus.channelUpdates(Map.of("3/2", 3)).get("charging-status"));
+        assertEquals(new StringType("RETURNING_FOR_DRY_MOP"),
+                DreameVacuumStatus.channelUpdates(Map.of("4/25", 7)).get("base-status"));
+    }
+
+    @Test
+    void mapsSegmentCleaningOperatingStatusToRoomCleaning() {
+        assertEquals(new StringType("ROOM_CLEANING"),
+                DreameVacuumStatus.channelUpdates(Map.of("4/1", 18)).get("operating-status"));
     }
 
     @Test
@@ -62,8 +118,8 @@ class DreameVacuumStatusTest {
         var updates = DreameVacuumStatus.channelUpdates(Map.of("2/1", 8, "4/1", 14));
         assertEquals(new StringType("DRYING"), updates.get("state"));
         assertEquals(new StringType("SLEEPING"), updates.get("operating-status"));
-        assertEquals(new StringType("UNKNOWN_14"), DreameVacuumStatus.channelUpdates(Map.of("2/1", 14)).get("state"));
-        assertEquals(new StringType("UNKNOWN_8"),
+        assertEquals(new StringType("UPGRADING"), DreameVacuumStatus.channelUpdates(Map.of("2/1", 14)).get("state"));
+        assertEquals(new StringType("FCT"),
                 DreameVacuumStatus.channelUpdates(Map.of("4/1", 8)).get("operating-status"));
     }
 
@@ -120,8 +176,6 @@ class DreameVacuumStatusTest {
     void mapsObservedMopSessionStates() {
         Map.of(9, "WASHING", 12, "SWEEPING_AND_MOPPING", 20, "CLEAN_ADD_WATER").forEach((code, name) -> {
             assertEquals(new StringType(name), DreameVacuumStatus.channelUpdates(Map.of("2/1", code)).get("state"));
-            assertEquals(new StringType("UNKNOWN_" + code),
-                    DreameVacuumStatus.channelUpdates(Map.of("4/1", code)).get("operating-status"));
         });
     }
 
@@ -129,8 +183,8 @@ class DreameVacuumStatusTest {
     void mapsCleaningProgressModesAndBaseStatus() {
         var updates = DreameVacuumStatus
                 .channelUpdates(Map.of("4/2", 37, "4/3", 82, "4/4", 3, "4/5", 2, "4/7", 3, "4/23", 2, "4/25", 1));
-        assertEquals(new DecimalType(37), updates.get("cleaning-time"));
-        assertEquals(new DecimalType(82), updates.get("cleaned-area"));
+        assertEquals(new QuantityType<>(37, Units.MINUTE), updates.get("cleaning-time"));
+        assertEquals(new QuantityType<>(82, SIUnits.SQUARE_METRE), updates.get("cleaned-area"));
         assertEquals(new StringType("TURBO"), updates.get("suction-level"));
         assertEquals(new StringType("MEDIUM"), updates.get("water-volume"));
         assertEquals(new StringType("ROOM_CLEANING"), updates.get("task-status"));
@@ -178,21 +232,21 @@ class DreameVacuumStatusTest {
                 Map.entry("16/1", 50), Map.entry("16/2", 30), Map.entry("18/1", 40), Map.entry("18/2", 90),
                 Map.entry("20/1", 30), Map.entry("20/2", 20), Map.entry("12/2", 1234), Map.entry("12/3", 42),
                 Map.entry("12/4", 5678)));
-        assertEquals(new DecimalType(240), updates.get("main-brush-time-left"));
-        assertEquals(new DecimalType(80), updates.get("main-brush-left"));
-        assertEquals(new DecimalType(120), updates.get("side-brush-time-left"));
-        assertEquals(new DecimalType(70), updates.get("side-brush-left"));
-        assertEquals(new DecimalType(60), updates.get("filter-left"));
-        assertEquals(new DecimalType(180), updates.get("filter-time-left"));
-        assertEquals(new DecimalType(50), updates.get("sensor-dirty-left"));
-        assertEquals(new DecimalType(30), updates.get("sensor-dirty-time-left"));
-        assertEquals(new DecimalType(40), updates.get("mop-pad-left"));
-        assertEquals(new DecimalType(90), updates.get("mop-pad-time-left"));
-        assertEquals(new DecimalType(30), updates.get("detergent-left"));
-        assertEquals(new DecimalType(20), updates.get("detergent-time-left"));
-        assertEquals(new DecimalType(1234), updates.get("total-cleaning-time"));
+        assertEquals(new QuantityType<>(240, Units.HOUR), updates.get("main-brush-time-left"));
+        assertEquals(new QuantityType<>(80, Units.PERCENT), updates.get("main-brush-left"));
+        assertEquals(new QuantityType<>(120, Units.HOUR), updates.get("side-brush-time-left"));
+        assertEquals(new QuantityType<>(70, Units.PERCENT), updates.get("side-brush-left"));
+        assertEquals(new QuantityType<>(60, Units.PERCENT), updates.get("filter-left"));
+        assertEquals(new QuantityType<>(180, Units.HOUR), updates.get("filter-time-left"));
+        assertEquals(new QuantityType<>(50, Units.PERCENT), updates.get("sensor-dirty-left"));
+        assertEquals(new QuantityType<>(30, Units.HOUR), updates.get("sensor-dirty-time-left"));
+        assertEquals(new QuantityType<>(40, Units.PERCENT), updates.get("mop-pad-left"));
+        assertEquals(new QuantityType<>(90, Units.HOUR), updates.get("mop-pad-time-left"));
+        assertEquals(new QuantityType<>(30, Units.PERCENT), updates.get("detergent-left"));
+        assertEquals(new QuantityType<>(20, Units.DAY), updates.get("detergent-time-left"));
+        assertEquals(new QuantityType<>(1234, Units.MINUTE), updates.get("total-cleaning-time"));
         assertEquals(new DecimalType(42), updates.get("cleaning-count"));
-        assertEquals(new DecimalType(5678), updates.get("total-cleaned-area"));
+        assertEquals(new QuantityType<>(5678, SIUnits.SQUARE_METRE), updates.get("total-cleaned-area"));
         assertEquals(15, updates.size());
     }
 }

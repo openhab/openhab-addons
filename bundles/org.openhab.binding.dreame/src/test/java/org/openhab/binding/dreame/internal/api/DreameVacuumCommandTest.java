@@ -366,7 +366,7 @@ class DreameVacuumCommandTest {
                 { 7, 4, 4 }, { 8, 4, 5 }, { 9, 4, 7 }, { 10, 4, 23 }, { 11, 4, 25 }, { 12, 4, 40 }, { 13, 4, 50 },
                 { 14, 9, 1 }, { 15, 9, 2 }, { 16, 10, 1 }, { 17, 10, 2 }, { 18, 11, 1 }, { 19, 11, 2 }, { 20, 12, 2 },
                 { 21, 12, 3 }, { 22, 12, 4 }, { 23, 16, 1 }, { 24, 16, 2 }, { 25, 18, 1 }, { 26, 18, 2 }, { 27, 20, 1 },
-                { 28, 20, 2 } };
+                { 28, 20, 2 }, { 29, 15, 3 } };
         assertEquals(expected.length, parameters.size());
         for (int i = 0; i < expected.length; i++) {
             var parameter = parameters.get(i).getAsJsonObject();

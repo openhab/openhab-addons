@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.dreame.internal.api;
 
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -83,7 +84,8 @@ public class DreameAuthenticationService {
             if (refreshToken.isBlank()) {
                 throw new DreameCloudException(cloudService.label() + " access token expired");
             }
-            authenticate("platform=IOS&scope=all&grant_type=refresh_token&refresh_token=" + refreshToken, requester);
+            authenticate("platform=IOS&scope=all&grant_type=refresh_token&refresh_token=" + formEncode(refreshToken),
+                    requester);
         }
     }
 
@@ -95,7 +97,7 @@ public class DreameAuthenticationService {
         }
         accessToken = token;
         userId = defaultIfBlank(stringValue(response, "uid"), userId);
-        refreshToken = stringValue(response, "refresh_token");
+        refreshToken = defaultIfBlank(stringValue(response, "refresh_token"), refreshToken);
         tenantId = defaultIfBlank(stringValue(response, "tenant_id"), tenantId);
         country = cloudRegion(defaultIfBlank(stringValue(response, "region"), country));
         long expiresIn = response.has("expires_in") ? response.get("expires_in").getAsLong() : 3600;
@@ -137,9 +139,9 @@ public class DreameAuthenticationService {
     static String createPasswordRequestBody(String username, String password, String countryCode)
             throws DreameCloudException {
         String location = countryCode.isBlank() ? ""
-                : "&country=" + countryCode.toUpperCase(Locale.ROOT) + "&lang=" + countryCode;
-        return "platform=IOS&scope=all&grant_type=password&username=" + username + "&password="
-                + md5(password + PASSWORD_SALT) + "&type=account" + location;
+                : "&country=" + formEncode(countryCode.toUpperCase(Locale.ROOT)) + "&lang=" + formEncode(countryCode);
+        return "platform=IOS&scope=all&grant_type=password&username=" + formEncode(username) + "&password="
+                + formEncode(md5(password + PASSWORD_SALT)) + "&type=account" + location;
     }
 
     static String cloudRegion(String country) throws DreameCloudException {
@@ -168,6 +170,10 @@ public class DreameAuthenticationService {
         } catch (NoSuchAlgorithmException e) {
             throw new DreameCloudException("MD5 is unavailable", e);
         }
+    }
+
+    private static String formEncode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     private static String stringValue(JsonObject object, String name) {

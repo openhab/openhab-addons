@@ -1,6 +1,7 @@
 # Dreame Binding
 
-This binding integrates Dreame and MOVA robotic lawn mowers with openHAB through the Dreamehome or MOVAhome cloud.
+This binding integrates supported Dreame robotic vacuums and Dreame or MOVA robotic lawn mowers with openHAB through
+the Dreamehome or MOVAhome cloud.
 It uses the selected cloud service for authentication, discovery, commands, periodic status polling and MQTT live updates.
 
 > **Development status:** The Dreame A1 Pro 2000 (`dreame.mower.g2540d`) has been tested with firmware `4.3.6_0623` in the European cloud region, including the `start`, `pause`, `stop` and `dock` commands.
@@ -17,10 +18,11 @@ The binding recognizes model identifiers in the `dreame.vacuum.*` family as vacu
 Discovery of the L50 Ultra Pro (`dreame.vacuum.r9445d`) has been confirmed by a community tester.
 MQTT subscription and reception during cleaning, pause and return-to-dock have also been confirmed.
 Cleaning, pause, return-to-dock and charging codes have been correlated with a community test on this model.
-Discovery offers a separate `vacuum` Thing in the inbox. The tested L50 Ultra Pro exposes the channels below.
-Only `dreame.vacuum.r9445d` opens a read-only MQTT subscription, using the existing account credentials and TLS settings.
-Other vacuum candidates remain discovery-only.
-A matched Thing starts as `UNKNOWN` until valid device status arrives; discovery-only models remain `UNKNOWN`.
+Discovery offers a separate `vacuum` Thing in the inbox. Models with a protocol mapping in the
+[Home Assistant Dreame integration](https://github.com/foXaCe/dreame-vacuum/blob/main/docs/supported_devices.md)
+use the common Dreame property and action mappings and open an MQTT subscription with the existing account credentials
+and TLS settings. Other vacuum candidates remain visible in discovery, but their Thing reports that no verified protocol mapping exists.
+A supported Thing starts as `UNKNOWN` until valid device status arrives.
 Mower Things continue to use their existing discovery, commands and MQTT processing.
 
 For discovery diagnostics, enable TRACE for `org.openhab.binding.dreame.internal.handler.DreameVacuumHandler`,
@@ -30,7 +32,7 @@ owner and broker metadata are present. It omits their values, device IDs, names,
 The shared HTTP transport also omits device-list response bodies, including unknown fields and embedded JSON.
 The same handler logger emits `Vacuum MQTT diagnostics` when the subscription succeeds, fails, or receives a message.
 Message summaries include known method names, numeric service/property addresses and value types.
-For `dreame.vacuum.r9445d` only, `properties_changed` also includes bounded integer values for these candidate fields:
+For mapped vacuum models, `properties_changed` also includes bounded integer values for these candidate fields:
 
 | Address (siid/piid) | Candidate meaning | Diagnostic value range |
 |--------------------|-------------------|------------------------|
@@ -46,11 +48,21 @@ For `dreame.vacuum.r9445d` only, `properties_changed` also includes bounded inte
 | `4/7` | Task status | 0–255 |
 | `4/23` | Cleaning mode | 0–255 |
 | `4/25` | Base status | 0–255 |
+| `4/40` | Drying time | 0–255 |
+| `9/1`, `9/2` | Main brush service time and percentage | 0–65535 / 0–100 |
+| `10/1`, `10/2` | Side brush service time and percentage | 0–65535 / 0–100 |
+| `11/1`, `11/2` | Filter percentage and service time | 0–100 / 0–65535 |
+| `12/2`–`12/4` | Lifetime cleaning statistics | 0–65535 |
+| `15/3` | Auto-empty availability | 0–255 |
+| `16/1`, `16/2` | Sensor service percentage and time | 0–100 / 0–65535 |
+| `18/1`, `18/2` | Mop-pad service percentage and time | 0–100 / 0–65535 |
+| `20/1`, `20/2` | Detergent percentage and time | 0–100 / 0–65535 |
 
-Addresses were cross-checked against the [Tasshack/dreame-vacuum property mapping](https://github.com/Tasshack/dreame-vacuum/blob/master/custom_components/dreame_vacuum/dreame/types.py).
+Addresses were cross-checked against the [Tasshack/dreame-vacuum property mapping](https://github.com/Tasshack/dreame-vacuum/blob/dev/custom_components/dreame_vacuum/dreame/types.py).
 The ranges are diagnostic limits, not declarations of supported enum values.
 Diagnostics retain raw numeric codes. Channels assign names to observed states using the reference mapping.
-String values (including numeric strings), arrays, objects, out-of-range numbers and failed property results are omitted.
+String values (including numeric strings), arrays, objects, out-of-range numbers and failed property results are omitted,
+except for the bounded `4/50` structured setting value used by CleanGenius and Cleaning Route.
 All other property values, unknown field names, raw payloads and MQTT topics remain excluded. Payloads over 64 KiB or 32 nesting levels are omitted;
 property summaries are limited to 32 entries per message.
 Subscription success confirms broker access only. A valid status push or property response sets the Thing to `ONLINE`.
@@ -58,71 +70,72 @@ Every 60 seconds the binding checks the subscription and refreshes account crede
 Failed connections are replaced, and changes to credentials cause the subscription to be recreated.
 Disabling the Thing or taking its bridge offline stops the subscription and retry task.
 
-The binding queries the supported status and setting properties on initialization and every 60 seconds through the cloud HTTP API.
+The binding queries the supported status and setting properties on initialization and at the configured
+`refreshInterval` through the cloud HTTP API (60 seconds by default).
 A failed query sets the Thing to `OFFLINE` unless a newer valid push arrived during that query; the next valid update restores `ONLINE`.
-A community test with build `202609241026` confirmed ONLINE status, all five values while idle (including the error code),
-successful periodic property queries, and continued operation of START, PAUSE and DOCK.
-Recovery after a connection interruption still requires explicit device-test confirmation.
+Community testing confirmed ONLINE status, periodic property queries, MQTT updates and continued operation of the
+supported commands and settings on the L50 Ultra Pro.
 Explicit control commands and setting changes also use the cloud HTTP API; MQTT remains subscription-only.
 
 ### Vacuum Channels
 
-| Channel | Item type | Meaning |
-|---------|-----------|---------|
-| `command` | String | Send a cleaning, dock or station command; retains the last acknowledged command |
-| `battery-level` | Number | Last reported battery percentage (0–100) |
-| `state` | String | Device state: `CLEANING`, `PAUSED`, `RETURNING`, `CHARGING`, `CHARGING_COMPLETED`, `AUTO_EMPTYING`, `DRYING` |
-| `operating-status` | String | Operating status: `CLEANING`, `PAUSED`, `RETURNING`, `CHARGING`, `SLEEPING` |
-| `charging-status` | String | `NOT_CHARGING`, `RETURNING`, `CHARGING` |
-| `error-code` | Number | Raw numeric error code; 0 was observed during normal cleaning |
-| `cleaning-time` | Number | Elapsed cleaning time in minutes |
-| `cleaned-area` | Number | Area cleaned during the current task in square metres |
-| `suction-level` | String | Read/write suction level: `QUIET`, `STANDARD`, `STRONG`, `TURBO` |
-| `water-volume` | String | Read/write water volume: `LOW`, `MEDIUM`, `HIGH` |
-| `task-status` | String | Current task, including automatic, room and zone cleaning |
-| `cleaning-mode` | String | Read/write mode: `SWEEPING`, `MOPPING`, `SWEEPING_AND_MOPPING` |
-| `clean-genius` | String | Read/write CleanGenius mode: `OFF`, `ROUTINE`, `DEEP` |
-| `cleaning-route` | String | Read/write cleaning route: `STANDARD`, `QUICK` |
-| `drying-time` | String | Read/write mop drying time: `2H`, `3H`, `4H` |
-| `main-brush-left` | Number | Main brush service life remaining in percent |
-| `main-brush-time-left` | Number | Main brush service time remaining in hours |
-| `side-brush-left` | Number | Side brush service life remaining in percent |
-| `side-brush-time-left` | Number | Side brush service time remaining in hours |
-| `filter-left` | Number | Filter service life remaining in percent |
-| `filter-time-left` | Number | Filter service time remaining in hours |
-| `sensor-dirty-left` | Number | Remaining sensor-cleaning interval in percent |
-| `sensor-dirty-time-left` | Number | Remaining sensor-cleaning interval in hours |
-| `mop-pad-left` | Number | Mop pad service life remaining in percent |
-| `mop-pad-time-left` | Number | Mop pad service time remaining in hours |
-| `detergent-left` | Number | Detergent supply remaining in percent |
-| `detergent-time-left` | Number | Estimated detergent supply remaining in days |
-| `total-cleaning-time` | Number | Total cleaning time in minutes |
-| `cleaning-count` | Number | Total number of cleaning jobs |
-| `total-cleaned-area` | Number | Total cleaned area in square metres |
-| `base-status` | String | Mop washing and drying station state |
-| `rooms` | String | Room segment IDs and names from the current map, for example `3=Kitchen, 7=Living Room` |
-| `room-cleaning` | String | Write comma-separated room IDs, for example `3,7`, to clean those rooms once; retains the last acknowledged selection |
-| `map-png` | Image | Rendered PNG map for Basic UI and clients without reliable SVG support |
-| `map-svg` | Image | Rendered vector SVG map |
+| Channel | Item type | Access | Meaning |
+|---------|-----------|--------|---------|
+| `command` | String | RW | Send a cleaning, dock or station command; retains the last acknowledged command |
+| `battery-level` | Number:Dimensionless | R | Last reported battery percentage (0–100) |
+| `state` | String | R | Device state, including cleaning, mopping, docking, washing, drying and maintenance transitions |
+| `operating-status` | String | R | Operating status, including cleaning, mapping, remote-control and monitoring activities |
+| `charging-status` | String | R | `NOT_CHARGING`, `RETURNING`, `CHARGING`, `CHARGING_COMPLETED` |
+| `error-code` | Number | R | Raw numeric error code; 0 was observed during normal cleaning |
+| `cleaning-time` | Number:Time | R | Elapsed cleaning time in minutes |
+| `cleaned-area` | Number:Area | R | Area cleaned during the current task in square metres |
+| `suction-level` | String | RW | Suction level: `QUIET`, `STANDARD`, `STRONG`, `TURBO` |
+| `water-volume` | String | RW | Water volume: `LOW`, `MEDIUM`, `HIGH` |
+| `task-status` | String | R | Current task, including automatic, room and zone cleaning and their paused variants |
+| `cleaning-mode` | String | RW | Cleaning mode: `SWEEPING`, `MOPPING`, `SWEEPING_AND_MOPPING` |
+| `clean-genius` | String | RW | CleanGenius mode: `OFF`, `ROUTINE`, `DEEP` |
+| `cleaning-route` | String | RW | Cleaning route: `STANDARD`, `QUICK` |
+| `drying-time` | String | RW | Mop drying time: `2H`, `3H`, `4H` |
+| `main-brush-left` | Number:Dimensionless | R | Main brush service life remaining in percent |
+| `main-brush-time-left` | Number:Time | R | Main brush service time remaining in hours |
+| `side-brush-left` | Number:Dimensionless | R | Side brush service life remaining in percent |
+| `side-brush-time-left` | Number:Time | R | Side brush service time remaining in hours |
+| `filter-left` | Number:Dimensionless | R | Filter service life remaining in percent |
+| `filter-time-left` | Number:Time | R | Filter service time remaining in hours |
+| `sensor-dirty-left` | Number:Dimensionless | R | Remaining sensor-cleaning interval in percent |
+| `sensor-dirty-time-left` | Number:Time | R | Remaining sensor-cleaning interval in hours |
+| `mop-pad-left` | Number:Dimensionless | R | Mop pad service life remaining in percent |
+| `mop-pad-time-left` | Number:Time | R | Mop pad service time remaining in hours |
+| `detergent-left` | Number:Dimensionless | R | Detergent supply remaining in percent |
+| `detergent-time-left` | Number:Time | R | Estimated detergent supply remaining in days |
+| `total-cleaning-time` | Number:Time | R | Total cleaning time in minutes |
+| `cleaning-count` | Number | R | Total number of cleaning jobs |
+| `total-cleaned-area` | Number:Area | R | Total cleaned area in square metres |
+| `base-status` | String | R | Mop washing and drying station state |
+| `rooms` | String | R | Room segment IDs and names from the current map, for example `3=Kitchen, 7=Living Room` |
+| `room-cleaning` | String | RW | Comma-separated room IDs, for example `3,7`; retains the last acknowledged selection |
+| `map-png` | Image | R | Rendered PNG map for Basic UI and clients without reliable SVG support |
+| `map-svg` | Image | R | Rendered vector SVG map |
 
 Unknown state codes are preserved as `UNKNOWN_<code>`.
-State codes 13 and 22 follow the [reference state mapping](https://github.com/Tasshack/dreame-vacuum/blob/dev/custom_components/dreame_vacuum/dreame/types.py).
-The tester confirmed auto-emptying for code 22 after docking.
-Newly observed state code 8 and operating-status code 14 are named `DRYING` and `SLEEPING` according to the reference mapping;
-these describe the states before START, followed by `CLEANING` in both channels.
+Device-state codes 19 and above differ between older and newer Dreame protocol variants. The binding names the values
+confirmed for the L50 protocol and preserves every other value as `UNKNOWN_<code>`. State codes 13 and 22 follow the
+[reference state mapping](https://github.com/Tasshack/dreame-vacuum/blob/dev/custom_components/dreame_vacuum/dreame/types.py),
+and community testing confirmed auto-emptying for code 22 after docking.
 Values are updated independently as MQTT properties or query results arrive; missing or failed properties do not overwrite other channels.
 A query does not overwrite a newer push received for the same channel while the query was running.
 Channels remain `UNDEF` until their first valid update and are cleared when the subscription is replaced or the Thing/bridge is stopped.
 Channels show the last received values and retain them if a property query fails.
 `REFRESH` republishes cached values only and sends no device request.
-Other vacuum models have no status updates or commands yet.
+Properties unavailable on a particular model remain `UNDEF`; a failed optional property does not prevent other status updates.
+Maintenance, consumable and lifetime-statistics channels are marked as advanced in the Thing description.
 
 ### Vacuum Commands
 
 The `command` channel accepts `START`, `PAUSE`, `DOCK`, `STOP`, `LOCATE`, `AUTO_EMPTY`, `WASH_MOPS`,
-`PAUSE_WASHING`, `START_DRYING` and `STOP_DRYING` for `dreame.vacuum.r9445d` only.
+`PAUSE_WASHING`, `START_DRYING` and `STOP_DRYING` for mapped vacuum models.
 The action and station-input mappings follow the
-[Dreame vacuum reference implementation](https://github.com/Tasshack/dreame-vacuum/blob/dev/custom_components/dreame_vacuum/dreame/types.py).
+[Dreame vacuum reference implementation](https://github.com/foXaCe/dreame-vacuum/blob/main/custom_components/dreame_vacuum/dreame/types_properties.py).
 The commands and writable setting channels have been exercised in community testing on the L50 Ultra Pro.
 Room cleaning uses the most recently reported suction and water settings and falls back to `STANDARD` and `MEDIUM`
 until those properties have been received. Room IDs are the numeric segment identifiers from the current map.
@@ -154,7 +167,7 @@ with physical mowers.
 ## Discovery
 
 First add an account bridge with the same credentials, country and cloud service used in the Dreamehome or MOVAhome app.
-After the bridge becomes online, mower Things are added to the inbox automatically.
+After the bridge becomes online, supported mower and vacuum Things are added to the inbox automatically.
 A manual inbox scan can be used to repeat discovery.
 
 ## Thing Configuration
@@ -167,9 +180,11 @@ A manual inbox scan can be used to repeat discovery.
 | `account` | `country`         | yes      | `de`    | Two-letter account country code                      |
 | `mower`   | `deviceId`        | yes      | N/A     | Cloud device identifier, normally discovered         |
 | `mower`   | `refreshInterval` | no       | `30`    | HTTPS fallback polling interval in seconds            |
+| `vacuum`  | `deviceId`        | yes      | N/A     | Cloud device identifier, normally discovered         |
+| `vacuum`  | `refreshInterval` | no       | `60`    | HTTPS fallback polling interval in seconds            |
 
 European country codes such as `de`, `fr` or `nl` are routed to the selected service's European cloud.
-The minimum refresh interval is 15 seconds.
+The minimum refresh interval is 15 seconds. MQTT continues to deliver immediate updates independently of this interval.
 
 ## Channels
 
@@ -242,18 +257,19 @@ It is `UNDEF` for the MOVA 1000 (`mova.mower.g2405c`), which uses a mechanical c
 ```java
 Bridge dreame:account:home "Dreamehome" [ cloudService="dreamehome", username="name@example.com", password="secret", country="de" ] {
     Thing mower a1pro "Dreame A1 Pro" [ deviceId="123456789", refreshInterval=30 ]
+    Thing vacuum l50 "Dreame L50 Ultra Pro" [ deviceId="987654321", refreshInterval=60 ]
 }
 ```
 
 The device ID is sensitive account data.
 Prefer inbox discovery instead of copying it into a text configuration.
 
-### Item Configuration
+### Mower Item Configuration
 
 ```java
 String Dreame_Command "Command" { channel="dreame:mower:home:a1pro:command" }
 String Dreame_State "State [%s]" { channel="dreame:mower:home:a1pro:state" }
-Number Dreame_Battery "Battery [%.0f %%]" { channel="dreame:mower:home:a1pro:battery-level" }
+Number:Dimensionless Dreame_Battery "Battery [%.0f %%]" { channel="dreame:mower:home:a1pro:battery-level" }
 Number:Dimensionless Dreame_Progress "Progress [%.2f %%]" { channel="dreame:mower:home:a1pro:mowing-progress" }
 Number:Area Dreame_Area "Mowed [%.2f %unit%]" { channel="dreame:mower:home:a1pro:current-mowed-area" }
 String Dreame_Docking "Docking [%s]" { channel="dreame:mower:home:a1pro:docking-state" }
@@ -273,6 +289,64 @@ Dreame_Command.sendCommand("pause")
 Dreame_Command.sendCommand("dock")
 Dreame_ZoneMowing.sendCommand("1")
 Dreame_CuttingHeight.sendCommand(4.5)
+```
+
+### Vacuum Item Configuration
+
+```java
+String Vacuum_Command "Vacuum Command [%s]" { channel="dreame:vacuum:home:l50:command" }
+Number:Dimensionless Vacuum_Battery "Vacuum Battery [%.0f %%]" { channel="dreame:vacuum:home:l50:battery-level" }
+String Vacuum_State "Vacuum State [%s]" { channel="dreame:vacuum:home:l50:state" }
+String Vacuum_OperatingStatus "Operating Status [%s]" { channel="dreame:vacuum:home:l50:operating-status" }
+String Vacuum_ChargingStatus "Charging Status [%s]" { channel="dreame:vacuum:home:l50:charging-status" }
+Number Vacuum_ErrorCode "Vacuum Error [%d]" { channel="dreame:vacuum:home:l50:error-code" }
+Number:Time Vacuum_CleaningTime "Cleaning Time [%.0f %unit%]" { channel="dreame:vacuum:home:l50:cleaning-time" }
+Number:Area Vacuum_CleanedArea "Cleaned Area [%.0f %unit%]" { channel="dreame:vacuum:home:l50:cleaned-area" }
+String Vacuum_TaskStatus "Task Status [%s]" { channel="dreame:vacuum:home:l50:task-status" }
+String Vacuum_BaseStatus "Base Status [%s]" { channel="dreame:vacuum:home:l50:base-status" }
+
+String Vacuum_SuctionLevel "Suction Level [%s]" { channel="dreame:vacuum:home:l50:suction-level" }
+String Vacuum_WaterVolume "Water Volume [%s]" { channel="dreame:vacuum:home:l50:water-volume" }
+String Vacuum_CleaningMode "Cleaning Mode [%s]" { channel="dreame:vacuum:home:l50:cleaning-mode" }
+String Vacuum_CleanGenius "CleanGenius [%s]" { channel="dreame:vacuum:home:l50:clean-genius" }
+String Vacuum_CleaningRoute "Cleaning Route [%s]" { channel="dreame:vacuum:home:l50:cleaning-route" }
+String Vacuum_DryingTime "Drying Time [%s]" { channel="dreame:vacuum:home:l50:drying-time" }
+
+String Vacuum_Rooms "Rooms [%s]" { channel="dreame:vacuum:home:l50:rooms" }
+String Vacuum_RoomCleaning "Room Cleaning [%s]" { channel="dreame:vacuum:home:l50:room-cleaning" }
+Image Vacuum_MapPng "Vacuum Map (PNG)" { channel="dreame:vacuum:home:l50:map-png" }
+Image Vacuum_MapSvg "Vacuum Map (SVG)" { channel="dreame:vacuum:home:l50:map-svg" }
+
+Number:Dimensionless Vacuum_MainBrush "Main Brush [%.0f %%]" { channel="dreame:vacuum:home:l50:main-brush-left" }
+Number:Dimensionless Vacuum_SideBrush "Side Brush [%.0f %%]" { channel="dreame:vacuum:home:l50:side-brush-left" }
+Number:Dimensionless Vacuum_Filter "Filter [%.0f %%]" { channel="dreame:vacuum:home:l50:filter-left" }
+Number:Dimensionless Vacuum_MopPads "Mop Pads [%.0f %%]" { channel="dreame:vacuum:home:l50:mop-pad-left" }
+Number:Time Vacuum_TotalCleaningTime "Total Cleaning Time [%.0f %unit%]" { channel="dreame:vacuum:home:l50:total-cleaning-time" }
+Number Vacuum_CleaningCount "Cleaning Count [%.0f]" { channel="dreame:vacuum:home:l50:cleaning-count" }
+Number:Area Vacuum_TotalCleanedArea "Total Cleaned Area [%.0f %unit%]" { channel="dreame:vacuum:home:l50:total-cleaned-area" }
+```
+
+Use the numeric segment IDs shown by `Vacuum_Rooms` for room cleaning. The PNG map is suitable for Basic UI;
+clients with reliable SVG support can use the SVG channel.
+
+Example vacuum commands and settings:
+
+```java
+Vacuum_Command.sendCommand("START")
+Vacuum_Command.sendCommand("PAUSE")
+Vacuum_Command.sendCommand("DOCK")
+Vacuum_Command.sendCommand("AUTO_EMPTY")
+Vacuum_Command.sendCommand("WASH_MOPS")
+Vacuum_Command.sendCommand("START_DRYING")
+
+Vacuum_SuctionLevel.sendCommand("TURBO")
+Vacuum_WaterVolume.sendCommand("MEDIUM")
+Vacuum_CleaningMode.sendCommand("SWEEPING_AND_MOPPING")
+Vacuum_CleanGenius.sendCommand("ROUTINE")
+Vacuum_CleaningRoute.sendCommand("QUICK")
+Vacuum_DryingTime.sendCommand("3H")
+
+Vacuum_RoomCleaning.sendCommand("3,7")
 ```
 
 ## Communication
@@ -310,6 +384,8 @@ If a newly added channel does not appear after updating a development JAR, disab
 
 - Mower models other than `dreame.mower.g2540d`, `mova.mower.g2405c`, `mova.mower.g2529d` and
   `mova.mower.g2584d` still require physical-device testing.
+- Vacuum discovery, status, commands, settings and map rendering have been physically tested with the L50 Ultra Pro;
+  other mapped vacuum models remain untested with this binding.
 - ¹ The active map can be selected on MOVA mowers. This selects the map used by the openHAB cloud session; other MOVAhome app sessions may continue to display another map.
 - Lifetime statistics and do not disturb are not exposed by all mower firmware versions.
 - ² On the MOVA LiDAX Ultra 1600 AWD (`mova.mower.g2584d`), do not disturb is currently read-only: MQTT reports its
@@ -319,6 +395,8 @@ If a newly added channel does not appear after updating a development JAR, disab
 - `do-not-disturb-active` is calculated from the enabled flag and time window reported by the mower, using the local
   time zone of the openHAB server. Time windows crossing midnight are supported.
 - Map details depend on the geometry and metadata supplied by the mower firmware.
+- Vacuum room names depend on saved-map metadata supplied by the vacuum cloud service. The map and numeric room IDs
+  remain available when that metadata is absent.
 - Position values use the native Dreame map coordinate system and are not geographic coordinates.
 - The integration depends on private Dreamehome and MOVAhome cloud APIs and may require updates if they change.
 
@@ -326,6 +404,9 @@ If a newly added channel does not appear after updating a development JAR, disab
 
 Protocol behavior was compared with the MIT-licensed [nicolasglg/dreame-mower-a1-pro](https://github.com/nicolasglg/dreame-mower-a1-pro) project and the mower protocol documentation in [TA2k/ioBroker.dreame](https://github.com/TA2k/ioBroker.dreame/blob/main/docs/mower-protocol.md).
 No source code from these projects is copied into this binding.
+The vacuum model identifiers are derived from the MIT-licensed
+[foXaCe/dreame-vacuum device database](https://github.com/foXaCe/dreame-vacuum/tree/d32732d1175d9b3e90e5f8f38651370effea8fe0),
+as documented in the binding's `NOTICE` file.
 
 The latest L50 test confirms `DRYING` and `SLEEPING` and observes state codes 9, 12 and 20 during a mop session.
 These map to `WASHING`, `SWEEPING_AND_MOPPING` and `CLEAN_ADD_WATER`, following the reference state enumeration.
@@ -339,7 +420,8 @@ The preview uses the map's native orientation rather than the app's rotation set
 The binding requests a complete I frame through the device action and then applies sequential MQTT P frames.
 If a partial frame is missing, belongs to another map or uses an unsupported V3 cover/diff update, the binding discards it and requests a new complete frame during the next refresh.
 Until a supported complete frame arrives, the channels remain undefined; reconnecting clears the previous image.
-Encrypted map values and cloud object downloads are not supported.
+Encrypted map values are not supported.
+Cloud map objects are downloaded only from validated Dreame or Alibaba Cloud HTTPS hosts.
 Malformed maps and maps exceeding the 1 MiB decompressed data or 2048-pixel per-axis limits are ignored.
 
 The `map-png` and `map-svg` Image channels provide the same map as PNG and vector SVG respectively.

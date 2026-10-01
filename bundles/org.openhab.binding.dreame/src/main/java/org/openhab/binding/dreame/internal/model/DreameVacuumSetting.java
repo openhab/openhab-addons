@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Writable L50 cleaning properties and their protocol values.
+ * Writable common Dreame vacuum properties and their protocol values.
  *
  * @author Ronny Grun - Initial contribution
  */
@@ -61,6 +61,10 @@ public enum DreameVacuumSetting {
 
     public int propertyId() {
         return propertyId;
+    }
+
+    public String address() {
+        return serviceId + "/" + propertyId;
     }
 
     public @Nullable String autoSwitchKey() {

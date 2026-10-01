@@ -27,6 +27,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dreame.internal.model.DreameDevice;
 
+import com.google.gson.JsonParser;
+
 /**
  * Verifies that vacuum diagnostics expose only approved metadata.
  *
@@ -34,6 +36,15 @@ import org.openhab.binding.dreame.internal.model.DreameDevice;
  */
 @NonNullByDefault
 class DreameVacuumDiagnosticsTest {
+    @Test
+    void acceptsDryingTimeAndAutoEmptyAvailabilityProperties() {
+        var values = JsonParser.parseString("[{\"siid\":4,\"piid\":40,\"code\":0,\"value\":2},"
+                + "{\"siid\":15,\"piid\":3,\"code\":0,\"value\":1}]").getAsJsonArray();
+
+        assertEquals(2, DreameVacuumDiagnostics.readPropertyResults(values).get("4/40"));
+        assertEquals(1, DreameVacuumDiagnostics.readPropertyResults(values).get("15/3"));
+    }
+
     @Test
     void omitsIdentifiersNamesFirmwareBrokerAndEmbeddedSecrets() {
         DreameDevice device = new DreameDevice("secret-id", "Private room", "dreame.vacuum.example", "secret-version",
