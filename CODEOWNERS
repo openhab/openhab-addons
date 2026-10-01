@@ -267,6 +267,7 @@
 /bundles/org.openhab.binding.modbus.sungrow/ @soenkekueper
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig
 /bundles/org.openhab.binding.monopriceaudio/ @mlobstein
+/bundles/org.openhab.binding.motionblinds/ @san4esmc
 /bundles/org.openhab.binding.mpd/ @stefanroellin
 /bundles/org.openhab.binding.mqtt/ @ccutrer
 /bundles/org.openhab.binding.mqtt.awtrixlight/ @DrRSatzteil

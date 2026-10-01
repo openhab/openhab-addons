@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="motionblinds"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="wifi-motor">
+		<label>Wi-Fi Motor</label>
+		<description>Blind, curtain or gate motor that is directly connected to Wi-Fi, controlled with the Connector or
+			Motion
+			Blinds app</description>
+		<category>Blinds</category>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
+
+		<channels>
+			<channel id="position" typeId="position"/>
+			<channel id="tilt" typeId="tilt"/>
+			<channel id="angle" typeId="angle"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Motion Blinds / Dooya</property>
+		</properties>
+		<representation-property>macAddress</representation-property>
+
+		<config-description>
+			<parameter name="macAddress" type="text" required="true">
+				<label>MAC Address</label>
+				<description>MAC address of the motor, as found by discovery (12 hex digits).</description>
+			</parameter>
+			<parameter name="key" type="text" required="true">
+				<context>password</context>
+				<label>Key</label>
+				<description>16 character key from the app, including dashes. In the Connector or Motion Blinds app go to
+					Settings -
+					About and tap the screen 5 times.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="30">
+				<label>Refresh Interval</label>
+				<description>Interval for polling the status. The motor also pushes its status while moving and with a
+					heartbeat
+					about once a minute.</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tiltTravel" type="decimal" unit="%" min="0.5" max="20" step="0.1">
+				<label>Tilt Travel</label>
+				<description>Travel of the blind that turns the slats from closed on one side to closed on the other side.
+					Increase
+					it if tilt steps at mid-height turn the slats too far, decrease it if they do not turn far enough.</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="tiltSlack" type="decimal" unit="%" min="0" max="10" step="0.1">
+				<label>Tilt Slack</label>
+				<description>Travel that does not turn the slats when the blind starts to move up from fully lowered, until the
+					bottom rail lifts off. Increase it if tilt 50% from fully lowered turns the slats past open (bottom side
+					visible),
+					decrease it if they stay closed (top side visible).</description>
+				<default>2</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="position">
+		<item-type>Rollershutter</item-type>
+		<label>Position</label>
+		<description>Position of the blind: 0% is fully open, 100% is fully closed</description>
+		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="tilt">
+		<item-type>Dimmer</item-type>
+		<label>Tilt</label>
+		<description>Tilt of the slats at the current height: 0% is closed with the bottom side visible, 50% is open, 100% is
+			closed with the top side visible</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="angle">
+		<item-type>Number:Angle</item-type>
+		<label>Motor Angle</label>
+		<description>Slat angle as estimated by the motor (0-180°). The estimate drifts from the real slats when the blind
+			changes direction; use the tilt channel to control the slats.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
+		<state min="0" max="180" step="1" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="rssi">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>RSSI</label>
+		<description>Wi-Fi signal strength of the motor</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%d dBm"/>
+	</channel-type>
+</thing:thing-descriptions>
