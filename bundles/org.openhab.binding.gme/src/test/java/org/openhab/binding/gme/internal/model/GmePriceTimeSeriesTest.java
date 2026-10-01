@@ -43,6 +43,16 @@ class GmePriceTimeSeriesTest {
     }
 
     @Test
+    void buildsHalfHourlyTimeSeries() {
+        LocalDate date = LocalDate.of(2026, 9, 10);
+        TimeSeries series = build(date, GmeGranularity.PT30);
+
+        assertEquals(48, series.size());
+        assertEquals(date.atStartOfDay(ROME).toInstant(), series.getBegin());
+        assertEquals(date.plusDays(1).atStartOfDay(ROME).minusMinutes(30).toInstant(), series.getEnd());
+    }
+
+    @Test
     void buildsQuarterHourlyTimeSeries() {
         LocalDate date = LocalDate.of(2026, 9, 10);
         TimeSeries series = build(date, GmeGranularity.PT15);
