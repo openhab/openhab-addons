@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
@@ -106,6 +107,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     protected ChannelTypeRegistry channelTypeRegistry;
     protected BasicChannelTypeProvider basicChannelTypeProvider;
     private Map<String, Integer> customRefreshInterval = new HashMap<>();
+    private final Set<String> refreshedOnce = ConcurrentHashMap.newKeySet();
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
@@ -123,6 +125,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         isIdentified = false;
         refreshList = new ArrayList<>();
         refreshListCustomCommands = new HashMap<>();
+        refreshedOnce.clear();
     }
 
     @Override
@@ -130,6 +133,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         Command command = receivedCommand;
         deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
         if (command == RefreshType.REFRESH) {
+            // an explicit refresh request also re-reads channels that are normally read only once
+            refreshedOnce.remove(channelUID.getId());
             if (updateDataCache.isExpired()) {
                 logger.debug("Refreshing {}", channelUID);
                 updateDataCache.getValue();
@@ -330,6 +335,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     private boolean customRefreshIntervalCheck(MiIoBasicChannel miChannel) {
+        if (miChannel.getRefreshInterval() < 0) {
+            // read once: skip as long as it has not been read successfully since the last (re)initialization or refresh
+            return refreshedOnce.contains(miChannel.getChannel());
+        }
         if (miChannel.getRefreshInterval() > 1) {
             int iteration = customRefreshInterval.getOrDefault(miChannel.getChannel(), 0);
             if (iteration < 1) {
@@ -618,6 +627,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
             MiIoBasicChannel basicChannel = getChannel(param);
             updateChannel(basicChannel, param, val);
+            markReadOnce(basicChannel);
         }
     }
 
@@ -632,6 +642,16 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
             MiIoBasicChannel basicChannel = getChannel(param);
             updateChannel(basicChannel, param, val);
+            markReadOnce(basicChannel);
+        }
+    }
+
+    /**
+     * Registers that a channel that is read only once (negative refreshInterval) has been read successfully
+     */
+    private void markReadOnce(@Nullable MiIoBasicChannel basicChannel) {
+        if (basicChannel != null && basicChannel.getRefreshInterval() < 0) {
+            refreshedOnce.add(basicChannel.getChannel());
         }
     }
 
@@ -793,6 +813,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             }
                         }
                         cmds.remove(response.getId());
+                        // a response without result (e.g. a cloud error) does not count as read, so it is retried
+                        if (response.getResponse().has("result")) {
+                            markReadOnce(ch);
+                        }
                     } else {
                         logger.debug("Could not identify channel for {}. Device {} has {} commands in queue.",
                                 response.getMethod(), getThing().getUID(), cmds.size());
