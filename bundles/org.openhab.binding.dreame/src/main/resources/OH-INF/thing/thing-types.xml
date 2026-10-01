@@ -42,6 +42,7 @@
 		</supported-bridge-type-refs>
 		<label>Dreame Vacuum</label>
 		<description>Vacuum status, map and controls</description>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 		<channels>
 			<channel id="command" typeId="vacuum-command"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
@@ -83,6 +84,12 @@
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device ID</label>
 				<description>Device identifier reported by the cloud account</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="15">
+				<label>Refresh Interval</label>
+				<description>Interval between cloud status refreshes</description>
+				<default>60</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -209,22 +216,23 @@
 	</channel-type>
 
 	<channel-type id="vacuum-cleaning-time">
-		<item-type>Number</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Cleaning Time</label>
 		<description>Elapsed cleaning time reported by the vacuum in minutes</description>
-		<state readOnly="true" min="0" pattern="%d min"/>
+		<state readOnly="true" min="0" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="vacuum-cleaned-area">
-		<item-type>Number</item-type>
+		<item-type unitHint="m²">Number:Area</item-type>
 		<label>Cleaned Area</label>
 		<description>Area cleaned during the current task in square metres</description>
-		<state readOnly="true" min="0" pattern="%.0f m²"/>
+		<state readOnly="true" min="0" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="vacuum-suction-level">
 		<item-type>String</item-type>
 		<label>Suction Level</label>
+		<description>Configured vacuum suction level</description>
 		<state>
 			<options>
 				<option value="QUIET">Quiet</option>
@@ -239,6 +247,7 @@
 	<channel-type id="vacuum-water-volume">
 		<item-type>String</item-type>
 		<label>Water Volume</label>
+		<description>Configured mop water volume</description>
 		<state>
 			<options>
 				<option value="LOW">Low</option>
@@ -252,12 +261,14 @@
 	<channel-type id="vacuum-task-status">
 		<item-type>String</item-type>
 		<label>Task Status</label>
+		<description>Current cleaning task and paused state</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-cleaning-mode">
 		<item-type>String</item-type>
 		<label>Cleaning Mode</label>
+		<description>Configured sweeping and mopping mode</description>
 		<state>
 			<options>
 				<option value="SWEEPING">Sweeping</option>
@@ -271,12 +282,14 @@
 	<channel-type id="vacuum-base-status">
 		<item-type>String</item-type>
 		<label>Base Status</label>
+		<description>Current mop washing and drying station state</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-clean-genius">
 		<item-type>String</item-type>
 		<label>CleanGenius</label>
+		<description>Configured CleanGenius cleaning intensity</description>
 		<state>
 			<options>
 				<option value="OFF">Off</option>
@@ -290,6 +303,7 @@
 	<channel-type id="vacuum-cleaning-route">
 		<item-type>String</item-type>
 		<label>Cleaning Route</label>
+		<description>Configured standard or quick cleaning route</description>
 		<state>
 			<options>
 				<option value="STANDARD">Standard</option>
@@ -302,6 +316,7 @@
 	<channel-type id="vacuum-drying-time">
 		<item-type>String</item-type>
 		<label>Drying Time</label>
+		<description>Configured mop drying duration</description>
 		<state>
 			<options>
 				<option value="2H">2 Hours</option>
@@ -313,93 +328,108 @@
 	</channel-type>
 
 	<channel-type id="vacuum-main-brush-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Main Brush Remaining</label>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<description>Main brush service life remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-main-brush-time-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Main Brush Time Remaining</label>
-		<state pattern="%.0f h" readOnly="true"/>
+		<description>Main brush service time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-side-brush-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Side Brush Remaining</label>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<description>Side brush service life remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-side-brush-time-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Side Brush Time Remaining</label>
-		<state pattern="%.0f h" readOnly="true"/>
+		<description>Side brush service time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-filter-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Filter Remaining</label>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<description>Filter service life remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-filter-time-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Filter Time Remaining</label>
-		<state pattern="%.0f h" readOnly="true"/>
+		<description>Filter service time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-sensor-dirty-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Sensor Cleaning Remaining</label>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<description>Sensor cleaning interval remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-sensor-dirty-time-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Sensor Cleaning Time Remaining</label>
-		<state pattern="%.0f h" readOnly="true"/>
+		<description>Sensor cleaning time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-mop-pad-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Mop Pad Remaining</label>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<description>Mop pad service life remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-mop-pad-time-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Mop Pad Time Remaining</label>
-		<state pattern="%.0f h" readOnly="true"/>
+		<description>Mop pad service time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-detergent-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Detergent Remaining</label>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<description>Detergent supply remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-detergent-time-left" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="d">Number:Time</item-type>
 		<label>Detergent Time Remaining</label>
-		<state pattern="%.0f d" readOnly="true"/>
+		<description>Estimated detergent supply time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-total-cleaning-time" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Total Cleaning Time</label>
-		<state pattern="%.0f min" readOnly="true"/>
+		<description>Total cleaning time reported by the vacuum</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-cleaning-count" advanced="true">
 		<item-type>Number</item-type>
 		<label>Cleaning Count</label>
+		<description>Total number of cleaning jobs reported by the vacuum</description>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-total-cleaned-area" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="m²">Number:Area</item-type>
 		<label>Total Cleaned Area</label>
-		<state pattern="%.0f m²" readOnly="true"/>
+		<description>Total cleaned area reported by the vacuum</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vacuum-room-cleaning">

@@ -142,6 +142,31 @@ public class DreameVacuumMapStateTest {
     }
 
     @Test
+    void correlatesSavedRoomNamesBySegmentsWhenMapIdsDiffer() {
+        DreameVacuumMapState state = new DreameVacuumMapState();
+        assertEquals("1, 2",
+                Objects.requireNonNull(state.accept(frame(5, 10, 'I', 0, 0, 2, 1, new byte[] { 1, 2 }, "{}"))).rooms());
+        String saved = frame(1, 1, 'I', 0, 0, 2, 1, new byte[] { 1, 2 },
+                "{\"seg_inf\":{\"1\":{\"name\":\"S8O8Y2hl\"},\"2\":{\"name\":\"QmFk\"}}}");
+
+        DreameVacuumMapState.Images enriched = Objects
+                .requireNonNull(state.acceptMapList("{\"curr_id\":1,\"mapstr\":[{\"map\":\"" + saved + "\"}]}"));
+
+        assertEquals("1=Küche, 2=Bad", enriched.rooms());
+        assertTrue(state.diagnostic().startsWith("published-map-list/map=5/rooms=2"));
+    }
+
+    @Test
+    void doesNotCorrelateDifferentRoomSegmentsAcrossMapIds() {
+        DreameVacuumMapState state = new DreameVacuumMapState();
+        assertNotNull(state.accept(frame(5, 10, 'I', 0, 0, 1, 1, new byte[] { 2 }, "{}")));
+        String saved = frame(1, 1, 'I', 0, 0, 1, 1, new byte[] { 1 }, "{\"seg_inf\":{\"1\":{\"name\":\"S8O8Y2hl\"}}}");
+
+        assertNull(state.acceptMapList("{\"curr_id\":1,\"mapstr\":[{\"map\":\"" + saved + "\"}]}"));
+        assertTrue(state.diagnostic().startsWith("map-list-room-metadata-cached/map=1/rooms=1"));
+    }
+
+    @Test
     void rejectsMalformedAndOversizedInput() {
         DreameVacuumMapState state = new DreameVacuumMapState();
         assertNull(state.accept("not-base64"));

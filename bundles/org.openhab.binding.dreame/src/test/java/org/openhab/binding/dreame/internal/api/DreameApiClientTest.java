@@ -85,10 +85,10 @@ class DreameApiClientTest {
     @Test
     void passwordLoginBodyMatchesReferenceProtocol() throws DreameCloudException {
         assertEquals(
-                "platform=IOS&scope=all&grant_type=password&username=user@example.com&password=ab51518dc498dcac64b000f288be8ea6&type=account",
+                "platform=IOS&scope=all&grant_type=password&username=user%40example.com&password=ab51518dc498dcac64b000f288be8ea6&type=account",
                 DreameAuthenticationService.createPasswordRequestBody("user@example.com", "secret", ""));
         assertEquals(
-                "platform=IOS&scope=all&grant_type=password&username=user@example.com&password=ab51518dc498dcac64b000f288be8ea6&type=account&country=DE&lang=de",
+                "platform=IOS&scope=all&grant_type=password&username=user%40example.com&password=ab51518dc498dcac64b000f288be8ea6&type=account&country=DE&lang=de",
                 DreameAuthenticationService.createPasswordRequestBody("user@example.com", "secret", "de"));
     }
 

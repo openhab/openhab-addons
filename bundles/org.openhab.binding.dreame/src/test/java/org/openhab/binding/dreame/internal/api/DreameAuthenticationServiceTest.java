@@ -69,6 +69,44 @@ class DreameAuthenticationServiceTest {
     }
 
     @Test
+    void refreshKeepsExistingRefreshTokenWhenResponseOmitsReplacement() throws DreameCloudException {
+        DreameAuthenticationService authentication = new DreameAuthenticationService(CLOCK);
+        authentication.login("user", "secret", "eu", body -> JsonParser.parseString("""
+                {"access_token":"old","refresh_token":"refresh-old","expires_in":1,"region":"eu"}
+                """).getAsJsonObject());
+
+        authentication.ensureAuthenticated(body -> JsonParser.parseString("""
+                {"access_token":"new","expires_in":1,"region":"eu"}
+                """).getAsJsonObject());
+        authentication.ensureAuthenticated(body -> {
+            assertTrue(body.contains("refresh_token=refresh-old"));
+            return JsonParser.parseString("""
+                    {"access_token":"newer","expires_in":7200,"region":"eu"}
+                    """).getAsJsonObject();
+        });
+
+        assertEquals("newer", authentication.accessToken());
+    }
+
+    @Test
+    void formValuesAreUrlEncoded() throws DreameCloudException {
+        assertTrue(DreameAuthenticationService.createPasswordRequestBody("user+dreame@example.com", "secret", "de")
+                .contains("username=user%2Bdreame%40example.com"));
+
+        DreameAuthenticationService authentication = new DreameAuthenticationService(CLOCK);
+        authentication.login("user", "secret", "eu", body -> JsonParser.parseString("""
+                {"access_token":"old","refresh_token":"token+/=&","expires_in":1,"region":"eu"}
+                """).getAsJsonObject());
+
+        authentication.ensureAuthenticated(body -> {
+            assertTrue(body.contains("refresh_token=token%2B%2F%3D%26"));
+            return JsonParser.parseString("""
+                    {"access_token":"new","refresh_token":"new-token","expires_in":7200,"region":"eu"}
+                    """).getAsJsonObject();
+        });
+    }
+
+    @Test
     void logoutClearsAuthenticationState() throws DreameCloudException {
         DreameAuthenticationService authentication = new DreameAuthenticationService(CLOCK);
         authentication.login("user", "secret", "eu", body -> JsonParser.parseString("""

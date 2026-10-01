@@ -34,6 +34,7 @@ import org.openhab.binding.dreame.internal.model.DreameMqttConfiguration;
 import org.openhab.binding.dreame.internal.model.DreameProperty;
 import org.openhab.binding.dreame.internal.model.DreameStatus;
 import org.openhab.binding.dreame.internal.model.DreameVacuumAction;
+import org.openhab.binding.dreame.internal.model.DreameVacuumCapabilities;
 import org.openhab.binding.dreame.internal.model.DreameVacuumProperties;
 import org.openhab.binding.dreame.internal.model.DreameVacuumSetting;
 import org.openhab.binding.dreame.internal.util.DreameDiagnostics;
@@ -209,7 +210,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
     @Override
     public synchronized DreameVacuumProperties getVacuumProperties(DreameDevice device, BooleanSupplier isCurrent)
             throws DreameCloudException {
-        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+        if (!DreameVacuumCapabilities.isSupported(device)) {
             throw new DreameCloudException("Vacuum properties are not supported for this model");
         }
         // Correlation IDs and addresses follow DreameVacuumProperty in the vacuum reference implementation.
@@ -217,7 +218,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
                 { 6, 4, 3 }, { 7, 4, 4 }, { 8, 4, 5 }, { 9, 4, 7 }, { 10, 4, 23 }, { 11, 4, 25 }, { 12, 4, 40 },
                 { 13, 4, 50 }, { 14, 9, 1 }, { 15, 9, 2 }, { 16, 10, 1 }, { 17, 10, 2 }, { 18, 11, 1 }, { 19, 11, 2 },
                 { 20, 12, 2 }, { 21, 12, 3 }, { 22, 12, 4 }, { 23, 16, 1 }, { 24, 16, 2 }, { 25, 18, 1 }, { 26, 18, 2 },
-                { 27, 20, 1 }, { 28, 20, 2 } };
+                { 27, 20, 1 }, { 28, 20, 2 }, { 29, 15, 3 } };
         JsonArray parameters = new JsonArray();
         for (int[] property : properties) {
             JsonObject parameter = new JsonObject();
@@ -245,7 +246,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
     @Override
     public synchronized @Nullable String getVacuumMapListObjectName(DreameDevice device, BooleanSupplier isCurrent)
             throws DreameCloudException {
-        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+        if (!DreameVacuumCapabilities.isSupported(device)) {
             throw new DreameCloudException("Vacuum map list is not supported for this model");
         }
         JsonObject parameter = new JsonObject();
@@ -269,7 +270,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
     @Override
     public synchronized void callVacuumAction(DreameDevice device, DreameVacuumAction action, BooleanSupplier isCurrent)
             throws DreameCloudException {
-        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+        if (!DreameVacuumCapabilities.isSupported(device)) {
             throw new DreameCloudException("Vacuum commands are not supported for this model");
         }
         JsonObject parameters = new JsonObject();
@@ -304,7 +305,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
     @Override
     public synchronized void setVacuumSetting(DreameDevice device, DreameVacuumSetting setting, int value,
             BooleanSupplier isCurrent) throws DreameCloudException {
-        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+        if (!DreameVacuumCapabilities.isSupported(device)) {
             throw new DreameCloudException("Vacuum settings are not supported for this model");
         }
         if (!isCurrent.getAsBoolean()) {
@@ -350,7 +351,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
     @Override
     public synchronized void cleanVacuumRooms(DreameDevice device, List<Integer> roomIds, int suctionLevel,
             int waterVolume, BooleanSupplier isCurrent) throws DreameCloudException {
-        if (!"dreame.vacuum.r9445d".equals(device.model()) || roomIds.isEmpty() || roomIds.size() > 32) {
+        if (!DreameVacuumCapabilities.isSupported(device) || roomIds.isEmpty() || roomIds.size() > 32) {
             throw new DreameCloudException("Vacuum room cleaning is not supported for this request");
         }
         JsonArray selections = new JsonArray();
@@ -390,7 +391,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
     @Override
     public synchronized @Nullable String getVacuumMap(DreameDevice device, BooleanSupplier isCurrent)
             throws DreameCloudException {
-        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+        if (!DreameVacuumCapabilities.isSupported(device)) {
             throw new DreameCloudException("Vacuum maps are not supported for this model");
         }
         JsonObject frameRequest = new JsonObject();
@@ -449,7 +450,7 @@ public class DreameApiClient implements DreameMowerApi, DreameVacuumApi {
     @Override
     public synchronized String getVacuumMapList(DreameDevice device, String objectName, BooleanSupplier isCurrent)
             throws DreameCloudException {
-        if (!"dreame.vacuum.r9445d".equals(device.model())) {
+        if (!DreameVacuumCapabilities.isSupported(device)) {
             throw new DreameCloudException("Vacuum map lists are not supported for this model");
         }
         return downloadVacuumMap(device, objectName, isCurrent);

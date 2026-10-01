@@ -41,15 +41,17 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 
 /**
- * Prevents untested device families from opening vacuum MQTT subscriptions.
+ * Restricts vacuum MQTT subscriptions to models with a known protocol mapping.
  *
  * @author Ronny Grun - Initial contribution
  */
 @NonNullByDefault
 class DreameVacuumHandlerTest {
     @Test
-    void onlyConfirmedL50ModelEnablesMqttDiagnostics() {
+    void homeAssistantMappedModelsEnableMqttDiagnostics() {
         assertTrue(DreameVacuumHandler.supportsMqttDiagnostics(device("dreame.vacuum.r9445d")));
+        assertTrue(DreameVacuumHandler.supportsMqttDiagnostics(device("dreame.vacuum.r2205")));
+        assertTrue(DreameVacuumHandler.supportsMqttDiagnostics(device("dreame.vacuum.r9533a")));
         assertFalse(DreameVacuumHandler.supportsMqttDiagnostics(device("dreame.vacuum.other")));
         assertFalse(DreameVacuumHandler.supportsMqttDiagnostics(device("dreame.mower.g2540d")));
         assertFalse(DreameVacuumHandler.supportsMqttDiagnostics(device("mova.mower.g2584d")));
