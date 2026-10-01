@@ -47,6 +47,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
+import org.openhab.binding.miio.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -303,10 +304,10 @@ public class MiCloudConnector {
                         }
                     }
                 } else {
-                    logger.debug("Response missing result: '{}'", response);
+                    logger.debug("Response missing result: '{}'", Utils.sanitizeForLog(response));
                 }
             } else {
-                logger.debug("Response is not a json object: '{}'", response);
+                logger.debug("Response is not a json object: '{}'", Utils.sanitizeForLog(response));
             }
         } catch (MiCloudException e) {
             // loginFailedCounter is already managed by request() for network and authentication failures;
@@ -340,7 +341,7 @@ public class MiCloudConnector {
         String url = urlPart.trim();
         url = getApiUrl(country) + (url.startsWith("/app") ? url.substring(4) : url);
         String response = request(url, params);
-        logger.debug("Request to '{}' server '{}'. Response: '{}'", country, urlPart, response);
+        logger.debug("Request to '{}' server '{}'. Response: '{}'", country, urlPart, Utils.sanitizeForLog(response));
         return response;
     }
 

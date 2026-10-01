@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miio.internal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -65,5 +65,56 @@ public class UtilsTest {
         did = "cant parse";
         assertEquals("cant parse", Utils.toHEX(did));
         assertEquals("cant parse", Utils.fromHEX(did));
+    }
+
+    private static final String TOKEN = "17a8da0b48bd12902a495c8608eb8a73";
+
+    @Test
+    public void maskSecretsTest() {
+        String masked = Utils.obfuscateToken(TOKEN);
+        assertEquals("{\"did\":\"1\",\"token\":\"" + masked + "\",\"name\":\"Plug\"}",
+                Utils.maskSecrets("{\"did\":\"1\",\"token\":\"" + TOKEN + "\",\"name\":\"Plug\"}"));
+        // several members, different keys and spacing
+        assertEquals("{\"a\": {\"bindkey\" : \"" + masked + "\", \"ssecurity\":\"" + masked + "\"}}",
+                Utils.maskSecrets("{\"a\": {\"bindkey\" : \"" + TOKEN + "\", \"ssecurity\":\"" + TOKEN + "\"}}"));
+        assertEquals("{\"serviceToken\":\"" + masked + "\"}",
+                Utils.maskSecrets("{\"serviceToken\":\"" + TOKEN + "\"}"));
+        // quotes escaped, as when the Json is the value of another member
+        assertEquals("{\"extra\":\"{\\\"token\\\":\\\"" + masked + "\\\"}\"}",
+                Utils.maskSecrets("{\"extra\":\"{\\\"token\\\":\\\"" + TOKEN + "\\\"}\"}"));
+        // location
+        assertEquals("{\"longitude\":\"***\",\"latitude\":\"***\",\"name\":\"Home\"}",
+                Utils.maskSecrets("{\"longitude\":\"4.9123\",\"latitude\":\"52.3702\",\"name\":\"Home\"}"));
+    }
+
+    @Test
+    public void maskSecretsLeavesOtherTextTest() {
+        for (String text : new String[] { "", "no json at all", "token: 17a8da0b48bd12902a495c8608eb8a73",
+                "{\"token\":\"\"}", "{\"token\":123,\"name\":\"x\"}", "{\"tokens\":[\"abc\"],\"mytoken\":\"abc\"}",
+                "{\"result\":{\"recipes\":[{\"recipeID\":1}]}}" }) {
+            assertEquals(text, Utils.maskSecrets(text));
+        }
+    }
+
+    @Test
+    public void truncateTest() {
+        assertEquals("", Utils.truncate("", 10));
+        assertEquals("0123456789", Utils.truncate("0123456789", 10));
+        assertEquals("01234... [truncated, 10 characters in total]", Utils.truncate("0123456789", 5));
+    }
+
+    @Test
+    public void sanitizeForLogTest() {
+        // short values are logged as is
+        assertEquals("{\"result\":[1,2,3]}", Utils.sanitizeForLog("{\"result\":[1,2,3]}").toString());
+        assertEquals("null", Utils.sanitizeForLog(null).toString());
+
+        // long values are limited, with secrets masked in the part that is kept
+        String longText = "{\"token\":\"" + TOKEN + "\",\"data\":\"" + "x".repeat(10000) + "\"}";
+        String logged = Utils.sanitizeForLog(longText).toString();
+        assertTrue(logged.startsWith("{\"token\":\"" + Utils.obfuscateToken(TOKEN) + "\",\"data\":\"xxx"));
+        assertFalse(logged.contains(TOKEN));
+        assertTrue(logged.length() < Utils.MAX_LOG_LENGTH + 100);
+        assertTrue(logged.endsWith("... [truncated, " + longText.length() + " characters in total]"));
     }
 }

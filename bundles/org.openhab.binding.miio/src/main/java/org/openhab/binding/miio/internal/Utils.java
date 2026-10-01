@@ -23,8 +23,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 
 import com.google.gson.JsonElement;
@@ -42,6 +45,17 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public final class Utils {
+
+    /** Maximum number of characters of a response or other (potentially large) payload written to the log */
+    public static final int MAX_LOG_LENGTH = 2000;
+
+    private static final String SECRET_KEYS = "token|bindkey|bind_key|ssecurity|serviceToken|passToken";
+    private static final String LOCATION_KEYS = "longitude|latitude";
+    // a Json member with a secret value; the quotes may be escaped when the Json is part of a string
+    private static final Pattern SECRET_MEMBER = Pattern
+            .compile("(\\\\?\"(?:" + SECRET_KEYS + ")\\\\?\"\\s*:\\s*\\\\?\")([^\"\\\\]*)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern LOCATION_MEMBER = Pattern
+            .compile("(\\\\?\"(?:" + LOCATION_KEYS + ")\\\\?\"\\s*:\\s*\\\\?\")([^\"\\\\]*)", Pattern.CASE_INSENSITIVE);
 
     /**
      * Convert a string representation of hexadecimal to a byte array.
@@ -97,6 +111,65 @@ public final class Utils {
         } else {
             return tokenString;
         }
+    }
+
+    /**
+     * Masks the values of tokens, keys and the location in the Json members of a text, so that it can be written to a
+     * log that may be shared. Text without such members is returned unchanged.
+     *
+     * @param text the text, typically a Json response
+     * @return the text with the values of the sensitive members masked
+     */
+    public static String maskSecrets(String text) {
+        String masked = text;
+        if (masked.indexOf(':') >= 0) {
+            masked = replaceValues(SECRET_MEMBER, masked, true);
+            masked = replaceValues(LOCATION_MEMBER, masked, false);
+        }
+        return masked;
+    }
+
+    private static String replaceValues(Pattern pattern, String text, boolean obfuscate) {
+        Matcher matcher = pattern.matcher(text);
+        StringBuilder result = new StringBuilder();
+        while (matcher.find()) {
+            String value = obfuscate ? obfuscateToken(matcher.group(2)) : (matcher.group(2).isEmpty() ? "" : "***");
+            matcher.appendReplacement(result, Matcher.quoteReplacement(matcher.group(1) + value));
+        }
+        matcher.appendTail(result);
+        return result.toString();
+    }
+
+    /**
+     * Limits the length of a text to be logged. The end of a longer text is replaced by a note with the original
+     * length.
+     *
+     * @param text the text
+     * @param maxLength maximum number of characters to keep
+     * @return the (shortened) text
+     */
+    public static String truncate(String text, int maxLength) {
+        if (text.length() <= maxLength) {
+            return text;
+        }
+        return text.substring(0, maxLength) + "... [truncated, " + text.length() + " characters in total]";
+    }
+
+    /**
+     * Prepares a value, like a response of a device or the cloud, to be passed as argument to a log statement:
+     * secrets are masked and the length is limited to {@link #MAX_LOG_LENGTH} characters. The text is only created when
+     * the log statement is actually written, so there is no cost when the log level is disabled.
+     *
+     * @param value the value to log
+     * @return an object to be used as log argument
+     */
+    public static Object sanitizeForLog(@Nullable Object value) {
+        return new Object() {
+            @Override
+            public String toString() {
+                return truncate(maskSecrets(String.valueOf(value)), MAX_LOG_LENGTH);
+            }
+        };
     }
 
     public static JsonObject convertFileToJSON(URL fileName) throws JsonIOException, JsonSyntaxException,
