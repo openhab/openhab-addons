@@ -92,6 +92,28 @@ public class MiIoAsyncCommunicationCloudTest {
     }
 
     @Test
+    public void emptyCustomCloudResponseGivesErrorWithoutStatusChange() throws MiCloudException {
+        when(cloudConnector.sendCloudCommand(anyString(), anyString(), anyString())).thenReturn("");
+
+        MiIoSendCommand result = communication.sendMiIoSendCommand(command("/v2/recipes/query"));
+
+        assertTrue(result.isError());
+        assertEquals("Received message is not a JSON object", result.getResponse().get("error").getAsString());
+        verify(listener, never()).onStatusUpdated(any(), any());
+    }
+
+    @Test
+    public void nonObjectCustomCloudResponseGivesErrorWithoutStatusChange() throws MiCloudException {
+        when(cloudConnector.sendCloudCommand(anyString(), anyString(), anyString())).thenReturn("[1,2]");
+
+        MiIoSendCommand result = communication.sendMiIoSendCommand(command("/v2/recipes/query"));
+
+        assertTrue(result.isError());
+        assertEquals("Received message is not a JSON object", result.getResponse().get("error").getAsString());
+        verify(listener, never()).onStatusUpdated(any(), any());
+    }
+
+    @Test
     public void failingCloudRpcCommandStillSetsDeviceOffline() throws MiCloudException {
         when(cloudConnector.sendRPCCommand(anyString(), anyString(), any(MiIoSendCommand.class)))
                 .thenThrow(new MiCloudException("Cannot execute request. Cloud service not available"));

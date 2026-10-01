@@ -185,22 +185,16 @@ public class MiIoAsyncCommunication {
                     String data = miIoSendCommand.getParams().toString();
                     logger.debug("Custom cloud request send to url '{}' with data '{}'", miIoSendCommand.getMethod(),
                             data);
-                    try {
-                        decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),
-                                miIoSendCommand.getCloudServer(), data);
-                    } catch (MiCloudException e) {
-                        // a failing cloud request (e.g. no cloud login) says nothing about the connection to the
-                        // device, so the device status is not changed
-                        logger.debug("Custom cloud request '{}' -> cloudserver '{}' (Device: {}) gave error {}",
-                                miIoSendCommand.getMethod(), miIoSendCommand.getCloudServer(), deviceId,
-                                e.getMessage());
-                        JsonObject errorResponse = new JsonObject();
-                        errorResponse.addProperty("error", e.getMessage());
-                        miIoSendCommand.setResponse(errorResponse);
+                    decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),
+                            miIoSendCommand.getCloudServer(), data);
+                    JsonElement cloudResponse = JsonParser.parseString(decryptedResponse);
+                    if (cloudResponse.isJsonObject()) {
+                        miIoSendCommand.setResponse(cloudResponse.getAsJsonObject());
                         return miIoSendCommand;
                     }
-                    miIoSendCommand.setResponse(JsonParser.parseString(decryptedResponse).getAsJsonObject());
-                    return miIoSendCommand;
+                    errorMsg = "Received message is not a JSON object";
+                    logger.debug("{}: {}", errorMsg, decryptedResponse);
+                    return setErrorResponse(miIoSendCommand, errorMsg);
                 }
             }
             // hack due to avoid invalid json errors from some misbehaving device firmwares
@@ -246,8 +240,15 @@ public class MiIoAsyncCommunication {
             logger.debug("Send command '{}'  -> cloudserver '{}' (Device: {}) gave error {}",
                     miIoSendCommand.getCommandString(), miIoSendCommand.getCloudServer(), deviceId, e.getMessage());
             errorMsg = e.getMessage();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            // a failing custom cloud request (e.g. no cloud login) says nothing about the device connection
+            if (!miIoSendCommand.getMethod().startsWith("/")) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         }
+        return setErrorResponse(miIoSendCommand, errorMsg);
+    }
+
+    private MiIoSendCommand setErrorResponse(MiIoSendCommand miIoSendCommand, @Nullable String errorMsg) {
         JsonObject erroResp = new JsonObject();
         erroResp.addProperty("error", errorMsg);
         miIoSendCommand.setResponse(erroResp);
