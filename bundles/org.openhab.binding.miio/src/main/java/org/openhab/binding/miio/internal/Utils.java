@@ -121,7 +121,7 @@ public final class Utils {
      * @param text the text, typically a Json response
      * @return the text with the values of the sensitive members masked
      */
-    static String maskSecrets(String text) {
+    public static String maskSecrets(String text) {
         String masked = text;
         if (masked.indexOf(':') >= 0) {
             masked = replaceValues(SECRET_MEMBER, masked, true);
@@ -157,9 +157,10 @@ public final class Utils {
     }
 
     /**
-     * Prepares a value, like a response of a device or the cloud, to be passed as argument to a log statement:
-     * secrets are masked and the length is limited to {@link #MAX_LOG_LENGTH} characters. The text is only created when
-     * the log statement is actually written, so there is no cost when the log level is disabled.
+     * Prepares a value, like a response of a device or the cloud, to be passed as argument to a debug or higher level
+     * log statement: secrets are masked and the length is limited to {@link #MAX_LOG_LENGTH} characters. The text is
+     * only created when the log statement is actually written, so there is no cost when the log level is disabled.
+     * Trace logging uses {@link #maskSecrets(String)} instead, so that the complete value remains available.
      *
      * @param value the value to log
      * @return an object to be used as log argument

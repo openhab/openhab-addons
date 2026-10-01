@@ -123,8 +123,11 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
                 case HttpStatus.OK_200:
                     return true;
                 default:
-                    logger.trace("request returned status '{}', reason: {}, content = {}", responseStep3.getStatus(),
-                            responseStep3.getReason(), Utils.sanitizeForLog(responseStep3.getContentAsString()));
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("request returned status '{}', reason: {}, content = {}",
+                                responseStep3.getStatus(), responseStep3.getReason(),
+                                Utils.maskSecrets(responseStep3.getContentAsString()));
+                    }
                     throw new MiCloudException(responseStep3.getStatus() + responseStep3.getReason());
             }
         } catch (InterruptedException e) {
@@ -149,8 +152,10 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
 
         final ContentResponse responseStep1 = request.send();
         final String content = responseStep1.getContentAsString();
-        logger.trace("Xiaomi Login step 1 content response= {}", Utils.sanitizeForLog(content));
-        logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Xiaomi Login step 1 content response= {}", Utils.maskSecrets(content));
+            logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
+        }
 
         try {
             JsonElement resp = JsonParser.parseString(CloudUtil.parseJson(content));
@@ -203,8 +208,10 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
         final ContentResponse responseStep2 = request.send();
 
         final String content2 = responseStep2.getContentAsString();
-        logger.trace("Xiaomi login step 2 response = {}", responseStep2);
-        logger.trace("Xiaomi login step 2 content = {}", Utils.sanitizeForLog(content2));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Xiaomi login step 2 response = {}", responseStep2);
+            logger.trace("Xiaomi login step 2 content = {}", Utils.maskSecrets(content2));
+        }
 
         JsonElement resp2 = JsonParser.parseString(CloudUtil.parseJson(content2));
         CloudLoginDTO jsonResp = GSON.fromJson(resp2, CloudLoginDTO.class);
@@ -377,10 +384,12 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
 
             if (!location.isEmpty()) {
                 final ContentResponse response = loginStep3(location);
-                logger.trace("Xiaomi login step 3 status = {}", response.getStatus());
-                logger.trace("Xiaomi login step 3 response = {}", response);
-                logger.trace("Xiaomi login step 3 header = {}", response.getHeaders().toString());
-                logger.trace("Xiaomi login step 3 content = {}", Utils.sanitizeForLog(response.getContentAsString()));
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Xiaomi login step 3 status = {}", response.getStatus());
+                    logger.trace("Xiaomi login step 3 response = {}", response);
+                    logger.trace("Xiaomi login step 3 header = {}", response.getHeaders().toString());
+                    logger.trace("Xiaomi login step 3 content = {}", Utils.maskSecrets(response.getContentAsString()));
+                }
             } else {
                 logger.warn("2FA completed but no redirect location found");
             }

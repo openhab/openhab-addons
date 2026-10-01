@@ -199,7 +199,9 @@ public class MiIoAsyncCommunication {
                 errorMsg = "Received message is not a JSON object ";
             } else {
                 needPing = false;
-                logger.trace("Received  JSON message {}", Utils.sanitizeForLog(response));
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Received  JSON message {}", Utils.maskSecrets(response.toString()));
+                }
                 JsonObject resJson = response.getAsJsonObject();
                 if (resJson.has("id")) {
                     int id = resJson.get("id").getAsInt();
@@ -336,7 +338,9 @@ public class MiIoAsyncCommunication {
             pingSuccess();
         }
         String decryptedResponse = new String(MiIoCrypto.decrypt(miIoResponseMsg.getData(), token), "UTF-8").trim();
-        logger.trace("Received response from {}: {}", ip, Utils.sanitizeForLog(decryptedResponse));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Received response from {}: {}", ip, Utils.maskSecrets(decryptedResponse));
+        }
         return decryptedResponse;
     }
 

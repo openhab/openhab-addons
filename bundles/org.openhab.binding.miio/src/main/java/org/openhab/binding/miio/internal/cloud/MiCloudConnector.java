@@ -209,7 +209,9 @@ public class MiCloudConnector {
         map.put("data", buildMapUrlRequestData(vacuumMap, model));
         try {
             String mapResponse = request(url, map);
-            logger.trace("Response: {}", Utils.sanitizeForLog(mapResponse));
+            if (logger.isTraceEnabled()) {
+                logger.trace("Response: {}", Utils.maskSecrets(mapResponse));
+            }
             JsonElement response = JsonParser.parseString(mapResponse);
             if (response.isJsonObject()) {
                 logger.debug("Received  JSON message {}", Utils.sanitizeForLog(response));
@@ -273,7 +275,9 @@ public class MiCloudConnector {
         try {
             response = request("/homeroom/gethome", country,
                     "{\"fg\":false,\"fetch_share\":true,\"fetch_share_dev\":true,\"limit\":300,\"app_ver\":7,\"fetch_cariot\":true}");
-            logger.trace("gethome response: {}", Utils.sanitizeForLog(response));
+            if (logger.isTraceEnabled()) {
+                logger.trace("gethome response: {}", Utils.maskSecrets(response));
+            }
             final JsonElement resp = JsonParser.parseString(response);
             if (resp.isJsonObject() && resp.getAsJsonObject().has("result")) {
                 return resp.getAsJsonObject().get("result").getAsJsonObject();
@@ -323,7 +327,9 @@ public class MiCloudConnector {
     public String getDeviceString(String country) throws MiCloudException {
         // Let request() exceptions propagate directly; request() manages loginFailedCounter for network failures.
         String resp = request("/home/device_list_page", country, "{\"getVirtualModel\":true,\"getHuamiDevices\":1}");
-        logger.trace("Get devices response: {}", Utils.sanitizeForLog(resp));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Get devices response: {}", Utils.maskSecrets(resp));
+        }
         if (resp.length() > 2) {
             CloudUtil.saveDeviceInfoFile(resp, country, logger);
             return resp;
@@ -551,7 +557,7 @@ public class MiCloudConnector {
         logger.trace("Xiaomi cloud response response = {}", response);
         logger.trace("Xiaomi cloud response content = {}", response.toString());
         logger.trace("Xiaomi cloud response header = {}", response.getHeaders().toString());
-        logger.trace("Xiaomi cloud response content = {}", Utils.sanitizeForLog(response.getContentAsString()));
+        logger.trace("Xiaomi cloud response content = {}", Utils.maskSecrets(response.getContentAsString()));
     }
 
     protected void informImageListeners(byte[] image) {
@@ -574,9 +580,9 @@ public class MiCloudConnector {
         request.agent(USERAGENT);
         request.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
         responseStep3 = request.send();
-        logger.trace("Xiaomi login step 3 content = {}", Utils.sanitizeForLog(responseStep3.getContentAsString()));
-        logger.trace("Xiaomi login step 3 response = {}", responseStep3);
         if (logger.isTraceEnabled()) {
+            logger.trace("Xiaomi login step 3 content = {}", Utils.maskSecrets(responseStep3.getContentAsString()));
+            logger.trace("Xiaomi login step 3 response = {}", responseStep3);
             dumpCookies(location, false);
         }
         URI uri = URI.create("http://sts.api.io.mi.com");
