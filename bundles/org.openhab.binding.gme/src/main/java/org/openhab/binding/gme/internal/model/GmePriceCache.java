@@ -64,6 +64,13 @@ public class GmePriceCache {
         tomorrowPrices = List.of();
     }
 
+    public synchronized void clear() {
+        todayDate = null;
+        tomorrowDate = null;
+        todayPrices = List.of();
+        tomorrowPrices = List.of();
+    }
+
     public synchronized boolean promoteTomorrowToToday(LocalDate currentDate, ZoneId zoneId) {
         return promoteTomorrowToToday(currentDate, zoneId, GmeGranularity.PT60);
     }
