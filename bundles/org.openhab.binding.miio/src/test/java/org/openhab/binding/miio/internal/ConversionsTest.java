@@ -199,6 +199,16 @@ public class ConversionsTest {
     }
 
     @Test
+    public void getJsonElementBlankMembersIgnoredTest() {
+        JsonElement value = JsonParser.parseString(RECIPES);
+        assertEquals(JsonParser.parseString("{\"time\":11}"), getJsonElement("recipes[0].cookCommand.{time,}", value));
+        assertEquals(JsonParser.parseString("{\"time\":11}"),
+                getJsonElement("recipes[0].cookCommand.{time,,notThere}", value));
+        assertEquals(JsonParser.parseString("{\"time\":11,\"temperature\":180}"),
+                getJsonElement("recipes[0].cookCommand.{time, ,temperature}", value));
+    }
+
+    @Test
     public void getJsonElementExactMemberHasPrecedenceTest() {
         // existing behavior: a member name is used as is, even if it looks like a path
         JsonElement value = JsonParser.parseString("{\"blt.3.17q3si5345k00\":\"-54\",\"blt\":{\"3\":1}}");
@@ -219,6 +229,14 @@ public class ConversionsTest {
             assertEquals(value, getJsonElement("recipes[x]", value));
             assertEquals(value, getJsonElement("recipes[99999999999]", value));
             assertEquals(value, getJsonElement("recipes[*", value));
+            // empty segments are invalid
+            assertEquals(value, getJsonElement("recipes..recipeID", value));
+            assertEquals(value, getJsonElement("hasMore.", value));
+            assertEquals(value, getJsonElement(".hasMore", value));
+            assertEquals(value, getJsonElement(".", value));
+            // no members listed
+            assertEquals(value, getJsonElement("recipes[0].{}", value));
+            assertEquals(value, getJsonElement("recipes[0].{ , }", value));
         }
         JsonElement notJson = new JsonPrimitive("some non json value");
         assertEquals(notJson, getJsonElement("recipes[*].recipeID", notJson));

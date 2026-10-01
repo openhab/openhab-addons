@@ -185,15 +185,17 @@ public class Conversions {
     /**
      * Returns the element from the Json response. If not found, returns the input.
      * <p>
-     * The element is first looked up as a member name of the (top level) Json object. If there is no such member, it is
-     * evaluated as a path:
+     * If the (top level) Json object has a member with exactly this name, that member is returned. Otherwise the
+     * element is evaluated as a path. Empty segments are not allowed; a segment without a name is only valid when it
+     * has an index, like {@code [*].name} on an array:
      * <ul>
      * <li>segments are separated by a dot, e.g. {@code result.recipes}</li>
      * <li>{@code name[n]} selects the n-th element (starting at 0) of the array {@code name}</li>
      * <li>{@code name[*]} applies the rest of the path to every element of the array {@code name} and returns the
      * results as an array; elements for which the path does not resolve are left out</li>
      * <li>a last segment {@code {a,b}} returns only the listed members of an object, or of every object in an
-     * array; it must be the last segment. A listed member can be a path (without brackets), like
+     * array; it must be the last segment and blank entries are ignored. A listed member can be a path (without
+     * brackets), like
      * {@code {id,cook.time}}; it is returned with the last segment of the path as name, here {@code time}</li>
      * </ul>
      * While following a path, a string value that contains a Json object or array (as some cloud responses have) is
@@ -269,13 +271,16 @@ public class Conversions {
         }
         JsonElement next = current;
         final String name = m.group(1);
+        final @Nullable String index = m.group(2);
+        if (name.isEmpty() && index == null) {
+            return null;
+        }
         if (!name.isEmpty()) {
             if (!next.isJsonObject() || !next.getAsJsonObject().has(name)) {
                 return null;
             }
             next = next.getAsJsonObject().get(name);
         }
-        final @Nullable String index = m.group(2);
         if (index == null) {
             return selectPath(next, segments, pos + 1);
         }
@@ -334,6 +339,9 @@ public class Conversions {
         final JsonObject result = new JsonObject();
         for (String member : members) {
             final String path = member.trim();
+            if (path.isEmpty()) {
+                continue;
+            }
             if (source.has(path)) {
                 result.add(path, source.get(path));
             } else if (!path.contains("{") && !path.contains("}")) {
