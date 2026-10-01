@@ -263,7 +263,7 @@ public class Conversions {
             if (pos != segments.size() - 1) {
                 return null;
             }
-            return selectMembers(current, segment.substring(1, segment.length() - 1).split(","));
+            return selectMembers(current, List.of(segment.substring(1, segment.length() - 1).split(",")));
         }
         final Matcher m = PATH_SEGMENT.matcher(segment);
         if (!m.matches()) {
@@ -320,7 +320,7 @@ public class Conversions {
         return element;
     }
 
-    private static @Nullable JsonElement selectMembers(JsonElement element, String[] members) {
+    private static @Nullable JsonElement selectMembers(JsonElement element, List<String> members) {
         final JsonElement current = unwrapJson(element);
         if (current.isJsonArray()) {
             final JsonArray results = new JsonArray();
