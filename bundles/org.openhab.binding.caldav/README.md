@@ -23,16 +23,21 @@ The `calendar` thing represents one CalDAV Calendar Collection below an `account
 By default, Calendar Collections are discovered once when the account bridge is initialized.
 Further discovery scans can be started explicitly from the Inbox.
 
-With `discoveryMode=AUTO`, set `url` to a known CalDAV service endpoint where `DAV:current-user-principal` can be queried directly with `PROPFIND`.
-The scan resolves that principal, reads its `CALDAV:calendar-home-set` property, and discovers Calendar Collections below every URL it contains.
-The property can contain multiple URLs; results from all of them are combined and deduplicated by collection URI.
+The `discoveryMode` parameter defines what the configured `url` represents and therefore which CalDAV discovery steps are performed.
 
-With `DIRECT`, set `url` to the collection whose Calendar Collections should be listed.
-The scan lists Calendar Collections directly at that URL with `PROPFIND` and `Depth: 1`, skipping principal and `calendar-home-set` discovery.
+| Mode     | `url` represents                                   | Discovery steps                                                                                                           |
+|----------|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `AUTO`   | CalDAV service endpoint                            | Resolve `DAV:current-user-principal`, read all `CALDAV:calendar-home-set` URLs, then enumerate their Calendar Collections |
+| `DIRECT` | Collection container such as a `calendar-home-set` | Enumerate Calendar Collections directly with `PROPFIND` and `Depth: 1`                                                    |
+
+In `AUTO` mode, all `calendar-home-set` URLs returned for the principal are processed and the discovered Calendar Collections are deduplicated by collection URI.
+
+A principal URL is not a separate discovery mode because it would only skip the initial `current-user-principal` request.
+If the URL of an individual calendar is already known, no collection discovery is required; configure that URL as the Calendar Thing's `path`.
 
 The binding does not perform RFC 6764 bootstrapping through DNS SRV/TXT records or `/.well-known/caldav`.
 Redirects are not followed, including redirects from a well-known URL.
-Configure the final CalDAV endpoint instead.
+Configure a URL matching the selected `discoveryMode` instead.
 All discovered URLs must have the same scheme, host and effective port as the account URL.
 
 ## Time Range
@@ -187,12 +192,12 @@ Widget installation and presentation are independent of the binding configuratio
 
 | Parameter           | Default  | Current behavior                                                                                                                              |
 |---------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `url`               | Required | CalDAV endpoint used for `AUTO`, or collection URL scanned directly in `DIRECT` mode                                                          |
+| `url`               | Required | Starting URL for CalDAV discovery; its meaning depends on `discoveryMode`                                                                     |
 | `username`          | Optional | Username used for authentication. Configure both `username` and `password`, or leave both empty for anonymous access.                         |
 | `password`          | Optional | Password or application password used for authentication. Configure both `username` and `password`, or leave both empty for anonymous access. |
 | `requestTimeout`    | `30`     | Request timeout in seconds, 1–300                                                                                                             |
 | `refreshInterval`   | `300`    | Polling delay in seconds; minimum 30                                                                                                          |
-| `discoveryMode`     | `AUTO`   | `AUTO` resolves principal and `calendar-home-set` URLs; `DIRECT` scans directly at `url`                                                      |
+| `discoveryMode`     | `AUTO`   | Defines what `url` represents: `AUTO` starts with principal discovery; `DIRECT` enumerates Calendar Collections directly at `url`             |
 | `authType`          | `AUTO`   | `BASIC`, `DIGEST`, or `AUTO` to accept either authentication challenge. Used when username and password are configured.                       |
 | `verifyCertificate` | `true`   | Validates TLS certificates; `false` disables verification                                                                                     |
 | `syncMode`          | `AUTO`   | `AUTO`, `SYNC_TOKEN`, `ETAG`, or `FULL`                                                                                                       |
