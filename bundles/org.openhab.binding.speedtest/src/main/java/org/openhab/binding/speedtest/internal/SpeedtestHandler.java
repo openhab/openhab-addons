@@ -68,6 +68,7 @@ public class SpeedtestHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
     public volatile boolean isRunning = false;
+    private volatile int initId = 0;
 
     public static final String[] SHELL_WINDOWS = new String[] { "cmd" };
     public static final String[] SHELL_NIX = new String[] { "sh", "bash", "zsh", "csh" };
@@ -122,7 +123,7 @@ public class SpeedtestHandler extends BaseThingHandler {
         if (ch.equals(SpeedtestBindingConstants.TRIGGER_TEST)) {
             if (command instanceof OnOffType) {
                 if (command == OnOffType.ON) {
-                    getSpeed();
+                    getSpeed(initId);
                     updateState(channelUID, OnOffType.OFF);
                 }
             }
@@ -131,6 +132,7 @@ public class SpeedtestHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        int currentInitId = ++initId;
         config = getConfigAs(SpeedtestConfiguration.class);
         pollingInterval = config.refreshInterval;
         serverID = config.serverID;
@@ -183,6 +185,7 @@ public class SpeedtestHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing Speedtest Handler Thing");
         isRunning = false;
+        ++initId;
         ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
@@ -205,7 +208,7 @@ public class SpeedtestHandler extends BaseThingHandler {
      */
     private Runnable pollingRunnable = () -> {
         try {
-            getSpeed();
+            getSpeed(initId);
         } catch (Exception e) {
             logger.warn("An exception occurred while running Speedtest: '{}'", e.getMessage());
             updateStatus(ThingStatus.OFFLINE);
@@ -286,7 +289,7 @@ public class SpeedtestHandler extends BaseThingHandler {
     /**
      * Get the speedtest data and convert it from JSON and send it to update the channels.
      */
-    private void getSpeed() {
+    private void getSpeed(int currentInitId) {
         logger.debug("Getting Speed Measurement");
         String postCommand = "";
         if (!serverID.isBlank()) {
@@ -385,7 +388,7 @@ public class SpeedtestHandler extends BaseThingHandler {
                         + tmpCont.getServer().getLocation();
                 updateChannels();
 
-                if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                if (currentInitId == initId && !ThingStatus.ONLINE.equals(getThing().getStatus())) {
                     updateStatus(ThingStatus.ONLINE);
                 }
             }
