@@ -44,6 +44,13 @@ import org.slf4j.LoggerFactory;
 public class FreeboxOsSession {
     private static final String API_VERSION_PATH = "api_version";
 
+    private static final Map<Class<? extends RestManager>, Class<? extends RestManager>> PARENT_REST_MANAGERS = Map.of(
+            MediaReceiverManager.class, AirMediaManager.class, //
+            LanBrowserManager.class, LanManager.class, //
+            SambaManager.class, NetShareManager.class, //
+            AfpManager.class, NetShareManager.class, //
+            APManager.class, WifiManager.class);
+
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsSession.class);
 
     // All access must be guarded by "this"
@@ -204,6 +211,10 @@ public class FreeboxOsSession {
 
     @SuppressWarnings("unchecked")
     public synchronized <T extends RestManager> T getManager(Class<T> clazz) throws FreeboxException {
+        Class<? extends RestManager> parentClazz = PARENT_REST_MANAGERS.get(clazz);
+        if (parentClazz != null) {
+            getManager(parentClazz);
+        }
         RestManager manager = restManagers.get(clazz);
         if (manager == null) {
             try {
