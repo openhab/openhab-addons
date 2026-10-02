@@ -10,7 +10,7 @@ Instead of hardcoding device references or manually duplicating item definitions
 
 YAML Composer exposes special top-level map variables corresponding to runtime registries, such as **`THINGS`** and **`ITEMS`**.
 
-1. **Lazy Loading**: Entity lookup is on-demand. When a template queries `THINGS['mqtt:topic:porch']` or iterates over `THINGS`, only the requested entities are converted and cached for the duration of that compilation pass.
+1. **Snapshot Consistency:** Dynamic sources evaluate against a consistent snapshot of the openHAB registry for the duration of a compilation pass, preventing mid-render state tearing if registries update mid-evaluation.
 1. **Dependency Tracking**: Whenever a YAML file queries a dynamic source, YAML Composer automatically registers a dependency between that source file and the respective openHAB registry.
 1. **Automatic Recompilation**: When an entity is added, removed, or updated—or when a Thing is **enabled** or **disabled**—YAML Composer automatically invalidates and recompiles all dependent YAML files in the background after a brief debounce period.
 
