@@ -16,6 +16,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
@@ -38,6 +40,24 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 class DDWRTBaseDeviceTest {
+
+    @SuppressWarnings("null")
+    @Test
+    void testStaleUpdaterCannotClearReplacement() {
+        DDWRTBroadcomDevice device = new DDWRTBroadcomDevice(new DDWRTDeviceConfiguration(), mock(Logger.class));
+        DDWRTThingUpdater staleUpdater = mock(DDWRTThingUpdater.class);
+        DDWRTThingUpdater currentUpdater = mock(DDWRTThingUpdater.class);
+
+        device.setUpdater(staleUpdater);
+        device.setUpdater(currentUpdater);
+        device.clearUpdater(staleUpdater);
+
+        assertThat(device.updater.get(), sameInstance(currentUpdater));
+
+        device.clearUpdater(currentUpdater);
+
+        assertThat(device.updater.get(), nullValue());
+    }
 
     @Test
     void testParseStaticDhcpMacsFromDdwrtAndOpenWrtFormats() {
