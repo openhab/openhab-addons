@@ -170,6 +170,18 @@ Finally, the existing SDM Account Thing can be updated so it can subscribe to SD
 
 The SDM Account Thing should now be ONLINE with status description "Using periodic refresh and Pub/Sub".
 
+#### Self-hosted Pub/Sub topic
+
+By default the binding subscribes to the Google-hosted SDM topic of your SDM project.
+Google is ending support for Google-hosted topics, so events can instead be published to a topic in your own GCP project:
+
+1. Create a Pub/Sub topic in your GCP project and grant the SDM publisher service account the Pub/Sub Publisher role on it
+1. Set the SDM project's Pub/Sub topic to the new topic (full name `projects/<project-id>/topics/<topic-id>`) in the Device Access console
+1. Enter the same full topic name in the advanced **Topic Name** parameter of the Pub/Sub group in the SDM Account Thing configuration
+1. Choose a new **Subscription ID**, because an existing subscription stays attached to its original topic
+
+Leave **Topic Name** empty to keep using the Google-hosted topic.
+
 The created subscription can also be monitored using the Google Cloud Platform Console via [Pub/Sub > Subscriptions](https://console.cloud.google.com/cloudpubsub/subscription/list).
 
 ## SDM Device Configuration

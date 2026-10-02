@@ -40,6 +40,12 @@
 			<label>Subscription ID</label>
 			<description>Identifies the subscription that is created for subscribing to SDM Pub/Sub events</description>
 		</parameter>
+		<parameter name="pubsubTopicName" type="text" groupName="pubsub">
+			<label>Topic Name</label>
+			<description>The full name of the Pub/Sub topic to subscribe to, e.g. projects/my-gcp-project/topics/nest-sdm-events.
+				Leave empty to use the Google-hosted SDM topic</description>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="pubsubClientId" type="text" groupName="pubsub">
 			<label>Client ID</label>
 			<description>Identifies the OAuth 2.0 client used for accessing the Pub/Sub subscription</description>
