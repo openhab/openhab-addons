@@ -12,8 +12,6 @@
  */
 package org.openhab.io.yamlcomposer.internal.processors;
 
-import java.util.function.Consumer;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.yamlcomposer.internal.BufferedLogger;
@@ -21,6 +19,7 @@ import org.openhab.io.yamlcomposer.internal.StringInterpolator;
 import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.core.RecursiveTransformer;
 import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
+import org.openhab.io.yamlcomposer.internal.placeholders.ElseIfPlaceholder;
 
 /**
  * Base class for resolving {@link IfPlaceholder} and the {@link ElseIfPlaceholder} in YAML models.
@@ -30,11 +29,9 @@ import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
 @NonNullByDefault
 public abstract class AbstractConditionalProcessor {
     protected final BufferedLogger logger;
-    protected final Consumer<String> envVarCallback;
 
-    protected AbstractConditionalProcessor(BufferedLogger logger, Consumer<String> envVarCallback) {
+    protected AbstractConditionalProcessor(BufferedLogger logger) {
         this.logger = logger;
-        this.envVarCallback = envVarCallback;
     }
 
     /**
@@ -74,8 +71,8 @@ public abstract class AbstractConditionalProcessor {
                 }
             }
 
-            Object result = StringInterpolator.evaluateExpression(exprStr, context.scope().flatten(), envVarCallback,
-                    logger.getLogSession(), sourceLocation);
+            Object result = StringInterpolator.evaluateExpression(exprStr, context, logger.getLogSession(),
+                    sourceLocation);
             return ExpressionEvaluator.isTruthy(result);
         }
 

@@ -49,7 +49,7 @@ public class LogSession implements AutoCloseable {
      * Returns an unmodifiable list of tracked warning messages in the order they were recorded.
      * Primarily used for verification in unit tests.
      */
-    List<String> getTrackedWarnings() {
+    public List<String> getTrackedWarnings() {
         return List.copyOf(counts.keySet());
     }
 

@@ -475,16 +475,18 @@ If the list item must remain a scalar, declare the variable in the parent mappin
 The Composer injects environmental and file-system context automatically.
 These variables can be interpolated just like regular ones and are helpful when constructing paths for directives.
 
-| Variable           | Description                                                          |
-|:-------------------|:---------------------------------------------------------------------|
-| `OPENHAB_CONF`     | Absolute path to openHAB's main configuration directory.             |
-| `OPENHAB_USERDATA` | Absolute path to openHAB's userdata directory.                       |
-| `__FILE__`         | Absolute path to the current file.                                   |
-| `__FILE_NAME__`    | Filename portion without the extension or leading path.              |
-| `__FILE_EXT__`     | File extension portion of the current file name.                     |
-| `__DIRECTORY__`    | Directory portion of the current file.                               |
-| `__DIR__`          | Alias for `__DIRECTORY__`.                                           |
-| `VARS`             | Map containing all variables currently visible in the current scope. |
+| Variable           | Description                                                                              |
+|:-------------------|:-----------------------------------------------------------------------------------------|
+| `OPENHAB_CONF`     | Absolute path to openHAB's main configuration directory.                                 |
+| `OPENHAB_USERDATA` | Absolute path to openHAB's userdata directory.                                           |
+| `__FILE__`         | Absolute path to the current file.                                                       |
+| `__FILE_NAME__`    | Filename portion without the extension or leading path.                                  |
+| `__FILE_EXT__`     | File extension portion of the current file name.                                         |
+| `__DIRECTORY__`    | Directory portion of the current file.                                                   |
+| `__DIR__`          | Alias for `__DIRECTORY__`.                                                               |
+| `VARS`             | Map containing all variables currently visible in the current scope.                     |
+| `THINGS`           | Live map of openHAB Things keyed by UID. See [Dynamic Sources](dynamic-sources.md).      |
+| `ITEMS`            | Live map of openHAB Items keyed by item name. See [Dynamic Sources](dynamic-sources.md). |
 
 #### Contextual / Special Variables
 

@@ -34,27 +34,25 @@ public class TemplateLoader {
     private final Map<Object, @Nullable Object> templates;
     private final RecursiveTransformer recursiveTransformer;
     private final SourceLocator locator;
-    private final Scope scope;
 
     public TemplateLoader(BufferedLogger logger, Path relativePath, Map<Object, @Nullable Object> templates,
-            RecursiveTransformer recursiveTransformer, SourceLocator locator, Scope scope) {
+            RecursiveTransformer recursiveTransformer, SourceLocator locator) {
         this.logger = logger;
         this.relativePath = relativePath;
         this.templates = templates;
         this.recursiveTransformer = recursiveTransformer;
         this.locator = locator;
-        this.scope = scope;
     }
 
     /**
      * Extracts templates from the given map and stores them into the templates map.
      *
      * @param templatesSection the section of the YAML model containing templates
+     * @param context the current evaluation context
      */
-    public void extractTemplates(@Nullable Object templatesSection) {
+    public void extractTemplates(@Nullable Object templatesSection, EvaluationContext context) {
         if (templatesSection instanceof java.util.Map<?, ?> templatesMap) {
             StructuralMerger structuralMerger = recursiveTransformer.getStructuralMerger();
-            EvaluationContext context = new EvaluationContext(scope, ProcessingPhase.STANDARD);
             Map<Object, @Nullable Object> resolvedTemplates = new LinkedHashMap<>(templatesMap.size());
 
             structuralMerger.composeMapPreservingValues(templatesMap, resolvedTemplates, recursiveTransformer, context);

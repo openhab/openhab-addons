@@ -32,7 +32,7 @@ import org.openhab.io.yamlcomposer.internal.placeholders.IncludePlaceholder;
 @NonNullByDefault
 public class VariableLoader {
 
-    public static final Set<String> SPECIAL_VARIABLES = Set.of("OPENHAB_CONF", "OPENHAB_USERDATA", "__FILE__",
+    public static final Set<String> BUILTIN_SPECIAL_VARIABLES = Set.of("OPENHAB_CONF", "OPENHAB_USERDATA", "__FILE__",
             "__FILE_NAME__", "__FILE_EXT__", "__DIRECTORY__", "__DIR__", "ENV", "VARS", "ARGS");
 
     private final RecursiveTransformer recursiveTransformer;
@@ -45,8 +45,12 @@ public class VariableLoader {
         this.scope = scope;
     }
 
-    public static boolean isSpecialVariable(String name) {
-        return SPECIAL_VARIABLES.contains(name);
+    public static boolean isSpecialVariable(String name, EvaluationContext context) {
+        if (BUILTIN_SPECIAL_VARIABLES.contains(name)) {
+            return true;
+        }
+        // Check if the name corresponds to a registered dynamic source
+        return context.sourceResolver().apply(name) != null;
     }
 
     /**
@@ -87,12 +91,12 @@ public class VariableLoader {
      *
      * @param variablesSection the section of the YAML file containing variable definitions, can be null
      * @param locator the source locator for logging purposes
+     * @param context the current evaluation context
      * @see ComposerConfig#VARIABLES_KEY
      */
-    public void extractVariables(@Nullable Object variablesSection, SourceLocator locator) {
+    public void extractVariables(@Nullable Object variablesSection, SourceLocator locator, EvaluationContext context) {
         if (variablesSection instanceof Map<?, ?> variablesMap) {
 
-            EvaluationContext context = new EvaluationContext(scope, ProcessingPhase.STANDARD);
             StructuralMerger structuralMerger = recursiveTransformer.getStructuralMerger();
 
             Map<Object, @Nullable Object> mergedMap = new LinkedHashMap<>(variablesMap.size());
@@ -102,7 +106,7 @@ public class VariableLoader {
                 Object transformedKey = recursiveTransformer.transform(key, context);
                 String keyStr = String.valueOf(transformedKey);
 
-                if (isSpecialVariable(keyStr)) {
+                if (isSpecialVariable(keyStr, context)) {
                     logger.warn("{} Cannot redefine special variable '{}'.", recursiveTransformer.getAbsolutePath(),
                             keyStr);
                     return;
@@ -115,9 +119,9 @@ public class VariableLoader {
                 }
             });
         } else if (variablesSection instanceof IncludePlaceholder includePlaceholder) {
-            EvaluationContext includeContext = new EvaluationContext(scope, ProcessingPhase.INCLUDES);
+            EvaluationContext includeContext = context.withProcessingPhase(ProcessingPhase.INCLUDES);
             Object includedData = recursiveTransformer.transform(includePlaceholder, includeContext);
-            extractVariables(includedData, locator);
+            extractVariables(includedData, locator, includeContext);
         } else if (variablesSection != null) {
             var position = locator.findPosition(ComposerConfig.VARIABLES_KEY);
             Path absolutePath = recursiveTransformer.getAbsolutePath();

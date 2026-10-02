@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.service.WatchService;
+import org.openhab.io.yamlcomposer.internal.dynamic.DynamicSourceRegistry;
 
 @DisplayName("YAML Composer Watch Service")
 class YamlComposerWatchServiceTest extends AbstractYamlComposerTest {
@@ -60,7 +61,9 @@ class YamlComposerWatchServiceTest extends AbstractYamlComposerTest {
                     """.formatted(LONG_LABEL));
 
             WatchService watchService = mock(WatchService.class);
-            YamlComposerWatchService composer = new YamlComposerWatchService(watchService, Map.of());
+            DynamicSourceRegistry dynamicSourceRegistry = mock(DynamicSourceRegistry.class);
+            YamlComposerWatchService composer = new YamlComposerWatchService(watchService, dynamicSourceRegistry,
+                    Map.of());
             try {
                 Path output = ComposerConfig.resolveOutputPath(source);
                 String initialYaml = yamlBody(Files.readString(output));

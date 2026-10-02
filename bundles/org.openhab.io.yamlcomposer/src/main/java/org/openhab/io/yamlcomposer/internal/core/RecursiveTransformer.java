@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,9 +40,9 @@ public class RecursiveTransformer {
     private final StructuralMerger structuralMerger;
     private final Path absolutePath;
 
-    public RecursiveTransformer(Consumer<String> envVarCallback, Path absolutePath, BufferedLogger logger) {
+    public RecursiveTransformer(Path absolutePath, BufferedLogger logger) {
         this.absolutePath = absolutePath;
-        this.directiveProcessor = new DirectiveProcessor(logger, envVarCallback);
+        this.directiveProcessor = new DirectiveProcessor(logger);
         this.structuralMerger = new StructuralMerger(logger);
     }
 

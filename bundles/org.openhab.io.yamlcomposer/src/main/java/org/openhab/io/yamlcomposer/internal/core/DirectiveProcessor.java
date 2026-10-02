@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,7 +41,6 @@ import org.openhab.io.yamlcomposer.internal.expression.ExpressionEvaluator;
 public class DirectiveProcessor {
 
     private final BufferedLogger logger;
-    private final Consumer<String> envVarCallback;
 
     public static class IfChainState {
         boolean matched = false;
@@ -59,9 +57,8 @@ public class DirectiveProcessor {
         }
     }
 
-    public DirectiveProcessor(BufferedLogger logger, Consumer<String> envVarCallback) {
+    public DirectiveProcessor(BufferedLogger logger) {
         this.logger = logger;
-        this.envVarCallback = envVarCallback;
     }
 
     /**
@@ -231,7 +228,7 @@ public class DirectiveProcessor {
     public void processVarDirective(VarDirective varDirective, @Nullable Object oldVal,
             RecursiveTransformer transformer, EvaluationContext context) {
         String varName = varDirective.variableName();
-        if (VariableLoader.isSpecialVariable(varName)) {
+        if (VariableLoader.isSpecialVariable(varName, context)) {
             logger.warn("{} Cannot redefine special variable '{}'.", varDirective.sourceLocation(), varName);
             return;
         }
@@ -264,7 +261,7 @@ public class DirectiveProcessor {
             if (vars.containsKey(expr)) {
                 target = vars.get(expr);
             } else {
-                target = StringInterpolator.evaluateExpression(expr, vars, envVarCallback, logger.getLogSession(),
+                target = StringInterpolator.evaluateExpression(expr, context, logger.getLogSession(),
                         forDirective.sourceLocation());
             }
         }
@@ -310,19 +307,20 @@ public class DirectiveProcessor {
 
             Scope loopScope = context.scope().createChild();
             loopScope.putAll(loopVars);
-            if (shouldKeepIteration(forDirective, loopScope)) {
+            EvaluationContext loopContext = context.forIteration(loopScope);
+            if (shouldKeepIteration(forDirective, loopContext)) {
                 iterationConsumer.accept(loopScope, oldVal);
             }
         }
     }
 
-    private boolean shouldKeepIteration(ForDirective forDirective, Scope loopScope) {
+    private boolean shouldKeepIteration(ForDirective forDirective, EvaluationContext loopContext) {
         String filterCondition = forDirective.filterCondition();
         if (filterCondition == null || filterCondition.isBlank()) {
             return true;
         }
-        Object evaluated = StringInterpolator.evaluateExpression(filterCondition.trim(), loopScope.flatten(),
-                envVarCallback, logger.getLogSession(), forDirective.sourceLocation());
+        Object evaluated = StringInterpolator.evaluateExpression(filterCondition.trim(), loopContext,
+                logger.getLogSession(), forDirective.sourceLocation());
         return ExpressionEvaluator.isTruthy(evaluated);
     }
 }
