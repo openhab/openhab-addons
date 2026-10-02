@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.awattar.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Common checked exception for market price API failures.
+ *
+ * @author Thomas Leber - Initial contribution
  */
+@NonNullByDefault
 public class MarketPriceApiException extends Exception {
     private static final long serialVersionUID = 1L;
 
