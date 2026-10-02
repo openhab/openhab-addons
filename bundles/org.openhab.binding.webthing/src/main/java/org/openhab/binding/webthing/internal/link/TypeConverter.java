@@ -13,7 +13,6 @@
 package org.openhab.binding.webthing.internal.link;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
@@ -25,12 +24,12 @@ import org.openhab.core.types.State;
 interface TypeConverter {
 
     /**
-     * * maps a Property value to an Item state command
+     * Maps a Property value to an Item state
      * 
      * @param propertyValue the Property value
-     * @return the Item state command
+     * @return the Item state
      */
-    Command toStateCommand(Object propertyValue);
+    State toState(Object propertyValue);
 
     /**
      * maps an Item state to a Property value

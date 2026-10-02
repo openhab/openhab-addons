@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.webthing.internal.ChannelHandler;
+import org.openhab.binding.webthing.internal.WebThingHandler;
 import org.openhab.binding.webthing.internal.channel.Channels;
 import org.openhab.binding.webthing.internal.client.Mocks;
 import org.openhab.binding.webthing.internal.client.WebthingTest;
@@ -35,9 +36,11 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.types.Command;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
@@ -98,6 +101,42 @@ public class WebthingChannelLinkTest {
         ChannelToPropertyLink.establish(testWebthingThingHandler, channel, webthing, "target_position");
 
         testWebthingThingHandler.listeners.get(channelUID).onItemStateChanged(channelUID, new DecimalType(130));
+    }
+
+    @Test
+    public void testContactChannelIgnoresCommands() {
+        var thing = mock(Thing.class);
+        var channel = mock(Channel.class);
+        var channelUID = new ChannelUID(new ThingUID("webthing", "test"), "open");
+        when(thing.getChannel(channelUID)).thenReturn(channel);
+        when(channel.getAcceptedItemType()).thenReturn("Contact");
+
+        var handler = new WebThingHandler(thing, mock(org.eclipse.jetty.client.HttpClient.class),
+                mock(org.eclipse.jetty.websocket.client.WebSocketClient.class));
+        var listener = mock(ChannelHandler.ItemChangedListener.class);
+        handler.observeChannel(channelUID, listener);
+        handler.handleCommand(channelUID, OpenClosedType.OPEN);
+
+        verifyNoInteractions(listener);
+    }
+
+    @Test
+    public void testPropertyUpdatesUseStateForContactAndCommandForSwitch() {
+        var thing = mock(Thing.class);
+        var thingUID = new ThingUID("webthing", "test");
+        var contactChannelUID = new ChannelUID(thingUID, "open");
+        var switchChannelUID = new ChannelUID(thingUID, "onoff");
+        var callback = mock(ThingHandlerCallback.class);
+        var handler = new WebThingHandler(thing, mock(org.eclipse.jetty.client.HttpClient.class),
+                mock(org.eclipse.jetty.websocket.client.WebSocketClient.class));
+        handler.setCallback(callback);
+
+        handler.updateItemState(contactChannelUID, OpenClosedType.OPEN);
+        handler.updateItemState(switchChannelUID, OnOffType.ON);
+
+        verify(callback).stateUpdated(contactChannelUID, OpenClosedType.OPEN);
+        verify(callback).postCommand(switchChannelUID, OnOffType.ON);
+        verifyNoMoreInteractions(callback);
     }
 
     @Test
@@ -185,7 +224,7 @@ public class WebthingChannelLinkTest {
         message.data = Map.of(propertyName, initialValue);
         websocketConnectionFactory.webSocketRef.get().sendToClient(message);
 
-        Command actualState = testWebthingThingHandler.itemState.get(channelUID);
+        State actualState = testWebthingThingHandler.itemState.get(channelUID);
         if ((actualState instanceof HSBType actualHsb) && (initialState instanceof HSBType initialStateHsb)) {
             assertTrue(actualHsb.closeTo(initialStateHsb, 0.01));
         } else {
@@ -202,7 +241,7 @@ public class WebthingChannelLinkTest {
 
     private static class TestWebthingThingHandler implements ChannelHandler {
         public final Map<ChannelUID, ItemChangedListener> listeners = new ConcurrentHashMap<>();
-        public final Map<ChannelUID, Command> itemState = new ConcurrentHashMap<>();
+        public final Map<ChannelUID, State> itemState = new ConcurrentHashMap<>();
 
         @Override
         public void observeChannel(ChannelUID channelUID, ItemChangedListener listener) {
@@ -210,8 +249,8 @@ public class WebthingChannelLinkTest {
         }
 
         @Override
-        public void updateItemState(ChannelUID channelUID, Command command) {
-            itemState.put(channelUID, command);
+        public void updateItemState(ChannelUID channelUID, State state) {
+            itemState.put(channelUID, state);
         }
     }
 }
