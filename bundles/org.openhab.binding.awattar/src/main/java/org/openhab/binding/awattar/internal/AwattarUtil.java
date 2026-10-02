@@ -54,8 +54,11 @@ public class AwattarUtil {
         return ZonedDateTime.ofInstant(Instant.ofEpochMilli(date), zoneId).toString();
     }
 
-    public static String getHourFrom(long timestamp, ZoneId zoneId) {
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(timestamp), zoneId);
-        return String.format("%02d", zdt.getHour());
+    public static String formatPriceInterval(AwattarPrice price, ZoneId zoneId) {
+        ZonedDateTime start = ZonedDateTime.ofInstant(Instant.ofEpochMilli(price.timerange().start()), zoneId);
+        if (price.timerange().end() - price.timerange().start() == 3_600_000L) {
+            return String.format("%02d", start.getHour());
+        }
+        return String.format("%02d:%02d", start.getHour(), start.getMinute());
     }
 }

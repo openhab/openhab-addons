@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -10,20 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.awattar.internal;
+package org.openhab.binding.awattar.internal.dto;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
-/**
- * Stores the bridge configuration
- *
- * @author Wolfgang Klimt - initial contribution
- */
+import com.google.gson.annotations.SerializedName;
+
 @NonNullByDefault
-public class AwattarBridgeConfiguration {
-    public String provider = "awattar";
-    public double basePrice;
-    public double vatPercent;
-    public double serviceFee;
-    public String country = "";
+public class EnergyChartsApiData {
+    @SerializedName("unix_seconds")
+    public List<Long> unixSeconds = List.of();
+
+    @SerializedName("price")
+    public List<@Nullable Double> prices = List.of();
 }

@@ -87,6 +87,21 @@ public class AwattarBestPriceTest {
     }
 
     @Test
+    void bestPriceLabelsFollowPriceIntervalTimestamps() {
+        long firstStart = Instant.parse("2025-01-01T12:00:00Z").toEpochMilli();
+        List<AwattarPrice> quarterHours = new ArrayList<>();
+        for (int index = 0; index < 4; index++) {
+            long start = firstStart + index * 15 * 60 * 1000L;
+            quarterHours.add(new AwattarPrice(1.0, 1.0, 1.0, 1.0, new TimeRange(start, start + 15 * 60 * 1000L)));
+        }
+
+        AwattarConsecutiveBestPriceResult result = new AwattarConsecutiveBestPriceResult(quarterHours, 4, zoneId);
+
+        assertEquals("12:00,12:15,12:30,12:45", result.getHours());
+        assertEquals(firstStart + 60 * 60 * 1000L, result.getEnd());
+    }
+
+    @Test
     void awattarNonConsecutiveBestPriceResultNonInverted() {
         int length = 6;
         boolean inverted = false;

@@ -121,9 +121,9 @@ public class AwattarBridgeHandlerTest extends JavaTest {
         bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, timeProviderMock);
         bridgeHandler.setCallback(bridgeCallbackMock);
 
-        // mock the private field awattarApi
+        // mock the selected market price API
         List<Field> fields = ReflectionSupport.findFields(AwattarBridgeHandler.class,
-                field -> field.getName().equals("awattarApi"), HierarchyTraversalMode.BOTTOM_UP);
+                field -> field.getName().equals("priceApi"), HierarchyTraversalMode.BOTTOM_UP);
 
         for (Field field : fields) {
             field.setAccessible(true);

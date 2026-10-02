@@ -88,7 +88,7 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
         bridgeHandler.setCallback(bridgeCallbackMock);
 
         List<Field> fields = ReflectionSupport.findFields(AwattarBridgeHandler.class,
-                field -> field.getName().equals("awattarApi"), HierarchyTraversalMode.BOTTOM_UP);
+                field -> field.getName().equals("priceApi"), HierarchyTraversalMode.BOTTOM_UP);
 
         for (Field field : fields) {
             field.setAccessible(true);

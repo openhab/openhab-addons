@@ -40,8 +40,8 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Hourly Price</label>
-		<description>Prices for one kilowatt-hour at the given hour in Cent</description>
+		<label>Prices</label>
+		<description>Prices for one kilowatt-hour at the selected API's price interval in Cent</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
@@ -301,7 +301,7 @@
 	<channel-type id="input-duration">
 		<item-type>Number</item-type>
 		<label>Duration</label>
-		<description>Length of the bestprice period to search for (hours)</description>
+		<description>Number of API price intervals in the bestprice period</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Duration</tag>
@@ -396,8 +396,8 @@
 
 	<channel-type id="hours-type">
 		<item-type>String</item-type>
-		<label>Hours</label>
-		<description>A list of all hours within this bestprice range.</description>
+		<label>Price intervals</label>
+		<description>A list of API price intervals within this bestprice range.</description>
 		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
