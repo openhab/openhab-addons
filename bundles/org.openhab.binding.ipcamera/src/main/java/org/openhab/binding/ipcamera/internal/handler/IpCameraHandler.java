@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -61,6 +62,7 @@ import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegForm
 import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProvider;
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.ReolinkHandler;
+import org.openhab.binding.ipcamera.internal.ReolinkPtz;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
 import org.openhab.binding.ipcamera.internal.servlet.CameraServlet;
 import org.openhab.core.OpenHAB;
@@ -75,8 +77,10 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -197,6 +201,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public boolean ffmpegSnapshotGeneration = false;
     public boolean snapshotPolling = false;
     public OnvifConnection onvifCamera = new OnvifConnection(this, "", "", "");
+    public final ReolinkPtz reolinkPtz = new ReolinkPtz(this);
 
     // These methods handle the response from all camera brands, nothing specific to 1 brand.
     private class CommonCameraHandler extends ChannelDuplexHandler {
@@ -1112,6 +1117,45 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Re-adds channels of this thing type that were removed earlier, e.g. by a capability check.
+     */
+    public void addMissingChannels(List<String> channelIds) {
+        ThingHandlerCallback callback = getCallback();
+        if (callback == null) {
+            return;
+        }
+        ThingBuilder thingBuilder = editThing();
+        boolean changed = false;
+        for (String channelId : channelIds) {
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
+            if (getThing().getChannel(channelUID) == null) {
+                thingBuilder.withChannel(
+                        callback.createChannelBuilder(channelUID, new ChannelTypeUID(BINDING_ID, channelId)).build());
+                changed = true;
+            }
+        }
+        if (changed) {
+            updateThing(thingBuilder.build());
+        }
+    }
+
+    public @Nullable ScheduledFuture<?> scheduleTask(Runnable task, long delayMs) {
+        try {
+            return threadPool.schedule(task, delayMs, TimeUnit.MILLISECONDS);
+        } catch (RejectedExecutionException e) {
+            // the handler is being disposed
+            return null;
+        }
+    }
+
+    private boolean useReolinkApiPtz(String channelId) {
+        // NVRs and hubs may advertise an ONVIF PTZ service that does not work for the connected cameras,
+        // so the Reolink API is preferred whenever GetAbility reports PTZ for this channel.
+        return REOLINK_THING.equals(thing.getThingTypeUID().getId()) && ReolinkPtz.isPtzChannel(channelId)
+                && reolinkPtz.isSupported();
+    }
+
     public void removeChannels(List<org.openhab.core.thing.Channel> removeChannels) {
         if (!removeChannels.isEmpty()) {
             ThingBuilder thingBuilder = editThing();
@@ -1122,6 +1166,10 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (useReolinkApiPtz(channelUID.getId())) {
+            reolinkPtz.handleCommand(channelUID, command);
+            return;
+        }
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_PAN:
@@ -1883,6 +1931,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        reolinkPtz.dispose();
         offline();
         CameraServlet localServlet = servlet;
         if (localServlet != null) {

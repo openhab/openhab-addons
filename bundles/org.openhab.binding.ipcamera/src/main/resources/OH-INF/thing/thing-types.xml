@@ -2618,6 +2618,42 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="ptzPanMin" type="integer" groupName="Settings">
+				<label>PTZ Pan Minimum</label>
+				<description>Only used when PTZ is controlled via the Reolink API (e.g. cameras connected to a Reolink NVR or
+					Home
+					Hub). Lowest pan position reported by the camera (left end stop).</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ptzPanMax" type="integer" groupName="Settings">
+				<label>PTZ Pan Maximum</label>
+				<description>Only used when PTZ is controlled via the Reolink API. Highest pan position reported by the
+					camera (right
+					end stop).</description>
+				<default>6000</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ptzTiltMin" type="integer" groupName="Settings">
+				<label>PTZ Tilt Minimum</label>
+				<description>Only used when PTZ is controlled via the Reolink API. Lowest tilt position reported by the
+					camera (upper
+					end stop).</description>
+				<default>150</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ptzTiltMax" type="integer" groupName="Settings">
+				<label>PTZ Tilt Maximum</label>
+				<description>Only used when PTZ is controlled via the Reolink API. Highest tilt position reported by the
+					camera
+					(lower end stop).</description>
+				<default>1400</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="onvifMediaProfile" type="integer" required="true" min="0" max="5" groupName="Settings">
 				<label>ONVIF Media Profile</label>
 				<description>Cameras can supply more than one stream at different resolutions and formats. 0 selects the main-stream
