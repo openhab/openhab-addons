@@ -174,7 +174,7 @@ final class ComposerUtils {
             }
         }
 
-        Set<String> sortedEnvVars = new TreeSet<>(trackedEnvVars);
+        TreeSet<String> sortedEnvVars = new TreeSet<>(trackedEnvVars);
         String envDepsFormatted = formatEnvDeps(sortedEnvVars);
         String envHashStr = computeEnvHash(sortedEnvVars, envMap);
 
@@ -259,7 +259,7 @@ final class ComposerUtils {
                 return true;
             }
 
-            String currentHash = computeEnvHash(trackedEnvVars, envMap);
+            String currentHash = computeEnvHash(new TreeSet<>(trackedEnvVars), envMap);
             return !currentHash.equals(envHashLine);
         } catch (IOException e) {
             return true;
@@ -336,7 +336,7 @@ final class ComposerUtils {
         return String.join("\n#            ", lines);
     }
 
-    private static String computeEnvHash(Set<String> envVars, Map<String, String> envMap) {
+    private static String computeEnvHash(TreeSet<String> envVars, Map<String, String> envMap) {
         if (envVars.isEmpty()) {
             return "";
         }
