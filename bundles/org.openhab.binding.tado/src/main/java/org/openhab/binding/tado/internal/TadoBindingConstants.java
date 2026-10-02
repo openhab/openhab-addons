@@ -157,4 +157,7 @@ public class TadoBindingConstants {
     }
 
     public static final String PROPERTY_MOBILE_DEVICE_NAME = "name";
+
+    // i18n translatable text keys
+    public static final String TEXT_ONLINE_BATTERY_LOW = "@text/online.battery-low";
 }
