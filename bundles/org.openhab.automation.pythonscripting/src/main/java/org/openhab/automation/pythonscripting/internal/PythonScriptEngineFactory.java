@@ -87,12 +87,10 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
         Engine.Builder engineBuilder = createEngineBuilder();
         if (configuration.isDebuggerEnabled()) {
             engineBuilder //
-                    .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
+                    .option("inspect", String.valueOf(configuration.getDebuggerPort())) //
                     .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
-                    .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
-                                                             // attach
-                    .option("inspect.Secure", "false"); // Disable TLS
-
+                    .option("inspect.WaitAttached", "false"); // Don't block code execution waiting for debugger to
+                                                              // attach
             Engine engine;
             try {
                 engine = engineBuilder.build();
