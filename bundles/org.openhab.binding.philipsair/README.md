@@ -38,6 +38,8 @@ These models are supported in a limited way, as their modes, fan speeds and ligh
 | `child-lock`                   | read and write (only models with `D03xxx` fields)    |
 | `pm25`, `allergen-index`       | read only                                            |
 | `humidity`, `temperature`      | read only (only models with `D03xxx` fields)         |
+| `error-code`                   | read only (only models with `D03xxx` fields)         |
+| `displayed-index`              | read only (only models with `D03xxx` fields)         |
 | `pre-filter-life`, `hepa-filter-life` | read only                                     |
 | all other channels             | not supported, the channels stay `NULL`              |
 

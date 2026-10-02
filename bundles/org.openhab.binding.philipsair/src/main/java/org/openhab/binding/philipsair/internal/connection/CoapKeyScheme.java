@@ -99,6 +99,12 @@ enum CoapKeyScheme {
                 copyNumber(reported, "D03120", classic, "iaql");
                 copyNumber(reported, "D03221", classic, "pm25");
                 copyNumber(reported, "D03125", classic, "rh");
+                copyNumber(reported, "D03240", classic, "err");
+                // the displayed index is a number here, a text on the classic models
+                Number displayIndex = getNumber(reported, "D0312A");
+                if (displayIndex != null) {
+                    classic.addProperty("ddp", String.valueOf(displayIndex.intValue()));
+                }
                 // the temperature is reported in tenths of a degree
                 Number temperature = getNumber(reported, "D03224");
                 if (temperature != null) {

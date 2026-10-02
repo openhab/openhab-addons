@@ -41,7 +41,8 @@ public class CoapKeySchemeTest {
             "D03-32":3,"D03-33":12,"D05-13":340,"D05-14":4200,"DeviceId":"abc"}""";
     private static final String GEN3_STATUS = """
             {"D01S03":"Office","D01S05":"AC3737/10","D01S12":"0.2.1","D03102":0,"D03103":1,"D03120":2,
-            "D03221":8,"D03125":48,"D03224":215,"D0520D":100,"D0540E":3900,"D0310C":1,"DeviceId":"def"}""";
+            "D03221":8,"D03125":48,"D03224":215,"D03240":0,"D0312A":1,"D0520D":100,"D0540E":3900,"D0310C":1,
+            "DeviceId":"def"}""";
 
     private final Gson gson = new Gson();
 
@@ -101,6 +102,8 @@ public class CoapKeySchemeTest {
         assertEquals(2, data.getAllergenLevel());
         assertEquals(48f, data.getHumidity());
         assertEquals(21.5f, data.getTemperature());
+        assertEquals(0, data.getErrorCode());
+        assertEquals("1", data.getDisplayIndex());
         assertNull(data.getMode());
 
         PhilipsAirPurifierDeviceDTO device = gson.fromJson(classic, PhilipsAirPurifierDeviceDTO.class);
@@ -123,6 +126,18 @@ public class CoapKeySchemeTest {
         assertFalse(classic.has("pwr"));
         assertFalse(classic.has("temp"));
         assertFalse(classic.has("pm25"));
+    }
+
+    @Test
+    public void gen3ErrorAndDisplayIndexAreOnlyTranslatedWhenReported() {
+        JsonObject classic = CoapKeyScheme.GEN3.toClassic(parse("{\"D01S05\":\"AC3737/10\"}"));
+        assertFalse(classic.has("err"));
+        assertFalse(classic.has("ddp"));
+
+        classic = CoapKeyScheme.GEN3
+                .toClassic(parse("{\"D01S05\":\"AC3737/10\",\"D03240\":\"none\",\"D0312A\":\"pm25\"}"));
+        assertFalse(classic.has("err"));
+        assertFalse(classic.has("ddp"));
     }
 
     private JsonObject command(PhilipsAirPurifierWritableDataDTO command) {
