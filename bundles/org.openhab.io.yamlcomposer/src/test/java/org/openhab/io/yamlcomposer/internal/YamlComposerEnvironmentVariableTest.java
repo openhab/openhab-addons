@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -393,6 +394,31 @@ class YamlComposerEnvironmentVariableTest extends AbstractYamlComposerTest {
             String updatedContent = Files.readString(output);
             assertThat(updatedContent, containsString("BAR"));
             assertThat(updatedContent, not(containsString("FOO")));
+        }
+
+        @Test
+        @DisplayName("Skips second write when tracked variable iteration order differs between compilation passes")
+        void skipsSecondWriteWhenTrackedVariableIterationOrderDiffers() throws IOException {
+            Map<String, String> envMap = Map.of("B", "valB", "Q", "valQ");
+
+            Path main = writeFixture("unordered_env_main.yaml", """
+                    b_val: ${ENV.B}
+                    q_val: ${ENV.Q}
+                    """);
+            Path output = Objects.requireNonNull(sharedTempDir).resolve("unordered_env_output.yaml");
+
+            Object yamlObject = loadWithTracking(main, ConcurrentHashMap.newKeySet());
+
+            try (MockedStatic<OpenHAB> openHABMock = mockOpenHabMetadata()) {
+                Set<String> pass1Envs = new LinkedHashSet<>(List.of("B", "Q"));
+                boolean firstWrite = ComposerUtils.writeCompiledOutput(yamlObject, main, output, pass1Envs, envMap);
+                assertThat("First compile pass must write file", firstWrite, is(true));
+
+                Set<String> pass2Envs = new LinkedHashSet<>(List.of("Q", "B"));
+                boolean secondWrite = ComposerUtils.writeCompiledOutput(yamlObject, main, output, pass2Envs, envMap);
+                assertThat("Second write must be skipped despite different set iteration order", secondWrite,
+                        is(false));
+            }
         }
 
         private void removeHeaderFromFile(Path file) throws IOException {
