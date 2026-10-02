@@ -86,12 +86,10 @@ public class KNXProfileFactory implements ProfileFactory, ProfileAdvisor, Profil
     private @Nullable ProfileTypeUID getSuggestedProfileTypeUID(@Nullable ChannelTypeUID channelTypeUID,
             @Nullable String itemType) {
         if (KNXBindingConstants.CHANNEL_CONTACT_CONTROL_UID.equals(channelTypeUID) && itemType != null) {
-            switch (itemType) {
-                case CoreItemFactory.CONTACT:
-                    return UID_CONTACT_CONTROL;
-                default:
-                    return null;
-            }
+            return switch (itemType) {
+                case CoreItemFactory.CONTACT -> UID_CONTACT_CONTROL;
+                default -> null;
+            };
         }
         return null;
     }
