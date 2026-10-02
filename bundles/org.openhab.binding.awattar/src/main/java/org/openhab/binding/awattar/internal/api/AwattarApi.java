@@ -137,6 +137,9 @@ public class AwattarApi implements MarketPriceApi {
                 SortedSet<AwattarPrice> result = new TreeSet<>(Comparator.comparing(AwattarPrice::timerange));
 
                 AwattarApiData apiData = gson.fromJson(content, AwattarApiData.class);
+                if (apiData == null) {
+                    throw new AwattarApiException("@text/error.empty.data");
+                }
 
                 for (Datum d : apiData.data) {
                     // the API returns prices in €/MWh, we need €ct/kWh -> divide by 10 (100/1000)
