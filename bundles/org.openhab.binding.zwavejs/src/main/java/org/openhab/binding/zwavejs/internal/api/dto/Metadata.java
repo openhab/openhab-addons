@@ -14,6 +14,7 @@ package org.openhab.binding.zwavejs.internal.api.dto;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -42,4 +43,15 @@ public class Metadata {
     public boolean allowManualEntry;
     public boolean isFromConfig;
     public String description;
+
+    /**
+     * Compares the metadata fields that are used to generate openHAB channels and configuration descriptions.
+     * Metadata maintained solely for presentation or internal Z-Wave JS behavior is deliberately ignored.
+     */
+    public boolean hasSameGeneratedDefinition(Metadata other) {
+        return type == other.type && writeable == other.writeable && Objects.equals(label, other.label)
+                && Objects.equals(unit, other.unit) && Objects.equals(states, other.states)
+                && Objects.equals(min, other.min) && Objects.equals(max, other.max)
+                && Objects.equals(steps, other.steps) && Objects.equals(description, other.description);
+    }
 }

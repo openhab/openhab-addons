@@ -21,6 +21,7 @@ public class Event {
     public int nodeId;
     public Args args;
     public Node node;
+    public Node nodeState;
     public int ccId;
     public int endpointIndex;
     public Statistics statistics;
