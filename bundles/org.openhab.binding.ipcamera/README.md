@@ -127,7 +127,9 @@ Thing ipcamera:hikvision:West "West Camera"
 ### Reolink
 
 - NVR's made by Reolink have ONVIF disabled by default and may require a screen connected to the hardware to enable ONVIF, or newer firmwares may be able to do this via their app or web UI.
-- This binding will use the Reolink API for polling the alarms if the `nvrChannel` is 1 or higher and does not need ONVIF to be enabled. To use ONVIF event methods for the alarms, you can set `nvrChannel` to 0.
+- This binding will use the Reolink API for polling the alarms if `onvifPort` is set to 0 and does not need ONVIF to be enabled. Otherwise, ONVIF events are used for the alarms.
+- For Reolink things, `nvrChannel` is the zero-based input channel of a Reolink NVR or Home Hub; use 0 for a standalone camera.
+- A Reolink NVR or Home Hub sends the ONVIF events of all connected cameras to every subscriber. Only events whose source matches the `nvrChannel` of the Thing are processed, so create one Thing per camera with the IP of the NVR and the matching `nvrChannel`.
 - Cameras have ONVIF, RTSP and HTTP disabled by default, to enable these required features, do the following: DEVICE SETTINGS>NETWORK>ADVANCED>PORT SETTINGS> then turn these on leaving the default port number alone.
 - Consider setting the substream of the camera to be 4 FPS and to 640*360 as this will lower CPU load if using the ipcamera.mjpeg stream.
 
