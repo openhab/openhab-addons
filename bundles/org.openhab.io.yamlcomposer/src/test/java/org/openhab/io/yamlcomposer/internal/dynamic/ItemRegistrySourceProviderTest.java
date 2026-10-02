@@ -34,6 +34,11 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 
+/**
+ * Unit tests for {@link ItemRegistrySourceProvider}.
+ *
+ * @author Jimmy Tanagra - Initial contribution
+ */
 @NonNullByDefault
 class ItemRegistrySourceProviderTest {
 
