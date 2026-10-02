@@ -995,12 +995,16 @@ See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for fu
     - .remove(key) ⇒ <code>Previous * | null</code>
     - .exists(key) ⇒ <code>boolean</code>
   - .shared
-    - .get(key, defaultSupplier) ⇒ <code>* | null</code>
-    - .put(key, value) ⇒ <code>Previous * | null</code>
-    - .remove(key) ⇒ <code>Previous * | null</code>
+    - .get(key, defaultSupplier, jsifyResult) ⇒ <code>* | null</code>
+    - .put(key, value, jsifyResult) ⇒ <code>Previous * | null</code>
+    - .remove(key, jsifyResult) ⇒ <code>Previous * | null</code>
     - .exists(key) ⇒ <code>boolean</code>
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value.
+
+Values stored in `cache.shared` are automatically converted to Java types using [`utils.javaify`](#utils).
+The optional `jsifyResult` parameter (defaults to `true`) controls whether results returned from `cache.shared` are automatically converted back to JavaScript objects using [`utils.jsify`](#utils).
+Setting `jsifyResult = false` returns the raw Java object instead.
 
 **Example** _(Get a previously set value with a default value (times = 0))_
 
@@ -1310,6 +1314,14 @@ openHAB internally is a Java program.
 openHAB-JS converts between Java and JavaScript data types and reverse.
 
 See [openhab-js : utils](https://openhab.github.io/openhab-js/utils.html) for full API documentation.
+
+#### `utils.javaify(val)`
+
+Recursively converts JavaScript objects, primitives, arrays, maps, sets, dates (JS `Date` or `time.ZonedDateTime` / `time.Instant` / `time.Duration` / `time.LocalDate` / `time.LocalDateTime`), and openHAB JS objects (`Item`, `Thing`, `Quantity`, etc.) to their Java counterparts (`ArrayList`, `LinkedHashMap`, `LinkedHashSet`, `java.time.*`, Java `Item`, etc.).
+
+#### `utils.jsify(val)`
+
+Recursively converts Java objects, primitives, Lists, Sets, Maps, `java.time.*` temporal objects, and openHAB Java objects (`Item`, `Thing`, `QuantityType`, etc.) to their native JavaScript counterparts (`Array`, `Set`, `Object`, `time.*`, openHAB JS `Item`, `Thing`, `Quantity`, etc.).
 
 ### Environment
 
