@@ -106,6 +106,42 @@ public class PIDControllerTriggerType extends TriggerType {
                 .withLabel("I-part Upper Limit") //
                 .withDescription("The I-part will be max this value. Can be left empty for no limit.") //
                 .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_I_DECAY_TIME, Type.DECIMAL) //
+                .withRequired(false) //
+                .withMultiple(false) //
+                .withMinimum(BigDecimal.ZERO) //
+                .withDefault("0") //
+                .withLabel("I-part Decay Time") //
+                .withDescription("Time constant in seconds for fading out the I-part while the deviation from the "
+                        + "setpoint is no longer growing. After one decay time the I-part has fallen to about 37% of "
+                        + "its value, after three decay times to about 5%. Use this if the I-part stays at its limit "
+                        + "long after the demand has gone, which happens when the process settles slightly off the "
+                        + "setpoint and the error never changes sign, so the I-part is never unwound. While the "
+                        + "deviation is still growing the I-part accumulates normally and is not faded out. "
+                        + "0 (the default) disables the fade-out.") //
+                .withUnit("s") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_I_HOLD_ITEM, Type.TEXT) //
+                .withRequired(false) //
+                .withMultiple(false) //
+                .withContext(ITEM) //
+                .withLabel("I-part Hold Item") //
+                .withDescription("Switch or Contact Item that suspends the I-part while the actuator cannot act on "
+                        + "the process, for example a mixing damper whose supply is on the wrong side of the room "
+                        + "temperature. While the Item is ON (or CLOSED for a Contact) the I-part keeps its value but "
+                        + "stops growing, so it does not wind up during a period the controller has no influence "
+                        + "over. Leave empty to always integrate.") //
+                .build());
+        configDescriptions.add(ConfigDescriptionParameterBuilder.create(CONFIG_I_HOLD_DIRECTIONAL, Type.BOOLEAN) //
+                .withRequired(false) //
+                .withDefault("false") //
+                .withLabel("Directional I-part Hold") //
+                .withDescription("Suspend only the accumulation that takes the I-part further from zero while the "
+                        + "hold Item is active, and let a step that brings it back through. Use this when the hold "
+                        + "reports a lasting plant condition rather than a brief one: a symmetric hold also blocks "
+                        + "the recovery step, so the I-part stays at the value it reached even once the process "
+                        + "starts moving the right way again.") //
+                .build());
         configDescriptions.add(ConfigDescriptionParameterBuilder.create(P_INSPECTOR, Type.TEXT) //
                 .withRequired(false) //
                 .withMultiple(false) //
