@@ -374,6 +374,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         if (blu.precipitation != null) {
                             sensorData.precipitation = blu.precipitation;
                         }
+                        if (blu.capacitorVoltage != null) {
+                            sensorData.capacitorVoltage = blu.capacitorVoltage;
+                        }
                         if (profile.isWS90) {
                             ShellySensorTmp tmp = sensorData.tmp;
                             ShellySensorHum hum = sensorData.hum;

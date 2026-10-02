@@ -211,6 +211,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_GROUP_BATTERY = "battery";
     public static final String CHANNEL_SENSOR_BAT_LEVEL = "batteryLevel";
     public static final String CHANNEL_SENSOR_BAT_LOW = "lowBattery";
+    public static final String CHANNEL_SENSOR_CAPACITOR_VOLTAGE = "capacitorVoltage"; // BLU Weather
 
     public static final String CHANNEL_GROUP_LIGHT_CONTROL = "control";
     public static final String CHANNEL_LIGHT_COLOR_MODE = "mode";
@@ -339,6 +340,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_VAR = 2;
     public static final int DIGITS_KWH = 3;
     public static final int DIGITS_VOLT = 2;
+    public static final int DIGITS_VOLT_PRECISE = 3;
     public static final int DIGITS_AMPERE = 3;
     public static final int DIGITS_FREQUENCY = 2;
     public static final int DIGITS_TEMP = 1;
