@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.awattar.internal;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -32,13 +33,17 @@ import org.openhab.core.library.unit.Units;
 public class AwattarUtil {
 
     public static long getMillisToNextMinute(int mod, ZoneId zoneId) {
-        long now = Instant.now().toEpochMilli();
-        ZonedDateTime dt = ZonedDateTime.now(zoneId).truncatedTo(ChronoUnit.MINUTES);
+        return getMillisToNextMinute(mod, Clock.system(zoneId));
+    }
+
+    static long getMillisToNextMinute(int mod, Clock clock) {
+        ZonedDateTime now = ZonedDateTime.now(clock);
+        ZonedDateTime dt = now.truncatedTo(ChronoUnit.MINUTES);
         int min = dt.getMinute();
         int offset = min % mod;
         offset = offset == 0 ? mod : offset;
         dt = dt.plusMinutes(offset);
-        return dt.toInstant().toEpochMilli() - now;
+        return dt.toInstant().toEpochMilli() - now.toInstant().toEpochMilli();
     }
 
     public static ZonedDateTime getCalendarForHour(int hour, ZoneId zone) {
