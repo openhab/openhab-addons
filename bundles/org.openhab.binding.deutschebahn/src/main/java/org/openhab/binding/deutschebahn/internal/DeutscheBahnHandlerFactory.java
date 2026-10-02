@@ -20,14 +20,18 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1Impl;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link DeutscheBahnHandlerFactory} is responsible for creating things and thing handlers.
@@ -40,6 +44,13 @@ public class DeutscheBahnHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TIMETABLE_TYPE, TRAIN_TYPE);
 
+    private final TimeZoneProvider timeZoneProvider;
+
+    @Activate
+    public DeutscheBahnHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = timeZoneProvider;
+    }
+
     @Override
     public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -48,11 +59,13 @@ public class DeutscheBahnHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(final Thing thing) {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        final TimetableTimeConverter timeConverter = new TimetableTimeConverter(timeZoneProvider.getTimeZone());
 
         if (TIMETABLE_TYPE.equals(thingTypeUID)) {
-            return new DeutscheBahnTimetableHandler((Bridge) thing, TimetablesV1Impl::new, Date::new, null);
+            return new DeutscheBahnTimetableHandler((Bridge) thing, TimetablesV1Impl::new, Date::new, timeConverter,
+                    null);
         } else if (TRAIN_TYPE.equals(thingTypeUID)) {
-            return new DeutscheBahnTrainHandler(thing);
+            return new DeutscheBahnTrainHandler(thing, timeConverter);
         }
 
         return null;

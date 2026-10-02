@@ -16,6 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import org.openhab.binding.deutschebahn.internal.EventAttribute;
 import org.openhab.binding.deutschebahn.internal.EventAttributeSelection;
 import org.openhab.binding.deutschebahn.internal.EventType;
 import org.openhab.binding.deutschebahn.internal.TripLabelAttribute;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 
 /**
  * Tests for {@link FilterParser}
@@ -37,6 +39,8 @@ import org.openhab.binding.deutschebahn.internal.TripLabelAttribute;
  */
 @NonNullByDefault
 public class FilterParserTest {
+
+    private static final TimetableTimeConverter TIME_CONVERTER = new TimetableTimeConverter(ZoneId.of("Europe/Berlin"));
 
     private static final class FilterTokenSequenceBuilder {
 
@@ -91,7 +95,8 @@ public class FilterParserTest {
 
     private static void checkAttributeFilter(TimetableStopPredicate predicate, ChannelNameEquals channelEquals,
             EventType eventType, EventAttribute<?, ?> eventAttribute) {
-        checkAttributeFilter(predicate, channelEquals, new EventAttributeSelection(eventType, eventAttribute));
+        checkAttributeFilter(predicate, channelEquals,
+                new EventAttributeSelection(eventType, eventAttribute, TIME_CONVERTER));
     }
 
     private static void checkAttributeFilter(TimetableStopPredicate predicate, ChannelNameEquals channelEquals,
@@ -112,12 +117,16 @@ public class FilterParserTest {
         return (AndPredicate) predicate;
     }
 
+    private static TimetableStopPredicate parse(List<FilterToken> tokens) throws FilterParserException {
+        return FilterParser.parse(tokens, TIME_CONVERTER);
+    }
+
     @Test
     public void testParseSimple() throws FilterParserException {
         final List<FilterToken> input = new ArrayList<>();
         ChannelNameEquals channelEquals = new ChannelNameEquals(1, "trip", "number", Pattern.compile("20"));
         input.add(channelEquals);
-        final TimetableStopPredicate result = FilterParser.parse(input);
+        final TimetableStopPredicate result = parse(input);
         checkAttributeFilter(result, channelEquals, TripLabelAttribute.N);
     }
 
@@ -127,7 +136,7 @@ public class FilterParserTest {
         final ChannelNameEquals channelEquals01 = b.channelFilter("trip", "number", "20");
         b.and();
         final ChannelNameEquals channelEquals02 = b.channelFilter("trip", "number", "30");
-        final TimetableStopPredicate result = FilterParser.parse(b.build());
+        final TimetableStopPredicate result = parse(b.build());
         final AndPredicate andPredicate = assertAnd(result);
 
         checkAttributeFilter(andPredicate.getFirst(), channelEquals01, TripLabelAttribute.N);
@@ -140,7 +149,7 @@ public class FilterParserTest {
         final ChannelNameEquals channelEquals01 = b.channelFilter("trip", "number", "20");
         b.or();
         final ChannelNameEquals channelEquals02 = b.channelFilter("trip", "number", "30");
-        final TimetableStopPredicate result = FilterParser.parse(b.build());
+        final TimetableStopPredicate result = parse(b.build());
         final OrPredicate orPredicate = assertOr(result);
 
         checkAttributeFilter(orPredicate.getFirst(), channelEquals01, TripLabelAttribute.N);
@@ -159,7 +168,7 @@ public class FilterParserTest {
         b.bracketClose();
         final List<FilterToken> input = b.build();
 
-        final TimetableStopPredicate result = FilterParser.parse(input);
+        final TimetableStopPredicate result = parse(input);
         final AndPredicate andPredicate = assertAnd(result);
 
         checkAttributeFilter(andPredicate.getFirst(), channelEquals01, TripLabelAttribute.N);
@@ -188,7 +197,7 @@ public class FilterParserTest {
 
         final List<FilterToken> input = b.build();
 
-        final TimetableStopPredicate result = FilterParser.parse(input);
+        final TimetableStopPredicate result = parse(input);
         final OrPredicate orPredicate = assertOr(result);
 
         final AndPredicate firstAnd = assertAnd(orPredicate.getFirst());
@@ -204,79 +213,79 @@ public class FilterParserTest {
     public void testParseErrors() {
         final ChannelNameEquals channelEquals = new ChannelNameEquals(1, "trip", "number", Pattern.compile("20"));
         try {
-            FilterParser.parse(Collections.emptyList());
+            parse(Collections.emptyList());
             fail();
         } catch (FilterParserException e) {
         }
 
         try {
-            FilterParser.parse(builder().and().build());
+            parse(builder().and().build());
             fail();
         } catch (FilterParserException e) {
         }
 
         try {
-            FilterParser.parse(builder().or().build());
+            parse(builder().or().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().bracketOpen().build());
+            parse(builder().bracketOpen().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().bracketClose().build());
+            parse(builder().bracketClose().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().bracketOpen().bracketClose().build());
+            parse(builder().bracketOpen().bracketClose().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().bracketOpen().and().build());
+            parse(builder().bracketOpen().and().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().bracketOpen().and().build());
+            parse(builder().bracketOpen().and().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().channelFilter(channelEquals).and().bracketOpen().build());
+            parse(builder().channelFilter(channelEquals).and().bracketOpen().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().channelFilter(channelEquals).and().bracketClose().build());
+            parse(builder().channelFilter(channelEquals).and().bracketClose().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().channelFilter(channelEquals).or().bracketOpen().build());
+            parse(builder().channelFilter(channelEquals).or().bracketOpen().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().channelFilter(channelEquals).or().bracketClose().build());
+            parse(builder().channelFilter(channelEquals).or().bracketClose().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().channelFilter(channelEquals).and().build());
+            parse(builder().channelFilter(channelEquals).and().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(builder().channelFilter(channelEquals).or().build());
+            parse(builder().channelFilter(channelEquals).or().build());
             fail();
         } catch (FilterParserException e) {
         }
         try {
-            FilterParser.parse(Arrays.asList(channelEquals, channelEquals));
+            parse(Arrays.asList(channelEquals, channelEquals));
             fail();
         } catch (FilterParserException e) {
         }

@@ -30,13 +30,15 @@ import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 public class TimetableStopComparator implements Comparator<TimetableStop> {
 
     private final EventType eventSelection;
+    private final TimetableTimeConverter timeConverter;
 
     /**
      * Creates a new {@link TimetableStopComparator} that sorts {@link TimetableStop} according the Event selected
      * selected by the given {@link EventType}.
      */
-    public TimetableStopComparator(EventType eventSelection) {
+    public TimetableStopComparator(EventType eventSelection, TimetableTimeConverter timeConverter) {
         this.eventSelection = eventSelection;
+        this.timeConverter = timeConverter;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class TimetableStopComparator implements Comparator<TimetableStop> {
      * The time will be returned from the {@link Event} selected by the given {@link EventType}.
      * If the {@link TimetableStop} has no according {@link Event} the other Event will be used.
      */
-    private static Date determinePlannedDate(TimetableStop stop, EventType eventSelection) {
+    private Date determinePlannedDate(TimetableStop stop, EventType eventSelection) {
         Event selectedEvent = eventSelection.getEvent(stop);
         if (selectedEvent == null) {
             selectedEvent = eventSelection.getOppositeEvent(stop);
@@ -57,7 +59,7 @@ public class TimetableStopComparator implements Comparator<TimetableStop> {
         if (selectedEvent == null) {
             throw new AssertionError("one event is always present");
         }
-        final Date value = EventAttribute.PT.getValue(selectedEvent);
+        final Date value = EventAttribute.PT.getValue(selectedEvent, timeConverter);
         if (value == null) {
             throw new AssertionError("planned time cannot be null");
         }

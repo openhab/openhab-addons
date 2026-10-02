@@ -22,6 +22,7 @@ import org.openhab.binding.deutschebahn.internal.filter.FilterScanner;
 import org.openhab.binding.deutschebahn.internal.filter.FilterScannerException;
 import org.openhab.binding.deutschebahn.internal.filter.FilterToken;
 import org.openhab.binding.deutschebahn.internal.filter.TimetableStopPredicate;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetableTimeConverter;
 
 /**
  * The {@link DeutscheBahnTimetableConfiguration} for the Timetable bridge-type.
@@ -66,13 +67,14 @@ public class DeutscheBahnTimetableConfiguration {
     /**
      * Returns the additional configured {@link TimetableStopPredicate} or <code>null</code> if not specified.
      */
-    public @Nullable TimetableStopPredicate getAdditionalFilter() throws FilterScannerException, FilterParserException {
+    public @Nullable TimetableStopPredicate getAdditionalFilter(TimetableTimeConverter timeConverter)
+            throws FilterScannerException, FilterParserException {
         if (additionalFilter.isBlank()) {
             return null;
         } else {
             final FilterScanner scanner = new FilterScanner();
             final List<FilterToken> filterTokens = scanner.processInput(additionalFilter);
-            return FilterParser.parse(filterTokens);
+            return FilterParser.parse(filterTokens, timeConverter);
         }
     }
 }
