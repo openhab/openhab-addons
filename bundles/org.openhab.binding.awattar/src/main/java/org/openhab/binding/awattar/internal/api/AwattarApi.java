@@ -46,7 +46,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Thomas Leber - Initial contribution
  */
 @NonNullByDefault
-public class AwattarApi {
+public class AwattarApi implements MarketPriceApi {
     private final Logger logger = LoggerFactory.getLogger(AwattarApi.class);
 
     private static final String URL_DE = "https://api.awattar.de/v1/marketdata";
@@ -66,7 +66,7 @@ public class AwattarApi {
     /**
      * Generic exception for the aWATTar API.
      */
-    public class AwattarApiException extends Exception {
+    public class AwattarApiException extends MarketPriceApiException {
         private static final long serialVersionUID = 1L;
 
         public AwattarApiException(String message) {
@@ -137,6 +137,9 @@ public class AwattarApi {
                 SortedSet<AwattarPrice> result = new TreeSet<>(Comparator.comparing(AwattarPrice::timerange));
 
                 AwattarApiData apiData = gson.fromJson(content, AwattarApiData.class);
+                if (apiData == null) {
+                    throw new AwattarApiException("@text/error.empty.data");
+                }
 
                 for (Datum d : apiData.data) {
                     // the API returns prices in €/MWh, we need €ct/kWh -> divide by 10 (100/1000)
