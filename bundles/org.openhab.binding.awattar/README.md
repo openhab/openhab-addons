@@ -35,9 +35,10 @@ Auto discovery is not supported.
 | provider   | Price API: `awattar` (default) or `energy-charts`. Energy-Charts returns intervals based on its timestamp data.                                                                                                                                                                                                 |
 | vatPercent | Percentage of the value added tax to apply to net prices. Optional, defaults to 19.                                                                                                                                                                                                                             |
 | basePrice  | The net(!) base price you have to pay for every kWh. Optional, but you most probably want to set it based on you delivery contract.                                                                                                                                                                             |
-| timeZone   | The time zone the hour definitions of the things below refer to. Default is `CET`, as it corresponds to the aWATTar API. It is strongly recommended not to change this. However, if you do so, be aware that the prices delivered by the API will not cover a whole calendar day in this timezone. **Advanced** |
 | country    | The country prices should be received for. Use `DE` for Germany or `AT` for Austria. `DE` is the default.                                                                                                                                                                                                       |
 | serviceFee | The service fee in percent. Will be added to the total price. Will be calculated on top of the absolute price per hour. Default is `0`.                                                                                                                                                                         |
+
+Hour-based channel groups and Bestprice ranges use openHAB's configured time zone.
 
 ### Prices Thing
 
@@ -69,14 +70,11 @@ The bridge has two channels which support a time-series:
 | channel    | type               | description                                                                  |
 | ---------- | ------------------ | ---------------------------------------------------------------------------- |
 | market-net | Number:EnergyPrice | This net market price per kWh. This is directly taken from the selected API. |
-
-The bridge time-series uses the selected API's returned timestamps, so Energy-Charts quarter-hour records remain quarter-hour points. The prices thing's `todayXX` and `tomorrowXX` channel groups remain hourly for compatibility.
-
-Energy-Charts market data is provided by Bundesnetzagentur / SMARD under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The API response includes a `license_info` field with attribution details.
-| total-net | Number:EnergyPrice | Sum of net market price and configured base price |
+| total-net  | Number:EnergyPrice | Sum of net market price and configured base price |
 
 If you need gross prices, please use the [VAT profile](https://www.openhab.org/addons/transformations/vat/).
 The bridge time-series uses the selected API's returned timestamps, so Energy-Charts quarter-hour records remain quarter-hour points. The prices thing's `todayXX` and `tomorrowXX` channel groups remain hourly for compatibility.
+Energy-Charts market data is provided by Bundesnetzagentur / SMARD under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The API response includes a `license_info` field with attribution details.
 
 ### Prices Thing
 
@@ -102,13 +100,11 @@ All prices are available in each of the following channel groups:
 | channel   | type        | description                                                                                                                                                                                               |
 | --------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | active    | Switch      | `ON` if the current time is within the bestprice period, `OFF` otherwise. If `consecutive` was set to `false`, this channel may change between `ON` and `OFF` multiple times within the bestprice period. |
-| start     | DateTime    | The exact start time of the bestprice range. If `consecutive` was `false`, it is the start time of the first hour found.                                                                                  |
 | start     | DateTime    | The exact start time of the bestprice range. If `consecutive` was `false`, it is the start time of the first interval found.                                                                              |
 | end       | DateTime    | The exact end time of the bestprice range. If `consecutive` was `false`, it is the end time of the last interval found.                                                                                   |
 | hours     | String      | A comma-separated list of API price intervals in the bestprice period. Quarter-hour intervals include their minute in the label.                                                                          |
 | countdown | Number:Time | The time in minutes until start of the bestprice range. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available.                                     |
 | remaining | Number:Time | The time in minutes until end of the bestprice range. If start time passed. the channel will be set to `UNDEFINED` until the values for the next day are available.                                       |
-| hours     | String      | A comma separated list of hours this bestprice period contains.                                                                                                                                           |
 
 ## Full Example
 
