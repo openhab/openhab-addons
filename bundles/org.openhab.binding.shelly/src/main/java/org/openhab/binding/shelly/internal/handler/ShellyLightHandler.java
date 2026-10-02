@@ -330,7 +330,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         }
 
         // COLOR:
-        if (model.supportsColorChannel() && model.isColorDirty()) {
+        if (model.supportsColorChannel() && model.isColorDirty() && Mode.COLOR == model.getMode()) {
             int[] rgbw = model.getRGBX();
             parms.put(SHELLY_COLOR_RED, String.valueOf(rgbw[0]));
             parms.put(SHELLY_COLOR_GREEN, String.valueOf(rgbw[1]));
@@ -352,7 +352,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         }
 
         // BRIGHTNESS: align Gen 1/2 behaviour; only include brightness if light is on
-        if (model.supportsBrightnessChannel() && model.isBrightnessDirty()
+        if (model.supportsBrightnessChannel() && model.isBrightnessDirty() && Mode.WHITE == model.getMode()
                 && model.getBrightnessState() instanceof PercentType pct && OnOffType.ON == model.getOnOff(true)) {
             parms.put(SHELLY_COLOR_BRIGHTNESS, String.valueOf(pct.intValue()));
         }
