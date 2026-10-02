@@ -64,16 +64,22 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -91,6 +97,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeListener {
+
+    private static final int MIN_RSSI_ERROR_VALUE = 125;
 
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSNodeHandler.class);
     private final ZwaveJSTypeGenerator typeGenerator;
@@ -724,17 +732,40 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     }
 
     @Override
-    public void onStatisticsUpdated(Statistics statistics) {
-        Map<String, String> properties = thing.getProperties();
-        String lastSeenPropString = properties.getOrDefault(PROPERTY_NODE_LASTSEEN, "");
-        Instant lastSeenProp = lastSeenPropString.isEmpty() ? Instant.EPOCH : Instant.parse(lastSeenPropString);
-        Instant lastSeenStat = statistics.lastSeen;
+    public void onNodeAwake(Event event) {
+        logger.trace("Node {}. Awake", config.id);
+        updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_LAST_AWAKE), new DateTimeType(Instant.now()));
+    }
 
-        if (lastSeenStat != null && !lastSeenProp.equals(lastSeenStat)) {
-            properties = new HashMap<>(properties);
-            properties.put(PROPERTY_NODE_LASTSEEN, lastSeenStat.toString());
-            updateProperties(properties);
+    @Override
+    public void onStatisticsUpdated(Statistics statistics) {
+        updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_COMMANDS_TX), new DecimalType(statistics.commandsTX));
+        updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_COMMANDS_RX), new DecimalType(statistics.commandsRX));
+        updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_COMMANDS_DROPPED_TX),
+                new DecimalType(statistics.commandsDroppedTX));
+        updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_COMMANDS_DROPPED_RX),
+                new DecimalType(statistics.commandsDroppedRX));
+        updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_TIMEOUT_RESPONSE),
+                new DecimalType(statistics.timeoutResponse));
+
+        Instant lastSeen = statistics.lastSeen;
+        if (lastSeen != null) {
+            updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_LAST_SEEN), new DateTimeType(lastSeen));
         }
+        Double rtt = statistics.rtt;
+        if (rtt != null) {
+            updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_RTT),
+                    new QuantityType<>(rtt, MetricPrefix.MILLI(Units.SECOND)));
+        }
+        Integer rssi = statistics.rssi;
+        if (rssi != null) {
+            updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_RSSI), rssi >= MIN_RSSI_ERROR_VALUE ? UnDefType.UNDEF
+                    : new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS));
+        }
+    }
+
+    private ChannelUID getStatisticsChannelUID(String channelId) {
+        return new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATISTICS, channelId);
     }
 
     @Override
@@ -779,6 +810,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         // Initialize state for channels and configuration
         initializeChannelAndConfigState(node, result);
+        initializeStatisticsState(node);
 
         // Update properties in case the device had a firmware update or something
         updateNodeProperties(node);
@@ -806,9 +838,15 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         Map<String, Channel> existingChannelEntries = thing.getChannels().stream()
                 .collect(Collectors.toMap(channel -> channel.getUID().getId(), channel -> channel));
 
+        ThingHandlerCallback callback = getCallback();
+        if (callback != null) {
+            addMissingStatisticsChannels(builder, existingChannelEntries, callback);
+        }
+
         // remove channels that are no longer part of the thing
         for (Map.Entry<String, Channel> existingEntry : existingChannelEntries.entrySet()) {
-            if (!result.channels.containsKey(existingEntry.getKey())) {
+            if (!CHANNEL_GROUP_STATISTICS.equals(existingEntry.getValue().getUID().getGroupId())
+                    && !result.channels.containsKey(existingEntry.getKey())) {
                 logger.trace("Node {}. Removing {} channel", this.config.id, existingEntry.getKey());
                 builder.withoutChannel(existingEntry.getValue().getUID());
             }
@@ -831,6 +869,18 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
 
         return builder;
+    }
+
+    private void addMissingStatisticsChannels(ThingBuilder builder, Map<String, Channel> existingChannelEntries,
+            ThingHandlerCallback callback) {
+        ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_STATISTICS);
+        ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, CHANNEL_GROUP_STATISTICS);
+        for (ChannelBuilder channelBuilder : callback.createChannelBuilders(groupUID, groupTypeUID)) {
+            Channel channel = channelBuilder.build();
+            if (!existingChannelEntries.containsKey(channel.getUID().getId())) {
+                builder.withChannel(channel);
+            }
+        }
     }
 
     private void initializeChannelAndConfigState(Node node, ZwaveJSTypeGeneratorResult result) {
@@ -891,6 +941,17 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
     }
 
+    private void initializeStatisticsState(Node node) {
+        Statistics statistics = node.statistics;
+        if (statistics != null) {
+            onStatisticsUpdated(statistics);
+        }
+
+        if ((statistics == null || statistics.lastSeen == null) && node.lastSeen != null) {
+            updateState(getStatisticsChannelUID(CHANNEL_STATISTICS_LAST_SEEN), new DateTimeType(node.lastSeen));
+        }
+    }
+
     private void updateNodeProperties(Node node) {
         Map<String, String> origProperties = thing.getProperties();
         Map<String, String> properties = new HashMap<>(origProperties);
@@ -900,7 +961,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         properties.put(PROPERTY_NODE_IS_SECURE, String.valueOf(node.isSecure));
         properties.put(PROPERTY_VENDOR, node.deviceConfig != null ? node.deviceConfig.manufacturer : "Unknown");
         properties.put(PROPERTY_MODEL_ID, node.deviceConfig != null ? node.deviceConfig.label : "");
-        properties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen != null ? node.lastSeen.toString() : "");
+        properties.remove(PROPERTY_NODE_LASTSEEN);
         properties.put(PROPERTY_NODE_FREQ_LISTENING, String.valueOf(node.isFrequentListening));
         properties.put(PROPERTY_FIRMWARE_VERSION, node.firmwareVersion != null ? node.firmwareVersion : "");
 

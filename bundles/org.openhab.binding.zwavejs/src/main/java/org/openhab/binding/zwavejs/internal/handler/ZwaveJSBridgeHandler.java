@@ -191,6 +191,11 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                         nodeListener.onNodeAlive(eventMsg.event);
                     }
                     break;
+                case "wake up":
+                    if (nodeListener != null) {
+                        nodeListener.onNodeAwake(eventMsg.event);
+                    }
+                    break;
                 case "dead":
                     if (nodeListener != null) {
                         nodeListener.onNodeDead(eventMsg.event);

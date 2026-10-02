@@ -18,7 +18,6 @@ import static org.openhab.binding.zwavejs.internal.BindingConstants.PROPERTY_NOD
 import static org.openhab.binding.zwavejs.internal.BindingConstants.PROPERTY_NODE_IS_LISTENING;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.PROPERTY_NODE_IS_ROUTING;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.PROPERTY_NODE_IS_SECURE;
-import static org.openhab.binding.zwavejs.internal.BindingConstants.PROPERTY_NODE_LASTSEEN;
 import static org.openhab.core.thing.Thing.PROPERTY_FIRMWARE_VERSION;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 import static org.openhab.core.thing.Thing.PROPERTY_VENDOR;
@@ -88,7 +87,6 @@ public class NodeDiscoveryServiceTest {
         expectedProperties.put(PROPERTY_NODE_IS_SECURE, String.valueOf(node.isSecure));
         expectedProperties.put(PROPERTY_VENDOR, node.deviceConfig.manufacturer);
         expectedProperties.put(PROPERTY_MODEL_ID, node.deviceConfig.label);
-        expectedProperties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen.toString());
         expectedProperties.put(PROPERTY_NODE_FREQ_LISTENING, String.valueOf(node.isFrequentListening));
         expectedProperties.put(PROPERTY_FIRMWARE_VERSION, "");
 

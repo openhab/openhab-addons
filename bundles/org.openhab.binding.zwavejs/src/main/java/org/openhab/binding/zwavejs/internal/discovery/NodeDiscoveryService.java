@@ -124,7 +124,6 @@ public class NodeDiscoveryService extends AbstractThingHandlerDiscoveryService<Z
             properties.put(PROPERTY_NODE_IS_SECURE, String.valueOf(node.isSecure));
             properties.put(PROPERTY_VENDOR, manufacturer);
             properties.put(PROPERTY_MODEL_ID, product);
-            properties.put(PROPERTY_NODE_LASTSEEN, node.lastSeen != null ? node.lastSeen.toString() : "");
             properties.put(PROPERTY_NODE_FREQ_LISTENING, String.valueOf(node.isFrequentListening));
             properties.put(PROPERTY_FIRMWARE_VERSION, node.firmwareVersion != null ? node.firmwareVersion : "");
 
