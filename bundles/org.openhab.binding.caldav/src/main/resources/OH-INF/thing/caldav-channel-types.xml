@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="caldav"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="events">
+		<label>Events</label>
+		<description>All events and effective range information.</description>
+		<channels>
+			<channel id="json" typeId="events-json"/>
+			<channel id="count" typeId="event-count"/>
+			<channel id="range-start" typeId="range-start"/>
+			<channel id="range-end" typeId="range-end"/>
+			<channel id="truncated" typeId="events-truncated"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="current">
+		<label>Current Event</label>
+		<description>Information about the currently active event.</description>
+		<channels>
+			<channel id="active" typeId="current-active"/>
+			<channel id="uid" typeId="current-uid"/>
+			<channel id="title" typeId="current-title"/>
+			<channel id="description" typeId="current-description"/>
+			<channel id="location" typeId="current-location"/>
+			<channel id="start" typeId="current-start"/>
+			<channel id="end" typeId="current-end"/>
+			<channel id="all-day" typeId="current-all-day"/>
+			<channel id="organizer" typeId="current-organizer"/>
+			<channel id="categories" typeId="current-categories"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="next">
+		<label>Next Event</label>
+		<description>Information about the next event.</description>
+		<channels>
+			<channel id="uid" typeId="next-uid"/>
+			<channel id="title" typeId="next-title"/>
+			<channel id="description" typeId="next-description"/>
+			<channel id="location" typeId="next-location"/>
+			<channel id="start" typeId="next-start"/>
+			<channel id="end" typeId="next-end"/>
+			<channel id="all-day" typeId="next-all-day"/>
+			<channel id="organizer" typeId="next-organizer"/>
+			<channel id="categories" typeId="next-categories"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sync">
+		<label>Synchronization</label>
+		<description>Synchronization state and diagnostics.</description>
+		<channels>
+			<channel id="last" typeId="last-sync"/>
+			<channel id="status" typeId="sync-status"/>
+			<channel id="error" typeId="connection-error"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="events-json">
+		<item-type>String</item-type>
+		<label>Calendar Events</label>
+		<description>All event instances within the configured time range as a JSON array.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="event-count">
+		<item-type>Number</item-type>
+		<label>Event Count</label>
+		<description>Number of event instances within the configured time range.</description>
+		<state min="0" step="1" readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-start">
+		<item-type>DateTime</item-type>
+		<label>Range Start</label>
+		<description>Effective start of the current output range.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-end">
+		<item-type>DateTime</item-type>
+		<label>Range End</label>
+		<description>Exclusive end of the current output range.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="events-truncated">
+		<item-type>Switch</item-type>
+		<label>Event List Truncated</label>
+		<description>Indicates whether additional event instances were omitted because the configured maximum event count was
+			reached.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-active">
+		<item-type>Switch</item-type>
+		<label>Current Event Active</label>
+		<description>Indicates whether an event is currently active.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-uid">
+		<item-type>String</item-type>
+		<label>Current Event UID</label>
+		<description>UID of the currently active event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-title">
+		<item-type>String</item-type>
+		<label>Current Event Title</label>
+		<description>Title of the currently active event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-description">
+		<item-type>String</item-type>
+		<label>Current Event Description</label>
+		<description>Description of the currently active event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-location">
+		<item-type>String</item-type>
+		<label>Current Event Location</label>
+		<description>Location of the currently active event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-start">
+		<item-type>DateTime</item-type>
+		<label>Current Event Start</label>
+		<description>Start time of the currently active event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-end">
+		<item-type>DateTime</item-type>
+		<label>Current Event End</label>
+		<description>End time of the currently active event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-all-day">
+		<item-type>Switch</item-type>
+		<label>Current Event All Day</label>
+		<description>Indicates whether the currently active event is an all-day event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-organizer">
+		<item-type>String</item-type>
+		<label>Current Event Organizer</label>
+		<description>Organizer of the currently active event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="current-categories">
+		<item-type>String</item-type>
+		<label>Current Event Categories</label>
+		<description>Categories of the currently active event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="next-uid">
+		<item-type>String</item-type>
+		<label>Next Event UID</label>
+		<description>UID of the next event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-title">
+		<item-type>String</item-type>
+		<label>Next Event Title</label>
+		<description>Title of the next event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-description">
+		<item-type>String</item-type>
+		<label>Next Event Description</label>
+		<description>Description of the next event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-location">
+		<item-type>String</item-type>
+		<label>Next Event Location</label>
+		<description>Location of the next event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-start">
+		<item-type>DateTime</item-type>
+		<label>Next Event Start</label>
+		<description>Start time of the next event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-end">
+		<item-type>DateTime</item-type>
+		<label>Next Event End</label>
+		<description>End time of the next event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-all-day">
+		<item-type>Switch</item-type>
+		<label>Next Event All Day</label>
+		<description>Indicates whether the next event is an all-day event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-organizer">
+		<item-type>String</item-type>
+		<label>Next Event Organizer</label>
+		<description>Organizer of the next event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="next-categories">
+		<item-type>String</item-type>
+		<label>Next Event Categories</label>
+		<description>Categories of the next event.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-sync">
+		<item-type>DateTime</item-type>
+		<label>Last Synchronization</label>
+		<description>Time of the last complete successful synchronization.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sync-status">
+		<item-type>String</item-type>
+		<label>Synchronization Status</label>
+		<description>Current synchronization status of the calendar.</description>
+		<state readOnly="true">
+			<options>
+				<option value="SYNCING">Synchronizing</option>
+				<option value="OK">Synchronized</option>
+				<option value="PARTIAL">Partially Synchronized</option>
+				<option value="ERROR">Error</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="connection-error">
+		<item-type>String</item-type>
+		<label>Connection Error</label>
+		<description>Last communication or synchronization error reported for this calendar.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
