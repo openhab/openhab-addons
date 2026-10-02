@@ -4675,7 +4675,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | ambientBrightness          | Dimmer               | Ambient Brightness                       |            |
 | delayoff                   | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature           | Number               | Color Temperature                        |            |
-| colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode, use the nightlightMode channel for Night Light mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode"]` |
 | name                       | String               | Name                                     |            |
 | ambientPower               | Switch               | Ambient Power                            |            |
 | ambientColor               | Color                | Ambient Color                            |            |
@@ -4683,8 +4683,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | ambientColorflow           | Switch               | Ambient Color Flow                       |            |
 | ambientColorflowScene      | String               | Ambient Color Flow Scene                 | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | customScene                | String               | Set Scene                                |            |
-| ambientColorMode           | Number               | Ambient Color Mode                       |            |
+| ambientColorMode           | Number               | Ambient Color Mode                       | Value mapping `["1"="RGB mode","2"="CT mode","3"="HSV mode"]` |
 | nightlightBrightness       | Dimmer               | Nightlight Brightness                    |            |
+| nightlightMode             | Switch               | Night Light Mode                         | Switching off returns the light to CT mode |
 
 ### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling4-ambi">yeelink.light.ceiling4.ambi</a>) Channels
 
@@ -4773,7 +4774,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | ambientBrightness          | Dimmer               | Ambient Brightness                       |            |
 | delayoff                   | Number:Time          | Shutdown Timer                           |            |
 | colorTemperature           | Number               | Color Temperature                        |            |
-| colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode","5"="Night Light mode"]` |
+| colorMode                  | Number               | Color Mode                               | Note, currently only supporting switching to RGB or CT mode, use the nightlightMode channel for Night Light mode. Value mapping `["0"="Default","2"="CT mode","1"="RGB mode","3"="HSV mode","4"="Color Flow mode"]` |
 | name                       | String               | Name                                     |            |
 | ambientPower               | Switch               | Ambient Power                            |            |
 | ambientColor               | Color                | Ambient Color                            |            |
@@ -4781,8 +4782,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | ambientColorflow           | Switch               | Ambient Color Flow                       |            |
 | ambientColorflowScene      | String               | Ambient Color Flow Scene                 | Value mapping `["sunrise"="Sunrise","sunset"="Sunset","home"="Home","tea_time"="Tea Time","date_night"="Date Night","movie"="Movie","romance"="Romance","night_mode"="Night Mode","candle_flicker"="Candle Flicker","happy_birthday"="Happy Birthday","christmas"="Christmas","disco"="Disco","rgb"="RGB","lsd"="Psychedelic","temp"="Color Temperature Cycle","strobe"="Strobe","strobe_color"="Color Strobe","alarm"="Alarm","police"="Police","police2"="Police 2"]` |
 | customScene                | String               | Set Scene                                |            |
-| ambientColorMode           | Number               | Ambient Color Mode                       |            |
+| ambientColorMode           | Number               | Ambient Color Mode                       | Value mapping `["1"="RGB mode","2"="CT mode","3"="HSV mode"]` |
 | nightlightBrightness       | Dimmer               | Nightlight Brightness                    |            |
+| nightlightMode             | Switch               | Night Light Mode                         | Switching off returns the light to CT mode |
 
 ### Yeelight LED Ceiling Ambi Lamp (<a name="yeelink-light-ceiling10-ambi">yeelink.light.ceiling10.ambi</a>) Channels
 
@@ -11636,6 +11638,7 @@ String ambientColorflowScene "Ambient Color Flow Scene" (G_light) {channel="miio
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
 Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Switch nightlightMode "Night Light Mode" (G_light) {channel="miio:basic:light:nightlightMode"}
 ```
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling4.ambi) item file lines
@@ -11755,6 +11758,7 @@ String ambientColorflowScene "Ambient Color Flow Scene" (G_light) {channel="miio
 String customScene "Set Scene" (G_light) {channel="miio:basic:light:customScene"}
 Number ambientColorMode "Ambient Color Mode" (G_light) {channel="miio:basic:light:ambientColorMode"}
 Dimmer nightlightBrightness "Nightlight Brightness" (G_light) {channel="miio:basic:light:nightlightBrightness"}
+Switch nightlightMode "Night Light Mode" (G_light) {channel="miio:basic:light:nightlightMode"}
 ```
 
 ### Yeelight LED Ceiling Ambi Lamp (yeelink.light.ceiling10.ambi) item file lines
