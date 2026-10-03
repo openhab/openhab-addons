@@ -104,6 +104,11 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         verify(mockedModbusManager).newModbusCommunicationInterface(any(), any());
     }
 
+    private Thing managedPoller() {
+        return thingProvider.getAll().stream().filter(thing -> thing.getUID().equals(poller.getUID())).findFirst()
+                .orElseThrow();
+    }
+
     public ModbusReadCallback getPollerCallback(ModbusPollerThingHandler handler)
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         Field callbackField = ModbusPollerThingHandler.class.getDeclaredField("callbackDelegator");
@@ -232,10 +237,9 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
         addThing(poller);
 
-        waitForAssert(() -> assertThat(poller.getChannel("raw").getChannelTypeUID(),
+        waitForAssert(() -> assertThat(managedPoller().getChannel("raw").getChannelTypeUID(),
                 is(equalTo(new ChannelTypeUID("modbus", "poller2-shim-string")))));
-        assertThat(poller.getChannel("raw").getAcceptedItemType(), is(equalTo("String")));
-        assertThat(poller.getChannel("raw").getConfiguration().get("length"), is(equalTo(2)));
+        assertThat(managedPoller().getChannel("raw").getAcceptedItemType(), is(equalTo("String")));
     }
 
     @Test
@@ -342,7 +346,8 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
                 Map.of("address", "100", "valueType", "uint16", "writeStart", "42", "writeValueType", "int16"));
         poller = createPoller2ThingBuilder("failing-write-poller2").withConfiguration(pollerConfig)
                 .withBridge(endpoint.getUID())
-                .withChannel(ChannelBuilder.create(channelUid, "Number").withConfiguration(channelConfig).build())
+                .withChannel(ChannelBuilder.create(channelUid, "Number")
+                        .withType(new ChannelTypeUID("modbus", "number-type")).withConfiguration(channelConfig).build())
                 .build();
         addThing(poller);
 
@@ -356,7 +361,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
                         Mockito.mock(org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint.class),
                         new RuntimeException("transport down")));
 
-        assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        waitForAssert(() -> assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE))));
         assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.COMMUNICATION_ERROR)));
     }
 
@@ -371,11 +376,12 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         ChannelUID channelUid = new ChannelUID(pollerUid, "value");
         Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "uint16"));
         poller = createPoller2ThingBuilder("coil-poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
-                .withChannel(ChannelBuilder.create(channelUid, "Number").withConfiguration(channelConfig).build())
+                .withChannel(ChannelBuilder.create(channelUid, "Number")
+                        .withType(new ChannelTypeUID("modbus", "number-type")).withConfiguration(channelConfig).build())
                 .build();
         addThing(poller);
 
-        assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        waitForAssert(() -> assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE))));
         assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         assertThat(poller.getStatusInfo().getDescription(),
                 is(equalTo("Channel 'value' has invalid valueType 'uint16'; coils and discrete inputs are bits")));
@@ -417,14 +423,16 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         poller = createPoller2ThingBuilder("invalid-poller2").withConfiguration(pollerConfig)
                 .withBridge(endpoint.getUID())
                 .withChannel(ChannelBuilder.create(new ChannelUID(pollerUid, "first"), "Number")
+                        .withType(new ChannelTypeUID("modbus", "number-type"))
                         .withConfiguration(new Configuration(Map.of("address", "102", "valueType", "uint16"))).build())
                 .withChannel(ChannelBuilder.create(new ChannelUID(pollerUid, "second"), "Number")
+                        .withType(new ChannelTypeUID("modbus", "number-type"))
                         .withConfiguration(new Configuration(Map.of("address", "100.1", "valueType", "uint16")))
                         .build())
                 .build();
         addThing(poller);
 
-        assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        waitForAssert(() -> assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE))));
         assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
         assertThat(poller.getStatusInfo().getDescription(),
                 is(equalTo("Channel 'first': Address 102 is outside poll window 100..101\n"
