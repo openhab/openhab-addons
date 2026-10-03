@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = UpnpDiscoveryParticipant.class, configurationPid = "discovery.philipsair", immediate = true)
 public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirUpnpDiscoveryParticipant.class);
-    private boolean isAutoDiscoveryEnabled = true;
+    private volatile boolean isAutoDiscoveryEnabled = true;
 
     @Activate
     protected void activate(Map<String, Object> properties) {
@@ -78,6 +78,8 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
+        // a participant cannot tell a manual scan from a background one, so the setting suppresses both, as in the
+        // other UPnP participants with this setting
         if (!isAutoDiscoveryEnabled) {
             return null;
         }

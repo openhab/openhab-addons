@@ -162,6 +162,8 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
         assertNull(participant.createResult(device));
     }
 
+    // Intended: a participant cannot tell a manual scan from a background one, so the setting suppresses both. This is
+    // documented in the README, as for the other UPnP participants with this setting.
     @Test
     public void noResultWhenBackgroundDiscoveryIsDisabled() throws Exception {
         stubResultDetails();

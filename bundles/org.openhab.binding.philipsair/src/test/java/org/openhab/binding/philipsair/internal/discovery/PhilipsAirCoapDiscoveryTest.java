@@ -51,7 +51,9 @@ public class PhilipsAirCoapDiscoveryTest {
 
     @AfterEach
     public void tearDown() {
-        discovery.deactivate();
+        if (discovery != null) {
+            discovery.deactivate();
+        }
     }
 
     @Test

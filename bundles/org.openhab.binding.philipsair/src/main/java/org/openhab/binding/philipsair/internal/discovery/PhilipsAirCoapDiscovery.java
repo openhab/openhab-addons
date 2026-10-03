@@ -143,6 +143,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         this.client.setEndpoint(endpoint);
     }
 
+    // Overridden only to carry the DS annotations, as AbstractDiscoveryService has none and they are not inherited.
     @Override
     @Activate
     protected void activate(@Nullable Map<String, Object> configProperties) {

@@ -54,24 +54,26 @@ Select `basic` again if the device does not behave as expected.
 
 A profile only applies to a device with the field names it is for, otherwise the profile is detected.
 
-| Channel                                     | `basic`                    | `unicorn`                                | `ac3737`                    | `ac1715`, `ac0850`          |
-|---------------------------------------------|----------------------------|------------------------------------------|-----------------------------|-----------------------------|
-| `power`                                     | read and write             | read and write                           | read and write              | read and write              |
-| `child-lock`                                | read and write<sup>1</sup> | read and write                           | read and write              | read and write              |
-| `pm25`, `allergen-index`                    | read only                  | read only                                | read only                   | read only                   |
-| `humidity`, `temperature`, `error-code`     | read only                  | read only                                | read only                   | read only                   |
-| `tvoc`                                      | read only                  | read only                                | read only                   | read only                   |
-| `air-quality-threshold`, `displayed-index`  | read only                  | read and write                           | read and write              | read and write              |
-| `mode`                                      | not supported              | `P` (auto), `S` (sleep)                  | `P`, `S`                    | `P`, `S`                    |
-| `fan-speed`                                 | not supported              | `1` to `5`, `m` (medium), `t` (turbo)    | `1`, `2`, `t`               | `1`, `2`, `t` (`t` only: ac0850) |
-| `timer`                                     | not supported              | 0 (off) to 12 hours                      | not supported               | not supported               |
-| `timer-remaining`                           | read only<sup>2</sup>      | read only                                | read only                   | not supported               |
-| `target-humidity`                           | read only<sup>2</sup>      | read and write                           | read and write              | not supported               |
-| `beep`, `standby-sensors`, `display`, `lamp-mode` | not supported        | read and write                           | not supported               | not supported               |
-| `display-brightness`                        | not supported              | `0` (off), `101` (auto), `115` (low), `123` (bright) | `0`, `50`, `100` | not supported       |
-| `allergy-sleep`                             | not supported              | read and write                           | read and write              | not supported               |
-| `pre-filter-life`, `hepa-filter-life`       | read only                  | read only                                | read only                   | read only                   |
-| all other channels                          | not supported, they stay `NULL` | not supported                       | not supported               | not supported               |
+| Channel                                    | `basic`                         | `unicorn`                                            | `ac0950`             | `ac3737`         | `ac1715`, `ac0850`               |
+|--------------------------------------------|---------------------------------|------------------------------------------------------|----------------------|------------------|----------------------------------|
+| `power`                                    | read and write                  | read and write                                       | read and write       | read and write   | read and write                   |
+| `child-lock`                               | read and write<sup>1</sup>      | read and write                                       | read and write       | read and write   | read and write                   |
+| `pm25`, `allergen-index`                   | read only                       | read only                                            | read only            | read only        | read only                        |
+| `error-code`                               | read only                       | read only                                            | read only            | read only        | read only                        |
+| `humidity`, `temperature`                  | read only                       | read only                                            | not reported         | read only        | read only                        |
+| `tvoc`                                     | read only                       | read only                                            | read only            | read only        | read only                        |
+| `air-quality-threshold`, `displayed-index` | read only                       | read and write                                       | read and write       | read and write   | read and write                   |
+| `mode`                                     | not supported                   | `P` (auto), `S` (sleep)                              | `P`, `S`             | `P`, `S`         | `P`, `S`                         |
+| `fan-speed`                                | not supported                   | `1` to `5`, `m` (medium), `t` (turbo)                | `1` to `5`, `m`, `t` | `1`, `2`, `t`    | `1`, `2`, `t` (`t` only: ac0850) |
+| `timer`                                    | not supported                   | 0 (off) to 12 hours                                  | 0 (off) to 12 hours  | not supported    | not supported                    |
+| `timer-remaining`                          | read only<sup>2</sup>           | read only                                            | read only            | read only        | not supported                    |
+| `target-humidity`                          | read only<sup>2</sup>           | read and write                                       | not supported        | read and write   | not supported                    |
+| `beep`, `standby-sensors`                  | not supported                   | read and write                                       | read and write       | not supported    | not supported                    |
+| `display`, `lamp-mode`                     | not supported                   | read and write                                       | not supported        | not supported    | not supported                    |
+| `display-brightness`                       | not supported                   | `0` (off), `101` (auto), `115` (low), `123` (bright) | `0`, `115`, `123`    | `0`, `50`, `100` | not supported                    |
+| `allergy-sleep`                            | not supported                   | read and write                                       | not supported        | read and write   | not supported                    |
+| `pre-filter-life`, `hepa-filter-life`      | read only                       | read only                                            | read only            | read only        | read only                        |
+| all other channels                         | not supported, they stay `NULL` | not supported                                        | not supported        | not supported    | not supported                    |
 
 - <sup>1</sup> The older field names (`D03-xx`) only support reading the child lock.
 - <sup>2</sup> Only the newer field names (`D03xxx`).
@@ -136,6 +138,7 @@ discovery.philipsair:background=false
 ```
 
 This setting applies to both the UPnP and the CoAP discovery.
+With background discovery disabled, HTTP devices (UPnP) are not reported by a manual scan either, while CoAP devices are still found by a manual scan.
 
 ## Thing Configuration
 
