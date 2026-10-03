@@ -78,4 +78,12 @@ Fragment-Host: org.openhab.io.yamlcomposer
 	org.apache.commons.commons-net;version='[3.13.0,3.13.1)',\
 	org.apache.commons.lang3;version='[3.20.0,3.20.1)',\
 	ch.qos.logback.classic;version='[1.5.38,1.5.39)',\
-	ch.qos.logback.core;version='[1.5.38,1.5.39)'
+	ch.qos.logback.core;version='[1.5.38,1.5.39)',\
+	org.openhab.core.addon;version='[5.3.0,5.3.1)',\
+	org.openhab.core.config.core;version='[5.3.0,5.3.1)',\
+	org.openhab.core.io.console;version='[5.3.0,5.3.1)',\
+	org.openhab.core.semantics;version='[5.3.0,5.3.1)',\
+	org.openhab.core.thing;version='[5.3.0,5.3.1)',\
+	org.openhab.core.transform;version='[5.3.0,5.3.1)',\
+	org.osgi.service.component.annotations;version='[1.5.1,1.5.2)',\
+	xstream;version='[1.4.21,1.4.22)'
