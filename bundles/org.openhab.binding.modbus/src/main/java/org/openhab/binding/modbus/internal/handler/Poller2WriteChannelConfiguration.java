@@ -45,13 +45,25 @@ public final class Poller2WriteChannelConfiguration {
         if (writeStart == null || writeStart instanceof String text && text.isBlank()) {
             return new Poller2WriteChannelConfiguration(null, null, null);
         }
-        if (!(writeStart instanceof String addressText) || !addressText.matches("[0-9]+")) {
+        if (!(writeStart instanceof String addressText)) {
             return error("Channel '%s' has invalid writeStart '%s'; expected a non-negative register or coil address"
                     .formatted(channelId, writeStart));
         }
         final int address;
+        int bit = -1;
         try {
-            address = Integer.parseInt(addressText);
+            String[] addressAndBit = addressText.split("\\.", -1);
+            if (addressAndBit.length == 1 && addressAndBit[0].matches("[0-9]+")) {
+                address = Integer.parseInt(addressAndBit[0]);
+            } else if (addressAndBit.length == 2 && addressAndBit[0].matches("[0-9]+")
+                    && addressAndBit[1].matches("[0-9]+")) {
+                address = Integer.parseInt(addressAndBit[0]);
+                bit = Integer.parseInt(addressAndBit[1]);
+            } else {
+                return error(
+                        "Channel '%s' has invalid writeStart '%s'; expected a non-negative register or coil address"
+                                .formatted(channelId, addressText));
+            }
         } catch (IllegalArgumentException e) {
             return error("Channel '%s' has invalid writeStart '%s'; expected a non-negative register or coil address"
                     .formatted(channelId, addressText));
@@ -64,6 +76,9 @@ public final class Poller2WriteChannelConfiguration {
         }
         final ValueType valueType;
         if (coil) {
+            if (bit >= 0) {
+                return error("Channel '%s' coil writes do not support a bit sub-index".formatted(channelId));
+            }
             Object configuredValueType = configuration.get("writeValueType");
             if (configuredValueType != null && !"bit".equals(configuredValueType)) {
                 return error("Channel '%s' coil writes only support writeValueType 'bit'".formatted(channelId));
@@ -74,14 +89,23 @@ public final class Poller2WriteChannelConfiguration {
             if (!(configuredValueType instanceof String valueTypeText) || valueTypeText.isBlank()) {
                 return error("Channel '%s' is missing required configuration 'writeValueType'".formatted(channelId));
             }
-            try {
-                valueType = ValueType.fromConfigValue(valueTypeText);
-            } catch (IllegalArgumentException e) {
-                return error("Channel '%s' has invalid writeValueType '%s'".formatted(channelId, valueTypeText));
-            }
-            if (valueType.getBits() < Short.SIZE) {
-                return error("Channel '%s' holding-register writes require writeValueType of at least 16 bits"
-                        .formatted(channelId));
+            if (bit >= 0) {
+                if (bit >= Short.SIZE || !"bit".equals(valueTypeText)) {
+                    return error(
+                            "Channel '%s' holding-register bit writes require writeStart X.Y with Y from 0 to 15 and writeValueType 'bit'"
+                                    .formatted(channelId));
+                }
+                valueType = ValueType.BIT;
+            } else {
+                try {
+                    valueType = ValueType.fromConfigValue(valueTypeText);
+                } catch (IllegalArgumentException e) {
+                    return error("Channel '%s' has invalid writeValueType '%s'".formatted(channelId, valueTypeText));
+                }
+                if (valueType.getBits() < Short.SIZE) {
+                    return error("Channel '%s' holding-register writes require writeValueType of at least 16 bits"
+                            .formatted(channelId));
+                }
             }
         }
         int maxTries = intConfiguration(configuration, "writeMaxTries", 3);
@@ -90,9 +114,10 @@ public final class Poller2WriteChannelConfiguration {
         }
         boolean writeMultiple = Boolean.TRUE.equals(configuration.get("writeMultipleEvenWithSingleRegisterOrCoil"));
         List<String> transformation = transformation(configuration.get("writeTransform"));
-        return new Poller2WriteChannelConfiguration(
-                new Poller2WriteChannel(address, valueType, transformation, maxTries, writeMultiple, coil), valueType,
-                null);
+        Poller2WriteChannel channel = bit >= 0
+                ? new Poller2WriteChannel(address, bit, transformation, maxTries, writeMultiple)
+                : new Poller2WriteChannel(address, valueType, transformation, maxTries, writeMultiple, coil);
+        return new Poller2WriteChannelConfiguration(channel, valueType, null);
     }
 
     private static int intConfiguration(Map<String, Object> configuration, String key, int defaultValue) {

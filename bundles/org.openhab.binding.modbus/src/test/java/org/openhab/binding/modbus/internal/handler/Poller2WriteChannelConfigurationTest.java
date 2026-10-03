@@ -56,4 +56,15 @@ public class Poller2WriteChannelConfigurationTest {
 
         assertEquals(ValueType.BIT, configuration.valueType().orElseThrow());
     }
+
+    @Test
+    public void createsHoldingRegisterBitWriteEndpointForDottedWriteStart() {
+        Poller2WriteChannelConfiguration configuration = Poller2WriteChannelConfiguration.create("enabled",
+                Map.of("writeStart", "100.3", "writeValueType", "bit"),
+                ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
+
+        assertTrue(configuration.error().isEmpty());
+        assertTrue(configuration.channel().isPresent());
+        assertEquals(ValueType.BIT, configuration.valueType().orElseThrow());
+    }
 }

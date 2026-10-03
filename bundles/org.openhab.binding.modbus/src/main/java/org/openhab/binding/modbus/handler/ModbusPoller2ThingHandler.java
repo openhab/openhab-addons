@@ -35,6 +35,7 @@ import org.openhab.binding.modbus.internal.handler.Poller2WriteChannel;
 import org.openhab.binding.modbus.internal.handler.Poller2WriteChannelConfiguration;
 import org.openhab.binding.modbus.internal.handler.Poller2WriteRequest;
 import org.openhab.binding.modbus.internal.handler.Poller2WriteResult;
+import org.openhab.binding.modbus.internal.handler.PollerRegisterCache;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.core.io.transport.modbus.AsyncModbusWriteResult;
@@ -70,6 +71,7 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
     private volatile Map<ChannelUID, Poller2BitChannel> bitChannels = Map.of();
     private volatile Map<ChannelUID, Poller2RawChannel> rawChannels = Map.of();
     private volatile Map<ChannelUID, Poller2WriteChannel> writeChannels = Map.of();
+    private final PollerRegisterCache registerCache = new PollerRegisterCache();
     private volatile int pollStart;
 
     public ModbusPoller2ThingHandler(Bridge bridge, ModbusChannelTypeProvider channelTypeProvider) {
@@ -191,7 +193,7 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
         if (readRequest == null) {
             return;
         }
-        writeChannel.requestFor(command, readRequest.getUnitID()).ifPresent(request -> {
+        writeChannel.requestFor(command, readRequest.getUnitID(), registerCache).ifPresent(request -> {
             logger.trace("Submitting poller2 write task {}", request);
             communication.submitOneTimeWrite(request, this::onWriteResponse, this::onWriteFailure);
         });
@@ -219,7 +221,7 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
             return Poller2WriteResult.NOT_READY;
         }
         Optional<ModbusWriteRequestBlueprint> writeRequest = writeChannel.requestFor(actionRequest.command(),
-                readRequest.getUnitID());
+                readRequest.getUnitID(), registerCache);
         if (writeRequest.isEmpty()) {
             return Poller2WriteResult.INVALID_COMMAND;
         }
@@ -241,6 +243,7 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
 
     @Override
     protected void onPollResult(AsyncModbusReadResult result) {
+        result.getRegisters().ifPresent(registers -> registerCache.acceptSuccessfulPoll(pollStart, registers));
         result.getRegisters().ifPresent(registers -> channels
                 .forEach((uid, channel) -> updateState(uid, channel.acceptRegisters(registers, pollStart))));
         result.getRegisters().ifPresent(registers -> rawChannels

@@ -24,7 +24,7 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-final class PollerRegisterCache {
+public final class PollerRegisterCache {
 
     private int start;
     private @Nullable ModbusRegisterArray registers;
@@ -63,12 +63,8 @@ final class PollerRegisterCache {
             return Optional.empty();
         }
         int offset = address - start;
-        int[] updated = new int[localRegisters.size()];
-        for (int index = 0; index < updated.length; index++) {
-            updated[index] = localRegisters.getRegister(index);
-        }
-        updated[offset] = set ? updated[offset] | 1 << bit : updated[offset] & ~(1 << bit);
-        registers = new ModbusRegisterArray(updated);
-        return Optional.of(new ModbusRegisterArray(updated[offset]));
+        int value = localRegisters.getRegister(offset);
+        int updated = set ? value | 1 << bit : value & ~(1 << bit);
+        return Optional.of(new ModbusRegisterArray(updated));
     }
 }

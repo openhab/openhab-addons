@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.internal.ModbusTransformation;
 import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
@@ -40,6 +41,7 @@ public final class Poller2WriteChannel {
     private final int maxTries;
     private final boolean writeMultiple;
     private final boolean coil;
+    private final int bit;
 
     public Poller2WriteChannel(int address, ValueType valueType, List<String> writeTransform, int maxTries,
             boolean writeMultiple) {
@@ -48,15 +50,30 @@ public final class Poller2WriteChannel {
 
     public Poller2WriteChannel(int address, ValueType valueType, List<String> writeTransform, int maxTries,
             boolean writeMultiple, boolean coil) {
+        this(address, valueType, writeTransform, maxTries, writeMultiple, coil, -1);
+    }
+
+    public Poller2WriteChannel(int address, int bit, List<String> writeTransform, int maxTries, boolean writeMultiple) {
+        this(address, ValueType.BIT, writeTransform, maxTries, writeMultiple, false, bit);
+    }
+
+    private Poller2WriteChannel(int address, ValueType valueType, List<String> writeTransform, int maxTries,
+            boolean writeMultiple, boolean coil, int bit) {
         this.address = address;
         this.valueType = valueType;
         this.transformation = new ModbusTransformation(writeTransform);
         this.maxTries = maxTries;
         this.writeMultiple = writeMultiple;
         this.coil = coil;
+        this.bit = bit;
     }
 
     public Optional<ModbusWriteRequestBlueprint> requestFor(Command command, int slaveId) {
+        return requestFor(command, slaveId, null);
+    }
+
+    public Optional<ModbusWriteRequestBlueprint> requestFor(Command command, int slaveId,
+            @Nullable PollerRegisterCache registerCache) {
         Command magnitudeCommand = command instanceof QuantityType<?> quantity
                 ? new DecimalType(quantity.toBigDecimal())
                 : command;
@@ -68,6 +85,15 @@ public final class Poller2WriteChannel {
         if (coil) {
             return ModbusBitUtilities.translateCommand2Boolean(transformed.get()).<ModbusWriteRequestBlueprint> map(
                     value -> new ModbusWriteCoilRequestBlueprint(slaveId, address, value, writeMultiple, maxTries));
+        }
+        if (bit >= 0) {
+            if (registerCache == null) {
+                return Optional.empty();
+            }
+            return ModbusBitUtilities.translateCommand2Boolean(transformed.get())
+                    .flatMap(value -> registerCache.overlayRegisterBit(address, bit, value))
+                    .map(registers -> new ModbusWriteRegisterRequestBlueprint(slaveId, address, registers,
+                            writeMultiple, maxTries));
         }
         try {
             ModbusRegisterArray registers = ModbusBitUtilities.commandToRegisters(transformed.get(), valueType);

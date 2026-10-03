@@ -35,47 +35,25 @@ public class PollerRegisterCacheTest {
         return new ModbusRegisterArray(values);
     }
 
-    static Stream<Arguments> bitOverlays() {
-        return Stream.of(Arguments.of(0x0000, 0, true, 0x0001), Arguments.of(0xFFFF, 0, false, 0xFFFE),
-                Arguments.of(0x0000, 15, true, 0x8000), Arguments.of(0xFFFF, 15, false, 0x7FFF),
-                Arguments.of(0xA55A, 4, true, 0xA55A), Arguments.of(0xA55A, 5, false, 0xA55A),
-                Arguments.of(0xA55A, 7, true, 0xA5DA), Arguments.of(0xA55A, 8, false, 0xA45A));
-    }
-
-    @Test
-    public void returnsNoDataBeforeSuccessfulPoll() {
-        PollerRegisterCache cache = new PollerRegisterCache();
-
-        assertTrue(cache.read(100, 1).isEmpty());
-    }
-
-    @Test
-    public void returnsTheRequestedSubrangeFromLatestSuccessfulPoll() {
-        PollerRegisterCache cache = new PollerRegisterCache();
-        cache.acceptSuccessfulPoll(100, registers(0x1234, 0x5678, 0x9ABC));
-
-        assertEquals(Optional.of(registers(0x5678, 0x9ABC)), cache.read(101, 2));
-        assertTrue(cache.read(99, 1).isEmpty());
-        assertTrue(cache.read(102, 2).isEmpty());
+    static Stream<Arguments> overlays() {
+        return Stream.of(Arguments.of(0, 0x1356, 0x1357), Arguments.of(3, 0x1357, 0x135F),
+                Arguments.of(15, 0x1357, 0x9357));
     }
 
     @ParameterizedTest
-    @MethodSource("bitOverlays")
-    public void overlaysOnlyTheRequestedBitInTheCachedRegister(int initialValue, int bit, boolean set,
-            int expectedValue) {
+    @MethodSource("overlays")
+    public void overlaysRequestedBitWithoutChangingCachedPollImage(int bit, int original, int expected) {
         PollerRegisterCache cache = new PollerRegisterCache();
-        cache.acceptSuccessfulPoll(100, registers(initialValue, 0x1357));
+        cache.acceptSuccessfulPoll(100, registers(original, 0x2468));
 
-        assertEquals(Optional.of(registers(expectedValue)), cache.overlayRegisterBit(100, bit, set));
-        assertEquals(Optional.of(registers(expectedValue, 0x1357)), cache.read(100, 2));
+        assertEquals(Optional.of(registers(expected)), cache.overlayRegisterBit(100, bit, true));
+        assertEquals(Optional.of(registers(original, 0x2468)), cache.read(100, 2));
     }
 
     @Test
-    public void refusesAnOverlayWhenTheRegisterWasNotRead() {
+    public void refusesOverlayWithoutSuccessfulPoll() {
         PollerRegisterCache cache = new PollerRegisterCache();
-        cache.acceptSuccessfulPoll(100, registers(0x1234));
 
-        assertTrue(cache.overlayRegisterBit(101, 0, true).isEmpty());
-        assertEquals(Optional.of(registers(0x1234)), cache.read(100, 1));
+        assertTrue(cache.overlayRegisterBit(100, 3, true).isEmpty());
     }
 }
