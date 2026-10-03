@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -88,6 +89,8 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
     private static final String EVENT_DEVICE_REGISTRY_UPDATED = "device_registry_updated";
     private static final String EVENT_ENTITY_REGISTRY_UPDATED = "entity_registry_updated";
     private static final String EVENT_AREA_REGISTRY_UPDATED = "area_registry_updated";
+
+    private static final Pattern REDACT_PATTERN = Pattern.compile("(?i)((?:token|code|secret)\"\\s*:\\s*)\"[^\"]*\"");
 
     private final Logger logger = LoggerFactory.getLogger(HomeAssistantWebSocketClient.class);
     private final WebSocketClient wsClient;
@@ -244,7 +247,9 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
         try {
             RemoteEndpoint remote = localSession.getRemote();
             synchronized (sendLock) {
-                logger.trace("SEND | {}", json);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("SEND | {}", redactToken(json));
+                }
                 remote.sendString(json);
             }
         } catch (IOException e) {
@@ -344,7 +349,9 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
 
     @Override
     public void onWebSocketText(@NonNullByDefault({}) String message) {
-        logger.trace("RECV | {}", message);
+        if (logger.isTraceEnabled()) {
+            logger.trace("RECV | {}", redactToken(message));
+        }
         JsonObject frame;
         try {
             frame = JsonParser.parseString(message).getAsJsonObject();
@@ -563,5 +570,9 @@ public class HomeAssistantWebSocketClient implements WebSocketListener {
                 scheduleReconnect();
             }
         }
+    }
+
+    private String redactToken(String source) {
+        return REDACT_PATTERN.matcher(source).replaceAll("$1\"<hidden>\"");
     }
 }
