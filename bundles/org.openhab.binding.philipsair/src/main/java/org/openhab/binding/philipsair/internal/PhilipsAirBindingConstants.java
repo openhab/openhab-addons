@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link PhilipsAirBindingConstants} class defines common constants, which
  * are used across the whole binding.
  *
- * @author Michal Boronski - Initial contribution
+ * @author Michał Boroński - Initial contribution
  * @author Marcel Verpaalen - Add coap protocol support and update channel definitions
  */
 @NonNullByDefault

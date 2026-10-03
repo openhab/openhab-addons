@@ -64,9 +64,9 @@ public class PhilipsAirCoapDiscoveryTest {
         assertEquals(1, results.size());
         DiscoveryResult result = results.get(0);
         assertEquals(new ThingUID(THING_TYPE_COAP, "abc123"), result.getThingUID());
-        assertEquals(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, result.getRepresentationProperty());
+        assertEquals(PhilipsAirConfiguration.CONFIG_DEVICE_UUID, result.getRepresentationProperty());
         assertEquals("192.168.1.60", result.getProperties().get(PhilipsAirConfiguration.CONFIG_HOST));
-        assertEquals("abc123", result.getProperties().get(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID));
+        assertEquals("abc123", result.getProperties().get(PhilipsAirConfiguration.CONFIG_DEVICE_UUID));
     }
 
     @Test

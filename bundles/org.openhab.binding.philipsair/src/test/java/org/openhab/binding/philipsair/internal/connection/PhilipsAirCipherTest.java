@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
  * Test cases for {@link PhilipsAirCipher}. The tests
  * verifies basics of the key exchange procedure
  *
- * @author michalboronski - Initial contribution
+ * @author Michał Boroński - Initial contribution
  * @author Marcel Verpaalen - Code cleanup and align with guidelines
  */
 public class PhilipsAirCipherTest {

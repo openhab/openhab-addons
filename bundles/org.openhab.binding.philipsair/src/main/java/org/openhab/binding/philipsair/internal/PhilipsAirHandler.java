@@ -72,13 +72,8 @@ import com.google.gson.JsonSyntaxException;
  * The {@link PhilipsAirHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Michal Boronski - Initial contribution
- * @author Marcel Verpaalen - OH3 migration
- * @author Marcel Verpaalen - Add optional channels reported by the device
- * @author Marcel Verpaalen - Release the connection on dispose
- * @author Marcel Verpaalen - Execute commands asynchronously
- * @author Marcel Verpaalen - Model specific displayed index and threshold options
- *
+ * @author Michał Boroński - Initial contribution
+ * @author Marcel Verpaalen - OH3 migration, CoAP support and optional channels
  */
 @NonNullByDefault
 public class PhilipsAirHandler extends BaseThingHandler {

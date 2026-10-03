@@ -12,6 +12,9 @@ Philips air purifiers use one of two local protocols, depending on their age:
 - **HTTP**: older models, discovered using UPnP. The communication is encrypted with a key that the binding exchanges with the device automatically.
 - **CoAP**: models released from about 2019 on. These devices push their state changes to openHAB.
 
+Some models, such as the AC2889 and AC3829, used HTTP with early firmware and use CoAP after a firmware update.
+Use the `coap` thing type for a device with updated firmware, and the thing type of the model (or `universal`) for a device with HTTP firmware.
+
 | Thing Type | Protocol | Description                                                     |
 |------------|----------|-----------------------------------------------------------------|
 | ac2889-10  | HTTP     | Philips Air Purifier AC2889/10                                  |
@@ -26,7 +29,7 @@ Other models using the same protocols are likely to work as well; feedback on co
 
 ### Recent CoAP Models
 
-CoAP devices such as the AC2889, AC3033, AC3829 and AC4236 series report their state with the classic field names (e.g. `pwr`, `om`, `pm25`) and are fully supported.
+CoAP devices such as the AC2889, AC3033, AC3829 and AC4236 series (the AC2889 and AC3829 only with updated firmware, see above) report their state with the classic field names (e.g. `pwr`, `om`, `pm25`) and are fully supported.
 
 Recent models report their state with numbered field names instead: newer models use names like `D03102`, older ones names like `D03-02`.
 Examples are the AC0850, AC0950, AC1715, AC2210, AC3210, AC3420, AC3737, AMF and HU series.
@@ -34,7 +37,7 @@ Their modes, fan speeds and other settings are encoded differently per model, so
 
 #### Device Profiles
 
-The profile is detected from the model that the device reports and is shown in the thing property `deviceProfile`.
+The profile is detected from the model that the device reports and is shown in the thing property `deviceProfile`, see [Thing Properties](#thing-properties).
 When the model of your device is not detected, you can select the profile of a model that is the same or similar in the advanced thing configuration parameter `deviceProfile`.
 The device then is controlled like that model, without the binding needing an update.
 Select `basic` again if the device does not behave as expected.
@@ -80,6 +83,7 @@ Notes on the profiles:
 - The timer, `target-humidity` and the settings channels (`beep`, `standby-sensors`, `allergy-sleep`, `display`, `display-brightness` and `lamp-mode`) are added once the device reports them.
   The `display` switch is on while the display is on.
 - Commands are only sent for the values listed in the table. Other values are ignored.
+- The `display-brightness` values `101`, `115` and `123` are the codes the device uses, not percentages.
 
 The profiles follow the Philips Air+ app and the [philips-airpurifier-coap](https://github.com/kongo09/philips-airpurifier-coap) integration.
 Reading the status of an AC3210/12 has been confirmed on a real device; the commands have not been confirmed on a device yet, and neither has any other recent model.
@@ -136,9 +140,9 @@ Discovered things do not need any configuration.
 | Parameter         | Type    | Required | Default | Description                                                                                                        |
 |-------------------|---------|----------|---------|--------------------------------------------------------------------------------------------------------------------|
 | host              | text    | yes      |         | IP address or hostname of the device. Set automatically upon discovery.                                            |
-| key               | text    | no       |         | Encryption key for HTTP devices. Exchanged with the device automatically when empty. Not used for CoAP devices.   |
+| key               | text    | no       |         | HTTP devices only: encryption key. Exchanged with the device automatically when empty.                             |
 | deviceUUID        | text    | no       |         | Device ID. Set automatically upon discovery and used to identify discovered things.                               |
-| refreshInterval   | integer | no       | 60      | Refresh interval in seconds (minimum 5).                                                                           |
+| refreshInterval   | integer | no       | 60      | Refresh interval in seconds (minimum 5). For CoAP devices the interval at which the connection is checked.         |
 | deviceProfile     | text    | no       | auto    | CoAP devices only (advanced): the model profile, see [Device Profiles](#device-profiles). Detected when `auto`.    |
 | humidityOffset    | decimal | no       | 0       | Offset in % added to the humidity readings (-100 to 100).                                                          |
 | temperatureOffset | decimal | no       | 0       | Offset in °C added to the temperature readings (-50 to 50).                                                        |
@@ -147,8 +151,10 @@ HTTP devices are polled at the refresh interval.
 When the device rejects the key, for example after a reset, the binding exchanges a new key automatically.
 
 CoAP devices push their state changes, so they are not polled.
-For these devices the refresh interval is only used to check that the device still sends updates.
-The thing goes offline when no update is received within twice the refresh interval, but at least 60 seconds.
+For these devices the refresh interval is only used to check the connection.
+When no update has arrived for the refresh interval (at least 30 seconds), the binding checks whether the device still answers.
+A device that sends no updates, for example in standby, stays online as long as it answers this check.
+The thing goes offline when the device neither sends an update nor answers within twice the refresh interval (at least 60 seconds).
 
 ## Channels
 
@@ -159,7 +165,7 @@ The channels are organized in the groups `controls`, `controls-ui`, `sensors` an
 | controls      | power                 | Switch               | RW         | Device power                                                                             |
 | controls      | fan-speed             | String               | RW         | Fan speed: `s` (silent), `1`, `2`, `3`, `t` (turbo). Setting the fan speed also switches the device to manual mode. |
 | controls      | mode                  | String               | RW         | Mode: `P` (auto), `A` (allergen), `S` (sleep), `M` (manual), `B` (bacteria), `N` (night) |
-| controls      | timer                 | Number               | RW         | Switch-off timer in hours (0-5, 0 is off)                                                |
+| controls      | timer                 | Number               | RW         | Switch-off timer in hours (0 is off, up to 5 or 12 depending on the model)               |
 | controls      | timer-remaining       | Number:Time          | R          | Time left until the timer switches the device off                                        |
 | controls      | child-lock            | Switch               | RW         | Child lock                                                                               |
 | controls      | target-humidity       | Number:Dimensionless | RW         | Humidity setpoint (40-70 %, in steps of 10 %)                                            |
@@ -180,7 +186,7 @@ The channels are organized in the groups `controls`, `controls-ui`, `sensors` an
 | sensors       | humidity              | Number:Dimensionless | R          | Current humidity, corrected by `humidityOffset`                                          |
 | sensors       | temperature           | Number:Temperature   | R          | Current temperature, corrected by `temperatureOffset`                                    |
 | sensors       | water-level           | Number:Dimensionless | R          | Water tank level                                                                         |
-| sensors       | tvoc                  | Number               | R          | Total volatile organic compounds (TVOC) level                                            |
+| sensors       | tvoc                  | Number               | R          | TVOC level; recent models report it as an index from 1 to 4                              |
 | sensors       | rssi                  | Number:Power         | R          | Wi-Fi signal strength (advanced)                                                         |
 | filters       | pre-filter-life       | Number:Time          | R          | Time until the pre-filter needs to be cleaned                                            |
 | filters       | hepa-filter-life      | Number:Time          | R          | Remaining lifetime of the HEPA filter                                                    |
@@ -208,9 +214,12 @@ The channels `beep`, `display`, `display-brightness`, `lamp-mode`, `standby-sens
 | preFilterType   | Type code of the pre-filter, if reported by the device                |
 | hepaFilterType  | Type code of the HEPA filter, e.g. `A3`, if reported by the device    |
 | carbonFilterType | Type code of the active carbon filter, e.g. `C7`, if reported by the device |
-| deviceProfile   | Device profile in use for a CoAP device with the recent field names, e.g. `UNICORN` |
+| deviceProfile   | Name of the device profile resolved for a CoAP device, e.g. `UNICORN` or `CLASSIC` |
+| deviceProfileHost | Host the `deviceProfile` was resolved for                           |
 
 The properties `deviceType`, `manufacturer` and `macAddress` are only set on discovered things.
+The properties `deviceProfile` and `deviceProfileHost` are stored for every CoAP device once it has reported its status.
+After a restart, the stored profile is used until the device reports its status, as long as the configured host is still the host in `deviceProfileHost`.
 
 ## Full Example
 

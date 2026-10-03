@@ -46,7 +46,7 @@ import org.openhab.core.thing.ThingUID;
 /**
  * Test cases for {@link PhilipsAirUpnpDiscoveryParticipant}. Covers recognition of things based on received UPnP info.
  *
- * @author michalboronski - Initial contribution
+ * @author Michał Boroński - Initial contribution
  * @author Marcel Verpaalen - Re-enable tests and cover model numbers with region suffix
  */
 @NonNullByDefault
@@ -133,11 +133,11 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
 
         assertNotNull(result);
         assertEquals(new ThingUID(THING_TYPE_AC2889_10, UDN_ID), result.getThingUID());
-        assertEquals(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, result.getRepresentationProperty());
+        assertEquals(PhilipsAirConfiguration.CONFIG_DEVICE_UUID, result.getRepresentationProperty());
         assertEquals("Philips AirPurifier AC2889/10", result.getLabel());
         Map<String, Object> properties = result.getProperties();
         assertEquals("192.168.1.50", properties.get(PhilipsAirConfiguration.CONFIG_HOST));
-        assertEquals(UDN_ID, properties.get(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID));
+        assertEquals(UDN_ID, properties.get(PhilipsAirConfiguration.CONFIG_DEVICE_UUID));
         assertEquals("e8c1d7007123", properties.get(Thing.PROPERTY_MAC_ADDRESS));
         assertEquals("Philips", properties.get(PROPERTY_MANUFACTURER));
         assertEquals(VENDOR, properties.get(Thing.PROPERTY_VENDOR));

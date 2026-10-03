@@ -46,7 +46,10 @@ import com.google.gson.JsonPrimitive;
  */
 @NonNullByDefault
 public enum CoapProfile {
-    /** Classic field names, e.g. AC2889, AC3829, AC4236 */
+    /**
+     * Classic field names, e.g. AC2889, AC3829, AC4236. The AC2889 and AC3829 use CoAP with updated firmware, and the
+     * HTTP protocol with early firmware.
+     */
     CLASSIC("classic", Generation.CLASSIC, Spec.NONE),
     /** Field names like {@code D03-02}, e.g. AC0850, AC1715 */
     BASIC_GEN2("basic", Generation.GEN2, Spec.NONE),

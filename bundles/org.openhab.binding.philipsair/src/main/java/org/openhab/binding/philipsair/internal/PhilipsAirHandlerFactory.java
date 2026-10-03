@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link PhilipsAirHandlerFactory} is responsible for creating things and
  * thing handlers.
  *
- * @author Michal Boronski - Initial contribution
+ * @author Michał Boroński - Initial contribution
  * @author Marcel Verpaalen - Add support for coap and http protocol connections
  */
 @NonNullByDefault

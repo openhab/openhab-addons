@@ -68,7 +68,7 @@
 			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state readOnly="false" pattern="%s">
+		<state pattern="%s">
 			<options>
 				<option value="0">Allergen Index</option>
 				<option value="1">PM2.5</option>
@@ -97,24 +97,24 @@
 	</channel-type>
 
 	<channel-type id="timer-remaining">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Timer Remaining</label>
 		<description>Time left until the timer switches the device off</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%d min"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="timer">
 		<item-type>Number</item-type>
 		<label>Timer</label>
-		<description>Timer in hours (0-5)</description>
+		<description>Timer in hours, 0 is off. Up to 5 or 12 hours, depending on the model</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state min="0" max="5" pattern="%d" step="1"/>
+		<state min="0" max="12" pattern="%d" step="1"/>
 	</channel-type>
 
 	<channel-type id="pm25">
@@ -125,7 +125,7 @@
 			<tag>Measurement</tag>
 			<tag>ParticulateMatter</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f µg/m³" min="0" max="5000"/>
+		<state readOnly="true" pattern="%.0f µg/m³"/>
 	</channel-type>
 	<channel-type id="allergen-index">
 		<item-type>Number</item-type>
@@ -140,7 +140,7 @@
 	<channel-type id="tvoc">
 		<item-type>Number</item-type>
 		<label>TVOC</label>
-		<description>Total volatile organic compounds level</description>
+		<description>Total volatile organic compounds (TVOC) level. Recent models report it as an index from 1 to 4</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>VOC</tag>
@@ -237,7 +237,7 @@
 			<tag>Control</tag>
 			<tag>Brightness</tag>
 		</tags>
-		<state readOnly="false" pattern="%s"/>
+		<state pattern="%s"/>
 	</channel-type>
 	<channel-type id="lamp-mode">
 		<item-type>String</item-type>
@@ -247,7 +247,7 @@
 			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state readOnly="false" pattern="%s"/>
+		<state pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="pre-filter-life">
@@ -310,7 +310,7 @@
 			<tag>Setpoint</tag>
 			<tag>Humidity</tag>
 		</tags>
-		<state readOnly="false" pattern="%.0f %unit%" min="40" max="70" step="10"/>
+		<state pattern="%.0f %unit%" min="40" max="70" step="10"/>
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
@@ -331,7 +331,7 @@
 			<tag>Control</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state readOnly="false" pattern="%s">
+		<state pattern="%s">
 			<options>
 				<option value="P">Purification</option>
 				<option value="PH">Purification and Humidity</option>

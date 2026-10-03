@@ -134,7 +134,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
     private PhilipsAirHandler createHandler(List<String> channels, Configuration extraConfig) {
         Configuration config = new Configuration();
-        config.put(PhilipsAirConfiguration.CONFIG_DEF_REFRESH_INTERVAL, 5);
+        config.put(PhilipsAirConfiguration.CONFIG_REFRESH_INTERVAL, 5);
         config.put(PhilipsAirConfiguration.CONFIG_HOST, "1.1.1.1");
         config.put(PhilipsAirConfiguration.CONFIG_KEY, FAKE_KEY);
         extraConfig.getProperties().forEach(config::put);
@@ -229,8 +229,8 @@ public class PhilipsAirHandlerTest extends JavaTest {
     public void stateUpdatesApplyOffsets() throws Exception {
         mockResponses(DEVICE, STATUS);
         Configuration offsets = new Configuration();
-        offsets.put(PhilipsAirConfiguration.CONFIG_DEF_TEMPERATURE_OFFSET, 1.0);
-        offsets.put(PhilipsAirConfiguration.CONFIG_DEF_HUMIDITY_OFFSET, -1.0);
+        offsets.put(PhilipsAirConfiguration.CONFIG_TEMPERATURE_OFFSET, 1.0);
+        offsets.put(PhilipsAirConfiguration.CONFIG_HUMIDITY_OFFSET, -1.0);
         PhilipsAirHandler handler = createHandler(
                 List.of("sensors#humidity:Number:Dimensionless", "sensors#temperature:Number:Temperature"), offsets);
 

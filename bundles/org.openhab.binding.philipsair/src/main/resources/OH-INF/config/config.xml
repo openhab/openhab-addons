@@ -23,8 +23,7 @@
 		</parameter>
 		<parameter name="refreshInterval" type="integer" required="false" min="5" unit="s">
 			<label>Refresh Interval</label>
-			<description>Refresh interval in seconds. For CoAP devices, which push their updates, the interval at which the
-				connection is checked.</description>
+			<description>Refresh interval in seconds</description>
 			<default>60</default>
 		</parameter>
 		<parameter name="humidityOffset" type="decimal" required="false" min="-100" max="100">
@@ -47,12 +46,6 @@
 			<label>IP or Hostname</label>
 			<description>IP address or hostname of the device</description>
 		</parameter>
-		<parameter name="key" type="text" required="false">
-			<context>password</context>
-			<label>Key</label>
-			<description>Encryption key for HTTP devices, exchanged with the device automatically when empty</description>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="deviceUUID" type="text" required="false">
 			<label>Device ID (UDN)</label>
 			<description>Device ID (UUID)</description>
@@ -60,8 +53,8 @@
 		</parameter>
 		<parameter name="refreshInterval" type="integer" required="false" min="5" unit="s">
 			<label>Refresh Interval</label>
-			<description>Refresh interval in seconds. For CoAP devices, which push their updates, the interval at which the
-				connection is checked.</description>
+			<description>Interval in seconds at which the connection to the device is checked, as CoAP devices push their
+				updates</description>
 			<default>60</default>
 		</parameter>
 		<parameter name="deviceProfile" type="text" required="false">

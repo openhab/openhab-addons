@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="ac2889-10">
-		<label>Air Purifier AC2889/10</label>
-		<description>Philips Air Purifier AC2889/10</description>
+	<thing-type id="ac1214-10">
+		<label>Air Purifier AC1214/10</label>
+		<description>Philips Air Purifier AC1214/10</description>
 		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="controls-basic" id="controls"/>
@@ -16,34 +16,6 @@
 		</channel-groups>
 		<representation-property>deviceUUID</representation-property>
 		<config-description-ref uri="thing-type:philipsair:config"/>
-	</thing-type>
-
-	<thing-type id="universal">
-		<label>Air Purifier (HTTP)</label>
-		<description>Philips Air Purifier using the HTTP protocol</description>
-		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
-		<channel-groups>
-			<channel-group typeId="controls-basic" id="controls"/>
-			<channel-group typeId="controls-ui" id="controls-ui"/>
-			<channel-group typeId="sensors-basic" id="sensors"/>
-			<channel-group typeId="filters" id="filters"/>
-		</channel-groups>
-		<representation-property>deviceUUID</representation-property>
-		<config-description-ref uri="thing-type:philipsair:config"/>
-	</thing-type>
-
-	<thing-type id="coap">
-		<label>Air Purifier (CoAP)</label>
-		<description>Philips Air Purifier using COAP protocol</description>
-		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
-		<channel-groups>
-			<channel-group typeId="controls-basic" id="controls"/>
-			<channel-group typeId="controls-ui" id="controls-ui"/>
-			<channel-group typeId="sensors-basic" id="sensors"/>
-			<channel-group typeId="filters" id="filters"/>
-		</channel-groups>
-		<representation-property>deviceUUID</representation-property>
-		<config-description-ref uri="thing-type:philipsair:coap-config"/>
 	</thing-type>
 
 	<thing-type id="ac2729">
@@ -60,9 +32,9 @@
 		<config-description-ref uri="thing-type:philipsair:config"/>
 	</thing-type>
 
-	<thing-type id="ac1214-10">
-		<label>Air Purifier AC1214/10</label>
-		<description>Philips Air Purifier AC1214/10</description>
+	<thing-type id="ac2889-10">
+		<label>Air Purifier AC2889/10</label>
+		<description>Philips Air Purifier AC2889/10</description>
 		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="controls-basic" id="controls"/>
@@ -83,6 +55,34 @@
 			<channel-group typeId="controls-ui" id="controls-ui"/>
 			<channel-group typeId="sensors-adv" id="sensors"/>
 			<channel-group typeId="filters-wicks" id="filters"/>
+		</channel-groups>
+		<representation-property>deviceUUID</representation-property>
+		<config-description-ref uri="thing-type:philipsair:config"/>
+	</thing-type>
+
+	<thing-type id="coap">
+		<label>Air Purifier (CoAP)</label>
+		<description>Philips Air Purifier using COAP protocol</description>
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group typeId="controls-basic" id="controls"/>
+			<channel-group typeId="controls-ui" id="controls-ui"/>
+			<channel-group typeId="sensors-basic" id="sensors"/>
+			<channel-group typeId="filters" id="filters"/>
+		</channel-groups>
+		<representation-property>deviceUUID</representation-property>
+		<config-description-ref uri="thing-type:philipsair:coap-config"/>
+	</thing-type>
+
+	<thing-type id="universal">
+		<label>Air Purifier (HTTP)</label>
+		<description>Philips Air Purifier using the HTTP protocol</description>
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group typeId="controls-basic" id="controls"/>
+			<channel-group typeId="controls-ui" id="controls-ui"/>
+			<channel-group typeId="sensors-basic" id="sensors"/>
+			<channel-group typeId="filters" id="filters"/>
 		</channel-groups>
 		<representation-property>deviceUUID</representation-property>
 		<config-description-ref uri="thing-type:philipsair:config"/>

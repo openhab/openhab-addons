@@ -230,7 +230,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
             ThingUID thingUid = new ThingUID(PhilipsAirBindingConstants.THING_TYPE_COAP, deviceId);
             Map<String, Object> properties = new HashMap<>();
             addProperty(properties, PhilipsAirConfiguration.CONFIG_HOST, host);
-            addProperty(properties, PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, deviceId);
+            addProperty(properties, PhilipsAirConfiguration.CONFIG_DEVICE_UUID, deviceId);
             addProperty(properties, PhilipsAirBindingConstants.PROPERTY_MANUFACTURER, "Philips");
             addProperty(properties, PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
             addProperty(properties, PROPERTY_MODEL_ID, info.getModelId());
@@ -238,7 +238,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
 
             String label = String.format("Philips AirPurifier %s %s", info.getName(), info.getModelId());
             DiscoveryResult result = DiscoveryResultBuilder.create(thingUid).withProperties(properties).withLabel(label)
-                    .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID).build();
+                    .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEVICE_UUID).build();
 
             logger.debug("DiscoveryResult with uid {} and label: '{}'", result.getThingUID(), result.getLabel());
             thingDiscovered(result);

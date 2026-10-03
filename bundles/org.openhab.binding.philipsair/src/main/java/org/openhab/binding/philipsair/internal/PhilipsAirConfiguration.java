@@ -18,17 +18,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link PhilipsAirConfiguration} class contains fields mapping thing
  * configuration parameters.
  *
- * @author Michal Boronski - Initial contribution
+ * @author Michał Boroński - Initial contribution
  * @author Marcel Verpaalen - Add configuration properties and timeout handling
  */
 @NonNullByDefault
 public class PhilipsAirConfiguration {
 
     public static final String CONFIG_KEY = "key";
-    public static final String CONFIG_DEF_DEVICE_UUID = "deviceUUID";
-    public static final String CONFIG_DEF_REFRESH_INTERVAL = "refreshInterval";
-    public static final String CONFIG_DEF_HUMIDITY_OFFSET = "humidityOffset";
-    public static final String CONFIG_DEF_TEMPERATURE_OFFSET = "temperatureOffset";
+    public static final String CONFIG_DEVICE_UUID = "deviceUUID";
+    public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
+    public static final String CONFIG_HUMIDITY_OFFSET = "humidityOffset";
+    public static final String CONFIG_TEMPERATURE_OFFSET = "temperatureOffset";
 
     /**
      * Hostname or IP address of Air Purifier device

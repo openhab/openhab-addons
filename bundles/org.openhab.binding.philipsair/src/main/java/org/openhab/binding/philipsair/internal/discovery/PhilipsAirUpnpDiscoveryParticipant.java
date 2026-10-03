@@ -92,7 +92,7 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
             }
             String idString = getIdentifier(device);
             if (idString != null) {
-                addProperty(properties, PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, idString);
+                addProperty(properties, PhilipsAirConfiguration.CONFIG_DEVICE_UUID, idString);
                 int macIndex = idString.lastIndexOf('-');
                 if (macIndex > 0) {
                     addProperty(properties, PROPERTY_MAC_ADDRESS, idString.substring(macIndex + 1));
@@ -113,7 +113,7 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
             }
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
-                    .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID).build();
+                    .withRepresentationProperty(PhilipsAirConfiguration.CONFIG_DEVICE_UUID).build();
 
             logger.debug("DiscoveryResult with uid {} label : {} ", result.getThingUID().getAsString(),
                     result.getLabel());
