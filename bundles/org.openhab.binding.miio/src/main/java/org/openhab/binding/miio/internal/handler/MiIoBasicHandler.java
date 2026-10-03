@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -106,6 +108,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     protected ChannelTypeRegistry channelTypeRegistry;
     protected BasicChannelTypeProvider basicChannelTypeProvider;
     private Map<String, Integer> customRefreshInterval = new HashMap<>();
+    private final Set<String> refreshedOnce = ConcurrentHashMap.newKeySet();
+    private final AtomicBoolean readOnceRefreshPending = new AtomicBoolean();
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
@@ -123,6 +127,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         isIdentified = false;
         refreshList = new ArrayList<>();
         refreshListCustomCommands = new HashMap<>();
+        refreshedOnce.clear();
+        readOnceRefreshPending.set(false);
     }
 
     @Override
@@ -130,9 +136,20 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         Command command = receivedCommand;
         deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
         if (command == RefreshType.REFRESH) {
+            // an explicit refresh request also re-reads channels that are normally read only once
+            final boolean readAgain = refreshedOnce.remove(channelUID.getId());
             if (updateDataCache.isExpired()) {
                 logger.debug("Refreshing {}", channelUID);
                 updateDataCache.getValue();
+            } else if (readAgain) {
+                // the update that filled the cache left this channel out, and without polling no other update follows
+                if (readOnceRefreshPending.compareAndSet(false, true)) {
+                    logger.debug("Refreshing read once channel {}", channelUID);
+                    miIoScheduler.schedule(() -> {
+                        readOnceRefreshPending.set(false);
+                        updateData();
+                    }, 0, TimeUnit.SECONDS);
+                }
             } else {
                 logger.debug("Refresh {} skipped. Already refreshing", channelUID);
             }
@@ -330,6 +347,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     }
 
     private boolean customRefreshIntervalCheck(MiIoBasicChannel miChannel) {
+        if (miChannel.getRefreshInterval() < 0) {
+            // read once: skip as long as it has not been read successfully since the last (re)initialization or refresh
+            return refreshedOnce.contains(miChannel.getChannel());
+        }
         if (miChannel.getRefreshInterval() > 1) {
             int iteration = customRefreshInterval.getOrDefault(miChannel.getChannel(), 0);
             if (iteration < 1) {
@@ -615,9 +636,15 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 continue;
             } else if (val.isJsonObject()) { // miot channel
                 val = val.getAsJsonObject().get("value");
+                if (val == null || val.isJsonNull()) {
+                    logger.debug("Property '{}' returned no value: {}", param, res.get(i));
+                    continue;
+                }
             }
             MiIoBasicChannel basicChannel = getChannel(param);
-            updateChannel(basicChannel, param, val);
+            if (updateChannel(basicChannel, param, val)) {
+                markReadOnce(basicChannel);
+            }
         }
     }
 
@@ -631,16 +658,32 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 continue;
             }
             MiIoBasicChannel basicChannel = getChannel(param);
-            updateChannel(basicChannel, param, val);
+            if (updateChannel(basicChannel, param, val)) {
+                markReadOnce(basicChannel);
+            }
         }
     }
 
-    protected void updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
+    /**
+     * Registers that a channel that is read only once (negative refreshInterval) has been read successfully
+     */
+    private void markReadOnce(@Nullable MiIoBasicChannel basicChannel) {
+        if (basicChannel != null && basicChannel.getRefreshInterval() < 0) {
+            refreshedOnce.add(basicChannel.getChannel());
+        }
+    }
+
+    /**
+     * Updates the channel with the received value
+     *
+     * @return true if the value was applied to the channel, false if the channel was not found or the update failed
+     */
+    protected boolean updateChannel(@Nullable MiIoBasicChannel basicChannel, String param, JsonElement value) {
         JsonElement val = value;
         deviceVariables.put(param, val);
         if (basicChannel == null) {
             logger.debug("Channel not found for {}", param);
-            return;
+            return false;
         }
         final String transformation = basicChannel.getTransformation();
         if (transformation != null) {
@@ -699,6 +742,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         } catch (IllegalArgumentException e) {
                             logger.debug("Failed updating channel '{}'. Could not convert '{}' to color",
                                     basicChannel.getChannel(), val.getAsString());
+                            return false;
                         }
                     }
                     break;
@@ -709,7 +753,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             logger.debug("Error updating {} property {} with '{}' : {}: {}", getThing().getUID(),
                     basicChannel.getChannel(), val, e.getClass().getCanonicalName(), e.getMessage());
             logger.trace("Property update error detail:", e);
+            return false;
         }
+        return true;
     }
 
     protected void quantityTypeUpdate(MiIoBasicChannel basicChannel, JsonElement val, String type) {
@@ -751,6 +797,12 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     @Override
     public void onMessageReceived(MiIoSendCommand response) {
         super.onMessageReceived(response);
+        if (response.isError()) {
+            String errorChannel = cmds.get(response.getId());
+            if (errorChannel != null && getCustomRefreshChannel(errorChannel) != null) {
+                cmds.remove(response.getId());
+            }
+        }
         if (response.isError() || (!response.getSender().isBlank()
                 && !response.getSender().contentEquals(getThing().getUID().getAsString()))) {
             logger.trace("Device {} is not processing command {} as no match. Sender id:'{}'", getThing().getUID(),
@@ -777,22 +829,32 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         logger.debug("Processing custom refresh command response for '{}' - {}", response.getMethod(),
                                 response.getResult());
                         final MiIoBasicChannel ch = getCustomRefreshChannel(channel);
-                        if (ch != null) {
+                        boolean updated = false;
+                        if (ch != null && !response.getResult().isJsonNull()) {
                             if (response.getResult().isJsonArray()) {
                                 JsonArray cmdResponse = response.getResult().getAsJsonArray();
                                 final String transformation = ch.getTransformation();
                                 if (transformation == null || transformation.isBlank()) {
                                     JsonElement response0 = cmdResponse.get(0);
-                                    updateChannel(ch, ch.getChannel(), response0.isJsonPrimitive() ? response0
-                                            : new JsonPrimitive(response0.toString()));
+                                    if (!response0.isJsonNull()) {
+                                        updated = updateChannel(ch, ch.getChannel(),
+                                                response0.isJsonPrimitive() ? response0
+                                                        : new JsonPrimitive(response0.toString()));
+                                    }
                                 } else {
-                                    updateChannel(ch, ch.getChannel(), cmdResponse);
+                                    updated = updateChannel(ch, ch.getChannel(), cmdResponse);
                                 }
                             } else {
-                                updateChannel(ch, ch.getChannel(), new JsonPrimitive(response.getResult().toString()));
+                                updated = updateChannel(ch, ch.getChannel(),
+                                        new JsonPrimitive(response.getResult().toString()));
                             }
                         }
                         cmds.remove(response.getId());
+                        // a failed update or a response without result (e.g. a cloud error or a null result) does not
+                        // count as read, so it is retried
+                        if (updated && response.getResponse().has("result")) {
+                            markReadOnce(ch);
+                        }
                     } else {
                         logger.debug("Could not identify channel for {}. Device {} has {} commands in queue.",
                                 response.getMethod(), getThing().getUID(), cmds.size());
