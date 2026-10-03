@@ -7,18 +7,18 @@ This binding integrates the [Keba KeContact EV Charging Stations](https://www.ke
 The binding provides one Thing type for each supported wallbox interface. Select the Thing type that matches both
 the station family and the interface enabled on the station.
 
-| Station variant | Ethernet | UDP (`kecontact`) | Modbus TCP (`kecontact-modbus`) | REST API (`kecontact-rest`) |
-| --------------- | -------- | ----------------- | -------------------------------- | -------------------------- |
-| KeContact P20 with network connection | Yes | Supported, firmware 2.5+ | Not supported | Not supported |
-| | | | | |
-| KeContact P30 e-series | SKU-dependent; some variants have no Ethernet | Not supported | Not supported | Not supported |
-| KeContact P30 a-series | SKU-dependent | Not supported | Not supported | Not supported |
-| KeContact P30 b-series | SKU-dependent; some variants have no Ethernet | SKU-dependent | SKU-dependent | Not supported |
-| **KeContact P30 c-series** | Yes | Supported, firmware 3.9.24+ | Supported, firmware 3.10.16+ | Not supported |
-| **KeContact P30 x-series** | Yes | Supported | Supported, firmware 1.11+ | Supported, developed and tested against firmeware 2.1.0 |
-| BMW wallbox (P30 x-series) | Yes | Supported | Supported, firmware 1.11+ | Supported, developed and tested against firmeware 2.1.0 |
-| | | | | |
-| **KeContact P40 / P40 Pro** | Yes | Not supported | Supported | Supported |
+| Station variant                       | Ethernet                                      | UDP (`kecontact`)           | Modbus TCP (`kecontact-modbus`) | REST API (`kecontact-rest`)                             |
+|---------------------------------------|-----------------------------------------------|-----------------------------|---------------------------------|---------------------------------------------------------|
+| KeContact P20 with network connection | Yes                                           | Supported, firmware 2.5+    | Not supported                   | Not supported                                           |
+|                                       |                                               |                             |                                 |                                                         |
+| KeContact P30 e-series                | SKU-dependent; some variants have no Ethernet | Not supported               | Not supported                   | Not supported                                           |
+| KeContact P30 a-series                | SKU-dependent                                 | Not supported               | Not supported                   | Not supported                                           |
+| KeContact P30 b-series                | SKU-dependent; some variants have no Ethernet | SKU-dependent               | SKU-dependent                   | Not supported                                           |
+| **KeContact P30 c-series**            | Yes                                           | Supported, firmware 3.9.24+ | Supported, firmware 3.10.16+    | Not supported                                           |
+| **KeContact P30 x-series**            | Yes                                           | Supported                   | Supported, firmware 1.11+       | Supported, developed and tested against firmeware 2.1.0 |
+| BMW wallbox (P30 x-series)            | Yes                                           | Supported                   | Supported, firmware 1.11+       | Supported, developed and tested against firmeware 2.1.0 |
+|                                       |                                               |                             |                                 |                                                         |
+| **KeContact P40 / P40 Pro**           | Yes                                           | Not supported               | Supported                       | Supported                                               |
 
 Marketed editions such as **PV Edition** and **Dienstwagen Wallbox** are not enough on their own to determine protocol
 support. Use the full KEBA product/type code to identify the underlying P30 series, then apply that series' row above;
@@ -32,11 +32,11 @@ It provides wallbox state, meter values, and common commands such as unlock, sta
 
 Choose the protocol that best fits your installation:
 
-| Thing type | Advantages | Limitations |
-| ---------- | ---------- | ----------- |
-| `kecontact` | Legacy UDP support, no credentials required, broad P20/P30 compatibility | UDP setup/DIP switch required; no transport security; single shared UDP port |
-| `kecontact-modbus` | Local register access, deterministic Modbus semantics, no REST credentials | Requires Modbus TCP to be enabled; polling is register-based and slower; smaller documented channel set |
-| `kecontact-rest` | Authenticated HTTPS API, wallbox state and meter data, convenient high-level commands | Requires REST credentials; API availability depends on firmware; local HTTPS certificates may be self-signed |
+| Thing type         | Advantages                                                                            | Limitations                                                                                                  |
+|--------------------|---------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| `kecontact`        | Legacy UDP support, no credentials required, broad P20/P30 compatibility              | UDP setup/DIP switch required; no transport security; single shared UDP port                                 |
+| `kecontact-modbus` | Local register access, deterministic Modbus semantics, no REST credentials            | Requires Modbus TCP to be enabled; polling is register-based and slower; smaller documented channel set      |
+| `kecontact-rest`   | Authenticated HTTPS API, wallbox state and meter data, convenient high-level commands | Requires REST credentials; API availability depends on firmware; local HTTPS certificates may be self-signed |
 
 ## Thing Configuration
 
@@ -56,13 +56,13 @@ The Modbus TCP interface must be enabled on the wallbox beforehand (via the KEBA
 Interface combinations can depend on wallbox model, firmware, and configuration; installations may use the UDP
 Thing alongside Modbus TCP for UDP-only commands.
 
-| Parameter          | Description                                                                                 | Default |
-| ------------------ | ------------------------------------------------------------------------------------------- | ------- |
-| ipAddress          | Network address of the wallbox                                                              | -       |
-| port               | TCP port of the Modbus TCP interface of the wallbox                                         | 502     |
-| unitId             | Modbus unit id (slave address) of the wallbox                                               | 255     |
-| refreshInterval    | Refresh interval in seconds for frequently changing registers                               | 12      |
-| refreshIntervalSlow| Refresh interval in seconds for registers that change infrequently                          | 60      |
+| Parameter           | Description                                                                                 | Default |
+| ------------------- | ------------------------------------------------------------------------------------------- | ------- |
+| ipAddress           | Network address of the wallbox                                                              | -       |
+| port                | TCP port of the Modbus TCP interface of the wallbox                                         | 502     |
+| unitId              | Modbus unit id (slave address) of the wallbox                                               | 255     |
+| refreshInterval     | Refresh interval in seconds for frequently changing registers                               | 12      |
+| refreshIntervalSlow | Refresh interval in seconds for registers that change infrequently                          | 60      |
 
 The Modbus interface requires at least five seconds between different write jobs. The binding queues writes
 separately at this interval while retaining a 500 ms delay between all Modbus transactions, including reads.
@@ -85,14 +85,14 @@ The Thing property `ipAddress` shows the host used by the configured `baseUrl`. 
 API is retained separately as `reportedIpAddress`; depending on the wallbox network configuration, that value may
 be a static fallback address rather than the currently active address.
 
-| Parameter | Description | Default |
-| --------- | ----------- | ------- |
-| baseUrl | Base URL of the wallbox REST API | `https://` |
-| username | REST API username | `admin` |
-| password | REST API password | - |
-| serialNumber | Optional serial number; leave empty for automatic discovery, or set it to select a slave wallbox in a master/slave setup | - |
-| refreshInterval | REST polling interval in seconds | 10 |
-| verifyCertificate | Verify the wallbox TLS certificate and hostname | `false` |
+| Parameter         | Description                                                                                                              | Default    |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------|------------|
+| baseUrl           | Base URL of the wallbox REST API                                                                                         | `https://` |
+| username          | REST API username                                                                                                        | `admin`    |
+| password          | REST API password                                                                                                        | -          |
+| serialNumber      | Optional serial number; leave empty for automatic discovery, or set it to select a slave wallbox in a master/slave setup | -          |
+| refreshInterval   | REST polling interval in seconds                                                                                         | 10         |
+| verifyCertificate | Verify the wallbox TLS certificate and hostname                                                                          | `false`    |
 
 The REST Thing is a good choice when authenticated HTTPS access and high-level commands are more important than the complete low-level register set. Set `verifyCertificate` to `true` only when the wallbox certificate is trusted by openHAB and contains the configured host name or IP address. Local KEBA installations commonly use a self-signed certificate; with `verifyCertificate` set to `false`, certificate trust and host name verification are both disabled.
 
