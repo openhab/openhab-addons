@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -69,7 +70,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             final LocationProvider locationProvider) {
         super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient,
                 locationProvider);
-        channelColors = new TreeMap<>();
+        channelColors = new ConcurrentHashMap<>(); // command and status threads
     }
 
     @Override
@@ -348,7 +349,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         if (col == null) {
             col = new ShellyColorUtils(); // create a new entry
             col.setMinMaxTemp(profile.getMinTemp(lightId), profile.getMaxTemp(lightId));
-            channelColors.put(lightId, col);
+            ShellyColorUtils existing = channelColors.putIfAbsent(lightId, col);
+            if (existing != null) {
+                return existing;
+            }
             logger.trace("{}: Colors entry created for lightId {}", thingName, lightId);
         } else {
             logger.trace(
