@@ -113,6 +113,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     protected volatile boolean initialized;
     protected final boolean alwaysOn;
+    // All access must be guarded by "this"
     private @Nullable Shelly2RpcSocket rpcSocket;
     private @Nullable Shelly2AuthChallenge authInfo;
     private final WebSocketClient client;
@@ -161,9 +162,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void initialize() {
+    public synchronized void initialize() {
         if (alwaysOn) {
-            disconnect();
+            // dispose, not just disconnect: late Jetty callbacks of the replaced socket must not reach this handler
+            Shelly2RpcSocket oldSocket = this.rpcSocket;
+            this.rpcSocket = null;
+            if (oldSocket != null) {
+                oldSocket.dispose();
+            }
             InetSocketAddress socketAddr = config.getDeviceSocketAddress();
             if (socketAddr == null) {
                 logger.warn("{}: Failed to initialize because the IP address is unknown", thingName);
@@ -618,11 +624,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_LPUSH:
                 case SHELLY2_EVENT_SLPUSH:
                 case SHELLY2_EVENT_LSPUSH:
-                    if (id < profile.numInputs && id < relayStatus.inputs.size()) {
-                        ShellyInputState input = relayStatus.inputs.get(id);
+                    List<ShellyInputState> inputs = relayStatus.inputs;
+                    if (id < profile.numInputs && id < inputs.size()) {
+                        ShellyInputState input = inputs.get(id);
                         input.event = getString(MAP_INPUT_EVENT_TYPE.get(event));
                         input.eventCount = getInteger(input.eventCount) + 1;
-                        relayStatus.inputs.set(id, input);
                         List<@Nullable ShellyInputState> statusInputs = profile.status.inputs;
                         if (statusInputs != null && id < statusInputs.size()) {
                             statusInputs.set(id, input);
@@ -748,10 +754,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onPong() {
-        ShellyThingInterface thing;
-        synchronized (this) {
-            thing = this.thing;
-        }
+        ShellyThingInterface thing = this.thing;
         if (thing != null) {
             thing.restartWatchdog();
         }
@@ -917,8 +920,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public ShellyRollerStatus getRollerStatus(int rollerIndex) throws ShellyApiException {
-        if (rollerIndex < rollerStatus.size()) {
-            return rollerStatus.get(rollerIndex);
+        List<ShellyRollerStatus> rollers = getProfile().status.rollers;
+        if (rollers != null && rollerIndex >= 0 && rollerIndex < rollers.size()) {
+            return rollers.get(rollerIndex);
         }
         throw new IllegalArgumentException("Invalid rollerIndex on getRollerStatus");
     }
@@ -1529,11 +1533,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void asyncApiRequest(String method) throws ShellyApiException {
-        if (alwaysOn) {
-            reconnect();
+        Shelly2RpcSocket rpcSocket;
+        synchronized (this) {
+            if (alwaysOn) {
+                reconnect();
+            }
+            rpcSocket = this.rpcSocket;
         }
-
-        Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
             Shelly2RpcBaseMessage request = buildRequest(method, null);
             rpcSocket.sendMessage(gson.toJson(request)); // submit, result will be async
@@ -1617,7 +1623,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         return httpPost(authInfo, postData);
     }
 
-    private void reconnect() throws ShellyApiException {
+    private synchronized void reconnect() throws ShellyApiException {
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
             if (!rpcSocket.isConnected()) {
@@ -1629,7 +1635,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
     }
 
-    private void disconnect() {
+    private synchronized void disconnect() {
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket == null) {
             return;
@@ -1645,7 +1651,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void dispose() {
+    public synchronized void dispose() {
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
             rpcSocket.dispose();
@@ -1655,7 +1661,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket == null) {
             initialized = false;
