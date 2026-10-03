@@ -16,22 +16,49 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
  * @author MikeTheTux - Initial contribution
  */
 public class MowerWorkAreaAttributes {
-    private byte cuttingHeight;
-    private boolean enable;
+    private Byte cuttingHeight;
+    private Boolean enable;
+    private String name;
+    private Integer orientation;
+    private Integer orientationShift;
 
-    public byte getCuttingHeight() {
+    public Byte getCuttingHeight() {
         return cuttingHeight;
     }
 
-    public void setCuttingHeight(byte cuttingHeight) {
+    public void setCuttingHeight(Byte cuttingHeight) {
         this.cuttingHeight = cuttingHeight;
     }
 
-    public boolean getEnable() {
+    public Boolean getEnable() {
         return enable;
     }
 
-    public void setEnable(boolean enable) {
+    public void setEnable(Boolean enable) {
         this.enable = enable;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(Integer orientation) {
+        this.orientation = orientation;
+    }
+
+    public Integer getOrientationShift() {
+        return orientationShift;
+    }
+
+    public void setOrientationShift(Integer orientationShift) {
+        this.orientationShift = orientationShift;
     }
 }
