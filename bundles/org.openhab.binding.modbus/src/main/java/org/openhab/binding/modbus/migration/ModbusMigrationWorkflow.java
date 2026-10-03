@@ -47,8 +47,9 @@ public final class ModbusMigrationWorkflow {
         if (!previewIdentity.equals(currentPreview.identity()) || !previews.containsKey(previewIdentity)) {
             throw new IllegalArgumentException("apply requires the exact, current preview identity");
         }
-        if (applied.add(previewIdentity)) {
+        if (!applied.contains(previewIdentity)) {
             applier.createTargets(currentPreview);
+            applied.add(previewIdentity);
         }
     }
 
