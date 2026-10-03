@@ -49,7 +49,7 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ModbusHandlerFactory.class);
 
     private @NonNullByDefault({}) ModbusManager manager;
-    private @NonNullByDefault({}) ModbusPoller2ChannelTypeProvider poller2ChannelTypeProvider;
+    private @NonNullByDefault({}) ModbusChannelTypeProvider poller2ChannelTypeProvider;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
     static {
@@ -101,7 +101,7 @@ public class ModbusHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Reference
-    public void setPoller2ChannelTypeProvider(ModbusPoller2ChannelTypeProvider poller2ChannelTypeProvider) {
+    public void setPoller2ChannelTypeProvider(ModbusChannelTypeProvider poller2ChannelTypeProvider) {
         this.poller2ChannelTypeProvider = poller2ChannelTypeProvider;
     }
 }

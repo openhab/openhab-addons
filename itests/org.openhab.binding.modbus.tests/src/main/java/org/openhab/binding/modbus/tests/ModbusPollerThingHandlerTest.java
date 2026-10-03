@@ -238,7 +238,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         addThing(poller);
 
         waitForAssert(() -> assertThat(managedPoller().getChannel("raw").getChannelTypeUID(),
-                is(equalTo(new ChannelTypeUID("modbus", "poller2-shim-string")))));
+                is(equalTo(new ChannelTypeUID("modbus", "poller2-generated-string")))));
         assertThat(managedPoller().getChannel("raw").getAcceptedItemType(), is(equalTo("String")));
     }
 

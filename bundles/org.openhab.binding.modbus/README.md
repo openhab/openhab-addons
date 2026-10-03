@@ -57,15 +57,54 @@ This binding supports 4 different things types
 | -------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `tcp`    | Bridge | Modbus TCP server (Modbus TCP slave)                                                                                                                                                                                                      |
 | `serial` | Bridge | Modbus serial slave                                                                                                                                                                                                                       |
-| `poller` | Bridge | Thing taking care of polling the data from modbus slaves. One poller corresponds to single Modbus read request (FC01, FC02, FC03, or FC04). Is child of `tcp` or `serial`.                                                                |
-| `data`   | Thing  | Thing for converting polled data to meaningful numbers. Analogously, is responsible of converting openHAB commands to Modbus write requests. Is child of `poller` (read-only or read-write things) or `tcp`/`serial` (write-only things). |
+| `poller2` | Bridge | Modern poller that owns configured read channels. It is a child of `tcp` or `serial`. |
+| `poller` | Bridge | **Legacy topology.** Thing taking care of polling the data from modbus slaves. One poller corresponds to single Modbus read request (FC01, FC02, FC03, or FC04). Is child of `tcp` or `serial`. |
+| `data`   | Thing  | **Legacy topology.** Thing for converting polled data to meaningful numbers. Analogously, is responsible of converting openHAB commands to Modbus write requests. Is child of `poller` (read-only or read-write things) or `tcp`/`serial` (write-only things). |
 
 Typically one defines either `tcp` or `serial` bridge, depending on the variant of Modbus slave.
 For each Modbus read request, a `poller` is defined.
 Finally, one or more `data` things are introduced to extract relevant numbers from the raw Modbus data.
 For write-only communication, `data` things can be introduced directly as children of `tcp` or `serial` bridges.
 
-The newer `poller2` topology keeps configured read channels on the poller bridge. For an opt-in, review-first migration from the legacy `poller` + `data` topology, see [Legacy Poller Migration](doc/legacy-poller-migration.md). Legacy Things are retained until a separate explicit cleanup action.
+### `poller2` modern channel topology
+
+`poller2` keeps configured channels on the poller bridge. Use one `poller2` bridge for each Modbus read request, then add one channel for each value to expose. This is separate from the legacy `poller` + `data` topology documented below.
+
+A channel's `itemType` selects the Item type it accepts. When the bridge is initialized, the binding assigns a **generated ChannelType** for that Item type so the channel is available in Main UI like other typed channels. Configure the Item type and the channel's Modbus settings; do not depend on generated ChannelType identifiers in configuration.
+
+In Main UI, create a `poller2` bridge under the TCP or serial bridge and add custom channels in the bridge's Channels tab. Select the required Item type, then configure the channel. The following native YAML is equivalent to a holding-register poller with a read/write `Number` channel and can be used in the Main UI code editor:
+
+```yaml
+UID: modbus:poller2:plant:holding
+label: Plant holding registers
+thingTypeUID: modbus:poller2
+bridgeUID: modbus:tcp:plant
+configuration:
+  start: 100
+  length: 2
+  type: holding
+  refresh: 1000
+channels:
+  - id: temperature
+    label: Temperature
+    itemType: Number
+    configuration:
+      address: "100"
+      valueType: int16
+      writeStart: "100"
+      writeValueType: int16
+      writeMaxTries: 3
+```
+
+For a regular register channel, `address` and `valueType` are required. The address is zero-based and must fit within the poller's `start`/`length` range. `valueType` supports the same Modbus value types described in [Value Types On Read And Write](#value-types-on-read-and-write). Use `errorPolicy: keepLast` to retain the last state after a read failure; the default `undef` publishes `UNDEF`.
+
+For coil or discrete-input pollers, channels use `address` and `valueType: bit`. For a raw register channel, use `valueType: raw` with `address` and a positive integer `length`. A channel can write only when its poller type is `holding` or `coil`: set `writeStart`; holding-register writes also require `writeValueType`, while coil writes use the bit value type. Optional `readTransform`, `writeTransform`, and `writeMultipleEvenWithSingleRegisterOrCoil` follow the existing transformation and write behavior described later in this document.
+
+### Legacy `poller` + `data` topology
+
+The legacy topology uses a `poller` bridge plus child `data` Things. For each Modbus read request, a `poller` is defined. One or more `data` Things extract relevant values from the raw Modbus data; write-only `data` Things can be children of `tcp` or `serial`.
+
+For an opt-in, review-first migration from this legacy topology to `poller2`, see [Legacy Poller Migration](doc/legacy-poller-migration.md). Legacy Things are retained until a separate explicit cleanup action.
 
 ## Binding Configuration
 

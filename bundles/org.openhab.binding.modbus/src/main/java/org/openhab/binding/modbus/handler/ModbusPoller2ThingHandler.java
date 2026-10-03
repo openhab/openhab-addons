@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
-import org.openhab.binding.modbus.internal.ModbusPoller2ChannelTypeProvider;
+import org.openhab.binding.modbus.internal.ModbusChannelTypeProvider;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
 import org.openhab.binding.modbus.internal.handler.Poller2BitChannel;
 import org.openhab.binding.modbus.internal.handler.Poller2BitChannelConfiguration;
@@ -59,21 +59,21 @@ import org.slf4j.LoggerFactory;
 public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ModbusPoller2ThingHandler.class);
 
-    private final ModbusPoller2ChannelTypeProvider channelTypeProvider;
+    private final ModbusChannelTypeProvider channelTypeProvider;
     private volatile Map<ChannelUID, Poller2Channel> channels = Map.of();
     private volatile Map<ChannelUID, Poller2BitChannel> bitChannels = Map.of();
     private volatile Map<ChannelUID, Poller2RawChannel> rawChannels = Map.of();
     private volatile Map<ChannelUID, Poller2WriteChannel> writeChannels = Map.of();
     private volatile int pollStart;
 
-    public ModbusPoller2ThingHandler(Bridge bridge, ModbusPoller2ChannelTypeProvider channelTypeProvider) {
+    public ModbusPoller2ThingHandler(Bridge bridge, ModbusChannelTypeProvider channelTypeProvider) {
         super(bridge);
         this.channelTypeProvider = channelTypeProvider;
     }
 
     @Override
     public synchronized void initialize() {
-        applyUiChannelTypeShims();
+        applyGeneratedChannelTypes();
         ModbusPollerConfiguration configuration = getConfigAs(ModbusPollerConfiguration.class);
         String type = configuration.getType();
         if (type == null) {
@@ -147,17 +147,17 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
         super.initialize();
     }
 
-    private void applyUiChannelTypeShims() {
+    private void applyGeneratedChannelTypes() {
         List<Channel> channels = getThing().getChannels();
-        List<Channel> shimmedChannels = channels.stream().map(this::withUiChannelTypeShim).toList();
-        if (!channels.equals(shimmedChannels)) {
+        List<Channel> generatedChannels = channels.stream().map(this::withGeneratedChannelType).toList();
+        if (!channels.equals(generatedChannels)) {
             ThingBuilder builder = editThing();
-            builder.withChannels(shimmedChannels);
+            builder.withChannels(generatedChannels);
             updateThing(builder.build());
         }
     }
 
-    private Channel withUiChannelTypeShim(Channel channel) {
+    private Channel withGeneratedChannelType(Channel channel) {
         if (channel.getChannelTypeUID() != null) {
             return channel;
         }

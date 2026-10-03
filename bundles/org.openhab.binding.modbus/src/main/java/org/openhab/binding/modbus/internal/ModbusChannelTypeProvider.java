@@ -31,10 +31,10 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Sami Salonen - Initial contribution
  */
-@Component(service = { ChannelTypeProvider.class, ModbusPoller2ChannelTypeProvider.class })
+@Component(service = { ChannelTypeProvider.class, ModbusChannelTypeProvider.class })
 @NonNullByDefault
-public class ModbusPoller2ChannelTypeProvider implements ChannelTypeProvider {
-    private static final String SHIM_PREFIX = "poller2-shim-";
+public class ModbusChannelTypeProvider implements ChannelTypeProvider {
+    private static final String GENERATED_PREFIX = "poller2-generated-";
 
     private final Map<String, ChannelTypeUID> channelTypeUIDsByItemType = new ConcurrentHashMap<>();
     private final Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<>();
@@ -57,7 +57,7 @@ public class ModbusPoller2ChannelTypeProvider implements ChannelTypeProvider {
     }
 
     private ChannelTypeUID createChannelType(String itemType) {
-        String id = SHIM_PREFIX
+        String id = GENERATED_PREFIX
                 + itemType.replace(':', '-').replaceAll("([a-z])([A-Z])", "$1-$2").toLowerCase(Locale.ROOT);
         ChannelTypeUID uid = new ChannelTypeUID(ModbusBindingConstants.BINDING_ID, id);
         channelTypes.putIfAbsent(uid, ChannelTypeBuilder.state(uid, itemType, itemType).build());
