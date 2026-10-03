@@ -12,12 +12,17 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -29,12 +34,14 @@ import org.openhab.binding.amazonechocontrol.internal.connection.Connection;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 
 import com.google.gson.Gson;
 
 /**
  * Tests that installing a connection from the web proxy login leaves exactly one live connection behind: the
- * replaced one is closed, and a candidate that lost against dispose or close never replaces the current one.
+ * replaced one is closed, a candidate that lost against dispose or close never replaces the current one, and a
+ * logout finishes before a login can swap the connection.
  *
  * @author Martin Littkovsky - Initial contribution
  */
@@ -103,5 +110,42 @@ public class AccountHandlerConnectionSwapTest {
         assertNotSame(lateLoginCandidate, handler.getConnection());
         assertSame(current, handler.getConnection());
         assertTrue(lateLoginCandidate.isClosed());
+    }
+
+    @Test
+    public void aLoginWaitsForARunningLogoutInsteadOfOverlappingIt() throws InterruptedException {
+        handler.setCallback(mock(ThingHandlerCallback.class));
+        Connection fresh = new Connection(null, gson, httpClient);
+        List<Thread> loginsDuringLogout = new ArrayList<>();
+        Connection loggingOut = new Connection(null, gson, httpClient) {
+            @Override
+            public void logout(boolean reset) {
+                if (loginsDuringLogout.isEmpty()) {
+                    Thread login = new Thread(() -> handler.setConnection(fresh));
+                    loginsDuringLogout.add(login);
+                    login.setDaemon(true);
+                    login.start();
+                    assertEquals(Thread.State.BLOCKED, settledState(login));
+                }
+                super.logout(reset);
+            }
+        };
+        handler.setConnection(loggingOut);
+
+        handler.resetConnection(false);
+
+        Thread login = loginsDuringLogout.get(0);
+        login.join(TimeUnit.SECONDS.toMillis(5));
+        assertFalse(login.isAlive());
+        assertSame(fresh, handler.getConnection());
+    }
+
+    private static Thread.State settledState(Thread thread) {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (thread.getState() != Thread.State.BLOCKED && thread.getState() != Thread.State.TERMINATED
+                && System.nanoTime() < deadline) {
+            Thread.onSpinWait();
+        }
+        return thread.getState();
     }
 }
