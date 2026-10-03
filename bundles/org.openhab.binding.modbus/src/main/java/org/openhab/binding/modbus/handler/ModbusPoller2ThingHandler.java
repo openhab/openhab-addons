@@ -13,14 +13,17 @@
 package org.openhab.binding.modbus.handler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.ModbusChannelTypeProvider;
+import org.openhab.binding.modbus.internal.action.ModbusPoller2Actions;
 import org.openhab.binding.modbus.internal.config.ModbusPollerConfiguration;
 import org.openhab.binding.modbus.internal.handler.Poller2BitChannel;
 import org.openhab.binding.modbus.internal.handler.Poller2BitChannelConfiguration;
@@ -30,6 +33,8 @@ import org.openhab.binding.modbus.internal.handler.Poller2RawChannel;
 import org.openhab.binding.modbus.internal.handler.Poller2RawChannelConfiguration;
 import org.openhab.binding.modbus.internal.handler.Poller2WriteChannel;
 import org.openhab.binding.modbus.internal.handler.Poller2WriteChannelConfiguration;
+import org.openhab.binding.modbus.internal.handler.Poller2WriteRequest;
+import org.openhab.binding.modbus.internal.handler.Poller2WriteResult;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.core.io.transport.modbus.AsyncModbusWriteResult;
@@ -42,6 +47,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -69,6 +75,11 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
     public ModbusPoller2ThingHandler(Bridge bridge, ModbusChannelTypeProvider channelTypeProvider) {
         super(bridge);
         this.channelTypeProvider = channelTypeProvider;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(ModbusPoller2Actions.class);
     }
 
     @Override
@@ -184,6 +195,37 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
             logger.trace("Submitting poller2 write task {}", request);
             communication.submitOneTimeWrite(request, this::onWriteResponse, this::onWriteFailure);
         });
+    }
+
+    /**
+     * Submits one typed write for a configured poller-owned channel.
+     *
+     * @param actionRequest immutable action request
+     * @return whether the write was accepted for asynchronous execution
+     */
+    public synchronized Poller2WriteResult submitActionWrite(Poller2WriteRequest actionRequest) {
+        Poller2WriteChannel writeChannel = writeChannels.entrySet().stream()
+                .filter(entry -> entry.getKey().getId().equals(actionRequest.channelId())).map(Map.Entry::getValue)
+                .findFirst().orElse(null);
+        if (writeChannel == null) {
+            return Poller2WriteResult.UNKNOWN_CHANNEL;
+        }
+        boolean coilRequest = actionRequest.type() == Poller2WriteRequest.Type.COIL;
+        if (writeChannel.isCoil() != coilRequest) {
+            return Poller2WriteResult.TYPE_MISMATCH;
+        }
+        ModbusReadRequestBlueprint readRequest = getRequest();
+        if (readRequest == null) {
+            return Poller2WriteResult.NOT_READY;
+        }
+        Optional<ModbusWriteRequestBlueprint> writeRequest = writeChannel.requestFor(actionRequest.command(),
+                readRequest.getUnitID());
+        if (writeRequest.isEmpty()) {
+            return Poller2WriteResult.INVALID_COMMAND;
+        }
+        logger.trace("Submitting poller2 action write task {}", writeRequest.get());
+        getCommunicationInterface().submitOneTimeWrite(writeRequest.get(), this::onWriteResponse, this::onWriteFailure);
+        return Poller2WriteResult.ACCEPTED;
     }
 
     private void onWriteResponse(AsyncModbusWriteResult result) {

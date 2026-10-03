@@ -77,4 +77,8 @@ public final class Poller2WriteChannel {
             return Optional.empty();
         }
     }
+
+    public boolean isCoil() {
+        return coil;
+    }
 }
