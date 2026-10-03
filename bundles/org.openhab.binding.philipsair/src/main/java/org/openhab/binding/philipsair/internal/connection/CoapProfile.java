@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,13 +54,18 @@ public enum CoapProfile {
     BASIC_GEN3("basic", Generation.GEN3, Spec.NONE),
     /** AC2210, AC2220, AC2221, AC3210, AC3220, AC3221, AC4220 and AC4221 */
     UNICORN("unicorn", Generation.GEN3,
-            new Spec(Tables.unicornModes(), "D0310D", new Timer("D03110", 1, 12), false, true)),
+            new Spec().modes(Tables.unicornModes()).speedFallbackKey("D0310D").timer(new Timer("D03110", 1, 12))
+                    .humiditySetpoint()
+                    .settings(Setting.BEEP, Setting.STANDBY_SENSORS, Setting.ALLERGY_SLEEP, Setting.DISPLAY_SWITCH)
+                    .displayBrightness(Tables.unicornBrightness()).lampModes(Tables.lampModes())),
     /** AC3737 */
-    AC3737("ac3737", Generation.GEN3, new Spec(Tables.ac3737Modes(), null, null, true, true)),
+    AC3737("ac3737", Generation.GEN3,
+            new Spec().modes(Tables.ac3737Modes()).modePowersOn().humiditySetpoint().settings(Setting.ALLERGY_SLEEP)
+                    .displayBrightness(Tables.ac3737Brightness())),
     /** AC1715 */
-    AC1715("ac1715", Generation.GEN2, new Spec(Tables.ac1715Modes(), null, null, true, false)),
+    AC1715("ac1715", Generation.GEN2, new Spec().modes(Tables.ac1715Modes()).modePowersOn()),
     /** AC0850 with the field names of the generation 2 */
-    AC0850("ac0850", Generation.GEN2, new Spec(Tables.ac0850Modes(), null, null, true, false));
+    AC0850("ac0850", Generation.GEN2, new Spec().modes(Tables.ac0850Modes()).modePowersOn());
 
     /** The generations of field names reported by the devices */
     enum Generation {
@@ -81,18 +87,92 @@ public enum CoapProfile {
     }
 
     /**
-     * What a model profile adds to the translation of the basic profile of its generation.
-     *
-     * @param modes the modes and fan speeds of the model
-     * @param speedFallbackKey the field with the speed the device chose itself, for the modes without a selected speed
-     * @param timer the timer of the model, null if it is not supported
-     * @param modePowersOn true if selecting a mode also switches the device on, as the Philips app and the integration
-     *            of the model do
-     * @param humiditySetpoint true if the humidity setpoint of the model can be set
+     * The settings with an on and an off value, which are the same for the models that have them.
      */
-    record Spec(List<ModeEntry> modes, @Nullable String speedFallbackKey, @Nullable Timer timer, boolean modePowersOn,
-            boolean humiditySetpoint) {
-        static final Spec NONE = new Spec(List.of(), null, null, false, false);
+    enum Setting {
+        /** The beep when a button is pressed, which is 100 when on */
+        BEEP("beep", "D03130", 100, 0),
+        /** Sensors that keep measuring in standby */
+        STANDBY_SENSORS("standby", "D03134", 1, 0),
+        /** The sleep mode that is gentle for allergic people */
+        ALLERGY_SLEEP("allslp", "D03115", 1, 0),
+        /** The display, which is on when the field is 0 */
+        DISPLAY_SWITCH("dispon", "D03112", 0, 1);
+
+        final String classicKey;
+        final String key;
+        final int on;
+        final int off;
+
+        Setting(String classicKey, String key, int on, int off) {
+            this.classicKey = classicKey;
+            this.key = key;
+            this.on = on;
+            this.off = off;
+        }
+    }
+
+    /**
+     * What a model profile adds to the translation of the basic profile of its generation. The setters are used when
+     * the profiles are defined.
+     */
+    static final class Spec {
+        static final Spec NONE = new Spec();
+
+        List<ModeEntry> modes = List.of();
+        @Nullable
+        String speedFallbackKey;
+        @Nullable
+        Timer timer;
+        boolean modePowersOn;
+        boolean humiditySetpoint;
+        Set<Setting> settings = Set.of();
+        List<StateOption> displayBrightness = List.of();
+        List<StateOption> lampModes = List.of();
+
+        /** The modes and fan speeds of the model */
+        Spec modes(List<ModeEntry> modes) {
+            this.modes = modes;
+            return this;
+        }
+
+        /** The field with the speed the device chose itself, for the modes without a selected speed */
+        Spec speedFallbackKey(String speedFallbackKey) {
+            this.speedFallbackKey = speedFallbackKey;
+            return this;
+        }
+
+        Spec timer(Timer timer) {
+            this.timer = timer;
+            return this;
+        }
+
+        /** Selecting a mode also switches the device on, as the Philips app and the integration of the model do */
+        Spec modePowersOn() {
+            this.modePowersOn = true;
+            return this;
+        }
+
+        /** The humidity setpoint of the model can be set */
+        Spec humiditySetpoint() {
+            this.humiditySetpoint = true;
+            return this;
+        }
+
+        Spec settings(Setting... settings) {
+            this.settings = Set.of(settings);
+            return this;
+        }
+
+        Spec displayBrightness(List<StateOption> displayBrightness) {
+            this.displayBrightness = displayBrightness;
+            return this;
+        }
+
+        Spec lampModes(List<StateOption> lampModes) {
+            this.lampModes = lampModes;
+            return this;
+        }
     }
 
     /**
@@ -125,6 +205,8 @@ public enum CoapProfile {
     private static final String GEN3_THRESHOLD = "D0312C";
     private static final String GEN3_DISPLAYED_INDEX = "D0312A";
     private static final String GEN3_HUMIDITY_SETPOINT = "D03128";
+    private static final String GEN3_DISPLAY_BRIGHTNESS = "D03105";
+    private static final String GEN3_LAMP_MODE = "D03135";
 
     private static final List<String> UNICORN_MODELS = List.of("AC2210", "AC2220", "AC2221", "AC3210", "AC3220",
             "AC3221", "AC4220", "AC4221");
@@ -136,16 +218,22 @@ public enum CoapProfile {
     private final @Nullable Timer timer;
     private final boolean modePowersOn;
     private final boolean humiditySetpoint;
+    private final Set<Setting> settings;
+    private final List<StateOption> displayBrightness;
+    private final List<StateOption> lampModes;
     private final boolean modelProfile;
 
     CoapProfile(String id, Generation generation, Spec spec) {
         this.id = id;
         this.generation = generation;
-        this.modes = spec.modes();
-        this.speedFallbackKey = spec.speedFallbackKey();
-        this.timer = spec.timer();
-        this.modePowersOn = spec.modePowersOn();
-        this.humiditySetpoint = spec.humiditySetpoint();
+        this.modes = spec.modes;
+        this.speedFallbackKey = spec.speedFallbackKey;
+        this.timer = spec.timer;
+        this.modePowersOn = spec.modePowersOn;
+        this.humiditySetpoint = spec.humiditySetpoint;
+        this.settings = spec.settings;
+        this.displayBrightness = spec.displayBrightness;
+        this.lampModes = spec.lampModes;
         this.modelProfile = spec != Spec.NONE;
     }
 
@@ -254,6 +342,20 @@ public enum CoapProfile {
     }
 
     /**
+     * @return the brightness settings of the display, empty if the profile has none
+     */
+    public List<StateOption> getDisplayBrightnessOptions() {
+        return displayBrightness;
+    }
+
+    /**
+     * @return the modes of the lamp, empty if the profile has none
+     */
+    public List<StateOption> getLampModeOptions() {
+        return lampModes;
+    }
+
+    /**
      * @return a copy of the reported status, with the classic field names added for the translatable fields
      */
     JsonObject toClassic(JsonObject reported) {
@@ -329,7 +431,25 @@ public enum CoapProfile {
         }
         modesToClassic(reported, classic);
         timerToClassic(reported, classic);
+        settingsToClassic(reported, classic);
         return classic;
+    }
+
+    private void settingsToClassic(JsonObject reported, JsonObject classic) {
+        for (Setting setting : settings) {
+            Number value = getNumber(reported, setting.key);
+            if (value != null) {
+                classic.addProperty(setting.classicKey, value.intValue() != setting.off);
+            }
+        }
+        Number brightness = getNumber(reported, GEN3_DISPLAY_BRIGHTNESS);
+        if (brightness != null && !displayBrightness.isEmpty()) {
+            classic.addProperty("dispbr", String.valueOf(brightness.intValue()));
+        }
+        Number lamp = getNumber(reported, GEN3_LAMP_MODE);
+        if (lamp != null && !lampModes.isEmpty()) {
+            classic.addProperty("lamp", String.valueOf(lamp.intValue()));
+        }
     }
 
     private void modesToClassic(JsonObject reported, JsonObject classic) {
@@ -458,6 +578,19 @@ public enum CoapProfile {
                 }
             }
         }
+        for (Setting setting : settings) {
+            if (desired.get(setting.classicKey) instanceof JsonPrimitive on && on.isBoolean()) {
+                translated.addProperty(setting.key, on.getAsBoolean() ? setting.on : setting.off);
+            }
+        }
+        String brightness = getString(desired, "dispbr");
+        if (brightness != null && hasValue(displayBrightness, brightness)) {
+            translated.addProperty(GEN3_DISPLAY_BRIGHTNESS, Integer.parseInt(brightness));
+        }
+        String lamp = getString(desired, "lamp");
+        if (lamp != null && hasValue(lampModes, lamp)) {
+            translated.addProperty(GEN3_LAMP_MODE, Integer.parseInt(lamp));
+        }
         // the gas index (2) is not offered, as the models have no gas sensor
         String displayIndex = getString(desired, "ddp");
         if ("0".equals(displayIndex) || "1".equals(displayIndex)) {
@@ -486,6 +619,10 @@ public enum CoapProfile {
             }
         }
         return null;
+    }
+
+    private static boolean hasValue(List<StateOption> options, String value) {
+        return options.stream().anyMatch(option -> option.getValue().equals(value));
     }
 
     private static @Nullable String getString(JsonObject object, String key) {
@@ -540,6 +677,23 @@ public enum CoapProfile {
             return List.of(entry("P", null, "D0310C", 0, "D0310A", 2), entry("S", null, "D0310C", 17, "D0310A", 2),
                     entry("M", "1", "D0310C", 1, "D0310A", 2), entry("M", "2", "D0310C", 2, "D0310A", 2),
                     entry("M", "t", "D0310C", 18, "D0310A", 3));
+        }
+
+        /**
+         * The Unicorn range sets the brightness of the display in steps and has an automatic setting.
+         */
+        static List<StateOption> unicornBrightness() {
+            return List.of(new StateOption("0", "Off"), new StateOption("101", "Auto"), new StateOption("115", "Low"),
+                    new StateOption("123", "Bright"));
+        }
+
+        static List<StateOption> ac3737Brightness() {
+            return List.of(new StateOption("0", "Off"), new StateOption("50", "50 %"), new StateOption("100", "100 %"));
+        }
+
+        static List<StateOption> lampModes() {
+            return List.of(new StateOption("0", "Off"), new StateOption("1", "Air quality"),
+                    new StateOption("2", "Ambient"));
         }
 
         static List<ModeEntry> ac1715Modes() {

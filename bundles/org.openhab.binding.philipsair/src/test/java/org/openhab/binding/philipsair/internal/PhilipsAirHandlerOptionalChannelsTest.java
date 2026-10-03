@@ -41,6 +41,8 @@ import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -216,6 +218,48 @@ public class PhilipsAirHandlerOptionalChannelsTest {
         assertEquals(List.of("0", "1"), options(CONTROLS_UI, DISPLAYED_INDEX));
         assertEquals(List.of("1", "4", "7", "10"), options(SENSORS, AIR_QUALITY_NOTIFICATION_THRESHOLD));
         assertEquals("UNICORN", handler.getThing().getProperties().get(PROPERTY_DEVICE_PROFILE));
+    }
+
+    @Test
+    public void settingChannelsAreAddedAndControlled() throws PhilipsAirAPIException {
+        // the status as translated by the connection, see CoapProfile
+        String status = """
+                {"modelid":"AC3210/12","pwr":"1","beep":true,"standby":false,"allslp":false,"dispon":true,\
+                "dispbr":"115","lamp":"2"}""";
+        when(connection.getDeviceProfile()).thenReturn(CoapProfile.UNICORN);
+        when(connection.isPushingStatus()).thenReturn(true);
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson(status, PhilipsAirPurifierDeviceDTO.class));
+        PhilipsAirPurifierDataDTO data = gson.fromJson(status, PhilipsAirPurifierDataDTO.class);
+        when(connection.getAirPurifierStatus(any())).thenReturn(data);
+
+        handler.updateData(connection);
+
+        assertEquals(
+                Set.of("controls#power", "controls-ui#beep", "controls-ui#display", "controls-ui#display-brightness",
+                        "controls-ui#lamp-mode", "controls#standby-sensors", "controls#allergy-sleep"),
+                channelIds(handler.getThing().getChannels()));
+        assertEquals(List.of("0", "101", "115", "123"), options(CONTROLS_UI, DISPLAY_BRIGHTNESS));
+        assertEquals(List.of("0", "1", "2"), options(CONTROLS_UI, LAMP_MODE));
+
+        ThingUID thingUID = handler.getThing().getUID();
+        assertEquals(OnOffType.ON, handler.getValue(new ChannelUID(thingUID, CONTROLS_UI, BEEP), data, null, null));
+        assertEquals(OnOffType.OFF,
+                handler.getValue(new ChannelUID(thingUID, CONTROLS, STANDBY_SENSORS), data, null, null));
+        assertEquals(OnOffType.ON, handler.getValue(new ChannelUID(thingUID, CONTROLS_UI, DISPLAY), data, null, null));
+        assertEquals("115",
+                handler.getValue(new ChannelUID(thingUID, CONTROLS_UI, DISPLAY_BRIGHTNESS), data, null, null));
+        assertEquals("2", handler.getValue(new ChannelUID(thingUID, CONTROLS_UI, LAMP_MODE), data, null, null));
+
+        assertEquals("{\"beep\":false}", gson.toJson(handler.prepareCommandData(BEEP, OnOffType.OFF)));
+        assertEquals("{\"standby\":true}", gson.toJson(handler.prepareCommandData(STANDBY_SENSORS, OnOffType.ON)));
+        assertEquals("{\"allslp\":true}", gson.toJson(handler.prepareCommandData(ALLERGY_SLEEP, OnOffType.ON)));
+        assertEquals("{\"dispon\":false}", gson.toJson(handler.prepareCommandData(DISPLAY, OnOffType.OFF)));
+        assertEquals("{\"dispbr\":\"123\"}",
+                gson.toJson(handler.prepareCommandData(DISPLAY_BRIGHTNESS, new StringType("123"))));
+        assertEquals("{\"lamp\":\"1\"}", gson.toJson(handler.prepareCommandData(LAMP_MODE, new StringType("1"))));
+        assertNull(handler.prepareCommandData(BEEP, new StringType("on")));
+        assertNull(handler.prepareCommandData(LAMP_MODE, OnOffType.ON));
     }
 
     @Test

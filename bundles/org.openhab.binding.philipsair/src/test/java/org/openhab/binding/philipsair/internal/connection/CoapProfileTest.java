@@ -239,6 +239,122 @@ public class CoapProfileTest {
     }
 
     @Test
+    public void unicornSettingsAreRead() {
+        JsonObject classic = CoapProfile.UNICORN.toClassic(parse("""
+                {"D01S04":"Unicorn","D03130":100,"D03134":1,"D03115":0,"D03112":0,"D03105":115,"D03135":2}"""));
+
+        PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals(Boolean.TRUE, data.getBeep());
+        assertEquals(Boolean.TRUE, data.getStandbySensors());
+        assertEquals(Boolean.FALSE, data.getAllergySleep());
+        // the display is on when the field is 0
+        assertEquals(Boolean.TRUE, data.getDisplayOn());
+        assertEquals("115", data.getDisplayBrightness());
+        assertEquals("2", data.getLampMode());
+
+        classic = CoapProfile.UNICORN
+                .toClassic(parse("{\"D01S04\":\"Unicorn\",\"D03130\":0,\"D03112\":1,\"D03105\":0}"));
+        data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals(Boolean.FALSE, data.getBeep());
+        assertEquals(Boolean.FALSE, data.getDisplayOn());
+        assertEquals("0", data.getDisplayBrightness());
+        assertNull(data.getLampMode());
+    }
+
+    @Test
+    public void settingsAreOnlyReadForTheModelsThatHaveThem() {
+        String status = "{\"D01S04\":\"X\",\"D03130\":100,\"D03134\":1,\"D03115\":1,\"D03112\":0,\"D03105\":50,"
+                + "\"D03135\":1}";
+
+        JsonObject classic = CoapProfile.AC3737.toClassic(parse(status));
+        PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals(Boolean.TRUE, data.getAllergySleep());
+        assertEquals("50", data.getDisplayBrightness());
+        for (String field : new String[] { "beep", "standby", "dispon", "lamp" }) {
+            assertFalse(classic.has(field), field);
+        }
+
+        classic = CoapProfile.BASIC_GEN3.toClassic(parse(status));
+        for (String field : new String[] { "beep", "standby", "allslp", "dispon", "dispbr", "lamp" }) {
+            assertFalse(classic.has(field), field);
+        }
+    }
+
+    @Test
+    public void unexpectedSettingValuesAreIgnored() {
+        JsonObject classic = CoapProfile.UNICORN.toClassic(parse(
+                "{\"D01S04\":\"Unicorn\",\"D03130\":\"loud\",\"D03134\":null,\"D03105\":\"bright\",\"D03135\":\"x\"}"));
+
+        for (String field : new String[] { "beep", "standby", "dispbr", "lamp" }) {
+            assertFalse(classic.has(field), field);
+        }
+    }
+
+    @Test
+    public void unicornSettingCommandsAreTranslated() {
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setBeep(true);
+        command.setStandbySensors(false);
+        command.setAllergySleep(true);
+        command.setDisplayOn(true);
+        command.setDisplayBrightness("123");
+        command.setLampMode("1");
+
+        assertEquals(parse("{\"D03130\":100,\"D03134\":0,\"D03115\":1,\"D03112\":0,\"D03105\":123,\"D03135\":1}"),
+                CoapProfile.UNICORN.toDevice(command(command)));
+
+        command = new PhilipsAirPurifierWritableDataDTO();
+        command.setBeep(false);
+        command.setDisplayOn(false);
+        command.setDisplayBrightness("0");
+        assertEquals(parse("{\"D03130\":0,\"D03112\":1,\"D03105\":0}"), CoapProfile.UNICORN.toDevice(command(command)));
+    }
+
+    @Test
+    public void settingCommandsWithValuesTheModelDoesNotOfferAreDropped() {
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setDisplayBrightness("50");
+        command.setLampMode("3");
+
+        assertTrue(CoapProfile.UNICORN.toDevice(command(command)).isEmpty());
+
+        command = new PhilipsAirPurifierWritableDataDTO();
+        command.setDisplayBrightness("50");
+        assertEquals(parse("{\"D03105\":50}"), CoapProfile.AC3737.toDevice(command(command)));
+        command.setDisplayBrightness("123");
+        assertTrue(CoapProfile.AC3737.toDevice(command(command)).isEmpty());
+    }
+
+    @Test
+    public void settingCommandsAreOnlySentToModelsThatHaveThem() {
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setBeep(true);
+        command.setStandbySensors(true);
+        command.setDisplayOn(true);
+        command.setLampMode("1");
+
+        assertTrue(CoapProfile.AC3737.toDevice(command(command)).isEmpty());
+        assertTrue(CoapProfile.BASIC_GEN3.toDevice(command(command)).isEmpty());
+        assertTrue(CoapProfile.AC1715.toDevice(command(command)).isEmpty());
+
+        command = new PhilipsAirPurifierWritableDataDTO();
+        command.setAllergySleep(true);
+        assertEquals(parse("{\"D03115\":1}"), CoapProfile.AC3737.toDevice(command(command)));
+    }
+
+    @Test
+    public void settingOptionsDependOnTheModel() {
+        assertEquals(List.of("0", "101", "115", "123"), values(CoapProfile.UNICORN.getDisplayBrightnessOptions()));
+        assertEquals(List.of("0", "50", "100"), values(CoapProfile.AC3737.getDisplayBrightnessOptions()));
+        assertEquals(List.of("0", "1", "2"), values(CoapProfile.UNICORN.getLampModeOptions()));
+        assertTrue(CoapProfile.AC3737.getLampModeOptions().isEmpty());
+        assertTrue(CoapProfile.BASIC_GEN3.getDisplayBrightnessOptions().isEmpty());
+    }
+
+    @Test
     public void ac3737DoesNotTranslateTheUnicornTimer() {
         JsonObject classic = CoapProfile.AC3737.toClassic(parse("{\"D01S05\":\"AC3737/10\",\"D03110\":3}"));
         assertFalse(classic.has("dt"));

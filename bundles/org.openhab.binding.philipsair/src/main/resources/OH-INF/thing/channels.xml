@@ -193,6 +193,63 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="beep" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Beep</label>
+		<description>The device beeps when a button is pressed</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="standby-sensors" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sensors in Standby</label>
+		<description>The sensors keep measuring when the device is in standby</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="allergy-sleep" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Allergy Sleep</label>
+		<description>Sleep mode that is gentle for allergic people</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="display" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Display</label>
+		<description>The display of the device is on</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="display-brightness">
+		<item-type>String</item-type>
+		<label>Display Brightness</label>
+		<description>Brightness of the display, with the steps the model offers</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+		<state readOnly="false" pattern="%s"/>
+	</channel-type>
+	<channel-type id="lamp-mode">
+		<item-type>String</item-type>
+		<label>Lamp Mode</label>
+		<description>What the lamp of the device shows</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="false" pattern="%s"/>
+	</channel-type>
+
 	<channel-type id="pre-filter-life">
 		<item-type unitHint="h">Number:Time</item-type>
 		<label>Pre-filter</label>

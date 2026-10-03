@@ -186,6 +186,36 @@ public class PhilipsAirBindingConstants {
     public static final String WATER_LEVEL = "water-level";
 
     /**
+     * The beep when a button is pressed
+     */
+    public static final String BEEP = "beep";
+
+    /**
+     * Sensors that keep measuring in standby
+     */
+    public static final String STANDBY_SENSORS = "standby-sensors";
+
+    /**
+     * Sleep mode that is gentle for allergic people
+     */
+    public static final String ALLERGY_SLEEP = "allergy-sleep";
+
+    /**
+     * The display is on
+     */
+    public static final String DISPLAY = "display";
+
+    /**
+     * Brightness of the display, with the steps the model has
+     */
+    public static final String DISPLAY_BRIGHTNESS = "display-brightness";
+
+    /**
+     * What the lamp shows
+     */
+    public static final String LAMP_MODE = "lamp-mode";
+
+    /**
      * Pre-filter
      */
     public static final String PRE_FILTER = "pre-filter-life";

@@ -60,6 +60,25 @@ public class PhilipsAirPurifierWritableDataDTO {
     @SerializedName("func")
     @Expose
     private @Nullable String function;
+    // the settings of recent models, which have no classic field name
+    @SerializedName("beep")
+    @Expose
+    private @Nullable Boolean beep;
+    @SerializedName("standby")
+    @Expose
+    private @Nullable Boolean standbySensors;
+    @SerializedName("allslp")
+    @Expose
+    private @Nullable Boolean allergySleep;
+    @SerializedName("dispon")
+    @Expose
+    private @Nullable Boolean displayOn;
+    @SerializedName("dispbr")
+    @Expose
+    private @Nullable String displayBrightness;
+    @SerializedName("lamp")
+    @Expose
+    private @Nullable String lampMode;
 
     public @Nullable String getFanSpeed() {
         return fanSpeed;
@@ -159,5 +178,53 @@ public class PhilipsAirPurifierWritableDataDTO {
 
     public void setFunction(String function) {
         this.function = function;
+    }
+
+    public @Nullable Boolean getBeep() {
+        return beep;
+    }
+
+    public void setBeep(boolean beep) {
+        this.beep = beep;
+    }
+
+    public @Nullable Boolean getStandbySensors() {
+        return standbySensors;
+    }
+
+    public void setStandbySensors(boolean standbySensors) {
+        this.standbySensors = standbySensors;
+    }
+
+    public @Nullable Boolean getAllergySleep() {
+        return allergySleep;
+    }
+
+    public void setAllergySleep(boolean allergySleep) {
+        this.allergySleep = allergySleep;
+    }
+
+    public @Nullable Boolean getDisplayOn() {
+        return displayOn;
+    }
+
+    public void setDisplayOn(boolean displayOn) {
+        this.displayOn = displayOn;
+    }
+
+    public @Nullable String getDisplayBrightness() {
+        return displayBrightness;
+    }
+
+    public void setDisplayBrightness(String displayBrightness) {
+        this.displayBrightness = displayBrightness;
+    }
+
+    public @Nullable String getLampMode() {
+        return lampMode;
+    }
+
+    public void setLampMode(String lampMode) {
+        this.lampMode = lampMode;
     }
 }

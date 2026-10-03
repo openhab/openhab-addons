@@ -89,7 +89,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private static final List<Map.Entry<String, String>> OPTIONAL_CHANNELS = List.of(Map.entry(AUTO_TIMEOFF, CONTROLS),
             Map.entry(TIMER_COUNTDOWN, CONTROLS), Map.entry(HUMIDITY_SETPOINT, CONTROLS), Map.entry(FUNCTION, CONTROLS),
             Map.entry(HUMIDITY, SENSORS), Map.entry(TEMPERATURE, SENSORS), Map.entry(WATER_LEVEL, SENSORS),
-            Map.entry(TVOC, SENSORS), Map.entry(RSSI, SENSORS), Map.entry(WICKS_FILTER, FILTERS));
+            Map.entry(TVOC, SENSORS), Map.entry(RSSI, SENSORS), Map.entry(WICKS_FILTER, FILTERS),
+            Map.entry(BEEP, CONTROLS_UI), Map.entry(DISPLAY_BRIGHTNESS, CONTROLS_UI), Map.entry(LAMP_MODE, CONTROLS_UI),
+            Map.entry(DISPLAY, CONTROLS_UI), Map.entry(STANDBY_SENSORS, CONTROLS), Map.entry(ALLERGY_SLEEP, CONTROLS));
     /**
      * Model id prefixes of the devices that can show the gas (TVOC) index on the display, as offered by the Philips
      * app.
@@ -287,6 +289,42 @@ public class PhilipsAirHandler extends BaseThingHandler {
                     return null;
                 }
                 data.setHumiditySetpoint(intCommand);
+                break;
+            case BEEP:
+                if (onOffCommand == null) {
+                    return null;
+                }
+                data.setBeep(onOffCommand == OnOffType.ON);
+                break;
+            case STANDBY_SENSORS:
+                if (onOffCommand == null) {
+                    return null;
+                }
+                data.setStandbySensors(onOffCommand == OnOffType.ON);
+                break;
+            case ALLERGY_SLEEP:
+                if (onOffCommand == null) {
+                    return null;
+                }
+                data.setAllergySleep(onOffCommand == OnOffType.ON);
+                break;
+            case DISPLAY:
+                if (onOffCommand == null) {
+                    return null;
+                }
+                data.setDisplayOn(onOffCommand == OnOffType.ON);
+                break;
+            case DISPLAY_BRIGHTNESS:
+                if (stringCommand == null) {
+                    return null;
+                }
+                data.setDisplayBrightness(stringCommand);
+                break;
+            case LAMP_MODE:
+                if (stringCommand == null) {
+                    return null;
+                }
+                data.setLampMode(stringCommand);
                 break;
             case FUNCTION:
                 if (stringCommand == null) {
@@ -623,9 +661,16 @@ public class PhilipsAirHandler extends BaseThingHandler {
             return;
         }
         optionsProfile = profile;
-        setProfileOptions(FAN_MODE, profile != null ? profile.getFanSpeedOptions() : List.of(), DEFAULT_FAN_OPTIONS);
-        setProfileOptions(MODE, profile != null ? profile.getModeOptions() : List.of(), DEFAULT_MODE_OPTIONS);
-        setProfileOptions(AUTO_TIMEOFF, profile != null ? profile.getTimerOptions() : List.of(), DEFAULT_TIMER_OPTIONS);
+        setProfileOptions(CONTROLS, FAN_MODE, profile != null ? profile.getFanSpeedOptions() : List.of(),
+                DEFAULT_FAN_OPTIONS);
+        setProfileOptions(CONTROLS, MODE, profile != null ? profile.getModeOptions() : List.of(), DEFAULT_MODE_OPTIONS);
+        setProfileOptions(CONTROLS, AUTO_TIMEOFF, profile != null ? profile.getTimerOptions() : List.of(),
+                DEFAULT_TIMER_OPTIONS);
+        // these channels only exist for the profiles that have them, so they have no default options
+        setProfileOptions(CONTROLS_UI, DISPLAY_BRIGHTNESS,
+                profile != null ? profile.getDisplayBrightnessOptions() : List.of(), List.of());
+        setProfileOptions(CONTROLS_UI, LAMP_MODE, profile != null ? profile.getLampModeOptions() : List.of(),
+                List.of());
         logger.debug("Profile of {}: {}", thing.getUID(), profile);
     }
 
@@ -633,9 +678,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
      * Sets the options a profile offers for a channel of the controls. A channel that had the options of another
      * profile before, because the profile changed, gets the default options again, as options cannot be removed.
      */
-    private void setProfileOptions(String channelId, List<StateOption> profileOptions,
+    private void setProfileOptions(String group, String channelId, List<StateOption> profileOptions,
             List<StateOption> defaultOptions) {
-        ChannelUID channelUID = new ChannelUID(thing.getUID(), CONTROLS, channelId);
+        ChannelUID channelUID = new ChannelUID(thing.getUID(), group, channelId);
         if (!profileOptions.isEmpty()) {
             stateDescriptionProvider.setStateOptions(channelUID, profileOptions);
             profileOptionChannels.add(channelUID);
@@ -691,6 +736,12 @@ public class PhilipsAirHandler extends BaseThingHandler {
             case WATER_LEVEL -> data.getWaterLevel() != null;
             case TVOC -> data.getTvoc() != null;
             case RSSI -> data.getRssi() != null;
+            case BEEP -> data.getBeep() != null;
+            case STANDBY_SENSORS -> data.getStandbySensors() != null;
+            case ALLERGY_SLEEP -> data.getAllergySleep() != null;
+            case DISPLAY -> data.getDisplayOn() != null;
+            case DISPLAY_BRIGHTNESS -> data.getDisplayBrightness() != null;
+            case LAMP_MODE -> data.getLampMode() != null;
             default -> false;
         };
     }
@@ -788,6 +839,18 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 case RSSI:
                     Integer rssi = data.getRssi();
                     return rssi != null ? new QuantityType<>(rssi, Units.DECIBEL_MILLIWATTS) : null;
+                case BEEP:
+                    return toOnOff(data.getBeep());
+                case STANDBY_SENSORS:
+                    return toOnOff(data.getStandbySensors());
+                case ALLERGY_SLEEP:
+                    return toOnOff(data.getAllergySleep());
+                case DISPLAY:
+                    return toOnOff(data.getDisplayOn());
+                case DISPLAY_BRIGHTNESS:
+                    return data.getDisplayBrightness();
+                case LAMP_MODE:
+                    return data.getLampMode();
             }
         }
 
@@ -809,6 +872,10 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
     private static @Nullable OnOffType toOnOff(@Nullable String value) {
         return value != null ? OnOffType.from(!"0".equals(value)) : null;
+    }
+
+    private static @Nullable OnOffType toOnOff(@Nullable Boolean value) {
+        return value != null ? OnOffType.from(value) : null;
     }
 
     private static @Nullable QuantityType<Dimensionless> toPercent(@Nullable Integer value) {
