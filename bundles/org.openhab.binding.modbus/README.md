@@ -65,6 +65,8 @@ For each Modbus read request, a `poller` is defined.
 Finally, one or more `data` things are introduced to extract relevant numbers from the raw Modbus data.
 For write-only communication, `data` things can be introduced directly as children of `tcp` or `serial` bridges.
 
+The newer `poller2` topology keeps configured read channels on the poller bridge. For an opt-in, review-first migration from the legacy `poller` + `data` topology, see [Legacy Poller Migration](doc/legacy-poller-migration.md). Legacy Things are retained until a separate explicit cleanup action.
+
 ## Binding Configuration
 
 Other than the things themselves, there is no binding configuration.
