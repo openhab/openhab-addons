@@ -43,7 +43,7 @@
 			<channel-group typeId="filters" id="filters"/>
 		</channel-groups>
 		<representation-property>deviceUUID</representation-property>
-		<config-description-ref uri="thing-type:philipsair:config"/>
+		<config-description-ref uri="thing-type:philipsair:coap-config"/>
 	</thing-type>
 
 	<thing-type id="ac2729">

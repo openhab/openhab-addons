@@ -17,9 +17,11 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +32,7 @@ import javax.measure.quantity.Time;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.philipsair.internal.connection.CoapProfile;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIException;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirCoapAPIConnection;
@@ -104,6 +107,19 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private static final List<Integer> TEXT_THRESHOLDS = List.of(13, 19, 29, 40);
     private static final List<String> TEXT_THRESHOLD_MODELS = List.of("AC4373", "AC4375");
     /**
+     * The options of the channels as defined by the channel types, which are set again when the options of a device
+     * profile are not used anymore.
+     */
+    private static final List<StateOption> DEFAULT_FAN_OPTIONS = List.of(new StateOption("s", "Silent"),
+            new StateOption("1", "1"), new StateOption("2", "2"), new StateOption("3", "3"),
+            new StateOption("t", "Turbo"));
+    private static final List<StateOption> DEFAULT_MODE_OPTIONS = List.of(new StateOption("P", "Auto"),
+            new StateOption("A", "Allergen"), new StateOption("S", "Sleep"), new StateOption("M", "Manual"),
+            new StateOption("B", "Bacteria"), new StateOption("N", "Night"));
+    private static final List<StateOption> DEFAULT_TIMER_OPTIONS = List.of(new StateOption("0", "Off"),
+            new StateOption("1", "1 h"), new StateOption("2", "2 h"), new StateOption("3", "3 h"),
+            new StateOption("4", "4 h"), new StateOption("5", "5 h"));
+    /**
      * The filter status of devices that are not polled for it is requested this many times to detect the optional wick
      * filter channel, in case a request fails.
      */
@@ -128,6 +144,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private final PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
     private boolean modelOptionsSet;
+    // the channels that have the options of a device profile, and the profile these are the options of
+    private final Set<ChannelUID> profileOptionChannels = new HashSet<>();
+    private @Nullable CoapProfile optionsProfile;
 
     public PhilipsAirHandler(Thing thing, HttpClient httpClient,
             PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider) {
@@ -455,6 +474,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 updateDeviceConfiguration(connection);
                 addOptionalChannels();
                 setModelOptions();
+                updateProfileOptions(connection);
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -515,10 +535,14 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
         PhilipsAirPurifierDeviceDTO deviceInfo = this.deviceInfo;
         PhilipsAirPurifierFiltersDTO filters = this.filters;
+        CoapProfile profile = connection.getDeviceProfile();
         if (deviceInfo != null || filters != null) {
             Map<String, String> properties = editProperties();
             if (deviceInfo != null) {
                 fillDeviceProperties(deviceInfo, properties);
+            }
+            if (profile != null && profile != CoapProfile.CLASSIC) {
+                properties.put(PROPERTY_DEVICE_PROFILE, profile.name());
             }
             if (filters != null) {
                 putIfNotNull(properties, PROPERTY_PRE_FILTER_TYPE, filters.getPreFilterType());
@@ -587,33 +611,37 @@ public class PhilipsAirHandler extends BaseThingHandler {
         stateDescriptionProvider.setStateOptions(
                 new ChannelUID(thing.getUID(), SENSORS, AIR_QUALITY_NOTIFICATION_THRESHOLD), thresholdOptions);
         logger.debug("Options of {}: displayed index {}, threshold {}", thing.getUID(), indexOptions, thresholdOptions);
-
-        if (RANGE_UNICORN.equalsIgnoreCase(deviceInfo.getRange())) {
-            setUnicornOptions();
-        }
     }
 
     /**
-     * The Unicorn range selects its mode and manual fan speed together, and offers a timer of up to 12 hours.
+     * Sets the options of the settings the device profile offers, when the profile is not the one the options were set
+     * for. The profile is detected from the status of the device or selected in the configuration.
      */
-    private void setUnicornOptions() {
-        List<StateOption> speedOptions = new ArrayList<>();
-        for (int speed = 1; speed <= UNICORN_MAX_SPEED; speed++) {
-            speedOptions.add(new StateOption(String.valueOf(speed), String.valueOf(speed)));
+    private void updateProfileOptions(PhilipsAirAPIConnection connection) {
+        CoapProfile profile = connection.getDeviceProfile();
+        if (profile == optionsProfile) {
+            return;
         }
-        speedOptions.add(new StateOption("m", "Medium"));
-        speedOptions.add(new StateOption("t", "Turbo"));
-        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CONTROLS, FAN_MODE), speedOptions);
+        optionsProfile = profile;
+        setProfileOptions(FAN_MODE, profile != null ? profile.getFanSpeedOptions() : List.of(), DEFAULT_FAN_OPTIONS);
+        setProfileOptions(MODE, profile != null ? profile.getModeOptions() : List.of(), DEFAULT_MODE_OPTIONS);
+        setProfileOptions(AUTO_TIMEOFF, profile != null ? profile.getTimerOptions() : List.of(), DEFAULT_TIMER_OPTIONS);
+        logger.debug("Profile of {}: {}", thing.getUID(), profile);
+    }
 
-        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CONTROLS, MODE),
-                List.of(new StateOption("P", "Auto"), new StateOption("S", "Sleep")));
-
-        List<StateOption> timerOptions = new ArrayList<>();
-        timerOptions.add(new StateOption("0", "Off"));
-        for (int hours = 1; hours <= UNICORN_MAX_TIMER_HOURS; hours++) {
-            timerOptions.add(new StateOption(String.valueOf(hours), hours + " h"));
+    /**
+     * Sets the options a profile offers for a channel of the controls. A channel that had the options of another
+     * profile before, because the profile changed, gets the default options again, as options cannot be removed.
+     */
+    private void setProfileOptions(String channelId, List<StateOption> profileOptions,
+            List<StateOption> defaultOptions) {
+        ChannelUID channelUID = new ChannelUID(thing.getUID(), CONTROLS, channelId);
+        if (!profileOptions.isEmpty()) {
+            stateDescriptionProvider.setStateOptions(channelUID, profileOptions);
+            profileOptionChannels.add(channelUID);
+        } else if (profileOptionChannels.remove(channelUID)) {
+            stateDescriptionProvider.setStateOptions(channelUID, defaultOptions);
         }
-        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CONTROLS, AUTO_TIMEOFF), timerOptions);
     }
 
     static boolean supportsGasIndex(@Nullable PhilipsAirPurifierDeviceDTO deviceInfo,

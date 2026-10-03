@@ -68,6 +68,13 @@ public abstract class PhilipsAirAPIConnection {
     }
 
     /**
+     * @return the profile of the device, or null if the connection has none (the profiles are those of CoAP devices)
+     */
+    public @Nullable CoapProfile getDeviceProfile() {
+        return null;
+    }
+
+    /**
      * Releases the resources held by this connection. The connection must not be used afterwards.
      */
     public void dispose() {

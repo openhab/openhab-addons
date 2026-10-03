@@ -14,6 +14,8 @@ package org.openhab.binding.philipsair.internal.connection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
@@ -21,18 +23,19 @@ import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
+import org.openhab.core.types.StateOption;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Tests the translation between the field naming schemes of CoAP devices in {@link CoapKeyScheme}.
+ * Tests the translation between the field naming schemes of CoAP devices in {@link CoapProfile}.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
 @NonNullByDefault
-public class CoapKeySchemeTest {
+public class CoapProfileTest {
 
     private static final String CLASSIC_STATUS = """
             {"name":"Living Room","modelid":"AC2889/10","swversion":"1.0.7","pwr":"1","cl":false,"pm25":6,
@@ -59,25 +62,76 @@ public class CoapKeySchemeTest {
 
     @Test
     public void schemeIsDetectedFromFieldNames() {
-        assertEquals(CoapKeyScheme.CLASSIC, CoapKeyScheme.detect(parse(CLASSIC_STATUS)));
-        assertEquals(CoapKeyScheme.GEN2, CoapKeyScheme.detect(parse(GEN2_STATUS)));
-        assertEquals(CoapKeyScheme.GEN3, CoapKeyScheme.detect(parse(GEN3_STATUS)));
-        assertEquals(CoapKeyScheme.UNICORN, CoapKeyScheme.detect(parse(UNICORN_STATUS)));
-        assertEquals(CoapKeyScheme.UNICORN, CoapKeyScheme.detect(parse("{\"D01S04\":\"unicorn\"}")));
-        assertEquals(CoapKeyScheme.GEN3, CoapKeyScheme.detect(parse("{\"D01S04\":\"Pegasus\"}")));
-        assertEquals(CoapKeyScheme.CLASSIC, CoapKeyScheme.detect(new JsonObject()));
+        assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("auto", parse(CLASSIC_STATUS)));
+        assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("auto", parse(GEN2_STATUS)));
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse(GEN3_STATUS)));
+        assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("auto", parse(UNICORN_STATUS)));
+        assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("auto", parse("{\"D01S04\":\"unicorn\"}")));
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S04\":\"Pegasus\"}")));
+        assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("auto", new JsonObject()));
+    }
+
+    @Test
+    public void unicornIsDetectedFromTheModel() {
+        for (String model : new String[] { "AC2210/10", "AC2220/10", "AC2221/10", "AC3210/12", "AC3220/10", "AC3221/10",
+                "AC4220/12", "ac4221/11" }) {
+            assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("auto", parse("{\"D01S05\":\"" + model + "\"}")),
+                    model);
+        }
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC3737/10\"}")));
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC4228/10\"}")));
+    }
+
+    @Test
+    public void configuredProfileOverridesTheDetection() {
+        JsonObject pegasus = parse("{\"D01S04\":\"Pegasus\",\"D01S05\":\"AMF765/10\"}");
+
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", pegasus));
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve(null, pegasus));
+        assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("unicorn", pegasus));
+        assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("UNICORN", pegasus));
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("basic", parse(UNICORN_STATUS)));
+    }
+
+    @Test
+    public void unknownOrUnfittingConfiguredProfileIsIgnored() {
+        assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("toaster", parse(UNICORN_STATUS)));
+        // the Unicorn fields do not exist on a device with the other generation of field names
+        assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("unicorn", parse(GEN2_STATUS)));
+        assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("unicorn", parse(CLASSIC_STATUS)));
+        assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("basic", parse(CLASSIC_STATUS)));
+    }
+
+    @Test
+    public void profileOptionsDependOnTheModel() {
+        assertEquals(List.of("1", "2", "3", "4", "5", "m", "t"), values(CoapProfile.UNICORN.getFanSpeedOptions()));
+        assertEquals(List.of("P", "S"), values(CoapProfile.UNICORN.getModeOptions()));
+        assertEquals(13, CoapProfile.UNICORN.getTimerOptions().size());
+        assertEquals("0", CoapProfile.UNICORN.getTimerOptions().get(0).getValue());
+        assertEquals("12", CoapProfile.UNICORN.getTimerOptions().get(12).getValue());
+
+        for (CoapProfile profile : new CoapProfile[] { CoapProfile.CLASSIC, CoapProfile.BASIC_GEN2,
+                CoapProfile.BASIC_GEN3 }) {
+            assertTrue(profile.getFanSpeedOptions().isEmpty(), profile.name());
+            assertTrue(profile.getModeOptions().isEmpty(), profile.name());
+            assertTrue(profile.getTimerOptions().isEmpty(), profile.name());
+        }
+    }
+
+    private static List<String> values(List<StateOption> options) {
+        return options.stream().map(StateOption::getValue).toList();
     }
 
     @Test
     public void classicStatusIsUnchanged() {
         JsonObject status = parse(CLASSIC_STATUS);
 
-        assertEquals(status, CoapKeyScheme.CLASSIC.toClassic(status));
+        assertEquals(status, CoapProfile.CLASSIC.toClassic(status));
     }
 
     @Test
     public void gen2StatusIsTranslated() {
-        JsonObject classic = CoapKeyScheme.GEN2.toClassic(parse(GEN2_STATUS));
+        JsonObject classic = CoapProfile.BASIC_GEN2.toClassic(parse(GEN2_STATUS));
 
         PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
         assertNotNull(data);
@@ -102,7 +156,7 @@ public class CoapKeySchemeTest {
 
     @Test
     public void gen3StatusIsTranslated() {
-        JsonObject classic = CoapKeyScheme.GEN3.toClassic(parse(GEN3_STATUS));
+        JsonObject classic = CoapProfile.BASIC_GEN3.toClassic(parse(GEN3_STATUS));
 
         PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
         assertNotNull(data);
@@ -130,7 +184,7 @@ public class CoapKeySchemeTest {
 
     @Test
     public void unicornStatusIsTranslated() {
-        JsonObject classic = CoapKeyScheme.UNICORN.toClassic(parse(UNICORN_STATUS));
+        JsonObject classic = CoapProfile.UNICORN.toClassic(parse(UNICORN_STATUS));
 
         PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
         assertNotNull(data);
@@ -166,7 +220,7 @@ public class CoapKeySchemeTest {
     }
 
     private void assertModeAndSpeed(@Nullable String mode, @Nullable String speed, String reported) {
-        JsonObject classic = CoapKeyScheme.UNICORN.toClassic(parse("{\"D01S04\":\"Unicorn\"," + reported.substring(1)));
+        JsonObject classic = CoapProfile.UNICORN.toClassic(parse("{\"D01S04\":\"Unicorn\"," + reported.substring(1)));
 
         PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
         assertNotNull(data);
@@ -186,7 +240,7 @@ public class CoapKeySchemeTest {
     }
 
     private void assertTimer(@Nullable Integer hours, @Nullable Integer minutesLeft, String reported) {
-        JsonObject classic = CoapKeyScheme.UNICORN.toClassic(parse("{\"D01S04\":\"Unicorn\"," + reported.substring(1)));
+        JsonObject classic = CoapProfile.UNICORN.toClassic(parse("{\"D01S04\":\"Unicorn\"," + reported.substring(1)));
 
         PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
         assertNotNull(data);
@@ -196,7 +250,7 @@ public class CoapKeySchemeTest {
 
     @Test
     public void modeSpeedAndTimerAreOnlyTranslatedForUnicorn() {
-        JsonObject classic = CoapKeyScheme.GEN3.toClassic(
+        JsonObject classic = CoapProfile.BASIC_GEN3.toClassic(
                 parse("{\"D01S04\":\"Pegasus\",\"D0310C\":18,\"D0310D\":3,\"D03110\":3,\"D03211\":60,\"D0312C\":4}"));
 
         assertFalse(classic.has("mode"));
@@ -210,7 +264,7 @@ public class CoapKeySchemeTest {
 
     @Test
     public void unexpectedValueTypesAreIgnored() {
-        JsonObject classic = CoapKeyScheme.GEN3
+        JsonObject classic = CoapProfile.BASIC_GEN3
                 .toClassic(parse("{\"D01S05\":\"AC3737/10\",\"D03102\":\"on\",\"D03224\":\"hot\",\"D03221\":null}"));
 
         assertFalse(classic.has("pwr"));
@@ -220,11 +274,11 @@ public class CoapKeySchemeTest {
 
     @Test
     public void gen3ErrorAndDisplayIndexAreOnlyTranslatedWhenReported() {
-        JsonObject classic = CoapKeyScheme.GEN3.toClassic(parse("{\"D01S05\":\"AC3737/10\"}"));
+        JsonObject classic = CoapProfile.BASIC_GEN3.toClassic(parse("{\"D01S05\":\"AC3737/10\"}"));
         assertFalse(classic.has("err"));
         assertFalse(classic.has("ddp"));
 
-        classic = CoapKeyScheme.GEN3
+        classic = CoapProfile.BASIC_GEN3
                 .toClassic(parse("{\"D01S05\":\"AC3737/10\",\"D03240\":\"none\",\"D0312A\":\"pm25\"}"));
         assertFalse(classic.has("err"));
         assertFalse(classic.has("ddp"));
@@ -240,7 +294,7 @@ public class CoapKeySchemeTest {
         command.setFanSpeed("2");
         command.setMode("M");
 
-        assertEquals(parse("{\"om\":\"2\",\"mode\":\"M\"}"), CoapKeyScheme.CLASSIC.toDevice(command(command)));
+        assertEquals(parse("{\"om\":\"2\",\"mode\":\"M\"}"), CoapProfile.CLASSIC.toDevice(command(command)));
     }
 
     @Test
@@ -250,34 +304,34 @@ public class CoapKeySchemeTest {
         PhilipsAirPurifierWritableDataDTO off = new PhilipsAirPurifierWritableDataDTO();
         off.setPower("0");
 
-        assertEquals(parse("{\"D03-02\":\"ON\"}"), CoapKeyScheme.GEN2.toDevice(command(on)));
-        assertEquals(parse("{\"D03-02\":\"OFF\"}"), CoapKeyScheme.GEN2.toDevice(command(off)));
-        assertEquals(parse("{\"D03102\":1}"), CoapKeyScheme.GEN3.toDevice(command(on)));
-        assertEquals(parse("{\"D03102\":0}"), CoapKeyScheme.GEN3.toDevice(command(off)));
+        assertEquals(parse("{\"D03-02\":\"ON\"}"), CoapProfile.BASIC_GEN2.toDevice(command(on)));
+        assertEquals(parse("{\"D03-02\":\"OFF\"}"), CoapProfile.BASIC_GEN2.toDevice(command(off)));
+        assertEquals(parse("{\"D03102\":1}"), CoapProfile.BASIC_GEN3.toDevice(command(on)));
+        assertEquals(parse("{\"D03102\":0}"), CoapProfile.BASIC_GEN3.toDevice(command(off)));
     }
 
     @Test
     public void unicornModeCommandIsTranslated() {
-        assertEquals(parse("{\"D0310C\":0}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("P", null)));
-        assertEquals(parse("{\"D0310C\":17}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("S", null)));
+        assertEquals(parse("{\"D0310C\":0}"), CoapProfile.UNICORN.toDevice(modeCommand("P", null)));
+        assertEquals(parse("{\"D0310C\":17}"), CoapProfile.UNICORN.toDevice(modeCommand("S", null)));
         // the fan speed command selects the manual mode together with the speed
-        assertEquals(parse("{\"D0310C\":3}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "3")));
-        assertEquals(parse("{\"D0310C\":5}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "5")));
-        assertEquals(parse("{\"D0310C\":18}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "t")));
-        assertEquals(parse("{\"D0310C\":19}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "m")));
-        assertEquals(parse("{\"D0310C\":2}"), CoapKeyScheme.UNICORN.toDevice(modeCommand(null, "2")));
+        assertEquals(parse("{\"D0310C\":3}"), CoapProfile.UNICORN.toDevice(modeCommand("M", "3")));
+        assertEquals(parse("{\"D0310C\":5}"), CoapProfile.UNICORN.toDevice(modeCommand("M", "5")));
+        assertEquals(parse("{\"D0310C\":18}"), CoapProfile.UNICORN.toDevice(modeCommand("M", "t")));
+        assertEquals(parse("{\"D0310C\":19}"), CoapProfile.UNICORN.toDevice(modeCommand("M", "m")));
+        assertEquals(parse("{\"D0310C\":2}"), CoapProfile.UNICORN.toDevice(modeCommand(null, "2")));
     }
 
     @Test
     public void unicornModeCommandsWithoutMatchingModeAreDropped() {
         // the manual mode needs a speed, the other modes do not exist on the device
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("M", null)).isEmpty());
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("A", null)).isEmpty());
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("B", "1")).isEmpty());
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "0")).isEmpty());
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "6")).isEmpty());
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "s")).isEmpty());
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "10")).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(modeCommand("M", null)).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(modeCommand("A", null)).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(modeCommand("B", "1")).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(modeCommand("M", "0")).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(modeCommand("M", "6")).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(modeCommand("M", "s")).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(modeCommand("M", "10")).isEmpty());
     }
 
     private JsonObject modeCommand(@Nullable String mode, @Nullable String speed) {
@@ -293,11 +347,11 @@ public class CoapKeySchemeTest {
 
     @Test
     public void unicornTimerCommandIsTranslated() {
-        assertEquals(parse("{\"D03110\":0}"), CoapKeyScheme.UNICORN.toDevice(timerCommand(0)));
-        assertEquals(parse("{\"D03110\":2}"), CoapKeyScheme.UNICORN.toDevice(timerCommand(1)));
-        assertEquals(parse("{\"D03110\":13}"), CoapKeyScheme.UNICORN.toDevice(timerCommand(12)));
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(timerCommand(13)).isEmpty());
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(timerCommand(-1)).isEmpty());
+        assertEquals(parse("{\"D03110\":0}"), CoapProfile.UNICORN.toDevice(timerCommand(0)));
+        assertEquals(parse("{\"D03110\":2}"), CoapProfile.UNICORN.toDevice(timerCommand(1)));
+        assertEquals(parse("{\"D03110\":13}"), CoapProfile.UNICORN.toDevice(timerCommand(12)));
+        assertTrue(CoapProfile.UNICORN.toDevice(timerCommand(13)).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(timerCommand(-1)).isEmpty());
     }
 
     private JsonObject timerCommand(int hours) {
@@ -311,23 +365,23 @@ public class CoapKeySchemeTest {
         for (int threshold : new int[] { 1, 4, 7, 10 }) {
             PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
             command.setAqit(threshold);
-            assertEquals(parse("{\"D0312C\":" + threshold + "}"), CoapKeyScheme.UNICORN.toDevice(command(command)));
+            assertEquals(parse("{\"D0312C\":" + threshold + "}"), CoapProfile.UNICORN.toDevice(command(command)));
         }
         PhilipsAirPurifierWritableDataDTO unknownThreshold = new PhilipsAirPurifierWritableDataDTO();
         unknownThreshold.setAqit(5);
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(command(unknownThreshold)).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(command(unknownThreshold)).isEmpty());
         PhilipsAirPurifierWritableDataDTO textThreshold = new PhilipsAirPurifierWritableDataDTO();
         textThreshold.setAqit("7");
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(command(textThreshold)).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(command(textThreshold)).isEmpty());
 
         for (String index : new String[] { "0", "1" }) {
             PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
             command.setDisplayIndex(index);
-            assertEquals(parse("{\"D0312A\":" + index + "}"), CoapKeyScheme.UNICORN.toDevice(command(command)));
+            assertEquals(parse("{\"D0312A\":" + index + "}"), CoapProfile.UNICORN.toDevice(command(command)));
         }
         PhilipsAirPurifierWritableDataDTO gas = new PhilipsAirPurifierWritableDataDTO();
         gas.setDisplayIndex("2");
-        assertTrue(CoapKeyScheme.UNICORN.toDevice(command(gas)).isEmpty());
+        assertTrue(CoapProfile.UNICORN.toDevice(command(gas)).isEmpty());
     }
 
     @Test
@@ -336,7 +390,7 @@ public class CoapKeySchemeTest {
         command.setPower("1");
         command.setChildLock(true);
 
-        assertEquals(parse("{\"D03102\":1,\"D03103\":1}"), CoapKeyScheme.UNICORN.toDevice(command(command)));
+        assertEquals(parse("{\"D03102\":1,\"D03103\":1}"), CoapProfile.UNICORN.toDevice(command(command)));
     }
 
     @Test
@@ -348,8 +402,8 @@ public class CoapKeySchemeTest {
         command.setAqit(7);
         command.setDisplayIndex("1");
 
-        assertTrue(CoapKeyScheme.GEN3.toDevice(command(command)).isEmpty());
-        assertTrue(CoapKeyScheme.GEN2.toDevice(command(command)).isEmpty());
+        assertTrue(CoapProfile.BASIC_GEN3.toDevice(command(command)).isEmpty());
+        assertTrue(CoapProfile.BASIC_GEN2.toDevice(command(command)).isEmpty());
     }
 
     @Test
@@ -357,8 +411,8 @@ public class CoapKeySchemeTest {
         PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
         command.setChildLock(true);
 
-        assertEquals(parse("{\"D03103\":1}"), CoapKeyScheme.GEN3.toDevice(command(command)));
-        assertTrue(CoapKeyScheme.GEN2.toDevice(command(command)).isEmpty());
+        assertEquals(parse("{\"D03103\":1}"), CoapProfile.BASIC_GEN3.toDevice(command(command)));
+        assertTrue(CoapProfile.BASIC_GEN2.toDevice(command(command)).isEmpty());
     }
 
     @Test
@@ -367,7 +421,7 @@ public class CoapKeySchemeTest {
         command.setFanSpeed("2");
         command.setMode("M");
 
-        assertTrue(CoapKeyScheme.GEN2.toDevice(command(command)).isEmpty());
-        assertTrue(CoapKeyScheme.GEN3.toDevice(command(command)).isEmpty());
+        assertTrue(CoapProfile.BASIC_GEN2.toDevice(command(command)).isEmpty());
+        assertTrue(CoapProfile.BASIC_GEN3.toDevice(command(command)).isEmpty());
     }
 }

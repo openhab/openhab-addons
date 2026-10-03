@@ -49,8 +49,11 @@ public class PhilipsAirBindingConstants {
      * The product range of devices such as the AC3210, as reported by CoAP devices
      */
     public static final String RANGE_UNICORN = "Unicorn";
-    public static final int UNICORN_MAX_SPEED = 5;
-    public static final int UNICORN_MAX_TIMER_HOURS = 12;
+
+    /**
+     * The device profile setting that detects the profile from the device
+     */
+    public static final String PROFILE_AUTO = "auto";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_UNIVERSAL = new ThingTypeUID(BINDING_ID, SUPPORTED_MODEL_UNIVERSAL);
@@ -85,6 +88,7 @@ public class PhilipsAirBindingConstants {
     public static final String PROPERTY_PRE_FILTER_TYPE = "preFilterType";
     public static final String PROPERTY_HEPA_FILTER_TYPE = "hepaFilterType";
     public static final String PROPERTY_CARBON_FILTER_TYPE = "carbonFilterType";
+    public static final String PROPERTY_DEVICE_PROFILE = "deviceProfile";
 
     // List of all Channel groups
     public static final String CONTROLS = "controls";

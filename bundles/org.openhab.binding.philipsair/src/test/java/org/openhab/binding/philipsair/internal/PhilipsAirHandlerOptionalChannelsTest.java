@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.philipsair.internal.connection.CoapProfile;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIException;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
@@ -194,10 +195,11 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void unicornOptionsAndChannelsAreSet() throws PhilipsAirAPIException {
-        // the status as translated by the connection, see CoapKeyScheme
+        // the status as translated by the connection, see CoapProfile
         String status = """
                 {"modelid":"AC3210/12","range":"Unicorn","pwr":"1","mode":"P","om":"1","dt":0,"dtrs":0,"aqit":7,\
                 "err":0,"rh":46,"temp":24.1,"pm25":1,"iaql":1}""";
+        when(connection.getDeviceProfile()).thenReturn(CoapProfile.UNICORN);
         when(connection.isPushingStatus()).thenReturn(true);
         when(connection.getAirPurifierDevice(any()))
                 .thenReturn(gson.fromJson(status, PhilipsAirPurifierDeviceDTO.class));
@@ -213,6 +215,54 @@ public class PhilipsAirHandlerOptionalChannelsTest {
                 options(CONTROLS, AUTO_TIMEOFF));
         assertEquals(List.of("0", "1"), options(CONTROLS_UI, DISPLAYED_INDEX));
         assertEquals(List.of("1", "4", "7", "10"), options(SENSORS, AIR_QUALITY_NOTIFICATION_THRESHOLD));
+        assertEquals("UNICORN", handler.getThing().getProperties().get(PROPERTY_DEVICE_PROFILE));
+    }
+
+    @Test
+    public void defaultOptionsAreSetAgainWhenTheProfileChanges() throws PhilipsAirAPIException {
+        String status = """
+                {"modelid":"AC3210/12","pwr":"1","mode":"P","om":"1","dt":0,"dtrs":0}""";
+        when(connection.getDeviceProfile()).thenReturn(CoapProfile.UNICORN);
+        when(connection.isPushingStatus()).thenReturn(true);
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson(status, PhilipsAirPurifierDeviceDTO.class));
+        when(connection.getAirPurifierStatus(any())).thenReturn(gson.fromJson(status, PhilipsAirPurifierDataDTO.class));
+        ChannelUID fanSpeed = new ChannelUID(handler.getThing().getUID(), CONTROLS, FAN_MODE);
+        ChannelUID mode = new ChannelUID(handler.getThing().getUID(), CONTROLS, MODE);
+        ChannelUID timer = new ChannelUID(handler.getThing().getUID(), CONTROLS, AUTO_TIMEOFF);
+
+        // the options of the profile are only set once for the same profile
+        handler.updateData(connection);
+        handler.updateData(connection);
+        verify(stateDescriptionProvider, times(1)).setStateOptions(eq(fanSpeed), any());
+
+        // a profile without options of its own gets the options of the channel types again
+        when(connection.getDeviceProfile()).thenReturn(CoapProfile.BASIC_GEN3);
+        handler.updateData(connection);
+
+        assertEquals(List.of("s", "1", "2", "3", "t"), lastOptions(fanSpeed));
+        assertEquals(List.of("P", "A", "S", "M", "B", "N"), lastOptions(mode));
+        assertEquals(List.of("0", "1", "2", "3", "4", "5"), lastOptions(timer));
+
+        // and not again for the same profile
+        clearInvocations(stateDescriptionProvider);
+        handler.updateData(connection);
+        verify(stateDescriptionProvider, never()).setStateOptions(eq(fanSpeed), any());
+    }
+
+    @Test
+    public void classicDevicesHaveNoProfileOptionsOrProperty() throws PhilipsAirAPIException {
+        when(connection.getDeviceProfile()).thenReturn(CoapProfile.CLASSIC);
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDeviceDTO.class));
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
+
+        handler.updateData(connection);
+
+        verify(stateDescriptionProvider, never())
+                .setStateOptions(eq(new ChannelUID(handler.getThing().getUID(), CONTROLS, FAN_MODE)), any());
+        assertFalse(handler.getThing().getProperties().containsKey(PROPERTY_DEVICE_PROFILE));
     }
 
     @Test
@@ -297,6 +347,14 @@ public class PhilipsAirHandlerOptionalChannelsTest {
         verify(stateDescriptionProvider).setStateOptions(
                 eq(new ChannelUID(handler.getThing().getUID(), group, channelId)), optionsCaptor.capture());
         return optionsCaptor.getValue().stream().map(StateOption::getValue).toList();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<String> lastOptions(ChannelUID channelUID) {
+        ArgumentCaptor<List<StateOption>> optionsCaptor = ArgumentCaptor.forClass(List.class);
+        verify(stateDescriptionProvider, atLeastOnce()).setStateOptions(eq(channelUID), optionsCaptor.capture());
+        List<List<StateOption>> all = optionsCaptor.getAllValues();
+        return all.get(all.size() - 1).stream().map(StateOption::getValue).toList();
     }
 
     private static Set<String> channelIds(List<Channel> channels) {

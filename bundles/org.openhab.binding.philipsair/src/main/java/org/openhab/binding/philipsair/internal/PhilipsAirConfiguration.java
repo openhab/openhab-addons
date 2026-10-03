@@ -47,6 +47,7 @@ public class PhilipsAirConfiguration {
     private String key = "";
     private float temperatureOffset;
     private float humidityOffset;
+    private String deviceProfile = PhilipsAirBindingConstants.PROFILE_AUTO;
 
     public int getRefreshInterval() {
         return refreshInterval;
@@ -94,5 +95,16 @@ public class PhilipsAirConfiguration {
 
     public void setHumidityOffset(float humidityOffset) {
         this.humidityOffset = humidityOffset;
+    }
+
+    /**
+     * @return the profile of the model of a CoAP device, or {@code auto} to detect it
+     */
+    public String getDeviceProfile() {
+        return deviceProfile;
+    }
+
+    public void setDeviceProfile(String deviceProfile) {
+        this.deviceProfile = deviceProfile;
     }
 }

@@ -40,4 +40,55 @@
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
+
+	<config-description uri="thing-type:philipsair:coap-config">
+		<parameter name="host" type="text" required="true">
+			<context>network-address</context>
+			<label>IP or Hostname</label>
+			<description>IP address or hostname of the device</description>
+		</parameter>
+		<parameter name="key" type="text" required="false">
+			<context>password</context>
+			<label>Key</label>
+			<description>Encryption key for HTTP devices, exchanged with the device automatically when empty</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="deviceUUID" type="text" required="false">
+			<label>Device ID (UDN)</label>
+			<description>Device ID (UUID)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" required="false" min="5" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval in seconds. For CoAP devices, which push their updates, the interval at which the
+				connection is checked.</description>
+			<default>60</default>
+		</parameter>
+		<parameter name="deviceProfile" type="text" required="false">
+			<label>Device Profile</label>
+			<description>The model of the device, which determines the settings that can be controlled. Select a model
+				to control
+				a device that is not detected as that model like it.</description>
+			<default>auto</default>
+			<options>
+				<option value="auto">Auto-detect</option>
+				<option value="basic">Basic (power and child lock)</option>
+				<option value="unicorn">AC2210, AC2220, AC2221, AC3210, AC3220, AC3221, AC4220, AC4221</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="humidityOffset" type="decimal" required="false" min="-100" max="100">
+			<label>Humidity Offset</label>
+			<description>Humidity sensor readings offset used for correction</description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="temperatureOffset" type="decimal" required="false" min="-50" max="50">
+			<label>Temperature Offset</label>
+			<description>Temperature sensor readings offset used for correction (in Celsius)</description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

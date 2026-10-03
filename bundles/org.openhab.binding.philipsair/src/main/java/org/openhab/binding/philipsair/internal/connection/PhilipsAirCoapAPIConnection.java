@@ -87,7 +87,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private volatile @Nullable CoapObserveRelation observe = null;
     private volatile @Nullable String lastJson = null;
     // the scheme of the last status, commands are sent in the classic scheme until the device reported its status
-    private volatile CoapKeyScheme keyScheme = CoapKeyScheme.CLASSIC;
+    private volatile CoapProfile profile = CoapProfile.CLASSIC;
     // epoch ms of the last valid JSON or answer to a ping
     private volatile long lastContact = 0L;
     // set when the device did not answer, as it may have lost the observe relation when it comes back
@@ -319,9 +319,13 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                         hasSync = true;
                         // the sync is only renewed after consecutive invalid responses
                         syncCounter = 0;
-                        CoapKeyScheme scheme = CoapKeyScheme.detect(reported);
-                        keyScheme = scheme;
-                        return scheme.toClassic(reported).toString();
+                        CoapProfile resolved = CoapProfile.resolve(config.getDeviceProfile(), reported);
+                        if (resolved != profile) {
+                            logger.info("Using the {} profile for {} (configured: {})", resolved, host,
+                                    config.getDeviceProfile());
+                            profile = resolved;
+                        }
+                        return resolved.toClassic(reported).toString();
                     } else {
                         logger.debug("Response does not contain 'reported' element");
                     }
@@ -370,6 +374,11 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     }
 
     @Override
+    public @Nullable CoapProfile getDeviceProfile() {
+        return profile;
+    }
+
+    @Override
     public void dispose() {
         listener = null;
         CoapObserveRelation observe = this.observe;
@@ -407,7 +416,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
      */
     @Override
     public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value) {
-        JsonObject desired = keyScheme.toDevice((JsonObject) gson.toJsonTree(value));
+        JsonObject desired = profile.toDevice((JsonObject) gson.toJsonTree(value));
         if (desired.isEmpty()) {
             logger.debug("Command '{}' is not supported by {}", gson.toJson(value), host);
             return null;
