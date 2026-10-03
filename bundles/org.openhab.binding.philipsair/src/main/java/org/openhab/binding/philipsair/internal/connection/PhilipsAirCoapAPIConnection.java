@@ -80,8 +80,10 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private final CoapClient pingClient = new CoapClient();
     private final CoapEndpoint endpoint;
     private volatile long counter = 1;
-    // Serializes the counter sync exchanges with the device and the use of the synced counter. This is not the monitor
-    // of ensureConnected(), so a command never waits for the whole check of the connection, only for an exchange.
+    // Serializes the exchanges with the device that depend on the counter: the sync and the control post of a command,
+    // as the synced counter is only valid until the next exchange, and the sync of the check of the connection. So that
+    // check may wait for a running command. This is not the monitor of ensureConnected(), so a command only waits for
+    // a single exchange of that check, not for the whole check.
     private final Object exchangeLock = new Object();
     // written by the Californium thread on notifications, read when the observe relation is started
     private volatile boolean hasSync = false;
@@ -123,13 +125,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         pingAfterMs = Math.max(refreshIntervalMs, MIN_PING_AFTER_MS);
         staleAfterMs = Math.max(2 * refreshIntervalMs, MIN_STALE_AFTER_MS);
 
-        // a copy, as the standard configuration is shared with the other bindings using Californium
-        Configuration netConfig = new Configuration(Configuration.getStandard())
-                .set(CoapConfig.DEDUPLICATOR, CoapConfig.NO_DEDUPLICATOR)
-                .set(CoapConfig.ACK_TIMEOUT, 20, TimeUnit.SECONDS)
-                .set(CoapConfig.EXCHANGE_LIFETIME, 65, TimeUnit.SECONDS);
-
-        endpoint = new CoapEndpoint.Builder().setConfiguration(netConfig).build();
+        endpoint = new CoapEndpoint.Builder().setConfiguration(newNetConfig()).build();
         if (logger.isTraceEnabled()) {
             MessageInterceptor interceptor = new CoapMessageLogger();
             endpoint.addInterceptor(interceptor);
@@ -205,7 +201,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             }
 
             logger.debug("Start Observe request {}", uri);
-            CoapObserveRelation newObserve = client.observe(request, new CoapHandler() {
+            CoapObserveRelation newObserve = observe(request, new CoapHandler() {
                 @Override
                 public void onLoad(@Nullable CoapResponse response) {
                     processCoapResponse(uri, response);
@@ -236,6 +232,9 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     boolean pingDevice() {
         long synced;
         synchronized (exchangeLock) {
+            if (listener == null) {
+                return false; // disposed while waiting for a running command
+            }
             String response = requestSync();
             if (response == null) {
                 logger.debug("No answer to the ping of {}", host);
@@ -451,6 +450,10 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         }
         try {
             synchronized (exchangeLock) {
+                if (listener == null) {
+                    logger.debug("Command '{}' not sent to {}, the connection is disposed", command, host);
+                    return null;
+                }
                 OptionalLong synced = exchangeCounter(client);
                 if (synced.isEmpty()) {
                     logger.warn("Counter sync with {} failed, command '{}' ({} profile) not sent", host, command,
@@ -460,7 +463,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                 long controlCounter = synced.getAsLong();
                 counter = controlCounter;
                 logger.debug("ControlCounter from sync={}", controlCounter);
-                String encrypted = encryptCommand(desired, controlCounter + 1);
+                // the counter is 32 bits wide
+                String encrypted = encryptCommand(desired, (controlCounter + 1) & 0xFFFFFFFFL);
                 if (encrypted == null) {
                     logger.debug("Could not encrypt command '{}'", command);
                     return null;
@@ -506,6 +510,17 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
 
     long currentTimeMillis() {
         return System.currentTimeMillis();
+    }
+
+    static Configuration newNetConfig() {
+        // a copy, as the standard configuration is shared with the other bindings using Californium
+        return new Configuration(Configuration.getStandard()).set(CoapConfig.DEDUPLICATOR, CoapConfig.NO_DEDUPLICATOR)
+                .set(CoapConfig.ACK_TIMEOUT, 20, TimeUnit.SECONDS)
+                .set(CoapConfig.EXCHANGE_LIFETIME, 65, TimeUnit.SECONDS);
+    }
+
+    CoapObserveRelation observe(Request request, CoapHandler handler) {
+        return client.observe(request, handler);
     }
 
     String post(CoapClient client, String server, int port, String resourcePath, String body)

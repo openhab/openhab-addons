@@ -13,6 +13,7 @@
 package org.openhab.binding.philipsair.internal.connection;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +21,12 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.californium.core.CoapClient;
+import org.eclipse.californium.core.CoapHandler;
+import org.eclipse.californium.core.CoapObserveRelation;
+import org.eclipse.californium.core.CoapResponse;
+import org.eclipse.californium.core.coap.CoAP.ResponseCode;
+import org.eclipse.californium.core.coap.Request;
+import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.config.CoapConfig;
 import org.eclipse.californium.elements.config.Configuration;
 import org.eclipse.californium.elements.exception.ConnectorException;
@@ -28,6 +35,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
@@ -51,6 +60,8 @@ public class PhilipsAirCoapAPIConnectionTest {
 
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirCoapAPIConnectionTest.class);
     private final List<PhilipsAirAPIConnection> notifications = new ArrayList<>();
+    // disposed after the test
+    private final List<PhilipsAirCoapAPIConnection> devices = new ArrayList<>();
 
     private @NonNullByDefault({}) PhilipsAirCoapAPIConnection connection;
 
@@ -66,6 +77,7 @@ public class PhilipsAirCoapAPIConnectionTest {
         if (connection != null) {
             connection.dispose();
         }
+        devices.forEach(PhilipsAirCoapAPIConnection::dispose);
     }
 
     private String encrypt(String message) {
@@ -75,13 +87,23 @@ public class PhilipsAirCoapAPIConnectionTest {
     }
 
     @Test
-    public void standardCoapConfigurationIsNotChanged() {
+    public void coapConfigurationIsACopyOfTheStandardOne() {
         // the standard configuration is shared with the other bindings using Californium
         Configuration standard = Configuration.getStandard();
+        Object standardDeduplicator = standard.get(CoapConfig.DEDUPLICATOR);
+        long standardAckTimeout = standard.get(CoapConfig.ACK_TIMEOUT, TimeUnit.MILLISECONDS);
+        long standardExchangeLifetime = standard.get(CoapConfig.EXCHANGE_LIFETIME, TimeUnit.MILLISECONDS);
 
-        assertNotEquals(CoapConfig.NO_DEDUPLICATOR, standard.get(CoapConfig.DEDUPLICATOR));
-        assertNotEquals(20L, standard.get(CoapConfig.ACK_TIMEOUT, TimeUnit.SECONDS));
-        assertNotEquals(65L, standard.get(CoapConfig.EXCHANGE_LIFETIME, TimeUnit.SECONDS));
+        Configuration config = PhilipsAirCoapAPIConnection.newNetConfig();
+
+        assertEquals(CoapConfig.NO_DEDUPLICATOR, config.get(CoapConfig.DEDUPLICATOR));
+        assertEquals(20L, (long) config.get(CoapConfig.ACK_TIMEOUT, TimeUnit.SECONDS));
+        assertEquals(65L, (long) config.get(CoapConfig.EXCHANGE_LIFETIME, TimeUnit.SECONDS));
+        assertNotSame(standard, config);
+        assertEquals(standardDeduplicator, standard.get(CoapConfig.DEDUPLICATOR));
+        assertEquals(standardAckTimeout, (long) standard.get(CoapConfig.ACK_TIMEOUT, TimeUnit.MILLISECONDS));
+        assertEquals(standardExchangeLifetime,
+                (long) standard.get(CoapConfig.EXCHANGE_LIFETIME, TimeUnit.MILLISECONDS));
     }
 
     @Test
@@ -164,7 +186,14 @@ public class PhilipsAirCoapAPIConnectionTest {
         }
     }
 
-    private record Post(String path, String body) {
+    // the timeouts of the clients of the connection, which tell the posts of a ping from those of a command
+    private static final long COMMAND_TIMEOUT_MS = 25_000;
+    private static final long PING_TIMEOUT_MS = 5_000;
+
+    private record Post(String path, String body, long timeoutMs) {
+    }
+
+    private record Observe(Request request, CoapHandler handler, CoapObserveRelation relation) {
     }
 
     /**
@@ -173,6 +202,8 @@ public class PhilipsAirCoapAPIConnectionTest {
      */
     private class FakeDevice extends PhilipsAirCoapAPIConnection {
         final List<Post> posts = new ArrayList<>();
+        final List<Observe> observes = new ArrayList<>();
+        volatile @Nullable IOException syncFailure;
         volatile @Nullable String syncAnswer = "00000020";
         volatile String controlAnswer = "{\"status\":\"success\"}";
         volatile long now = 1_000_000L;
@@ -184,14 +215,33 @@ public class PhilipsAirCoapAPIConnectionTest {
         @Override
         String post(CoapClient client, String server, int port, String resourcePath, String body)
                 throws ConnectorException, IOException {
-            posts.add(new Post(resourcePath, body));
+            posts.add(new Post(resourcePath, body, client.getTimeout()));
+            IOException failure = syncFailure;
+            if (failure != null && resourcePath.endsWith("/sync")) {
+                throw failure;
+            }
             String answer = resourcePath.endsWith("/sync") ? syncAnswer : controlAnswer;
             return answer != null ? answer : "";
         }
 
         @Override
+        CoapObserveRelation observe(Request request, CoapHandler handler) {
+            CoapObserveRelation relation = mock(CoapObserveRelation.class);
+            observes.add(new Observe(request, handler, relation));
+            return relation;
+        }
+
+        @Override
         long currentTimeMillis() {
             return now;
+        }
+
+        long commandSyncs() {
+            return posts("/sys/dev/sync").stream().filter(post -> post.timeoutMs() == COMMAND_TIMEOUT_MS).count();
+        }
+
+        long pings() {
+            return posts("/sys/dev/sync").stream().filter(post -> post.timeoutMs() == PING_TIMEOUT_MS).count();
         }
 
         List<Post> posts(String path) {
@@ -361,5 +411,187 @@ public class PhilipsAirCoapAPIConnectionTest {
         disposed.processNotification(encrypt(STATUS), URI);
 
         assertTrue(notifications.isEmpty());
+    }
+
+    private FakeDevice device(@Nullable CoapProfile initialProfile) {
+        FakeDevice device = new FakeDevice(initialProfile);
+        devices.add(device);
+        return device;
+    }
+
+    private static CoapResponse response(String payload, int mid) {
+        Response response = new Response(ResponseCode.CONTENT);
+        response.setMID(mid);
+        response.setPayload(payload);
+        return new CoapResponse(response) {
+        };
+    }
+
+    @Test
+    public void firstCheckSyncsTheCounterAndStartsOneObserveRelation() {
+        FakeDevice device = device(null);
+
+        device.ensureConnected();
+
+        assertEquals(1, device.commandSyncs());
+        assertEquals(0, device.pings());
+        assertEquals(1, device.observes.size());
+        // Californium leaves out the default port
+        assertEquals("coap://127.0.0.1/sys/dev/status", device.observes.get(0).request().getURI());
+    }
+
+    @Test
+    public void recentNotificationKeepsTheRelationWithoutPing() {
+        FakeDevice device = device(null);
+        device.ensureConnected();
+        assertTrue(device.processNotification(encrypt(STATUS), URI));
+
+        device.now += 29_999;
+        device.ensureConnected();
+
+        assertEquals(0, device.pings());
+        assertEquals(1, device.commandSyncs());
+        assertEquals(1, device.observes.size());
+        verify(device.observes.get(0).relation(), never()).proactiveCancel();
+    }
+
+    @Test
+    public void silentDeviceAnsweringThePingKeepsTheRelation() {
+        FakeDevice device = device(null);
+        device.ensureConnected();
+        assertTrue(device.processNotification(encrypt(STATUS), URI));
+
+        device.now += 30_000;
+        device.ensureConnected();
+
+        assertEquals(1, device.pings());
+        assertEquals(1, device.observes.size());
+        verify(device.observes.get(0).relation(), never()).proactiveCancel();
+
+        // the answer counts as contact
+        device.now += 29_999;
+        device.ensureConnected();
+
+        assertEquals(1, device.pings());
+    }
+
+    @Test
+    public void relationIsRestartedWhenTheDeviceAnswersAgainAfterMissingAPing() {
+        FakeDevice device = device(null);
+        device.ensureConnected();
+        assertTrue(device.processNotification(encrypt(STATUS), URI));
+        CoapObserveRelation first = device.observes.get(0).relation();
+
+        device.syncAnswer = "";
+        device.now += 30_000;
+        device.ensureConnected();
+
+        assertEquals(1, device.pings());
+        assertEquals(1, device.observes.size());
+        verify(first, never()).proactiveCancel();
+
+        device.syncAnswer = "00000020";
+        device.ensureConnected();
+
+        assertEquals(2, device.pings());
+        verify(first).proactiveCancel();
+        assertEquals(2, device.observes.size());
+    }
+
+    // The sync of a restart is posted with the command client, the ping with the ping client, so the posts tell them
+    // apart. The relation is restarted as it is cancelled, without a ping.
+    @ParameterizedTest
+    @CsvSource({ "3,1", "4,2" })
+    public void counterIsSyncedAgainAfterMoreThanThreeInvalidNotifications(int invalidNotifications,
+            long expectedCommandSyncs) {
+        FakeDevice device = device(null);
+        device.ensureConnected();
+        assertTrue(device.processNotification(encrypt(STATUS), URI));
+        for (int i = 0; i < invalidNotifications; i++) {
+            assertFalse(device.processNotification(encrypt("{\"status\":\"success\"}"), URI));
+        }
+        when(device.observes.get(0).relation().isCanceled()).thenReturn(true);
+
+        device.ensureConnected();
+
+        assertEquals(2, device.observes.size());
+        assertEquals(0, device.pings());
+        assertEquals(expectedCommandSyncs, device.commandSyncs());
+    }
+
+    @Test
+    public void failedSyncWhileStartingTheRelationIsRetriedAtTheNextCheck() {
+        FakeDevice device = device(null);
+        device.syncFailure = new IOException("unreachable");
+
+        assertDoesNotThrow(device::ensureConnected);
+
+        assertEquals(1, device.commandSyncs());
+        assertTrue(device.observes.isEmpty());
+
+        device.syncFailure = null;
+        device.ensureConnected();
+
+        assertEquals(2, device.commandSyncs());
+        assertEquals(1, device.observes.size());
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "5,6", "28672,28673" })
+    public void restartedRelationContinuesAfterTheMidOfTheLastNotification(int notificationMid, int expectedMid) {
+        FakeDevice device = device(null);
+        device.ensureConnected();
+        Observe first = device.observes.get(0);
+
+        first.handler().onLoad(response(encrypt(STATUS), notificationMid));
+
+        assertEquals(1, notifications.size());
+        when(first.relation().isCanceled()).thenReturn(true);
+        device.ensureConnected();
+
+        assertEquals(2, device.observes.size());
+        assertEquals(expectedMid, device.observes.get(1).request().getMID());
+    }
+
+    @Test
+    public void midOfAnInvalidNotificationIsNotContinuedAfter() {
+        FakeDevice device = device(null);
+        device.ensureConnected();
+        Observe first = device.observes.get(0);
+
+        first.handler().onLoad(response(encrypt(STATUS), 5));
+        first.handler().onLoad(response(encrypt("{\"status\":\"success\"}"), 9));
+
+        when(first.relation().isCanceled()).thenReturn(true);
+        device.ensureConnected();
+
+        assertEquals(6, device.observes.get(1).request().getMID());
+    }
+
+    @Test
+    public void disposedConnectionDoesNotContactTheDevice() {
+        FakeDevice device = device(CoapProfile.BASIC_GEN3);
+        device.dispose();
+
+        assertFalse(device.pingDevice());
+        device.sendCommand("power", powerOn());
+        device.ensureConnected();
+
+        assertTrue(device.posts.isEmpty());
+        assertTrue(device.observes.isEmpty());
+    }
+
+    @Test
+    public void counterOfTheDeviceWrapsAroundIn32Bits() {
+        FakeDevice device = device(CoapProfile.BASIC_GEN3);
+        device.syncAnswer = "FFFFFFFF";
+
+        device.sendCommand("power", powerOn());
+
+        List<Post> control = device.posts("/sys/dev/control");
+        assertEquals(1, control.size());
+        String body = control.get(0).body();
+        assertTrue(body.startsWith("00000000"));
+        assertTrue(decrypt(body).has("state"));
     }
 }
