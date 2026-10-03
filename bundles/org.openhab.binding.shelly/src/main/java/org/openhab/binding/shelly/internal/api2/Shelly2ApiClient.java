@@ -1572,16 +1572,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.temp = value.ct;
         }
 
-        Integer ct = value.ct;
-        if (ct != null) {
-            ds.temp = ct;
-        }
-
-        lights.set(lightId, ds);
+        lights.set(idx, ds);
         if (profile.isRGBW2) {
             // the light components (Plus RGBW PM: light0..3, Pro RGBWW PM: light0..4) report power metering data
-            updateComponentMeter(status, lightId, value.apower, value.aenergy, value.voltage, value.current,
-                    channelUpdate);
+            updateComponentMeter(status, idx, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
 
         if (channelUpdate) {

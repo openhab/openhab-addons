@@ -268,6 +268,7 @@ class ShellyLightModelToGen2RpcContractTest {
             return harness;
         }
 
+        @SuppressWarnings("null")
         private static void setApi(ShellyTestLightHandler handler, Shelly2ApiRpc api)
                 throws ReflectiveOperationException {
             Field apiField = handler.getClass().getSuperclass().getSuperclass().getDeclaredField("api");
@@ -392,7 +393,7 @@ class ShellyLightModelToGen2RpcContractTest {
             try {
                 return classOfT.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                return null;
+                throw new RuntimeException("Unable to create fallback instance", e);
             }
         }
     }

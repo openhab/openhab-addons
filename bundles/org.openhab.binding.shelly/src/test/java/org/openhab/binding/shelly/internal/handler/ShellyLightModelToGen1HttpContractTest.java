@@ -166,6 +166,7 @@ class ShellyLightModelToGen1HttpContractTest {
             return new Gen1Harness(handler, urls);
         }
 
+        @SuppressWarnings("null")
         private static void setApi(ShellyTestLightHandler handler, Shelly1HttpApi api)
                 throws ReflectiveOperationException {
             Field apiField = handler.getClass().getSuperclass().getSuperclass().getDeclaredField("api");
@@ -186,6 +187,7 @@ class ShellyLightModelToGen1HttpContractTest {
             }
         }
 
+        @SuppressWarnings("null")
         private void setProfile(ShellyDeviceProfile profile) {
             try {
                 Field profileField = getClass().getSuperclass().getSuperclass().getDeclaredField("profile");
