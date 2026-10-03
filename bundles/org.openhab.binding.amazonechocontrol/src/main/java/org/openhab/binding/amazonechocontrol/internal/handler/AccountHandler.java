@@ -374,9 +374,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                 }
                 try {
                     if (connection.isLoggedIn()) {
-                        if (connection.renewTokens()) {
-                            storeSession();
-                        }
+                        connection.renewTokens();
                     } else {
                         // read session data from property
                         String sessionStore = sessionStorage.get("sessionStorage");

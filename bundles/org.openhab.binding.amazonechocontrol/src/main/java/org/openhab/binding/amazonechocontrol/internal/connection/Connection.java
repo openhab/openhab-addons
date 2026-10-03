@@ -136,6 +136,7 @@ import com.google.gson.JsonObject;
 public class Connection {
     private static final String THING_THREADPOOL_NAME = "thingHandler";
     private static final long EXPIRES_IN = 432000; // five days
+    private static final double RENEW_AFTER_FRACTION_OF_LIFETIME = 0.8;
     private static final String SIGN_IN_URL = "https://" + AmazonEchoControlBindingConstants.SIGN_IN_HOST;
     // Amazon answers /api/notifications with 400 ThrottlingException for the app agent the binding otherwise
     // sends, and with 200 for a browser agent; a quiet window of hours does not clear the 400.
@@ -153,8 +154,8 @@ public class Connection {
     private final HttpRequestBuilder requestBuilder;
     private @Nullable Date verifyTime;
     private volatile boolean closed = false;
-    private long connectionExpiryTime = 0;
-    private long accessTokenExpiryTime = 0;
+    private long connectionRenewalTime = 0;
+    private long accessTokenRenewalTime = 0;
     private @Nullable String customerName;
     private @Nullable String accessToken;
 
@@ -364,7 +365,7 @@ public class Connection {
     }
 
     private void exchangeToken(String cookieDomain) throws ConnectionException {
-        this.connectionExpiryTime = 0;
+        this.connectionRenewalTime = 0;
         String cookiesJson = "{\"cookies\":{\"." + cookieDomain + "\":[]}}";
         String cookiesBase64 = Base64.getEncoder().encodeToString(cookiesJson.getBytes());
 
@@ -394,8 +395,7 @@ public class Connection {
             throw new ConnectionException("Verify login failed after token exchange");
         }
 
-        // renew at 80% expired
-        this.connectionExpiryTime = System.currentTimeMillis() + (long) (Connection.EXPIRES_IN * 1000d / 0.8d);
+        this.connectionRenewalTime = renewalTime(System.currentTimeMillis(), EXPIRES_IN);
     }
 
     public String getAccessToken() throws ConnectionException {
@@ -406,19 +406,9 @@ public class Connection {
         return accessToken;
     }
 
-    /**
-     * Check if tokens need to be renewed
-     * <p />
-     * The {@link #accessToken} is renewed when the current nextAlarmTime is above
-     * {@link #accessTokenExpiryTime}, additionally the session tokens/cookies are renewed when the current
-     * nextAlarmTime is
-     * above {@link #connectionExpiryTime}
-     *
-     * @return {@code true} when the session tokens have been renewed, {@code false} otherwise
-     * @throws ConnectionException when an error occurred
-     */
-    public boolean renewTokens() throws ConnectionException {
-        if (System.currentTimeMillis() >= this.accessTokenExpiryTime) {
+    /** Renews the access token, and with it the session, once their renewal times have passed. */
+    public void renewTokens() throws ConnectionException {
+        if (System.currentTimeMillis() >= this.accessTokenRenewalTime) {
             String renewTokenPostData = "app_name=Amazon%20Alexa" //
                     + "&app_version=" + AmazonEchoControlBindingConstants.API_VERSION //
                     + "&di.sdk.version=" + AmazonEchoControlBindingConstants.DI_SDK_VERSION //
@@ -441,14 +431,16 @@ public class Connection {
                 throw new ConnectionException("Failed to renew access token, no token received.");
             }
 
-            // renew at 80% expired
-            this.accessTokenExpiryTime = System.currentTimeMillis() + (long) ((tokenResponse.expiresIn * 1000.0) / 0.8);
+            this.accessTokenRenewalTime = renewalTime(System.currentTimeMillis(), tokenResponse.expiresIn);
 
-            if (System.currentTimeMillis() > this.connectionExpiryTime) {
+            if (System.currentTimeMillis() > this.connectionRenewalTime) {
                 exchangeToken(loginData.getRetailDomain());
             }
         }
-        return false;
+    }
+
+    static long renewalTime(long nowMillis, long lifetimeSeconds) {
+        return nowMillis + (long) (lifetimeSeconds * 1000 * RENEW_AFTER_FRACTION_OF_LIFETIME);
     }
 
     public boolean isLoggedIn() {
@@ -563,8 +555,8 @@ public class Connection {
         }
 
         verifyTime = null;
-        connectionExpiryTime = 0;
-        accessTokenExpiryTime = 0;
+        connectionRenewalTime = 0;
+        accessTokenRenewalTime = 0;
         customerName = null;
         accessToken = null;
 
