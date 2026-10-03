@@ -400,23 +400,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // New Shelly devices might use a different endpoint for the CoAP listener
             tmpPrf.coiotEndpoint = tmpPrf.device.coiot;
         }
-        if (tmpPrf.settings.sleepMode != null && !tmpPrf.isTRV) {
-            // Sensor, usually 12h, H&T in USB mode 10min
-            tmpPrf.updatePeriod = "m".equalsIgnoreCase(getString(tmpPrf.settings.sleepMode.unit))
-                    ? tmpPrf.settings.sleepMode.period * 60 // minutes
-                    : tmpPrf.settings.sleepMode.period * 3600; // hours
-            if (tmpPrf.isSmoke) {
-                tmpPrf.updatePeriod += 1800; // for smoke sensor give 30min extra
-            } else {
-                tmpPrf.updatePeriod += 60; // give 1min extra
-            }
-        } else if (tmpPrf.settings.coiot != null && tmpPrf.settings.coiot.updatePeriod != null) {
-            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
-            tmpPrf.updatePeriod = 2 * //
-                    Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, getInteger(tmpPrf.settings.coiot.updatePeriod)) + 10;
-        } else {
-            tmpPrf.updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
-        }
+        tmpPrf.updateWatchdogPeriod();
 
         tmpPrf.status = api.getStatus(); // update thing properties
         tmpPrf.updateFromStatus(tmpPrf.status);
@@ -1761,6 +1745,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         try {
             if (consumeRefreshSettings(forceRefresh)) {
                 profile = api.getDeviceProfile(thing.getThingTypeUID(), null);
+                profile.updateWatchdogPeriod();
                 if (!isThingOnline()) {
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
                 }

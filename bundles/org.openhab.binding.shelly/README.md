@@ -448,7 +448,8 @@ Communication errors are handled depending on the device type:
 The binding also monitors that the device is responding at least once within a given time period.
 The period is computed depending on the device type and configuration:
 
-- battery  powered devices: &lt;sleepPeriod from device config&gt; + 10min, usually 12h+10min=730min
+- battery powered devices: &lt;sleepPeriod from device config&gt; + 10% + 1min, usually 12h → 13h13min (Smoke: another 30min).
+  If the device doesn't provide its sleep period, the longest possible period of 24h is assumed.
 - else, if CoIoT or WebSocket is enabled: 3*&lt;update Period from device settings&gt;+10sec, usually3*15+10=45sec
 - else 2*60+10sec = 130sec
 

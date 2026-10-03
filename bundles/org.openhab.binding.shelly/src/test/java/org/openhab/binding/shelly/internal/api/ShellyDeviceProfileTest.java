@@ -37,6 +37,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
@@ -892,5 +893,37 @@ public class ShellyDeviceProfileTest {
 
         assertThat(profile.getButtonType(0), is(equalTo(SHELLY_BTNT_MOMENTARY)));
         assertThat(profile.getButtonType(1), is(equalTo(SHELLY_BTNT_EDGE)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForWatchdogPeriod")
+    void updateWatchdogPeriodDerivesTimeoutFromWakeupPeriod(ThingTypeUID thingTypeUID, int period, String unit,
+            int expected) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        if (period > 0) {
+            profile.settings.sleepMode = sleepMode(period, unit);
+        }
+
+        profile.updateWatchdogPeriod();
+
+        assertThat(profile.updatePeriod, is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForWatchdogPeriod() {
+        int unknown = (int) Math.round(ShellyDeviceProfile.MAX_WAKEUP_PERIOD_SECONDS * 1.1) + 60;
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, 10, "m", (int) Math.round(10 * 60 * 1.1) + 60), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, 12, "h", (int) Math.round(12 * 3600 * 1.1) + 60 + 1800), //
+                Arguments.of(THING_TYPE_SHELLYHT, 0, "", unknown), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, 0, "", unknown + 1800), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, 0, "", 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10), //
+                Arguments.of(THING_TYPE_SHELLYTRV, 0, "", 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10));
+    }
+
+    private static ShellySensorSleepMode sleepMode(int period, String unit) {
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.period = period;
+        sleepMode.unit = unit;
+        return sleepMode;
     }
 }

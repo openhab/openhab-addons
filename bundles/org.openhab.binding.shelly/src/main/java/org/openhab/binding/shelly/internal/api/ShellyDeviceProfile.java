@@ -133,6 +133,7 @@ public class ShellyDeviceProfile {
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
 
+    public static final int MAX_WAKEUP_PERIOD_SECONDS = 24 * 3600; // longest configurable sleep period of a device
     public int updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
 
     public String coiotEndpoint = "";
@@ -321,6 +322,38 @@ public class ShellyDeviceProfile {
         } else if (status.input != null) {
             // RGBW2
             numInputs = 1;
+        }
+    }
+
+    /**
+     * Derive the watchdog timeout ({@link #updatePeriod}) from the wakeup period in the device settings. The wakeup
+     * period of a sleeping device can't be read on demand and Gen1 doesn't report it in status updates, so if unknown
+     * the longest period a device can be configured to is assumed.
+     */
+    public void updateWatchdogPeriod() {
+        if (settings.sleepMode != null && !isTRV) {
+            // Sensor, usually 12h, H&T in USB mode 10min
+            applyWakeupPeriod("m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
+                    ? settings.sleepMode.period * 60 // minutes
+                    : settings.sleepMode.period * 3600); // hours
+        } else if (!alwaysOn && !isTRV) {
+            // Sleeping device with unknown wakeup period
+            applyWakeupPeriod(MAX_WAKEUP_PERIOD_SECONDS);
+        } else if (settings.coiot != null && settings.coiot.updatePeriod != null) {
+            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
+            updatePeriod = 2 * Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, getInteger(settings.coiot.updatePeriod)) + 10;
+        } else {
+            updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
+        }
+    }
+
+    private void applyWakeupPeriod(int wakeupPeriod) {
+        // Proportional margin absorbs wakeup jitter that grows with the sleep interval, plus a fixed
+        // margin for the report round-trip itself
+        updatePeriod = (int) Math.round(wakeupPeriod * 1.1) + 60;
+        if (isSmoke) {
+            // Smoke sensors wake up far less predictably than other sensors, grant an extra 30min
+            updatePeriod += 1800;
         }
     }
 
