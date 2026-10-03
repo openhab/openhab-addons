@@ -102,6 +102,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     private final FakeHttpDevice device = new FakeHttpDevice(HOST, FAKE_KEY);
     private final Set<ChannelUID> linkedChannels = new HashSet<>();
     private final AtomicInteger connectionsCreated = new AtomicInteger();
+    private final AtomicInteger connectionRefreshInterval = new AtomicInteger();
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
     private @Mock @NonNullByDefault({}) PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
@@ -134,6 +135,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
             @Override
             PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
                 connectionsCreated.incrementAndGet();
+                connectionRefreshInterval.set(config.getRefreshInterval());
                 return super.createConnection(config);
             }
         };
@@ -358,6 +360,63 @@ public class PhilipsAirHandlerTest extends JavaTest {
                 argThat(PhilipsAirHandlerTest::isOnline));
         verify(callback, never()).thingUpdated(any());
         verify(callback, never()).configurationUpdated(any());
+    }
+
+    @Test
+    public void linkedFilterChannelRequestsTheFiltersOfADeviceThatDoesNotPushItsStatus() throws Exception {
+        respondWith(DEVICE, STATUS);
+        PhilipsAirHandler handler = createHandler(
+                List.of("controls#power:Switch", "filters#pre-filter-life:Number:Time"), new Configuration());
+
+        initializeAndWaitForOnline(handler);
+
+        assertEquals(new QuantityType<>(10, Units.HOUR), lastState("filters#pre-filter-life"));
+        int filterRequests = device.count(Endpoint.FILTERS, HttpMethod.GET);
+        assertTrue(filterRequests >= 1);
+
+        // unlike the probe for the wick filter, which stops once the device answered, every poll requests the filters.
+        // The responses are cached for the refresh interval, so this is the periodic poll after it.
+        waitForAssert(() -> assertTrue(device.count(Endpoint.FILTERS, HttpMethod.GET) > filterRequests), 15000, 100);
+    }
+
+    @Test
+    public void filtersAreOnlyRequestedOnceWithoutLinkedFilterChannel() throws Exception {
+        respondWith(DEVICE, STATUS);
+        PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), new Configuration());
+
+        initializeAndWaitForOnline(handler);
+        // the first update probes the filters to detect the optional wick filter channel, which succeeded
+        assertEquals(1, device.count(Endpoint.FILTERS, HttpMethod.GET));
+        int statusRequests = device.count(Endpoint.STATUS, HttpMethod.GET);
+
+        // the responses are cached for the refresh interval, so this is the periodic poll after it
+        waitForAssert(() -> assertTrue(device.count(Endpoint.STATUS, HttpMethod.GET) > statusRequests), 15000, 100);
+
+        assertEquals(1, device.count(Endpoint.FILTERS, HttpMethod.GET));
+    }
+
+    @Test
+    public void refreshIntervalBelowTheMinimumIsRaisedToTheMinimum() throws Exception {
+        respondWith(DEVICE, STATUS);
+        Configuration tooShort = new Configuration();
+        tooShort.put(PhilipsAirConfiguration.CONFIG_REFRESH_INTERVAL, 1);
+        PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), tooShort);
+
+        initializeAndWaitForOnline(handler);
+
+        assertEquals(PhilipsAirConfiguration.MIN_REFRESH_INTERVAL, connectionRefreshInterval.get());
+    }
+
+    @Test
+    public void refreshIntervalAboveTheMinimumIsKept() throws Exception {
+        respondWith(DEVICE, STATUS);
+        Configuration longer = new Configuration();
+        longer.put(PhilipsAirConfiguration.CONFIG_REFRESH_INTERVAL, 60);
+        PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), longer);
+
+        initializeAndWaitForOnline(handler);
+
+        assertEquals(60, connectionRefreshInterval.get());
     }
 
     @Test

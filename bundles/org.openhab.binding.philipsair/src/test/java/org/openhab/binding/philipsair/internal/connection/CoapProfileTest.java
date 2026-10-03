@@ -15,10 +15,14 @@ package org.openhab.binding.philipsair.internal.connection;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
@@ -172,6 +176,31 @@ public class CoapProfileTest {
         assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("unicorn", pegasus));
         assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("UNICORN", pegasus));
         assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("basic", parse(UNICORN_STATUS)));
+    }
+
+    private static Stream<Arguments> initialProfiles() {
+        return Stream.of( //
+                Arguments.of(null, CoapProfile.UNICORN, CoapProfile.UNICORN), //
+                Arguments.of(null, null, null), //
+                Arguments.of("auto", CoapProfile.UNICORN, CoapProfile.UNICORN), //
+                Arguments.of("auto", null, null), //
+                // the identifier is shared by BASIC_GEN2 and BASIC_GEN3, only the status tells the generation
+                Arguments.of("basic", null, null), //
+                Arguments.of("unicorn", null, CoapProfile.UNICORN), //
+                Arguments.of("UNICORN", null, CoapProfile.UNICORN), //
+                Arguments.of("classic", null, CoapProfile.CLASSIC), //
+                Arguments.of("toaster", null, null), //
+                Arguments.of("basic", CoapProfile.UNICORN, CoapProfile.BASIC_GEN3), //
+                Arguments.of("basic", CoapProfile.AC1715, CoapProfile.BASIC_GEN2), //
+                // the configured profile does not exist in the generation of the stored one
+                Arguments.of("unicorn", CoapProfile.BASIC_GEN2, CoapProfile.BASIC_GEN2));
+    }
+
+    @ParameterizedTest
+    @MethodSource("initialProfiles")
+    public void initialProfileIsTheConfiguredOneWithinTheStoredGeneration(@Nullable String configured,
+            @Nullable CoapProfile stored, @Nullable CoapProfile expected) {
+        assertEquals(expected, CoapProfile.initial(configured, stored));
     }
 
     @Test

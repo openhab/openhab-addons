@@ -18,8 +18,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -78,6 +81,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     private final CountDownLatch requestStarted = new CountDownLatch(1);
     private final CountDownLatch finishRequest = new CountDownLatch(1);
     private final AtomicInteger connectionsCreated = new AtomicInteger();
+    private final Queue<String> latchTimeouts = new ConcurrentLinkedQueue<>();
     // returned instead of the connection by the creations after the first one
     private volatile @Nullable PhilipsAirAPIConnection replacementConnection;
 
@@ -118,17 +122,28 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
 
     @AfterEach
     public void tearDown() {
+        // released first, so that no thread of the handler keeps waiting, which is not recorded as a timeout
         releaseConnection.countDown();
         finishRequest.countDown();
-        handler.dispose();
+        if (handler != null) {
+            handler.dispose();
+        }
+        assertEquals(List.of(), List.copyOf(latchTimeouts), "a latch was not released by the test");
     }
 
-    private static void awaitUninterruptibly(CountDownLatch latch) {
+    /**
+     * Waits for the latch on a thread of the handler, where a failure would not fail the test. A timeout is recorded
+     * and asserted by {@link #tearDown()}.
+     */
+    private void awaitUninterruptibly(CountDownLatch latch) {
         boolean interrupted = false;
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
         try {
             while (true) {
                 try {
-                    latch.await(10, TimeUnit.SECONDS);
+                    if (!latch.await(Math.max(0, deadline - System.nanoTime()), TimeUnit.NANOSECONDS)) {
+                        latchTimeouts.add("timed out waiting for " + latch);
+                    }
                     return;
                 } catch (InterruptedException e) {
                     interrupted = true;
@@ -249,7 +264,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         verify(connection, times(1)).getAirPurifierDevice(any());
         handler.dispose();
 
-        // e.g. a changed refresh interval keeps the info of the device
+        // initializing again with the same host keeps the info of the device
         handler.initialize();
         waitForAssert(() -> verify(connection, times(2)).ensureConnected());
         handler.updateData(connection);
@@ -282,6 +297,17 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         verify(callback, timeout(10000)).statusUpdated(any(Thing.class),
                 eq(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null)));
         verify(callback).stateUpdated(POWER_CHANNEL, OnOffType.ON);
+    }
+
+    @Test
+    public void failedPollWithoutMessageSetsOfflineWithTheDefaultDescription() {
+        doThrow(new IllegalStateException()).when(connection).ensureConnected();
+        releaseConnection.countDown();
+
+        handler.initialize();
+
+        verify(callback, timeout(10000)).statusUpdated(any(Thing.class), eq(new ThingStatusInfo(ThingStatus.OFFLINE,
+                ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error.no-response")));
     }
 
     @Test

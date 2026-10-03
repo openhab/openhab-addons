@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,9 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -467,6 +471,20 @@ public class PhilipsAirHandlerOptionalChannelsTest {
     }
 
     @Test
+    public void filterStatusIsNoLongerRequestedAfterTheProbeAttemptsFailed() throws PhilipsAirAPIException {
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
+        when(connection.getAirPurifierFiltersStatus(any())).thenThrow(new PhilipsAirAPIException("busy"));
+
+        for (int i = 0; i < 5; i++) {
+            handler.updateData(connection);
+        }
+
+        verify(connection, times(3)).getAirPurifierFiltersStatus(any());
+        assertEquals(Set.of("controls#power"), channelIds(handler.getThing().getChannels()));
+    }
+
+    @Test
     public void displayedIndexOptionsExcludeGasOnOtherModels() throws PhilipsAirAPIException {
         when(connection.getAirPurifierDevice(any()))
                 .thenReturn(gson.fromJson(HUMIDIFIER_STATUS, PhilipsAirPurifierDeviceDTO.class));
@@ -521,6 +539,65 @@ public class PhilipsAirHandlerOptionalChannelsTest {
                 gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class)));
         assertTrue(PhilipsAirHandler
                 .supportsGasIndex(gson.fromJson("{\"type\":\"AC4558\"}", PhilipsAirPurifierDeviceDTO.class), null));
+    }
+
+    private PhilipsAirPurifierDeviceDTO deviceOf(String json) {
+        return Objects.requireNonNull(gson.fromJson(json, PhilipsAirPurifierDeviceDTO.class));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "AC4558/10", "AC4550/10", "AC6675/10", "AC5659/10", "AC5660/10", "MS3000/10", "MS4000/10", "ac5659/10",
+            "ms3000/10" })
+    public void gasIndexIsSupportedByTheGasModels(String modelId) {
+        assertTrue(PhilipsAirHandler.supportsGasIndex(deviceOf("{\"modelid\":\"" + modelId + "\"}"), null));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "AC2889/10", "AC3829/10", "AC4373/10", "AC4375/10", "AC5000/10", "MS2000/10", "ac2889/10" })
+    public void gasIndexIsNotSupportedByOtherModels(String modelId) {
+        assertFalse(PhilipsAirHandler.supportsGasIndex(deviceOf("{\"modelid\":\"" + modelId + "\"}"), null));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "AC4373/10", "AC4375/10", "AC4373/11", "ac4373/10", "ac4375/10" })
+    public void thresholdsAreTextForTheTextThresholdModels(String modelId) {
+        assertTrue(PhilipsAirHandler.hasTextThresholds(deviceOf("{\"modelid\":\"" + modelId + "\"}")));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "AC4374/10", "AC4558/10", "AC5659/10", "AC2889/10", "AC3829/10", "MS3000/10" })
+    public void thresholdsAreNumbersForOtherModels(String modelId) {
+        assertFalse(PhilipsAirHandler.hasTextThresholds(deviceOf("{\"modelid\":\"" + modelId + "\"}")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "", " " })
+    public void blankModelIdFallsBackToTheType(String modelId) {
+        PhilipsAirPurifierDeviceDTO textModel = deviceOf("{\"modelid\":\"" + modelId + "\",\"type\":\"AC4373\"}");
+        assertTrue(PhilipsAirHandler.hasTextThresholds(textModel));
+        assertFalse(PhilipsAirHandler.supportsGasIndex(textModel, null));
+        assertTrue(PhilipsAirHandler.supportsGasIndex(deviceOf("{\"modelid\":\"" + modelId + "\",\"type\":\"AC4558\"}"),
+                null));
+    }
+
+    @Test
+    public void modelIdTakesPrecedenceOverTheType() {
+        PhilipsAirPurifierDeviceDTO device = deviceOf("{\"modelid\":\"AC2889/10\",\"type\":\"AC4558\"}");
+
+        assertFalse(PhilipsAirHandler.supportsGasIndex(device, null));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "{}", "{\"modelid\":\"\"}", "{\"modelid\":\" \"}" })
+    public void deviceWithoutModelOnlyHasTheGasIndexWithAGasSensor(String json) {
+        PhilipsAirPurifierDeviceDTO device = deviceOf(json);
+
+        assertFalse(PhilipsAirHandler.hasTextThresholds(device));
+        assertFalse(PhilipsAirHandler.supportsGasIndex(device, null));
+        assertFalse(PhilipsAirHandler.supportsGasIndex(device,
+                gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class)));
+        assertTrue(PhilipsAirHandler.supportsGasIndex(device,
+                gson.fromJson("{\"tvoc\":1}", PhilipsAirPurifierDataDTO.class)));
     }
 
     @SuppressWarnings("unchecked")
