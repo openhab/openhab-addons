@@ -920,6 +920,23 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYTRV, 0, "", 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10));
     }
 
+    @ParameterizedTest
+    @MethodSource("provideEventDrivenDevices")
+    void isEventDrivenCoversButtonsAndRemotesButNotPeriodicDevices(ThingTypeUID thingTypeUID, boolean expected) {
+        assertThat(ShellyDeviceProfile.isEventDriven(thingTypeUID), is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideEventDrivenDevices() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYBUTTON1, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUWALLSWITCH4, true), //
+                Arguments.of(THING_TYPE_SHELLYBLURCBUTTON4, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUREMOTE, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, false), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, false));
+    }
+
     private static ShellySensorSleepMode sleepMode(int period, String unit) {
         ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
         sleepMode.period = period;

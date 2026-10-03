@@ -456,6 +456,7 @@ The period is computed depending on the device type and configuration:
 
 Once the timer expires the device switches to OFFLINE and the bindings starts to re-initialize the device periodically.
 A battery powered device is not polled while it sleeps, it switches back to ONLINE with its next report.
+Buttons and remotes only report when a button is pressed, so they are never set OFFLINE by the watchdog.
 
 You could also create a rule to catch those status changes or device alarms (see rule examples).
 

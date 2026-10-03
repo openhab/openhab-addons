@@ -66,7 +66,9 @@ class ShellyBaseHandlerWatchdogTest {
                 Arguments.of(THING_TYPE_SHELLYHT, 23, false), //
                 Arguments.of(THING_TYPE_SHELLYHT, 27, true), //
                 Arguments.of(THING_TYPE_SHELLYPLUSHT, 27, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUHT, 27, true));
+                Arguments.of(THING_TYPE_SHELLYBLUHT, 27, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, 27, true), //
+                Arguments.of(THING_TYPE_SHELLYBLURCBUTTON4, 27, false));
     }
 
     @Test

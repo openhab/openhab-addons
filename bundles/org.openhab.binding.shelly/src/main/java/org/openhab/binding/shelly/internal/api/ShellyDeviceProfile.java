@@ -693,6 +693,15 @@ public class ShellyDeviceProfile {
                 || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
     }
 
+    /**
+     * Buttons and remotes only report on button events and don't wake up periodically, so the watchdog can't police a
+     * "missed wakeup" for them. The BLU Distance sensor is excluded, it broadcasts periodically.
+     */
+    public static boolean isEventDriven(ThingTypeUID thingTypeUID) {
+        return (GROUP_BUTTON_THING_TYPES.contains(thingTypeUID) || GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID))
+                && !THING_TYPE_SHELLYBLUDISTANCE.equals(thingTypeUID);
+    }
+
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {
         return GROUP_BLU_THING_TYPES.contains(thingTypeUID);
     }

@@ -902,6 +902,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private boolean isWatchdogExpired() {
+        if (ShellyDeviceProfile.isEventDriven(getThing().getThingTypeUID())) {
+            // Buttons/remotes only report on button events (BLU periodic beacons are opt-in and undocumented), so
+            // they can stay silent for days - never force them offline for a missed wakeup.
+            return false;
+        }
         double delta = now() - watchdog;
         if ((watchdog > 0) && (delta > profile.updatePeriod)) {
             stats.remainingWatchdog.set((long) delta);
