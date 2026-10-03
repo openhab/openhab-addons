@@ -483,6 +483,14 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * Schedules a poll that bypasses the read response cache.
+     */
+    protected void reconcileAfterWrite() {
+        callbackDelegator.resetCache();
+        refresh();
+    }
+
     public AtomicReference<@Nullable ModbusRegisterArray> getLastPolledDataCache() {
         return lastPolledDataCache;
     }

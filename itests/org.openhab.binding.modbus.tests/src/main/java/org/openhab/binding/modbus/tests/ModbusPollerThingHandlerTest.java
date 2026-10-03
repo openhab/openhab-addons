@@ -56,7 +56,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,48 +189,114 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     }
 
     @Test
-    public void testPoller2UpdatesRawChannelFromPollResult()
-            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+    public void testPoller2DispatchesTransformedHoldingWriteWithoutOptimisticStateUpdate() {
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 0L);
         pollerConfig.put("start", 100);
         pollerConfig.put("length", 2);
         pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
-        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "raw-poller2");
-        ChannelUID channelUid = new ChannelUID(pollerUid, "raw");
-        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "raw", "length", 2));
-        poller = createPoller2ThingBuilder("raw-poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
-                .withChannel(ChannelBuilder.create(channelUid, "String").withConfiguration(channelConfig).build()).build();
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "write-poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "setpoint");
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "uint16", "writeStart", "42",
+                "writeValueType", "int16", "writeTransform", "17", "writeMaxTries", 2));
+        poller = createPoller2ThingBuilder("write-poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "Number").withConfiguration(channelConfig).build()).build();
         addThing(poller);
 
         ModbusPoller2ThingHandler handler = (ModbusPoller2ThingHandler) poller.getHandler();
         handler.setCallback(thingCallback);
-        getPollerCallback(handler).handle(new AsyncModbusReadResult(Mockito.mock(ModbusReadRequestBlueprint.class),
-                new ModbusRegisterArray(0x0001, 0x002A)));
+        handler.handleCommand(channelUid, new org.openhab.core.library.types.DecimalType(4));
 
-        verify(thingCallback).stateUpdated(channelUid, new org.openhab.core.library.types.StringType("0001002A"));
+        ArgumentCaptor<org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint> requests = ArgumentCaptor
+                .forClass(org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint.class);
+        ArgumentCaptor<org.openhab.core.io.transport.modbus.ModbusWriteCallback> successfulWrites = ArgumentCaptor
+                .forClass(org.openhab.core.io.transport.modbus.ModbusWriteCallback.class);
+        verify(comms).submitOneTimeWrite(requests.capture(), successfulWrites.capture(), any());
+        org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint request = (org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint) requests
+                .getValue();
+        assertThat(request.getReference(), is(equalTo(42)));
+        assertThat(request.getRegisters().getRegister(0), is(equalTo(17)));
+        assertThat(request.getMaxTries(), is(equalTo(2)));
+        verifyNoInteractions(thingCallback);
+
+        successfulWrites.getValue().handle(Mockito.mock(AsyncModbusWriteResult.class));
+        verify(comms).submitOneTimePoll(any(), any(), any());
     }
 
     @Test
-    public void testPoller2AssignsGeneratedChannelTypeToRuntimeStringChannel() {
+    public void testPoller2DoesNotWriteWhenTransformOutputCannotBeParsed() {
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 0L);
         pollerConfig.put("start", 100);
-        pollerConfig.put("length", 2);
+        pollerConfig.put("length", 1);
         pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
-        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "typed-raw-poller2");
-        ChannelUID channelUid = new ChannelUID(pollerUid, "raw");
-        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "raw", "length", 2));
-        poller = createPoller2ThingBuilder("typed-raw-poller2").withConfiguration(pollerConfig)
-                .withBridge(endpoint.getUID())
-                .withChannel(ChannelBuilder.create(channelUid, "String").withConfiguration(channelConfig).build()).build();
-
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "invalid-write-poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "setpoint");
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "uint16", "writeStart", "42",
+                "writeValueType", "int16", "writeTransform", "not-a-command"));
+        poller = createPoller2ThingBuilder("invalid-write-poller2").withConfiguration(pollerConfig)
+                .withBridge(endpoint.getUID()).withChannel(ChannelBuilder.create(channelUid, "Number")
+                        .withConfiguration(channelConfig).build()).build();
         addThing(poller);
 
-        waitForAssert(() -> assertThat(poller.getChannel("raw").getChannelTypeUID(),
-                is(equalTo(new ChannelTypeUID("modbus", "poller2-shim-string")))));
-        assertThat(poller.getChannel("raw").getAcceptedItemType(), is(equalTo("String")));
-        assertThat(poller.getChannel("raw").getConfiguration().get("length"), is(equalTo(2)));
+        ((ModbusPoller2ThingHandler) poller.getHandler()).handleCommand(channelUid,
+                new org.openhab.core.library.types.DecimalType(4));
+
+        verify(comms, never()).submitOneTimeWrite(any(), any(), any());
+    }
+
+    @Test
+    public void testPoller2WritesMaintainedCoil() {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 100);
+        pollerConfig.put("length", 1);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_COIL);
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "coil-write-poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "output");
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "writeStart", "7"));
+        poller = createPoller2ThingBuilder("coil-write-poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "Switch").withConfiguration(channelConfig).build()).build();
+        addThing(poller);
+
+        ((ModbusPoller2ThingHandler) poller.getHandler()).handleCommand(channelUid,
+                org.openhab.core.library.types.OnOffType.ON);
+
+        ArgumentCaptor<org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint> requests = ArgumentCaptor
+                .forClass(org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint.class);
+        verify(comms).submitOneTimeWrite(requests.capture(), any(), any());
+        org.openhab.core.io.transport.modbus.ModbusWriteCoilRequestBlueprint request = (org.openhab.core.io.transport.modbus.ModbusWriteCoilRequestBlueprint) requests
+                .getValue();
+        assertThat(request.getReference(), is(equalTo(7)));
+        assertThat(request.getCoils().getBit(0), is(equalTo(true)));
+    }
+
+    @Test
+    public void testPoller2ReportsTransportFailureFromWrite() {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 100);
+        pollerConfig.put("length", 1);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "failing-write-poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "setpoint");
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "uint16", "writeStart", "42",
+                "writeValueType", "int16"));
+        poller = createPoller2ThingBuilder("failing-write-poller2").withConfiguration(pollerConfig)
+                .withBridge(endpoint.getUID()).withChannel(ChannelBuilder.create(channelUid, "Number")
+                        .withConfiguration(channelConfig).build()).build();
+        addThing(poller);
+
+        ((ModbusPoller2ThingHandler) poller.getHandler()).handleCommand(channelUid,
+                new org.openhab.core.library.types.DecimalType(4));
+        ArgumentCaptor<org.openhab.core.io.transport.modbus.ModbusFailureCallback> failures = ArgumentCaptor
+                .forClass(org.openhab.core.io.transport.modbus.ModbusFailureCallback.class);
+        verify(comms).submitOneTimeWrite(any(), any(), failures.capture());
+        failures.getValue().handle(new AsyncModbusFailure<>(Mockito.mock(org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint.class),
+                new RuntimeException("transport down")));
+
+        assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.COMMUNICATION_ERROR)));
     }
 
     @Test

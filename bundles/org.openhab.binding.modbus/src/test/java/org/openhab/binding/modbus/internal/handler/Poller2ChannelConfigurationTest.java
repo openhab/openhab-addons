@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -49,6 +50,15 @@ public class Poller2ChannelConfigurationTest {
     public void reportsActionableConfigurationErrors(Map<String, Object> configuration, String expectedMessage) {
         assertEquals(expectedMessage,
                 Poller2ChannelConfiguration.create("value", configuration, 100, 4).error().orElseThrow());
+    }
+
+    @Test
+    public void appliesReadTransformToDecodedValue() {
+        Poller2Channel channel = Poller2ChannelConfiguration
+                .create("value", Map.of("address", "100", "valueType", "uint16", "readTransform", "17"), 100, 1)
+                .channel().orElseThrow();
+
+        assertEquals(new DecimalType("17"), channel.acceptRegisters(new ModbusRegisterArray(42), 100));
     }
 
     @ParameterizedTest

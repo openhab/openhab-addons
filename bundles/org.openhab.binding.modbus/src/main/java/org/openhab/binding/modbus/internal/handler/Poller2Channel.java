@@ -12,9 +12,11 @@
  */
 package org.openhab.binding.modbus.internal.handler;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.modbus.internal.ModbusTransformation;
 import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
@@ -29,11 +31,11 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public final class Poller2Channel {
-
     private final int address;
     private final int subAddress;
     private final boolean hasSubAddress;
     private final ValueType valueType;
+    private final ModbusTransformation transformation;
     private final PollerChannelState state;
 
     public Poller2Channel(int address, ValueType valueType, PollerReadFailurePolicy failurePolicy) {
@@ -41,10 +43,16 @@ public final class Poller2Channel {
         this.subAddress = 0;
         this.hasSubAddress = false;
         this.valueType = valueType;
+        this.transformation = new ModbusTransformation(List.of("default"));
         this.state = new PollerChannelState(failurePolicy);
     }
 
     public Poller2Channel(String address, ValueType valueType, PollerReadFailurePolicy failurePolicy) {
+        this(address, valueType, failurePolicy, List.of("default"));
+    }
+
+    public Poller2Channel(String address, ValueType valueType, PollerReadFailurePolicy failurePolicy,
+            List<String> readTransform) {
         String[] parts = address.split("\\.", -1);
         if (parts.length > 2) {
             throw new IllegalArgumentException("Invalid Modbus address " + address);
@@ -53,6 +61,7 @@ public final class Poller2Channel {
         this.subAddress = parts.length == 2 ? Integer.parseInt(parts[1]) : 0;
         this.hasSubAddress = parts.length == 2;
         this.valueType = valueType;
+        this.transformation = new ModbusTransformation(readTransform);
         this.state = new PollerChannelState(failurePolicy);
     }
 
@@ -72,9 +81,17 @@ public final class Poller2Channel {
             state.acceptSuccessfulState(UnDefType.UNDEF);
             return state.currentState();
         }
-        State decoded = decodedValue.isPresent() ? decodedValue.get() : UnDefType.UNDEF;
+        State decoded = decodedValue.map(this::transform).orElse(UnDefType.UNDEF);
         state.acceptSuccessfulState(decoded);
         return state.currentState();
+    }
+
+    private State transform(DecimalType decoded) {
+        if (transformation.isIdentityTransform()) {
+            return decoded;
+        }
+        return ModbusTransformation.tryConvertToCommand(transformation.transform(decoded.toString()))
+                .filter(State.class::isInstance).map(State.class::cast).orElse(UnDefType.UNDEF);
     }
 
     public synchronized State acceptReadFailure() {

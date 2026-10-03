@@ -28,10 +28,15 @@ import org.openhab.binding.modbus.internal.handler.Poller2Channel;
 import org.openhab.binding.modbus.internal.handler.Poller2ChannelConfiguration;
 import org.openhab.binding.modbus.internal.handler.Poller2RawChannel;
 import org.openhab.binding.modbus.internal.handler.Poller2RawChannelConfiguration;
+import org.openhab.binding.modbus.internal.handler.Poller2WriteChannel;
+import org.openhab.binding.modbus.internal.handler.Poller2WriteChannelConfiguration;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.core.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.core.io.transport.modbus.BitArray;
+import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -40,6 +45,10 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for the poller-owned channel model.
@@ -48,11 +57,13 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
+    private final Logger logger = LoggerFactory.getLogger(ModbusPoller2ThingHandler.class);
 
     private final ModbusPoller2ChannelTypeProvider channelTypeProvider;
     private volatile Map<ChannelUID, Poller2Channel> channels = Map.of();
     private volatile Map<ChannelUID, Poller2BitChannel> bitChannels = Map.of();
     private volatile Map<ChannelUID, Poller2RawChannel> rawChannels = Map.of();
+    private volatile Map<ChannelUID, Poller2WriteChannel> writeChannels = Map.of();
     private volatile int pollStart;
 
     public ModbusPoller2ThingHandler(Bridge bridge, ModbusPoller2ChannelTypeProvider channelTypeProvider) {
@@ -78,19 +89,15 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
         Map<ChannelUID, Poller2Channel> parsedChannels = new LinkedHashMap<>();
         Map<ChannelUID, Poller2BitChannel> parsedBitChannels = new LinkedHashMap<>();
         Map<ChannelUID, Poller2RawChannel> parsedRawChannels = new LinkedHashMap<>();
+        Map<ChannelUID, Poller2WriteChannel> parsedWriteChannels = new LinkedHashMap<>();
         List<String> configurationErrors = new ArrayList<>();
         for (Channel channel : getThing().getChannels()) {
             if (registerPoller) {
-                boolean raw = "raw".equals(channel.getConfiguration().getProperties().get("valueType"));
-                if (raw) {
+                if ("raw".equals(channel.getConfiguration().getProperties().get("valueType"))) {
                     Poller2RawChannelConfiguration parsed = Poller2RawChannelConfiguration.create(channel.getUID().getId(),
                             channel.getConfiguration().getProperties(), configuration.getStart(), configuration.getLength());
-                    Optional<String> error = parsed.error();
-                    if (error.isPresent()) {
-                        configurationErrors.add(error.get());
-                    } else {
-                        parsedRawChannels.put(channel.getUID(), parsed.channel().orElseThrow());
-                    }
+                    parsed.error().ifPresent(configurationErrors::add);
+                    parsed.channel().ifPresent(raw -> parsedRawChannels.put(channel.getUID(), raw));
                     continue;
                 }
                 Poller2ChannelConfiguration parsed = Poller2ChannelConfiguration.create(channel.getUID().getId(),
@@ -98,25 +105,29 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
                 Optional<String> error = parsed.error();
                 if (error.isPresent()) {
                     configurationErrors.add(error.get());
-                } else {
-                    parsedChannels.put(channel.getUID(), parsed.channel().orElseThrow());
+                    continue;
                 }
+                parsedChannels.put(channel.getUID(), parsed.channel().orElseThrow());
             } else if (bitPoller) {
                 Poller2BitChannelConfiguration parsed = Poller2BitChannelConfiguration.create(channel.getUID().getId(),
-                        channel.getConfiguration().getProperties(), configuration.getStart(),
-                        configuration.getLength());
+                        channel.getConfiguration().getProperties(), configuration.getStart(), configuration.getLength());
                 Optional<String> error = parsed.error();
                 if (error.isPresent()) {
                     configurationErrors.add(error.get());
-                } else {
-                    parsedBitChannels.put(channel.getUID(), parsed.channel().orElseThrow());
+                    continue;
                 }
+                parsedBitChannels.put(channel.getUID(), parsed.channel().orElseThrow());
             }
+            Poller2WriteChannelConfiguration writeConfiguration = Poller2WriteChannelConfiguration.create(
+                    channel.getUID().getId(), channel.getConfiguration().getProperties(), type);
+            writeConfiguration.error().ifPresent(configurationErrors::add);
+            writeConfiguration.channel().ifPresent(write -> parsedWriteChannels.put(channel.getUID(), write));
         }
         if (!configurationErrors.isEmpty()) {
             channels = Map.of();
             bitChannels = Map.of();
             rawChannels = Map.of();
+            writeChannels = Map.of();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     String.join(System.lineSeparator(), configurationErrors));
             return;
@@ -124,6 +135,7 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
         channels = Map.copyOf(parsedChannels);
         bitChannels = Map.copyOf(parsedBitChannels);
         rawChannels = Map.copyOf(parsedRawChannels);
+        writeChannels = Map.copyOf(parsedWriteChannels);
         super.initialize();
     }
 
@@ -143,6 +155,38 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
         }
         ChannelTypeUID channelTypeUID = channelTypeProvider.getGeneratedChannelTypeUID(channel.getAcceptedItemType());
         return channelTypeUID == null ? channel : ChannelBuilder.create(channel).withType(channelTypeUID).build();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == RefreshType.REFRESH) {
+            refresh();
+            return;
+        }
+        Poller2WriteChannel writeChannel = writeChannels.get(channelUID);
+        if (writeChannel == null) {
+            return;
+        }
+        ModbusReadRequestBlueprint readRequest = getRequest();
+        ModbusCommunicationInterface communication = getCommunicationInterface();
+        if (readRequest == null || communication == null) {
+            return;
+        }
+        writeChannel.requestFor(command, readRequest.getUnitID()).ifPresent(request -> {
+            logger.trace("Submitting poller2 write task {}", request);
+            communication.submitOneTimeWrite(request, this::onWriteResponse, this::onWriteFailure);
+        });
+    }
+
+    private void onWriteResponse(AsyncModbusWriteResult result) {
+        updateStatus(ThingStatus.ONLINE);
+        reconcileAfterWrite();
+    }
+
+    private void onWriteFailure(AsyncModbusFailure<ModbusWriteRequestBlueprint> failure) {
+        Exception cause = failure.getCause();
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "Error with write: %s: %s".formatted(cause.getClass().getName(), cause.getMessage()));
     }
 
     @Override

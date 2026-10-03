@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.modbus.internal.handler;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -66,13 +67,22 @@ public final class Poller2ChannelConfiguration {
 
         final Poller2Channel channel;
         try {
-            channel = new Poller2Channel(addressText, parsedValueType, parsedErrorPolicy);
+            channel = new Poller2Channel(addressText, parsedValueType, parsedErrorPolicy,
+                    transformation(configuration.get("readTransform")));
         } catch (IllegalArgumentException e) {
             return error("Channel '%s' has invalid address '%s'; expected X or X.Y".formatted(channelId, addressText));
         }
         Optional<String> rangeError = channel.validateReadRange(pollStart, pollLength);
         return rangeError.map(message -> error("Channel '%s': %s".formatted(channelId, message)))
                 .orElseGet(() -> new Poller2ChannelConfiguration(channel, null));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<String> transformation(Object value) {
+        if (value instanceof List<?> list && list.stream().allMatch(String.class::isInstance)) {
+            return (List<String>) list;
+        }
+        return value instanceof String text ? List.of(text) : List.of("default");
     }
 
     private static Poller2ChannelConfiguration error(String message) {
