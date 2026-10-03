@@ -277,13 +277,13 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             boolean passwordSent = false;
             for (int step = 0; step < 3; step++) {
                 Document page = Jsoup.parse(response.getContentAsString());
+                if (page.selectFirst("[data-captcha-provider], input[name=captcha]") != null) {
+                    throw new LoginBlockedException("Auth0 is requesting a captcha");
+                }
                 Element form = page.selectFirst("form:has(input[name=state])");
                 if (form == null) {
                     // no form means Auth0 redirected back to the app
                     return;
-                }
-                if (page.selectFirst("[data-captcha-provider], input[name=captcha]") != null) {
-                    throw new LoginBlockedException("Auth0 is requesting a captcha");
                 }
                 boolean passwordStep = form.selectFirst("input[name=password]") != null;
                 if (passwordStep && passwordSent) {
