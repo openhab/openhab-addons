@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,10 +43,17 @@ public class ShellyChannelMigration {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShellyChannelMigration.class);
 
     private record ChannelMigrationRule(int version, String channelId, @Nullable String replacementChannelId,
-            boolean refreshExistingChannel, @Nullable Predicate<ShellyDeviceProfile> condition) {
+            boolean refreshExistingChannel, @Nullable BiPredicate<ShellyDeviceProfile, String> condition) {
         ChannelMigrationRule(int version, String channelId, @Nullable String replacementChannelId,
                 boolean refreshExistingChannel) {
-            this(version, channelId, replacementChannelId, refreshExistingChannel, null);
+            this(version, channelId, replacementChannelId, refreshExistingChannel,
+                    (BiPredicate<ShellyDeviceProfile, String>) null);
+        }
+
+        ChannelMigrationRule(int version, String channelId, @Nullable String replacementChannelId,
+                boolean refreshExistingChannel, Predicate<ShellyDeviceProfile> condition) {
+            this(version, channelId, replacementChannelId, refreshExistingChannel,
+                    (profile, group) -> condition.test(profile));
         }
     }
 
@@ -115,9 +123,9 @@ public class ShellyChannelMigration {
     }
 
     // Gen1: only /emeter devices (EM) expose a reset API. 3EM resets at the device level, not per meter.
-    // Duo/Multicolor Bulb G3 (isDuo) meter on CCT/RGBCCT components, which have no ResetCounters RPC.
-    private static boolean supportsPerMeterReset(ShellyDeviceProfile profile) {
-        return !profile.is3EM && !profile.isDuo && (profile.isGen2 || profile.isEMeter);
+    private static boolean supportsPerMeterReset(ShellyDeviceProfile profile, String group) {
+        return !profile.is3EM && (profile.isGen2 || profile.isEMeter)
+                && profile.supportsMeterReset(ShellyDeviceProfile.getMeterIndex(group));
     }
 
     private static boolean isGen1Rgbw2(ShellyDeviceProfile profile) {
@@ -159,18 +167,17 @@ public class ShellyChannelMigration {
     }
 
     private static boolean applyMigrationRule(ShellyThingInterface thing, ChannelMigrationRule rule) {
-        Predicate<ShellyDeviceProfile> condition = rule.condition();
-        if (condition != null && !condition.test(thing.getProfile())) {
-            return false;
-        }
-
+        BiPredicate<ShellyDeviceProfile, String> condition = rule.condition();
+        ShellyDeviceProfile profile = thing.getProfile();
         String thingName = thing.getThingName();
         List<Channel> existingChannels = thing.getThing().getChannels();
-        List<Channel> matchingChannels = findChannels(existingChannels, rule.channelId());
-        String replacementChannelName = rule.replacementChannelId();
-        if (matchingChannels.isEmpty() && (replacementChannelName == null || replacementChannelName.isEmpty())) {
+        List<Channel> matchingChannels = findChannels(existingChannels, rule.channelId()).stream().filter(
+                channel -> condition == null || condition.test(profile, getString(channel.getUID().getGroupId())))
+                .toList();
+        if (matchingChannels.isEmpty()) {
             return false;
         }
+        String replacementChannelName = rule.replacementChannelId();
 
         Map<String, Channel> channelUpdates = new HashMap<>();
         Map<String, Channel> newOrReplacementChannels = new HashMap<>();

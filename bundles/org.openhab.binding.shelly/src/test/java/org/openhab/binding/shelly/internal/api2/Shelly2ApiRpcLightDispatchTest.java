@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
@@ -481,5 +482,46 @@ public class Shelly2ApiRpcLightDispatchTest {
         assertThat(rpc.calledParams.get(0).id, is(0)); // settings.lights[0] -> RGB:0
         assertThat(rpc.calledParams.get(1).id, is(0)); // settings.lights[1] -> Light:0
         assertThat(rpc.calledParams.get(2).id, is(1)); // settings.lights[2] -> Light:1, not Light:2
+    }
+
+    @Test
+    void supportsMeterResetOnlyOnLightComponents() {
+        assertThat(lightModeProfile(4).supportsMeterReset(3), is(true));
+        assertThat(colorModeProfile(SHELLY2_PROFILE_RGB).supportsMeterReset(0), is(false));
+        assertThat(colorModeProfile(SHELLY2_PROFILE_RGBW).supportsMeterReset(0), is(false));
+        assertThat(rgbcctProfile().supportsMeterReset(0), is(false));
+        assertThat(cctx2Profile(2).supportsMeterReset(1), is(false));
+        assertThat(rgbx2lightProfile().supportsMeterReset(0), is(false));
+        assertThat(rgbx2lightProfile().supportsMeterReset(1), is(true));
+        assertThat(rgbx2lightProfile().supportsMeterReset(2), is(true));
+        assertThat(rgbx2lightProfile().supportsMeterReset(3), is(false));
+    }
+
+    @Test
+    void resetMeterTotalSendsLightResetCountersWithComponentLocalId() throws ShellyApiException {
+        assertResetSentToLight(lightModeProfile(4), 2, 2);
+        assertResetSentToLight(rgbx2lightProfile(), 2, 1);
+    }
+
+    @Test
+    void resetMeterTotalOnComponentWithoutResetApiIsRejectedWithoutRpcCall() {
+        assertResetRejected(colorModeProfile(SHELLY2_PROFILE_RGBW), 0);
+        assertResetRejected(rgbx2lightProfile(), 0);
+    }
+
+    private void assertResetSentToLight(ShellyDeviceProfile profile, int meterIdx, int componentId)
+            throws ShellyApiException {
+        StubApiRpc rpc = newRpc(profile);
+        rpc.resetMeterTotal(meterIdx);
+
+        assertThat(rpc.lastMethod(), is(SHELLYRPC_METHOD_LIGHT_RESETCOUNTERS));
+        assertThat(rpc.lastParams().id, is(componentId));
+    }
+
+    private void assertResetRejected(ShellyDeviceProfile profile, int meterIdx) {
+        StubApiRpc rpc = newRpc(profile);
+
+        assertThrows(ShellyApiException.class, () -> rpc.resetMeterTotal(meterIdx));
+        assertThat(rpc.calledMethods.isEmpty(), is(true));
     }
 }

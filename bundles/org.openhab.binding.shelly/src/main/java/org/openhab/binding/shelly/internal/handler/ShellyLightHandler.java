@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -69,7 +70,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             final LocationProvider locationProvider) {
         super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient,
                 locationProvider);
-        channelColors = new TreeMap<>();
+        channelColors = new ConcurrentHashMap<>(); // command and status threads
     }
 
     @Override
@@ -296,6 +297,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             logger.debug("{}: Switch light {}", thingName, onOffCommand);
             api.setLightParm(lightId, SHELLY_LIGHT_TURN, onOffCommand == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
             col.power = onOffCommand;
+            // the picker derives its switch from the HSB state, so pull the device state right away
+            requestUpdates(1, false);
         } else if (command instanceof IncreaseDecreaseType) {
             if (pickerControlsBrightness(profile, lightId)) {
                 logger.debug("{}: {} brightness by {}", thingName, command, SHELLY_DIM_STEPSIZE);
@@ -346,7 +349,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         if (col == null) {
             col = new ShellyColorUtils(); // create a new entry
             col.setMinMaxTemp(profile.getMinTemp(lightId), profile.getMaxTemp(lightId));
-            channelColors.put(lightId, col);
+            ShellyColorUtils existing = channelColors.putIfAbsent(lightId, col);
+            if (existing != null) {
+                return existing;
+            }
             logger.trace("{}: Colors entry created for lightId {}", thingName, lightId);
         } else {
             logger.trace(
@@ -426,7 +432,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 setFullColor(colorGroup, col);
 
                 logger.trace("{}: update {}.color picker", thingName, colorGroup);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_PICKER, col.toHSB());
+                updated |= updateChannel(colorGroup, CHANNEL_COLOR_PICKER, col.toHSBState());
             }
 
             if (updatesWhiteChannels(profile, lightId)) {

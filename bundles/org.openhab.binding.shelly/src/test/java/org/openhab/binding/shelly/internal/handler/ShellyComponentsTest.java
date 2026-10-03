@@ -62,6 +62,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -1179,6 +1180,56 @@ public class ShellyComponentsTest {
 
         assertThat(updated, is(false));
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), anyString(), any());
+    }
+
+    @Test
+    void updateRGBWPushesPowerChannelForRgbwPmOnPartialStatusWithoutRgb() throws Exception {
+        ShellyThingInterface handler = mockHandler(colorProfile(THING_TYPE_SHELLYPLUSRGBWPM));
+
+        boolean updated = ShellyComponents.updateRGBW(handler, statusWithLight(true));
+
+        assertThat(updated, is(true));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_LIGHT_CONTROL), eq(CHANNEL_LIGHT_POWER), eq(OnOffType.ON));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), anyString(), any());
+    }
+
+    @Test
+    void updateRGBWPushesZeroBrightnessColorPickerForRgbwPmWhenOff() throws Exception {
+        ShellyThingInterface handler = mockHandler(colorProfile(THING_TYPE_SHELLYPLUSRGBWPM));
+        ShellySettingsStatus status = statusWithLight(false);
+        ShellySettingsLight light = status.lights.get(0);
+        light.red = 255;
+        light.green = 0;
+        light.blue = 0;
+        light.white = 0;
+
+        ShellyComponents.updateRGBW(handler, status);
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), eq(CHANNEL_COLOR_PICKER),
+                eq(new HSBType(new DecimalType(0), new PercentType(100), PercentType.ZERO)));
+    }
+
+    @Test
+    void updateRGBWSkipsPowerChannelForMulticolorBulbGen3() throws Exception {
+        ShellyThingInterface handler = mockHandler(colorProfile(THING_TYPE_SHELLYPLUSCOLORBULB));
+
+        ShellyComponents.updateRGBW(handler, statusWithLight(true));
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_LIGHT_CONTROL), eq(CHANNEL_LIGHT_POWER), any());
+    }
+
+    private static ShellyDeviceProfile colorProfile(ThingTypeUID thingType) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingType);
+        profile.inColor = true;
+        return profile;
+    }
+
+    private static ShellySettingsStatus statusWithLight(boolean ison) {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsLight light = new ShellySettingsLight();
+        light.ison = ison;
+        status.lights = new ArrayList<>(List.of(light));
+        return status;
     }
 
     @Test

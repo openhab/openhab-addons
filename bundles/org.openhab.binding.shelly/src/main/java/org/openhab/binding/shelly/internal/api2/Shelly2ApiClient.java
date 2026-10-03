@@ -15,7 +15,6 @@ package org.openhab.binding.shelly.internal.api2;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_INPUT;
 import static org.openhab.binding.shelly.internal.ShellyDevices.SHELLYDT_PLUSDIMMER0110VG3;
 import static org.openhab.binding.shelly.internal.ShellyDevices.SHELLYDT_PLUSDIMMER0110VG4;
-import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPRORGBWWPM;
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
@@ -375,9 +374,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             fromDeviceConfig = 2; // em1:0 + em1:1 → 2 clamps (Pro EM-50)
         } else if (dc.em10 != null) {
             fromDeviceConfig = 1; // em1:0 alone → single clamp (EM Mini)
-        } else if (THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID)) {
+        } else if (profile.isRGBW2) {
             // No dedicated PM/EM component: every settings.lights entry (color, CCT or Light) is its own
-            // metered component.
+            // metered component. Applies to both Pro RGBWW PM and Plus RGBW PM.
             List<ShellySettingsRgbwLight> sl = profile.settings.lights;
             fromDeviceConfig = sl != null && !sl.isEmpty() ? sl.size() : -1;
         } else if (SHELLYDT_PLUSDIMMER0110VG3.equals(profile.device.type)
@@ -889,8 +888,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     /**
-     * Pro RGBWW PM reports power/energy directly on its RGB/Light/CCT components (no dedicated PM/EM
-     * component) - extract those fields into the numbered meter slot the same way updateRelayStatus() does.
+     * Plus RGBW PM and Pro RGBWW PM report power/energy directly on their RGB/Light/CCT components (no
+     * dedicated PM/EM component) - extract those fields into the numbered meter slot the same way
+     * updateRelayStatus() does.
      */
     private void updateComponentMeter(ShellySettingsStatus status, int meterIdx, @Nullable Double apower,
             @Nullable Shelly2Energy aenergy, @Nullable Double voltage, @Nullable Double current, boolean channelUpdate)
@@ -1435,8 +1435,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         Integer rawId = value.id;
         boolean updated = applyLightStatus(status, rawId != null ? rawId : id, value.output, value.brightness,
                 value.rgb, value.white, null, channelUpdate, true);
-        if (profile.isProRgbwwPm) {
-            // the color component always sits at settings.lights[0]
+        if (profile.isRGBW2) {
+            // the color component always sits at settings.lights[0]; both Plus RGBW PM and Pro RGBWW PM
+            // report power metering data on this component (Gen1 RGBW2 never reaches this Gen2 client)
             updateComponentMeter(status, 0, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }
         return updated;
@@ -1542,8 +1543,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ds.temp = ct;
         }
         lights.set(lightId, ds);
-        if (profile.isProRgbwwPm) {
-            // Plus RGBW PM's white-mode light0..3 channels also reach this point but must not be metered here
+        if (profile.isRGBW2) {
+            // the light components (Plus RGBW PM: light0..3, Pro RGBWW PM: light0..4) report power metering data
             updateComponentMeter(status, lightId, value.apower, value.aenergy, value.voltage, value.current,
                     channelUpdate);
         }

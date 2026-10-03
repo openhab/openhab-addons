@@ -409,6 +409,8 @@ Its placement depends on the device type:
 - Three-phase 3EM devices (Gen1 3EM, Plus 3EM-63, Pro 3EM) expose `resetTotals` once in the common `device` group; it resets all phases together.
 - Gen1 devices with a simple power meter (e.g. 1PM, Plug-S, Shelly 2/2.5, dimmers) have no reset API in the firmware, so no `resetTotals` channel is created for them.
 - The Duo Bulb G3 and Multicolor Bulb G3 meter on CCT/RGBCCT components, which likewise have no reset API in the firmware, so no `resetTotals` channel is created for them.
+- The Plus RGBW PM and Pro RGBWW PM expose `resetTotals` only for channels running as plain `Light` components (profile `light`, or the light channels of `rgbx2light`).
+  Channels running as RGB/RGBW/CCT components have no reset API in the firmware, so no `resetTotals` channel is created for them.
 
 ### Thing Status
 
@@ -1951,6 +1953,7 @@ In `rgbw` or `rgb` profile (color mode):
 | Group   | Channel       | Type     | read-only | Description                                                             |
 | ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
 | control | power         | Switch   | r/w       | Switch light ON/OFF                                                     |
+|         | brightness    | Dimmer   | r/w       | Overall brightness: 0..100%                                             |
 |         | autoOn        | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
 |         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
 |         | timerActive   | Switch   | yes       | ON: An auto-on/off timer is active                                      |
@@ -1992,6 +1995,7 @@ In `rgbcct` or `rgbx2light` profile, the RGB component is exposed as the color c
 | Group   | Channel       | Type     | read-only | Description                                                             |
 | ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
 | control | power         | Switch   | r/w       | Switch light ON/OFF                                                     |
+|         | brightness    | Dimmer   | r/w       | Overall brightness: 0..100%                                             |
 |         | autoOn        | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
 |         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
 |         | timerActive   | Switch   | yes       | ON: An auto-on/off timer is active                                      |

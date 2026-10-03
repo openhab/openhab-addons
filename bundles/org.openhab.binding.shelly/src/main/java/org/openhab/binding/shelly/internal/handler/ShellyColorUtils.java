@@ -160,6 +160,12 @@ public class ShellyColorUtils {
         return HSBType.fromRGB(red, green, blue);
     }
 
+    // the color picker derives its on/off switch from the HSB brightness, so an off light must report 0%
+    public HSBType toHSBState() {
+        HSBType hsb = toHSB();
+        return power == OnOffType.ON ? hsb : new HSBType(hsb.getHue(), hsb.getSaturation(), PercentType.ZERO);
+    }
+
     public Integer[] fromRGBW(String rgbwString) {
         Integer[] values = new Integer[4];
         values[0] = values[1] = values[2] = values[3] = -1;

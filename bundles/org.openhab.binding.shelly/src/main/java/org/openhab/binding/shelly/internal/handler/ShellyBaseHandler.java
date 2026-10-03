@@ -133,10 +133,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     // Scheduler
     private volatile double watchdog = now();
-    protected int scheduledUpdates = 0;
+    protected volatile int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
-    private boolean refreshSettings;
+    private volatile boolean refreshSettings;
+    private final Object channelLock = new Object();
     private @Nullable ScheduledFuture<?> statusJob;
     private @Nullable ScheduledFuture<?> initJob;
 
@@ -591,17 +592,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_EMETER_RESETTOTAL:
                     if (command == OnOffType.ON) {
-                        // Duo/Multicolor Bulb G3 meter on CCT/RGBCCT components, which have no ResetCounters
+                        // Duo/Multicolor Bulb G3 and Plus/Pro RGBW PM meter on components that have no ResetCounters
                         // RPC; the channel is no longer created for them, but a Thing provisioned before that
                         // fix may still have it, so fail soft instead of forwarding a request that 404s.
-                        if (profile.isDuo) {
-                            logger.debug("{}: Meter reset is not supported by this device", thingName);
+                        int idx = ShellyDeviceProfile.getMeterIndex(group);
+                        if (!profile.supportsMeterReset(idx)) {
+                            logger.debug("{}: Meter reset is not supported for group {}", thingName, group);
                         } else {
-                            int idx = 0;
-                            if (group.startsWith(CHANNEL_GROUP_METER)
-                                    && group.length() > CHANNEL_GROUP_METER.length()) {
-                                idx = Integer.parseInt(substringAfter(group, CHANNEL_GROUP_METER)) - 1;
-                            }
                             logger.debug("{}: Reset meter totals for group {}", thingName, group);
                             api.resetMeterTotal(idx);
                         }
@@ -717,8 +714,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // sleep mode. Once the next update is successful the device goes back online
             handleApiException(e);
         } finally {
-            if (scheduledUpdates > 0) {
-                --scheduledUpdates;
+            if (consumeScheduledUpdate()) {
                 logger.trace("{}: {} more updates requested", thingName, scheduledUpdates);
             } else if ((skipUpdate >= cacheCount) && !cache.isEnabled()) {
                 logger.debug("{}: Enabling channel cache ({} updates / {}s)", thingName, skipUpdate,
@@ -1360,6 +1356,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
     }
 
+    // Command threads request updates while the status job consumes them
+    private synchronized boolean consumeScheduledUpdate() {
+        if (scheduledUpdates > 0) {
+            --scheduledUpdates;
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Flag the status job to do an exceptional update (something happened) rather
      * than waiting until the next regular poll
@@ -1370,7 +1375,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      *         scheduled)
      */
     @Override
-    public boolean requestUpdates(int requestCount, boolean refreshSettings) {
+    public synchronized boolean requestUpdates(int requestCount, boolean refreshSettings) {
         this.refreshSettings |= refreshSettings;
         if (refreshSettings) {
             if (requestCount == 0) {
@@ -1536,14 +1541,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (channelsCreated) {
             return; // already done
         }
-        addMissingChannelDefinitions(dynChannels);
+        synchronized (channelLock) {
+            addMissingChannelDefinitions(dynChannels);
+        }
     }
 
     @Override
     public boolean updateThingChannels(Map<String, Channel> channelUpdates, Map<String, Channel> newChannels) {
-        boolean updated = replaceChannelDefinitions(channelUpdates);
-        updated |= addMissingChannelDefinitions(newChannels);
-        return updated;
+        // WebSocket and poll threads both edit the Thing; read-modify-write of its channel list must not interleave
+        synchronized (channelLock) {
+            boolean updated = replaceChannelDefinitions(channelUpdates);
+            updated |= addMissingChannelDefinitions(newChannels);
+            return updated;
+        }
     }
 
     private boolean replaceChannelDefinitions(Map<String, Channel> channelUpdates) {
@@ -1608,6 +1618,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (channelIds.isEmpty()) {
             return false;
         }
+        synchronized (channelLock) {
+            return removeChannelDefinitions(channelIds);
+        }
+    }
+
+    private boolean removeChannelDefinitions(Set<String> channelIds) {
         try {
             List<Channel> obsolete = getThing().getChannels().stream()
                     .filter(channel -> channelIds.contains(channel.getUID().getId())).toList();
@@ -1743,8 +1759,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public ShellyDeviceProfile getProfile(boolean forceRefresh) throws ShellyApiException {
         try {
-            refreshSettings |= forceRefresh;
-            if (refreshSettings) {
+            if (consumeRefreshSettings(forceRefresh)) {
                 profile = api.getDeviceProfile(thing.getThingTypeUID(), null);
                 if (!isThingOnline()) {
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
@@ -1752,10 +1767,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
         } catch (ShellyApiException | RuntimeException e) {
             logger.debug("{}: Unable to initialize Device Profile", thingName, e);
-        } finally {
-            refreshSettings = false;
         }
         return profile;
+    }
+
+    private synchronized boolean consumeRefreshSettings(boolean forceRefresh) {
+        boolean refresh = refreshSettings || forceRefresh;
+        refreshSettings = false;
+        return refresh;
     }
 
     @Override
