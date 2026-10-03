@@ -163,7 +163,10 @@ public class OndiloBridge {
                     + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi",
                     LastMeasure[].class);
 
-            if (lastMeasures == null || lastMeasures.length == 0) {
+            if (lastMeasures == null) {
+                // Request failed; keep the last known measures instead of erasing valid state
+                logger.debug("Failed to retrieve lastMeasures for Ondilo ICO with ID: {}", id);
+            } else if (lastMeasures.length == 0) {
                 logger.warn("No lastMeasures available for Ondilo ICO with ID: {}", id);
                 ondiloHandler.clearLastMeasuresChannels();
             } else {
@@ -173,7 +176,10 @@ public class OndiloBridge {
             Recommendation[] recommendations = apiClient.request("GET", "/pools/" + id + "/recommendations",
                     Recommendation[].class);
 
-            if (recommendations == null || recommendations.length == 0) {
+            if (recommendations == null) {
+                // Request failed; keep the last known recommendation instead of erasing valid state
+                logger.debug("Failed to retrieve recommendations for Ondilo ICO with ID: {}", id);
+            } else if (recommendations.length == 0) {
                 logger.trace("No Recommendations available for Ondilo ICO with ID: {}", id);
                 ondiloHandler.clearRecommendationChannels();
             } else {

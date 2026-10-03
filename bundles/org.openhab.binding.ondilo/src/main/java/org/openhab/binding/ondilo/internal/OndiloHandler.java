@@ -247,10 +247,15 @@ public class OndiloHandler extends BaseThingHandler {
     public @Nullable Instant updateLastMeasuresChannels(LastMeasure[] measures) {
         Instant earliestValueTime = null;
         for (LastMeasure measure : measures) {
-            logger.trace("LastMeasure: type={}, value={}", measure.dataType, measure.value);
+            logger.trace("LastMeasure: type={}, value={}, valueTime={}", measure.dataType, measure.value,
+                    measure.valueTime);
             Instant valueTime = parseUtcTimeToInstant(measure.valueTime);
             if (earliestValueTime == null || valueTime.isBefore(earliestValueTime)) {
                 earliestValueTime = valueTime;
+            }
+            if (!measure.isValid) {
+                logger.debug("Ignoring invalid {} measure: {}", measure.dataType, measure.exclusionReason);
+                continue;
             }
             switch (measure.dataType) {
                 case "temperature":
