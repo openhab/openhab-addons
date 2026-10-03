@@ -395,7 +395,6 @@ public enum CoapProfile {
                 break;
             case GEN3:
                 copyString(reported, "D01S03", classic, "name");
-                copyString(reported, GEN3_RANGE, classic, "range");
                 copyString(reported, GEN3_MODEL, classic, "modelid");
                 copyString(reported, "D01S12", classic, "swversion");
                 Number gen3Power = getNumber(reported, GEN3_POWER);

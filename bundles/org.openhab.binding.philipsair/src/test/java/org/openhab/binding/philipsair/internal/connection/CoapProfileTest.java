@@ -445,7 +445,6 @@ public class CoapProfileTest {
         PhilipsAirPurifierDeviceDTO device = gson.fromJson(classic, PhilipsAirPurifierDeviceDTO.class);
         assertNotNull(device);
         assertEquals("AC3210/12", device.getModelId());
-        assertEquals("Unicorn", device.getRange());
     }
 
     @Test
@@ -502,7 +501,6 @@ public class CoapProfileTest {
         // the threshold and the remaining time are read from every recent model
         assertEquals(4, classic.get("aqit").getAsInt());
         assertEquals(60, classic.get("dtrs").getAsInt());
-        assertEquals("Pegasus", classic.get("range").getAsString());
     }
 
     @Test

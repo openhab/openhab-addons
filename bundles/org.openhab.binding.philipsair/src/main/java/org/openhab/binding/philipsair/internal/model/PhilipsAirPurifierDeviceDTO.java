@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.philipsair.internal.model;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -25,24 +27,21 @@ public class PhilipsAirPurifierDeviceDTO {
 
     @SerializedName("device_id")
     @Expose
-    private String deviceId;
+    private @Nullable String deviceId;
     @SerializedName("name")
     @Expose
-    private String name;
+    private @Nullable String name;
     @SerializedName("type")
     @Expose
-    private String type;
+    private @Nullable String type;
     @SerializedName("modelid")
     @Expose
-    private String modelId;
+    private @Nullable String modelId;
     @SerializedName("swversion")
     @Expose
-    private String softwareVersion;
-    @SerializedName("range")
-    @Expose
-    private String range;
+    private @Nullable String softwareVersion;
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
@@ -50,7 +49,7 @@ public class PhilipsAirPurifierDeviceDTO {
         this.name = name;
     }
 
-    public String getDeviceId() {
+    public @Nullable String getDeviceId() {
         return deviceId;
     }
 
@@ -58,7 +57,7 @@ public class PhilipsAirPurifierDeviceDTO {
         this.deviceId = deviceId;
     }
 
-    public String getType() {
+    public @Nullable String getType() {
         return type;
     }
 
@@ -66,7 +65,7 @@ public class PhilipsAirPurifierDeviceDTO {
         this.type = type;
     }
 
-    public String getModelId() {
+    public @Nullable String getModelId() {
         return modelId;
     }
 
@@ -74,18 +73,11 @@ public class PhilipsAirPurifierDeviceDTO {
         this.modelId = modelId;
     }
 
-    public String getSoftwareVersion() {
+    public @Nullable String getSoftwareVersion() {
         return softwareVersion;
     }
 
     public void setSoftwareVersion(String softwareVersion) {
         this.softwareVersion = softwareVersion;
-    }
-
-    /**
-     * @return the product range reported by CoAP devices, e.g. {@code Unicorn}
-     */
-    public String getRange() {
-        return range;
     }
 }

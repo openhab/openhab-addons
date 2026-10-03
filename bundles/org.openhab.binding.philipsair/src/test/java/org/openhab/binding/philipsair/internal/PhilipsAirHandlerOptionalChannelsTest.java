@@ -199,7 +199,7 @@ public class PhilipsAirHandlerOptionalChannelsTest {
     public void unicornOptionsAndChannelsAreSet() throws PhilipsAirAPIException {
         // the status as translated by the connection, see CoapProfile
         String status = """
-                {"modelid":"AC3210/12","range":"Unicorn","pwr":"1","mode":"P","om":"1","dt":0,"dtrs":0,"aqit":7,\
+                {"modelid":"AC3210/12","pwr":"1","mode":"P","om":"1","dt":0,"dtrs":0,"aqit":7,\
                 "err":0,"rh":46,"temp":24.1,"pm25":1,"iaql":1}""";
         when(connection.getDeviceProfile()).thenReturn(CoapProfile.UNICORN);
         when(connection.isPushingStatus()).thenReturn(true);
