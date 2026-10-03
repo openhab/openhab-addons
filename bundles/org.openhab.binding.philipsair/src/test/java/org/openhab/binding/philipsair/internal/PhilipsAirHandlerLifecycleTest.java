@@ -14,6 +14,7 @@ package org.openhab.binding.philipsair.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
@@ -33,8 +34,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIException;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
@@ -63,7 +62,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class PhilipsAirHandlerLifecycleTest extends JavaTest {
 
     private static final ThingUID THING_UID = new ThingUID(THING_TYPE_COAP, "test");
@@ -106,11 +104,16 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
             }
         };
         handler.setCallback(callback);
+        // the thing is a CoAP thing, which is not polled right after the connection is created. Lenient, as the poll
+        // that asks for it runs asynchronously and may be cancelled first.
+        lenient().when(connection.isPushingStatus()).thenReturn(true);
+    }
+
+    /**
+     * Makes the connection report the configuration it was created with, as it does once the device sent data.
+     */
+    private void stubConnectionConfig(PhilipsAirAPIConnection connection) {
         when(connection.getConfig()).thenReturn(new PhilipsAirConfiguration());
-        // the thing is a CoAP thing, which is not polled right after the connection is created
-        when(connection.isPushingStatus()).thenReturn(true);
-        when(secondConnection.getConfig()).thenReturn(new PhilipsAirConfiguration());
-        when(secondConnection.isPushingStatus()).thenReturn(true);
     }
 
     @AfterEach
@@ -188,15 +191,16 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     @Test
     public void failedCommandKeepsLastState() throws Exception {
         when(callback.isChannelLinked(POWER_CHANNEL)).thenReturn(true);
+        stubConnectionConfig(connection);
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
         when(connection.sendCommand(any(), any())).thenReturn(null);
         releaseConnection.countDown();
         handler.initialize();
-        waitForAssert(() -> {
-            handler.handleCommand(POWER_CHANNEL, RefreshType.REFRESH);
-            verify(callback, atLeastOnce()).stateUpdated(POWER_CHANNEL, OnOffType.ON);
-        });
+        waitForAssert(() -> verify(connection).ensureConnected());
+        // the device pushes its status, so the status is only requested by the refresh
+        handler.handleCommand(POWER_CHANNEL, RefreshType.REFRESH);
+        verify(callback, timeout(10000)).stateUpdated(POWER_CHANNEL, OnOffType.ON);
 
         clearInvocations(callback);
         handler.handleCommand(POWER_CHANNEL, OnOffType.OFF);
@@ -211,6 +215,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     @Test
     public void pushedDataIsOnlyAcceptedFromActiveConnection() throws Exception {
         when(callback.isChannelLinked(POWER_CHANNEL)).thenReturn(true);
+        stubConnectionConfig(connection);
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
         releaseConnection.countDown();
@@ -232,6 +237,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     @Test
     public void cachedDeviceInfoIsOnlyDiscardedWhenTheHostChanges() throws Exception {
         Gson gson = new Gson();
+        stubConnectionConfig(connection);
         when(connection.getAirPurifierDevice(any()))
                 .thenReturn(gson.fromJson("{\"modelid\":\"AC2889/10\"}", PhilipsAirPurifierDeviceDTO.class));
         when(connection.getAirPurifierStatus(any()))
@@ -256,6 +262,26 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         handler.updateData(connection);
         verify(connection, times(2)).getAirPurifierDevice(any());
         handler.dispose();
+    }
+
+    @Test
+    public void failedPollSetsOfflineAndRefreshRecovers() throws Exception {
+        when(callback.isChannelLinked(POWER_CHANNEL)).thenReturn(true);
+        stubConnectionConfig(connection);
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
+        doThrow(new IllegalStateException("socket closed")).when(connection).ensureConnected();
+        releaseConnection.countDown();
+
+        handler.initialize();
+
+        verify(callback, timeout(10000)).statusUpdated(any(Thing.class),
+                eq(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "socket closed")));
+        // the refresh job keeps running, the next update is not influenced by the failed one
+        handler.handleCommand(POWER_CHANNEL, RefreshType.REFRESH);
+        verify(callback, timeout(10000)).statusUpdated(any(Thing.class),
+                eq(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null)));
+        verify(callback).stateUpdated(POWER_CHANNEL, OnOffType.ON);
     }
 
     @Test
@@ -288,7 +314,8 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
 
     @Test
     public void noStateOfOldConnectionIsPublishedAfterReinitialize() throws Exception {
-        when(callback.isChannelLinked(POWER_CHANNEL)).thenReturn(true);
+        // only used if the state of the old connection is published, which is what the test must detect
+        lenient().when(callback.isChannelLinked(POWER_CHANNEL)).thenReturn(true);
         blockStatusRequest();
         releaseConnection.countDown();
         handler.initialize();
@@ -310,6 +337,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     @Test
     public void connectionCreatedBeforeReinitializeIsNotUsed() throws Exception {
         replacementConnection = secondConnection;
+        lenient().when(secondConnection.isPushingStatus()).thenReturn(true);
         handler.initialize();
         assertTrue(connectionCreated.await(10, TimeUnit.SECONDS));
 

@@ -17,26 +17,22 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentProvider;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
-import org.openhab.binding.philipsair.internal.connection.PhilipsAirCipher;
+import org.openhab.binding.philipsair.internal.FakeHttpDevice.Call;
+import org.openhab.binding.philipsair.internal.FakeHttpDevice.Endpoint;
+import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierWritableDataDTO;
@@ -50,11 +46,13 @@ import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -62,21 +60,24 @@ import org.openhab.core.types.State;
 import com.google.gson.Gson;
 
 /**
- * Test cases for {@link PhilipsAirHandler} using the encrypted HTTP protocol. The HTTP client is mocked, the
- * encryption, parsing and channel updates are exercised for real.
+ * Test cases for {@link PhilipsAirHandler} using the encrypted HTTP protocol. The HTTP client is replaced by a
+ * {@link FakeHttpDevice}, the encryption, parsing and channel updates are exercised for real.
  *
  * @author Michał Boroński - Initial contribution
  * @author Marcel Verpaalen - Re-enable tests for current handler behavior
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class PhilipsAirHandlerTest extends JavaTest {
 
     private static final String FAKE_KEY = "1F09722BE668AF0B8DC78051B70E4F76";
+    private static final String OLD_KEY = "FFEEDDCCBBAA99887766554433221100";
+    private static final String OTHER_KEY = "0123456789ABCDEF0123456789ABCDEF";
+    private static final String HOST = "1.1.1.1";
     private static final ThingUID THING_UID = new ThingUID(THING_TYPE_AC2889_10, "1");
 
     private static final String DEVICE = "{\"name\":\"Philips\",\"type\":\"AC2889\",\"modelid\":\"AC2889/10\",\"swversion\":\"1.0.4\"}";
+    private static final String FILTERS_JSON = "{\"fltsts0\":10,\"fltsts1\":2000,\"fltsts2\":3000}";
     private static final String STATUS = "{\"om\":\"s\",\"pwr\":\"1\",\"cl\":false,\"aqil\":75,\"uil\":\"1\",\"dt\":0,\"dtrs\":0,\"mode\":\"P\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":8,\"iaql\":2,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0}";
     private static final String STATUS_PWR_OFF = "{\"om\":\"0\",\"pwr\":\"0\",\"cl\":false,\"aqil\":75,\"uil\":\"1\",\"dt\":0,\"dtrs\":0,\"mode\":\"P\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":2,\"iaql\":1,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0}";
     private static final String STATUS_UIL_OFF = "{\"om\":\"s\",\"pwr\":\"1\",\"cl\":false,\"aqil\":75,\"uil\":\"0\",\"dt\":0,\"dtrs\":0,\"mode\":\"P\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":6,\"iaql\":2,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0}";
@@ -97,36 +98,18 @@ public class PhilipsAirHandlerTest extends JavaTest {
             "sensors#water-level:Number:Dimensionless");
 
     private static final Gson GSON = new Gson();
-    private final PhilipsAirCipher cipher;
+
+    private final FakeHttpDevice device = new FakeHttpDevice(HOST, FAKE_KEY);
+    private final Set<ChannelUID> linkedChannels = new HashSet<>();
+    private final AtomicInteger connectionsCreated = new AtomicInteger();
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
-    private @Mock @NonNullByDefault({}) HttpClient httpClient;
     private @Mock @NonNullByDefault({}) PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
-    private @Mock @NonNullByDefault({}) Request request;
-    private @Mock @NonNullByDefault({}) ContentResponse response;
 
-    private @Nullable PhilipsAirHandler handler;
-
-    public PhilipsAirHandlerTest() throws Exception {
-        cipher = new PhilipsAirCipher();
-        cipher.initKey(FAKE_KEY);
-    }
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        when(httpClient.newRequest(anyString())).thenReturn(request);
-        when(request.method(any(HttpMethod.class))).thenReturn(request);
-        when(request.content(any(ContentProvider.class))).thenReturn(request);
-        when(request.timeout(anyLong(), any(TimeUnit.class))).thenReturn(request);
-        when(request.send()).thenReturn(response);
-        when(response.getStatus()).thenReturn(200);
-        when(callback.createChannelBuilder(any(ChannelUID.class), any()))
-                .thenAnswer(invocation -> ChannelBuilder.create((ChannelUID) invocation.getArgument(0), "Number"));
-    }
+    private @NonNullByDefault({}) PhilipsAirHandler handler;
 
     @AfterEach
     public void tearDown() {
-        PhilipsAirHandler handler = this.handler;
         if (handler != null) {
             handler.dispose();
         }
@@ -135,7 +118,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     private PhilipsAirHandler createHandler(List<String> channels, Configuration extraConfig) {
         Configuration config = new Configuration();
         config.put(PhilipsAirConfiguration.CONFIG_REFRESH_INTERVAL, 5);
-        config.put(PhilipsAirConfiguration.CONFIG_HOST, "1.1.1.1");
+        config.put(PhilipsAirConfiguration.CONFIG_HOST, HOST);
         config.put(PhilipsAirConfiguration.CONFIG_KEY, FAKE_KEY);
         extraConfig.getProperties().forEach(config::put);
 
@@ -144,41 +127,54 @@ public class PhilipsAirHandlerTest extends JavaTest {
             String[] parts = channel.split(":", 2);
             ChannelUID channelUID = new ChannelUID(THING_UID, parts[0]);
             thingBuilder.withChannel(ChannelBuilder.create(channelUID, parts[1]).build());
-            when(callback.isChannelLinked(channelUID)).thenReturn(true);
+            linkedChannels.add(channelUID);
         }
-        PhilipsAirHandler handler = new PhilipsAirHandler(thingBuilder.build(), httpClient, stateDescriptionProvider);
+        PhilipsAirHandler handler = new PhilipsAirHandler(thingBuilder.build(), device.httpClient(),
+                stateDescriptionProvider) {
+            @Override
+            PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
+                connectionsCreated.incrementAndGet();
+                return super.createConnection(config);
+            }
+        };
         handler.setCallback(callback);
         this.handler = handler;
         return handler;
     }
 
     /**
-     * Mocks the encrypted device responses. The handler requests the device info first, then the status and
-     * finally (only for commands) the command response.
+     * Scripts the responses of the device. The requests of the other URLs are answered independent of each other and
+     * of the time they are requested.
      */
-    private void mockResponses(String... responses) throws Exception {
-        String first = cipher.encrypt(responses[0]);
-        String[] next = new String[responses.length - 1];
-        for (int i = 1; i < responses.length; i++) {
-            next[i - 1] = cipher.encrypt(responses[i]);
-        }
-        when(response.getContentAsString()).thenReturn(first, next);
+    private void respondWith(String deviceJson, String statusJson) throws Exception {
+        device.respond(Endpoint.DEVICE, HttpMethod.GET, deviceJson);
+        device.respond(Endpoint.STATUS, HttpMethod.GET, statusJson);
+        device.respond(Endpoint.FILTERS, HttpMethod.GET, FILTERS_JSON);
+    }
+
+    private static boolean isOnline(ThingStatusInfo statusInfo) {
+        return statusInfo.getStatus() == ThingStatus.ONLINE;
     }
 
     /**
-     * Initializes the handler and waits until the asynchronously created connection has delivered the first data.
+     * Initializes the handler and waits until the first poll, which is scheduled without delay, has published its
+     * result. The status is the last thing published by an update.
      */
-    private void initializeAndRefresh(PhilipsAirHandler handler, String channel) {
-        ChannelUID channelUID = new ChannelUID(THING_UID, channel);
+    private void initializeAndWaitForOnline(PhilipsAirHandler handler) {
+        // the channels of the thing are the linked ones, the ones the handler adds are not
+        when(callback.isChannelLinked(any(ChannelUID.class)))
+                .thenAnswer(invocation -> linkedChannels.contains(invocation.getArgument(0)));
+        // lenient, as it is only used by the tests of which the thing lacks channels the device reports
+        lenient().when(callback.createChannelBuilder(any(ChannelUID.class), any(ChannelTypeUID.class)))
+                .thenAnswer(invocation -> ChannelBuilder.create((ChannelUID) invocation.getArgument(0), "Number"));
         handler.initialize();
-        waitForAssert(() -> {
-            handler.handleCommand(channelUID, RefreshType.REFRESH);
-            verify(callback, atLeastOnce()).stateUpdated(eq(channelUID), any());
-        }, 10000, 100);
+        waitForAssert(() -> verify(callback, atLeastOnce()).statusUpdated(any(Thing.class),
+                argThat(PhilipsAirHandlerTest::isOnline)), 10000, 100);
     }
 
     private State lastState(String channel) {
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
+        // atLeastOnce, as the periodic poll may have published the state again
         verify(callback, atLeastOnce()).stateUpdated(eq(new ChannelUID(THING_UID, channel)), stateCaptor.capture());
         List<State> states = stateCaptor.getAllValues();
         return states.get(states.size() - 1);
@@ -186,24 +182,32 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
     @Test
     public void initializeGoesOnlineAfterFirstData() throws Exception {
-        mockResponses(DEVICE, STATUS);
+        respondWith(DEVICE, STATUS);
         PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), new Configuration());
 
-        initializeAndRefresh(handler, "controls#power");
+        initializeAndWaitForOnline(handler);
 
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback, atLeast(2)).statusUpdated(any(Thing.class), statusInfoCaptor.capture());
         List<ThingStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
         assertEquals(ThingStatus.UNKNOWN, statusInfos.get(0).getStatus());
         assertEquals(ThingStatus.ONLINE, statusInfos.get(statusInfos.size() - 1).getStatus());
+        // the first update requests the device info, the status and the filters (to detect the optional filter channel)
+        assertEquals(
+                List.of("http://1.1.1.1/di/v1/products/1/device", "http://1.1.1.1/di/v1/products/1/air",
+                        "http://1.1.1.1/di/v1/products/1/fltsts"),
+                device.calls().stream().map(Call::url).limit(3).toList());
+        assertTrue(device.calls().stream().allMatch(call -> call.method() == HttpMethod.GET));
+        // the key is configured, so there is no key exchange
+        assertEquals(0, device.count(Endpoint.SECURITY, HttpMethod.PUT));
     }
 
     @Test
     public void stateUpdatesForAllChannels() throws Exception {
-        mockResponses(DEVICE, STATUS);
+        respondWith(DEVICE, STATUS);
         PhilipsAirHandler handler = createHandler(ALL_CHANNELS, new Configuration());
 
-        initializeAndRefresh(handler, "controls#power");
+        initializeAndWaitForOnline(handler);
 
         assertEquals(OnOffType.ON, lastState("controls#power"));
         assertEquals(new StringType("s"), lastState("controls#fan-speed"));
@@ -227,14 +231,14 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
     @Test
     public void stateUpdatesApplyOffsets() throws Exception {
-        mockResponses(DEVICE, STATUS);
+        respondWith(DEVICE, STATUS);
         Configuration offsets = new Configuration();
         offsets.put(PhilipsAirConfiguration.CONFIG_TEMPERATURE_OFFSET, 1.0);
         offsets.put(PhilipsAirConfiguration.CONFIG_HUMIDITY_OFFSET, -1.0);
         PhilipsAirHandler handler = createHandler(
                 List.of("sensors#humidity:Number:Dimensionless", "sensors#temperature:Number:Temperature"), offsets);
 
-        initializeAndRefresh(handler, "sensors#humidity");
+        initializeAndWaitForOnline(handler);
 
         QuantityType<?> humidity = (QuantityType<?>) lastState("sensors#humidity");
         assertEquals(55f, humidity.floatValue());
@@ -245,138 +249,168 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     private void sendCommandTemplate(String channel, Command command, State stateBefore, State stateAfter,
-            String statusBefore, String commandResponse) throws Exception {
-        mockResponses(DEVICE, statusBefore, commandResponse);
+            String statusBefore, String commandResponse, String expectedBody) throws Exception {
+        respondWith(DEVICE, statusBefore);
+        device.respondToCommandWithStatus(commandResponse);
         String channelId = channel.split(":", 2)[0];
         PhilipsAirHandler handler = createHandler(List.of(channel), new Configuration());
 
-        initializeAndRefresh(handler, channelId);
+        initializeAndWaitForOnline(handler);
         assertEquals(stateBefore, lastState(channelId));
 
         handler.handleCommand(new ChannelUID(THING_UID, channelId), command);
 
-        waitForAssert(() -> {
-            assertEquals(stateAfter, lastState(channelId));
-            verify(request).method(HttpMethod.PUT);
-        });
+        waitForAssert(() -> assertEquals(stateAfter, lastState(channelId)));
+        List<Call> commands = device.calls(Endpoint.STATUS, HttpMethod.PUT);
+        assertEquals(1, commands.size());
+        assertEquals("http://1.1.1.1/di/v1/products/1/air", commands.get(0).url());
+        assertEquals(expectedBody, device.decryptedBody(commands.get(0)));
     }
 
     @Test
-    public void testSendCommandPWR() throws Exception {
-        sendCommandTemplate("controls#power:Switch", OnOffType.OFF, OnOffType.ON, OnOffType.OFF, STATUS,
-                STATUS_PWR_OFF);
+    public void powerCommandIsSent() throws Exception {
+        sendCommandTemplate("controls#power:Switch", OnOffType.OFF, OnOffType.ON, OnOffType.OFF, STATUS, STATUS_PWR_OFF,
+                "{\"pwr\":\"0\"}");
     }
 
     @Test
-    public void testSendCommandUIL() throws Exception {
+    public void buttonLightCommandIsSent() throws Exception {
         sendCommandTemplate("controls-ui#button-light:Switch", OnOffType.OFF, OnOffType.ON, OnOffType.OFF, STATUS,
-                STATUS_UIL_OFF);
+                STATUS_UIL_OFF, "{\"uil\":\"0\"}");
     }
 
     @Test
-    public void testSendCommandDDP() throws Exception {
+    public void displayedIndexCommandIsSent() throws Exception {
         sendCommandTemplate("controls-ui#displayed-index:String", new StringType("0"), new StringType("1"),
-                new StringType("0"), STATUS, STATUS_DDP_0);
+                new StringType("0"), STATUS, STATUS_DDP_0, "{\"ddp\":\"0\"}");
     }
 
     @Test
-    public void testSendCommandOM1() throws Exception {
+    public void manualFanSpeedCommandIsSent() throws Exception {
         sendCommandTemplate("controls#fan-speed:String", new StringType("1"), new StringType("s"), new StringType("1"),
-                STATUS, STATUS_OM_1);
+                STATUS, STATUS_OM_1, "{\"om\":\"1\",\"mode\":\"M\"}");
     }
 
     @Test
-    public void testSendCommandOMs() throws Exception {
+    public void silentFanSpeedCommandIsSent() throws Exception {
         sendCommandTemplate("controls#fan-speed:String", new StringType("s"), new StringType("1"), new StringType("s"),
-                STATUS_OM_1, STATUS);
+                STATUS_OM_1, STATUS, "{\"om\":\"s\",\"mode\":\"M\"}");
     }
 
     @Test
-    public void testSendCommandAqil() throws Exception {
+    public void lightLevelCommandIsSent() throws Exception {
         sendCommandTemplate("controls-ui#light-level:Number:Dimensionless", new DecimalType(25),
-                new QuantityType<>(75, Units.PERCENT), new QuantityType<>(25, Units.PERCENT), STATUS, STATUS_AQIL_25);
+                new QuantityType<>(75, Units.PERCENT), new QuantityType<>(25, Units.PERCENT), STATUS, STATUS_AQIL_25,
+                "{\"aqil\":25}");
     }
 
     @Test
-    public void testSendCommandDt() throws Exception {
+    public void timerCommandIsSent() throws Exception {
         sendCommandTemplate("controls#timer:Number", new DecimalType(1), new DecimalType(0), new DecimalType(1), STATUS,
-                STATUS_DT_1);
+                STATUS_DT_1, "{\"dt\":1}");
     }
 
     @Test
-    public void testSendCommandMode() throws Exception {
+    public void modeCommandIsSent() throws Exception {
         sendCommandTemplate("controls#mode:String", new StringType("A"), new StringType("P"), new StringType("A"),
-                STATUS, STATUS_MODE_A);
+                STATUS, STATUS_MODE_A, "{\"mode\":\"A\"}");
     }
 
     @Test
-    public void testSendCommandCL() throws Exception {
+    public void childLockCommandIsSent() throws Exception {
         sendCommandTemplate("controls#child-lock:Switch", OnOffType.ON, OnOffType.OFF, OnOffType.ON, STATUS,
-                STATUS_CL_ON);
+                STATUS_CL_ON, "{\"cl\":true}");
     }
 
     @Test
     public void configurationIsOnlyPersistedWhenChanged() throws Exception {
-        mockResponses(DEVICE, STATUS);
+        respondWith(DEVICE, STATUS);
         PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), new Configuration());
 
         initializeAndWaitForOnline(handler);
         assertEquals("AC2889/10", handler.getThing().getProperties().get(Thing.PROPERTY_MODEL_ID));
         assertEquals("1.0.4", handler.getThing().getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION));
 
-        assertRefreshesDoNotUpdateThing(handler, "controls#power");
+        assertRefreshDoesNotUpdateThing(handler, "controls#power");
     }
 
     @Test
     public void missingDevicePropertiesDoNotPersistTheThing() throws Exception {
-        mockResponses("{\"name\":\"Philips\",\"modelid\":\"AC2889/10\"}", STATUS);
+        respondWith("{\"name\":\"Philips\",\"modelid\":\"AC2889/10\"}", STATUS);
         PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), new Configuration());
 
         initializeAndWaitForOnline(handler);
         assertFalse(handler.getThing().getProperties().containsKey(Thing.PROPERTY_FIRMWARE_VERSION));
 
-        assertRefreshesDoNotUpdateThing(handler, "controls#power");
+        assertRefreshDoesNotUpdateThing(handler, "controls#power");
     }
 
     /**
-     * Waits until the first update is complete, so no refresh is still queued in the handler.
+     * A refresh is executed asynchronously. The status is the last thing an update publishes, so the thing and the
+     * configuration were not updated by it when the status is published again.
      */
-    private void initializeAndWaitForOnline(PhilipsAirHandler handler) {
+    private void assertRefreshDoesNotUpdateThing(PhilipsAirHandler handler, String channel) {
+        clearInvocations(callback);
+
+        handler.handleCommand(new ChannelUID(THING_UID, channel), RefreshType.REFRESH);
+
+        verify(callback, timeout(10000).atLeastOnce()).statusUpdated(any(Thing.class),
+                argThat(PhilipsAirHandlerTest::isOnline));
+        verify(callback, never()).thingUpdated(any());
+        verify(callback, never()).configurationUpdated(any());
+    }
+
+    @Test
+    public void blankHostIsAConfigurationError() {
+        Configuration blankHost = new Configuration();
+        blankHost.put(PhilipsAirConfiguration.CONFIG_HOST, "");
+        blankHost.put(PhilipsAirConfiguration.CONFIG_KEY, "");
+        PhilipsAirHandler handler = createHandler(List.of(), blankHost);
+
         handler.initialize();
-        waitForAssert(() -> {
-            ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-            verify(callback, atLeastOnce()).statusUpdated(any(Thing.class), statusInfoCaptor.capture());
-            List<ThingStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
-            assertEquals(ThingStatus.ONLINE, statusInfos.get(statusInfos.size() - 1).getStatus());
-        }, 10000, 100);
+
+        // nothing else was published, like the unknown status that precedes the connection
+        verify(callback).statusUpdated(any(Thing.class), eq(new ThingStatusInfo(ThingStatus.OFFLINE,
+                ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error.missing-host")));
+        verifyNoMoreInteractions(callback);
+        assertEquals(0, connectionsCreated.get());
+        // there is no connection that could be used, with an empty key it would start with a key exchange
+        assertTrue(device.calls().isEmpty());
     }
 
-    /**
-     * Refreshes are queued and executed asynchronously, so the thing updates are only compared after both refreshes
-     * have published their state.
-     */
-    private void assertRefreshesDoNotUpdateThing(PhilipsAirHandler handler, String channel) {
-        ChannelUID channelUID = new ChannelUID(THING_UID, channel);
-        long thingUpdates = countThingUpdates();
-        long stateUpdates = countStateUpdates(channelUID);
+    @Test
+    public void exchangedKeyIsStoredInTheConfiguration() throws Exception {
+        respondWith(DEVICE, STATUS);
+        device.respondToKeyExchange();
+        Configuration noKey = new Configuration();
+        noKey.put(PhilipsAirConfiguration.CONFIG_KEY, "");
+        PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), noKey);
+        assertEquals("", handler.getThing().getConfiguration().get(PhilipsAirConfiguration.CONFIG_KEY));
 
-        handler.handleCommand(channelUID, RefreshType.REFRESH);
-        handler.handleCommand(channelUID, RefreshType.REFRESH);
+        initializeAndWaitForOnline(handler);
 
-        waitForAssert(() -> assertTrue(countStateUpdates(channelUID) >= stateUpdates + 2), 10000, 100);
-        assertEquals(thingUpdates, countThingUpdates());
+        assertEquals(FAKE_KEY, handler.getThing().getConfiguration().get(PhilipsAirConfiguration.CONFIG_KEY));
+        verify(callback, atLeastOnce()).thingUpdated(any());
+        assertEquals(1, device.count(Endpoint.SECURITY, HttpMethod.PUT));
     }
 
-    private long countThingUpdates() {
-        return mockingDetails(callback).getInvocations().stream().filter(invocation -> List
-                .of("thingUpdated", "configurationUpdated").contains(invocation.getMethod().getName())).count();
-    }
+    @Test
+    public void renewedKeyIsStoredInTheConfiguration() throws Exception {
+        respondWith(DEVICE, STATUS);
+        // the device lost the key, so its first response cannot be decrypted with the stored key
+        device.respondRaw(Endpoint.DEVICE, HttpMethod.GET, 200, FakeHttpDevice.encrypt(DEVICE, OTHER_KEY),
+                FakeHttpDevice.encrypt(DEVICE, FAKE_KEY));
+        device.respondToKeyExchange();
+        Configuration oldKey = new Configuration();
+        oldKey.put(PhilipsAirConfiguration.CONFIG_KEY, OLD_KEY);
+        PhilipsAirHandler handler = createHandler(List.of("controls#power:Switch"), oldKey);
 
-    private long countStateUpdates(ChannelUID channelUID) {
-        return mockingDetails(callback).getInvocations().stream()
-                .filter(invocation -> "stateUpdated".equals(invocation.getMethod().getName())
-                        && channelUID.equals(invocation.getArgument(0)))
-                .count();
+        initializeAndWaitForOnline(handler);
+
+        assertEquals(FAKE_KEY, handler.getThing().getConfiguration().get(PhilipsAirConfiguration.CONFIG_KEY));
+        verify(callback, atLeastOnce()).thingUpdated(any());
+        assertEquals(1, device.count(Endpoint.SECURITY, HttpMethod.PUT));
+        assertEquals(2, device.count(Endpoint.DEVICE, HttpMethod.GET));
     }
 
     @Test
@@ -436,7 +470,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
     }
 
     @Test
-    public void testPrepareCommands() {
+    public void commandDataIsPrepared() {
         PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
 
         // testing not obvious (non intuitive types) command conversions
@@ -480,15 +514,32 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         commandDto = handler.prepareCommandData("target-humidity", new QuantityType<>(0.4, Units.ONE));
         assertEquals("{\"rhset\":40}", GSON.toJson(commandDto));
+
+        commandDto = handler.prepareCommandData("function", StringType.valueOf("PH"));
+        assertEquals("{\"func\":\"PH\"}", GSON.toJson(commandDto));
     }
 
     @Test
-    public void unsupportedCommandsAreNotSent() {
-        PhilipsAirHandler handler = createHandler(List.of(), new Configuration());
+    public void unsupportedCommandsAreNotSent() throws Exception {
+        respondWith(DEVICE, STATUS);
+        device.respondToCommandWithStatus(STATUS_PWR_OFF);
+        PhilipsAirHandler handler = createHandler(
+                List.of("controls#power:Switch", "controls#fan-speed:String",
+                        "controls-ui#light-level:Number:Dimensionless", "sensors#pm25:Number:Density"),
+                new Configuration());
+        initializeAndWaitForOnline(handler);
 
-        assertNull(handler.prepareCommandData("pm25", DecimalType.valueOf("5")));
-        assertNull(handler.prepareCommandData("fan-speed", OnOffType.ON));
-        assertNull(handler.prepareCommandData("light-level", OnOffType.ON));
-        assertNull(handler.prepareCommandData("power", StringType.valueOf("1")));
+        // none of these is a valid command for the channel
+        handler.handleCommand(new ChannelUID(THING_UID, "sensors#pm25"), DecimalType.valueOf("5"));
+        handler.handleCommand(new ChannelUID(THING_UID, "controls#fan-speed"), OnOffType.ON);
+        handler.handleCommand(new ChannelUID(THING_UID, "controls-ui#light-level"), OnOffType.ON);
+        handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), StringType.valueOf("1"));
+        // commands are executed in order, so the commands above are processed once this one has its effect
+        handler.handleCommand(new ChannelUID(THING_UID, "controls#power"), OnOffType.OFF);
+
+        waitForAssert(() -> assertEquals(OnOffType.OFF, lastState("controls#power")));
+        List<Call> commands = device.calls(Endpoint.STATUS, HttpMethod.PUT);
+        assertEquals(1, commands.size());
+        assertEquals("{\"pwr\":\"0\"}", device.decryptedBody(commands.get(0)));
     }
 }

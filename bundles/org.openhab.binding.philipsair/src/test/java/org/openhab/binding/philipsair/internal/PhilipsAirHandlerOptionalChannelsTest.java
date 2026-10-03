@@ -18,10 +18,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -31,8 +37,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.connection.CoapProfile;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnection;
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIException;
@@ -50,7 +54,10 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateOption;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import com.google.gson.Gson;
 
@@ -61,7 +68,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class PhilipsAirHandlerOptionalChannelsTest {
 
     private static final String HUMIDIFIER_STATUS = """
@@ -80,6 +86,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
             "ddp":"0","rddp":"0","err":0,"fltt1":"A3","fltt2":"C7","fltsts0":344,"fltsts1":1985,"fltsts2":1985}""";
 
     private final Gson gson = new Gson();
+    // the channel type the handler requested for each channel it added
+    private final Map<ChannelUID, ChannelTypeUID> requestedChannelTypes = new HashMap<>();
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
     private @Mock @NonNullByDefault({}) PhilipsAirAPIConnection connection;
@@ -94,11 +102,16 @@ public class PhilipsAirHandlerOptionalChannelsTest {
         Thing thing = ThingBuilder.create(THING_TYPE_COAP, thingUID).withConfiguration(new Configuration())
                 .withChannel(ChannelBuilder.create(new ChannelUID(thingUID, CONTROLS, POWER), "Switch").build())
                 .build();
-        when(callback.createChannelBuilder(any(ChannelUID.class), any()))
-                .thenAnswer(invocation -> ChannelBuilder.create((ChannelUID) invocation.getArgument(0), "Number"));
         handler = new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider);
         handler.setCallback(callback);
-        when(connection.getConfig()).thenReturn(new PhilipsAirConfiguration());
+        // lenient, as these are only used by the tests that update the data or add channels
+        lenient().when(callback.createChannelBuilder(any(ChannelUID.class), any(ChannelTypeUID.class)))
+                .thenAnswer(invocation -> {
+                    ChannelUID channelUID = invocation.getArgument(0);
+                    requestedChannelTypes.put(channelUID, invocation.getArgument(1));
+                    return ChannelBuilder.create(channelUID, "Number");
+                });
+        lenient().when(connection.getConfig()).thenReturn(new PhilipsAirConfiguration());
     }
 
     @Test
@@ -119,6 +132,55 @@ public class PhilipsAirHandlerOptionalChannelsTest {
         handler.updateData(connection);
 
         verify(callback, times(1)).thingUpdated(any());
+        // the channels were only requested once, with the channel type of their id
+        assertEquals(7, requestedChannelTypes.size());
+        assertChannelTypesAreNamedAfterTheChannels();
+    }
+
+    private void assertChannelTypesAreNamedAfterTheChannels() {
+        requestedChannelTypes.forEach((channelUID, channelTypeUID) -> assertEquals(
+                new ChannelTypeUID(BINDING_ID, channelUID.getIdWithoutGroup()), channelTypeUID, channelUID.getId()));
+    }
+
+    @Test
+    public void everyOptionalChannelHasAChannelType() throws Exception {
+        // reports every value that adds an optional channel
+        String status = """
+                {"modelid":"AC3210/12","pwr":"1","dt":0,"dtrs":0,"rhset":50,"func":"PH","rh":50,"temp":20,"wl":50,\
+                "tvoc":1,"rssi":-50,"beep":true,"standby":false,"allslp":false,"dispon":true,"dispbr":"115",\
+                "lamp":"2","wicksts":100}""";
+        when(connection.getAirPurifierStatus(any())).thenReturn(gson.fromJson(status, PhilipsAirPurifierDataDTO.class));
+        when(connection.getAirPurifierFiltersStatus(any()))
+                .thenReturn(gson.fromJson(status, PhilipsAirPurifierFiltersDTO.class));
+
+        handler.updateData(connection);
+
+        Set<String> requestedIds = requestedChannelTypes.keySet().stream().map(ChannelUID::getId)
+                .collect(Collectors.toSet());
+        assertEquals(requestedIds, channelIds(handler.getThing().getChannels()).stream()
+                .filter(id -> !"controls#power".equals(id)).collect(Collectors.toSet()));
+        assertChannelTypesAreNamedAfterTheChannels();
+        Set<String> channelTypeIds = channelTypeIds();
+        requestedChannelTypes.values()
+                .forEach(channelTypeUID -> assertTrue(channelTypeIds.contains(channelTypeUID.getId()),
+                        "no channel type " + channelTypeUID));
+    }
+
+    private Set<String> channelTypeIds() throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        try (InputStream in = PhilipsAirHandlerOptionalChannelsTest.class
+                .getResourceAsStream("/OH-INF/thing/channels.xml")) {
+            assertNotNull(in);
+            Document document = factory.newDocumentBuilder().parse(in);
+            NodeList channelTypes = document.getElementsByTagName("channel-type");
+            Set<String> ids = new HashSet<>();
+            for (int i = 0; i < channelTypes.getLength(); i++) {
+                ids.add(channelTypes.item(i).getAttributes().getNamedItem("id").getNodeValue());
+            }
+            assertFalse(ids.isEmpty());
+            return ids;
+        }
     }
 
     @Test
@@ -173,9 +235,11 @@ public class PhilipsAirHandlerOptionalChannelsTest {
         handler.updateData(connection);
         handler.updateData(connection);
 
-        verify(stateDescriptionProvider, times(2)).setStateOptions(any(), any());
-        assertEquals(List.of("0", "1", "2"), options(CONTROLS_UI, DISPLAYED_INDEX));
+        // each of the channels got its options once, and no other channel got any
+        assertEquals(List.of(new StateOption("0", "Allergen Index"), new StateOption("1", "PM2.5"),
+                new StateOption("2", "Gas")), stateOptions(CONTROLS_UI, DISPLAYED_INDEX));
         assertEquals(List.of("1", "4", "7", "10"), options(SENSORS, AIR_QUALITY_NOTIFICATION_THRESHOLD));
+        verifyNoMoreInteractions(stateDescriptionProvider);
     }
 
     @Test
@@ -192,7 +256,9 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
         handler.updateData(connection);
 
-        verify(stateDescriptionProvider, times(2)).setStateOptions(any(), any());
+        assertEquals(List.of("0", "1", "2"), options(CONTROLS_UI, DISPLAYED_INDEX));
+        assertEquals(List.of("1", "4", "7", "10"), options(SENSORS, AIR_QUALITY_NOTIFICATION_THRESHOLD));
+        verifyNoMoreInteractions(stateDescriptionProvider);
     }
 
     @Test
@@ -458,11 +524,16 @@ public class PhilipsAirHandlerOptionalChannelsTest {
     }
 
     @SuppressWarnings("unchecked")
-    private List<String> options(String group, String channelId) {
+    private List<StateOption> stateOptions(String group, String channelId) {
         ArgumentCaptor<List<StateOption>> optionsCaptor = ArgumentCaptor.forClass(List.class);
+        // exactly once for the channel
         verify(stateDescriptionProvider).setStateOptions(
                 eq(new ChannelUID(handler.getThing().getUID(), group, channelId)), optionsCaptor.capture());
-        return optionsCaptor.getValue().stream().map(StateOption::getValue).toList();
+        return optionsCaptor.getValue();
+    }
+
+    private List<String> options(String group, String channelId) {
+        return stateOptions(group, channelId).stream().map(StateOption::getValue).toList();
     }
 
     @SuppressWarnings("unchecked")

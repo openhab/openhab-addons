@@ -63,7 +63,9 @@ public class PhilipsAirCoapAPIConnectionTest {
 
     @AfterEach
     public void tearDown() {
-        connection.dispose();
+        if (connection != null) {
+            connection.dispose();
+        }
     }
 
     private String encrypt(String message) {
@@ -351,9 +353,12 @@ public class PhilipsAirCoapAPIConnectionTest {
 
     @Test
     public void noNotificationAfterDispose() {
-        connection.dispose();
+        // not the connection of the test, which is disposed after the test
+        PhilipsAirCoapAPIConnection disposed = new PhilipsAirCoapAPIConnection(newConfiguration(), notifications::add,
+                null);
+        disposed.dispose();
 
-        connection.processNotification(encrypt(STATUS), URI);
+        disposed.processNotification(encrypt(STATUS), URI);
 
         assertTrue(notifications.isEmpty());
     }

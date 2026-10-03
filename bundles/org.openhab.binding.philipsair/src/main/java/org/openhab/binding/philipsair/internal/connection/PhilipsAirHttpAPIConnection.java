@@ -84,7 +84,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     private void initCipher() {
         this.cipher = null;
         try {
-            final PhilipsAirCipher cipher = new PhilipsAirCipher();
+            final PhilipsAirCipher cipher = createCipher();
             if (config.getKey().isEmpty()) {
                 exchangeKeys(cipher);
             }
@@ -95,6 +95,13 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
         } catch (PhilipsAirAPIException e) {
             logger.debug("Key exchange with {} failed: {}", config.getHost(), e.getMessage());
         }
+    }
+
+    /**
+     * Creates the cipher for a key exchange. Overridden by tests to use a known private exponent.
+     */
+    PhilipsAirCipher createCipher() throws GeneralSecurityException {
+        return new PhilipsAirCipher();
     }
 
     @Override

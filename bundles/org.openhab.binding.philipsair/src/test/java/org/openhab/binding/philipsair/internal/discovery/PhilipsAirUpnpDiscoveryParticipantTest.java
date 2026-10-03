@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.BeforeEach;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,8 +34,6 @@ import org.jupnp.model.meta.RemoteDeviceIdentity;
 import org.jupnp.model.types.UDN;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -51,7 +49,6 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 public class PhilipsAirUpnpDiscoveryParticipantTest {
 
     private static final String UDN_ID = "12345678-1234-1234-1234-e8c1d7007123";
@@ -63,12 +60,23 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
 
     private final PhilipsAirUpnpDiscoveryParticipant participant = new PhilipsAirUpnpDiscoveryParticipant();
 
-    @BeforeEach
-    public void setUp() {
+    /**
+     * Makes the device report the model details, which decide whether it is a purifier.
+     */
+    private void stubModelName(String modelName) {
         when(device.getDetails()).thenReturn(deviceDetails);
-        when(device.getIdentity()).thenReturn(remoteDeviceIdentity);
         when(deviceDetails.getModelDetails()).thenReturn(modelDetails);
-        when(modelDetails.getModelName()).thenReturn("AirPurifier");
+        when(modelDetails.getModelName()).thenReturn(modelName);
+    }
+
+    private void stubPurifier(@Nullable String modelNumber) {
+        stubModelName("AirPurifier");
+        when(modelDetails.getModelNumber()).thenReturn(modelNumber);
+        stubIdentity();
+    }
+
+    private void stubIdentity() {
+        when(device.getIdentity()).thenReturn(remoteDeviceIdentity);
         when(remoteDeviceIdentity.getUdn()).thenReturn(new UDN(UDN_ID));
     }
 
@@ -76,7 +84,7 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
     @CsvSource({ "AC2889, ac2889-10", "AC2889/10, ac2889-10", "AC3829, ac3829-10", "AC3829/10, ac3829-10",
             "AC1214, ac1214-10", "AC2729, ac2729", "AC2729/50, ac2729", "AC3829/50, universal", "AC3333, universal" })
     public void thingTypeIsDerivedFromModelNumber(String modelNumber, String expectedThingTypeId) {
-        when(modelDetails.getModelNumber()).thenReturn(modelNumber);
+        stubPurifier(modelNumber);
 
         ThingUID thingUID = participant.getThingUID(device);
 
@@ -87,7 +95,7 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
     public void missingModelNumberIsUniversal() {
         ThingUID expected = new ThingUID(THING_TYPE_UNIVERSAL, UDN_ID);
 
-        when(modelDetails.getModelNumber()).thenReturn(null);
+        stubPurifier(null);
         assertEquals(expected, participant.getThingUID(device));
 
         when(modelDetails.getModelNumber()).thenReturn("");
@@ -96,7 +104,7 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
 
     @Test
     public void otherDevicesAreIgnored() {
-        when(modelDetails.getModelName()).thenReturn("MediaRenderer");
+        stubModelName("MediaRenderer");
         assertNull(participant.getThingUID(device));
 
         when(modelDetails.getModelName()).thenReturn(null);
@@ -112,7 +120,9 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
 
     @Test
     public void deviceWithoutIdentityOrIdentifierHasNoThingUID() {
+        stubModelName("AirPurifier");
         when(modelDetails.getModelNumber()).thenReturn("AC2889/10");
+        when(device.getIdentity()).thenReturn(remoteDeviceIdentity);
 
         when(remoteDeviceIdentity.getUdn()).thenReturn(new UDN((String) null));
         assertNull(participant.getThingUID(device));
@@ -127,7 +137,7 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
     @Test
     public void resultIsCreatedForPurifier() throws Exception {
         stubResultDetails();
-        when(modelDetails.getModelNumber()).thenReturn("AC2889/10");
+        stubPurifier("AC2889/10");
 
         DiscoveryResult result = participant.createResult(device);
 
@@ -147,7 +157,7 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
 
     @Test
     public void noResultForOtherDevices() {
-        when(modelDetails.getModelName()).thenReturn("MediaRenderer");
+        stubModelName("MediaRenderer");
 
         assertNull(participant.createResult(device));
     }
@@ -155,7 +165,7 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
     @Test
     public void noResultWhenBackgroundDiscoveryIsDisabled() throws Exception {
         stubResultDetails();
-        when(modelDetails.getModelNumber()).thenReturn("AC2889/10");
+        stubPurifier("AC2889/10");
         participant.activate(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, false));
         assertNull(participant.createResult(device));
 

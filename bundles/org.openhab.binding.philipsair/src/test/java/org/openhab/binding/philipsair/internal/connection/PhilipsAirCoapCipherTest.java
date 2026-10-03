@@ -31,6 +31,15 @@ public class PhilipsAirCoapCipherTest {
 
     private final Logger logger = LoggerFactory.getLogger(PhilipsAirCoapCipherTest.class);
 
+    // Known answers, produced independently of the binding with Python (hashlib and cryptography):
+    // key and iv are the two halves of the upper case hex MD5 of "JiangPan" + counter (used as ASCII text), the
+    // message is encrypted with AES-128-CBC and PKCS7 padding, and the message is counter + upper case hex of the
+    // cipher text + upper case hex SHA-256 of counter + cipher text.
+    private static final String REPORTED_PLAIN = "{\"state\":{\"reported\":{\"pwr\":\"1\",\"om\":\"s\",\"pm25\":8}}}";
+    private static final String REPORTED_ENCRYPTED = "000000FFE4EB7B77734E91061CEDB8DEA5110C9BBCE5E325C7B73597EE3B68CC053E66802D1DCEB81ADE7BAB89416C0B1FE2D12DAB4F854E4CD6654DC43A8B2D3450779455CC1461DA95A7D97B862B23DC1A636857B4FCB7CF3B2B15A2BB134D42D1198C";
+    private static final String COMMAND_PLAIN = "{\"state\":{\"desired\":{\"pwr\":\"0\"}}}";
+    private static final String COMMAND_ENCRYPTED = "00ABCDEFCAE74E0E019C4A7A71CDEC3ECC9988239F20BD77BABCC970BD22EAF57208F80360788EF41B6425A6568460C3C53BB78AAA304AFFDE7D3552977B8C719BF6C45D52310B7DBD207BEEAF5C3E35A9624E44";
+
     @Test
     public void encryptedMessageIsDecrypted() {
         String message = "{\"state\":{\"reported\":{\"pwr\":\"1\"}}}";
@@ -40,6 +49,18 @@ public class PhilipsAirCoapCipherTest {
         assertNotNull(encrypted);
         assertTrue(encrypted.startsWith("1234ABCD"));
         assertEquals(message, PhilipsAirCoapCipher.decryptMsg(encrypted, logger));
+    }
+
+    @Test
+    public void knownMessageIsDecrypted() {
+        assertEquals(REPORTED_PLAIN, PhilipsAirCoapCipher.decryptMsg(REPORTED_ENCRYPTED, logger));
+        assertEquals(COMMAND_PLAIN, PhilipsAirCoapCipher.decryptMsg(COMMAND_ENCRYPTED, logger));
+    }
+
+    @Test
+    public void knownMessageIsEncrypted() {
+        assertEquals(REPORTED_ENCRYPTED, PhilipsAirCoapCipher.encryptedMsg(REPORTED_PLAIN, 0xFFL, logger));
+        assertEquals(COMMAND_ENCRYPTED, PhilipsAirCoapCipher.encryptedMsg(COMMAND_PLAIN, 0xABCDEFL, logger));
     }
 
     @Test
