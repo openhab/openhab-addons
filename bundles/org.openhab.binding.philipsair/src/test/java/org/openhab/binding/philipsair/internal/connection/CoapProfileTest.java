@@ -256,10 +256,61 @@ public class CoapProfileTest {
         assertFalse(classic.has("mode"));
         assertFalse(classic.has("om"));
         assertFalse(classic.has("dt"));
-        assertFalse(classic.has("dtrs"));
-        // the threshold is read from every recent model
+        // the threshold and the remaining time are read from every recent model
         assertEquals(4, classic.get("aqit").getAsInt());
+        assertEquals(60, classic.get("dtrs").getAsInt());
         assertEquals("Pegasus", classic.get("range").getAsString());
+    }
+
+    @Test
+    public void gen3SensorsAndSetpointAreReadFromEveryModel() {
+        JsonObject classic = CoapProfile.BASIC_GEN3
+                .toClassic(parse("{\"D01S05\":\"AC3737/10\",\"D03122\":2,\"D03128\":50,\"D03211\":90}"));
+
+        PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals(2, data.getTvoc());
+        assertEquals(50, data.getHumiditySetpoint());
+        assertEquals(90, data.getTimerLeft());
+
+        classic = CoapProfile.BASIC_GEN3
+                .toClassic(parse("{\"D01S05\":\"AC3737/10\",\"D03122\":\"bad\",\"D03128\":null,\"D03211\":\"soon\"}"));
+        assertFalse(classic.has("tvoc"));
+        assertFalse(classic.has("rhset"));
+        assertFalse(classic.has("dtrs"));
+    }
+
+    @Test
+    public void gen2SettingsAndSensorsAreRead() {
+        JsonObject classic = CoapProfile.BASIC_GEN2.toClassic(parse("""
+                {"D01-05":"AC1715/10","D03-03":true,"D03-34":2,"D03-36":22,"D03-37":48,"D03-42":"PM2.5",
+                "D03-44":4,"D03-64":0}"""));
+
+        PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals(Boolean.TRUE, data.getChildLock());
+        assertEquals(2, data.getTvoc());
+        assertEquals(22f, data.getTemperature());
+        assertEquals(48f, data.getHumidity());
+        assertEquals("1", data.getDisplayIndex());
+        assertEquals(4, data.getAqit());
+        assertEquals(0, data.getErrorCode());
+
+        classic = CoapProfile.BASIC_GEN2.toClassic(parse("{\"D01-05\":\"AC1715/10\",\"D03-03\":0,\"D03-42\":\"IAI\"}"));
+        data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals(Boolean.FALSE, data.getChildLock());
+        assertEquals("0", data.getDisplayIndex());
+    }
+
+    @Test
+    public void gen2UnexpectedValuesAreIgnored() {
+        JsonObject classic = CoapProfile.BASIC_GEN2.toClassic(parse("""
+                {"D01-05":"AC1715/10","D03-03":"yes","D03-36":"warm","D03-37":null,"D03-42":"gas","D03-44":"high"}"""));
+
+        for (String field : new String[] { "cl", "temp", "rh", "ddp", "aqit" }) {
+            assertFalse(classic.has(field), field);
+        }
     }
 
     @Test

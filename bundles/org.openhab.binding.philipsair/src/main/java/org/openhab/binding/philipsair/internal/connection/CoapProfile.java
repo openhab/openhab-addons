@@ -52,7 +52,7 @@ public enum CoapProfile {
     /** Field names like {@code D03102}, e.g. AC0950, AC3420, AC3737, AMF and HU series */
     BASIC_GEN3("basic", Generation.GEN3, List.of(), null, null, false),
     /** AC2210, AC2220, AC2221, AC3210, AC3220, AC3221, AC4220 and AC4221 */
-    UNICORN("unicorn", Generation.GEN3, Tables.unicornModes(), "D0310D", new Timer("D03110", "D03211", 1, 12), true);
+    UNICORN("unicorn", Generation.GEN3, Tables.unicornModes(), "D0310D", new Timer("D03110", 1, 12), true);
 
     /** The generations of field names reported by the devices */
     enum Generation {
@@ -75,11 +75,10 @@ public enum CoapProfile {
      * The timer of a device, set as a number of hours that is coded as number of hours plus the offset.
      *
      * @param key the field with the timer setting, 0 is off
-     * @param leftKey the field with the remaining time in minutes
      * @param offset the value added to the number of hours
      * @param maxHours the longest timer
      */
-    record Timer(String key, String leftKey, int offset, int maxHours) {
+    record Timer(String key, int offset, int maxHours) {
     }
 
     private static final String CLASSIC_POWER = "pwr";
@@ -88,6 +87,11 @@ public enum CoapProfile {
     private static final String GEN2_POWER = "D03-02";
     private static final String GEN2_POWER_ON = "ON";
     private static final String GEN2_POWER_OFF = "OFF";
+    private static final String GEN2_CHILD_LOCK = "D03-03";
+    private static final String GEN2_DISPLAYED_INDEX = "D03-42";
+    private static final String GEN2_INDEX_ALLERGEN = "IAI";
+    private static final String GEN2_INDEX_PM25 = "PM2.5";
+    private static final String GEN2_THRESHOLD = "D03-44";
 
     private static final String GEN3_POWER = "D03102";
     private static final String GEN3_CHILD_LOCK = "D03103";
@@ -231,8 +235,25 @@ public enum CoapProfile {
                 if (GEN2_POWER_ON.equals(power) || GEN2_POWER_OFF.equals(power)) {
                     classic.addProperty(CLASSIC_POWER, GEN2_POWER_ON.equals(power) ? "1" : "0");
                 }
+                if (reported.get(GEN2_CHILD_LOCK) instanceof JsonPrimitive lock) {
+                    if (lock.isBoolean()) {
+                        classic.addProperty(CLASSIC_CHILD_LOCK, lock.getAsBoolean());
+                    } else if (lock.isNumber()) {
+                        classic.addProperty(CLASSIC_CHILD_LOCK, lock.getAsInt() != 0);
+                    }
+                }
                 copyNumber(reported, "D03-32", classic, "iaql");
                 copyNumber(reported, "D03-33", classic, "pm25");
+                copyNumber(reported, "D03-34", classic, "tvoc");
+                // the temperature is reported in whole degrees here
+                copyNumber(reported, "D03-36", classic, "temp");
+                copyNumber(reported, "D03-37", classic, "rh");
+                String gen2Index = getString(reported, GEN2_DISPLAYED_INDEX);
+                if (GEN2_INDEX_ALLERGEN.equals(gen2Index) || GEN2_INDEX_PM25.equals(gen2Index)) {
+                    classic.addProperty("ddp", GEN2_INDEX_ALLERGEN.equals(gen2Index) ? "0" : "1");
+                }
+                copyNumber(reported, GEN2_THRESHOLD, classic, "aqit");
+                copyNumber(reported, "D03-64", classic, "err");
                 copyNumber(reported, "D05-13", classic, "fltsts0");
                 copyNumber(reported, "D05-14", classic, "fltsts1");
                 break;
@@ -252,6 +273,10 @@ public enum CoapProfile {
                 copyNumber(reported, "D03120", classic, "iaql");
                 copyNumber(reported, "D03221", classic, "pm25");
                 copyNumber(reported, "D03125", classic, "rh");
+                // the gas level is an index of 1 to 4
+                copyNumber(reported, "D03122", classic, "tvoc");
+                copyNumber(reported, "D03128", classic, "rhset");
+                copyNumber(reported, "D03211", classic, "dtrs");
                 copyNumber(reported, GEN3_THRESHOLD, classic, "aqit");
                 copyNumber(reported, "D03240", classic, "err");
                 // the displayed index is a number here, a text on the classic models
@@ -324,7 +349,6 @@ public enum CoapProfile {
                 classic.addProperty("dt", value - timer.offset());
             }
         }
-        copyNumber(reported, timer.leftKey(), classic, "dtrs");
     }
 
     /**
