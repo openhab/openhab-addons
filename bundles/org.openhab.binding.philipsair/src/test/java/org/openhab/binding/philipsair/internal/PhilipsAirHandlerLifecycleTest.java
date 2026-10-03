@@ -18,11 +18,15 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,11 +71,17 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
     private @Mock @NonNullByDefault({}) PhilipsAirAPIConnection connection;
+    private @Mock @NonNullByDefault({}) PhilipsAirAPIConnection secondConnection;
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
     private @Mock @NonNullByDefault({}) PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
 
     private final CountDownLatch connectionCreated = new CountDownLatch(1);
     private final CountDownLatch releaseConnection = new CountDownLatch(1);
+    private final CountDownLatch requestStarted = new CountDownLatch(1);
+    private final CountDownLatch finishRequest = new CountDownLatch(1);
+    private final AtomicInteger connectionsCreated = new AtomicInteger();
+    // returned instead of the connection by the creations after the first one
+    private volatile @Nullable PhilipsAirAPIConnection replacementConnection;
 
     private @NonNullByDefault({}) PhilipsAirHandler handler;
 
@@ -84,12 +94,14 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         handler = new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider) {
             @Override
             PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
+                int created = connectionsCreated.incrementAndGet();
                 connectionCreated.countDown();
-                try {
-                    releaseConnection.await(10, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                PhilipsAirAPIConnection replacement = replacementConnection;
+                if (created > 1 && replacement != null) {
+                    return replacement;
                 }
+                // a blocking connection attempt does not necessarily react to the interrupt of a cancelled job
+                awaitUninterruptibly(releaseConnection);
                 return connection;
             }
         };
@@ -97,6 +109,33 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         when(connection.getConfig()).thenReturn(new PhilipsAirConfiguration());
         // the thing is a CoAP thing, which is not polled right after the connection is created
         when(connection.isPushingStatus()).thenReturn(true);
+        when(secondConnection.getConfig()).thenReturn(new PhilipsAirConfiguration());
+        when(secondConnection.isPushingStatus()).thenReturn(true);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        releaseConnection.countDown();
+        finishRequest.countDown();
+        handler.dispose();
+    }
+
+    private static void awaitUninterruptibly(CountDownLatch latch) {
+        boolean interrupted = false;
+        try {
+            while (true) {
+                try {
+                    latch.await(10, TimeUnit.SECONDS);
+                    return;
+                } catch (InterruptedException e) {
+                    interrupted = true;
+                }
+            }
+        } finally {
+            if (interrupted) {
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     @Test
@@ -151,7 +190,7 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         verify(callback, never()).stateUpdated(any(), any());
 
         handler.dataReceived(connection);
-        verify(callback).stateUpdated(POWER_CHANNEL, OnOffType.ON);
+        verify(callback, timeout(10000)).stateUpdated(POWER_CHANNEL, OnOffType.ON);
 
         handler.dispose();
         clearInvocations(callback);
@@ -200,25 +239,69 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
 
     @Test
     public void noStatusIsPublishedAfterDispose() throws Exception {
-        CountDownLatch requestStarted = new CountDownLatch(1);
-        CountDownLatch finishRequest = new CountDownLatch(1);
-        when(connection.getAirPurifierStatus(any())).thenAnswer(invocation -> {
-            requestStarted.countDown();
-            finishRequest.await(10, TimeUnit.SECONDS);
-            throw new PhilipsAirAPIException("interrupted");
-        });
+        blockStatusRequest();
         releaseConnection.countDown();
         handler.initialize();
         waitForAssert(() -> verify(connection).ensureConnected());
 
-        handler.handleCommand(POWER_CHANNEL, RefreshType.REFRESH);
+        CompletableFuture<Void> refresh = CompletableFuture.runAsync(() -> handler.updateData(connection));
         assertTrue(requestStarted.await(10, TimeUnit.SECONDS));
         handler.dispose();
         clearInvocations(callback);
         finishRequest.countDown();
 
-        // the refresh completes asynchronously, without an observable event when nothing is published
-        verify(callback, after(1000).never()).statusUpdated(any(), any());
+        refresh.get(10, TimeUnit.SECONDS);
+        verify(callback, never()).statusUpdated(any(), any());
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void noStateOfOldConnectionIsPublishedAfterReinitialize() throws Exception {
+        when(callback.isChannelLinked(POWER_CHANNEL)).thenReturn(true);
+        blockStatusRequest();
+        releaseConnection.countDown();
+        handler.initialize();
+        waitForAssert(() -> verify(connection).ensureConnected());
+
+        CompletableFuture<Void> refresh = CompletableFuture.runAsync(() -> handler.updateData(connection));
+        assertTrue(requestStarted.await(10, TimeUnit.SECONDS));
+        handler.dispose();
+        handler.initialize();
+        verify(connection, timeout(10000).times(2)).ensureConnected();
+        clearInvocations(callback);
+        finishRequest.countDown();
+
+        refresh.get(10, TimeUnit.SECONDS);
+        verify(callback, never()).statusUpdated(any(), any());
+        verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    @Test
+    public void connectionCreatedBeforeReinitializeIsNotUsed() throws Exception {
+        replacementConnection = secondConnection;
+        handler.initialize();
+        assertTrue(connectionCreated.await(10, TimeUnit.SECONDS));
+
+        handler.dispose();
+        handler.initialize();
+        // the new generation gets its own connection, while the first one is still being created
+        waitForAssert(() -> verify(secondConnection).ensureConnected());
+        releaseConnection.countDown();
+
+        waitForAssert(() -> verify(connection).dispose());
+        verify(connection, never()).ensureConnected();
+        handler.handleCommand(POWER_CHANNEL, OnOffType.ON);
+        verify(secondConnection, timeout(10000)).sendCommand(any(), any());
+        verify(connection, never()).sendCommand(any(), any());
+        verify(secondConnection, never()).dispose();
+    }
+
+    private void blockStatusRequest() throws PhilipsAirAPIException {
+        when(connection.getAirPurifierStatus(any())).thenAnswer(invocation -> {
+            requestStarted.countDown();
+            awaitUninterruptibly(finishRequest);
+            return new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class);
+        });
     }
 
     @Test
