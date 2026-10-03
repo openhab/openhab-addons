@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.philipsair.internal.connection;
 
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.RANGE_UNICORN;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -27,6 +29,9 @@ import com.google.gson.JsonPrimitive;
  * scheme, so the rest of the binding only handles the classic field names. Only fields with the same meaning as a
  * classic field are translated; the field names follow the
  * <a href="https://github.com/kongo09/philips-airpurifier-coap">philips-airpurifier-coap</a> integration.
+ * <p>
+ * The mode, fan speed and timer of the Unicorn range (e.g. AC3210) use model specific encodings, which are only
+ * translated for devices of that range.
  *
  * @author Marcel Verpaalen - Initial contribution
  */
@@ -37,7 +42,9 @@ enum CoapKeyScheme {
     /** Field names like {@code D03-02}, e.g. AC0850, AC1715 */
     GEN2,
     /** Field names like {@code D03102}, e.g. AC0950, AC2210, AC3420, AC3737, AMF and HU series */
-    GEN3;
+    GEN3,
+    /** {@link #GEN3} devices of the Unicorn range, e.g. AC3210 */
+    UNICORN;
 
     private static final String CLASSIC_POWER = "pwr";
     private static final String CLASSIC_CHILD_LOCK = "cl";
@@ -48,6 +55,20 @@ enum CoapKeyScheme {
 
     private static final String GEN3_POWER = "D03102";
     private static final String GEN3_CHILD_LOCK = "D03103";
+    private static final String GEN3_RANGE = "D01S04";
+
+    private static final String UNICORN_MODE = "D0310C";
+    private static final String UNICORN_SPEED = "D0310D";
+    private static final String UNICORN_TIMER = "D03110";
+    private static final String UNICORN_TIMER_LEFT = "D03211";
+    private static final int UNICORN_MODE_AUTO = 0;
+    private static final int UNICORN_MODE_SLEEP = 17;
+    private static final int UNICORN_MODE_TURBO = 18;
+    private static final int UNICORN_MODE_MEDIUM = 19;
+    private static final int UNICORN_MAX_SPEED = 5;
+    // the timer value is the number of hours plus one, the value 1 is a timer of 30 minutes on other ranges
+    private static final int UNICORN_TIMER_OFFSET = 1;
+    private static final int UNICORN_MAX_TIMER_HOURS = 12;
 
     /**
      * Detects the scheme from the field names of the device information, which every status report contains.
@@ -55,7 +76,7 @@ enum CoapKeyScheme {
     static CoapKeyScheme detect(JsonObject reported) {
         for (String key : reported.keySet()) {
             if (key.startsWith("D01S")) {
-                return GEN3;
+                return RANGE_UNICORN.equalsIgnoreCase(getString(reported, GEN3_RANGE)) ? UNICORN : GEN3;
             } else if (key.startsWith("D01-")) {
                 return GEN2;
             }
@@ -84,8 +105,9 @@ enum CoapKeyScheme {
                 copyNumber(reported, "D05-13", classic, "fltsts0");
                 copyNumber(reported, "D05-14", classic, "fltsts1");
                 break;
-            case GEN3:
+            case GEN3, UNICORN:
                 copyString(reported, "D01S03", classic, "name");
+                copyString(reported, GEN3_RANGE, classic, "range");
                 copyString(reported, "D01S05", classic, "modelid");
                 copyString(reported, "D01S12", classic, "swversion");
                 Number gen3Power = getNumber(reported, GEN3_POWER);
@@ -99,6 +121,7 @@ enum CoapKeyScheme {
                 copyNumber(reported, "D03120", classic, "iaql");
                 copyNumber(reported, "D03221", classic, "pm25");
                 copyNumber(reported, "D03125", classic, "rh");
+                copyNumber(reported, "D0312C", classic, "aqit");
                 copyNumber(reported, "D03240", classic, "err");
                 // the displayed index is a number here, a text on the classic models
                 Number displayIndex = getNumber(reported, "D0312A");
@@ -112,9 +135,59 @@ enum CoapKeyScheme {
                 }
                 copyNumber(reported, "D0520D", classic, "fltsts0");
                 copyNumber(reported, "D0540E", classic, "fltsts1");
+                if (this == UNICORN) {
+                    unicornToClassic(reported, classic);
+                }
                 break;
         }
         return classic;
+    }
+
+    private static void unicornToClassic(JsonObject reported, JsonObject classic) {
+        Number modeCode = getNumber(reported, UNICORN_MODE);
+        if (modeCode != null) {
+            int code = modeCode.intValue();
+            String speed = toClassicSpeed(code);
+            if (code == UNICORN_MODE_AUTO) {
+                classic.addProperty("mode", "P");
+            } else if (code == UNICORN_MODE_SLEEP) {
+                classic.addProperty("mode", "S");
+            } else if (speed != null) {
+                classic.addProperty("mode", "M");
+            }
+            if (code == UNICORN_MODE_AUTO || code == UNICORN_MODE_SLEEP) {
+                // the device reports the speed it chose itself in its own field
+                Number actualSpeed = getNumber(reported, UNICORN_SPEED);
+                speed = actualSpeed != null ? toClassicSpeed(actualSpeed.intValue()) : null;
+            }
+            if (speed != null) {
+                classic.addProperty("om", speed);
+            }
+        }
+        Number timer = getNumber(reported, UNICORN_TIMER);
+        if (timer != null) {
+            int code = timer.intValue();
+            if (code == 0) {
+                classic.addProperty("dt", 0);
+            } else if (code > UNICORN_TIMER_OFFSET && code <= UNICORN_MAX_TIMER_HOURS + UNICORN_TIMER_OFFSET) {
+                classic.addProperty("dt", code - UNICORN_TIMER_OFFSET);
+            }
+        }
+        copyNumber(reported, UNICORN_TIMER_LEFT, classic, "dtrs");
+    }
+
+    /**
+     * @return the classic fan speed of a manual speed code, or null for the other codes
+     */
+    private static @Nullable String toClassicSpeed(int code) {
+        if (code >= 1 && code <= UNICORN_MAX_SPEED) {
+            return String.valueOf(code);
+        }
+        return switch (code) {
+            case UNICORN_MODE_TURBO -> "t";
+            case UNICORN_MODE_MEDIUM -> "m";
+            default -> null;
+        };
     }
 
     /**
@@ -136,7 +209,7 @@ enum CoapKeyScheme {
             }
         }
         JsonElement childLock = desired.get(CLASSIC_CHILD_LOCK);
-        if (this == GEN3 && childLock instanceof JsonPrimitive primitive && primitive.isBoolean()) {
+        if (this != GEN2 && childLock instanceof JsonPrimitive primitive && primitive.isBoolean()) {
             translated.addProperty(GEN3_CHILD_LOCK, primitive.getAsBoolean() ? 1 : 0);
         }
         return translated;

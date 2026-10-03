@@ -15,6 +15,7 @@ package org.openhab.binding.philipsair.internal.connection;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
@@ -43,6 +44,12 @@ public class CoapKeySchemeTest {
             {"D01S03":"Office","D01S05":"AC3737/10","D01S12":"0.2.1","D03102":0,"D03103":1,"D03120":2,
             "D03221":8,"D03125":48,"D03224":215,"D03240":0,"D0312A":1,"D0520D":100,"D0540E":3900,"D0310C":1,
             "DeviceId":"def"}""";
+    // status of an AC3210/12 reported on the openHAB community forum, without the device and network details
+    private static final String UNICORN_STATUS = """
+            {"D01102":0,"D01S03":"Bedroom","D01S04":"Unicorn","D01S05":"AC3210/12","D01108":3,"D0110C":19,
+            "D01S12":"0.2.3","D03102":1,"D03103":0,"D03105":101,"D0310A":2,"D0310C":0,"D0310D":1,"D03110":0,
+            "D03211":0,"D03120":1,"D03221":1,"D03224":241,"D03125":46,"D0312A":1,"D0312C":7,"D03240":0,
+            "D05207":720,"D05408":9600,"D0520D":601,"D0540E":2870}""";
 
     private final Gson gson = new Gson();
 
@@ -55,6 +62,9 @@ public class CoapKeySchemeTest {
         assertEquals(CoapKeyScheme.CLASSIC, CoapKeyScheme.detect(parse(CLASSIC_STATUS)));
         assertEquals(CoapKeyScheme.GEN2, CoapKeyScheme.detect(parse(GEN2_STATUS)));
         assertEquals(CoapKeyScheme.GEN3, CoapKeyScheme.detect(parse(GEN3_STATUS)));
+        assertEquals(CoapKeyScheme.UNICORN, CoapKeyScheme.detect(parse(UNICORN_STATUS)));
+        assertEquals(CoapKeyScheme.UNICORN, CoapKeyScheme.detect(parse("{\"D01S04\":\"unicorn\"}")));
+        assertEquals(CoapKeyScheme.GEN3, CoapKeyScheme.detect(parse("{\"D01S04\":\"Pegasus\"}")));
         assertEquals(CoapKeyScheme.CLASSIC, CoapKeyScheme.detect(new JsonObject()));
     }
 
@@ -116,6 +126,86 @@ public class CoapKeySchemeTest {
         assertNotNull(filters);
         assertEquals(100, filters.getPreFilter());
         assertEquals(3900, filters.getHepaFilter());
+    }
+
+    @Test
+    public void unicornStatusIsTranslated() {
+        JsonObject classic = CoapKeyScheme.UNICORN.toClassic(parse(UNICORN_STATUS));
+
+        PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals("1", data.getPower());
+        assertEquals(Boolean.FALSE, data.getChildLock());
+        assertEquals("P", data.getMode());
+        assertEquals("1", data.getFanSpeed());
+        assertEquals(0, data.getTimer());
+        assertEquals(0, data.getTimerLeft());
+        assertEquals(7, data.getAqit());
+        assertEquals(0, data.getErrorCode());
+        assertEquals("1", data.getDisplayIndex());
+        assertEquals(24.1f, data.getTemperature());
+
+        PhilipsAirPurifierDeviceDTO device = gson.fromJson(classic, PhilipsAirPurifierDeviceDTO.class);
+        assertNotNull(device);
+        assertEquals("AC3210/12", device.getModelId());
+        assertEquals("Unicorn", device.getRange());
+    }
+
+    @Test
+    public void unicornModeAndSpeedAreTranslated() {
+        assertModeAndSpeed("P", "3", "{\"D0310C\":0,\"D0310D\":3}");
+        assertModeAndSpeed("S", "1", "{\"D0310C\":17,\"D0310D\":1}");
+        assertModeAndSpeed("M", "t", "{\"D0310C\":18,\"D0310D\":18}");
+        assertModeAndSpeed("M", "m", "{\"D0310C\":19,\"D0310D\":3}");
+        assertModeAndSpeed("M", "4", "{\"D0310C\":4,\"D0310D\":4}");
+        // the speed of the manual mode is the selected one, whatever the actual speed field says
+        assertModeAndSpeed("M", "2", "{\"D0310C\":2,\"D0310D\":5}");
+        assertModeAndSpeed(null, null, "{\"D0310C\":99,\"D0310D\":3}");
+        assertModeAndSpeed("P", null, "{\"D0310C\":0}");
+        assertModeAndSpeed(null, null, "{\"D0310C\":\"auto\",\"D0310D\":3}");
+    }
+
+    private void assertModeAndSpeed(@Nullable String mode, @Nullable String speed, String reported) {
+        JsonObject classic = CoapKeyScheme.UNICORN.toClassic(parse("{\"D01S04\":\"Unicorn\"," + reported.substring(1)));
+
+        PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals(mode, data.getMode(), reported);
+        assertEquals(speed, data.getFanSpeed(), reported);
+    }
+
+    @Test
+    public void unicornTimerIsTranslated() {
+        assertTimer(0, 0, "{\"D03110\":0,\"D03211\":0}");
+        assertTimer(1, 59, "{\"D03110\":2,\"D03211\":59}");
+        assertTimer(2, 119, "{\"D03110\":3,\"D03211\":119}");
+        assertTimer(12, 720, "{\"D03110\":13,\"D03211\":720}");
+        // 1 is the timer of 30 minutes of other ranges, the Unicorn does not offer it
+        assertTimer(null, null, "{\"D03110\":1}");
+        assertTimer(null, null, "{\"D03110\":14,\"D03211\":\"soon\"}");
+    }
+
+    private void assertTimer(@Nullable Integer hours, @Nullable Integer minutesLeft, String reported) {
+        JsonObject classic = CoapKeyScheme.UNICORN.toClassic(parse("{\"D01S04\":\"Unicorn\"," + reported.substring(1)));
+
+        PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals(hours, data.getTimer(), reported);
+        assertEquals(minutesLeft, data.getTimerLeft(), reported);
+    }
+
+    @Test
+    public void modeSpeedAndTimerAreOnlyTranslatedForUnicorn() {
+        JsonObject classic = CoapKeyScheme.GEN3.toClassic(
+                parse("{\"D01S04\":\"Pegasus\",\"D0310C\":18,\"D0310D\":3,\"D03110\":3,\"D03211\":60,\"D0312C\":4}"));
+
+        assertFalse(classic.has("mode"));
+        assertFalse(classic.has("om"));
+        assertFalse(classic.has("dt"));
+        assertFalse(classic.has("dtrs"));
+        // the threshold is read from every recent model
+        assertEquals(4, classic.get("aqit").getAsInt());
+        assertEquals("Pegasus", classic.get("range").getAsString());
     }
 
     @Test

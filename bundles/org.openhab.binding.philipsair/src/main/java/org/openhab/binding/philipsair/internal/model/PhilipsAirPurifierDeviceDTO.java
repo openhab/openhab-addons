@@ -38,6 +38,9 @@ public class PhilipsAirPurifierDeviceDTO {
     @SerializedName("swversion")
     @Expose
     private String softwareVersion;
+    @SerializedName("range")
+    @Expose
+    private String range;
 
     public String getName() {
         return name;
@@ -77,5 +80,12 @@ public class PhilipsAirPurifierDeviceDTO {
 
     public void setSoftwareVersion(String softwareVersion) {
         this.softwareVersion = softwareVersion;
+    }
+
+    /**
+     * @return the product range reported by CoAP devices, e.g. {@code Unicorn}
+     */
+    public String getRange() {
+        return range;
     }
 }

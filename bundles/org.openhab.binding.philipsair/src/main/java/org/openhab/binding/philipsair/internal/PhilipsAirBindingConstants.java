@@ -45,6 +45,11 @@ public class PhilipsAirBindingConstants {
 
     public static final String SUPPORTED_MODEL_COAP = "coap";
 
+    /**
+     * The product range of devices such as the AC3210, as reported by CoAP devices
+     */
+    public static final String RANGE_UNICORN = "Unicorn";
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_UNIVERSAL = new ThingTypeUID(BINDING_ID, SUPPORTED_MODEL_UNIVERSAL);
     public static final ThingTypeUID THING_TYPE_COAP = new ThingTypeUID(BINDING_ID, SUPPORTED_MODEL_COAP);
