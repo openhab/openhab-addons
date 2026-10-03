@@ -24,6 +24,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -117,5 +118,24 @@ public class MiCloudConnectorTest {
                 MiCloudConnector.buildMapUrlRequestData("roboroommap%2F1234567%2F2", "roborock.vacuum.a08"));
         assertEquals("{\"obj_name\":\"robomap/1234567/0\"}",
                 MiCloudConnector.buildMapUrlRequestData("robomap/1234567/0", ""));
+    }
+
+    @Test
+    public void headersAreLoggedWithoutSecrets() {
+        String token = "17a8da0b48bd12902a495c8608eb8a73";
+        HttpFields headers = new HttpFields();
+        headers.add("Content-Type", "application/json");
+        headers.add("Set-Cookie", "serviceToken=" + token + "; Path=/");
+        headers.add("Set-Cookie", "passToken=" + token + "; Path=/");
+        headers.add("Cookie", "serviceToken=" + token);
+        headers.add("Location", "https://sts.api.io.mi.com/sts?auth=" + token);
+        headers.add("extension-pragma", "{\"ssecurity\":\"" + token + "\"}");
+
+        String logged = MiCloudConnector.maskHeaders(headers);
+
+        assertFalse(logged.contains(token), logged);
+        assertTrue(logged.contains("Content-Type: application/json"), logged);
+        assertTrue(logged.contains("Location: https://sts.api.io.mi.com/sts?***"), logged);
+        assertTrue(logged.contains("Set-Cookie: ***"), logged);
     }
 }
