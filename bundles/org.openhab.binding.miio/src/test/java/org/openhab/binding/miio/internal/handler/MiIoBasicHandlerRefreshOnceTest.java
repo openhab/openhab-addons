@@ -14,10 +14,14 @@ package org.openhab.binding.miio.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,12 +41,14 @@ import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -87,6 +93,7 @@ public class MiIoBasicHandlerRefreshOnceTest {
     private class CapturingHandler extends MiIoBasicHandler {
         private final List<String> sentCommands = new ArrayList<>();
         private final List<JsonObject> sentJson = new ArrayList<>();
+        private final Semaphore updates = new Semaphore(0);
         private int lastId = 0;
 
         CapturingHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService, CloudConnector cloudConnector,
@@ -132,6 +139,16 @@ public class MiIoBasicHandlerRefreshOnceTest {
                     thingUID.getAsString());
             command.setResponse(json);
             onMessageReceived(command);
+        }
+
+        /** Waits for an update of the device data to be started, as done by the polling job or a refresh */
+        boolean awaitUpdate() throws InterruptedException {
+            return updates.tryAcquire(30, TimeUnit.SECONDS);
+        }
+
+        @Override
+        protected synchronized void updateData() {
+            updates.release();
         }
 
         @Override
@@ -309,5 +326,47 @@ public class MiIoBasicHandlerRefreshOnceTest {
         handler.respondProperties("[\"on\",\"auto\"]");
         handler.handleCommand(new ChannelUID(thingUID, "power"), RefreshType.REFRESH);
         assertEquals(List.of("[\"power\",\"mode\"]"), handler.pollProperties(device));
+    }
+
+    @Test
+    public void refreshOfReadOnceChannelStartsUpdateWhileCacheIsValid() throws InterruptedException {
+        load(ONCE_CHANNEL, EVERY_CYCLE_CHANNEL);
+
+        handler.poll(device);
+        handler.respond("once", "{\"code\":0,\"result\":{}}");
+        // this refresh fills the cache, as the polling job is not needed for it (refreshInterval=0)
+        handler.handleCommand(new ChannelUID(thingUID, "always"), RefreshType.REFRESH);
+        assertTrue(handler.awaitUpdate());
+
+        handler.handleCommand(new ChannelUID(thingUID, "once"), RefreshType.REFRESH);
+        assertTrue(handler.awaitUpdate());
+        assertTrue(handler.poll(device).contains("/v2/test/query"));
+    }
+
+    @Test
+    public void readOnceMiotPropertyWithNullValueIsRetried() {
+        load(ONCE_MIOT_PROPERTY);
+
+        assertEquals(1, handler.pollProperties(device).size());
+        handler.respondProperties("[{\"did\":\"pwr\",\"siid\":2,\"piid\":1,\"code\":0,\"value\":null}]");
+        assertEquals(1, handler.pollProperties(device).size());
+        verify(callback, never()).stateUpdated(any(ChannelUID.class), any(State.class));
+        handler.respondProperties("[{\"did\":\"pwr\",\"siid\":2,\"piid\":1,\"code\":0,\"value\":\"on\"}]");
+        assertEquals(0, handler.pollProperties(device).size());
+        verify(callback).stateUpdated(new ChannelUID(thingUID, "power"), new StringType("on"));
+    }
+
+    @Test
+    public void readOnceChannelWithNullResultIsRetried() {
+        load(ONCE_CHANNEL);
+
+        assertEquals(List.of("/v2/test/query"), handler.poll(device));
+        handler.respond("once", "{\"code\":0,\"result\":null}");
+        assertEquals(List.of("/v2/test/query"), handler.poll(device));
+        handler.respond("once", "{\"code\":0,\"result\":[null]}");
+        assertEquals(List.of("/v2/test/query"), handler.poll(device));
+        verify(callback, never()).stateUpdated(any(ChannelUID.class), any(State.class));
+        handler.respond("once", "{\"code\":0,\"result\":{}}");
+        assertEquals(List.of(), handler.poll(device));
     }
 }
