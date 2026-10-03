@@ -13,6 +13,7 @@
 package org.openhab.binding.philipsair.internal.connection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
@@ -63,5 +64,13 @@ public class PhilipsAirCipherTest {
         cipher.initKey(FAKE_KEY);
         String status = "{\"name\":\"Wohnzimmer Küche\"}";
         assertEquals(status, cipher.decrypt(Objects.requireNonNull(cipher.encrypt(status))));
+    }
+
+    @Test
+    public void usingTheCipherBeforeInitKeyFails() throws GeneralSecurityException {
+        PhilipsAirCipher uninitialized = new PhilipsAirCipher(BigInteger.ONE);
+
+        assertThrows(IllegalStateException.class, () -> uninitialized.encrypt("{}"));
+        assertThrows(IllegalStateException.class, () -> uninitialized.decrypt("765kW9EGhHMhtzJ/rxeyIg=="));
     }
 }

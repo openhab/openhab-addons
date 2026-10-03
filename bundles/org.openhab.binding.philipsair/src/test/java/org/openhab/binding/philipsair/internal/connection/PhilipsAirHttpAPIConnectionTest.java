@@ -207,7 +207,7 @@ public class PhilipsAirHttpAPIConnectionTest {
 
         PhilipsAirAPIException e = assertThrows(PhilipsAirAPIException.class,
                 () -> connection.getAirPurifierStatus("1.1.1.1"));
-        assertEquals("Error with status 404", e.getMessage());
+        assertEquals("@text/offline.communication-error.status [\"404\"]", e.getMessage());
         assertEquals(SESSION_KEY, config.getKey());
     }
 
@@ -219,8 +219,31 @@ public class PhilipsAirHttpAPIConnectionTest {
 
         PhilipsAirHttpAPIConnection connection = new PhilipsAirHttpAPIConnection(config, httpClient);
 
-        assertThrows(PhilipsAirAPIException.class, () -> connection.getAirPurifierStatus("1.1.1.1"));
-        assertThrows(PhilipsAirAPIException.class, () -> connection.getAirPurifierDevice("1.1.1.1"));
+        PhilipsAirAPIException first = assertThrows(PhilipsAirAPIException.class,
+                () -> connection.getAirPurifierStatus("1.1.1.1"));
+        assertEquals("@text/offline.communication-error.status [\"429\"]", first.getMessage());
+        PhilipsAirAPIException second = assertThrows(PhilipsAirAPIException.class,
+                () -> connection.getAirPurifierDevice("1.1.1.1"));
+        assertEquals("@text/offline.communication-error.cooldown", second.getMessage());
+        assertEquals(SESSION_KEY, config.getKey());
+        verify(request, times(1)).send();
+    }
+
+    @Test
+    public void cooldownWithoutCipherKeepsKeyAndSendsNothing() throws Exception {
+        // the key exchange is answered with 429, so there is no cipher
+        when(response.getStatus()).thenReturn(429);
+        when(response.getContentAsString()).thenReturn("Too Many Requests");
+
+        PhilipsAirHttpAPIConnection connection = new PhilipsAirHttpAPIConnection(config, httpClient);
+        verify(request, times(1)).send();
+        config.setKey(SESSION_KEY);
+
+        PhilipsAirAPIException e = assertThrows(PhilipsAirAPIException.class,
+                () -> connection.getAirPurifierStatus("1.1.1.1"));
+
+        assertEquals("@text/offline.communication-error.cooldown", e.getMessage());
+        assertEquals(SESSION_KEY, config.getKey());
         verify(request, times(1)).send();
     }
 }

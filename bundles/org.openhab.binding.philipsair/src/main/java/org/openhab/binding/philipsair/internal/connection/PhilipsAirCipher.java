@@ -60,21 +60,18 @@ public class PhilipsAirCipher {
         aPow = G.modPow(a, P);
     }
 
-    @SuppressWarnings("null")
     public void initKey(String key) throws GeneralSecurityException {
-        try {
-            decipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            decipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(HexUtils.hexToBytes(key), "AES"),
-                    new IvParameterSpec(new byte[16]));
+        this.cipher = null;
+        this.decipher = null;
+        SecretKeySpec keySpec = new SecretKeySpec(HexUtils.hexToBytes(key), "AES");
 
-            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(HexUtils.hexToBytes(key), "AES"),
-                    new IvParameterSpec(new byte[16]));
-        } catch (GeneralSecurityException e) {
-            cipher = null;
-            decipher = null;
-            throw e;
-        }
+        Cipher newDecipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        newDecipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(new byte[16]));
+        Cipher newCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        newCipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(new byte[16]));
+
+        this.decipher = newDecipher;
+        this.cipher = newCipher;
     }
 
     public String getApow() {
@@ -116,24 +113,30 @@ public class PhilipsAirCipher {
         return fixed;
     }
 
-    public @Nullable String decrypt(String encodedContent) throws IllegalBlockSizeException, BadPaddingException {
+    /**
+     * @throws IllegalStateException if no key was set with {@link #initKey(String)}
+     */
+    public String decrypt(String encodedContent) throws IllegalBlockSizeException, BadPaddingException {
+        Cipher decipher = this.decipher;
         if (decipher == null) {
-            return null;
+            throw new IllegalStateException("Key not initialized");
         }
 
-        @SuppressWarnings("null")
         byte[] decoded = decipher.doFinal(Base64.getDecoder().decode(encodedContent));
         byte[] unpaded = Arrays.copyOfRange(decoded, 2, decoded.length);
         return new String(unpaded, StandardCharsets.UTF_8);
     }
 
-    public @Nullable String encrypt(String data) throws IllegalBlockSizeException, BadPaddingException {
+    /**
+     * @throws IllegalStateException if no key was set with {@link #initKey(String)}
+     */
+    public String encrypt(String data) throws IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = this.cipher;
         if (cipher == null) {
-            return null;
+            throw new IllegalStateException("Key not initialized");
         }
 
         String encodedData = AA + data;
-        @SuppressWarnings("null")
         byte[] encryptedBytes = cipher.doFinal(encodedData.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }

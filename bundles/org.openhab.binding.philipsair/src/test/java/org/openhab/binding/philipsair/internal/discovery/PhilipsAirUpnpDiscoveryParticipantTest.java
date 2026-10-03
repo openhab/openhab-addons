@@ -13,8 +13,12 @@
 package org.openhab.binding.philipsair.internal.discovery;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
+
+import java.net.URI;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.jupnp.model.meta.DeviceDetails;
+import org.jupnp.model.meta.ManufacturerDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.meta.RemoteDeviceIdentity;
@@ -31,6 +36,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 
@@ -92,5 +101,65 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
 
         when(modelDetails.getModelName()).thenReturn(null);
         assertNull(participant.getThingUID(device));
+    }
+
+    private void stubResultDetails() throws Exception {
+        ManufacturerDetails manufacturerDetails = mock(ManufacturerDetails.class);
+        when(manufacturerDetails.getManufacturer()).thenReturn("Philips");
+        when(deviceDetails.getManufacturerDetails()).thenReturn(manufacturerDetails);
+        when(remoteDeviceIdentity.getDescriptorURL()).thenReturn(new URI("http://192.168.1.50:80/desc.xml").toURL());
+    }
+
+    @Test
+    public void deviceWithoutIdentityOrIdentifierHasNoThingUID() {
+        when(modelDetails.getModelNumber()).thenReturn("AC2889/10");
+
+        when(remoteDeviceIdentity.getUdn()).thenReturn(new UDN((String) null));
+        assertNull(participant.getThingUID(device));
+
+        when(remoteDeviceIdentity.getUdn()).thenReturn(null);
+        assertNull(participant.getThingUID(device));
+
+        when(device.getIdentity()).thenReturn(null);
+        assertNull(participant.getThingUID(device));
+    }
+
+    @Test
+    public void resultIsCreatedForPurifier() throws Exception {
+        stubResultDetails();
+        when(modelDetails.getModelNumber()).thenReturn("AC2889/10");
+
+        DiscoveryResult result = participant.createResult(device);
+
+        assertNotNull(result);
+        assertEquals(new ThingUID(THING_TYPE_AC2889_10, UDN_ID), result.getThingUID());
+        assertEquals(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, result.getRepresentationProperty());
+        assertEquals("Philips AirPurifier AC2889/10", result.getLabel());
+        Map<String, Object> properties = result.getProperties();
+        assertEquals("192.168.1.50", properties.get(PhilipsAirConfiguration.CONFIG_HOST));
+        assertEquals(UDN_ID, properties.get(PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID));
+        assertEquals("e8c1d7007123", properties.get(Thing.PROPERTY_MAC_ADDRESS));
+        assertEquals("Philips", properties.get(PROPERTY_MANUFACTURER));
+        assertEquals(VENDOR, properties.get(Thing.PROPERTY_VENDOR));
+        assertEquals("AC2889/10", properties.get(Thing.PROPERTY_MODEL_ID));
+        assertEquals("AirPurifier", properties.get(PROPERTY_DEV_TYPE));
+    }
+
+    @Test
+    public void noResultForOtherDevices() {
+        when(modelDetails.getModelName()).thenReturn("MediaRenderer");
+
+        assertNull(participant.createResult(device));
+    }
+
+    @Test
+    public void noResultWhenBackgroundDiscoveryIsDisabled() throws Exception {
+        stubResultDetails();
+        when(modelDetails.getModelNumber()).thenReturn("AC2889/10");
+        participant.activate(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, false));
+        assertNull(participant.createResult(device));
+
+        participant.modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, true));
+        assertNotNull(participant.createResult(device));
     }
 }

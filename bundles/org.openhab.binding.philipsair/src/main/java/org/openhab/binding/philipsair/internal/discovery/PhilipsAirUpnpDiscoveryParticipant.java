@@ -27,6 +27,7 @@ import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.meta.RemoteDeviceIdentity;
+import org.jupnp.model.types.UDN;
 import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.openhab.core.config.core.ConfigParser;
@@ -88,14 +89,13 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
             RemoteDeviceIdentity identity = device.getIdentity();
             if (identity != null) {
                 addProperty(properties, PhilipsAirConfiguration.CONFIG_HOST, identity.getDescriptorURL().getHost());
-                String idString = identity.getUdn().getIdentifierString();
-                if (idString != null) {
-                    addProperty(properties, PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, idString);
-                    int macIndex = idString.lastIndexOf('-');
-                    if (macIndex > 0) {
-                        addProperty(properties, PROPERTY_MAC_ADDRESS,
-                                idString.substring(idString.lastIndexOf('-') + 1));
-                    }
+            }
+            String idString = getIdentifier(device);
+            if (idString != null) {
+                addProperty(properties, PhilipsAirConfiguration.CONFIG_DEF_DEVICE_UUID, idString);
+                int macIndex = idString.lastIndexOf('-');
+                if (macIndex > 0) {
+                    addProperty(properties, PROPERTY_MAC_ADDRESS, idString.substring(macIndex + 1));
                 }
             }
 
@@ -103,7 +103,7 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
             String label = "Philips AirPurifier";
             if (details != null) {
                 addProperty(properties, PROPERTY_MANUFACTURER, details.getManufacturerDetails().getManufacturer());
-                ModelDetails modelDetails = device.getDetails().getModelDetails();
+                ModelDetails modelDetails = details.getModelDetails();
                 if (modelDetails != null) {
                     addProperty(properties, PROPERTY_VENDOR, PhilipsAirBindingConstants.VENDOR);
                     addProperty(properties, PROPERTY_MODEL_ID, modelDetails.getModelNumber());
@@ -137,7 +137,18 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
         String modelNumber = modelDetails.getModelNumber();
         ThingTypeUID thingType = getThingType(modelNumber);
         logger.debug("Attempt to create Philips Air things {} {}", modelName, modelNumber);
-        return new ThingUID(thingType, device.getIdentity().getUdn().getIdentifierString());
+        String identifier = getIdentifier(device);
+        if (identifier == null) {
+            logger.trace("Device without identifier {}", device);
+            return null;
+        }
+        return new ThingUID(thingType, identifier);
+    }
+
+    private static @Nullable String getIdentifier(RemoteDevice device) {
+        RemoteDeviceIdentity identity = device.getIdentity();
+        UDN udn = identity != null ? identity.getUdn() : null;
+        return udn != null ? udn.getIdentifierString() : null;
     }
 
     /**

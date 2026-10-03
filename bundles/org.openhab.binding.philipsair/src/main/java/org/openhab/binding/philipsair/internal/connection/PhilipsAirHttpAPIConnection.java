@@ -60,6 +60,10 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     private static final String KEY_URL = "http://%HOST%/di/v1/products/0/security";
     private static final String FILTERS_URL = "http://%HOST%/di/v1/products/1/fltsts";
     private static final long REQUEST_TIMEOUT_SECONDS = 10;
+    private static final String ERROR_COOLDOWN = "@text/offline.communication-error.cooldown";
+    private static final String ERROR_NO_KEY = "@text/offline.communication-error.no-key";
+    private static final String ERROR_KEY_RENEWED = "@text/offline.communication-error.key-renewed";
+    private static final String ERROR_STATUS = "@text/offline.communication-error.status";
 
     // responses are cached for the refresh interval, so the requests of a single update are not repeated
     private final Map<String, CachedResponse> cache = new HashMap<>();
@@ -68,7 +72,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     private long cooldownTimer = 0;
 
     private @Nullable PhilipsAirCipher cipher = null;
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     public PhilipsAirHttpAPIConnection(PhilipsAirConfiguration config, HttpClient httpClient) {
         super(config);
@@ -135,19 +139,19 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     private String getResponse(String url, HttpMethod method, @Nullable String content, boolean decode, boolean isRetry)
             throws PhilipsAirAPIException {
         try {
+            // checked first, so nothing is requested or changed, e.g. the stored key, during the cooldown
+            if (cooldownTimer > System.currentTimeMillis()) {
+                logger.debug("Waiting for the cooldown period, the device responded with status code {}",
+                        TOO_MANY_REQUESTS_429);
+                throw new PhilipsAirAPIException(ERROR_COOLDOWN);
+            }
+
             PhilipsAirCipher cipher = this.cipher;
             if (decode && cipher == null) {
                 logger.debug("Cipher not initialized, exchanging keys");
                 config.setKey("");
                 initCipher();
                 cipher = getCipher();
-            }
-
-            if (cooldownTimer > System.currentTimeMillis()) {
-                String message = "Waiting for the cooldown period, the device responded with status code "
-                        + TOO_MANY_REQUESTS_429;
-                logger.debug("{}", message);
-                throw new PhilipsAirAPIException(message);
             }
 
             Request request = httpClient.newRequest(url).method(method);
@@ -168,7 +172,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
                     // fall through
                 default:
                     logger.debug("Philips Air Purifier device responded with status code {}", httpStatus);
-                    throw new PhilipsAirAPIException(String.format("Error with status %d", httpStatus));
+                    throw new PhilipsAirAPIException(ERROR_STATUS + " [\"" + httpStatus + "\"]");
             }
 
             // only successful responses are encrypted
@@ -183,13 +187,10 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
                     // the response was encrypted with the previous key. A command is not repeated, as its content
                     // was also encrypted with the previous key.
                     if (isRetry || method != HttpMethod.GET) {
-                        throw new PhilipsAirAPIException("Could not decrypt response, encryption key renewed");
+                        throw new PhilipsAirAPIException(ERROR_KEY_RENEWED);
                     }
                     return getResponse(url, method, content, decode, true);
                 }
-            }
-            if (finalcontent == null) {
-                throw new PhilipsAirAPIException("Empty response");
             }
             logger.debug("Philips Air Purifier device response: '{}'", finalcontent);
             return finalcontent;
@@ -213,7 +214,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
     private PhilipsAirCipher getCipher() throws PhilipsAirAPIException {
         PhilipsAirCipher cipher = this.cipher;
         if (cipher == null) {
-            throw new PhilipsAirAPIException("Encryption key not available");
+            throw new PhilipsAirAPIException(ERROR_NO_KEY);
         }
         return cipher;
     }
@@ -254,14 +255,11 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
         try {
             String commandValue = gson.toJson(value);
             logger.debug("{}", commandValue);
-            commandValue = cipher.encrypt(commandValue.toString());
-            if (commandValue == null || commandValue.isEmpty()) {
-                return null;
-            }
+            commandValue = cipher.encrypt(commandValue);
             String statusUrl = buildURL(STATUS_URL, config.getHost());
             String response;
             try {
-                response = getResponse(statusUrl, PUT, commandValue.toString(), true);
+                response = getResponse(statusUrl, PUT, commandValue, true);
             } finally {
                 // the cached status no longer reflects the device state, even if the command failed
                 cache.remove(statusUrl);

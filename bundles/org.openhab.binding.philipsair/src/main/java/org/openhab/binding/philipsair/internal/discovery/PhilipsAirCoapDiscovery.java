@@ -98,9 +98,10 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
             endpoint.addInterceptor(interceptor);
         }
 
+        // Californium does not match all responses of a multicast request to the request, so the interceptor, which
+        // sees every response, is the only place where the responses are processed
         endpoint.addInterceptor(new MessageInterceptor() {
             @Override
-
             public void receiveResponse(@Nullable Response response) {
                 if (response == null) {
                     logger.debug("Response is null");
@@ -110,7 +111,7 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
                     String payload = response.getPayloadString();
                     InetSocketAddress src = response.getSourceContext().getPeerAddress();
                     logger.trace("Received coap response from {}  - {}", src, Utils.prettyPrint(response));
-                    if (payload != null && !payload.isBlank() && payload.contains("product_id")) {
+                    if (payload != null && !payload.isBlank()) {
                         PhilipsAirCoapDiscovery.this.discovered(payload, src.getHostString());
                     }
                 }
@@ -172,7 +173,12 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
 
     private void backgroundScan() {
         logger.debug("Initiated PhilipsAir (COAP) background discovery scan");
-        startScan();
+        try {
+            startScan();
+        } catch (RuntimeException e) {
+            // an uncaught exception would cancel the scheduled background discovery
+            logger.debug("PhilipsAir (COAP) background discovery scan failed: {}", e.getMessage(), e);
+        }
     }
 
     @Override
@@ -200,11 +206,16 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         broadcastAddresses.add("224.0.1.187"); // CoAP All-Nodes multicast address
         logger.debug("Broadcast to {} addresses", broadcastAddresses.size());
         for (String host : broadcastAddresses) {
-            mget(client, COAP_PORT, PATH, host);
+            try {
+                mget(client, COAP_PORT, PATH, host);
+            } catch (RuntimeException e) {
+                // e.g. an invalid address, which must not prevent the requests to the other addresses
+                logger.debug("Could not send the discovery request to {}: {}", host, e.getMessage());
+            }
         }
     }
 
-    private void discovered(String response, String host) {
+    void discovered(String response, String host) {
         try {
             PhilipsAirPurifierDeviceDTO info = gson.fromJson(response, PhilipsAirPurifierDeviceDTO.class);
             String deviceId = info != null ? info.getDeviceId() : null;
@@ -254,8 +265,9 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
     }
 
     /**
-     * Handles the discovery responses matched to the request. With Californium 3 not all responses of a multicast
-     * request are matched, so the message interceptor processes the responses as well.
+     * Handles the discovery responses matched to the request. The responses are only logged here, as they are
+     * processed by the message interceptor, which receives all responses, including those that Californium does not
+     * match to the multicast request.
      */
     private class DiscoveryCoapHandler implements CoapHandler {
 
@@ -264,10 +276,6 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
             if (response != null) {
                 InetSocketAddress ip = response.advanced().getSourceContext().getPeerAddress();
                 logger.trace("Received coap response from '{}' - {}", ip, Utils.prettyPrint(response));
-                String resTxt = response.getResponseText();
-                if (resTxt != null && !resTxt.isBlank()) {
-                    discovered(resTxt, ip.getHostString());
-                }
             } else {
                 logger.debug("Received NULL coap response");
             }
