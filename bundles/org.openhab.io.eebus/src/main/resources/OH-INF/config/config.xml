@@ -111,14 +111,6 @@
 				the SKI printed on
 				your CLS gateway. Only used when Connect Policy is "Trusted SKIs only".</description>
 		</parameter>
-		<parameter name="autoAcceptPairing" type="boolean" groupName="pairing">
-			<label>Auto-Accept Pairing Requests</label>
-			<description>Accept any pairing request without a pre-trusted SKI. Only intended for lab testing
-				against a simulator -
-				never enable this against a production installation.</description>
-			<default>false</default>
-			<advanced>true</advanced>
-		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

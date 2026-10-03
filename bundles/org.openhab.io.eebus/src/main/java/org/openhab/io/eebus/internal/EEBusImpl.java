@@ -190,7 +190,7 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
     }
 
     /**
-     * Applies the current {@code connectPolicy}/{@code autoAcceptPairing}/{@code trustedSkis}
+     * Applies the current {@code connectPolicy}/{@code trustedSkis}
      * settings onto {@code communication}. Safe to call both on a freshly built
      * {@link ShipCommunication} (from {@link #startNode()}) and on the already-running one (from
      * {@link #modified}) - {@code with*} mutates the instance in place and, if the underlying SHIP
@@ -199,7 +199,7 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
      */
     private ShipCommunication configurePairing(ShipCommunication communication) {
         return communication.withConnectClientsTo(ConnectClientsTo.valueOf(settings.connectPolicy))
-                .withAutoAcceptMode(settings.autoAcceptPairing).withTrustedSkis(parseTrustedSkis(settings.trustedSkis));
+                .withTrustedSkis(parseTrustedSkis(settings.trustedSkis));
     }
 
     private static Set<String> parseTrustedSkis(String trustedSkis) {

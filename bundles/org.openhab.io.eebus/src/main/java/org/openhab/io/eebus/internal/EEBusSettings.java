@@ -40,7 +40,6 @@ public class EEBusSettings {
 
     public String connectPolicy = "TRUSTED";
     public String trustedSkis = "";
-    public boolean autoAcceptPairing = false;
 
     /**
      * @return true if a change from {@code other} to {@code this} requires tearing down and

@@ -49,7 +49,6 @@ metadata - the same shape used by the HomeKit and Alexa add-ons.
 | entityType          | identity | no       | `CEM`                 | SPINE entity type hosting the LPC/LPP use cases (must be one of CEM, COMPRESSOR, EVSE, HEAT_PUMP_APPLIANCE, INVERTER, SMART_ENERGY_APPLIANCE, SUB_METER_ELECTRICITY). |
 | connectPolicy       | pairing  | no       | `TRUSTED`             | `TRUSTED` (only pre-trusted SKIs), `ALL` (insecure), or `NONE`.                                                                                                          |
 | trustedSkis         | pairing  | no       | -                      | Comma-separated list of remote SKIs to pre-trust. Used when `connectPolicy` is `TRUSTED`.                                                                                |
-| autoAcceptPairing   | pairing  | no       | `false`               | Accept any pairing request without a pre-trusted SKI. Lab testing only, never in production.                                                                            |
 
 Changing a `network` or `identity` parameter restarts the SHIP node.
 `pairing` parameters apply live.
