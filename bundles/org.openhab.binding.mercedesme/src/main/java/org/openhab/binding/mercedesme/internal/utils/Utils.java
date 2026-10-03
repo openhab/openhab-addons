@@ -51,7 +51,6 @@ import com.daimler.mbcarkit.proto.VehicleEvents;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.VehicleEvents.VVRTimeProfile;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.WeeklyProfileValue;
@@ -221,6 +220,7 @@ public class Utils {
         return switch (region) {
             case Constants.REGION_APAC -> Constants.WEBSOCKET_USER_AGENT_PA;
             case Constants.REGION_CHINA -> Constants.WEBSOCKET_USER_AGENT_CN;
+            case Constants.REGION_NORAM -> Constants.WEBSOCKET_USER_AGENT_US;
             default -> Constants.WEBSOCKET_USER_AGENT;
         };
     }
@@ -269,16 +269,15 @@ public class Utils {
     }
 
     /**
-     * Converts a protobuf update into JSON String
+     * Converts a vehicle attribute map into JSON String
      *
-     * @param protoUpdate - proto update
+     * @param m - attribute key to value map
      * @param uid - thing type uid for identification
      * @return JSON as String
      */
     @SuppressWarnings({ "unused", "null" })
-    public static String proto2Json(VEPUpdate protoUpdate, ThingTypeUID uid) {
+    public static String proto2Json(Map<String, VehicleAttributeStatus> m, ThingTypeUID uid) {
         JSONObject protoJson = new JSONObject();
-        Map<String, VehicleAttributeStatus> m = protoUpdate.getAttributesMap();
         m.forEach((key, value) -> {
             Map<FieldDescriptor, Object> attMap = value.getAllFields();
             JSONObject attributesJson = getJsonObject(attMap);
@@ -479,15 +478,19 @@ public class Utils {
     }
 
     /**
-     * Checks proto VehicleAttributeStatus is nil
+     * Checks proto VehicleAttributeStatus has no usable value: nil_value is set, or status is not
+     * VALUE_VALID (the backend may then send a default 0 that must not be forwarded as a reading).
      *
      * @param value - proto value
-     * @return true if nil value is present, false otherwise
+     * @return true if no usable value is present, false otherwise
      */
     public static boolean isNil(@Nullable VehicleAttributeStatus value) {
         if (value != null) {
-            if (value.hasNilValue()) {
-                return value.getNilValue();
+            if (value.hasNilValue() && value.getNilValue()) {
+                return true;
+            }
+            if (value.getStatus() != VehicleEvents.AttributeStatus.VALUE_VALID_VALUE) {
+                return true;
             }
         }
         return false;
