@@ -15,13 +15,21 @@ package org.openhab.binding.philipsair.internal.connection;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.philipsair.internal.FakeHttpDevice.Endpoint.*;
 
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.philipsair.internal.FakeHttpDevice;
 import org.openhab.binding.philipsair.internal.FakeHttpDevice.Call;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
@@ -50,6 +58,7 @@ public class PhilipsAirHttpAPIConnectionTest {
 
     private final PhilipsAirConfiguration config = new PhilipsAirConfiguration();
     private final FakeHttpDevice device = new FakeHttpDevice(HOST, SESSION_KEY);
+    private long now = 1_000_000L;
 
     @BeforeEach
     public void setUp() {
@@ -58,7 +67,12 @@ public class PhilipsAirHttpAPIConnectionTest {
     }
 
     private PhilipsAirHttpAPIConnection createConnection() {
-        return new PhilipsAirHttpAPIConnection(config, device.httpClient());
+        return new PhilipsAirHttpAPIConnection(config, device.httpClient()) {
+            @Override
+            long currentTimeMillis() {
+                return now;
+            }
+        };
     }
 
     private static PhilipsAirPurifierWritableDataDTO powerOff() {
@@ -126,7 +140,9 @@ public class PhilipsAirHttpAPIConnectionTest {
         PhilipsAirHttpAPIConnection connection = createConnection();
 
         assertEquals("", config.getKey());
-        assertThrows(PhilipsAirAPIException.class, () -> connection.getAirPurifierStatus(HOST));
+        PhilipsAirAPIException e = assertThrows(PhilipsAirAPIException.class,
+                () -> connection.getAirPurifierStatus(HOST));
+        assertEquals("@text/offline.communication-error.no-key", e.getMessage());
         assertEquals(2, device.count(SECURITY, HttpMethod.PUT));
         assertEquals(0, device.count(STATUS, HttpMethod.GET));
     }
@@ -157,7 +173,9 @@ public class PhilipsAirHttpAPIConnectionTest {
 
         PhilipsAirHttpAPIConnection connection = createConnection();
 
-        assertThrows(PhilipsAirAPIException.class, () -> connection.sendCommand("pwr", powerOff()));
+        PhilipsAirAPIException e = assertThrows(PhilipsAirAPIException.class,
+                () -> connection.sendCommand("pwr", powerOff()));
+        assertEquals("@text/offline.communication-error.key-renewed", e.getMessage());
         assertEquals(SESSION_KEY, config.getKey());
         List<Call> commands = device.calls(STATUS, HttpMethod.PUT);
         assertEquals(1, commands.size());
@@ -289,5 +307,118 @@ public class PhilipsAirHttpAPIConnectionTest {
         assertEquals("@text/offline.communication-error.cooldown", e.getMessage());
         assertEquals(SESSION_KEY, config.getKey());
         assertEquals(1, device.calls().size());
+    }
+
+    private static Stream<Exception> transportFailures() {
+        return Stream.of(new ExecutionException(new IOException("connection refused")),
+                new TimeoutException("timed out"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("transportFailures")
+    public void transportFailureIsReportedAsApiExceptionWithTheCause(Exception failure) throws Exception {
+        config.setKey(SESSION_KEY);
+        device.respondWithFailure(STATUS, HttpMethod.GET, failure);
+
+        PhilipsAirHttpAPIConnection connection = createConnection();
+
+        PhilipsAirAPIException e = assertThrows(PhilipsAirAPIException.class,
+                () -> connection.getAirPurifierStatus(HOST));
+        assertSame(failure, e.getCause());
+        assertEquals(1, device.count(STATUS, HttpMethod.GET));
+    }
+
+    @Test
+    public void interruptionIsReportedAsApiExceptionAndRestoresTheInterruptFlag() throws Exception {
+        config.setKey(SESSION_KEY);
+        InterruptedException failure = new InterruptedException("interrupted");
+        device.respondWithFailure(STATUS, HttpMethod.GET, failure);
+
+        PhilipsAirHttpAPIConnection connection = createConnection();
+
+        PhilipsAirAPIException e;
+        boolean interrupted;
+        try {
+            e = assertThrows(PhilipsAirAPIException.class, () -> connection.getAirPurifierStatus(HOST));
+        } finally {
+            // also clears the flag, so it does not affect other tests
+            interrupted = Thread.interrupted();
+        }
+        assertTrue(interrupted);
+        assertSame(failure, e.getCause());
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "'not base64 at all!', java.lang.IllegalArgumentException",
+            "AQIDBAU=, javax.crypto.IllegalBlockSizeException" })
+    public void undecryptableResponseIsReportedWithoutRenewingTheKey(String body, Class<?> expectedCause)
+            throws Exception {
+        config.setKey(SESSION_KEY);
+        device.respondRaw(STATUS, HttpMethod.GET, 200, body);
+
+        PhilipsAirHttpAPIConnection connection = createConnection();
+
+        PhilipsAirAPIException e = assertThrows(PhilipsAirAPIException.class,
+                () -> connection.getAirPurifierStatus(HOST));
+        assertInstanceOf(expectedCause, e.getCause());
+        assertEquals(SESSION_KEY, config.getKey());
+        assertEquals(0, device.count(SECURITY, HttpMethod.PUT));
+        assertEquals(1, device.count(STATUS, HttpMethod.GET));
+    }
+
+    @Test
+    public void statusIsRequestedOnlyOnceMoreWhenTheRenewedKeyAlsoFails() throws Exception {
+        config.setKey(OLD_SESSION_KEY);
+        device.respondToKeyExchange();
+        device.respondRaw(STATUS, HttpMethod.GET, 200, FakeHttpDevice.encrypt(STATUS_JSON, OTHER_KEY));
+
+        PhilipsAirHttpAPIConnection connection = createConnection();
+
+        PhilipsAirAPIException e = assertThrows(PhilipsAirAPIException.class,
+                () -> connection.getAirPurifierStatus(HOST));
+        assertEquals("@text/offline.communication-error.key-renewed", e.getMessage());
+        assertEquals(2, device.count(STATUS, HttpMethod.GET));
+        // the key is not exchanged a second time for the same request
+        assertEquals(1, device.count(SECURITY, HttpMethod.PUT));
+        assertEquals(SESSION_KEY, config.getKey());
+    }
+
+    @Test
+    public void statusIsRequestedAgainAfterTheCacheExpired() throws Exception {
+        config.setKey(SESSION_KEY);
+        device.respond(STATUS, HttpMethod.GET, STATUS_JSON);
+
+        PhilipsAirHttpAPIConnection connection = createConnection();
+        assertNotNull(connection.getAirPurifierStatus(HOST));
+
+        // the refresh interval of the configuration is 5 seconds
+        now += 4_999;
+        assertNotNull(connection.getAirPurifierStatus(HOST));
+        assertEquals(1, device.count(STATUS, HttpMethod.GET));
+
+        now += 1;
+        assertNotNull(connection.getAirPurifierStatus(HOST));
+        assertEquals(2, device.count(STATUS, HttpMethod.GET));
+    }
+
+    @Test
+    public void deviceIsRequestedAgainAfterTheCooldownExpired() throws Exception {
+        config.setKey(SESSION_KEY);
+        device.respondRaw(STATUS, HttpMethod.GET, 429, "Too Many Requests");
+
+        PhilipsAirHttpAPIConnection connection = createConnection();
+        assertThrows(PhilipsAirAPIException.class, () -> connection.getAirPurifierStatus(HOST));
+        assertEquals(1, device.count(STATUS, HttpMethod.GET));
+
+        now += TimeUnit.MINUTES.toMillis(5) - 1;
+        PhilipsAirAPIException e = assertThrows(PhilipsAirAPIException.class,
+                () -> connection.getAirPurifierStatus(HOST));
+        assertEquals("@text/offline.communication-error.cooldown", e.getMessage());
+        assertEquals(1, device.count(STATUS, HttpMethod.GET));
+
+        device.respond(STATUS, HttpMethod.GET, STATUS_JSON);
+        now += 1;
+        assertNotNull(connection.getAirPurifierStatus(HOST));
+        assertEquals(2, device.count(STATUS, HttpMethod.GET));
     }
 }

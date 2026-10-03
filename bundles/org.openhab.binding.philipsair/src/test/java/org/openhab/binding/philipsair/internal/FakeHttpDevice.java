@@ -15,7 +15,6 @@ package org.openhab.binding.philipsair.internal;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -106,6 +105,7 @@ public class FakeHttpDevice {
     private final String key;
     private final HttpClient httpClient;
     private final Map<String, Script> scripts = new HashMap<>();
+    private final Map<String, Exception> failures = new HashMap<>();
     private final List<Call> calls = new CopyOnWriteArrayList<>();
     private volatile @Nullable String statusAfterCommand;
 
@@ -179,8 +179,18 @@ public class FakeHttpDevice {
     }
 
     /**
-     * Scripts the answer to a command, which is the new status. The device reports that status from the first command
-     * on, until then it reports the status that was scripted for the status requests.
+     * Scripts a transport failure: sending the matching requests throws the failure, until the requests are scripted
+     * again. The requests are recorded in {@link #calls()}. Jetty declares InterruptedException, TimeoutException and
+     * ExecutionException for sending a request.
+     */
+    public synchronized void respondWithFailure(Endpoint endpoint, HttpMethod method, Exception failure) {
+        failures.put(scriptKey(endpoint, method), failure);
+    }
+
+    /**
+     * Scripts the answer to a command, which is the new status. It models the state of the device after a command:
+     * from the first command on, the device reports that status for the status requests, until these are scripted
+     * again with {@link #respond} or {@link #respondRaw}.
      */
     public void respondToCommandWithStatus(String status) throws GeneralSecurityException {
         respond(Endpoint.STATUS, HttpMethod.PUT, status);
@@ -221,7 +231,19 @@ public class FakeHttpDevice {
         }
     }
 
+    /**
+     * Replaces what the device does for the requests, which also ends a failure that was scripted for them. Scripting
+     * the status requests ends the state the device had after a command.
+     */
     private synchronized void script(Endpoint endpoint, HttpMethod method, List<Reply> replies) {
+        failures.remove(scriptKey(endpoint, method));
+        if (endpoint == Endpoint.STATUS && method == HttpMethod.GET) {
+            statusAfterCommand = null;
+        }
+        putScript(endpoint, method, replies);
+    }
+
+    private synchronized void putScript(Endpoint endpoint, HttpMethod method, List<Reply> replies) {
         scripts.put(scriptKey(endpoint, method), new Script(replies));
     }
 
@@ -230,12 +252,21 @@ public class FakeHttpDevice {
     }
 
     /**
-     * The answer to the calls that are not simulated: the default value of the return type.
+     * The answer to the calls that are not simulated. They fail, so a call the code under test newly makes is not
+     * silently answered with null or zero.
      */
     private static @Nullable Object defaultAnswer(InvocationOnMock invocation) {
-        Class<?> returnType = invocation.getMethod().getReturnType();
-        return returnType.isPrimitive() && returnType != void.class ? Array.get(Array.newInstance(returnType, 1), 0)
-                : null;
+        String method = invocation.getMethod().getName();
+        switch (method) {
+            case "toString":
+                return "FakeHttpDevice " + invocation.getMethod().getDeclaringClass().getSimpleName();
+            case "hashCode":
+                return System.identityHashCode(invocation.getMock());
+            case "equals":
+                return invocation.getMock() == invocation.getArgument(0);
+            default:
+                throw new UnsupportedOperationException("FakeHttpDevice does not support " + method);
+        }
     }
 
     private @Nullable Object answerHttpClient(InvocationOnMock invocation) {
@@ -275,14 +306,19 @@ public class FakeHttpDevice {
         return body.toString();
     }
 
-    private ContentResponse reply(String url, HttpMethod method, @Nullable String body) {
+    private ContentResponse reply(String url, HttpMethod method, @Nullable String body) throws Exception {
         calls.add(new Call(url, method, body));
         Reply reply = new Reply(404, "Not Found");
         for (Endpoint endpoint : Endpoint.values()) {
             if (url(endpoint).equals(url)) {
                 Script script;
+                Exception failure;
                 synchronized (this) {
                     script = scripts.get(scriptKey(endpoint, method));
+                    failure = failures.get(scriptKey(endpoint, method));
+                }
+                if (failure != null) {
+                    throw failure;
                 }
                 if (script != null) {
                     reply = script.next();
@@ -291,7 +327,7 @@ public class FakeHttpDevice {
         }
         String newStatus = statusAfterCommand;
         if (method == HttpMethod.PUT && url.equals(url(Endpoint.STATUS)) && newStatus != null) {
-            script(Endpoint.STATUS, HttpMethod.GET, List.of(new Reply(200, newStatus)));
+            putScript(Endpoint.STATUS, HttpMethod.GET, List.of(new Reply(200, newStatus)));
         }
         Reply result = reply;
         return mock(ContentResponse.class, withSettings().defaultAnswer(invocation -> {

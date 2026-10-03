@@ -127,8 +127,12 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
         return url.replace("%HOST%", host);
     }
 
+    long currentTimeMillis() {
+        return System.currentTimeMillis();
+    }
+
     private String getResponseFromCache(String url, boolean decrypt) throws PhilipsAirAPIException {
-        long now = System.currentTimeMillis();
+        long now = currentTimeMillis();
         CachedResponse cached = cache.get(url);
         if (cached != null && cached.expiresAt() > now) {
             return cached.content();
@@ -147,7 +151,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
             throws PhilipsAirAPIException {
         try {
             // checked first, so nothing is requested or changed, e.g. the stored key, during the cooldown
-            if (cooldownTimer > System.currentTimeMillis()) {
+            if (cooldownTimer > currentTimeMillis()) {
                 logger.debug("Waiting for the cooldown period, the device responded with status code {}",
                         TOO_MANY_REQUESTS_429);
                 throw new PhilipsAirAPIException(ERROR_COOLDOWN);
@@ -175,7 +179,7 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
                 case OK_200:
                     break;
                 case TOO_MANY_REQUESTS_429:
-                    cooldownTimer = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
+                    cooldownTimer = currentTimeMillis() + TimeUnit.MINUTES.toMillis(5);
                     // fall through
                 default:
                     logger.debug("Philips Air Purifier device responded with status code {}", httpStatus);
@@ -187,13 +191,18 @@ public class PhilipsAirHttpAPIConnection extends PhilipsAirAPIConnection {
                 try {
                     finalcontent = cipher.decrypt(finalcontent);
                 } catch (BadPaddingException bexp) {
+                    if (isRetry) {
+                        // the key was renewed for this request already, another exchange would not help
+                        logger.debug("Could not decrypt response with the renewed key");
+                        throw new PhilipsAirAPIException(ERROR_KEY_RENEWED);
+                    }
                     logger.debug("Could not decrypt response, exchanging keys");
                     config.setKey("");
                     initCipher();
                     getCipher();
                     // the response was encrypted with the previous key. A command is not repeated, as its content
                     // was also encrypted with the previous key.
-                    if (isRetry || method != HttpMethod.GET) {
+                    if (method != HttpMethod.GET) {
                         throw new PhilipsAirAPIException(ERROR_KEY_RENEWED);
                     }
                     return getResponse(url, method, content, decode, true);
