@@ -531,7 +531,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             logger.debug("{}: Thing is shutting down, ignore WebSocket message", thingName);
             return;
         }
-        if (!t.isThingOnline() && t.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
+        // A sleeping device set OFFLINE by the watchdog can't be polled, its next wakeup push is the only recovery
+        boolean sleepDevice = !getProfile().alwaysOn;
+        if (!sleepDevice && !t.isThingOnline() && t.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
             logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
             return;
         }
@@ -579,7 +581,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
 
             profile.status = status;
-            if (updated) {
+            // A wakeup without changed values still proves that a sleeping device is alive
+            if (updated || !profile.alwaysOn) {
                 getThing().restartWatchdog();
             }
         }

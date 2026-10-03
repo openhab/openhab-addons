@@ -648,6 +648,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
             skipUpdate++;
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
+                if ((scheduledUpdates == 0) && !profile.alwaysOn && profile.isInitialized()) {
+                    // Polling a sleeping device always fails, its wakeup push resets the watchdog instead. A missed
+                    // wakeup (flat battery, out of range) has to be detected here, as there is no failing poll.
+                    // A pending settings refresh waits for the next update requested by a wakeup.
+                    if (isWatchdogExpired()) {
+                        logger.debug("{}: Device missed its wakeup window, going offline", thingName);
+                        setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR,
+                                "offline.status-error-watchdog");
+                    } else {
+                        logger.trace("{}: Sleep device, skip periodic poll, waiting for next wakeup", thingName);
+                    }
+                    return;
+                }
                 ThingStatus thingStatus = getThing().getStatus();
                 if (!profile.isInitialized() || ((thingStatus == ThingStatus.OFFLINE))
                         || (getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING)) {
@@ -712,6 +725,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
         updateMarkerSet = false;
+        if (stopping) {
+            return;
+        }
         super.updateStatus(status, statusDetail, description);
     }
 
@@ -847,6 +863,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 // request 3 updates in a row (during the first 2+3*3 sec)
                 requestUpdates(profile.alwaysOn ? 3 : 1, !channelsCreated);
             }
+        } else if (!profile.alwaysOn && refreshSettings && scheduledUpdates == 0) {
+            // the poll queued by an earlier wakeup missed its window, retry on this one
+            requestUpdates(1, false);
         }
 
         // Restart watchdog when status update was successful (no exception)
@@ -860,7 +879,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         api.close(); // Gen2: disconnect WS/close http sessions
         watchdog = 0;
-        profile.initialized = false; // force full re-init (incl. asyncApiRequest) on next reconnect
+        if (profile.alwaysOn) {
+            // Force full re-init on next reconnect. Sleeping devices have no connection to re-establish, re-init
+            // would only flip them to CONFIGURATION_PENDING until their next wakeup.
+            profile.initialized = false;
+        }
         channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
     }
 
