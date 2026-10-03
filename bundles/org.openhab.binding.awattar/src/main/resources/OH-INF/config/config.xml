@@ -57,6 +57,14 @@
 			<description>Should the highest prices be returned?</description>
 			<default>false</default>
 		</parameter>
+		<parameter name="preferCheapStart" type="boolean">
+			<label>Prefer Cheap Start</label>
+			<description>Weight earlier hours of a consecutive range higher, so ranges starting with the cheapest hours are
+				preferred. Useful for devices that often finish before the full length is used. Only applies if consecutive
+				is true.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>
