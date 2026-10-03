@@ -1,0 +1,25 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "vacuum.demo_vacuum_1_first_floor": {
+        "s": "docked",
+        "a": {
+          "fan_speed_list": [
+            "min",
+            "medium",
+            "high",
+            "max"
+          ],
+          "fan_speed": "medium",
+          "cleaned_area": 0,
+          "friendly_name": "Demo vacuum 1 first floor",
+          "supported_features": 12348
+        },
+        "c": "01M3201RGZP22DWMGKFZWFD0KZ",
+        "lc": 1789994787.3594098
+      }
+    }
+  }
+}

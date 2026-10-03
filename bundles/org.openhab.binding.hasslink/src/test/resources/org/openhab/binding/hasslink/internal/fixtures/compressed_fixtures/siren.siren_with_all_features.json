@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "siren.siren_with_all_features": {
+        "s": "on",
+        "a": {
+          "available_tones": [
+            "fire",
+            "alarm"
+          ],
+          "friendly_name": "Siren with all features",
+          "supported_features": 31
+        },
+        "c": "01M3201RGS9CQ3GZQGNTF3CRQB",
+        "lc": 1789994787.3538992
+      }
+    }
+  }
+}

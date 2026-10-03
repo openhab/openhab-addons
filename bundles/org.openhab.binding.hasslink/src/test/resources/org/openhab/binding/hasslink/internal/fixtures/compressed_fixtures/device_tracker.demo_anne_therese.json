@@ -1,0 +1,21 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "device_tracker.demo_anne_therese": {
+        "s": "not_home",
+        "a": {
+          "source_type": "gps",
+          "latitude": 32.87589,
+          "longitude": 117.21975499999999,
+          "gps_accuracy": 86,
+          "battery": 52,
+          "friendly_name": "Anne Therese"
+        },
+        "c": "01M3201RETXGJMCH6NWYK0N9HH",
+        "lc": 1789994787.2909956
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "light.living_room_rgbww_lights": {
+        "s": "on",
+        "a": {
+          "supported_color_modes": [
+            "rgbww"
+          ],
+          "color_mode": "rgbww",
+          "brightness": 180,
+          "hs_color": [
+            0.923,
+            50.98
+          ],
+          "rgb_color": [
+            255,
+            127,
+            125
+          ],
+          "xy_color": [
+            0.528,
+            0.315
+          ],
+          "rgbww_color": [
+            255,
+            0,
+            0,
+            255,
+            0
+          ],
+          "friendly_name": "Living Room RGBWW Lights",
+          "supported_features": 0
+        },
+        "c": "01M3201RGAJXPEK7D4M4ZVSSFB",
+        "lc": 1789994787.338649
+      }
+    }
+  }
+}

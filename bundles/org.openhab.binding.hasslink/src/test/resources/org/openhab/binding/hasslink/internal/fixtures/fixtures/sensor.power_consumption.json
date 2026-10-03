@@ -1,0 +1,36 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "sensor.power_consumption",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "sensor.power_consumption",
+        "state": "100",
+        "attributes": {
+          "state_class": "measurement",
+          "unit_of_measurement": "W",
+          "device_class": "power",
+          "friendly_name": "Power consumption"
+        },
+        "last_changed": "2026-09-21T12:46:27.347993+00:00",
+        "last_reported": "2026-09-21T12:46:27.373904+00:00",
+        "last_updated": "2026-09-21T12:46:27.347993+00:00",
+        "context": {
+          "id": "01M3201RGK8J64JE5ZJJ7PTKQJ",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

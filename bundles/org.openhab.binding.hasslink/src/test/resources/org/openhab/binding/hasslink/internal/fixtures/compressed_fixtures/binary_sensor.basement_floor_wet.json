@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "binary_sensor.basement_floor_wet": {
+        "s": "off",
+        "a": {
+          "device_class": "moisture",
+          "friendly_name": "Basement Floor Wet"
+        },
+        "c": "01M3201RFZYJ40THSY4RQ03YHJ",
+        "lc": 1789994787.3279858
+      }
+    }
+  }
+}

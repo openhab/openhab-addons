@@ -1,0 +1,20 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "air_quality.demo_air_quality_office": {
+        "s": "4",
+        "a": {
+          "particulate_matter_10": 16,
+          "particulate_matter_2_5": 4,
+          "unit_of_measurement": "\u03bcg/m\u00b3",
+          "attribution": "Powered by Home Assistant",
+          "friendly_name": "Demo Air Quality Office"
+        },
+        "c": "01M3201RFYB3262ZTSXEQRVNN6",
+        "lc": 1789994787.326558
+      }
+    }
+  }
+}

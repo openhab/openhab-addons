@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.outside_temperature_battery": {
+        "s": "12",
+        "a": {
+          "state_class": "measurement",
+          "unit_of_measurement": "%",
+          "device_class": "battery",
+          "friendly_name": "Outside Temperature Battery"
+        },
+        "c": "01M3201RGJCQPKZWXEPAKFV53J",
+        "lc": 1789994787.346516
+      }
+    }
+  }
+}

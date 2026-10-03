@@ -1,0 +1,22 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "event.backup_automatic_backup": {
+        "s": "unknown",
+        "a": {
+          "event_types": [
+            "completed",
+            "failed",
+            "in_progress"
+          ],
+          "event_type": null,
+          "friendly_name": "Backup Automatic backup"
+        },
+        "c": "01M3201QYZQY1XEXJNAPM2DP54",
+        "lc": 1789994786.783081
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "a": {
+      "sensor.outside_humidity": {
+        "s": "54",
+        "a": {
+          "state_class": "measurement",
+          "unit_of_measurement": "%",
+          "device_class": "humidity",
+          "friendly_name": "Outside Humidity"
+        },
+        "c": "01M3201RGJW0BKT3VGW6QJ4C1A",
+        "lc": 1789994787.3468041
+      }
+    }
+  }
+}

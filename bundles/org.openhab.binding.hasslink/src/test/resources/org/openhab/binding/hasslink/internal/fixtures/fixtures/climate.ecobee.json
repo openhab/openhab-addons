@@ -1,0 +1,69 @@
+{
+  "id": 18,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "climate.ecobee",
+      "old_state": null,
+      "new_state": {
+        "entity_id": "climate.ecobee",
+        "state": "heat_cool",
+        "attributes": {
+          "hvac_modes": [
+            "off",
+            "cool",
+            "heat_cool",
+            "auto",
+            "dry",
+            "fan_only"
+          ],
+          "min_temp": 7,
+          "max_temp": 35,
+          "fan_modes": [
+            "on_low",
+            "on_high",
+            "auto_low",
+            "auto_high",
+            "off"
+          ],
+          "preset_modes": [
+            "home",
+            "eco",
+            "away"
+          ],
+          "swing_modes": [
+            "auto",
+            "1",
+            "2",
+            "3",
+            "off"
+          ],
+          "current_temperature": 23,
+          "target_temp_high": 24,
+          "target_temp_low": 21,
+          "fan_mode": "auto_low",
+          "preset_mode": "home",
+          "swing_mode": "auto",
+          "friendly_name": "Ecobee",
+          "supported_features": 442
+        },
+        "last_changed": "2026-09-21T12:46:27.332278+00:00",
+        "last_reported": "2026-09-21T12:46:27.372489+00:00",
+        "last_updated": "2026-09-21T12:46:27.332278+00:00",
+        "context": {
+          "id": "01M3201RG4NE6AE8Q83R989RRE",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2026-09-19T00:00:00.000000+00:00",
+    "context": {
+      "id": "01HXXXXXXX",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}
