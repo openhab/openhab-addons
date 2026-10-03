@@ -107,7 +107,7 @@ public class HassLinkDiscoveryService extends AbstractDiscoveryService {
         // 1. Process Hardware / Logical Devices
         for (DeviceRegistryEntry device : devices) {
             logger.debug("Processing device registry entry: {}", device);
-            if (!device.isPhysicalHardware()) {
+            if (device.isDisabled()) {
                 continue;
             }
             String deviceId = device.id();
@@ -115,6 +115,14 @@ public class HassLinkDiscoveryService extends AbstractDiscoveryService {
             if (!HassLinkEntityFilter.isDeviceAllowedByBridge(device, registry, bridgeConfig)) {
                 logger.debug("Device {} is excluded by bridge configuration filters. BridgeConfig: {}", deviceId,
                         bridgeConfig);
+                continue;
+            }
+
+            // Service-type devices (non-hardware) are skipped UNLESS an explicit inclusion filter was active.
+            // The fact that we've reached this point means that the device has passed those filters (checked above).
+            if (!device.isPhysicalHardware() && !HassLinkEntityFilter.hasActiveIncludeFilter(bridgeConfig)) {
+                logger.debug("Skipping service device {} because no explicit bridge inclusion filters are configured",
+                        deviceId);
                 continue;
             }
 
