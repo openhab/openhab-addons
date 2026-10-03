@@ -304,7 +304,7 @@ public class KeContactTransceiver {
                             responseCondition);
                 }
                 long remainingNanos = TimeUnit.MILLISECONDS.toNanos(KeContactHandler.REPORT_INTERVAL);
-                while (buffers.get(handler) == buffer && remainingNanos > 0) {
+                while (buffer.equals(buffers.get(handler)) && remainingNanos > 0) {
                     remainingNanos = responseCondition.awaitNanos(remainingNanos);
                 }
 
