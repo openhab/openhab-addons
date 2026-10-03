@@ -59,7 +59,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.awattar.internal.AwattarBindingConstants;
 import org.openhab.binding.awattar.internal.AwattarPrice;
 import org.openhab.binding.awattar.internal.api.AwattarApi;
-import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
+import org.openhab.binding.awattar.internal.api.MarketPriceApiException;
 import org.openhab.binding.awattar.internal.dto.AwattarApiData;
 import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.config.core.Configuration;
@@ -102,7 +102,7 @@ public class AwattarBridgeHandlerTest extends JavaTest {
     private @NonNullByDefault({}) AwattarBridgeHandler bridgeHandler;
 
     @BeforeEach
-    public void setUp() throws IOException, IllegalArgumentException, IllegalAccessException, AwattarApiException {
+    public void setUp() throws IOException, IllegalArgumentException, IllegalAccessException, MarketPriceApiException {
         // mock the API response
         try (InputStream inputStream = Objects
                 .requireNonNull(AwattarBridgeHandlerTest.class.getResourceAsStream("api_response.json"))) {

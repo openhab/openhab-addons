@@ -41,7 +41,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.awattar.internal.AwattarBindingConstants;
 import org.openhab.binding.awattar.internal.api.AwattarApi;
-import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
+import org.openhab.binding.awattar.internal.api.MarketPriceApiException;
 import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
@@ -100,10 +100,10 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
      * Test the refreshIfNeeded method with a bridge that is offline.
      *
      * @throws SecurityException
-     * @throws AwattarApiException
+     * @throws MarketPriceApiException
      */
     @Test
-    void testRefreshIfNeededThingOffline() throws SecurityException, AwattarApiException {
+    void testRefreshIfNeededThingOffline() throws SecurityException, MarketPriceApiException {
         when(bridgeMock.getStatus()).thenReturn(ThingStatus.OFFLINE);
 
         bridgeHandler.refreshIfNeeded();
@@ -118,10 +118,10 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
      * empty.
      *
      * @throws SecurityException
-     * @throws AwattarApiException
+     * @throws MarketPriceApiException
      */
     @Test
-    void testRefreshIfNeededDataEmpty() throws SecurityException, AwattarApiException {
+    void testRefreshIfNeededDataEmpty() throws SecurityException, MarketPriceApiException {
         when(bridgeMock.getStatus()).thenReturn(ThingStatus.ONLINE);
 
         bridgeHandler.refreshIfNeeded();

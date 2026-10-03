@@ -14,6 +14,7 @@ package org.openhab.binding.awattar.internal.api;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -39,7 +40,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
-import org.openhab.binding.awattar.internal.api.EnergyChartsApi.EnergyChartsApiException;
 import org.openhab.binding.awattar.internal.dto.AwattarTimeProvider;
 import org.openhab.core.test.java.JavaTest;
 
@@ -74,7 +74,7 @@ class EnergyChartsApiTest extends JavaTest {
     }
 
     @Test
-    void testPricesKeepIntervalsFromTimestamps() throws EnergyChartsApiException {
+    void testPricesKeepIntervalsFromTimestamps() throws MarketPriceApiException {
         SortedSet<AwattarPrice> prices = api.getData();
 
         assertThat(prices.size(), is(4));
@@ -87,20 +87,40 @@ class EnergyChartsApiTest extends JavaTest {
     }
 
     @Test
-    void testGermanBiddingZoneAndDateRange() throws EnergyChartsApiException {
+    void testGermanBiddingZoneAndDateRange() throws MarketPriceApiException {
         api.getData();
 
         verify(httpClient).newRequest("https://api.energy-charts.info/price?bzn=DE-LU&start=2024-06-14&end=2024-06-17");
     }
 
     @Test
-    void testAustrianBiddingZone() throws EnergyChartsApiException {
+    void testAustrianBiddingZone() throws MarketPriceApiException {
         config.country = "AT";
         api = new EnergyChartsApi(httpClient, timeProvider, config);
 
         api.getData();
 
         verify(httpClient).newRequest("https://api.energy-charts.info/price?bzn=AT&start=2024-06-14&end=2024-06-17");
+    }
+
+    @Test
+    void testServiceFeeIsApplied() throws MarketPriceApiException {
+        config.serviceFee = 10.0;
+        api = new EnergyChartsApi(httpClient, timeProvider, config);
+
+        AwattarPrice first = api.getData().first();
+
+        // 10 ct market + 10 ct base = 20 ct net, +10 % service fee = 22 ct, +20 % VAT
+        assertThat(first.netTotal(), is(closeTo(22.0, 1e-9)));
+        assertThat(first.grossTotal(), is(closeTo(26.4, 1e-9)));
+    }
+
+    @Test
+    void testPricesReturnNot200() {
+        when(response.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
+
+        MarketPriceApiException thrown = assertThrows(MarketPriceApiException.class, () -> api.getData());
+        assertThat(thrown.getMessage(), is("@text/warn.energycharts.statuscode [\"400\"]"));
     }
 
     @Test
