@@ -412,11 +412,13 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     }
 
     public void resetConnection(boolean newDevice) {
-        pushConnection.close();
-        connection.logout(newDevice);
-        sessionStorage.put("sessionStorage", null);
+        synchronized (synchronizeConnection) {
+            pushConnection.close();
+            connection.logout(newDevice);
+            sessionStorage.put("sessionStorage", null);
 
-        updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE);
+        }
     }
 
     // used to set a valid connection from the web proxy login
