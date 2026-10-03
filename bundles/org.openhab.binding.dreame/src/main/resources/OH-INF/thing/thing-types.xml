@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dreame"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Dreame/MOVA Account</label>
+		<description>Connects to a Dreamehome or MOVAhome cloud account</description>
+		<config-description>
+			<parameter name="cloudService" type="text" required="true">
+				<label>Cloud Service</label>
+				<description>Cloud service used by the account app</description>
+				<default>dreamehome</default>
+				<options>
+					<option value="dreamehome">Dreamehome</option>
+					<option value="movahome">MOVAhome</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Email address or phone number used by the selected app</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Account password used by the selected app</description>
+			</parameter>
+			<parameter name="country" type="text" required="true">
+				<label>Country</label>
+				<description>Two-letter country code used by the account; European countries are automatically routed to
+					the EU cloud</description>
+				<default>de</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="vacuum">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Dreame Vacuum</label>
+		<description>Vacuum status, map and controls</description>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
+		<channels>
+			<channel id="command" typeId="vacuum-command"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="state" typeId="vacuum-state"/>
+			<channel id="operating-status" typeId="vacuum-operating-status"/>
+			<channel id="charging-status" typeId="vacuum-charging-status"/>
+			<channel id="error-code" typeId="vacuum-error-code"/>
+			<channel id="cleaning-time" typeId="vacuum-cleaning-time"/>
+			<channel id="cleaned-area" typeId="vacuum-cleaned-area"/>
+			<channel id="suction-level" typeId="vacuum-suction-level"/>
+			<channel id="water-volume" typeId="vacuum-water-volume"/>
+			<channel id="task-status" typeId="vacuum-task-status"/>
+			<channel id="cleaning-mode" typeId="vacuum-cleaning-mode"/>
+			<channel id="clean-genius" typeId="vacuum-clean-genius"/>
+			<channel id="cleaning-route" typeId="vacuum-cleaning-route"/>
+			<channel id="drying-time" typeId="vacuum-drying-time"/>
+			<channel id="main-brush-left" typeId="vacuum-main-brush-left"/>
+			<channel id="main-brush-time-left" typeId="vacuum-main-brush-time-left"/>
+			<channel id="side-brush-left" typeId="vacuum-side-brush-left"/>
+			<channel id="side-brush-time-left" typeId="vacuum-side-brush-time-left"/>
+			<channel id="filter-left" typeId="vacuum-filter-left"/>
+			<channel id="filter-time-left" typeId="vacuum-filter-time-left"/>
+			<channel id="sensor-dirty-left" typeId="vacuum-sensor-dirty-left"/>
+			<channel id="sensor-dirty-time-left" typeId="vacuum-sensor-dirty-time-left"/>
+			<channel id="mop-pad-left" typeId="vacuum-mop-pad-left"/>
+			<channel id="mop-pad-time-left" typeId="vacuum-mop-pad-time-left"/>
+			<channel id="detergent-left" typeId="vacuum-detergent-left"/>
+			<channel id="detergent-time-left" typeId="vacuum-detergent-time-left"/>
+			<channel id="total-cleaning-time" typeId="vacuum-total-cleaning-time"/>
+			<channel id="cleaning-count" typeId="vacuum-cleaning-count"/>
+			<channel id="total-cleaned-area" typeId="vacuum-total-cleaned-area"/>
+			<channel id="base-status" typeId="vacuum-base-status"/>
+			<channel id="rooms" typeId="vacuum-rooms"/>
+			<channel id="room-cleaning" typeId="vacuum-room-cleaning"/>
+			<channel id="map-png" typeId="vacuum-map-png"/>
+			<channel id="map-svg" typeId="vacuum-map-svg"/>
+		</channels>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device identifier reported by the cloud account</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="15">
+				<label>Refresh Interval</label>
+				<description>Interval between cloud status refreshes</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="mower">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Dreame/MOVA Robotic Mower</label>
+		<description>A supported Dreame or MOVA robotic lawn mower</description>
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
+		<channels>
+			<channel id="command" typeId="command"/>
+			<channel id="state" typeId="state"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="charging-status" typeId="charging-status"/>
+			<channel id="error-code" typeId="error-code"/>
+			<channel id="firmware" typeId="firmware"/>
+			<channel id="do-not-disturb" typeId="do-not-disturb"/>
+			<channel id="do-not-disturb-active" typeId="do-not-disturb-active"/>
+			<channel id="current-zone" typeId="current-zone"/>
+			<channel id="mowing-sessions" typeId="mowing-sessions"/>
+			<channel id="total-mowing-time" typeId="total-mowing-time"/>
+			<channel id="total-mowed-area" typeId="total-mowed-area"/>
+			<channel id="position-x" typeId="position-x"/>
+			<channel id="position-y" typeId="position-y"/>
+			<channel id="heading" typeId="heading"/>
+			<channel id="mowing-progress" typeId="mowing-progress"/>
+			<channel id="planned-mowing-area" typeId="planned-mowing-area"/>
+			<channel id="current-mowed-area" typeId="current-mowed-area"/>
+			<channel id="docking-state" typeId="docking-state"/>
+			<channel id="location-state" typeId="location-state"/>
+			<channel id="wifi-rssi" typeId="wifi-rssi"/>
+			<channel id="ble-rssi" typeId="ble-rssi"/>
+			<channel id="lte-rssi" typeId="lte-rssi"/>
+			<channel id="task-executable" typeId="task-executable"/>
+			<channel id="task-active" typeId="task-active"/>
+			<channel id="task-operation" typeId="task-operation"/>
+			<channel id="task-state" typeId="task-state"/>
+			<channel id="task-time" typeId="task-time"/>
+			<channel id="current-map-id" typeId="current-map-id"/>
+			<channel id="maps" typeId="maps"/>
+			<channel id="zones" typeId="zones"/>
+			<channel id="map-svg" typeId="map-svg"/>
+			<channel id="map-png" typeId="map-png"/>
+			<channel id="zone-mowing" typeId="zone-mowing"/>
+			<channel id="cutting-height" typeId="cutting-height"/>
+		</channels>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device identifier reported by the selected cloud service</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="15">
+				<label>Refresh Interval</label>
+				<description>Interval between cloud status refreshes</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="vacuum-map-png">
+		<item-type>Image</item-type>
+		<label>Vacuum Map (PNG)</label>
+		<description>Rendered vacuum map in PNG format</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-map-svg">
+		<item-type>Image</item-type>
+		<label>Vacuum Map (SVG)</label>
+		<description>Vector SVG preview of the complete vacuum map</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-command">
+		<item-type>String</item-type>
+		<label>Vacuum Command</label>
+		<description>Vacuum cleaning, dock and station commands; displays the last acknowledged command</description>
+		<state>
+			<options>
+				<option value="START">Start Cleaning</option>
+				<option value="PAUSE">Pause</option>
+				<option value="DOCK">Return to Dock</option>
+				<option value="STOP">Stop</option>
+				<option value="LOCATE">Locate</option>
+				<option value="AUTO_EMPTY">Empty Dust Bin</option>
+				<option value="WASH_MOPS">Wash Mops</option>
+				<option value="PAUSE_WASHING">Pause Mop Washing</option>
+				<option value="START_DRYING">Start Mop Drying</option>
+				<option value="STOP_DRYING">Stop Mop Drying</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-state">
+		<item-type>String</item-type>
+		<label>Vacuum State</label>
+		<description>Last observed vacuum device state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-operating-status">
+		<item-type>String</item-type>
+		<label>Vacuum Operating Status</label>
+		<description>Last observed vacuum operating status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-charging-status">
+		<item-type>String</item-type>
+		<label>Vacuum Charging Status</label>
+		<description>Last observed vacuum charging status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-error-code">
+		<item-type>Number</item-type>
+		<label>Vacuum Error Code</label>
+		<description>Last observed numeric vacuum error code</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-cleaning-time">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Cleaning Time</label>
+		<description>Elapsed cleaning time reported by the vacuum in minutes</description>
+		<state readOnly="true" min="0" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="vacuum-cleaned-area">
+		<item-type unitHint="m²">Number:Area</item-type>
+		<label>Cleaned Area</label>
+		<description>Area cleaned during the current task in square metres</description>
+		<state readOnly="true" min="0" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="vacuum-suction-level">
+		<item-type>String</item-type>
+		<label>Suction Level</label>
+		<description>Configured vacuum suction level</description>
+		<state>
+			<options>
+				<option value="QUIET">Quiet</option>
+				<option value="STANDARD">Standard</option>
+				<option value="STRONG">Strong</option>
+				<option value="TURBO">Turbo</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-water-volume">
+		<item-type>String</item-type>
+		<label>Water Volume</label>
+		<description>Configured mop water volume</description>
+		<state>
+			<options>
+				<option value="LOW">Low</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="HIGH">High</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-task-status">
+		<item-type>String</item-type>
+		<label>Task Status</label>
+		<description>Current cleaning task and paused state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-cleaning-mode">
+		<item-type>String</item-type>
+		<label>Cleaning Mode</label>
+		<description>Configured sweeping and mopping mode</description>
+		<state>
+			<options>
+				<option value="SWEEPING">Sweeping</option>
+				<option value="MOPPING">Mopping</option>
+				<option value="SWEEPING_AND_MOPPING">Sweeping and Mopping</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-base-status">
+		<item-type>String</item-type>
+		<label>Base Status</label>
+		<description>Current mop washing and drying station state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-clean-genius">
+		<item-type>String</item-type>
+		<label>CleanGenius</label>
+		<description>Configured CleanGenius cleaning intensity</description>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="ROUTINE">Routine Cleaning</option>
+				<option value="DEEP">Deep Cleaning</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-cleaning-route">
+		<item-type>String</item-type>
+		<label>Cleaning Route</label>
+		<description>Configured standard or quick cleaning route</description>
+		<state>
+			<options>
+				<option value="STANDARD">Standard</option>
+				<option value="QUICK">Quick</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-drying-time">
+		<item-type>String</item-type>
+		<label>Drying Time</label>
+		<description>Configured mop drying duration</description>
+		<state>
+			<options>
+				<option value="2H">2 Hours</option>
+				<option value="3H">3 Hours</option>
+				<option value="4H">4 Hours</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-main-brush-left" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Main Brush Remaining</label>
+		<description>Main brush service life remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-main-brush-time-left" advanced="true">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Main Brush Time Remaining</label>
+		<description>Main brush service time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-side-brush-left" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Side Brush Remaining</label>
+		<description>Side brush service life remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-side-brush-time-left" advanced="true">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Side Brush Time Remaining</label>
+		<description>Side brush service time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-filter-left" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Filter Remaining</label>
+		<description>Filter service life remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-filter-time-left" advanced="true">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Filter Time Remaining</label>
+		<description>Filter service time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-sensor-dirty-left" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Sensor Cleaning Remaining</label>
+		<description>Sensor cleaning interval remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-sensor-dirty-time-left" advanced="true">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Sensor Cleaning Time Remaining</label>
+		<description>Sensor cleaning time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-mop-pad-left" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Mop Pad Remaining</label>
+		<description>Mop pad service life remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-mop-pad-time-left" advanced="true">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Mop Pad Time Remaining</label>
+		<description>Mop pad service time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-detergent-left" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Detergent Remaining</label>
+		<description>Detergent supply remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-detergent-time-left" advanced="true">
+		<item-type unitHint="d">Number:Time</item-type>
+		<label>Detergent Time Remaining</label>
+		<description>Estimated detergent supply time remaining</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-total-cleaning-time" advanced="true">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Total Cleaning Time</label>
+		<description>Total cleaning time reported by the vacuum</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-cleaning-count" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cleaning Count</label>
+		<description>Total number of cleaning jobs reported by the vacuum</description>
+		<state pattern="%.0f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-total-cleaned-area" advanced="true">
+		<item-type unitHint="m²">Number:Area</item-type>
+		<label>Total Cleaned Area</label>
+		<description>Total cleaned area reported by the vacuum</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="vacuum-room-cleaning">
+		<item-type>String</item-type>
+		<label>Room Cleaning</label>
+		<description>Comma-separated numeric room IDs to clean once; displays the last acknowledged selection</description>
+		<state/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="vacuum-rooms">
+		<item-type>String</item-type>
+		<label>Rooms</label>
+		<description>Room segment IDs and names reported by the current map</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Command sent to the mower</description>
+		<state>
+			<options>
+				<option value="start">Start</option>
+				<option value="pause">Pause</option>
+				<option value="stop">Stop</option>
+				<option value="dock">Return to Dock</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>Current mower state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charging-status">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+		<description>Current charging state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="error-code">
+		<item-type>String</item-type>
+		<label>Error Code</label>
+		<description>Current proprietary Dreame device status or error code</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="firmware">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Installed firmware version</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="do-not-disturb">
+		<item-type>Switch</item-type>
+		<label>Do Not Disturb</label>
+		<description>Enables or disables do not disturb mode; availability depends on the mower model and firmware</description>
+	</channel-type>
+
+	<channel-type id="do-not-disturb-active">
+		<item-type>Switch</item-type>
+		<label>Do Not Disturb Active</label>
+		<description>Indicates whether the enabled do not disturb schedule is currently active; availability depends on the
+			mower model and firmware</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-zone">
+		<item-type>String</item-type>
+		<label>Current Zone</label>
+		<description>Identifier of the active mowing zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mowing-sessions">
+		<item-type>Number</item-type>
+		<label>Mowing Sessions</label>
+		<description>Total number of mowing sessions</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="total-mowing-time">
+		<item-type>Number:Time</item-type>
+		<label>Total Mowing Time</label>
+		<description>Total time spent mowing</description>
+		<state pattern="%.1f h" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="total-mowed-area">
+		<item-type>Number:Area</item-type>
+		<label>Total Mowed Area</label>
+		<description>Total area mowed</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="position-x">
+		<item-type>Number</item-type>
+		<label>Position X</label>
+		<description>Current mower X coordinate in the Dreame map coordinate system</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="position-y">
+		<item-type>Number</item-type>
+		<label>Position Y</label>
+		<description>Current mower Y coordinate in the Dreame map coordinate system</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heading">
+		<item-type>Number</item-type>
+		<label>Heading</label>
+		<description>Current mower heading in degrees</description>
+		<state pattern="%.2f °" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mowing-progress">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Mowing Progress</label>
+		<description>Progress of the current mowing task</description>
+		<state pattern="%.2f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="planned-mowing-area">
+		<item-type>Number:Area</item-type>
+		<label>Planned Mowing Area</label>
+		<description>Total planned area of the current mowing task</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-mowed-area">
+		<item-type>Number:Area</item-type>
+		<label>Current Mowed Area</label>
+		<description>Area completed during the current mowing task</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="docking-state">
+		<item-type>String</item-type>
+		<label>Docking State</label>
+		<description>Current relationship between mower and charging station</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="location-state">
+		<item-type>Number</item-type>
+		<label>Location State</label>
+		<description>Current proprietary Dreame location state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wifi-rssi">
+		<item-type>Number</item-type>
+		<label>Wi-Fi Signal Strength</label>
+		<description>Current Wi-Fi received signal strength</description>
+		<state pattern="%.0f dBm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ble-rssi">
+		<item-type>Number</item-type>
+		<label>Bluetooth Signal Strength</label>
+		<description>Current Bluetooth received signal strength</description>
+		<state pattern="%.0f dBm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lte-rssi">
+		<item-type>Number</item-type>
+		<label>LTE Signal Strength</label>
+		<description>Current LTE received signal strength</description>
+		<state pattern="%.0f dBm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="task-executable">
+		<item-type>Switch</item-type>
+		<label>Task Executable</label>
+		<description>Whether Dreame marks the reported task as executable</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="task-active">
+		<item-type>Switch</item-type>
+		<label>Task Active</label>
+		<description>Whether the mower reports its current work sequence as active</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="task-operation">
+		<item-type>Number</item-type>
+		<label>Task Operation Code</label>
+		<description>Current proprietary Dreame task operation code</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="task-state">
+		<item-type>String</item-type>
+		<label>Task State</label>
+		<description>Task state derived from observed Dreame operation codes</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="task-time">
+		<item-type>Number</item-type>
+		<label>Task Time Value</label>
+		<description>Raw time field reported for the current Dreame task; its unit is not documented</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="current-map-id">
+		<item-type>Number</item-type>
+		<label>Current Map ID</label>
+		<description>Identifier of the active map; writable for MOVA mowers to select the map used by openHAB</description>
+		<state min="1" step="1"/>
+	</channel-type>
+
+	<channel-type id="maps">
+		<item-type>String</item-type>
+		<label>Maps</label>
+		<description>Available maps as a JSON array containing ID, index, name and area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zones">
+		<item-type>String</item-type>
+		<label>Mowing Zones</label>
+		<description>Mowing zones of the active map as a JSON array containing ID, name and area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="map-svg">
+		<item-type>Image</item-type>
+		<label>Map (SVG)</label>
+		<description>Rendered vector map of the active mowing area for SVG-capable clients</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="map-png">
+		<item-type>Image</item-type>
+		<label>Map (PNG)</label>
+		<description>Rendered PNG map of the active mowing area for mobile and Basic UI clients</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zone-mowing">
+		<item-type>String</item-type>
+		<label>Start Zone Mowing</label>
+		<description>Starts selective mowing. Send one or more existing positive zone IDs separated by commas, for example 1
+			or 1,2. IDs are validated against the active map.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="cutting-height">
+		<item-type>Number</item-type>
+		<label>Cutting Height</label>
+		<description>Map-wide cutting height in centimetres</description>
+		<state min="3" max="7" step="0.5" pattern="%.1f cm"/>
+	</channel-type>
+</thing:thing-descriptions>

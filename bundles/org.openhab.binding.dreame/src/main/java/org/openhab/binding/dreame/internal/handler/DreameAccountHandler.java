@@ -1,0 +1,199 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.dreame.internal.handler;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.dreame.internal.api.DreameCloudException;
+import org.openhab.binding.dreame.internal.api.DreameCloudService;
+import org.openhab.binding.dreame.internal.api.DreameMowerApi;
+import org.openhab.binding.dreame.internal.api.DreameVacuumApi;
+import org.openhab.binding.dreame.internal.config.DreameAccountConfiguration;
+import org.openhab.binding.dreame.internal.discovery.DreameMowerDiscoveryService;
+import org.openhab.binding.dreame.internal.discovery.DreameVacuumDiscoveryService;
+import org.openhab.binding.dreame.internal.model.DreameDevice;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Owns the selected cloud session shared by mower and vacuum things.
+ *
+ * @author Ronny Grun - Initial contribution
+ */
+@NonNullByDefault
+public class DreameAccountHandler extends BaseBridgeHandler {
+
+    private static final long DEVICE_METADATA_REFRESH_MINUTES = 15;
+
+    private final Logger logger = LoggerFactory.getLogger(DreameAccountHandler.class);
+    private final DreameMowerApi apiClient;
+    private final AtomicInteger lifecycleGeneration = new AtomicInteger();
+    private volatile List<DreameDevice> devices = List.of();
+    private volatile @Nullable ScheduledFuture<?> deviceMetadataRefreshJob;
+    private volatile @Nullable DreameMowerDiscoveryService discoveryService;
+    private volatile @Nullable DreameVacuumDiscoveryService vacuumDiscoveryService;
+
+    public DreameAccountHandler(Bridge bridge, DreameMowerApi apiClient) {
+        super(bridge);
+        this.apiClient = apiClient;
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // The account bridge does not expose command channels.
+    }
+
+    @Override
+    public void initialize() {
+        stopDeviceMetadataRefresh();
+        int generation = lifecycleGeneration.incrementAndGet();
+        DreameAccountConfiguration config = getConfigAs(DreameAccountConfiguration.class);
+        if (config.cloudService.isBlank() || config.username.isBlank() || config.password.isBlank()
+                || config.country.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.account-credentials");
+            return;
+        }
+
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(() -> connect(config, generation));
+    }
+
+    private void connect(DreameAccountConfiguration config, int generation) {
+        DreameCloudService cloudService;
+        try {
+            cloudService = DreameCloudService.fromConfiguration(config.cloudService);
+            apiClient.login(config.username, config.password, config.country, cloudService);
+            List<DreameDevice> discoveredDevices = apiClient.getDevices();
+            if (generation != lifecycleGeneration.get()) {
+                return;
+            }
+            devices = List.copyOf(discoveredDevices);
+            updateStatus(ThingStatus.ONLINE);
+            logger.debug("Connected to {}; account contains {} supported device records", cloudService.label(),
+                    devices.size());
+            DreameMowerDiscoveryService discovery = discoveryService;
+            if (discovery != null) {
+                discovery.discoverDevices();
+            }
+            DreameVacuumDiscoveryService vacuumDiscovery = vacuumDiscoveryService;
+            if (vacuumDiscovery != null) {
+                vacuumDiscovery.discoverDevices();
+            }
+            deviceMetadataRefreshJob = scheduler.scheduleWithFixedDelay(() -> refreshDeviceMetadata(generation),
+                    DEVICE_METADATA_REFRESH_MINUTES, DEVICE_METADATA_REFRESH_MINUTES, TimeUnit.MINUTES);
+        } catch (DreameCloudException e) {
+            if (generation != lifecycleGeneration.get()) {
+                return;
+            }
+            logger.debug("Cloud connection failed: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error.cloud");
+        }
+    }
+
+    private void refreshDeviceMetadata(int generation) {
+        try {
+            List<DreameDevice> refreshedDevices = List.copyOf(apiClient.getDevices());
+            if (generation != lifecycleGeneration.get()) {
+                return;
+            }
+            List<DreameDevice> previousDevices = devices;
+            devices = refreshedDevices;
+            if (!previousDevices.equals(refreshedDevices)) {
+                logger.debug("Refreshed cloud metadata for {} device records", refreshedDevices.size());
+                DreameMowerDiscoveryService discovery = discoveryService;
+                if (discovery != null) {
+                    discovery.discoverDevices();
+                }
+                DreameVacuumDiscoveryService vacuumDiscovery = vacuumDiscoveryService;
+                if (vacuumDiscovery != null) {
+                    vacuumDiscovery.discoverDevices();
+                }
+            }
+        } catch (DreameCloudException e) {
+            if (generation == lifecycleGeneration.get()) {
+                logger.debug("Cloud device metadata refresh failed; retaining the previous metadata");
+            }
+        }
+    }
+
+    public @Nullable DreameDevice getDevice(String deviceId) {
+        return getDevices().stream().filter(device -> device.id().equals(deviceId)).findFirst().orElse(null);
+    }
+
+    public @Nullable DreameDevice getVacuumDevice(String deviceId) {
+        return getVacuumDevices().stream().filter(device -> device.id().equals(deviceId)).findFirst().orElse(null);
+    }
+
+    public DreameMowerApi getApiClient() {
+        return apiClient;
+    }
+
+    public @Nullable DreameVacuumApi getVacuumApi() {
+        return apiClient instanceof DreameVacuumApi vacuumApi ? vacuumApi : null;
+    }
+
+    public List<DreameDevice> getDevices() {
+        return devices.stream().filter(DreameDevice::isMower).toList();
+    }
+
+    public List<DreameDevice> getVacuumDevices() {
+        return devices.stream().filter(DreameDevice::isVacuum).toList();
+    }
+
+    public void setVacuumDiscoveryService(@Nullable DreameVacuumDiscoveryService service) {
+        vacuumDiscoveryService = service;
+    }
+
+    public void setDiscoveryService(@Nullable DreameMowerDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(DreameMowerDiscoveryService.class, DreameVacuumDiscoveryService.class);
+    }
+
+    @Override
+    public void dispose() {
+        lifecycleGeneration.incrementAndGet();
+        stopDeviceMetadataRefresh();
+        discoveryService = null;
+        vacuumDiscoveryService = null;
+        devices = List.of();
+        apiClient.logout();
+        super.dispose();
+    }
+
+    private void stopDeviceMetadataRefresh() {
+        ScheduledFuture<?> job = deviceMetadataRefreshJob;
+        deviceMetadataRefreshJob = null;
+        if (job != null) {
+            job.cancel(false);
+        }
+    }
+}
