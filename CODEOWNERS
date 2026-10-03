@@ -161,6 +161,7 @@
 /bundles/org.openhab.binding.guntamatic/ @MikeTheTux
 /bundles/org.openhab.binding.haassohnpelletstove/ @chingon007
 /bundles/org.openhab.binding.harmonyhub/ @digitaldan
+/bundles/org.openhab.binding.hasslink/ @jimtng
 /bundles/org.openhab.binding.haywardomnilogic/ @matchews
 /bundles/org.openhab.binding.hccrubbishcollection/ @cossey
 /bundles/org.openhab.binding.hdanywhere/ @kgoderis
@@ -170,7 +171,6 @@
 /bundles/org.openhab.binding.heos/ @Wire82
 /bundles/org.openhab.binding.herzborg/ @Sonic-Amiga
 /bundles/org.openhab.binding.homeassistant/ @ccutrer
-/bundles/org.openhab.binding.hasslink/ @jimtng
 /bundles/org.openhab.binding.homeconnect/ @bruestel
 /bundles/org.openhab.binding.homeconnectdirect/ @bruestel
 /bundles/org.openhab.binding.homekit/ @andrewfg
