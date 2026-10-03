@@ -824,7 +824,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
                             ? new QuantityType<Dimensionless>(humidity + config.getHumidityOffset(), HUMIDITY_UNIT)
                             : null;
                 case HUMIDITY_SETPOINT:
-                    return data.getHumiditySetpoint();
+                    return toPercent(data.getHumiditySetpoint());
                 case TEMPERATURE:
                     Float temperature = data.getTemperature();
                     return temperature != null

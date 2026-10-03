@@ -211,7 +211,7 @@ public class PhilipsAirHandlerTest extends JavaTest {
         assertEquals(new StringType("P"), lastState("controls#mode"));
         assertEquals(new DecimalType(0), lastState("controls#timer"));
         assertEquals(new QuantityType<>(0, Units.MINUTE), lastState("controls#timer-remaining"));
-        assertEquals(new DecimalType(40), lastState("controls#target-humidity"));
+        assertEquals(new QuantityType<>(40, Units.PERCENT), lastState("controls#target-humidity"));
         assertEquals(new StringType("PH"), lastState("controls#function"));
         assertEquals(OnOffType.ON, lastState("controls-ui#button-light"));
         assertEquals(new QuantityType<>(75, Units.PERCENT), lastState("controls-ui#light-level"));
