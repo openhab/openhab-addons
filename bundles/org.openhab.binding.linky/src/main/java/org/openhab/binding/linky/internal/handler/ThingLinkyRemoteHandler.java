@@ -40,8 +40,12 @@ import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.config.LinkyThingRemoteConfiguration;
 import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
+import org.openhab.binding.linky.internal.dto.Alimentation;
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
+import org.openhab.binding.linky.internal.dto.ContractState;
+import org.openhab.binding.linky.internal.dto.ContractSynth;
+import org.openhab.binding.linky.internal.dto.GeneralData;
 import org.openhab.binding.linky.internal.dto.Identity;
 import org.openhab.binding.linky.internal.dto.IndexInfo;
 import org.openhab.binding.linky.internal.dto.IndexMode;
@@ -50,6 +54,7 @@ import org.openhab.binding.linky.internal.dto.MetaData;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.PrmDetail;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
+import org.openhab.binding.linky.internal.dto.SubscribeServices;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
 import org.openhab.binding.linky.internal.dto.UserInfo;
 import org.openhab.binding.linky.internal.types.LinkyException;
@@ -113,6 +118,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
     public String userId = "";
     public String segment = "";
+
+    private boolean isV26 = true;
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
@@ -353,13 +360,28 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             MetaData result = new MetaData();
             if (api != null) {
                 if (supportNewApiFormat()) {
-                    if (config.prmId.isBlank()) {
-                        throw new LinkyException("@text/offline.config-error-mandatory-settings");
+                    if (isV26) {
+                        SubscribeServices services = api.getSubscribeService(this);
+
+                        String prmId = "99999999999999";
+                        GeneralData generalData = api.getGeneralData(this, prmId);
+                        Alimentation alimentation = api.getAlimentation(this, prmId);
+                        ContractSynth contractSynth = api.getContractSynth(this, prmId);
+                        ContractState contractState = api.getContractState(this, prmId);
+
+                        result.identity = Identity.convertFromGeneralData(generalData);
+                        result.contact = Contact.convertFromGeneralData(generalData);
+                        result.contract = Contract.convertFromContract(contractSynth, contractState);
+                        result.usagePoint = UsagePoint.convertFromContract(generalData, contractSynth, contractState);
+                    } else {
+                        if (config.prmId.isBlank()) {
+                            throw new LinkyException("@text/offline.config-error-mandatory-settings");
+                        }
+                        result.identity = api.getIdentity(this, config.prmId);
+                        result.contact = api.getContact(this, config.prmId);
+                        result.contract = api.getContract(this, config.prmId);
+                        result.usagePoint = api.getUsagePoint(this, config.prmId);
                     }
-                    result.identity = api.getIdentity(this, config.prmId);
-                    result.contact = api.getContact(this, config.prmId);
-                    result.contract = api.getContract(this, config.prmId);
-                    result.usagePoint = api.getUsagePoint(this, config.prmId);
                 } else {
                     UserInfo userInfo = api.getUserInfo(this);
                     PrmInfo prmInfo = api.getPrmInfo(this, userInfo.userProperties.internId, config.prmId);
@@ -457,6 +479,10 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private synchronized void updateEnergyData() {
         dailyConsumption.getValue().ifPresentOrElse(values -> {
             int dSize = values.baseValue.length;
+
+            if (dSize == 1) {
+                return;
+            }
 
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, values.baseValue[dSize - 1].value);
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_2, values.baseValue[dSize - 2].value);
@@ -780,10 +806,12 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * Requests new daily or weekly data and updates the channels.
      */
     private synchronized void updateEnergyIndex() {
-        Bridge lcBridge = getBridge();
-        if (!(lcBridge != null && lcBridge.getHandler() instanceof BridgeRemoteEnedisWebHandler)) {
-            return;
-        }
+        /*
+         * Bridge lcBridge = getBridge();
+         * if (!(lcBridge != null && lcBridge.getHandler() instanceof BridgeRemoteEnedisWebHandler)) {
+         * return;
+         * }
+         */
         dailyIndex.getValue().ifPresentOrElse(values -> {
             handleDynamicChannel(values);
 

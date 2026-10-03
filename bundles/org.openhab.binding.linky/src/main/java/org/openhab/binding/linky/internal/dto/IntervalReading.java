@@ -14,6 +14,8 @@ package org.openhab.binding.linky.internal.dto;
 
 import java.time.LocalDateTime;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link IntervalReading} holds informations for the energy consumption of a period
  *
@@ -24,7 +26,16 @@ import java.time.LocalDateTime;
 public class IntervalReading {
     public Double value = 0.0;
     public IndexInfo[] indexInfo;
+
+    @SerializedName("date2")
     public LocalDateTime date;
+
+    @SerializedName("date")
+    public String originalDate;
+
+    public IntervalReading() {
+        date = LocalDateTime.now();
+    }
 
     public void initIndexInfo() {
         indexInfo = new IndexInfo[2];
