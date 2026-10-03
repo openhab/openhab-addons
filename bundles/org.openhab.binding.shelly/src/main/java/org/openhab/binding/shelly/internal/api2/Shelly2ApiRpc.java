@@ -114,7 +114,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     protected volatile boolean initialized;
     protected final boolean alwaysOn;
     private @Nullable Shelly2RpcSocket rpcSocket;
-    private @Nullable Shelly2AuthChallenge authInfo;
+    private volatile @Nullable Shelly2AuthChallenge authInfo;
+    // collapses concurrent refreshes of a stale nonce onto one, each extra nonce fills the device's nonce cache
+    private final Object authLock = new Object();
     private final WebSocketClient client;
     private final ScheduledExecutorService scheduler;
 
@@ -1546,6 +1548,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
         String json = "";
         Shelly2RpcBaseMessage req = buildRequest(method, params);
+        Shelly2AuthChallenge sentAuth = authInfo; // snapshot of the nonce this request is about to use, if any
         try {
             // only always-on devices have an RPC WebSocket; battery devices use HTTP RPC only
             if (alwaysOn) {
@@ -1557,25 +1560,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             ShellyApiResult res = e.getApiResult();
             String auth = getString(res.authChallenge);
             if (res.isHttpAccessUnauthorized() && !auth.isEmpty()) {
-                String[] options = auth.split(",");
-                Shelly2AuthChallenge authInfo = this.authInfo = new Shelly2AuthChallenge();
-                for (String o : options) {
-                    String key = substringBefore(o, "=").stripLeading().trim();
-                    String value = substringAfter(o, "=").replace("\"", "").trim();
-                    switch (key) {
-                        case "Digest qop":
-                            authInfo.authType = SHELLY2_AUTHTTYPE_DIGEST;
-                            break;
-                        case "realm":
-                            authInfo.realm = value;
-                            break;
-                        case "nonce":
-                            // authInfo.nonce = Long.parseLong(value, 16);
-                            authInfo.nonce = value;
-                            break;
-                        case "algorithm":
-                            authInfo.algorithm = value;
-                            break;
+                synchronized (authLock) {
+                    // identity check: another thread may already have refreshed the nonce meanwhile
+                    if (authInfo == sentAuth) { // NOPMD CompareObjectsWithEquals
+                        authInfo = parseAuthChallenge(auth);
                     }
                 }
                 req = buildRequest(method, params); // update RPC message id

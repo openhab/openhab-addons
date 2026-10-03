@@ -73,6 +73,10 @@ public class ShellyHttpClient {
     protected AtomicInteger timeoutsRecovered = new AtomicInteger(0);
     protected volatile boolean basicAuth = false;
 
+    private final Object ncLock = new Object();
+    private @Nullable String ncNonce;
+    private long ncCounter;
+
     protected final ShellyApiConfiguration config;
 
     protected final ShellyDeviceProfile profile;
@@ -253,7 +257,14 @@ public class ShellyHttpClient {
         response.realm = challenge.realm;
         response.nonce = challenge.nonce;
         response.cnonce = Long.toHexString((long) Math.floor(Math.random() * 10e8));
-        response.nc = "00000001";
+        synchronized (ncLock) {
+            // a cached nonce is reused, a repeated nc looks like a replay and drives the device into 429 throttling
+            if (!getString(challenge.nonce).equals(ncNonce)) {
+                ncNonce = challenge.nonce;
+                ncCounter = 0;
+            }
+            response.nc = String.format(Locale.ROOT, "%08x", ++ncCounter);
+        }
         response.authType = challenge.authType;
         response.algorithm = challenge.algorithm;
         String ha1 = sha256(response.username + ":" + response.realm + ":" + password);
