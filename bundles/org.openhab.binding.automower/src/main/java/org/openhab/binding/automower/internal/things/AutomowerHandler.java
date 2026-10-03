@@ -1006,10 +1006,12 @@ public class AutomowerHandler extends BaseThingHandler {
         this.stateRefreshFuture = scheduler.schedule(this::runScheduledStateRefresh, 5, TimeUnit.SECONDS);
     }
 
-    private synchronized void runScheduledStateRefresh() {
-        stateRefreshFuture = null;
-        if (disposed) {
-            return;
+    private void runScheduledStateRefresh() {
+        synchronized (this) {
+            stateRefreshFuture = null;
+            if (disposed) {
+                return;
+            }
         }
         poll();
     }
@@ -1541,7 +1543,7 @@ public class AutomowerHandler extends BaseThingHandler {
                 } else {
                     logger.warn("Received WebSocket event without type or attributes: {}", event);
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 logger.error("Error processing WebSocket event: {}", e.getMessage());
             }
         } else {
@@ -1561,7 +1563,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     updateMowerChannelState(mower);
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Error processing battery-event-v2: {}", e.getMessage());
         }
     }
@@ -1600,7 +1602,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     updateMowerChannelState(mower);
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Error processing calendar-event-v2: {}", e.getMessage());
         }
     }
@@ -1616,7 +1618,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     updateMowerChannelState(mower);
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Error processing cuttingHeight-event-v2: {}", e.getMessage());
         }
     }
@@ -1635,7 +1637,7 @@ public class AutomowerHandler extends BaseThingHandler {
             }
         } catch (IllegalArgumentException e) {
             logger.error("Invalid headlight mode received: {}", e.getMessage());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Error processing headlight-event-v2: {}", e.getMessage());
         }
     }
@@ -1662,7 +1664,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     updateMessagesChannelState(mowerMessages);
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Error processing message-event-v2: {}", e.getMessage());
         }
     }
@@ -1712,7 +1714,7 @@ public class AutomowerHandler extends BaseThingHandler {
             }
         } catch (IllegalArgumentException e) {
             logger.error("Invalid value received in mower event: {}", e.getMessage());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Error processing mower-event-v2: {}", e.getMessage());
         }
     }
@@ -1752,7 +1754,7 @@ public class AutomowerHandler extends BaseThingHandler {
             }
         } catch (IllegalArgumentException e) {
             logger.error("Invalid value received in planner event: {}", e.getMessage());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Error processing planner-event-v2: {}", e.getMessage());
         }
     }
@@ -1771,7 +1773,7 @@ public class AutomowerHandler extends BaseThingHandler {
                     updateMowerChannelState(mower);
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Error processing position-event-v2: {}", e.getMessage());
         }
     }

@@ -26,12 +26,12 @@
 				<description>The Application Secret is required to communicate with the Automower® Connect API. See "Application
 					Key" for further details</description>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" required="false" unit="s">
+			<parameter name="pollingInterval" type="integer" required="false" unit="s" min="1" max="86400">
 				<label>Polling Interval</label>
 				<default>300</default>
 				<description>How often the current Automower® states should be polled using REST API</description>
 			</parameter>
-			<parameter name="requestTimeout" type="integer" required="false" unit="s">
+			<parameter name="requestTimeout" type="integer" required="false" unit="s" min="1" max="300">
 				<label>Request Timeout</label>
 				<default>30</default>
 				<description>Maximum time to wait for an Automower® Connect REST API response</description>
@@ -88,6 +88,7 @@
 
 		<label>Automower® StayoutZone</label>
 		<description>An automatic lawn mower stay-out zone</description>
+		<semantic-equipment-tag>Zone</semantic-equipment-tag>
 
 		<channels>
 			<channel id="name" typeId="zone-name-type"/>
@@ -109,6 +110,7 @@
 
 		<label>Automower® WorkArea</label>
 		<description>An automatic lawn mower work-area</description>
+		<semantic-equipment-tag>Zone</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="work-area" typeId="work-area-type"/>

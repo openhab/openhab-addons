@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.automower.internal.things;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -19,7 +21,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*;
 
+import java.lang.reflect.Method;
 import java.time.ZoneId;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -37,6 +44,40 @@ import org.openhab.core.types.RefreshType;
 
 @SuppressWarnings("all")
 class AutomowerHandlerCommandTest {
+    @Test
+    void disposeDoesNotWaitForScheduledRefreshPoll() throws Exception {
+        AutomowerHandler handler = spy(createHandler());
+        CountDownLatch pollStarted = new CountDownLatch(1);
+        CountDownLatch finishPoll = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            pollStarted.countDown();
+            assertTrue(finishPoll.await(2, TimeUnit.SECONDS));
+            return null;
+        }).when(handler).poll();
+
+        Method refreshMethod = AutomowerHandler.class.getDeclaredMethod("runScheduledStateRefresh");
+        refreshMethod.setAccessible(true);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            var refresh = executor.submit(() -> {
+                try {
+                    refreshMethod.invoke(handler);
+                } catch (ReflectiveOperationException e) {
+                    throw new AssertionError(e);
+                }
+            });
+            assertTrue(pollStarted.await(2, TimeUnit.SECONDS));
+
+            var disposal = executor.submit(handler::dispose);
+            disposal.get(2, TimeUnit.SECONDS);
+            finishPoll.countDown();
+            refresh.get(2, TimeUnit.SECONDS);
+        } finally {
+            finishPoll.countDown();
+            executor.shutdownNow();
+        }
+    }
+
     @Test
     void handleCommandDispatchesSettingsStatusStatisticsAndRefresh() {
         AutomowerHandler handler = spy(createHandler());
