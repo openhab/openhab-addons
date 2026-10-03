@@ -73,6 +73,10 @@ public class ShellyHttpClient {
     protected AtomicInteger timeoutsRecovered = new AtomicInteger(0);
     protected volatile boolean basicAuth = false;
 
+    private final Object ncLock = new Object();
+    private @Nullable String ncNonce;
+    private long ncCounter;
+
     protected final ShellyApiConfiguration config;
 
     protected final ShellyDeviceProfile profile;
@@ -239,6 +243,17 @@ public class ShellyHttpClient {
 
     protected @Nullable Shelly2AuthRsp buildAuthResponse(String uri, @Nullable Shelly2AuthChallenge challenge,
             String user, String password) throws ShellyApiException {
+        return buildAuthResponse(challenge, user, password, sha256(HttpMethod.POST + ":" + uri));
+    }
+
+    // a WebSocket request has no HTTP method/URI, the RPC spec defines HA2 = SHA256("dummy_method:dummy_uri")
+    protected @Nullable Shelly2AuthRsp buildChannelAuthResponse(@Nullable Shelly2AuthChallenge challenge, String user,
+            String password) throws ShellyApiException {
+        return buildAuthResponse(challenge, user, password, SHELLY2_AUTH_NOISE);
+    }
+
+    private @Nullable Shelly2AuthRsp buildAuthResponse(@Nullable Shelly2AuthChallenge challenge, String user,
+            String password, String ha2) throws ShellyApiException {
         if (challenge == null) {
             return null; // not required
         }
@@ -253,11 +268,17 @@ public class ShellyHttpClient {
         response.realm = challenge.realm;
         response.nonce = challenge.nonce;
         response.cnonce = Long.toHexString((long) Math.floor(Math.random() * 10e8));
-        response.nc = "00000001";
+        synchronized (ncLock) {
+            // a cached nonce is reused, a repeated nc looks like a replay and drives the device into 429 throttling
+            if (!getString(challenge.nonce).equals(ncNonce)) {
+                ncNonce = challenge.nonce;
+                ncCounter = 0;
+            }
+            response.nc = String.format(Locale.ROOT, "%08x", ++ncCounter);
+        }
         response.authType = challenge.authType;
         response.algorithm = challenge.algorithm;
         String ha1 = sha256(response.username + ":" + response.realm + ":" + password);
-        String ha2 = sha256(HttpMethod.POST + ":" + uri);// SHELLY2_AUTH_NOISE;
         response.response = sha256(
                 ha1 + ":" + response.nonce + ":" + response.nc + ":" + response.cnonce + ":" + "auth" + ":" + ha2);
         return response;

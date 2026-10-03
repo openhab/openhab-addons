@@ -256,6 +256,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             status = profile.isBlu ? "offline.status-error-blu-timeout" : "offline.status-error-watchdog";
         } else if (res.isNotCalibrated()) {
             calibrationError = true; // device needs calibration; don't go offline, keep retrying
+        } else if (res.isHttpTooManyRequests()) {
+            // retry once after the device's ~2s throttle window, a pending update means this already is the retry
+            if (scheduledUpdates == 0) {
+                logger.debug("{}: Device is throttling requests (429), retrying in {}s", thingName,
+                        UPDATE_STATUS_INTERVAL_SECONDS);
+                requestUpdates(2, false); // refreshStatus() consumes one in its finally block
+            }
+            return true;
         } else if (res.httpCode >= 400) {
             logger.debug("{}: Unexpected API result: {}/{}", thingName, res.httpCode, res.httpReason, e);
             status = "offline.status-error-unexpected-api-result";
