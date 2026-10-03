@@ -251,6 +251,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
+                // RGBW PM color mode: brightness/temp share the color component's own "control" group, since
+                // these Thing types never declare a "white" channel-group (only Bulb/Duo do)
+                .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_COLOR_TEMP, "whiteTemp", ITEMT_DIMMER))
                 // RGBW2-white
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
@@ -636,7 +640,9 @@ public class ShellyChannelDefinitions {
         List<ShellySettingsRgbwLight> lights = profile.settings.lights;
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
-            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHANNEL_GROUP_WHITE_CONTROL;
+            // RGBW PM Thing types never declare a "white" channel-group (only Bulb/Duo do), so its color-mode
+            // component must keep brightness/temp in its own group too, not the undeclared shared "white" one.
+            String whiteGroup = profile.isRGBW2 ? group : CHANNEL_GROUP_WHITE_CONTROL;
             // Gen3 Duo/Multicolor Bulb (isDuo && isGen2) has no power channel (brightness 0 = off); the Gen1 Duo RGBW
             // keeps its documented one
             addChannel(thing, add, profile.hasColorTag(idx) && !(profile.isDuo && profile.isGen2), group,

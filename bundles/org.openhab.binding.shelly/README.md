@@ -1953,6 +1953,7 @@ In `rgbw` or `rgb` profile (color mode):
 | Group   | Channel       | Type     | read-only | Description                                                             |
 | ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
 | control | power         | Switch   | r/w       | Switch light ON/OFF                                                     |
+|         | brightness    | Dimmer   | r/w       | Overall brightness: 0..100%                                             |
 |         | autoOn        | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
 |         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
 |         | timerActive   | Switch   | yes       | ON: An auto-on/off timer is active                                      |
@@ -1994,6 +1995,7 @@ In `rgbcct` or `rgbx2light` profile, the RGB component is exposed as the color c
 | Group   | Channel       | Type     | read-only | Description                                                             |
 | ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------- |
 | control | power         | Switch   | r/w       | Switch light ON/OFF                                                     |
+|         | brightness    | Dimmer   | r/w       | Overall brightness: 0..100%                                             |
 |         | autoOn        | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds |
 |         | autoOff       | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
 |         | timerActive   | Switch   | yes       | ON: An auto-on/off timer is active                                      |

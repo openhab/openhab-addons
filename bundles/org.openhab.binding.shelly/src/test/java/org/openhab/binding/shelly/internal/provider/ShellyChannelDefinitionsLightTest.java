@@ -115,6 +115,25 @@ public class ShellyChannelDefinitionsLightTest {
     }
 
     @Test
+    void gen2RgbwPmColorModeRoutesBrightnessToControlGroupNotWhite() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
+        profile.inColor = true;
+        profile.settings.lights = new ArrayList<>(List.of(newLight()));
+
+        ShellyStatusLightChannel status = new ShellyStatusLightChannel();
+        status.brightness = 77;
+        status.temp = 4500;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createLightChannels(mockThing("shellyplusrgbwpm"),
+                profile, status, 0);
+
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_COLOR_TEMP)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP)));
+    }
+
+    @Test
     void bulbWhiteModeRoutesBrightnessAndColorTempToSharedWhiteGroup() {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBULB);
         profile.inColor = false;
