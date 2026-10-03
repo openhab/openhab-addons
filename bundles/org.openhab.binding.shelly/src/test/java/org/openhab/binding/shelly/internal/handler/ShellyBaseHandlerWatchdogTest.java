@@ -15,6 +15,7 @@ package org.openhab.binding.shelly.internal.handler;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.now;
@@ -28,10 +29,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -175,6 +178,25 @@ class ShellyBaseHandlerWatchdogTest {
 
         assertThat(profile.learnedWakeupPeriod, is(equalTo(6 * HOUR)));
         assertThat(profile.updatePeriod, is(equalTo((int) Math.round(6 * HOUR * 1.1) + 60)));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "OFFLINE, COMMUNICATION_ERROR, false", "UNKNOWN, NONE, true" })
+    void unreachableAlwaysOnDeviceIsOnlySetPendingWhenNotOffline(ThingStatus status, ThingStatusDetail detail,
+            boolean expectPending) throws Exception {
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        ShellyBaseHandler handler = prepareHandler(api, THING_TYPE_SHELLYPLUS1PM);
+        handler.profile.alwaysOn = true;
+        handler.profile.initialized = false;
+        setField(handler, "cache", mock(ShellyChannelCache.class));
+        when(handler.getThing().getStatus()).thenReturn(status);
+        doReturn(detail).when(handler).getThingStatusDetail();
+        doThrow(new ShellyApiException("device still unreachable")).when(api).getDeviceInfo();
+
+        assertThrows(ShellyApiException.class, () -> handler.initializeThing());
+
+        verify(handler, times(expectPending ? 1 : 0)).updateStatus(eq(ThingStatus.ONLINE),
+                eq(ThingStatusDetail.CONFIGURATION_PENDING), any());
     }
 
     private static ShellyBaseHandler prepareHandler(ShellyApiInterface api, ThingTypeUID thingType) throws Exception {
