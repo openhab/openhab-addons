@@ -56,6 +56,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,6 +187,51 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
                 new ModbusRegisterArray(0x0001, 0x002A)));
 
         verify(thingCallback).stateUpdated(channelUid, new org.openhab.core.library.types.DecimalType("42"));
+    }
+
+    @Test
+    public void testPoller2UpdatesRawChannelFromPollResult()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 100);
+        pollerConfig.put("length", 2);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "raw-poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "raw");
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "raw", "length", 2));
+        poller = createPoller2ThingBuilder("raw-poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "String").withConfiguration(channelConfig).build()).build();
+        addThing(poller);
+
+        ModbusPoller2ThingHandler handler = (ModbusPoller2ThingHandler) poller.getHandler();
+        handler.setCallback(thingCallback);
+        getPollerCallback(handler).handle(new AsyncModbusReadResult(Mockito.mock(ModbusReadRequestBlueprint.class),
+                new ModbusRegisterArray(0x0001, 0x002A)));
+
+        verify(thingCallback).stateUpdated(channelUid, new org.openhab.core.library.types.StringType("0001002A"));
+    }
+
+    @Test
+    public void testPoller2AssignsGeneratedChannelTypeToRuntimeStringChannel() {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 100);
+        pollerConfig.put("length", 2);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "typed-raw-poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "raw");
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "raw", "length", 2));
+        poller = createPoller2ThingBuilder("typed-raw-poller2").withConfiguration(pollerConfig)
+                .withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "String").withConfiguration(channelConfig).build()).build();
+
+        addThing(poller);
+
+        waitForAssert(() -> assertThat(poller.getChannel("raw").getChannelTypeUID(),
+                is(equalTo(new ChannelTypeUID("modbus", "poller2-shim-string")))));
+        assertThat(poller.getChannel("raw").getAcceptedItemType(), is(equalTo("String")));
+        assertThat(poller.getChannel("raw").getConfiguration().get("length"), is(equalTo(2)));
     }
 
     @Test

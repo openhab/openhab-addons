@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.modbus.internal.handler;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.library.types.StringType;
@@ -52,5 +54,15 @@ public final class Poller2RawChannel {
     public synchronized State acceptReadFailure() {
         state.acceptReadFailure();
         return state.currentState();
+    }
+
+    public Optional<String> validateReadRange(int pollStart, int pollLength) {
+        long pollEnd = (long) pollStart + pollLength - 1;
+        long channelEnd = (long) address + length - 1;
+        if (address < pollStart || channelEnd > pollEnd) {
+            return Optional.of("Address range %d..%d is outside poll window %d..%d".formatted(address, channelEnd,
+                    pollStart, pollEnd));
+        }
+        return Optional.empty();
     }
 }
