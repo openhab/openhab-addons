@@ -1157,7 +1157,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void resetMeterTotal(int id) throws ShellyApiException {
-        apiRequest(new Shelly2RpcRequest().withMethod(resetCountersMethod(getProfile())).withId(id));
+        ShellyDeviceProfile profile = getProfile();
+        // RGBW PM meters live on rgb:N/rgbw:N/cct:N/light:N, not a shared pm1:N
+        if (profile.isRGBW2) {
+            if (!profile.supportsMeterReset(id)) {
+                throw new ShellyApiException("Meter reset is only supported by the Light component");
+            }
+            apiRequest(new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_LIGHT_RESETCOUNTERS)
+                    .withId(profile.getLightComponentId(id)));
+            return;
+        }
+        apiRequest(new Shelly2RpcRequest().withMethod(resetCountersMethod(profile)).withId(id));
     }
 
     // Order matters: Pro EM-50 has isEM1 + hasRelays, roller-mode 2PM has isRoller + hasRelays, and

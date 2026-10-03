@@ -337,7 +337,7 @@ public class ShellyComponents {
             // Always create channels regardless of data validity — Gen2 first WS push may lack emdata
             if (createChannels) {
                 thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
-                        .createEMeterChannels(thingHandler.getThing(), profile, emeter, groupName));
+                        .createEMeterChannels(thingHandler.getThing(), profile, emeter, m, groupName));
             }
             if (getBool(emeter.isValid)) {
                 if (emeter.power != null) {
@@ -806,6 +806,10 @@ public class ShellyComponents {
             if ((profile.settings.externalPower != null) || (sdata.charger != null)) {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
                         getOnOff(charger));
+            }
+            if (sdata.capacitorVoltage != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_CAPACITOR_VOLTAGE,
+                        toQuantityType(getDouble(sdata.capacitorVoltage), DIGITS_VOLT_PRECISE, Units.VOLT));
             }
             if (sdata.bat != null) { // no update for Sense
                 if (sdata.bat.value != null) {

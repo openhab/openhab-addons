@@ -187,8 +187,14 @@ public class MiIoAsyncCommunication {
                             data);
                     decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),
                             miIoSendCommand.getCloudServer(), data);
-                    miIoSendCommand.setResponse(JsonParser.parseString(decryptedResponse).getAsJsonObject());
-                    return miIoSendCommand;
+                    JsonElement cloudResponse = JsonParser.parseString(decryptedResponse);
+                    if (cloudResponse.isJsonObject()) {
+                        miIoSendCommand.setResponse(cloudResponse.getAsJsonObject());
+                        return miIoSendCommand;
+                    }
+                    errorMsg = "Received message is not a JSON object";
+                    logger.debug("{}: {}", errorMsg, decryptedResponse);
+                    return setErrorResponse(miIoSendCommand, errorMsg);
                 }
             }
             // hack due to avoid invalid json errors from some misbehaving device firmwares
@@ -234,8 +240,15 @@ public class MiIoAsyncCommunication {
             logger.debug("Send command '{}'  -> cloudserver '{}' (Device: {}) gave error {}",
                     miIoSendCommand.getCommandString(), miIoSendCommand.getCloudServer(), deviceId, e.getMessage());
             errorMsg = e.getMessage();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            // a failing custom cloud request (e.g. no cloud login) says nothing about the device connection
+            if (!miIoSendCommand.getMethod().startsWith("/")) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
         }
+        return setErrorResponse(miIoSendCommand, errorMsg);
+    }
+
+    private MiIoSendCommand setErrorResponse(MiIoSendCommand miIoSendCommand, @Nullable String errorMsg) {
         JsonObject erroResp = new JsonObject();
         erroResp.addProperty("error", errorMsg);
         miIoSendCommand.setResponse(erroResp);

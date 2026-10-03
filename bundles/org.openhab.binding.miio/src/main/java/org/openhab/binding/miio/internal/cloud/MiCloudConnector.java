@@ -202,10 +202,10 @@ public class MiCloudConnector {
         return clientId;
     }
 
-    public Optional<String> getMapUrl(String vacuumMap, String country) throws MiCloudException {
+    public Optional<String> getMapUrl(String vacuumMap, String model, String country) throws MiCloudException {
         String url = getApiUrl(country) + "/home/getmapfileurl";
         Map<String, String> map = new HashMap<>();
-        map.put("data", "{\"obj_name\":\"" + vacuumMap + "\"}");
+        map.put("data", buildMapUrlRequestData(vacuumMap, model));
         try {
             String mapResponse = request(url, map);
             logger.trace("Response: {}", mapResponse);
@@ -230,6 +230,19 @@ public class MiCloudConnector {
             logger.debug("Error parsing map URL response: {}", e.getMessage());
             throw new MiCloudException("Received message could not be parsed", e);
         }
+    }
+
+    /**
+     * Builds the request data for the map file url request the same way as the Mi Home vacuum plugin does: the device
+     * model is included and the map name returned by the vacuum is used with its '%2F' separators decoded.
+     */
+    static String buildMapUrlRequestData(String vacuumMap, String model) {
+        JsonObject data = new JsonObject();
+        if (!model.isBlank()) {
+            data.addProperty("model", model);
+        }
+        data.addProperty("obj_name", vacuumMap.replace("%2F", "/"));
+        return data.toString();
     }
 
     public String getDeviceStatus(String device, String country) throws MiCloudException {
@@ -376,24 +389,28 @@ public class MiCloudConnector {
             final ContentResponse response = request.send();
             if (response.getStatus() >= HttpStatus.BAD_REQUEST_400
                     && response.getStatus() < HttpStatus.INTERNAL_SERVER_ERROR_500) {
-                this.serviceToken = "";
-                // Notify listeners that authentication was rejected so callers can re-authenticate.
-                // Only fire once when transitioning away from ONLINE to avoid repeated callbacks.
-                if (loginState == CloudLoginState.ONLINE) {
-                    updateLoginState(CloudLoginState.ACCESS_DENIED);
-                }
+                handleAuthenticationRejected();
             }
             return response.getContentAsString();
-        } catch (HttpResponseException e) {
-            serviceToken = "";
-            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
-            loginFailedCounter++;
-            throw new MiCloudException("Error while executing request: " + e.getMessage(), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             loginFailedCounter++;
             throw new MiCloudException("Request interrupted: " + e.getMessage(), e);
-        } catch (TimeoutException | ExecutionException | IOException e) {
+        } catch (ExecutionException e) {
+            // Jetty's authentication protocol handler fails a 401 without WWW-Authenticate header with an
+            // HttpResponseException, which send() delivers wrapped in an ExecutionException.
+            if (e.getCause() instanceof HttpResponseException hre) {
+                int status = hre.getResponse().getStatus();
+                if (status == HttpStatus.UNAUTHORIZED_401 || status == HttpStatus.FORBIDDEN_403) {
+                    logger.debug("Xiaomi cloud rejected the service token for request to {} (HTTP {})", url, status);
+                    handleAuthenticationRejected();
+                    throw new MiCloudException("Xiaomi cloud rejected the service token (HTTP " + status + ")", e);
+                }
+            }
+            logger.debug("Error while executing request to {} :{}", url, e.getMessage());
+            loginFailedCounter++;
+            throw new MiCloudException("Error while executing request: " + e.getMessage(), e);
+        } catch (TimeoutException | IOException e) {
             logger.debug("Error while executing request to {} :{}", url, e.getMessage());
             loginFailedCounter++;
             throw new MiCloudException("Error while executing request: " + e.getMessage(), e);
@@ -401,6 +418,15 @@ public class MiCloudConnector {
             logger.debug("Error while decrypting response of request to {} :{}", url, e.getMessage(), e);
             loginFailedCounter++;
             throw new MiCloudException("Error decrypting response: " + e.getMessage(), e);
+        }
+    }
+
+    private void handleAuthenticationRejected() {
+        serviceToken = "";
+        // Notify listeners that authentication was rejected so callers can re-authenticate.
+        // Only fire once when transitioning away from ONLINE to avoid repeated callbacks.
+        if (loginState == CloudLoginState.ONLINE) {
+            updateLoginState(CloudLoginState.ACCESS_DENIED);
         }
     }
 

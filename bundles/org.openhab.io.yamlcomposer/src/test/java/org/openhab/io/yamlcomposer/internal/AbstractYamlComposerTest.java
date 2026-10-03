@@ -36,6 +36,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.openhab.core.OpenHAB;
 import org.openhab.io.yamlcomposer.internal.YamlComposer.CacheEntry;
+import org.openhab.io.yamlcomposer.internal.core.EvaluationContext;
 import org.openhab.io.yamlcomposer.internal.directives.Directive;
 import org.openhab.io.yamlcomposer.internal.placeholders.Placeholder;
 
@@ -44,7 +45,7 @@ import org.openhab.io.yamlcomposer.internal.placeholders.Placeholder;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
-abstract class AbstractYamlComposerTest {
+public abstract class AbstractYamlComposerTest {
     private static final Pattern UNRESOLVED_STRING_PATTERN = Pattern
             .compile("(?s)^[A-Z].+(Placeholder|Directive)\\[.*");
 
@@ -100,9 +101,15 @@ abstract class AbstractYamlComposerTest {
 
         try {
             ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-            Object result = YamlComposer.load(filePath, path -> {
-            }, env -> {
-            }, logSession, includeCache);
+            EvaluationContext context = new EvaluationContext(env -> {
+            }, sourceName -> null);
+            Object result = YamlComposer.load( //
+                    filePath, //
+                    context, //
+                    path -> {
+                    }, //
+                    logSession, //
+                    includeCache);
 
             if (result instanceof Map<?, ?> dataMap) {
                 Map<Object, @Nullable Object> map = (Map<Object, @Nullable Object>) dataMap;
@@ -130,8 +137,9 @@ abstract class AbstractYamlComposerTest {
         Files.writeString(tempFile, content);
 
         ConcurrentHashMap<Path, CacheEntry> includeCache = new ConcurrentHashMap<>();
-        Object result = YamlComposer.load(tempFile, path -> {
-        }, env -> {
+        EvaluationContext context = new EvaluationContext(env -> {
+        }, sourceName -> null);
+        Object result = YamlComposer.load(tempFile, context, path -> {
         }, logSession, includeCache);
 
         if (result != null) {
@@ -258,5 +266,10 @@ abstract class AbstractYamlComposerTest {
             }
         }
         return value;
+    }
+
+    protected EvaluationContext emptyContext() {
+        return new EvaluationContext(env -> {
+        }, sourceName -> null);
     }
 }

@@ -12,8 +12,6 @@
  */
 package org.openhab.io.yamlcomposer.internal.processors;
 
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,11 +31,9 @@ import org.openhab.io.yamlcomposer.internal.placeholders.SubstitutionPlaceholder
 @NonNullByDefault
 public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionPlaceholder> {
 
-    private final Consumer<String> envVarCallback;
     private final BufferedLogger logger;
 
-    public SubstitutionProcessor(Consumer<String> envVarCallback, BufferedLogger logger) {
-        this.envVarCallback = envVarCallback;
+    public SubstitutionProcessor(BufferedLogger logger) {
         this.logger = logger;
     }
 
@@ -56,7 +52,7 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
     @Override
     public @Nullable Object process(SubstitutionPlaceholder placeholder, RecursiveTransformer recursiveTransformer,
             EvaluationContext context) {
-        return process(placeholder, context.scope().flatten());
+        return process(placeholder, context);
     }
 
     /**
@@ -70,19 +66,19 @@ public class SubstitutionProcessor implements PlaceholderProcessor<SubstitutionP
      * @param context The variable context for substitutions
      * @return The processed value with substitutions applied
      */
-    public @Nullable Object process(SubstitutionPlaceholder placeholder, Map<String, @Nullable Object> context) {
+    public @Nullable Object process(SubstitutionPlaceholder placeholder, EvaluationContext context) {
         Pattern pattern = resolvePattern(placeholder, context);
-        return StringInterpolator.interpolate(placeholder.value(), pattern, context, envVarCallback,
-                logger.getLogSession(), placeholder.sourceLocation());
+        return StringInterpolator.interpolate(placeholder.value(), pattern, context, logger.getLogSession(),
+                placeholder.sourceLocation());
     }
 
-    private Pattern resolvePattern(SubstitutionPlaceholder placeholder, Map<String, @Nullable Object> context) {
+    private Pattern resolvePattern(SubstitutionPlaceholder placeholder, EvaluationContext context) {
         String patternName = placeholder.patternName();
         if (patternName == null || patternName.isBlank()) {
             return StringInterpolator.DEFAULT_SUBSTITUTION_PATTERN;
         }
 
-        Object rawPatternSpec = context.get(patternName);
+        Object rawPatternSpec = context.scope().flatten().get(patternName);
         if (!(rawPatternSpec instanceof String patternSpec) || patternSpec.isBlank()) {
             logger.warn("{} Undefined or invalid pattern variable '{}' for !sub tag; using default pattern.",
                     placeholder.sourceLocation(), patternName);

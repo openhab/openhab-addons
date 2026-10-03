@@ -320,6 +320,7 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
 | Switch  | status#is_locating                | Robot is locating          |
 | Number  | actions#segment                   | Room Clean  (enter room #) |
+| Number  | actions#current_map               | Current map, select to load a map. Only when multi-floor maps are enabled in the app |
 | Switch  | actions#collect_dust              | Start collecting dust      |
 | Switch  | actions#clean_mop_start           | Start mop wash             |
 | Switch  | actions#clean_mop_stop            | Stop mop wash              |

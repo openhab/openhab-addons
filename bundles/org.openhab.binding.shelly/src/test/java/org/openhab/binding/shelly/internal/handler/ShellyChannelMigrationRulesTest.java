@@ -19,15 +19,19 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.Channel;
@@ -142,6 +146,26 @@ public class ShellyChannelMigrationRulesTest {
     }
 
     @Test
+    void schema6RgbwPmGetsResetOnlyOnMetersOfLightComponents() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        profile.isRGBW2 = true;
+        profile.isGen2 = true;
+        profile.settings.lights = new ArrayList<>(List.of(taggedLight(ShellyLightApiComponent.RGB),
+                taggedLight(ShellyLightApiComponent.LIGHT), taggedLight(ShellyLightApiComponent.LIGHT)));
+        ShellyThingInterface handler = handlerAtSchema(5, profile,
+                channel(CHANNEL_GROUP_METER + "1", CHANNEL_METER_CURRENTPOWER),
+                channel(CHANNEL_GROUP_METER + "2", CHANNEL_METER_CURRENTPOWER),
+                channel(CHANNEL_GROUP_METER + "3", CHANNEL_METER_CURRENTPOWER));
+
+        ShellyChannelMigration.migrateChannels(handler);
+
+        Set<String> resets = capturedNewChannelIds(handler).stream()
+                .filter(id -> id.endsWith("#" + CHANNEL_EMETER_RESETTOTAL)).collect(Collectors.toSet());
+        assertEquals(Set.of(mkChannelId(CHANNEL_GROUP_METER + "2", CHANNEL_EMETER_RESETTOTAL),
+                mkChannelId(CHANNEL_GROUP_METER + "3", CHANNEL_EMETER_RESETTOTAL)), resets);
+    }
+
+    @Test
     void schema6CreatesNoMinuteEnergySiblingsWithoutCurrentPowerAnchor() {
         ShellyThingInterface handler = handlerAtSchema(5, false,
                 channel(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALENERGY));
@@ -220,6 +244,12 @@ public class ShellyChannelMigrationRulesTest {
             ids.addAll(newChannels.keySet());
         }
         return ids;
+    }
+
+    private static ShellySettingsRgbwLight taggedLight(ShellyLightApiComponent apiComponent) {
+        ShellySettingsRgbwLight light = new ShellySettingsRgbwLight();
+        light.apiComponent = apiComponent;
+        return light;
     }
 
     private static Channel channel(String group, String name) {

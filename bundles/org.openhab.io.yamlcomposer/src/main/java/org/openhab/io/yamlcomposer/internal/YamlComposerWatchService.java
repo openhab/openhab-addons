@@ -18,7 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.service.WatchService;
 import org.openhab.core.service.WatchService.Kind;
+import org.openhab.io.yamlcomposer.internal.dynamic.DynamicSourceRegistry;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -60,11 +61,16 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
     private final WatchService watchService;
 
     private volatile YamlComposerSettings settings = YamlComposerSettings.defaultConfig();
+    private final DynamicSourceRegistry dynamicSourceRegistry;
 
     @Activate
-    public YamlComposerWatchService(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService,
+    public YamlComposerWatchService( //
+            @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService,
+            @Reference DynamicSourceRegistry dynamicSourceRegistry, //
             Map<String, Object> config) {
         this.watchService = watchService;
+        this.dynamicSourceRegistry = dynamicSourceRegistry;
+        this.dynamicSourceRegistry.setOnFileRecompileListener(path -> processWatchEvent(Kind.MODIFY, path));
         this.settings = YamlComposerSettings.fromMap(config);
 
         logger.debug("YamlComposer settings: {}, config map: {}", this.settings, config);
@@ -91,6 +97,7 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
     public void deactivate() {
         watchService.unregisterListener(this);
         includeRegistry.clear();
+        dynamicSourceRegistry.clear();
     }
 
     @Modified
@@ -127,6 +134,7 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
         }
 
         includeRegistry.removeMain(sourcePath);
+        dynamicSourceRegistry.unregisterFileSources(sourcePath);
 
         Path outputPath = ComposerConfig.resolveOutputPath(sourcePath);
         Path relativeSourcePath = ComposerConfig.configRoot().relativize(sourcePath);
@@ -144,50 +152,32 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
 
         try {
             Set<String> trackedEnvVars = new HashSet<>();
+            Path absSourcePath = sourcePath.toAbsolutePath().normalize();
+            Map<String, Map<String, Map<String, @Nullable Object>>> sourceMapCache = new HashMap<>();
 
-            Object yamlObject = YamlComposer.load(sourcePath,
-                    includePath -> includeRegistry.registerInclude(sourcePath, includePath), trackedEnvVars::add);
+            Object yamlObject = YamlComposer.load( //
+                    sourcePath, //
+                    includePath -> includeRegistry.registerInclude(sourcePath, includePath), //
+                    trackedEnvVars::add, //
+                    sourceName -> {
+                        if (dynamicSourceRegistry.supportsSource(sourceName)) {
+                            dynamicSourceRegistry.registerDependency(absSourcePath, sourceName);
+                            return sourceMapCache.computeIfAbsent(sourceName, dynamicSourceRegistry::getSourceMap);
+                        }
+                        return null;
+                    });
 
             if (yamlObject == null) {
                 logger.warn("YAML Composer produced no output when processing '{}'", relativeSourcePath);
                 return;
             }
 
-            Set<Path> includePaths = includeRegistry.getIncludesForMain(sourcePath);
-            if (force || isSourceModified(sourcePath, includePaths, outputPath)
-                    || ComposerUtils.isEnvironmentChanged(outputPath)) {
-                ComposerUtils.writeCompiledOutput(yamlObject, sourcePath, outputPath, trackedEnvVars,
-                        settings.output());
+            if (ComposerUtils.writeCompiledOutput(yamlObject, sourcePath, outputPath, trackedEnvVars,
+                    settings.output())) {
                 logger.info("YAML Composer: {} -> {}", relativeSourcePath, relativeOutputPath);
             }
         } catch (IOException e) {
             logger.warn("YAML Composer failed to process '{}': {}", relativeSourcePath, e.getMessage());
-        }
-    }
-
-    private boolean isSourceModified(Path sourcePath, Set<Path> includePaths, Path outputPath) {
-        if (!Files.exists(outputPath)) {
-            return true;
-        }
-
-        try {
-            FileTime outputMtime = Files.getLastModifiedTime(outputPath);
-            FileTime sourceMtime = Files.getLastModifiedTime(sourcePath);
-            if (outputMtime.compareTo(sourceMtime) <= 0) {
-                return true;
-            }
-
-            for (Path includePath : includePaths) {
-                FileTime includeMtime = Files.getLastModifiedTime(includePath);
-                if (outputMtime.compareTo(includeMtime) <= 0) {
-                    return true;
-                }
-            }
-
-            return false;
-        } catch (IOException e) {
-            logger.debug("Failed to compare mtime for '{}' and '{}': {}", outputPath, sourcePath, e.getMessage());
-            return true;
         }
     }
 

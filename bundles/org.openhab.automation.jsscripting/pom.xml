@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: JavaScript Scripting</name>
 
   <properties>
-    <ohjs.version>v5.21.0</ohjs.version>
+    <ohjs.version>v5.22.0</ohjs.version>
   </properties>
 
   <dependencies>

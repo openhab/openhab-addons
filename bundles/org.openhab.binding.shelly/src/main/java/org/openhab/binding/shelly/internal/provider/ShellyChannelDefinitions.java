@@ -27,6 +27,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -393,6 +395,8 @@ public class ShellyChannelDefinitions {
                 // Battery
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level", ITEMT_PERCENT))
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_CAPACITOR_VOLTAGE, "sensorCapacitorVoltage",
+                        ITEMT_VOLT))
 
                 // TRV
                 .add(new ShellyChannel(m, CHGR_CONTROL, CHANNEL_CONTROL_POSITION, "sensorPosition", ITEMT_DIMMER))
@@ -478,11 +482,14 @@ public class ShellyChannelDefinitions {
         }
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
-        // Any multi-meter device (relay, pure meter like ProEM50, or the Pro RGBWW PM light profile with
-        // more than one independently metered component) gets device-level accumulated channels.
-        // Other RGBW2 devices are excluded: their aggregation already lands in the single "meter" group
-        // via updateAggregatedMeter(), so a separate device-level total would be redundant.
-        boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && (!profile.isRGBW2 || profile.isProRgbwwPm);
+        /*
+         * Any multi-meter device (relay, pure meter like ProEM50, or a Gen2 RGBW2 device - Plus RGBW PM or
+         * Pro RGBWW PM - in a light profile with more than one independently metered component) gets
+         * device-level accumulated channels. Gen1 RGBW2 devices are excluded: their aggregation already
+         * lands in the single "meter" group via updateAggregatedMeter(), which only runs for Gen1; a
+         * separate device-level total would be redundant there.
+         */
+        boolean accuChannel = profile.numMeters > 1 && !profile.isRoller && (!profile.isRGBW2 || profile.isGen2);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
         addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
         // Gate returned/apparent totals on the device actually being a dedicated EMeter (3EM or EM50).
@@ -781,7 +788,7 @@ public class ShellyChannelDefinitions {
     }
 
     public static Map<String, Channel> createEMeterChannels(final Thing thing, final ShellyDeviceProfile profile,
-            final ShellySettingsEMeter emeter, String group) {
+            final ShellySettingsEMeter emeter, int meterIdx, String group) {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
         // Pure data-driven: create a channel if and only if the device populates the field.
         // Channel creation always runs during the first HTTP poll (full Shelly.GetStatus response),
@@ -826,11 +833,12 @@ public class ShellyChannelDefinitions {
         // null, so a device actually has a power meter iff at least one of these fields is populated.
         // Per-meter reset is only meaningful when each meter has its own resettable counter component
         // (Switch/PM1/EM1Data). 3EM's emdata:0 aggregates all phases, so it resets at the device level only.
-        // The Duo/Multicolor Bulb G3's CCT/RGBCCT components have no ResetCounters RPC at all (Shelly's
-        // API only exposes it on Switch/PM1/EM1/Cover/Light), so the channel would just 404 if offered.
+        // The Duo/Multicolor Bulb G3's CCT/RGBCCT and the Plus/Pro RGBW PM's RGB/RGBW/CCT components have no
+        // ResetCounters RPC at all (Shelly's API only exposes it on Switch/PM1/EM1/Cover/Light), so the channel would
+        // just 404 if offered.
         boolean hasMeterData = always || emeter.total != null || emeter.totalReturned != null || hasMinute1
                 || hasMinute2 || hasMinute3;
-        addChannel(thing, newChannels, !profile.is3EM && !profile.isDuo && hasMeterData, group,
+        addChannel(thing, newChannels, !profile.is3EM && profile.supportsMeterReset(meterIdx) && hasMeterData, group,
                 CHANNEL_EMETER_RESETTOTAL);
         addChannel(thing, newChannels, hasMeterData, group, CHANNEL_LAST_UPDATE);
         return newChannels;
@@ -850,9 +858,21 @@ public class ShellyChannelDefinitions {
      *         hardware for this device (numMeters == 0), left over on Things created before
      *         THING_TYPE_CAP_NUM_METERS covered it, and to be removed. Never returned for EMeter/3EM or the
      *         roller/RGBW2 aggregated-meter devices, which share several of the same channel ids under their
-     *         own code paths.
+     *         own code paths. For Plus RGBW PM/Pro RGBWW PM: the resetTotals channels of meters that can't be
+     *         reset.
      */
     public static Set<String> getObsoleteMeterChannelIds(final ShellyDeviceProfile profile) {
+        if (profile.isRGBW2 && profile.isGen2) {
+            // resetTotals created by older versions on meters of RGB/RGBW/CCT components, which can't be reset;
+            // without the component list (settings not loaded yet) nothing is known to be obsolete
+            List<ShellySettingsRgbwLight> lights = profile.settings.lights;
+            if (lights == null || lights.size() < profile.numMeters) {
+                return Set.of();
+            }
+            return IntStream.range(0, profile.numMeters).filter(i -> !profile.supportsMeterReset(i))
+                    .mapToObj(i -> profile.getMeterGroup(i) + "#" + CHANNEL_EMETER_RESETTOTAL)
+                    .collect(Collectors.toSet());
+        }
         if (profile.numMeters > 0 || profile.isEMeter || profile.isRoller || profile.isRGBW2) {
             return Set.of();
         }
@@ -991,6 +1011,8 @@ public class ShellyChannelDefinitions {
         boolean hasBatteryValue = sdata.bat != null && sdata.bat.value != null;
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL);
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
+        addChannel(thing, newChannels, ws90 || sdata.capacitorVoltage != null, CHANNEL_GROUP_BATTERY,
+                CHANNEL_SENSOR_CAPACITOR_VOLTAGE);
 
         addChannel(thing, newChannels, sdata.sensorError != null || (profile.isFlood && profile.isGen2),
                 CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);

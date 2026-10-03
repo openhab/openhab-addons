@@ -366,6 +366,14 @@ public class ShellyDeviceProfile {
     }
 
     /**
+     * Inverse of {@link #getMeterGroup(int)}: "meter" is index 0, "meterN" is index N-1.
+     */
+    public static int getMeterIndex(String group) {
+        String suffix = group.startsWith(CHANNEL_GROUP_METER) ? group.substring(CHANNEL_GROUP_METER.length()) : "";
+        return !suffix.isEmpty() && suffix.chars().allMatch(Character::isDigit) ? Integer.parseInt(suffix) - 1 : 0;
+    }
+
+    /**
      * Number of leading color-component slots in settings.lights (0 or 1 - no profile has more than one).
      * Used to convert a device-local component id (as reported by the device, 0-based per component type,
      * e.g. CCT:0/CCT:1 or Light:0/Light:1) into its index in the flat settings.lights list, where slot 0 is
@@ -383,6 +391,18 @@ public class ShellyDeviceProfile {
     public boolean hasColorTag(int idx) {
         ShellyLightApiComponent tag = tagAt(settings.lights, idx);
         return tag == ShellyLightApiComponent.NONE ? inColor : ShellyApiLightUtil.isColorComponent(tag);
+    }
+
+    /**
+     * Meter reset is only offered where the meter's component has a ResetCounters RPC: the Gen3 bulbs' CCT/RGBCCT
+     * and the RGB/RGBW/CCT components of the Plus/Pro RGBW PM have none, only the plain Light component does.
+     * On Gen2 RGBW2 devices each settings.lights entry is its own meter, so meterIdx is that list index.
+     */
+    public boolean supportsMeterReset(int meterIdx) {
+        if (isDuo) {
+            return false;
+        }
+        return !isGen2 || !isRGBW2 || tagAt(settings.lights, meterIdx) == ShellyLightApiComponent.LIGHT;
     }
 
     /**

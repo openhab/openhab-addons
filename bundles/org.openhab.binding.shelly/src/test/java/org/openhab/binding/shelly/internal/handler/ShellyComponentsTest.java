@@ -769,6 +769,63 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void updateSensorsWs90CapacitorVoltagePublishesVoltQuantityType() throws Exception {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.capacitorVoltage = 3.284;
+        ShellyThingInterface handler = ws90HandlerWith(sdata);
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_BATTERY), eq(CHANNEL_SENSOR_CAPACITOR_VOLTAGE),
+                argThat(s -> s instanceof QuantityType<?> qt && "V".equals(qt.getUnit().toString())
+                        && Math.abs(qt.doubleValue() - 3.284) < 0.0005));
+    }
+
+    @Test
+    void updateSensorsWs90WithoutCapacitorVoltageSkipsChannel() throws Exception {
+        ShellyThingInterface handler = ws90HandlerWith(new ShellyStatusSensor());
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_BATTERY), eq(CHANNEL_SENSOR_CAPACITOR_VOLTAGE), any());
+    }
+
+    @Test
+    void createSensorChannelsWs90WithoutDataStillCreatesCapacitorVoltageChannel() {
+        ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUWS90, "test");
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(thingUID);
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUWS90);
+        profile.isWS90 = true;
+
+        Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile,
+                new ShellyStatusSensor());
+
+        assertThat("capacitorVoltage channel created in battery group",
+                channels.containsKey(
+                        CHANNEL_GROUP_BATTERY + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_CAPACITOR_VOLTAGE),
+                is(true));
+    }
+
+    @Test
+    void createSensorChannelsNonWs90WithoutVoltageDoesNotCreateCapacitorVoltageChannel() {
+        ThingUID thingUID = new ThingUID(THING_TYPE_SHELLYBLUHT, "test");
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(thingUID);
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYBLUHT);
+
+        Map<String, Channel> channels = ShellyChannelDefinitions.createSensorChannels(thing, profile,
+                new ShellyStatusSensor());
+
+        assertThat("capacitorVoltage channel not created",
+                channels.containsKey(
+                        CHANNEL_GROUP_BATTERY + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_CAPACITOR_VOLTAGE),
+                is(false));
+    }
+
+    @Test
     void updateSensorsWs90WithoutDerivedValuesSkipsDerivedChannels() throws Exception {
         ShellyThingInterface handler = ws90HandlerWith(new ShellyStatusSensor());
 
@@ -1157,6 +1214,93 @@ public class ShellyComponentsTest {
 
         boolean updated = ShellyComponents.updateRGBW(value, handler);
         Map<String, State> updates = handler.getChannelUpdates();
+
+        assertThat(updated, is(true));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_PICKER), instanceOf(HSBType.class));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_RED), is(new PercentType(4)));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_GREEN), is(new PercentType(8)));
+        assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_BLUE), is(new PercentType(12)));
+    }
+
+    @Test
+    void updateRGBWPushesPowerChannelForRgbwPmOnPartialStatusWithoutRgb() throws Exception {
+        ShellyThingInterface handler = mockHandler(colorProfile(THING_TYPE_SHELLYPLUSRGBWPM));
+
+        boolean updated = ShellyComponents.updateRGBW(handler, statusWithLight(true));
+
+        assertThat(updated, is(true));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_LIGHT_CONTROL), eq(CHANNEL_LIGHT_POWER), eq(OnOffType.ON));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), anyString(), any());
+    }
+
+    @Test
+    void updateRGBWPushesZeroBrightnessColorPickerForRgbwPmWhenOff() throws Exception {
+        ShellyThingInterface handler = mockHandler(colorProfile(THING_TYPE_SHELLYPLUSRGBWPM));
+        ShellySettingsStatus status = statusWithLight(false);
+        ShellySettingsLight light = status.lights.get(0);
+        light.red = 255;
+        light.green = 0;
+        light.blue = 0;
+        light.white = 0;
+
+        ShellyComponents.updateRGBW(handler, status);
+
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), eq(CHANNEL_COLOR_PICKER),
+                eq(new HSBType(new DecimalType(0), new PercentType(100), PercentType.ZERO)));
+    }
+
+    @Test
+    void updateRGBWSkipsPowerChannelForMulticolorBulbGen3() throws Exception {
+        ShellyThingInterface handler = mockHandler(colorProfile(THING_TYPE_SHELLYPLUSCOLORBULB));
+
+        ShellyComponents.updateRGBW(handler, statusWithLight(true));
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_LIGHT_CONTROL), eq(CHANNEL_LIGHT_POWER), any());
+    }
+
+    private static ShellyDeviceProfile colorProfile(ThingTypeUID thingType) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingType);
+        profile.inColor = true;
+        return profile;
+    }
+
+    private static ShellySettingsStatus statusWithLight(boolean ison) {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsLight light = new ShellySettingsLight();
+        light.ison = ison;
+        status.lights = new ArrayList<>(List.of(light));
+        return status;
+    }
+
+    @Test
+    void updateRGBWSkipsColorChannelsForDuoBulbInWhiteMode() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        profile.inColor = false;
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.lights = new ArrayList<>(List.of(new ShellySettingsLight()));
+
+        boolean updated = ShellyComponents.updateRGBW(handler, status);
+
+        assertThat(updated, is(false));
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_COLOR_CONTROL), anyString(), any());
+    }
+
+    @Test
+    void updateLightModePushesBrightnessAndCtForDuoBulbInWhiteMode() throws Exception {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        profile.inColor = false;
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        ShellySettingsLight light = new ShellySettingsLight();
+        light.ison = true;
+        light.brightness = 55;
+        light.temp = 3200;
+        status.lights = new ArrayList<>(List.of(light));
+
+        boolean updated = ShellyComponents.updateLightMode(handler, status);
 
         assertThat(updated, is(true));
         assertThat(updates.get(CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_PICKER), instanceOf(HSBType.class));
