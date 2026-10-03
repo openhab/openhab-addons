@@ -657,6 +657,8 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(true));
         assertThat(Objects.requireNonNull(profile.settings.lights).size(), is(1));
+        assertThat(profile.numMeters, is(1));
+        assertThat(profile.getMeterGroup(0), is(CHANNEL_GROUP_METER));
     }
 
     @Test
@@ -667,6 +669,7 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(true));
         assertThat(Objects.requireNonNull(profile.settings.lights).size(), is(1));
+        assertThat(profile.numMeters, is(1));
     }
 
     @Test
@@ -677,6 +680,9 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(false));
         assertThat(Objects.requireNonNull(profile.settings.lights).size(), is(4));
+        assertThat(profile.numMeters, is(4));
+        assertThat(profile.getMeterGroup(0), is(CHANNEL_GROUP_METER + "1"));
+        assertThat(profile.getMeterGroup(3), is(CHANNEL_GROUP_METER + "4"));
     }
 
     @Test
