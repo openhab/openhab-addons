@@ -14,6 +14,8 @@ package org.openhab.binding.dreame.internal.handler;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,10 +46,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DreameAccountHandler extends BaseBridgeHandler {
 
+    private static final long DEVICE_METADATA_REFRESH_MINUTES = 15;
+
     private final Logger logger = LoggerFactory.getLogger(DreameAccountHandler.class);
     private final DreameMowerApi apiClient;
     private final AtomicInteger lifecycleGeneration = new AtomicInteger();
     private volatile List<DreameDevice> devices = List.of();
+    private volatile @Nullable ScheduledFuture<?> deviceMetadataRefreshJob;
     private volatile @Nullable DreameMowerDiscoveryService discoveryService;
     private volatile @Nullable DreameVacuumDiscoveryService vacuumDiscoveryService;
 
@@ -63,6 +68,7 @@ public class DreameAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        stopDeviceMetadataRefresh();
         int generation = lifecycleGeneration.incrementAndGet();
         DreameAccountConfiguration config = getConfigAs(DreameAccountConfiguration.class);
         if (config.cloudService.isBlank() || config.username.isBlank() || config.password.isBlank()
@@ -85,7 +91,7 @@ public class DreameAccountHandler extends BaseBridgeHandler {
             if (generation != lifecycleGeneration.get()) {
                 return;
             }
-            devices = discoveredDevices;
+            devices = List.copyOf(discoveredDevices);
             updateStatus(ThingStatus.ONLINE);
             logger.debug("Connected to {}; account contains {} supported device records", cloudService.label(),
                     devices.size());
@@ -97,6 +103,8 @@ public class DreameAccountHandler extends BaseBridgeHandler {
             if (vacuumDiscovery != null) {
                 vacuumDiscovery.discoverDevices();
             }
+            deviceMetadataRefreshJob = scheduler.scheduleWithFixedDelay(() -> refreshDeviceMetadata(generation),
+                    DEVICE_METADATA_REFRESH_MINUTES, DEVICE_METADATA_REFRESH_MINUTES, TimeUnit.MINUTES);
         } catch (DreameCloudException e) {
             if (generation != lifecycleGeneration.get()) {
                 return;
@@ -107,8 +115,38 @@ public class DreameAccountHandler extends BaseBridgeHandler {
         }
     }
 
+    private void refreshDeviceMetadata(int generation) {
+        try {
+            List<DreameDevice> refreshedDevices = List.copyOf(apiClient.getDevices());
+            if (generation != lifecycleGeneration.get()) {
+                return;
+            }
+            List<DreameDevice> previousDevices = devices;
+            devices = refreshedDevices;
+            if (!previousDevices.equals(refreshedDevices)) {
+                logger.debug("Refreshed cloud metadata for {} device records", refreshedDevices.size());
+                DreameMowerDiscoveryService discovery = discoveryService;
+                if (discovery != null) {
+                    discovery.discoverDevices();
+                }
+                DreameVacuumDiscoveryService vacuumDiscovery = vacuumDiscoveryService;
+                if (vacuumDiscovery != null) {
+                    vacuumDiscovery.discoverDevices();
+                }
+            }
+        } catch (DreameCloudException e) {
+            if (generation == lifecycleGeneration.get()) {
+                logger.debug("Cloud device metadata refresh failed; retaining the previous metadata");
+            }
+        }
+    }
+
     public @Nullable DreameDevice getDevice(String deviceId) {
         return getDevices().stream().filter(device -> device.id().equals(deviceId)).findFirst().orElse(null);
+    }
+
+    public @Nullable DreameDevice getVacuumDevice(String deviceId) {
+        return getVacuumDevices().stream().filter(device -> device.id().equals(deviceId)).findFirst().orElse(null);
     }
 
     public DreameMowerApi getApiClient() {
@@ -143,10 +181,19 @@ public class DreameAccountHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         lifecycleGeneration.incrementAndGet();
+        stopDeviceMetadataRefresh();
         discoveryService = null;
         vacuumDiscoveryService = null;
         devices = List.of();
         apiClient.logout();
         super.dispose();
+    }
+
+    private void stopDeviceMetadataRefresh() {
+        ScheduledFuture<?> job = deviceMetadataRefreshJob;
+        deviceMetadataRefreshJob = null;
+        if (job != null) {
+            job.cancel(false);
+        }
     }
 }
