@@ -75,7 +75,8 @@ public class DreameVacuumDiscoveryService extends AbstractThingHandlerDiscoveryS
                 continue;
             }
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel("Dreame Vacuum")
-                    .withProperties(Map.of("deviceId", device.id(), "model", device.model()))
+                    .withProperties(Map.of("deviceId", device.id(), "model", device.model(),
+                            Thing.PROPERTY_FIRMWARE_VERSION, device.version()))
                     .withRepresentationProperty("deviceId").build());
             logger.debug("Discovered vacuum model {}", device.model());
         }

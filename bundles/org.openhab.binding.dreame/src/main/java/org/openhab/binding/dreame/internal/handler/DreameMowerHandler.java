@@ -49,6 +49,7 @@ import org.openhab.binding.dreame.internal.model.DreameMowingStatistics;
 import org.openhab.binding.dreame.internal.model.DreameMqttConfiguration;
 import org.openhab.binding.dreame.internal.model.DreameProperty;
 import org.openhab.binding.dreame.internal.model.DreameStatus;
+import org.openhab.binding.dreame.internal.util.DreameDeviceMetadata;
 import org.openhab.binding.dreame.internal.util.DreameDiagnostics;
 import org.openhab.binding.dreame.internal.util.DreameMapPngRenderer;
 import org.openhab.binding.dreame.internal.util.DreameMapSvgRenderer;
@@ -292,7 +293,7 @@ public class DreameMowerHandler extends BaseThingHandler {
             updateStatusChannels(status, pollRevision);
             refreshStatistics(account, device);
             refreshMapData(account, device);
-            updateState(CHANNEL_FIRMWARE, new StringType(device.version()));
+            updateDeviceMetadata(device);
             consecutivePollingFailures.set(0);
             updateStatus(ThingStatus.ONLINE);
             ensureMqtt(account, device);
@@ -307,6 +308,16 @@ public class DreameMowerHandler extends BaseThingHandler {
                 logger.debug("Tolerating cloud polling failure {} of {} for device {}; MQTT connected={}", failures,
                         POLLING_FAILURE_THRESHOLD, DreameDiagnostics.maskIdentifier(device.id()), isMqttConnected());
             }
+        }
+    }
+
+    private void updateDeviceMetadata(DreameDevice device) {
+        if (!device.version().isBlank()) {
+            updateState(CHANNEL_FIRMWARE, new StringType(device.version()));
+        }
+        Map<String, String> properties = editProperties();
+        if (DreameDeviceMetadata.updateProperties(properties, device)) {
+            updateProperties(properties);
         }
     }
 

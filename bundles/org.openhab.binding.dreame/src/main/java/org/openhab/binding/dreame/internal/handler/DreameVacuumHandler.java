@@ -39,6 +39,7 @@ import org.openhab.binding.dreame.internal.model.DreameVacuumCapabilities;
 import org.openhab.binding.dreame.internal.model.DreameVacuumProperties;
 import org.openhab.binding.dreame.internal.model.DreameVacuumSetting;
 import org.openhab.binding.dreame.internal.model.DreameVacuumStatus;
+import org.openhab.binding.dreame.internal.util.DreameDeviceMetadata;
 import org.openhab.binding.dreame.internal.util.DreameVacuumDiagnostics;
 import org.openhab.binding.dreame.internal.util.DreameVacuumMapState;
 import org.openhab.core.library.types.RawType;
@@ -145,10 +146,12 @@ public class DreameVacuumHandler extends BaseThingHandler {
                 int currentGeneration = generation.get();
                 mapApi = account.getVacuumApi();
                 mapDevice = device;
-                mqttJob = scheduler.scheduleWithFixedDelay(() -> maintainMqtt(account, device, currentGeneration), 0,
-                        60, TimeUnit.SECONDS);
-                pollingJob = scheduler.scheduleWithFixedDelay(() -> refreshDevice(account, device, currentGeneration),
-                        0, config.refreshInterval, TimeUnit.SECONDS);
+                updateDeviceMetadata(device);
+                mqttJob = scheduler.scheduleWithFixedDelay(() -> maintainMqtt(account, device.id(), currentGeneration),
+                        0, 60, TimeUnit.SECONDS);
+                pollingJob = scheduler.scheduleWithFixedDelay(
+                        () -> refreshDevice(account, device.id(), currentGeneration), 0, config.refreshInterval,
+                        TimeUnit.SECONDS);
                 return;
             }
         }
@@ -160,7 +163,18 @@ public class DreameVacuumHandler extends BaseThingHandler {
         return DreameVacuumCapabilities.isSupported(device);
     }
 
-    private void refreshDevice(DreameAccountHandler account, DreameDevice device, int currentGeneration) {
+    private void refreshDevice(DreameAccountHandler account, String deviceId, int currentGeneration) {
+        DreameDevice device = account.getVacuumDevice(deviceId);
+        if (device == null) {
+            return;
+        }
+        synchronized (this) {
+            if (!active || generation.get() != currentGeneration) {
+                return;
+            }
+            mapDevice = device;
+            updateDeviceMetadata(device);
+        }
         DreameVacuumApi api = account.getVacuumApi();
         if (api != null) {
             refreshProperties(api, device, currentGeneration);
@@ -258,8 +272,12 @@ public class DreameVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void maintainMqtt(DreameAccountHandler account, DreameDevice device, int currentGeneration) {
+    private void maintainMqtt(DreameAccountHandler account, String deviceId, int currentGeneration) {
         if (generation.get() != currentGeneration) {
+            return;
+        }
+        DreameDevice device = account.getVacuumDevice(deviceId);
+        if (device == null) {
             return;
         }
         try {
@@ -278,6 +296,7 @@ public class DreameVacuumHandler extends BaseThingHandler {
                 }
                 currentConnection = ++connectionGeneration;
                 clearStates();
+                mapDevice = device;
                 previous = current;
                 mqttClient = null;
                 mqttConfiguration = null;
@@ -312,6 +331,13 @@ public class DreameVacuumHandler extends BaseThingHandler {
             if (generation.get() == currentGeneration) {
                 logger.debug("Vacuum MQTT setup failed; retrying in 60 seconds");
             }
+        }
+    }
+
+    private void updateDeviceMetadata(DreameDevice device) {
+        Map<String, String> properties = editProperties();
+        if (DreameDeviceMetadata.updateProperties(properties, device)) {
+            updateProperties(properties);
         }
     }
 

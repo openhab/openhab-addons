@@ -74,9 +74,9 @@ public class DreameMowerDiscoveryService extends AbstractThingHandlerDiscoverySe
                         device.model());
                 continue;
             }
-            thingDiscovered(DiscoveryResultBuilder
-                    .create(thingUID).withBridge(bridgeUID).withLabel(device.name()).withProperties(Map.of("deviceId",
-                            device.id(), "model", device.model(), "firmwareVersion", device.version()))
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(device.name())
+                    .withProperties(Map.of("deviceId", device.id(), "model", device.model(),
+                            Thing.PROPERTY_FIRMWARE_VERSION, device.version()))
                     .withRepresentationProperty("deviceId").build());
             logger.debug("Discovered mower {} ({})", DreameDiagnostics.maskIdentifier(device.id()), device.model());
         }
