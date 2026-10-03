@@ -13,8 +13,7 @@
 package org.openhab.binding.shelly.internal.provider;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
@@ -95,7 +94,7 @@ public class ShellyChannelDefinitionsLightTest {
         Map<String, Channel> created = ShellyChannelDefinitions.createLightChannels(mockThing("shellyrgbw2-white"),
                 profile, status, 1);
 
-        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_INDEX + "2", CHANNEL_COLOR_TEMP)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_INDEX + "2", CHANNEL_COLOR_TEMP_PCT)));
     }
 
     @Test
@@ -147,6 +146,7 @@ public class ShellyChannelDefinitionsLightTest {
                 status, 0);
 
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP_PCT)));
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP)));
     }
 
@@ -163,7 +163,7 @@ public class ShellyChannelDefinitionsLightTest {
                 status, 0);
 
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
-        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP_PCT)));
     }
 
     @Test
@@ -178,10 +178,16 @@ public class ShellyChannelDefinitionsLightTest {
         Map<String, Channel> created = ShellyChannelDefinitions.createLightChannels(mockThing("shellyplusduobulb"),
                 profile, status, 0);
 
-        Channel temp = created.get(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP));
+        Channel temp = created.get(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP_PCT));
         assertNotNull(temp);
-        assertEquals(CHANNEL_TYPE_WHITE_TEMP_DUO, Objects.requireNonNull(temp.getChannelTypeUID()).getId());
+        assertEquals("color-temperature", Objects.requireNonNull(temp.getChannelTypeUID()).getId());
+        assertEquals(ITEMT_DIMMER, temp.getAcceptedItemType());
+
+        temp = created.get(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP));
+        assertNotNull(temp);
+        assertEquals("color-temperature-abs", Objects.requireNonNull(temp.getChannelTypeUID()).getId());
         assertEquals(ITEMT_TEMP, temp.getAcceptedItemType());
+
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
         assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER)));
     }
@@ -198,17 +204,17 @@ public class ShellyChannelDefinitionsLightTest {
         Map<String, Channel> created = ShellyChannelDefinitions.createLightChannels(mockThing("shellybulb"), profile,
                 status, 0);
 
-        Channel temp = created.get(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP));
+        Channel temp = created.get(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP_PCT));
         assertNotNull(temp);
-        assertEquals("whiteTemp", Objects.requireNonNull(temp.getChannelTypeUID()).getId());
+        assertEquals("color-temperature", Objects.requireNonNull(temp.getChannelTypeUID()).getId());
         assertEquals(ITEMT_DIMMER, temp.getAcceptedItemType());
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER)));
     }
 
     @Test
     void indexedLightGroupHasColorTempDefinitionForProRgbwwPmCctx2Profile() {
-        assertDoesNotThrow(
-                () -> ShellyChannelDefinitions.getDefinition(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP));
+        assertDoesNotThrow(() -> ShellyChannelDefinitions
+                .getDefinition(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_COLOR_TEMP_PCT));
     }
 
     @Test
