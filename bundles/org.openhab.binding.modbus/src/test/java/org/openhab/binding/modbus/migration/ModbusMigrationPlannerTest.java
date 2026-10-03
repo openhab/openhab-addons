@@ -30,8 +30,8 @@ class ModbusMigrationPlannerTest {
         LegacyPoller poller = new LegacyPoller("modbus:poller:tcp:plant", "modbus:tcp:plant",
                 Map.of("start", 100, "length", 2, "type", "holding", "refresh", 500));
         LegacyData data = new LegacyData("modbus:data:tcp:plant:temperature", poller.uid(),
-                Map.of("readStart", "100", "readValueType", "int16"), List.of(new LegacyLink("Temperature",
-                        "modbus:data:tcp:plant:temperature:number", "Number")));
+                Map.of("readStart", "100", "readValueType", "int16"),
+                List.of(new LegacyLink("Temperature", "modbus:data:tcp:plant:temperature:number", "Number")));
 
         MigrationPreview preview = planner.preview(List.of(poller), List.of(data));
 
@@ -52,8 +52,7 @@ class ModbusMigrationPlannerTest {
         LegacyData transformed = new LegacyData("modbus:data:tcp:plant:scaled", poller.uid(),
                 Map.of("readStart", "100", "readValueType", "int16", "readTransform", "JS(scale.js)"), List.of());
         LegacyData jsonWrite = new LegacyData("modbus:data:tcp:plant:writer", poller.uid(),
-                Map.of("writeStart", "100", "writeType", "holding", "writeTransform", "JSONPATH($.value)"),
-                List.of());
+                Map.of("writeStart", "100", "writeType", "holding", "writeTransform", "JSONPATH($.value)"), List.of());
 
         MigrationPreview preview = planner.preview(List.of(poller), List.of(transformed, jsonWrite));
 

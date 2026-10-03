@@ -81,7 +81,10 @@ public final class Poller2Channel {
             state.acceptSuccessfulState(UnDefType.UNDEF);
             return state.currentState();
         }
-        State decoded = decodedValue.map(this::transform).orElse(UnDefType.UNDEF);
+        State decoded = UnDefType.UNDEF;
+        if (decodedValue.isPresent()) {
+            decoded = transform(decodedValue.get());
+        }
         state.acceptSuccessfulState(decoded);
         return state.currentState();
     }
@@ -90,8 +93,12 @@ public final class Poller2Channel {
         if (transformation.isIdentityTransform()) {
             return decoded;
         }
-        return ModbusTransformation.tryConvertToCommand(transformation.transform(decoded.toString()))
-                .filter(State.class::isInstance).map(State.class::cast).orElse(UnDefType.UNDEF);
+        Optional<org.openhab.core.types.Command> transformed = ModbusTransformation
+                .tryConvertToCommand(transformation.transform(decoded.toString()));
+        if (transformed.isPresent() && transformed.get() instanceof State transformedState) {
+            return transformedState;
+        }
+        return UnDefType.UNDEF;
     }
 
     public synchronized State acceptReadFailure() {

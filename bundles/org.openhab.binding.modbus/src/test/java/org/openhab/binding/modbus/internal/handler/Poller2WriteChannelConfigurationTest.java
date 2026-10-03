@@ -2,11 +2,11 @@
  * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0.
+ * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
  */
@@ -36,8 +36,8 @@ public class Poller2WriteChannelConfigurationTest {
                 ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
 
         Poller2WriteChannel channel = configuration.channel().orElseThrow();
-        assertEquals(42, channel.requestFor(new org.openhab.core.library.types.DecimalType(1), 9).orElseThrow()
-                .getReference());
+        assertEquals(42,
+                channel.requestFor(new org.openhab.core.library.types.DecimalType(1), 9).orElseThrow().getReference());
         assertTrue(channel.requestFor(new org.openhab.core.library.types.DecimalType(1), 9).isPresent());
     }
 

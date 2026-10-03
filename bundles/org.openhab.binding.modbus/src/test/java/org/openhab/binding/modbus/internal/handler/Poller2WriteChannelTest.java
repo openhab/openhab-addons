@@ -2,11 +2,11 @@
  * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
- * information regarding copyright ownership.
+ * information.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0.
+ * http://www.eclipse.org/legal/epl-2.0
  *
  * SPDX-License-Identifier: EPL-2.0
  */
@@ -37,8 +37,8 @@ public class Poller2WriteChannelTest {
 
         ModbusWriteRequestBlueprint request = channel.requestFor(new QuantityType<>("4.5 kW"), 9).orElseThrow();
 
-        ModbusWriteRegisterRequestBlueprint registerRequest = assertInstanceOf(ModbusWriteRegisterRequestBlueprint.class,
-                request);
+        ModbusWriteRegisterRequestBlueprint registerRequest = assertInstanceOf(
+                ModbusWriteRegisterRequestBlueprint.class, request);
         assertEquals(42, registerRequest.getReference());
         assertEquals(2, registerRequest.getMaxTries());
         assertEquals(17, registerRequest.getRegisters().getRegister(0));

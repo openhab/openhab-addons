@@ -76,6 +76,11 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
         applyUiChannelTypeShims();
         ModbusPollerConfiguration configuration = getConfigAs(ModbusPollerConfiguration.class);
         String type = configuration.getType();
+        if (type == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "poller2 requires a configured read type");
+            return;
+        }
         boolean registerPoller = ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER.equals(type)
                 || ModbusBindingConstantsInternal.READ_TYPE_INPUT_REGISTER.equals(type);
         boolean bitPoller = ModbusBindingConstantsInternal.READ_TYPE_COIL.equals(type)
@@ -94,14 +99,16 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
         for (Channel channel : getThing().getChannels()) {
             if (registerPoller) {
                 if ("raw".equals(channel.getConfiguration().getProperties().get("valueType"))) {
-                    Poller2RawChannelConfiguration parsed = Poller2RawChannelConfiguration.create(channel.getUID().getId(),
-                            channel.getConfiguration().getProperties(), configuration.getStart(), configuration.getLength());
+                    Poller2RawChannelConfiguration parsed = Poller2RawChannelConfiguration.create(
+                            channel.getUID().getId(), channel.getConfiguration().getProperties(),
+                            configuration.getStart(), configuration.getLength());
                     parsed.error().ifPresent(configurationErrors::add);
                     parsed.channel().ifPresent(raw -> parsedRawChannels.put(channel.getUID(), raw));
                     continue;
                 }
                 Poller2ChannelConfiguration parsed = Poller2ChannelConfiguration.create(channel.getUID().getId(),
-                        channel.getConfiguration().getProperties(), configuration.getStart(), configuration.getLength());
+                        channel.getConfiguration().getProperties(), configuration.getStart(),
+                        configuration.getLength());
                 Optional<String> error = parsed.error();
                 if (error.isPresent()) {
                     configurationErrors.add(error.get());
@@ -110,7 +117,8 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
                 parsedChannels.put(channel.getUID(), parsed.channel().orElseThrow());
             } else if (bitPoller) {
                 Poller2BitChannelConfiguration parsed = Poller2BitChannelConfiguration.create(channel.getUID().getId(),
-                        channel.getConfiguration().getProperties(), configuration.getStart(), configuration.getLength());
+                        channel.getConfiguration().getProperties(), configuration.getStart(),
+                        configuration.getLength());
                 Optional<String> error = parsed.error();
                 if (error.isPresent()) {
                     configurationErrors.add(error.get());
@@ -118,8 +126,8 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
                 }
                 parsedBitChannels.put(channel.getUID(), parsed.channel().orElseThrow());
             }
-            Poller2WriteChannelConfiguration writeConfiguration = Poller2WriteChannelConfiguration.create(
-                    channel.getUID().getId(), channel.getConfiguration().getProperties(), type);
+            Poller2WriteChannelConfiguration writeConfiguration = Poller2WriteChannelConfiguration
+                    .create(channel.getUID().getId(), channel.getConfiguration().getProperties(), type);
             writeConfiguration.error().ifPresent(configurationErrors::add);
             writeConfiguration.channel().ifPresent(write -> parsedWriteChannels.put(channel.getUID(), write));
         }
@@ -169,7 +177,7 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
         }
         ModbusReadRequestBlueprint readRequest = getRequest();
         ModbusCommunicationInterface communication = getCommunicationInterface();
-        if (readRequest == null || communication == null) {
+        if (readRequest == null) {
             return;
         }
         writeChannel.requestFor(command, readRequest.getUnitID()).ifPresent(request -> {

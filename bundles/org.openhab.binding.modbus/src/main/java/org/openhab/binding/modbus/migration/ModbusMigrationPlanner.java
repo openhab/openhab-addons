@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,12 +46,13 @@ public final class ModbusMigrationPlanner {
                 }
                 String channelId = data.uid().substring(data.uid().lastIndexOf(':') + 1);
                 String itemType = data.links().isEmpty() ? "Number" : data.links().getFirst().itemType();
-                Map<String, Object> channelConfiguration = Map.of("address", data.configuration().get("readStart"),
-                        "valueType", data.configuration().get("readValueType"));
+                Object readStart = Objects.requireNonNull(data.configuration().get("readStart"));
+                Object readValueType = Objects.requireNonNull(data.configuration().get("readValueType"));
+                Map<String, Object> channelConfiguration = Map.of("address", readStart, "valueType", readValueType);
                 channels.add(new MigrationChannel(data.uid(), channelId, channelConfiguration, itemType));
                 String targetChannelUid = targetPollerUid(poller.uid()) + ":" + channelId;
-                data.links().stream().sorted(Comparator.comparing(LegacyLink::channelUid))
-                        .forEach(link -> links.add(new MigrationLink(link.itemName(), link.channelUid(), targetChannelUid)));
+                data.links().stream().sorted(Comparator.comparing(LegacyLink::channelUid)).forEach(
+                        link -> links.add(new MigrationLink(link.itemName(), link.channelUid(), targetChannelUid)));
             }
             if (!channels.isEmpty()) {
                 groups.add(new MigrationGroup(poller.uid(), targetPollerUid(poller.uid()), poller.bridgeUid(),
@@ -91,8 +93,9 @@ public final class ModbusMigrationPlanner {
         for (MigrationGroup group : groups) {
             result.append("  ").append(group.targetPollerUid()).append(":\n    type: modbus:poller2\n    bridge: ")
                     .append(group.targetBridgeUid()).append("\n    configuration:\n");
-            group.configuration().entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> result.append("      ")
-                    .append(entry.getKey()).append(": ").append(yamlValue(entry.getValue())).append('\n'));
+            group.configuration().entrySet().stream().sorted(Map.Entry.comparingByKey())
+                    .forEach(entry -> result.append("      ").append(entry.getKey()).append(": ")
+                            .append(yamlValue(entry.getValue())).append('\n'));
             result.append("    channels:\n");
             for (MigrationChannel channel : group.channels()) {
                 result.append("      ").append(channel.id()).append(":\n        itemType: ").append(channel.itemType())
@@ -115,13 +118,13 @@ public final class ModbusMigrationPlanner {
         for (MigrationGroup group : groups) {
             for (MigrationChannel channel : group.channels()) {
                 mappings.add("{\"sourceThing\":\"" + json(channel.sourceDataUid()) + "\",\"targetPoller\":\""
-                        + json(group.targetPollerUid()) + "\",\"targetChannel\":\"" + json(group.targetPollerUid() + ":"
-                                + channel.id())
-                        + "\"}");
+                        + json(group.targetPollerUid()) + "\",\"targetChannel\":\""
+                        + json(group.targetPollerUid() + ":" + channel.id()) + "\"}");
             }
             for (MigrationLink link : group.links()) {
-                mappings.add("{\"item\":\"" + json(link.itemName()) + "\",\"sourceLink\":\""
-                        + json(link.sourceChannelUid()) + "\",\"targetLink\":\"" + json(link.targetChannelUid()) + "\"}");
+                mappings.add(
+                        "{\"item\":\"" + json(link.itemName()) + "\",\"sourceLink\":\"" + json(link.sourceChannelUid())
+                                + "\",\"targetLink\":\"" + json(link.targetChannelUid()) + "\"}");
             }
         }
         List<String> manual = manualWork.stream().map(work -> "{\"sourceThing\":\"" + json(work.sourceUid())
@@ -141,7 +144,8 @@ public final class ModbusMigrationPlanner {
 
     private static String identity(String manifest) {
         try {
-            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(manifest.getBytes(StandardCharsets.UTF_8)));
+            return HexFormat.of()
+                    .formatHex(MessageDigest.getInstance("SHA-256").digest(manifest.getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("SHA-256 is required by the Java runtime", e);
         }

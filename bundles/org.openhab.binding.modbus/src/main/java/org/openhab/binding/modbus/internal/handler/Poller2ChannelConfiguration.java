@@ -78,7 +78,7 @@ public final class Poller2ChannelConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    private static List<String> transformation(Object value) {
+    private static List<String> transformation(@Nullable Object value) {
         if (value instanceof List<?> list && list.stream().allMatch(String.class::isInstance)) {
             return (List<String>) list;
         }

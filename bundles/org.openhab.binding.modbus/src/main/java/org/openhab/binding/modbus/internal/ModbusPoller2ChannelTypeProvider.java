@@ -57,8 +57,8 @@ public class ModbusPoller2ChannelTypeProvider implements ChannelTypeProvider {
     }
 
     private ChannelTypeUID createChannelType(String itemType) {
-        String id = SHIM_PREFIX + itemType.replace(':', '-').replaceAll("([a-z])([A-Z])", "$1-$2")
-                .toLowerCase(Locale.ROOT);
+        String id = SHIM_PREFIX
+                + itemType.replace(':', '-').replaceAll("([a-z])([A-Z])", "$1-$2").toLowerCase(Locale.ROOT);
         ChannelTypeUID uid = new ChannelTypeUID(ModbusBindingConstants.BINDING_ID, id);
         channelTypes.putIfAbsent(uid, ChannelTypeBuilder.state(uid, itemType, itemType).build());
         return uid;

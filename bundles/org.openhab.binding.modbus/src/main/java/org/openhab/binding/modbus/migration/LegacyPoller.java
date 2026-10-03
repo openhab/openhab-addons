@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.modbus.migration;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;

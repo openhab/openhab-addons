@@ -59,7 +59,8 @@ public final class Poller2WriteChannelConfiguration {
         boolean coil = ModbusBindingConstantsInternal.READ_TYPE_COIL.equals(pollType);
         boolean holding = ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER.equals(pollType);
         if (!coil && !holding) {
-            return error("Channel '%s' writeStart is supported only by holding-register or coil pollers".formatted(channelId));
+            return error("Channel '%s' writeStart is supported only by holding-register or coil pollers"
+                    .formatted(channelId));
         }
         final ValueType valueType;
         if (coil) {
@@ -90,7 +91,8 @@ public final class Poller2WriteChannelConfiguration {
         boolean writeMultiple = Boolean.TRUE.equals(configuration.get("writeMultipleEvenWithSingleRegisterOrCoil"));
         List<String> transformation = transformation(configuration.get("writeTransform"));
         return new Poller2WriteChannelConfiguration(
-                new Poller2WriteChannel(address, valueType, transformation, maxTries, writeMultiple, coil), valueType, null);
+                new Poller2WriteChannel(address, valueType, transformation, maxTries, writeMultiple, coil), valueType,
+                null);
     }
 
     private static int intConfiguration(Map<String, Object> configuration, String key, int defaultValue) {

@@ -33,7 +33,8 @@ class ModbusMigrationWorkflowTest {
 
         MigrationPreview preview = workflow.preview(List.of(poller), List.of(data));
 
-        assertThrows(IllegalArgumentException.class, () -> workflow.apply("not-a-preview", List.of(poller), List.of(data)));
+        assertThrows(IllegalArgumentException.class,
+                () -> workflow.apply("not-a-preview", List.of(poller), List.of(data)));
         workflow.apply(preview.identity(), List.of(poller), List.of(data));
         assertEquals(List.of("create:modbus:poller2:tcp:plant"), applier.operations);
         workflow.rollback(preview.identity());
