@@ -34,10 +34,10 @@ Each feature addresses a different kind of reuse, composition, or abstraction to
 | **Include (`!include`)**                   | Insert the contents of another file                       | Reuse YAML across files; parameterize reusable blocks                                                          |
 | **Templates (`!insert`)**                  | Reuse YAML defined within the same file                   | Local parameterized blocks; reusable channel or item fragments                                                 |
 | **Packages**                               | Bundle multiple top-level sections into one reusable unit | Define reusable device structures containing things, items, metadata; sourced from external files or templates |
+| **Dynamic Sources**                        | Query live openHAB Things & Items                         | Auto-generate items from registered Things; react to enable/disable state changes                              |
 | **Anchors and Aliases (`&name`, `*name`)** | Define small, reusable YAML fragments                     | Static defaults, shared fields                                                                                 |
 | **Merge Keys (`<<:`)**                     | Combine mappings from multiple sources                    | Layer top-level defaults, override flat fields, compose shallow structures                                     |
 | **Deep Merge (`!deep <<:`)**               | Recursively merge nested mappings and list items          | Preserve nested configuration; append tags or lists; apply nested override layers                              |
-| **Dynamic Sources**                        | Query live openHAB Things & Items                         | Auto-generate items from registered Things; react to enable/disable state changes                              |
 
 Each feature has a dedicated documentation page:
 
@@ -47,6 +47,7 @@ Each feature has a dedicated documentation page:
 - [Include](doc/include.md)
 - [Templates](doc/templates.md)
 - [Packages](doc/packages.md)
+- [Dynamic Sources](doc/dynamic-sources.md)
 - [Anchors and Aliases](doc/anchors.md)
 - [Merge Keys](doc/merge-keys.md)
 - [Deep Merge](doc/deep-merge.md)
