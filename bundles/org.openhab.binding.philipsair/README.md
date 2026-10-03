@@ -30,21 +30,31 @@ CoAP devices such as the AC2889, AC3033, AC3829 and AC4236 series report their s
 
 Recent models report their state with numbered field names (e.g. `D03-02` or `D03102`) instead.
 Examples are the AC0850, AC0950, AC1715, AC2210, AC3210, AC3420, AC3737, AMF and HU series.
-These models are supported in a limited way, as their modes, fan speeds and light settings differ per model:
+These models are supported in a limited way, as their modes, fan speeds and light settings differ per model.
+The AC3210 and the other devices of the same product range (reported by the device as `Unicorn`) can also be controlled:
 
-| Channel                        | Recent models                                        |
-|--------------------------------|------------------------------------------------------|
-| `power`                        | read and write                                       |
-| `child-lock`                   | read and write (only models with `D03xxx` fields)    |
-| `pm25`, `allergen-index`       | read only                                            |
-| `humidity`, `temperature`      | read only (only models with `D03xxx` fields)         |
-| `error-code`                   | read only (only models with `D03xxx` fields)         |
-| `displayed-index`              | read only (only models with `D03xxx` fields)         |
-| `pre-filter-life`, `hepa-filter-life` | read only                                     |
-| all other channels             | not supported, the channels stay `NULL`              |
+| Channel                               | Recent models                                     | Unicorn range (e.g. AC3210)                       |
+|---------------------------------------|---------------------------------------------------|---------------------------------------------------|
+| `power`                               | read and write                                    | read and write                                    |
+| `child-lock`                          | read and write (only models with `D03xxx` fields) | read and write                                    |
+| `pm25`, `allergen-index`              | read only                                         | read only                                         |
+| `humidity`, `temperature`             | read only (only models with `D03xxx` fields)      | read only                                         |
+| `error-code`                          | read only (only models with `D03xxx` fields)      | read only                                         |
+| `air-quality-threshold`               | read only (only models with `D03xxx` fields)      | read and write                                    |
+| `displayed-index`                     | read only (only models with `D03xxx` fields)      | read and write (`0` allergen index, `1` PM2.5)    |
+| `mode`                                | not supported                                     | read and write: `P` (auto), `S` (sleep)           |
+| `fan-speed`                           | not supported                                     | read and write: `1` to `5`, `m` (medium), `t` (turbo) |
+| `timer`, `timer-remaining`            | not supported                                     | timer 0 (off) to 12 hours, remaining time in minutes |
+| `pre-filter-life`, `hepa-filter-life` | read only                                         | read only                                         |
+| all other channels                    | not supported, the channels stay `NULL`           | not supported, the channels stay `NULL`           |
+
+On the Unicorn range the mode is `M` (manual) while a fan speed is selected, and the fan speed shows the speed the device chose in auto and sleep mode.
+Selecting a fan speed switches the device to manual mode; there is no separate command for the manual mode.
+The `timer` and `timer-remaining` channels are added once the device reports them.
 
 The thing properties `modelId`, `firmwareVersion` and `name` are set for these models as well.
-Support for these models has not been tested with real devices yet; feedback is welcome.
+Reading the status of an AC3210/12 has been confirmed on a real device; the commands follow the Philips app and have not been confirmed on a device yet.
+Feedback is welcome.
 If such a device is not discovered, add it manually as `coap` thing with its IP address.
 
 ### Helping to Support a New Model
