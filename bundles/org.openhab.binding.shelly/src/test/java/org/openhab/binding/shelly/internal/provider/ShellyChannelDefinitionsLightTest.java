@@ -25,10 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
@@ -196,6 +198,19 @@ public class ShellyChannelDefinitionsLightTest {
         assertFalse(hasAccumulatedChannels(1));
     }
 
+    @Test
+    void rgbwPmResetTotalsOfComponentsWithoutResetApiAreObsolete() {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPRORGBWWPM);
+        profile.isRGBW2 = true;
+        profile.isGen2 = true;
+        profile.numMeters = 3;
+        profile.settings.lights = new ArrayList<>(List.of(taggedLight(ShellyLightApiComponent.RGB),
+                taggedLight(ShellyLightApiComponent.LIGHT), taggedLight(ShellyLightApiComponent.LIGHT)));
+
+        assertEquals(Set.of(mkChannelId(CHANNEL_GROUP_METER + "1", CHANNEL_EMETER_RESETTOTAL)),
+                ShellyChannelDefinitions.getObsoleteMeterChannelIds(profile));
+    }
+
     private static boolean hasAccumulatedChannels(int numMeters) {
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSRGBWPM);
         profile.numMeters = numMeters;
@@ -206,5 +221,11 @@ public class ShellyChannelDefinitionsLightTest {
         boolean power = created.containsKey(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUMULATEDPOWER));
         assertEquals(power, created.containsKey(mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_TOTALENERGY)));
         return power;
+    }
+
+    private static ShellySettingsRgbwLight taggedLight(ShellyLightApiComponent apiComponent) {
+        ShellySettingsRgbwLight light = newLight();
+        light.apiComponent = apiComponent;
+        return light;
     }
 }

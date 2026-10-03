@@ -591,17 +591,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_EMETER_RESETTOTAL:
                     if (command == OnOffType.ON) {
-                        // Duo/Multicolor Bulb G3 meter on CCT/RGBCCT components, which have no ResetCounters
+                        // Duo/Multicolor Bulb G3 and Plus/Pro RGBW PM meter on components that have no ResetCounters
                         // RPC; the channel is no longer created for them, but a Thing provisioned before that
                         // fix may still have it, so fail soft instead of forwarding a request that 404s.
-                        if (profile.isDuo) {
-                            logger.debug("{}: Meter reset is not supported by this device", thingName);
+                        int idx = ShellyDeviceProfile.getMeterIndex(group);
+                        if (!profile.supportsMeterReset(idx)) {
+                            logger.debug("{}: Meter reset is not supported for group {}", thingName, group);
                         } else {
-                            int idx = 0;
-                            if (group.startsWith(CHANNEL_GROUP_METER)
-                                    && group.length() > CHANNEL_GROUP_METER.length()) {
-                                idx = Integer.parseInt(substringAfter(group, CHANNEL_GROUP_METER)) - 1;
-                            }
                             logger.debug("{}: Reset meter totals for group {}", thingName, group);
                             api.resetMeterTotal(idx);
                         }

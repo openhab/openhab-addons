@@ -332,7 +332,7 @@ public class ShellyComponents {
             // Always create channels regardless of data validity — Gen2 first WS push may lack emdata
             if (createChannels) {
                 thingHandler.updateChannelDefinitions(ShellyChannelDefinitions
-                        .createEMeterChannels(thingHandler.getThing(), profile, emeter, groupName));
+                        .createEMeterChannels(thingHandler.getThing(), profile, emeter, m, groupName));
             }
             if (getBool(emeter.isValid)) {
                 if (emeter.power != null) {
