@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.philipsair.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonPrimitive;
@@ -24,6 +25,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Michał Boroński - Initial contribution
  * @author Marcel Verpaalen - Update property definitions
  */
+@NonNullByDefault
 public class PhilipsAirPurifierWritableDataDTO {
 
     @SerializedName("om")

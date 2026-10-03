@@ -67,7 +67,6 @@ public class PhilipsAirCoapCipher {
             String decryptedMsg = decrypt(encodedMessage, secret, iv);
             if (logger.isTraceEnabled()) {
                 logger.trace("Decrypting: '{}'", responseText);
-                logger.trace("Secret: {}, iv {}", secret, iv);
                 logger.trace("Seq: {}, encodedMessage: {}", counter, encodedMessage);
                 logger.trace("Calculated Hash: {}, Message Hash {}", calculatedHash, hash);
                 logger.trace("Decrypted: {}", decryptedMsg);
@@ -85,7 +84,7 @@ public class PhilipsAirCoapCipher {
         return encryptedMsg(commandText, String.format("%08X", counter), logger);
     }
 
-    public @Nullable static String encryptedMsg(String commandText, String sequence, Logger logger) {
+    private static @Nullable String encryptedMsg(String commandText, String sequence, Logger logger) {
         try {
             String keyAndIv = toMD5(SHARED_SECRET + sequence);
             String secret = keyAndIv.substring(0, keyAndIv.length() / 2);
@@ -95,8 +94,7 @@ public class PhilipsAirCoapCipher {
             String encrypedMessage = sequence + encryptedCmd + calculatedHash;
             if (logger.isTraceEnabled()) {
                 logger.trace("Encrypting: '{}'", commandText);
-                logger.trace("Secret: {}, iv {}", secret, iv);
-                logger.trace("Decrypted: {}", encryptedCmd);
+                logger.trace("Encrypted: {}", encryptedCmd);
                 logger.trace("Hash: {}", calculatedHash);
                 logger.trace("Encypted message: {}", encrypedMessage);
             }

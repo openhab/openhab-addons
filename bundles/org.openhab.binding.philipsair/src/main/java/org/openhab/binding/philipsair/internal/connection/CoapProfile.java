@@ -245,6 +245,40 @@ public enum CoapProfile {
      */
     static CoapProfile resolve(@Nullable String configured, JsonObject reported) {
         Generation generation = detectGeneration(reported);
+        CoapProfile selected = select(configured, generation);
+        return selected != null ? selected : detect(generation, reported);
+    }
+
+    /**
+     * @return the profile to use before the device reported its status, or null if that is not known yet
+     * @param configured the profile selected in the thing configuration
+     * @param stored the profile resolved earlier for the device, if any
+     */
+    static @Nullable CoapProfile initial(@Nullable String configured, @Nullable CoapProfile stored) {
+        if (configured == null || PROFILE_AUTO.equals(configured)) {
+            return stored;
+        }
+        if (stored != null) {
+            CoapProfile selected = select(configured, stored.generation);
+            return selected != null ? selected : stored;
+        }
+        // an identifier can be shared by profiles of several generations, which only the status of the device tells
+        CoapProfile selected = null;
+        for (CoapProfile profile : values()) {
+            if (profile.id.equals(configured.toLowerCase(Locale.ROOT))) {
+                if (selected != null) {
+                    return null;
+                }
+                selected = profile;
+            }
+        }
+        return selected;
+    }
+
+    /**
+     * @return the configured profile if it fits the generation of the field names, or null if it is to be detected
+     */
+    private static @Nullable CoapProfile select(@Nullable String configured, Generation generation) {
         if (configured != null && !PROFILE_AUTO.equals(configured)) {
             for (CoapProfile profile : values()) {
                 if (profile.generation == generation && profile.id.equals(configured.toLowerCase(Locale.ROOT))) {
@@ -252,7 +286,7 @@ public enum CoapProfile {
                 }
             }
         }
-        return detect(generation, reported);
+        return null;
     }
 
     private static Generation detectGeneration(JsonObject reported) {

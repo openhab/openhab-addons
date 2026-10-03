@@ -66,32 +66,16 @@ public class PhilipsAirPurifierFiltersDTO {
         return preFilter;
     }
 
-    public void setPreFilter(@Nullable Integer preFilter) {
-        this.preFilter = preFilter;
-    }
-
     public @Nullable Integer getCarbonFilter() {
         return carbonFilter;
-    }
-
-    public void setCarbonFilter(@Nullable Integer carbonFilter) {
-        this.carbonFilter = carbonFilter;
     }
 
     public @Nullable Integer getHepaFilter() {
         return hepaFilter;
     }
 
-    public void setHepaFilter(@Nullable Integer hepaFilter) {
-        this.hepaFilter = hepaFilter;
-    }
-
     public @Nullable Integer getWickFilter() {
         return wickFilter;
-    }
-
-    public void setWickFilter(@Nullable Integer wickFilter) {
-        this.wickFilter = wickFilter;
     }
 
     public @Nullable String getPreFilterType() {

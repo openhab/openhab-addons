@@ -26,26 +26,10 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class PhilipsAirPurifierStateDTO {
-    @SerializedName("reported")
-    @Expose
-    @Nullable
-    private JsonObject reported;
     @SerializedName("desired")
     @Expose
     @Nullable
     private JsonObject desired;
-
-    public @Nullable JsonObject getReported() {
-        return reported;
-    }
-
-    public void setReported(JsonObject reported) {
-        this.reported = reported;
-    }
-
-    public @Nullable JsonObject getDesired() {
-        return desired;
-    }
 
     public void setDesired(JsonObject desired) {
         this.desired = desired;

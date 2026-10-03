@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.philipsair.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
@@ -23,6 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Michał Boroński - Initial contribution
  * @author Marcel Verpaalen - Add CoAP device support
  */
+@NonNullByDefault
 public class PhilipsAirPurifierDeviceDTO {
 
     @SerializedName("device_id")
@@ -45,39 +47,19 @@ public class PhilipsAirPurifierDeviceDTO {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public @Nullable String getDeviceId() {
         return deviceId;
-    }
-
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
     }
 
     public @Nullable String getType() {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public @Nullable String getModelId() {
         return modelId;
     }
 
-    public void setModelId(String modelId) {
-        this.modelId = modelId;
-    }
-
     public @Nullable String getSoftwareVersion() {
         return softwareVersion;
-    }
-
-    public void setSoftwareVersion(String softwareVersion) {
-        this.softwareVersion = softwareVersion;
     }
 }

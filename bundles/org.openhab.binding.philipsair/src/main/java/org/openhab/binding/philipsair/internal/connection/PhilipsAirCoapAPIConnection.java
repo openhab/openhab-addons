@@ -13,6 +13,7 @@
 package org.openhab.binding.philipsair.internal.connection;
 
 import java.io.IOException;
+import java.util.OptionalLong;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -79,15 +80,20 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private final CoapClient pingClient = new CoapClient();
     private final CoapEndpoint endpoint;
     private volatile long counter = 1;
-    // commands are only serialized with each other, so they never wait for the observe relation to be (re)established
-    private final Object commandLock = new Object();
-    private boolean hasSync = false;
-    private long syncCounter = 0;
+    // Serializes the counter sync exchanges with the device and the use of the synced counter. This is not the monitor
+    // of ensureConnected(), so a command never waits for the whole check of the connection, only for an exchange.
+    private final Object exchangeLock = new Object();
+    // written by the Californium thread on notifications, read when the observe relation is started
+    private volatile boolean hasSync = false;
+    // the number of consecutive invalid notifications
+    private volatile long syncCounter = 0;
     private volatile @Nullable Consumer<PhilipsAirAPIConnection> listener;
     private volatile @Nullable CoapObserveRelation observe = null;
-    private volatile @Nullable String lastJson = null;
-    // the scheme of the last status, commands are sent in the classic scheme until the device reported its status
-    private volatile CoapProfile profile = CoapProfile.CLASSIC;
+    // the last status in the classic scheme
+    private volatile @Nullable JsonObject lastStatus = null;
+    // The scheme of the last status, null while it is not known. The field names of the commands depend on it, so they
+    // are not sent before.
+    private volatile @Nullable CoapProfile profile;
     // epoch ms of the last valid JSON or answer to a ping
     private volatile long lastContact = 0L;
     // set when the device did not answer, as it may have lost the observe relation when it comes back
@@ -98,10 +104,14 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     /**
      * @param config the thing configuration
      * @param listener called with this connection whenever the device reported a new status
+     * @param initialProfile the profile the device had when it was last seen, or null if it is not known (yet). It is
+     *            replaced by the profile of the status the device reports, if that is another one.
      */
-    public PhilipsAirCoapAPIConnection(PhilipsAirConfiguration config, Consumer<PhilipsAirAPIConnection> listener) {
+    public PhilipsAirCoapAPIConnection(PhilipsAirConfiguration config, Consumer<PhilipsAirAPIConnection> listener,
+            @Nullable CoapProfile initialProfile) {
         super(config);
         this.listener = listener;
+        this.profile = CoapProfile.initial(config.getDeviceProfile(), initialProfile);
         CoapConfig.register();
 
         if (!config.getHost().isEmpty()) {
@@ -142,7 +152,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         }
         final CoapObserveRelation currentObserve = this.observe;
         if (currentObserve != null && !currentObserve.isCanceled()) {
-            final long sinceLastContact = System.currentTimeMillis() - lastContact;
+            final long sinceLastContact = currentTimeMillis() - lastContact;
             if (sinceLastContact < pingAfterMs) {
                 return;
             }
@@ -170,13 +180,15 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         try {
             String uri = getUriString(host, COAP_PORT, RESOURCE_PATH_STATUS);
             if (!hasSync) {
-                counter = getSync(counter);
-                logger.debug("Counter for {}: {}", host, counter);
+                synchronized (exchangeLock) {
+                    // without a valid answer the relation is started with the counter known so far
+                    exchangeCounter(client).ifPresent(synced -> counter = synced);
+                    logger.debug("Counter for {}: {}", host, counter);
+                }
                 if (listener == null) {
                     return; // disposed while waiting for the sync response
                 }
             }
-            client.setURI(uri);
 
             Request request = Request.newGet();
             request.setURI(uri);
@@ -222,19 +234,23 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
      * @return true if the device answered
      */
     boolean pingDevice() {
-        String response = requestSync();
-        if (response == null || response.length() < 8) {
-            logger.debug("No answer to the ping of {}", host);
-            return false;
+        long synced;
+        synchronized (exchangeLock) {
+            String response = requestSync();
+            if (response == null) {
+                logger.debug("No answer to the ping of {}", host);
+                return false;
+            }
+            OptionalLong answer = getCounter(response);
+            if (answer.isEmpty()) {
+                logger.debug("Invalid answer to the ping of {}: '{}'", host, response);
+                return false;
+            }
+            synced = answer.getAsLong();
+            counter = synced;
         }
-        try {
-            counter = Long.parseUnsignedLong(response.substring(0, 8), 16);
-        } catch (NumberFormatException e) {
-            logger.debug("Invalid answer to the ping of {}: '{}'", host, response);
-            return false;
-        }
-        lastContact = System.currentTimeMillis();
-        logger.debug("{} answered the ping, counter {}", host, counter);
+        lastContact = currentTimeMillis();
+        logger.debug("{} answered the ping, counter {}", host, synced);
         return true;
     }
 
@@ -288,13 +304,13 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
      * @return true if the notification held a valid status
      */
     boolean processNotification(String content, String uri) {
-        String resp = processResponse(content.trim(), uri);
-        if (resp.length() <= 2) {
+        JsonObject status = processResponse(content.trim(), uri);
+        if (status == null || status.isEmpty()) {
             return false;
         }
-        logger.debug("Status from {}: {}", host, resp);
-        lastJson = resp;
-        lastContact = System.currentTimeMillis();
+        logger.debug("Status from {}: {}", host, status);
+        lastStatus = status;
+        lastContact = currentTimeMillis();
         // the relation delivers, so the device did not lose it
         deviceMissed = false;
         Consumer<PhilipsAirAPIConnection> listener = this.listener;
@@ -304,7 +320,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         return true;
     }
 
-    private String processResponse(String rawResponse, String uri) {
+    private @Nullable JsonObject processResponse(String rawResponse, String uri) {
         String decrypted = rawResponse.isBlank() ? "" : PhilipsAirCoapCipher.decryptMsg(rawResponse, logger);
         if (!decrypted.isEmpty()) {
             logger.trace("Raw Response from {}: {}", uri, rawResponse);
@@ -315,7 +331,13 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                     JsonElement stateObj = airResponse.getAsJsonObject().get("state");
                     if (stateObj.isJsonObject()
                             && stateObj.getAsJsonObject().get("reported") instanceof JsonObject reported) {
-                        counter = getCounter(rawResponse);
+                        OptionalLong notified = getCounter(rawResponse);
+                        if (notified.isPresent()) {
+                            counter = notified.getAsLong();
+                            logger.trace("Current counter of {}: {}", host, counter);
+                        } else {
+                            logger.debug("Error getting the counter from '{}'", rawResponse);
+                        }
                         hasSync = true;
                         // the sync is only renewed after consecutive invalid responses
                         syncCounter = 0;
@@ -325,7 +347,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                                     config.getDeviceProfile());
                             profile = resolved;
                         }
-                        return resolved.toClassic(reported).toString();
+                        return resolved.toClassic(reported);
                     } else {
                         logger.debug("Response does not contain 'reported' element");
                     }
@@ -342,30 +364,29 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             syncCounter = 0;
         }
         logger.debug("No valid response for {}", uri);
-        return "";
-    }
-
-    private long getCounter(String rawResponse) {
-        if (rawResponse.length() >= 8) {
-            String counterStr = rawResponse.substring(0, 8);
-            try {
-                counter = Long.parseUnsignedLong(counterStr, 16);
-                logger.trace("Current counter: {}->{}", counterStr, counter);
-            } catch (NumberFormatException e) {
-                logger.debug("Error decoding '{}' to a number", counterStr);
-            }
-        } else {
-            logger.debug("Error getting counter from response: '{}'", rawResponse);
-        }
-        return counter;
+        return null;
     }
 
     /**
-     * @return the last reported status, or null if the device did not report a status recently
+     * @return the counter at the start of an answer of the device, or empty if the answer does not start with one
      */
-    private @Nullable String currentStatus() {
-        String json = lastJson;
-        return json != null && System.currentTimeMillis() - lastContact < staleAfterMs ? json : null;
+    private static OptionalLong getCounter(String rawResponse) {
+        if (rawResponse.length() >= 8) {
+            try {
+                return OptionalLong.of(Long.parseUnsignedLong(rawResponse.substring(0, 8), 16));
+            } catch (NumberFormatException e) {
+                // not a counter
+            }
+        }
+        return OptionalLong.empty();
+    }
+
+    /**
+     * @return the last reported status in the classic scheme, or null if the device did not report a status recently
+     */
+    private @Nullable JsonObject currentStatus() {
+        JsonObject status = lastStatus;
+        return status != null && currentTimeMillis() - lastContact < staleAfterMs ? status : null;
     }
 
     @Override
@@ -394,54 +415,69 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
 
     @Override
     public @Nullable PhilipsAirPurifierDataDTO getAirPurifierStatus(String host) throws JsonSyntaxException {
-        String json = currentStatus();
-        return json != null ? gson.fromJson(json, PhilipsAirPurifierDataDTO.class) : null;
+        JsonObject status = currentStatus();
+        return status != null ? gson.fromJson(status, PhilipsAirPurifierDataDTO.class) : null;
     }
 
     @Override
     public @Nullable PhilipsAirPurifierDeviceDTO getAirPurifierDevice(String host) throws JsonSyntaxException {
-        String json = currentStatus();
-        return json != null ? gson.fromJson(json, PhilipsAirPurifierDeviceDTO.class) : null;
+        JsonObject status = currentStatus();
+        return status != null ? gson.fromJson(status, PhilipsAirPurifierDeviceDTO.class) : null;
     }
 
     @Override
     public @Nullable PhilipsAirPurifierFiltersDTO getAirPurifierFiltersStatus(String host) throws JsonSyntaxException {
-        String json = currentStatus();
-        return json != null ? gson.fromJson(json, PhilipsAirPurifierFiltersDTO.class) : null;
+        JsonObject status = currentStatus();
+        return status != null ? gson.fromJson(status, PhilipsAirPurifierFiltersDTO.class) : null;
     }
 
     /**
      * Sends the command to the device. No state is returned, as the device pushes the new state through the observe
-     * relation.
+     * relation. The command is not sent before the profile of the device is known, as the field names depend on it.
      */
     @Override
     public @Nullable PhilipsAirPurifierDataDTO sendCommand(String parameter, PhilipsAirPurifierWritableDataDTO value) {
+        String command = gson.toJson(value);
+        CoapProfile profile = this.profile;
+        if (profile == null) {
+            logger.debug("Command '{}' not sent to {}, the profile is not known before the device reported its status",
+                    command, host);
+            return null;
+        }
         JsonObject desired = profile.toDevice((JsonObject) gson.toJsonTree(value));
         if (desired.isEmpty()) {
-            logger.debug("Command '{}' is not supported by {}", gson.toJson(value), host);
+            logger.warn("Command '{}' is not supported by the {} profile of {}, not sent", command, profile, host);
             return null;
         }
         try {
-            synchronized (commandLock) {
-                String encrypted = prepareCommand(desired);
+            synchronized (exchangeLock) {
+                OptionalLong synced = exchangeCounter(client);
+                if (synced.isEmpty()) {
+                    logger.warn("Counter sync with {} failed, command '{}' ({} profile) not sent", host, command,
+                            profile);
+                    return null;
+                }
+                long controlCounter = synced.getAsLong();
+                counter = controlCounter;
+                logger.debug("ControlCounter from sync={}", controlCounter);
+                String encrypted = encryptCommand(desired, controlCounter + 1);
                 if (encrypted == null) {
-                    logger.debug("Could not encrypt command '{}'", gson.toJson(value));
+                    logger.debug("Could not encrypt command '{}'", command);
                     return null;
                 }
                 String response = post(client, host, COAP_PORT, RESOURCE_PATH_CONTROL, encrypted);
                 if (!"{\"status\":\"success\"}".equals(response)) {
-                    logger.debug("Command failed. Response: {}", response);
+                    logger.warn("Command '{}' ({} profile) failed for {}, response: '{}'", command, profile, host,
+                            response);
                 }
             }
         } catch (JsonSyntaxException | ConnectorException | IOException e) {
-            logger.debug("Error sending command '{}': {}", gson.toJson(value), e.getMessage());
+            logger.debug("Error sending command '{}': {}", command, e.getMessage());
         }
         return null;
     }
 
-    private @Nullable String prepareCommand(JsonObject desired) throws ConnectorException, IOException {
-        long controlCounter = getSync(counter);
-        logger.debug("ControlCounter from sync={}", controlCounter);
+    private @Nullable String encryptCommand(JsonObject desired, long controlCounter) {
         desired.addProperty("CommandType", "app");
         desired.addProperty("DeviceId", "");
         desired.addProperty("EnduserId", "1");
@@ -450,25 +486,32 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         PhilipsAirPurifierStatusDTO fullCmd = new PhilipsAirPurifierStatusDTO();
         fullCmd.setState(state);
         String commandValue = gson.toJson(fullCmd);
-        controlCounter++;
         logger.debug("Sending command {}", commandValue);
         return PhilipsAirCoapCipher.encryptedMsg(commandValue, controlCounter, logger);
     }
 
-    private long getSync(long currentCounter) throws ConnectorException, IOException {
-        String controlCounterResponse = post(client, host, COAP_PORT, RESOURCE_PATH_SYNC,
-                String.format("%08X", currentCounter));
-        return getCounter(controlCounterResponse);
+    /**
+     * Exchanges the counter with the device. The caller must hold the {@link #exchangeLock}, as the answer is only
+     * valid until the next exchange.
+     *
+     * @return the counter of the device, or empty if the device did not answer with one
+     */
+    private OptionalLong exchangeCounter(CoapClient client) throws ConnectorException, IOException {
+        return getCounter(post(client, host, COAP_PORT, RESOURCE_PATH_SYNC, String.format("%08X", counter)));
     }
 
     private static String getUriString(String server, int port, String resourcePath) {
         return "coap://" + server + ":" + port + resourcePath;
     }
 
-    private String post(CoapClient client, String server, int port, String resourcePath, String body)
+    long currentTimeMillis() {
+        return System.currentTimeMillis();
+    }
+
+    String post(CoapClient client, String server, int port, String resourcePath, String body)
             throws ConnectorException, IOException {
         String uri = getUriString(server, port, resourcePath);
-        // the URI is set on the request, as the shared client URI is also changed when (re)starting the observe
+        // each request carries its own URI, as the clients are shared by the requests of different resources
         Request request = Request.newPost();
         request.setURI(uri);
         request.setPayload(body);

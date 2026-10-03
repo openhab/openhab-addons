@@ -31,10 +31,6 @@ public class PhilipsAirPurifierStatusDTO {
     @Nullable
     private PhilipsAirPurifierStateDTO state;
 
-    public @Nullable PhilipsAirPurifierStateDTO getState() {
-        return state != null ? state : new PhilipsAirPurifierStateDTO();
-    }
-
     public void setState(PhilipsAirPurifierStateDTO state) {
         this.state = state;
     }

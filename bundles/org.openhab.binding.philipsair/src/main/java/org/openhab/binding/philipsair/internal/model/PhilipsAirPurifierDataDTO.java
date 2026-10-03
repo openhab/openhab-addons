@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.philipsair.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
@@ -23,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Michał Boroński - Initial contribution
  * @author Marcel Verpaalen - Add null handling and code cleanup
  */
-
+@NonNullByDefault
 public class PhilipsAirPurifierDataDTO extends PhilipsAirPurifierWritableDataDTO {
     @SerializedName("dtrs")
     @Expose
@@ -57,71 +58,35 @@ public class PhilipsAirPurifierDataDTO extends PhilipsAirPurifierWritableDataDTO
         return timerLeft;
     }
 
-    public void setTimerLeft(@Nullable Integer timerLeft) {
-        this.timerLeft = timerLeft;
-    }
-
     public @Nullable Integer getPm25() {
         return pm25;
-    }
-
-    public void setPm25(@Nullable Integer pm25) {
-        this.pm25 = pm25;
     }
 
     public @Nullable Integer getAllergenLevel() {
         return allergenLevel;
     }
 
-    public void setAllergenLevel(@Nullable Integer allergenLevel) {
-        this.allergenLevel = allergenLevel;
-    }
-
     public @Nullable Integer getErrorCode() {
         return errorCode;
-    }
-
-    public void setErrorCode(@Nullable Integer errorCode) {
-        this.errorCode = errorCode;
     }
 
     public @Nullable Float getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(@Nullable Float humidity) {
-        this.humidity = humidity;
-    }
-
     public @Nullable Float getTemperature() {
         return temperature;
-    }
-
-    public void setTemperature(@Nullable Float temperature) {
-        this.temperature = temperature;
     }
 
     public @Nullable Integer getWaterLevel() {
         return waterLevel;
     }
 
-    public void setWaterLevel(@Nullable Integer waterLevel) {
-        this.waterLevel = waterLevel;
-    }
-
     public @Nullable Integer getTvoc() {
         return tvoc;
     }
 
-    public void setTvoc(@Nullable Integer tvoc) {
-        this.tvoc = tvoc;
-    }
-
     public @Nullable Integer getRssi() {
         return rssi;
-    }
-
-    public void setRssi(@Nullable Integer rssi) {
-        this.rssi = rssi;
     }
 }

@@ -380,6 +380,10 @@ public class PhilipsAirHandler extends BaseThingHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
+        if (getStoredProfile(config) == null) {
+            // not inherited by another device; the status of the device stores its profile again
+            getThing().setProperty(PROPERTY_DEVICE_PROFILE, null);
+        }
         synchronized (updateLock) {
             if (!config.getHost().equals(dataHost)) {
                 currentData = null;
@@ -433,10 +437,29 @@ public class PhilipsAirHandler extends BaseThingHandler {
     PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
         if (SUPPORTED_COAP_THING_TYPES_UIDS.contains(getThing().getThingTypeUID())) {
             logger.debug("Starting Coap based connectivity");
-            return new PhilipsAirCoapAPIConnection(config, this::dataReceived);
+            return new PhilipsAirCoapAPIConnection(config, this::dataReceived, getStoredProfile(config));
         } else {
             logger.debug("Starting HTTP based connectivity");
             return new PhilipsAirHttpAPIConnection(config, httpClient);
+        }
+    }
+
+    /**
+     * @return the profile resolved earlier for the configured device, or null if there is none
+     */
+    @Nullable
+    CoapProfile getStoredProfile(PhilipsAirConfiguration config) {
+        Map<String, String> properties = getThing().getProperties();
+        String profile = properties.get(PROPERTY_DEVICE_PROFILE);
+        // the profile belongs to the device it was resolved for, not to the thing
+        if (profile == null || !config.getHost().equals(properties.get(PROPERTY_DEVICE_PROFILE_HOST))) {
+            return null;
+        }
+        try {
+            return CoapProfile.valueOf(profile);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Ignoring unknown stored profile '{}' of {}", profile, thing.getUID());
+            return null;
         }
     }
 
@@ -627,8 +650,9 @@ public class PhilipsAirHandler extends BaseThingHandler {
             if (deviceInfo != null) {
                 fillDeviceProperties(deviceInfo, properties);
             }
-            if (profile != null && profile != CoapProfile.CLASSIC) {
+            if (profile != null) {
                 properties.put(PROPERTY_DEVICE_PROFILE, profile.name());
+                properties.put(PROPERTY_DEVICE_PROFILE_HOST, config.getHost());
             }
             if (filters != null) {
                 putIfNotNull(properties, PROPERTY_PRE_FILTER_TYPE, filters.getPreFilterType());

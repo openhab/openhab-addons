@@ -138,6 +138,37 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         }
     }
 
+    private Map<String, String> initializeWithStoredProfile(String storedHost) {
+        Configuration config = new Configuration();
+        config.put(PhilipsAirConfiguration.CONFIG_HOST, "1.1.1.1");
+        Thing thing = ThingBuilder.create(THING_TYPE_COAP, THING_UID).withConfiguration(config)
+                .withProperties(Map.of(PROPERTY_DEVICE_PROFILE, "UNICORN", PROPERTY_DEVICE_PROFILE_HOST, storedHost))
+                .build();
+        PhilipsAirHandler storedHandler = new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider) {
+            @Override
+            PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
+                return connection;
+            }
+        };
+        storedHandler.setCallback(callback);
+        try {
+            storedHandler.initialize();
+            return Map.copyOf(storedHandler.getThing().getProperties());
+        } finally {
+            storedHandler.dispose();
+        }
+    }
+
+    @Test
+    public void storedProfileIsKeptForTheSameHost() {
+        assertEquals("UNICORN", initializeWithStoredProfile("1.1.1.1").get(PROPERTY_DEVICE_PROFILE));
+    }
+
+    @Test
+    public void storedProfileIsDroppedWhenTheHostChanged() {
+        assertNull(initializeWithStoredProfile("2.2.2.2").get(PROPERTY_DEVICE_PROFILE));
+    }
+
     @Test
     public void disposeReleasesConnection() throws Exception {
         releaseConnection.countDown();

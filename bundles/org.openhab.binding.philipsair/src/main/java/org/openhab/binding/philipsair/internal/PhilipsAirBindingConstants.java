@@ -90,6 +90,7 @@ public class PhilipsAirBindingConstants {
     public static final String PROPERTY_HEPA_FILTER_TYPE = "hepaFilterType";
     public static final String PROPERTY_CARBON_FILTER_TYPE = "carbonFilterType";
     public static final String PROPERTY_DEVICE_PROFILE = "deviceProfile";
+    public static final String PROPERTY_DEVICE_PROFILE_HOST = "deviceProfileHost";
 
     // List of all Channel groups
     public static final String CONTROLS = "controls";

@@ -295,7 +295,7 @@ public class PhilipsAirHandlerOptionalChannelsTest {
     }
 
     @Test
-    public void classicDevicesHaveNoProfileOptionsOrProperty() throws PhilipsAirAPIException {
+    public void classicDevicesHaveNoProfileOptionsButStoreTheProfile() throws PhilipsAirAPIException {
         when(connection.getDeviceProfile()).thenReturn(CoapProfile.CLASSIC);
         when(connection.getAirPurifierDevice(any()))
                 .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDeviceDTO.class));
@@ -306,7 +306,79 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
         verify(stateDescriptionProvider, never())
                 .setStateOptions(eq(new ChannelUID(handler.getThing().getUID(), CONTROLS, FAN_MODE)), any());
-        assertFalse(handler.getThing().getProperties().containsKey(PROPERTY_DEVICE_PROFILE));
+        assertEquals("CLASSIC", handler.getThing().getProperties().get(PROPERTY_DEVICE_PROFILE));
+    }
+
+    private PhilipsAirHandler handlerOf(String host, Map<String, String> properties) {
+        ThingUID thingUID = new ThingUID(THING_TYPE_COAP, "stored");
+        Configuration configuration = new Configuration();
+        configuration.put(PhilipsAirConfiguration.CONFIG_HOST, host);
+        Thing thing = ThingBuilder.create(THING_TYPE_COAP, thingUID).withConfiguration(configuration)
+                .withProperties(properties).build();
+        PhilipsAirHandler storedHandler = new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider);
+        storedHandler.setCallback(callback);
+        return storedHandler;
+    }
+
+    private static PhilipsAirConfiguration configurationOf(String host) {
+        PhilipsAirConfiguration config = new PhilipsAirConfiguration();
+        config.setHost(host);
+        return config;
+    }
+
+    @Test
+    public void storedProfileIsOnlyUsedForTheHostItWasResolvedFor() {
+        PhilipsAirHandler stored = handlerOf("1.1.1.1",
+                Map.of(PROPERTY_DEVICE_PROFILE, "UNICORN", PROPERTY_DEVICE_PROFILE_HOST, "1.1.1.1"));
+
+        assertEquals(CoapProfile.UNICORN, stored.getStoredProfile(configurationOf("1.1.1.1")));
+        assertNull(stored.getStoredProfile(configurationOf("2.2.2.2")));
+
+        assertNull(handlerOf("1.1.1.1", Map.of(PROPERTY_DEVICE_PROFILE, "UNICORN"))
+                .getStoredProfile(configurationOf("1.1.1.1")));
+        assertNull(handlerOf("1.1.1.1", Map.of()).getStoredProfile(configurationOf("1.1.1.1")));
+    }
+
+    @Test
+    public void unknownStoredProfileIsIgnored() {
+        PhilipsAirHandler stored = handlerOf("1.1.1.1",
+                Map.of(PROPERTY_DEVICE_PROFILE, "FUTURE", PROPERTY_DEVICE_PROFILE_HOST, "1.1.1.1"));
+
+        assertNull(stored.getStoredProfile(configurationOf("1.1.1.1")));
+    }
+
+    @Test
+    public void statusWithAnotherProfileReplacesTheStoredProfile() throws PhilipsAirAPIException {
+        PhilipsAirHandler stored = handlerOf("1.1.1.1",
+                Map.of(PROPERTY_DEVICE_PROFILE, "BASIC_GEN3", PROPERTY_DEVICE_PROFILE_HOST, "1.1.1.1"));
+        when(connection.getDeviceProfile()).thenReturn(CoapProfile.UNICORN);
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDeviceDTO.class));
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
+
+        stored.updateData(connection);
+
+        Map<String, String> properties = stored.getThing().getProperties();
+        assertEquals("UNICORN", properties.get(PROPERTY_DEVICE_PROFILE));
+        assertEquals("1.1.1.1", properties.get(PROPERTY_DEVICE_PROFILE_HOST));
+        verify(callback, times(1)).thingUpdated(any());
+    }
+
+    @Test
+    public void statusWithTheStoredProfileDoesNotUpdateTheThing() throws PhilipsAirAPIException {
+        PhilipsAirHandler stored = handlerOf("1.1.1.1", Map.of(PROPERTY_DEVICE_PROFILE, "UNICORN",
+                PROPERTY_DEVICE_PROFILE_HOST, "1.1.1.1", Thing.PROPERTY_VENDOR, VENDOR));
+        when(connection.getDeviceProfile()).thenReturn(CoapProfile.UNICORN);
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDeviceDTO.class));
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
+
+        stored.updateData(connection);
+        stored.updateData(connection);
+
+        verify(callback, never()).thingUpdated(any());
     }
 
     @Test
