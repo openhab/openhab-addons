@@ -91,7 +91,7 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
         updateState(CHANNEL_CONNECTION_TIME, new DateTimeType(apparatusDetail.connectionTimestamp));
         Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 70).findFirst().ifPresent(p -> {
             try {
-                updateState(CHANNEL_RUN_HOURS, new QuantityType<>(Integer.parseInt(p.value), Units.HOUR));
+                updateState(CHANNEL_RUN_HOURS, new QuantityType<>(Float.parseFloat(p.value), Units.HOUR));
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse runHours {}", p.value);
                 updateState(CHANNEL_RUN_HOURS, UnDefType.UNDEF);
