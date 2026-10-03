@@ -53,7 +53,7 @@ public enum CoapProfile {
     CLASSIC("classic", Generation.CLASSIC, Spec.NONE),
     /** Field names like {@code D03-02}, e.g. AC0850, AC1715 */
     BASIC_GEN2("basic", Generation.GEN2, Spec.NONE),
-    /** Field names like {@code D03102}, e.g. AC0950, AC3420, AC3737, AMF and HU series */
+    /** Field names like {@code D03102}, e.g. AC3420, AMF and HU series */
     BASIC_GEN3("basic", Generation.GEN3, Spec.NONE),
     /** AC2210, AC2220, AC2221, AC3210, AC3220, AC3221, AC4220 and AC4221 */
     UNICORN("unicorn", Generation.GEN3,
@@ -61,6 +61,13 @@ public enum CoapProfile {
                     .humiditySetpoint()
                     .settings(Setting.BEEP, Setting.STANDBY_SENSORS, Setting.ALLERGY_SLEEP, Setting.DISPLAY_SWITCH)
                     .displayBrightness(Tables.unicornBrightness()).lampModes(Tables.lampModes())),
+    /**
+     * AC0950 and AC0951, the small variant of the Unicorn range: no humidity, temperature and lamp, and a display
+     * brightness without the automatic setting
+     */
+    AC0950("ac0950", Generation.GEN3,
+            new Spec().modes(Tables.unicornModes()).speedFallbackKey("D0310D").timer(new Timer("D03110", 1, 12))
+                    .settings(Setting.BEEP, Setting.STANDBY_SENSORS).displayBrightness(Tables.ac0950Brightness())),
     /** AC3737 */
     AC3737("ac3737", Generation.GEN3,
             new Spec().modes(Tables.ac3737Modes()).modePowersOn().humiditySetpoint().settings(Setting.ALLERGY_SLEEP)
@@ -205,6 +212,9 @@ public enum CoapProfile {
     private static final String GEN3_CHILD_LOCK = "D03103";
     private static final String GEN3_RANGE = "D01S04";
     private static final String GEN3_MODEL = "D01S05";
+    private static final String GEN3_CAPABILITIES = "D0110C";
+    /** The capabilities the Philips app recognizes the small variant of the Unicorn range by */
+    private static final int CAPABILITIES_UNICORN_MINI = 18;
     private static final String GEN3_THRESHOLD = "D0312C";
     private static final String GEN3_DISPLAYED_INDEX = "D0312A";
     private static final String GEN3_HUMIDITY_SETPOINT = "D03128";
@@ -213,6 +223,7 @@ public enum CoapProfile {
 
     private static final List<String> UNICORN_MODELS = List.of("AC2210", "AC2220", "AC2221", "AC3210", "AC3220",
             "AC3221", "AC4220", "AC4221");
+    private static final String UNICORN_MINI_MODEL = "AC095";
 
     private final String id;
     private final Generation generation;
@@ -317,7 +328,12 @@ public enum CoapProfile {
             case GEN3:
                 model = upperCase(getString(reported, GEN3_MODEL));
                 String range = getString(reported, GEN3_RANGE);
-                if (RANGE_UNICORN.equalsIgnoreCase(range) || UNICORN_MODELS.stream().anyMatch(model::startsWith)) {
+                Number capabilities = getNumber(reported, GEN3_CAPABILITIES);
+                boolean unicorn = RANGE_UNICORN.equalsIgnoreCase(range);
+                if (model.startsWith(UNICORN_MINI_MODEL)
+                        || unicorn && capabilities != null && capabilities.intValue() == CAPABILITIES_UNICORN_MINI) {
+                    return AC0950;
+                } else if (unicorn || UNICORN_MODELS.stream().anyMatch(model::startsWith)) {
                     return UNICORN;
                 } else if (RANGE_CARNATION.equalsIgnoreCase(range) || model.startsWith("AC3737")) {
                     return AC3737;
@@ -720,6 +736,11 @@ public enum CoapProfile {
          */
         static List<StateOption> unicornBrightness() {
             return List.of(new StateOption("0", "Off"), new StateOption("101", "Auto"), new StateOption("115", "Low"),
+                    new StateOption("123", "Bright"));
+        }
+
+        static List<StateOption> ac0950Brightness() {
+            return List.of(new StateOption("0", "Off"), new StateOption("115", "Low"),
                     new StateOption("123", "Bright"));
         }
 

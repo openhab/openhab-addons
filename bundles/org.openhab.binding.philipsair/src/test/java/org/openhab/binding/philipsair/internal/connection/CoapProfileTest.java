@@ -53,6 +53,12 @@ public class CoapProfileTest {
             "D01S12":"0.2.3","D03102":1,"D03103":0,"D03105":101,"D0310A":2,"D0310C":0,"D0310D":1,"D03110":0,
             "D03211":0,"D03120":1,"D03221":1,"D03224":241,"D03125":46,"D0312A":1,"D0312C":7,"D03240":0,
             "D05207":720,"D05408":9600,"D0520D":601,"D0540E":2870}""";
+    // status of an AC0950/10 reported on the openHAB community forum, without the device and network details
+    private static final String AC0950_STATUS = """
+            {"D01102":0,"D01S03":"Bedroom","D01S04":"Unicorn","D01S05":"AC0950/10","D01108":3,"D0110C":18,
+            "D01S12":"0.3.3","D03102":1,"D03103":0,"D03104":123,"D03105":123,"D0310A":2,"D0310C":0,"D0310D":1,
+            "D03110":0,"D03211":0,"D03120":1,"D03221":3,"D0312A":1,"D0312B":1,"D0312C":4,"D03130":0,"D03134":0,
+            "D03136":0,"D03240":0,"D0313B":20,"D05207":720,"D05408":9600,"D0520D":662,"D0540E":9542}""";
 
     private final Gson gson = new Gson();
 
@@ -79,6 +85,72 @@ public class CoapProfileTest {
                     model);
         }
         assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC4228/10\"}")));
+    }
+
+    @Test
+    public void ac0950IsDetectedFromTheModelOrTheCapabilities() {
+        assertEquals(CoapProfile.AC0950, CoapProfile.resolve("auto", parse(AC0950_STATUS)));
+        assertEquals(CoapProfile.AC0950, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC0950/10\"}")));
+        assertEquals(CoapProfile.AC0950, CoapProfile.resolve("auto", parse("{\"D01S05\":\"ac0951/10\"}")));
+        assertEquals(CoapProfile.AC0950, CoapProfile.resolve("auto", parse("{\"D01S04\":\"Unicorn\",\"D0110C\":18}")));
+        // the capabilities only tell the variant of the Unicorn range
+        assertEquals(CoapProfile.BASIC_GEN3,
+                CoapProfile.resolve("auto", parse("{\"D01S04\":\"Pegasus\",\"D0110C\":18}")));
+        assertEquals(CoapProfile.UNICORN,
+                CoapProfile.resolve("auto", parse("{\"D01S04\":\"Unicorn\",\"D0110C\":\"18\"}")));
+        assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("unicorn", parse(AC0950_STATUS)));
+        assertEquals(CoapProfile.AC0950, CoapProfile.resolve("ac0950", parse(UNICORN_STATUS)));
+    }
+
+    @Test
+    public void ac0950StatusIsTranslated() {
+        JsonObject classic = CoapProfile.AC0950.toClassic(parse(AC0950_STATUS));
+
+        PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals("1", data.getPower());
+        assertEquals(Boolean.FALSE, data.getChildLock());
+        assertEquals("P", data.getMode());
+        assertEquals("1", data.getFanSpeed());
+        assertEquals(0, data.getTimer());
+        assertEquals(3, data.getPm25());
+        assertEquals(4, data.getAqit());
+        assertEquals("1", data.getDisplayIndex());
+        assertEquals(Boolean.FALSE, data.getBeep());
+        assertEquals(Boolean.FALSE, data.getStandbySensors());
+        assertEquals("123", data.getDisplayBrightness());
+        // the model has no temperature and humidity sensor and no lamp
+        assertNull(data.getTemperature());
+        assertNull(data.getHumidity());
+        assertNull(data.getLampMode());
+
+        PhilipsAirPurifierFiltersDTO filters = gson.fromJson(classic, PhilipsAirPurifierFiltersDTO.class);
+        assertNotNull(filters);
+        assertEquals(662, filters.getPreFilter());
+        assertEquals(9542, filters.getHepaFilter());
+    }
+
+    @Test
+    public void ac0950CommandsAreTranslated() {
+        assertEquals(parse("{\"D0310C\":17}"), CoapProfile.AC0950.toDevice(modeCommand("S", null)));
+        assertEquals(parse("{\"D0310C\":18}"), CoapProfile.AC0950.toDevice(modeCommand("M", "t")));
+        assertEquals(parse("{\"D03110\":3}"), CoapProfile.AC0950.toDevice(timerCommand(2)));
+
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setBeep(true);
+        command.setStandbySensors(true);
+        command.setDisplayBrightness("115");
+        assertEquals(parse("{\"D03130\":100,\"D03134\":1,\"D03105\":115}"),
+                CoapProfile.AC0950.toDevice(command(command)));
+
+        // the settings of the larger models of the range are not sent
+        command = new PhilipsAirPurifierWritableDataDTO();
+        command.setDisplayBrightness("101");
+        command.setLampMode("1");
+        command.setAllergySleep(true);
+        command.setDisplayOn(true);
+        command.setHumiditySetpoint(50);
+        assertTrue(CoapProfile.AC0950.toDevice(command(command)).isEmpty());
     }
 
     @Test
@@ -348,6 +420,8 @@ public class CoapProfileTest {
     @Test
     public void settingOptionsDependOnTheModel() {
         assertEquals(List.of("0", "101", "115", "123"), values(CoapProfile.UNICORN.getDisplayBrightnessOptions()));
+        assertEquals(List.of("0", "115", "123"), values(CoapProfile.AC0950.getDisplayBrightnessOptions()));
+        assertTrue(CoapProfile.AC0950.getLampModeOptions().isEmpty());
         assertEquals(List.of("0", "50", "100"), values(CoapProfile.AC3737.getDisplayBrightnessOptions()));
         assertEquals(List.of("0", "1", "2"), values(CoapProfile.UNICORN.getLampModeOptions()));
         assertTrue(CoapProfile.AC3737.getLampModeOptions().isEmpty());
