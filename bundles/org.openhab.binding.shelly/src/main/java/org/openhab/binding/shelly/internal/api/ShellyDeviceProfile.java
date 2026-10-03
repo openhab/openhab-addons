@@ -134,6 +134,8 @@ public class ShellyDeviceProfile {
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
 
     public static final int MAX_WAKEUP_PERIOD_SECONDS = 24 * 3600; // longest configurable sleep period of a device
+    public int learnedWakeupPeriod = 0; // longest wakeup period observed to exceed the configured one, in seconds
+    private int reportedWakeupPeriod = 0; // last wakeup period reported in a status update, in minutes
     public int updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
 
     public String coiotEndpoint = "";
@@ -350,11 +352,46 @@ public class ShellyDeviceProfile {
     private void applyWakeupPeriod(int wakeupPeriod) {
         // Proportional margin absorbs wakeup jitter that grows with the sleep interval, plus a fixed
         // margin for the report round-trip itself
-        updatePeriod = (int) Math.round(wakeupPeriod * 1.1) + 60;
+        updatePeriod = (int) Math.round(Math.max(wakeupPeriod, learnedWakeupPeriod) * 1.1) + 60;
         if (isSmoke) {
             // Smoke sensors wake up far less predictably than other sensors, grant an extra 30min
             updatePeriod += 1800;
         }
+    }
+
+    /**
+     * A sleeping device reported after a longer silence than the watchdog allows, so its real wakeup period is longer
+     * than assumed (e.g. changed on the device after the thing was initialized). Extend the watchdog accordingly.
+     *
+     * @param silenceSeconds time since the previous report of the device
+     * @return true if the watchdog period was extended
+     */
+    public boolean learnWakeupInterval(double silenceSeconds) {
+        if (alwaysOn || isTRV || silenceSeconds <= updatePeriod || silenceSeconds > MAX_WAKEUP_PERIOD_SECONDS) {
+            return false;
+        }
+        learnedWakeupPeriod = (int) Math.ceil(silenceSeconds);
+        updateWatchdogPeriod();
+        return true;
+    }
+
+    /**
+     * Apply the wakeup period a device reported in a status update. A learned period is only discarded when the
+     * reported period changed, a settings refresh or a report of the same period keeps it.
+     *
+     * @param periodMinutes wakeup period reported by the device
+     */
+    public void updateWakeupPeriod(int periodMinutes) {
+        ShellySensorSleepMode sleepMode = settings.sleepMode;
+        if (sleepMode == null) {
+            return;
+        }
+        if (periodMinutes != reportedWakeupPeriod) {
+            reportedWakeupPeriod = periodMinutes;
+            learnedWakeupPeriod = 0;
+        }
+        sleepMode.period = periodMinutes;
+        updateWatchdogPeriod();
     }
 
     public String getControlGroup(int i) {

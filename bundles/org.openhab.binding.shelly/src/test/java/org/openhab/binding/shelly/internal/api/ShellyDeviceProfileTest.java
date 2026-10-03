@@ -937,6 +937,31 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUS1PM, false));
     }
 
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForLearnWakeupInterval")
+    void learnWakeupIntervalExtendsWatchdogOnlyForPlausiblyLongerSilence(ThingTypeUID thingTypeUID, int silence,
+            int expected) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        profile.settings.sleepMode = sleepMode(1, "h");
+        profile.updateWatchdogPeriod();
+        int before = profile.updatePeriod;
+
+        boolean extended = profile.learnWakeupInterval(silence);
+
+        assertThat(extended, is(expected > 0));
+        assertThat(profile.updatePeriod, is(equalTo(expected > 0 ? expected : before)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForLearnWakeupInterval() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYHT, 6 * 3600, (int) Math.round(6 * 3600 * 1.1) + 60), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, 5 * 3600, (int) Math.round(5 * 3600 * 1.1) + 60 + 1800), //
+                Arguments.of(THING_TYPE_SHELLYHT, 600, 0), //
+                Arguments.of(THING_TYPE_SHELLYHT, ShellyDeviceProfile.MAX_WAKEUP_PERIOD_SECONDS + 1, 0), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, 3 * 3600, 0), //
+                Arguments.of(THING_TYPE_SHELLYTRV, 3 * 3600, 0));
+    }
+
     private static ShellySensorSleepMode sleepMode(int period, String unit) {
         ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
         sleepMode.period = period;

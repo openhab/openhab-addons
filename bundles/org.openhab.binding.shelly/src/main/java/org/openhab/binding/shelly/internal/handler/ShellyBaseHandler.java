@@ -133,6 +133,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     // Scheduler
     private volatile double watchdog = now();
+    private volatile double lastReport = 0;
     protected volatile int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
@@ -895,7 +896,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void restartWatchdog() {
         synchronized (this) {
-            watchdog = now();
+            double now = now();
+            if (lastReport > 0 && !ShellyDeviceProfile.isEventDriven(getThing().getThingTypeUID())
+                    && profile.learnWakeupInterval(now - lastReport)) {
+                logger.debug("{}: Device reports every {} sec, watchdog extended to {} sec", thingName,
+                        profile.learnedWakeupPeriod, profile.updatePeriod);
+            }
+            lastReport = now;
+            watchdog = now;
         }
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_HEARTBEAT, getTimestamp());
         logger.trace("{}: Watchdog restarted (expires in {} sec)", thingName, profile.updatePeriod);

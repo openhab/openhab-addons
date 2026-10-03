@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,12 +29,14 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
@@ -80,6 +85,32 @@ public class Shelly2ApiRpcNotifyStatusSleepDeviceTest {
         f.rpc.onNotifyStatus(message(WAKEUP_ONLY));
 
         verify(f.thing, times(sleeping ? 1 : 0)).restartWatchdog();
+    }
+
+    @Test
+    void reportedWakeupPeriodDiscardsLearnedPeriodOnlyWhenChanged() throws ShellyApiException {
+        Fixture f = build(THING_TYPE_SHELLYPLUSHT, true, ThingStatusDetail.NONE);
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.unit = "m";
+        sleepMode.period = 720;
+        f.profile.settings.sleepMode = sleepMode;
+
+        f.rpc.onNotifyStatus(message(wakeupWithPeriod(3600)));
+        f.profile.learnWakeupInterval(6 * 3600);
+        f.rpc.onNotifyStatus(message(wakeupWithPeriod(3600)));
+
+        assertThat(f.profile.learnedWakeupPeriod, is(equalTo(6 * 3600)));
+
+        f.rpc.onNotifyStatus(message(wakeupWithPeriod(7200)));
+
+        assertThat(f.profile.learnedWakeupPeriod, is(equalTo(0)));
+        assertThat(f.profile.updatePeriod, is(equalTo((int) Math.round(7200 * 1.1) + 60)));
+    }
+
+    private static String wakeupWithPeriod(int seconds) {
+        return """
+                {"src":"test","method":"NotifyStatus","params":{"ts":1.0,"sys":{"uptime":100,"wakeup_period":%d}}}
+                """.formatted(seconds);
     }
 
     private static Shelly2RpcNotifyStatus message(String json) {

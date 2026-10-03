@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.handler;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
@@ -29,12 +30,14 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.State;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -134,6 +137,46 @@ class ShellyBaseHandlerWatchdogTest {
         verify(callback, never()).statusUpdated(any(), any());
     }
 
+    @ParameterizedTest
+    @MethodSource("provideReportGaps")
+    void restartWatchdogLearnsLongerWakeupPeriodOfSleepingDevice(ThingTypeUID thingType, int hoursSinceLastReport,
+            boolean expectLearned) throws Exception {
+        ShellyBaseHandler handler = prepareHandler(mock(ShellyApiInterface.class), thingType);
+        handler.profile.settings.sleepMode = sleepMode(1, "h");
+        handler.profile.updateWatchdogPeriod();
+        if (hoursSinceLastReport > 0) {
+            setField(handler, "lastReport", now() - hoursSinceLastReport * HOUR);
+        }
+        doReturn(true).when(handler).updateChannel(anyString(), anyString(), any(State.class));
+
+        handler.restartWatchdog();
+
+        assertThat(handler.profile.learnedWakeupPeriod >= 6 * HOUR, is(expectLearned));
+    }
+
+    private static Stream<Arguments> provideReportGaps() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYHT, 6, true), //
+                Arguments.of(THING_TYPE_SHELLYHT, 0, false), //
+                Arguments.of(THING_TYPE_SHELLYBLURCBUTTON4, 6, false));
+    }
+
+    @Test
+    void settingsRefreshKeepsLearnedWakeupPeriod() throws Exception {
+        ShellyApiInterface api = mock(ShellyApiInterface.class);
+        ShellyBaseHandler handler = prepareHandler(api, THING_TYPE_SHELLYHT);
+        ShellyDeviceProfile profile = handler.profile;
+        profile.settings.sleepMode = sleepMode(1, "h");
+        profile.updateWatchdogPeriod();
+        profile.learnWakeupInterval(6 * HOUR);
+        when(api.getDeviceProfile(any(), any())).thenReturn(profile);
+
+        handler.getProfile(true);
+
+        assertThat(profile.learnedWakeupPeriod, is(equalTo(6 * HOUR)));
+        assertThat(profile.updatePeriod, is(equalTo((int) Math.round(6 * HOUR * 1.1) + 60)));
+    }
+
     private static ShellyBaseHandler prepareHandler(ShellyApiInterface api, ThingTypeUID thingType) throws Exception {
         ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
         Thing thing = mock(Thing.class);
@@ -156,6 +199,13 @@ class ShellyBaseHandlerWatchdogTest {
         doReturn(ThingStatusDetail.NONE).when(handler).getThingStatusDetail();
         doNothing().when(handler).updateStatus(any(ThingStatus.class), any(ThingStatusDetail.class), any());
         return handler;
+    }
+
+    private static ShellySensorSleepMode sleepMode(int period, String unit) {
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.period = period;
+        sleepMode.unit = unit;
+        return sleepMode;
     }
 
     private static void setField(Object target, String fieldName, Object value) throws Exception {
