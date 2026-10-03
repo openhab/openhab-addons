@@ -309,7 +309,7 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
         }
 
         logger.debug("Executing HA service call -> Domain: {}, Service: {}, entityId: {}, Payload: {}", domain, service,
-                entityId, serviceData);
+                entityId, serviceData == null ? null : "<redacted>");
 
         localClient.callService(domain, service, entityId, serviceData).whenComplete((result, throwable) -> {
             if (throwable != null) {
@@ -389,8 +389,6 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
             builder.header("Authorization", "Bearer " + accessToken);
         }
 
-        logger.debug("Fetching Home Assistant image from {}", uri);
-
         httpClient.sendAsync(builder.build(), HttpResponse.BodyHandlers.ofByteArray()).thenAccept(response -> {
             if (response.statusCode() / 100 == 2) {
                 byte[] body = response.body();
@@ -410,8 +408,13 @@ public class HassLinkBridgeHandler extends BaseBridgeHandler implements HomeAssi
                         imageCache.put(pathOrUrl, () -> new CachedImage(imageLastUpdated, rawType));
                     }
 
-                    logger.trace("Fetched Home Assistant image from {} ({} bytes, contentType={})", uri, body.length,
-                            contentType);
+                    if (logger.isTraceEnabled()) {
+                        String uriStr = uri.toString();
+                        int queryIdx = uriStr.indexOf('?');
+                        String cleanUri = (queryIdx != -1) ? uriStr.substring(0, queryIdx) + "?<redacted>" : uriStr;
+                        logger.trace("Fetched Home Assistant image from {} ({} bytes, contentType={})", cleanUri,
+                                body.length, contentType);
+                    }
 
                     consumer.accept(rawType);
                 }
