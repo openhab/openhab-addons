@@ -235,11 +235,11 @@ public class MiCloudQRConnector extends MiCloudConnector {
             String location = CloudUtil.getJsonString(responseJson, "location", "");
             String code = CloudUtil.getJsonString(responseJson, "code", "");
             if (logger.isTraceEnabled()) {
-                logger.trace("Xiaomi login ssecurity: {}", this.ssecurity);
+                logger.trace("Xiaomi login ssecurity: {}", Utils.obfuscateToken(this.ssecurity));
                 logger.trace("Xiaomi login userId: {}", this.userId);
                 logger.trace("Xiaomi login cUserId: {}", cuserId);
-                logger.trace("Xiaomi login passToken: {}", passToken);
-                logger.trace("Xiaomi login location: {}", location);
+                logger.trace("Xiaomi login passToken: {}", Utils.obfuscateToken(passToken));
+                logger.trace("Xiaomi login location: {}", Utils.maskUrl(location));
                 logger.trace("Xiaomi login code: {}", code);
             }
             if (location.isEmpty()) {

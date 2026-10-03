@@ -51,12 +51,17 @@ public final class Utils {
 
     private static final String SECRET_KEYS = "token|bindkey|bind_key|ssecurity|serviceToken|passToken";
     private static final String LOCATION_KEYS = "longitude|latitude";
+    private static final Pattern SECRET_NAME = Pattern.compile(SECRET_KEYS, Pattern.CASE_INSENSITIVE);
     // a Json member with a secret value; the quotes may be escaped when the Json is part of a string
     private static final Pattern SECRET_MEMBER = Pattern
             .compile("(\\\\?\"(?:" + SECRET_KEYS + ")\\\\?\"\\s*:\\s*\\\\?\")([^\"\\\\]*)", Pattern.CASE_INSENSITIVE);
     // a Json member with a location value, which may be a quoted string or a plain number
     private static final Pattern LOCATION_MEMBER = Pattern.compile(
             "(\\\\?\"(?:" + LOCATION_KEYS + ")\\\\?\"\\s*:\\s*\\\\?\"?)([^\"\\\\,}\\]]*)", Pattern.CASE_INSENSITIVE);
+
+    // a Json member with the url the login continues at; the parameters of the url give access to the account
+    private static final Pattern LOGIN_URL_MEMBER = Pattern.compile(
+            "(\\\\?\"location\\\\?\"\\s*:\\s*\\\\?\"[^\"?]*\\?)((?:[^\"\\\\]|\\\\[^\"])*)", Pattern.CASE_INSENSITIVE);
 
     /**
      * Convert a string representation of hexadecimal to a byte array.
@@ -115,8 +120,31 @@ public final class Utils {
     }
 
     /**
-     * Masks the values of tokens, keys and the location in the Json members of a text, so that it can be written to a
-     * log that may be shared. Text without such members is returned unchanged.
+     * Masks a value like a cookie when its name shows that it is a token or key, so that it can be written to a log
+     * that may be shared.
+     *
+     * @param name the name of the value
+     * @param value the value
+     * @return the value, masked when the name is the one of a secret
+     */
+    public static String maskSecretValue(String name, String value) {
+        return SECRET_NAME.matcher(name).find() ? obfuscateToken(value) : value;
+    }
+
+    /**
+     * Masks the parameters of an url, as the parameters of the Xiaomi login urls give access to the account.
+     *
+     * @param url the url
+     * @return the url with the parameters masked
+     */
+    public static String maskUrl(String url) {
+        int query = url.indexOf('?');
+        return query < 0 || query == url.length() - 1 ? url : url.substring(0, query + 1) + "***";
+    }
+
+    /**
+     * Masks the values of tokens, keys, the location and the parameters of the login url in the Json members of a
+     * text, so that it can be written to a log that may be shared. Text without such members is returned unchanged.
      *
      * @param text the text, typically a Json response
      * @return the text with the values of the sensitive members masked
@@ -126,6 +154,7 @@ public final class Utils {
         if (masked.indexOf(':') >= 0) {
             masked = replaceValues(SECRET_MEMBER, masked, true);
             masked = replaceValues(LOCATION_MEMBER, masked, false);
+            masked = replaceValues(LOGIN_URL_MEMBER, masked, false);
         }
         return masked;
     }

@@ -88,6 +88,43 @@ public class UtilsTest {
     }
 
     @Test
+    public void maskLoginUrlTest() {
+        String url = "https://sts.api.io.mi.com/sts?d=wb_1&auth=" + TOKEN + "&nonce=abc&_ssign=def";
+        assertEquals("{\"code\":0,\"location\":\"https://sts.api.io.mi.com/sts?***\",\"userId\":1}",
+                Utils.maskSecrets("{\"code\":0,\"location\":\"" + url + "\",\"userId\":1}"));
+        // escaped characters within the url
+        assertEquals("{\"location\":\"https:\\/\\/sts.api.io.mi.com\\/sts?***\",\"userId\":1}", Utils.maskSecrets(
+                "{\"location\":\"https:\\/\\/sts.api.io.mi.com\\/sts?d=1\\u0026auth=" + TOKEN + "\",\"userId\":1}"));
+        // quotes escaped, as when the Json is the value of another member
+        assertEquals("{\"extra\":\"{\\\"location\\\":\\\"https://mi.com/sts?***\\\",\\\"code\\\":0}\"}", Utils
+                .maskSecrets("{\"extra\":\"{\\\"location\\\":\\\"https://mi.com/sts?auth=1\\\",\\\"code\\\":0}\"}"));
+        for (String text : new String[] { "{\"location\":\"\",\"code\":0}", "{\"location\":\"https://mi.com/sts\"}",
+                "{\"location\":\"https://mi.com/sts?\"}" }) {
+            assertEquals(text, Utils.maskSecrets(text));
+        }
+    }
+
+    @Test
+    public void maskUrlTest() {
+        assertEquals("https://sts.api.io.mi.com/sts?***",
+                Utils.maskUrl("https://sts.api.io.mi.com/sts?d=wb_1&auth=" + TOKEN));
+        assertEquals("https://sts.api.io.mi.com/sts", Utils.maskUrl("https://sts.api.io.mi.com/sts"));
+        assertEquals("https://sts.api.io.mi.com/sts?", Utils.maskUrl("https://sts.api.io.mi.com/sts?"));
+        assertEquals("", Utils.maskUrl(""));
+    }
+
+    @Test
+    public void maskSecretValueTest() {
+        String masked = Utils.obfuscateToken(TOKEN);
+        for (String name : new String[] { "serviceToken", "yetAnotherServiceToken", "passToken", "ssecurity",
+                "PASSTOKEN" }) {
+            assertEquals(masked, Utils.maskSecretValue(name, TOKEN), name);
+        }
+        assertEquals("1234567890", Utils.maskSecretValue("userId", "1234567890"));
+        assertEquals("en_GB", Utils.maskSecretValue("locale", "en_GB"));
+    }
+
+    @Test
     public void maskNumericLocationTest() {
         assertEquals("{\"longitude\":***,\"latitude\":***,\"name\":\"Home\"}",
                 Utils.maskSecrets("{\"longitude\":4.9123,\"latitude\":52.3702,\"name\":\"Home\"}"));

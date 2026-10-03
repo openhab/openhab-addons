@@ -35,6 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -43,6 +44,7 @@ import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
@@ -374,7 +376,7 @@ public class MiCloudConnector {
         if (logger.isTraceEnabled()) {
             for (HttpCookie cookie : request.getCookies()) {
                 logger.trace("Cookie set for request ({}) : {} --> {}     (path: {})", cookie.getDomain(),
-                        cookie.getName(), cookie.getValue(), cookie.getPath());
+                        cookie.getName(), maskCookie(cookie), cookie.getPath());
             }
         }
         String method = "POST";
@@ -544,9 +546,32 @@ public class MiCloudConnector {
         logger.trace("Xiaomi cloud request  URL= {} {} {}", request.getMethod(), request.getHost(), request.getPath());
         logger.trace("Xiaomi cloud request content req= {}",
                 request.getContent() == null ? "" : request.getContent().toString());
-        logger.trace("Xiaomi cloud request headers= {}", request.getHeaders().toString());
+        logger.trace("Xiaomi cloud request headers= {}", maskHeaders(request.getHeaders()));
         logger.trace("Xiaomi cloud request param= {}", request.getParams());
-        logger.trace("Xiaomi cloud request cookie= {}", request.getCookies().toString());
+        logger.trace("Xiaomi cloud request cookie= {}", request.getCookies().stream()
+                .map(cookie -> cookie.getName() + "=" + maskCookie(cookie)).collect(Collectors.joining(", ")));
+    }
+
+    private static String maskCookie(HttpCookie cookie) {
+        return Utils.maskSecretValue(cookie.getName(), cookie.getValue());
+    }
+
+    /**
+     * Returns the headers for logging. The cookies are left out, as these are logged with the secrets masked by
+     * {@link #dumpCookies(String, boolean)}, and so are the parameters of the url the login is redirected to.
+     */
+    static String maskHeaders(HttpFields headers) {
+        return headers.stream().map(header -> {
+            final @Nullable String value = header.getValue();
+            if (value == null) {
+                return header.getName() + ": ";
+            }
+            return header.getName() + ": " + switch (header.getName().toLowerCase(Locale.ROOT)) {
+                case "cookie", "set-cookie", "authorization" -> "***";
+                case "location" -> Utils.maskUrl(value);
+                default -> Utils.maskSecrets(value);
+            };
+        }).collect(Collectors.joining(", ", "[", "]"));
     }
 
     private void traceResponse(ContentResponse response) {
@@ -556,7 +581,7 @@ public class MiCloudConnector {
         logger.trace("Xiaomi cloud response status = {}", response.getStatus());
         logger.trace("Xiaomi cloud response response = {}", response);
         logger.trace("Xiaomi cloud response content = {}", response.toString());
-        logger.trace("Xiaomi cloud response header = {}", response.getHeaders().toString());
+        logger.trace("Xiaomi cloud response header = {}", maskHeaders(response.getHeaders()));
         logger.trace("Xiaomi cloud response content = {}", Utils.maskSecrets(response.getContentAsString()));
     }
 
@@ -598,22 +623,22 @@ public class MiCloudConnector {
         if (logger.isTraceEnabled()) {
             try {
                 URI uri = URI.create(url);
-                logger.trace("Cookie dump for {}", uri);
+                logger.trace("Cookie dump for {}", Utils.maskUrl(url));
                 CookieStore cs = httpClient.getCookieStore();
                 if (cs != null) {
                     List<HttpCookie> cookies = cs.get(uri);
                     for (HttpCookie cookie : cookies) {
                         logger.trace("Cookie ({}) : {} --> {}     (path: {}. Removed: {})", cookie.getDomain(),
-                                cookie.getName(), cookie.getValue(), cookie.getPath(), delete);
+                                cookie.getName(), maskCookie(cookie), cookie.getPath(), delete);
                         if (delete) {
                             cs.remove(uri, cookie);
                         }
                     }
                 } else {
-                    logger.trace("Could not create cookiestore from {}", url);
+                    logger.trace("Could not create cookiestore from {}", Utils.maskUrl(url));
                 }
             } catch (IllegalArgumentException e) {
-                logger.trace("Error dumping cookies from {}: {}", url, e.getMessage(), e);
+                logger.trace("Error dumping cookies from {}", Utils.maskUrl(url));
             }
         }
     }
@@ -622,11 +647,11 @@ public class MiCloudConnector {
         String serviceToken = "";
         List<HttpCookie> cookies = httpClient.getCookieStore().get(uri);
         for (HttpCookie cookie : cookies) {
-            logger.trace("Cookie :{} --> {}", cookie.getName(), cookie.getValue());
+            logger.trace("Cookie :{} --> {}", cookie.getName(), maskCookie(cookie));
             if (cookie.getName().contentEquals("serviceToken")) {
                 serviceToken = cookie.getValue();
                 logger.debug("Xiaomi cloud login successful.");
-                logger.trace("Xiaomi cloud servicetoken: {}", serviceToken);
+                logger.trace("Xiaomi cloud servicetoken: {}", Utils.obfuscateToken(serviceToken));
             }
         }
         return serviceToken;

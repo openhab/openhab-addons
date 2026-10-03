@@ -232,11 +232,11 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
         Integer securityStatus = jsonResp.getSecurityStatus();
         Integer pwd = jsonResp.getPwd();
 
-        logger.trace("Xiaomi login ssecurity = {}", ssecurity);
+        logger.trace("Xiaomi login ssecurity = {}", Utils.obfuscateToken(ssecurity));
         logger.trace("Xiaomi login userId = {}", userId);
         logger.trace("Xiaomi login cUserId = {}", cUserId);
-        logger.trace("Xiaomi login passToken = {}", passToken);
-        logger.trace("Xiaomi login location = {}", location);
+        logger.trace("Xiaomi login passToken = {}", Utils.obfuscateToken(passToken));
+        logger.trace("Xiaomi login location = {}", Utils.maskUrl(location));
         logger.trace("Xiaomi login code = {}", code);
         logger.trace("Xiaomi login captcha URL = {}", captchaUrl);
         logger.trace("Xiaomi login callbackUrl = {}", callbackUrl);
@@ -387,7 +387,7 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Xiaomi login step 3 status = {}", response.getStatus());
                     logger.trace("Xiaomi login step 3 response = {}", response);
-                    logger.trace("Xiaomi login step 3 header = {}", response.getHeaders().toString());
+                    logger.trace("Xiaomi login step 3 header = {}", maskHeaders(response.getHeaders()));
                     logger.trace("Xiaomi login step 3 content = {}", Utils.maskSecrets(response.getContentAsString()));
                 }
             } else {
@@ -414,11 +414,12 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
             String headerName = header.getName();
             if ("location".equalsIgnoreCase(headerName)) {
                 String value = header.getValue();
-                logger.trace("Found location header: {}", value);
+                logger.trace("Found location header: {}", value != null ? Utils.maskUrl(value) : "");
                 return value != null ? value : "";
             }
             if ("extension-pragma".equalsIgnoreCase(headerName)) {
-                logger.trace("Found extension-pragma header: {}", header.getValue());
+                final @Nullable String pragma = header.getValue();
+                logger.trace("Found extension-pragma header: {}", pragma != null ? Utils.maskSecrets(pragma) : "");
             }
         }
         return "";
