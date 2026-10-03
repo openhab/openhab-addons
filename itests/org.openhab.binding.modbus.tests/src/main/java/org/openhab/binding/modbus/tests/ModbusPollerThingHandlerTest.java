@@ -36,6 +36,7 @@ import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.core.io.transport.modbus.AsyncModbusWriteResult;
 import org.openhab.core.io.transport.modbus.BitArray;
 import org.openhab.core.io.transport.modbus.ModbusConstants;
 import org.openhab.core.io.transport.modbus.ModbusFailureCallback;
@@ -56,6 +57,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -189,6 +191,54 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     }
 
     @Test
+    public void testPoller2UpdatesRawChannelFromPollResult()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 100);
+        pollerConfig.put("length", 2);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "raw-poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "raw");
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "raw", "length", 2));
+        poller = createPoller2ThingBuilder("raw-poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "String").withConfiguration(channelConfig).build())
+                .build();
+        addThing(poller);
+
+        ModbusPoller2ThingHandler handler = (ModbusPoller2ThingHandler) poller.getHandler();
+        handler.setCallback(thingCallback);
+        getPollerCallback(handler).handle(new AsyncModbusReadResult(Mockito.mock(ModbusReadRequestBlueprint.class),
+                new ModbusRegisterArray(0x0001, 0x002A)));
+
+        verify(thingCallback).stateUpdated(channelUid, new org.openhab.core.library.types.StringType("0001002A"));
+    }
+
+    @Test
+    public void testPoller2AssignsGeneratedChannelTypeToRuntimeStringChannel() {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 100);
+        pollerConfig.put("length", 2);
+        pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2,
+                "typed-raw-poller2");
+        ChannelUID channelUid = new ChannelUID(pollerUid, "raw");
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "raw", "length", 2));
+        poller = createPoller2ThingBuilder("typed-raw-poller2").withConfiguration(pollerConfig)
+                .withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "String").withConfiguration(channelConfig).build())
+                .build();
+
+        addThing(poller);
+
+        waitForAssert(() -> assertThat(poller.getChannel("raw").getChannelTypeUID(),
+                is(equalTo(new ChannelTypeUID("modbus", "poller2-shim-string")))));
+        assertThat(poller.getChannel("raw").getAcceptedItemType(), is(equalTo("String")));
+        assertThat(poller.getChannel("raw").getConfiguration().get("length"), is(equalTo(2)));
+    }
+
+    @Test
     public void testPoller2DispatchesTransformedHoldingWriteWithoutOptimisticStateUpdate() {
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 0L);
@@ -197,10 +247,12 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
         ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "write-poller2");
         ChannelUID channelUid = new ChannelUID(pollerUid, "setpoint");
-        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "uint16", "writeStart", "42",
-                "writeValueType", "int16", "writeTransform", "17", "writeMaxTries", 2));
-        poller = createPoller2ThingBuilder("write-poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
-                .withChannel(ChannelBuilder.create(channelUid, "Number").withConfiguration(channelConfig).build()).build();
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "uint16", "writeStart",
+                "42", "writeValueType", "int16", "writeTransform", "17", "writeMaxTries", 2));
+        poller = createPoller2ThingBuilder("write-poller2").withConfiguration(pollerConfig)
+                .withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "Number").withConfiguration(channelConfig).build())
+                .build();
         addThing(poller);
 
         ModbusPoller2ThingHandler handler = (ModbusPoller2ThingHandler) poller.getHandler();
@@ -230,13 +282,15 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         pollerConfig.put("start", 100);
         pollerConfig.put("length", 1);
         pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
-        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "invalid-write-poller2");
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2,
+                "invalid-write-poller2");
         ChannelUID channelUid = new ChannelUID(pollerUid, "setpoint");
-        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "uint16", "writeStart", "42",
-                "writeValueType", "int16", "writeTransform", "not-a-command"));
+        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "uint16", "writeStart",
+                "42", "writeValueType", "int16", "writeTransform", "not-a-command"));
         poller = createPoller2ThingBuilder("invalid-write-poller2").withConfiguration(pollerConfig)
-                .withBridge(endpoint.getUID()).withChannel(ChannelBuilder.create(channelUid, "Number")
-                        .withConfiguration(channelConfig).build()).build();
+                .withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "Number").withConfiguration(channelConfig).build())
+                .build();
         addThing(poller);
 
         ((ModbusPoller2ThingHandler) poller.getHandler()).handleCommand(channelUid,
@@ -252,11 +306,14 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         pollerConfig.put("start", 100);
         pollerConfig.put("length", 1);
         pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_COIL);
-        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "coil-write-poller2");
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2,
+                "coil-write-poller2");
         ChannelUID channelUid = new ChannelUID(pollerUid, "output");
         Configuration channelConfig = new Configuration(Map.of("address", "100", "writeStart", "7"));
-        poller = createPoller2ThingBuilder("coil-write-poller2").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
-                .withChannel(ChannelBuilder.create(channelUid, "Switch").withConfiguration(channelConfig).build()).build();
+        poller = createPoller2ThingBuilder("coil-write-poller2").withConfiguration(pollerConfig)
+                .withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "Switch").withConfiguration(channelConfig).build())
+                .build();
         addThing(poller);
 
         ((ModbusPoller2ThingHandler) poller.getHandler()).handleCommand(channelUid,
@@ -278,13 +335,15 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         pollerConfig.put("start", 100);
         pollerConfig.put("length", 1);
         pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
-        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2, "failing-write-poller2");
+        ThingUID pollerUid = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER2,
+                "failing-write-poller2");
         ChannelUID channelUid = new ChannelUID(pollerUid, "setpoint");
-        Configuration channelConfig = new Configuration(Map.of("address", "100", "valueType", "uint16", "writeStart", "42",
-                "writeValueType", "int16"));
+        Configuration channelConfig = new Configuration(
+                Map.of("address", "100", "valueType", "uint16", "writeStart", "42", "writeValueType", "int16"));
         poller = createPoller2ThingBuilder("failing-write-poller2").withConfiguration(pollerConfig)
-                .withBridge(endpoint.getUID()).withChannel(ChannelBuilder.create(channelUid, "Number")
-                        .withConfiguration(channelConfig).build()).build();
+                .withBridge(endpoint.getUID())
+                .withChannel(ChannelBuilder.create(channelUid, "Number").withConfiguration(channelConfig).build())
+                .build();
         addThing(poller);
 
         ((ModbusPoller2ThingHandler) poller.getHandler()).handleCommand(channelUid,
@@ -292,8 +351,10 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         ArgumentCaptor<org.openhab.core.io.transport.modbus.ModbusFailureCallback> failures = ArgumentCaptor
                 .forClass(org.openhab.core.io.transport.modbus.ModbusFailureCallback.class);
         verify(comms).submitOneTimeWrite(any(), any(), failures.capture());
-        failures.getValue().handle(new AsyncModbusFailure<>(Mockito.mock(org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint.class),
-                new RuntimeException("transport down")));
+        failures.getValue()
+                .handle(new AsyncModbusFailure<>(
+                        Mockito.mock(org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint.class),
+                        new RuntimeException("transport down")));
 
         assertThat(poller.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
         assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.COMMUNICATION_ERROR)));
