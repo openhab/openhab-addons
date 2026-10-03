@@ -37,11 +37,21 @@ public class Poller2ChannelTest {
 
     static Stream<Arguments> decodedValues() {
         return Stream.of(Arguments.of(ValueType.INT16, 100, registers(0x8000), new DecimalType("-32768")),
+                Arguments.of(ValueType.INT8, 100, registers(0xFF80), new DecimalType("-128")),
+                Arguments.of(ValueType.UINT8, 100, registers(0x00FF), new DecimalType("255")),
                 Arguments.of(ValueType.INT16, 100, registers(0x7FFF), new DecimalType("32767")),
                 Arguments.of(ValueType.UINT16, 100, registers(0x0000), DecimalType.ZERO),
                 Arguments.of(ValueType.UINT16, 100, registers(0xFFFF), new DecimalType("65535")),
                 Arguments.of(ValueType.INT32, 100, registers(0x8000, 0x0000), new DecimalType("-2147483648")),
+                Arguments.of(ValueType.INT32_SWAP, 100, registers(0x0001, 0x0000), new DecimalType("1")),
                 Arguments.of(ValueType.UINT32, 100, registers(0xFFFF, 0xFFFF), new DecimalType("4294967295")),
+                Arguments.of(ValueType.UINT32_SWAP, 100, registers(0x0002, 0x0001), new DecimalType("65538")),
+                Arguments.of(ValueType.INT64, 100, registers(0x8000, 0x0000, 0x0000, 0x0000),
+                        new DecimalType("-9223372036854775808")),
+                Arguments.of(ValueType.UINT64, 100, registers(0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF),
+                        new DecimalType("18446744073709551615")),
+                Arguments.of(ValueType.INT64_SWAP, 100, registers(0x0001, 0x0000, 0x0000, 0x0000),
+                        new DecimalType("1")),
                 Arguments.of(ValueType.FLOAT32, 100, registers(0x3F80, 0x0000), new DecimalType("1.0")),
                 Arguments.of(ValueType.FLOAT32, 100, registers(0x7FC0, 0x0000), UnDefType.UNDEF));
     }
