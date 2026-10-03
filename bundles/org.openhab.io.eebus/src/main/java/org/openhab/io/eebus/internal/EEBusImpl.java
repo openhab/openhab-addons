@@ -1,0 +1,205 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.io.eebus.internal;
+
+import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.events.EventPublisher;
+import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.service.ReadyMarker;
+import org.openhab.core.service.ReadyMarkerFilter;
+import org.openhab.core.service.ReadyService;
+import org.openhab.core.service.StartLevelService;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
+import org.openhab.io.eebus.EEBus;
+import org.openhab.io.eebus.internal.cert.EEBusCertificateStorage;
+import org.openmuc.jeebus.ship.api.ConfigBuilder;
+import org.openmuc.jeebus.shipspine.ShipCommunication;
+import org.openmuc.jeebus.shipspine.ShipCommunication.ConnectClientsTo;
+import org.openmuc.jeebus.spine.api.Device;
+import org.openmuc.jeebus.spine.api.Entity;
+import org.openmuc.jeebus.spine.xsd.v1.DeviceTypeEnumType;
+import org.openmuc.jeebus.spine.xsd.v1.EntityTypeEnumType;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Runs a local EEBus SHIP/SPINE node presenting openHAB as a Controllable System (CS), and wires
+ * its LPC/LPP use cases to whichever items are tagged with {@code eebus="lpc"}/{@code "lpp"}
+ * metadata (see {@link EEBusChangeListener}). Analogous in structure to
+ * {@code org.openhab.io.homekit.internal.HomekitImpl}, simplified to a single SHIP node instance
+ * (EEBus's LPC/LPP use cases are household-wide singleton limits, unlike HomeKit's
+ * many-accessories model).
+ *
+ * @author openHAB EEBus Add-on Contributors - Initial contribution
+ */
+@Component(service = { EEBus.class }, configurationPid = EEBusSettings.CONFIG_PID, property = {
+        Constants.SERVICE_PID + "=org.openhab.eebus" })
+@ConfigurableService(category = "io", label = "EEBus Integration", description_uri = "io:eebus")
+@NonNullByDefault
+public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
+
+    private static final int CERTIFICATE_VALIDITY_DAYS = 3650;
+    private static final String IDENTITY_STORAGE_KEY = "org.openhab.io.eebus.identity";
+
+    private final Logger logger = LoggerFactory.getLogger(EEBusImpl.class);
+
+    private final StorageService storageService;
+    private final ItemRegistry itemRegistry;
+    private final MetadataRegistry metadataRegistry;
+    private final EventPublisher eventPublisher;
+    private final ReadyService readyService;
+
+    private EEBusSettings settings;
+    private boolean started;
+
+    private @Nullable Device device;
+    private @Nullable ShipCommunication shipCommunication;
+    private @Nullable EEBusChangeListener changeListener;
+
+    @Activate
+    public EEBusImpl(@Reference StorageService storageService, @Reference ItemRegistry itemRegistry,
+            @Reference MetadataRegistry metadataRegistry, @Reference EventPublisher eventPublisher,
+            @Reference ReadyService readyService, Map<String, Object> properties) {
+        this.storageService = storageService;
+        this.itemRegistry = itemRegistry;
+        this.metadataRegistry = metadataRegistry;
+        this.eventPublisher = eventPublisher;
+        this.readyService = readyService;
+        this.settings = new Configuration(properties).as(EEBusSettings.class);
+        readyService.registerTracker(this, new ReadyMarkerFilter().withType(StartLevelService.STARTLEVEL_MARKER_TYPE)
+                .withIdentifier(Integer.toString(StartLevelService.STARTLEVEL_STATES)));
+    }
+
+    @Modified
+    protected synchronized void modified(Map<String, Object> properties) {
+        EEBusSettings newSettings = new Configuration(properties).as(EEBusSettings.class);
+        boolean restart = settings.requiresRestart(newSettings);
+        settings = newSettings;
+        if (restart && started) {
+            logger.info("EEBus: network/identity/trust settings changed, restarting SHIP node");
+            stopNode();
+            startNode();
+        } else if (started) {
+            ShipCommunication communication = shipCommunication;
+            if (communication != null) {
+                communication.withConnectClientsTo(ConnectClientsTo.valueOf(settings.connectPolicy));
+            }
+        }
+    }
+
+    @Override
+    public synchronized void onReadyMarkerAdded(ReadyMarker readyMarker) {
+        started = true;
+        startNode();
+    }
+
+    @Override
+    public synchronized void onReadyMarkerRemoved(ReadyMarker readyMarker) {
+        started = false;
+        stopNode();
+    }
+
+    @Deactivate
+    protected synchronized void deactivate() {
+        readyService.unregisterTracker(this);
+        stopNode();
+    }
+
+    private void startNode() {
+        try {
+            Storage<String> certStorage = storageService.getStorage(EEBusCertificateStorage.class.getName(),
+                    EEBusCertificateStorage.class.getClassLoader());
+            EEBusCertificateStorage certificateStorage = new EEBusCertificateStorage(certStorage, IDENTITY_STORAGE_KEY,
+                    "CN=" + settings.friendlyName, CERTIFICATE_VALIDITY_DAYS);
+
+            DeviceTypeEnumType deviceType = DeviceTypeEnumType.valueOf(settings.deviceType);
+            EntityTypeEnumType entityType = EntityTypeEnumType.valueOf(settings.entityType);
+
+            // The mDNS service instance name gets echoed back as the TLS SNI value by at least some
+            // SHIP clients connecting in, so it must be sanitized to a safe charset (see
+            // ServiceNameSanitizer). Trusted SKIs are only read when the node is built - ShipCommunication
+            // does not expose its Ship, so they cannot be changed on a running node.
+            ShipCommunication communication = new ShipCommunication(ConfigBuilder.aShipConfig()
+                    .withServerBindAddresses(Set.of(new InetSocketAddress(settings.bindAddress, settings.port)))
+                    .withWssPath(settings.wssPath).withId(settings.deviceId).withMDnsDomain(settings.serviceDomain)
+                    .withMDnsServiceInstance(ServiceNameSanitizer.sanitize(settings.friendlyName))
+                    .withCertificateStorage(certificateStorage).withCertificateDistinguishedName("CN=openhab-eebus")
+                    .withCertificateValidity(CERTIFICATE_VALIDITY_DAYS)
+                    .withTrustedSkis(parseTrustedSkis(settings.trustedSkis)).build())
+                    .withConnectClientsTo(ConnectClientsTo.valueOf(settings.connectPolicy));
+            this.shipCommunication = communication;
+
+            Device newDevice = Device.getBuilder().withDeviceType(deviceType).withCommunication(communication)
+                    .withId(settings.deviceId).withDiscoverDevices(false).addEntity().setType(entityType)
+                    .applyToDevice().build();
+            this.device = newDevice;
+
+            // Device.build() also adds an implicit DEVICE_INFORMATION entity alongside the one
+            // requested above - getEntities() does not guarantee that entity comes first, so it
+            // must be selected by type rather than assumed to be the sole/first entry (confirmed
+            // live: addUseCase() on the DEVICE_INFORMATION entity throws
+            // "Use case LpcCs does not allow entity type DEVICE_INFORMATION").
+            Entity entity = newDevice.getEntities().stream().filter(e -> e.getType() == entityType).findFirst()
+                    .orElseThrow(() -> new IllegalStateException(
+                            "EEBus: no " + entityType + " entity found on the built device"));
+            this.changeListener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+
+            logger.info("EEBus: SHIP node started, own SKI: {}", communication.getOwnSki());
+        } catch (RuntimeException e) {
+            logger.warn("EEBus: failed to start SHIP node", e);
+        }
+    }
+
+    private void stopNode() {
+        EEBusChangeListener listener = this.changeListener;
+        if (listener != null) {
+            listener.stop();
+            this.changeListener = null;
+        }
+        Device dev = this.device;
+        if (dev != null) {
+            dev.close();
+            this.device = null;
+        }
+        this.shipCommunication = null;
+    }
+
+    private static Set<String> parseTrustedSkis(String trustedSkis) {
+        if (trustedSkis.isBlank()) {
+            return Set.of();
+        }
+        return Set.of(trustedSkis.split(",")).stream().map(String::trim).filter(s -> !s.isEmpty())
+                .collect(java.util.stream.Collectors.toSet());
+    }
+
+    @Override
+    public @Nullable String getOwnSki() {
+        ShipCommunication communication = this.shipCommunication;
+        return communication == null ? null : communication.getOwnSki();
+    }
+}
