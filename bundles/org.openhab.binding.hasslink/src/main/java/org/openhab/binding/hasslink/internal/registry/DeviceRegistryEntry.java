@@ -41,6 +41,6 @@ public record DeviceRegistryEntry( //
     }
 
     public boolean isPhysicalHardware() {
-        return !isDisabled() && !"service".equalsIgnoreCase(entryType);
+        return !"service".equalsIgnoreCase(entryType);
     }
 }

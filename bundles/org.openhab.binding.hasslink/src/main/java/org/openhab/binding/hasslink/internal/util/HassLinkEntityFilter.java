@@ -76,6 +76,16 @@ public class HassLinkEntityFilter {
     }
 
     /**
+     * Checks if the bridge configuration has at least one active inclusion filter
+     * (includedAreas, includedLabels, or includedDomains).
+     */
+    public static boolean hasActiveIncludeFilter(HassLinkBridgeConfiguration bridgeConfig) {
+        return hasActiveFilter(bridgeConfig.includedAreas) //
+                || hasActiveFilter(bridgeConfig.includedLabels) //
+                || hasActiveFilter(bridgeConfig.includedDomains);
+    }
+
+    /**
      * Filters an entity against Device configuration rules (Domains, Labels, Explicit Entity IDs).
      */
     public static boolean isEntityAllowedForDevice(String entityId, @Nullable EntityRegistryEntry entityEntry,
