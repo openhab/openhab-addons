@@ -74,6 +74,9 @@
 				<option value="auto">Auto-detect</option>
 				<option value="basic">Basic (power and child lock)</option>
 				<option value="unicorn">AC2210, AC2220, AC2221, AC3210, AC3220, AC3221, AC4220, AC4221</option>
+				<option value="ac3737">AC3737</option>
+				<option value="ac1715">AC1715 (older field names)</option>
+				<option value="ac0850">AC0850 (older field names)</option>
 			</options>
 			<limitToOptions>true</limitToOptions>
 			<advanced>true</advanced>

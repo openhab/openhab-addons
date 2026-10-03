@@ -49,6 +49,7 @@ public class PhilipsAirBindingConstants {
      * The product range of devices such as the AC3210, as reported by CoAP devices
      */
     public static final String RANGE_UNICORN = "Unicorn";
+    public static final String RANGE_CARNATION = "Carnation";
 
     /**
      * The device profile setting that detects the profile from the device

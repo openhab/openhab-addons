@@ -63,8 +63,8 @@ public class CoapProfileTest {
     @Test
     public void schemeIsDetectedFromFieldNames() {
         assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("auto", parse(CLASSIC_STATUS)));
-        assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("auto", parse(GEN2_STATUS)));
-        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse(GEN3_STATUS)));
+        assertEquals(CoapProfile.AC0850, CoapProfile.resolve("auto", parse(GEN2_STATUS)));
+        assertEquals(CoapProfile.AC3737, CoapProfile.resolve("auto", parse(GEN3_STATUS)));
         assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("auto", parse(UNICORN_STATUS)));
         assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("auto", parse("{\"D01S04\":\"unicorn\"}")));
         assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S04\":\"Pegasus\"}")));
@@ -78,8 +78,17 @@ public class CoapProfileTest {
             assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("auto", parse("{\"D01S05\":\"" + model + "\"}")),
                     model);
         }
-        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC3737/10\"}")));
         assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC4228/10\"}")));
+    }
+
+    @Test
+    public void otherModelProfilesAreDetected() {
+        assertEquals(CoapProfile.AC3737, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC3737/10\"}")));
+        assertEquals(CoapProfile.AC3737, CoapProfile.resolve("auto", parse("{\"D01S04\":\"Carnation\"}")));
+        assertEquals(CoapProfile.AC1715, CoapProfile.resolve("auto", parse("{\"D01-05\":\"AC1715/10\"}")));
+        assertEquals(CoapProfile.AC0850, CoapProfile.resolve("auto", parse("{\"D01-05\":\"AC0850/11\"}")));
+        assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("auto", parse("{\"D01-05\":\"AC9999/10\"}")));
+        assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("auto", parse("{\"D01-03\":\"Room\"}")));
     }
 
     @Test
@@ -97,7 +106,9 @@ public class CoapProfileTest {
     public void unknownOrUnfittingConfiguredProfileIsIgnored() {
         assertEquals(CoapProfile.UNICORN, CoapProfile.resolve("toaster", parse(UNICORN_STATUS)));
         // the Unicorn fields do not exist on a device with the other generation of field names
-        assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("unicorn", parse(GEN2_STATUS)));
+        assertEquals(CoapProfile.AC0850, CoapProfile.resolve("unicorn", parse(GEN2_STATUS)));
+        assertEquals(CoapProfile.BASIC_GEN2, CoapProfile.resolve("unicorn", parse("{\"D01-03\":\"Room\"}")));
+        assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("ac1715", parse("{\"D01S03\":\"Room\"}")));
         assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("unicorn", parse(CLASSIC_STATUS)));
         assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("basic", parse(CLASSIC_STATUS)));
     }
@@ -110,12 +121,128 @@ public class CoapProfileTest {
         assertEquals("0", CoapProfile.UNICORN.getTimerOptions().get(0).getValue());
         assertEquals("12", CoapProfile.UNICORN.getTimerOptions().get(12).getValue());
 
+        assertEquals(List.of("1", "2", "t"), values(CoapProfile.AC3737.getFanSpeedOptions()));
+        assertEquals(List.of("1", "2", "t"), values(CoapProfile.AC1715.getFanSpeedOptions()));
+        assertEquals(List.of("t"), values(CoapProfile.AC0850.getFanSpeedOptions()));
+        for (CoapProfile profile : new CoapProfile[] { CoapProfile.AC3737, CoapProfile.AC1715, CoapProfile.AC0850 }) {
+            assertEquals(List.of("P", "S"), values(profile.getModeOptions()), profile.name());
+            assertTrue(profile.getTimerOptions().isEmpty(), profile.name());
+        }
+
         for (CoapProfile profile : new CoapProfile[] { CoapProfile.CLASSIC, CoapProfile.BASIC_GEN2,
                 CoapProfile.BASIC_GEN3 }) {
             assertTrue(profile.getFanSpeedOptions().isEmpty(), profile.name());
             assertTrue(profile.getModeOptions().isEmpty(), profile.name());
             assertTrue(profile.getTimerOptions().isEmpty(), profile.name());
         }
+    }
+
+    @Test
+    public void ac3737ModeIsReadFromTheModeField() {
+        assertMode(CoapProfile.AC3737, "{\"D0310A\":2,\"D0310C\":0}", "P", null);
+        assertMode(CoapProfile.AC3737, "{\"D0310A\":2,\"D0310C\":17}", "S", null);
+        assertMode(CoapProfile.AC3737, "{\"D0310A\":2,\"D0310C\":1}", "M", "1");
+        assertMode(CoapProfile.AC3737, "{\"D0310A\":2,\"D0310C\":2}", "M", "2");
+        assertMode(CoapProfile.AC3737, "{\"D0310A\":3,\"D0310C\":18}", "M", "t");
+        // the function field also tells that the device humidifies, which does not change the mode
+        assertMode(CoapProfile.AC3737, "{\"D0310A\":4,\"D0310C\":2}", "M", "2");
+        assertMode(CoapProfile.AC3737, "{\"D0310A\":2,\"D0310C\":19}", null, null);
+    }
+
+    @Test
+    public void ac3737ModeCommandIsTranslated() {
+        assertEquals(parse("{\"D0310A\":2,\"D0310C\":0,\"D03102\":1}"),
+                CoapProfile.AC3737.toDevice(modeCommand("P", null)));
+        assertEquals(parse("{\"D0310A\":2,\"D0310C\":17,\"D03102\":1}"),
+                CoapProfile.AC3737.toDevice(modeCommand("S", null)));
+        assertEquals(parse("{\"D0310A\":2,\"D0310C\":2,\"D03102\":1}"),
+                CoapProfile.AC3737.toDevice(modeCommand("M", "2")));
+        assertEquals(parse("{\"D0310A\":3,\"D0310C\":18,\"D03102\":1}"),
+                CoapProfile.AC3737.toDevice(modeCommand("M", "t")));
+        // the speeds of the other models do not exist
+        assertTrue(CoapProfile.AC3737.toDevice(modeCommand("M", "3")).isEmpty());
+        assertTrue(CoapProfile.AC3737.toDevice(modeCommand("M", "m")).isEmpty());
+    }
+
+    @Test
+    public void modeCommandDoesNotChangeThePowerCommandItIsSentWith() {
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setPower("0");
+        command.setMode("S");
+
+        assertEquals(parse("{\"D03102\":0,\"D0310A\":2,\"D0310C\":17}"), CoapProfile.AC3737.toDevice(command(command)));
+    }
+
+    @Test
+    public void gen2ModeIsTranslated() {
+        assertMode(CoapProfile.AC1715, "{\"D03-12\":\"Auto General\"}", "P", null);
+        assertMode(CoapProfile.AC1715, "{\"D03-12\":\"Sleep\"}", "S", null);
+        assertMode(CoapProfile.AC1715, "{\"D03-12\":\"Gentle/Speed 1\"}", "M", "1");
+        assertMode(CoapProfile.AC1715, "{\"D03-12\":\"Speed 2\"}", "M", "2");
+        assertMode(CoapProfile.AC1715, "{\"D03-12\":\"Turbo\"}", "M", "t");
+        assertMode(CoapProfile.AC1715, "{\"D03-12\":\"Allergy Sleep\"}", null, null);
+        assertMode(CoapProfile.AC0850, "{\"D03-12\":\"Turbo\"}", "M", "t");
+        // the AC0850 has no speeds
+        assertMode(CoapProfile.AC0850, "{\"D03-12\":\"Speed 2\"}", null, null);
+
+        assertEquals(parse("{\"D03-12\":\"Auto General\",\"D03-02\":\"ON\"}"),
+                CoapProfile.AC1715.toDevice(modeCommand("P", null)));
+        assertEquals(parse("{\"D03-12\":\"Gentle/Speed 1\",\"D03-02\":\"ON\"}"),
+                CoapProfile.AC1715.toDevice(modeCommand("M", "1")));
+        assertEquals(parse("{\"D03-12\":\"Turbo\",\"D03-02\":\"ON\"}"),
+                CoapProfile.AC0850.toDevice(modeCommand("M", "t")));
+        assertTrue(CoapProfile.AC0850.toDevice(modeCommand("M", "1")).isEmpty());
+        assertTrue(CoapProfile.BASIC_GEN2.toDevice(modeCommand("P", null)).isEmpty());
+    }
+
+    private void assertMode(CoapProfile profile, String reported, @Nullable String mode, @Nullable String speed) {
+        PhilipsAirPurifierDataDTO data = gson.fromJson(profile.toClassic(parse(reported)),
+                PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals(mode, data.getMode(), reported);
+        assertEquals(speed, data.getFanSpeed(), reported);
+    }
+
+    @Test
+    public void gen2SettingsCommandsAreTranslated() {
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setChildLock(true);
+        command.setAqit(7);
+        command.setDisplayIndex("1");
+
+        assertEquals(parse("{\"D03-03\":true,\"D03-44\":7,\"D03-42\":\"PM2.5\"}"),
+                CoapProfile.AC1715.toDevice(command(command)));
+
+        command = new PhilipsAirPurifierWritableDataDTO();
+        command.setChildLock(false);
+        command.setDisplayIndex("0");
+        assertEquals(parse("{\"D03-03\":false,\"D03-42\":\"IAI\"}"), CoapProfile.AC0850.toDevice(command(command)));
+
+        assertTrue(CoapProfile.BASIC_GEN2.toDevice(command(command)).isEmpty());
+    }
+
+    @Test
+    public void humiditySetpointIsOnlySentToModelsThatSupportIt() {
+        assertEquals(parse("{\"D03128\":50}"), CoapProfile.AC3737.toDevice(setpointCommand(50)));
+        assertEquals(parse("{\"D03128\":70}"), CoapProfile.UNICORN.toDevice(setpointCommand(70)));
+        assertTrue(CoapProfile.AC3737.toDevice(setpointCommand(45)).isEmpty());
+        assertTrue(CoapProfile.AC3737.toDevice(setpointCommand(80)).isEmpty());
+        assertTrue(CoapProfile.AC3737.toDevice(setpointCommand(30)).isEmpty());
+        assertTrue(CoapProfile.BASIC_GEN3.toDevice(setpointCommand(50)).isEmpty());
+        assertTrue(CoapProfile.AC1715.toDevice(setpointCommand(50)).isEmpty());
+    }
+
+    private JsonObject setpointCommand(int percent) {
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setHumiditySetpoint(percent);
+        return command(command);
+    }
+
+    @Test
+    public void ac3737DoesNotTranslateTheUnicornTimer() {
+        JsonObject classic = CoapProfile.AC3737.toClassic(parse("{\"D01S05\":\"AC3737/10\",\"D03110\":3}"));
+        assertFalse(classic.has("dt"));
+        assertTrue(CoapProfile.AC3737.toDevice(timerCommand(2)).isEmpty());
     }
 
     private static List<String> values(List<StateOption> options) {

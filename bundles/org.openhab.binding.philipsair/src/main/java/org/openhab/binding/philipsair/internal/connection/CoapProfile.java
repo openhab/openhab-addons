@@ -46,13 +46,20 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public enum CoapProfile {
     /** Classic field names, e.g. AC2889, AC3829, AC4236 */
-    CLASSIC("classic", Generation.CLASSIC, List.of(), null, null, false),
+    CLASSIC("classic", Generation.CLASSIC, Spec.NONE),
     /** Field names like {@code D03-02}, e.g. AC0850, AC1715 */
-    BASIC_GEN2("basic", Generation.GEN2, List.of(), null, null, false),
+    BASIC_GEN2("basic", Generation.GEN2, Spec.NONE),
     /** Field names like {@code D03102}, e.g. AC0950, AC3420, AC3737, AMF and HU series */
-    BASIC_GEN3("basic", Generation.GEN3, List.of(), null, null, false),
+    BASIC_GEN3("basic", Generation.GEN3, Spec.NONE),
     /** AC2210, AC2220, AC2221, AC3210, AC3220, AC3221, AC4220 and AC4221 */
-    UNICORN("unicorn", Generation.GEN3, Tables.unicornModes(), "D0310D", new Timer("D03110", 1, 12), true);
+    UNICORN("unicorn", Generation.GEN3,
+            new Spec(Tables.unicornModes(), "D0310D", new Timer("D03110", 1, 12), false, true)),
+    /** AC3737 */
+    AC3737("ac3737", Generation.GEN3, new Spec(Tables.ac3737Modes(), null, null, true, true)),
+    /** AC1715 */
+    AC1715("ac1715", Generation.GEN2, new Spec(Tables.ac1715Modes(), null, null, true, false)),
+    /** AC0850 with the field names of the generation 2 */
+    AC0850("ac0850", Generation.GEN2, new Spec(Tables.ac0850Modes(), null, null, true, false));
 
     /** The generations of field names reported by the devices */
     enum Generation {
@@ -66,9 +73,26 @@ public enum CoapProfile {
      *
      * @param mode the classic mode: {@code P} (auto), {@code S} (sleep) or {@code M} (manual)
      * @param speed the classic fan speed of the manual mode, null for the other modes
-     * @param fields the device fields and the values they have in this mode
+     * @param fields the device fields that are sent to select this mode
+     * @param readKey the field that tells the device is in this mode, as the other fields are not reported for every
+     *            mode
      */
-    record ModeEntry(String mode, @Nullable String speed, JsonObject fields) {
+    record ModeEntry(String mode, @Nullable String speed, JsonObject fields, String readKey) {
+    }
+
+    /**
+     * What a model profile adds to the translation of the basic profile of its generation.
+     *
+     * @param modes the modes and fan speeds of the model
+     * @param speedFallbackKey the field with the speed the device chose itself, for the modes without a selected speed
+     * @param timer the timer of the model, null if it is not supported
+     * @param modePowersOn true if selecting a mode also switches the device on, as the Philips app and the integration
+     *            of the model do
+     * @param humiditySetpoint true if the humidity setpoint of the model can be set
+     */
+    record Spec(List<ModeEntry> modes, @Nullable String speedFallbackKey, @Nullable Timer timer, boolean modePowersOn,
+            boolean humiditySetpoint) {
+        static final Spec NONE = new Spec(List.of(), null, null, false, false);
     }
 
     /**
@@ -84,6 +108,7 @@ public enum CoapProfile {
     private static final String CLASSIC_POWER = "pwr";
     private static final String CLASSIC_CHILD_LOCK = "cl";
 
+    private static final String GEN2_MODEL = "D01-05";
     private static final String GEN2_POWER = "D03-02";
     private static final String GEN2_POWER_ON = "ON";
     private static final String GEN2_POWER_OFF = "OFF";
@@ -99,6 +124,7 @@ public enum CoapProfile {
     private static final String GEN3_MODEL = "D01S05";
     private static final String GEN3_THRESHOLD = "D0312C";
     private static final String GEN3_DISPLAYED_INDEX = "D0312A";
+    private static final String GEN3_HUMIDITY_SETPOINT = "D03128";
 
     private static final List<String> UNICORN_MODELS = List.of("AC2210", "AC2220", "AC2221", "AC3210", "AC3220",
             "AC3221", "AC4220", "AC4221");
@@ -108,16 +134,19 @@ public enum CoapProfile {
     private final List<ModeEntry> modes;
     private final @Nullable String speedFallbackKey;
     private final @Nullable Timer timer;
-    private final boolean settingsWritable;
+    private final boolean modePowersOn;
+    private final boolean humiditySetpoint;
+    private final boolean modelProfile;
 
-    CoapProfile(String id, Generation generation, List<ModeEntry> modes, @Nullable String speedFallbackKey,
-            @Nullable Timer timer, boolean settingsWritable) {
+    CoapProfile(String id, Generation generation, Spec spec) {
         this.id = id;
         this.generation = generation;
-        this.modes = modes;
-        this.speedFallbackKey = speedFallbackKey;
-        this.timer = timer;
-        this.settingsWritable = settingsWritable;
+        this.modes = spec.modes();
+        this.speedFallbackKey = spec.speedFallbackKey();
+        this.timer = spec.timer();
+        this.modePowersOn = spec.modePowersOn();
+        this.humiditySetpoint = spec.humiditySetpoint();
+        this.modelProfile = spec != Spec.NONE;
     }
 
     /**
@@ -150,15 +179,23 @@ public enum CoapProfile {
     }
 
     private static CoapProfile detect(Generation generation, JsonObject reported) {
+        String model;
         switch (generation) {
             case GEN2:
+                model = upperCase(getString(reported, GEN2_MODEL));
+                if (model.startsWith("AC17")) {
+                    return AC1715;
+                } else if (model.startsWith("AC08")) {
+                    return AC0850;
+                }
                 return BASIC_GEN2;
             case GEN3:
-                String model = getString(reported, GEN3_MODEL);
-                String upperCaseModel = model != null ? model.toUpperCase(Locale.ROOT) : "";
-                if (RANGE_UNICORN.equalsIgnoreCase(getString(reported, GEN3_RANGE))
-                        || UNICORN_MODELS.stream().anyMatch(upperCaseModel::startsWith)) {
+                model = upperCase(getString(reported, GEN3_MODEL));
+                String range = getString(reported, GEN3_RANGE);
+                if (RANGE_UNICORN.equalsIgnoreCase(range) || UNICORN_MODELS.stream().anyMatch(model::startsWith)) {
                     return UNICORN;
+                } else if (RANGE_CARNATION.equalsIgnoreCase(range) || model.startsWith("AC3737")) {
+                    return AC3737;
                 }
                 return BASIC_GEN3;
             default:
@@ -166,11 +203,8 @@ public enum CoapProfile {
         }
     }
 
-    /**
-     * @return the name of the profile in the thing configuration
-     */
-    public String getId() {
-        return id;
+    private static String upperCase(@Nullable String value) {
+        return value != null ? value.toUpperCase(Locale.ROOT) : "";
     }
 
     /**
@@ -301,7 +335,8 @@ public enum CoapProfile {
     private void modesToClassic(JsonObject reported, JsonObject classic) {
         ModeEntry active = null;
         for (ModeEntry entry : modes) {
-            if (matches(entry.fields(), reported)) {
+            JsonElement value = entry.fields().get(entry.readKey());
+            if (value != null && value.equals(reported.get(entry.readKey()))) {
                 active = entry;
                 break;
             }
@@ -326,9 +361,8 @@ public enum CoapProfile {
      * @return the speed of the manual mode, which selects the same value of the field the active mode is selected with
      */
     private @Nullable String findManualSpeed(ModeEntry active, JsonElement value) {
-        String modeKey = active.fields().keySet().iterator().next();
         for (ModeEntry entry : modes) {
-            if (entry.speed() != null && value.equals(entry.fields().get(modeKey))) {
+            if (entry.speed() != null && value.equals(entry.fields().get(active.readKey()))) {
                 return entry.speed();
             }
         }
@@ -373,17 +407,29 @@ public enum CoapProfile {
         if (generation == Generation.GEN3 && childLock instanceof JsonPrimitive primitive && primitive.isBoolean()) {
             translated.addProperty(GEN3_CHILD_LOCK, primitive.getAsBoolean() ? 1 : 0);
         }
-        if (settingsWritable) {
+        if (modelProfile) {
             settingsToDevice(desired, translated);
         }
         return translated;
     }
 
     private void settingsToDevice(JsonObject desired, JsonObject translated) {
+        boolean gen2 = generation == Generation.GEN2;
+        JsonElement childLock = desired.get(CLASSIC_CHILD_LOCK);
+        if (gen2 && childLock instanceof JsonPrimitive primitive && primitive.isBoolean()) {
+            translated.addProperty(GEN2_CHILD_LOCK, primitive.getAsBoolean());
+        }
         ModeEntry entry = findMode(getString(desired, "mode"), getString(desired, "om"));
         if (entry != null) {
             for (Map.Entry<String, JsonElement> field : entry.fields().entrySet()) {
                 translated.add(field.getKey(), field.getValue());
+            }
+            if (modePowersOn && !translated.has(gen2 ? GEN2_POWER : GEN3_POWER)) {
+                if (gen2) {
+                    translated.addProperty(GEN2_POWER, GEN2_POWER_ON);
+                } else {
+                    translated.addProperty(GEN3_POWER, 1);
+                }
             }
         }
         Timer timer = this.timer;
@@ -396,10 +442,18 @@ public enum CoapProfile {
                 translated.addProperty(timer.key(), value + timer.offset());
             }
         }
+        Number setpoint = getNumber(desired, "rhset");
+        if (humiditySetpoint && setpoint != null) {
+            int percent = setpoint.intValue();
+            if (percent >= 40 && percent <= 70 && percent % 10 == 0) {
+                translated.addProperty(GEN3_HUMIDITY_SETPOINT, percent);
+            }
+        }
         Number threshold = getNumber(desired, "aqit");
         if (threshold != null) {
             switch (threshold.intValue()) {
-                case 1, 4, 7, 10 -> translated.addProperty(GEN3_THRESHOLD, threshold.intValue());
+                case 1, 4, 7, 10 ->
+                    translated.addProperty(gen2 ? GEN2_THRESHOLD : GEN3_THRESHOLD, threshold.intValue());
                 default -> {
                 }
             }
@@ -407,7 +461,12 @@ public enum CoapProfile {
         // the gas index (2) is not offered, as the models have no gas sensor
         String displayIndex = getString(desired, "ddp");
         if ("0".equals(displayIndex) || "1".equals(displayIndex)) {
-            translated.addProperty(GEN3_DISPLAYED_INDEX, "1".equals(displayIndex) ? 1 : 0);
+            boolean pm25 = "1".equals(displayIndex);
+            if (gen2) {
+                translated.addProperty(GEN2_DISPLAYED_INDEX, pm25 ? GEN2_INDEX_PM25 : GEN2_INDEX_ALLERGEN);
+            } else {
+                translated.addProperty(GEN3_DISPLAYED_INDEX, pm25 ? 1 : 0);
+            }
         }
     }
 
@@ -427,18 +486,6 @@ public enum CoapProfile {
             }
         }
         return null;
-    }
-
-    private static boolean matches(JsonObject fields, JsonObject reported) {
-        if (fields.isEmpty()) {
-            return false;
-        }
-        for (Map.Entry<String, JsonElement> field : fields.entrySet()) {
-            if (!field.getValue().equals(reported.get(field.getKey()))) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private static @Nullable String getString(JsonObject object, String key) {
@@ -485,10 +532,48 @@ public enum CoapProfile {
             return List.copyOf(modes);
         }
 
-        private static ModeEntry entry(String mode, @Nullable String speed, String key, int value) {
+        /**
+         * The AC3737 selects its mode with the mode field and the function field, which is 3 for the turbo mode.
+         * The mode is read from the mode field only, as the function field also tells if the device humidifies.
+         */
+        static List<ModeEntry> ac3737Modes() {
+            return List.of(entry("P", null, "D0310C", 0, "D0310A", 2), entry("S", null, "D0310C", 17, "D0310A", 2),
+                    entry("M", "1", "D0310C", 1, "D0310A", 2), entry("M", "2", "D0310C", 2, "D0310A", 2),
+                    entry("M", "t", "D0310C", 18, "D0310A", 3));
+        }
+
+        static List<ModeEntry> ac1715Modes() {
+            return List.of(entry("P", null, "D03-12", "Auto General"), entry("S", null, "D03-12", "Sleep"),
+                    entry("M", "1", "D03-12", "Gentle/Speed 1"), entry("M", "2", "D03-12", "Speed 2"),
+                    entry("M", "t", "D03-12", "Turbo"));
+        }
+
+        static List<ModeEntry> ac0850Modes() {
+            return List.of(entry("P", null, "D03-12", "Auto General"), entry("S", null, "D03-12", "Sleep"),
+                    entry("M", "t", "D03-12", "Turbo"));
+        }
+
+        /**
+         * @param readKey the field the mode is read from
+         * @param readValue the value the read field has in the mode, a number or a text
+         * @param otherFields the other fields and values that are sent to select the mode, as pairs
+         */
+        private static ModeEntry entry(String mode, @Nullable String speed, String readKey, Object readValue,
+                Object... otherFields) {
             JsonObject fields = new JsonObject();
-            fields.addProperty(key, value);
-            return new ModeEntry(mode, speed, fields);
+            put(fields, readKey, readValue);
+            for (int i = 0; i < otherFields.length; i += 2) {
+                put(fields, (String) otherFields[i], otherFields[i + 1]);
+            }
+            return new ModeEntry(mode, speed, fields, readKey);
+        }
+
+        private static void put(JsonObject fields, String key, Object value) {
+            if (value instanceof Number number) {
+                fields.addProperty(key, number);
+            } else {
+                fields.addProperty(key, value.toString());
+            }
         }
     }
 }
