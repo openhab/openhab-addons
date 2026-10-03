@@ -257,6 +257,102 @@ public class CoapKeySchemeTest {
     }
 
     @Test
+    public void unicornModeCommandIsTranslated() {
+        assertEquals(parse("{\"D0310C\":0}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("P", null)));
+        assertEquals(parse("{\"D0310C\":17}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("S", null)));
+        // the fan speed command selects the manual mode together with the speed
+        assertEquals(parse("{\"D0310C\":3}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "3")));
+        assertEquals(parse("{\"D0310C\":5}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "5")));
+        assertEquals(parse("{\"D0310C\":18}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "t")));
+        assertEquals(parse("{\"D0310C\":19}"), CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "m")));
+        assertEquals(parse("{\"D0310C\":2}"), CoapKeyScheme.UNICORN.toDevice(modeCommand(null, "2")));
+    }
+
+    @Test
+    public void unicornModeCommandsWithoutMatchingModeAreDropped() {
+        // the manual mode needs a speed, the other modes do not exist on the device
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("M", null)).isEmpty());
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("A", null)).isEmpty());
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("B", "1")).isEmpty());
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "0")).isEmpty());
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "6")).isEmpty());
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "s")).isEmpty());
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(modeCommand("M", "10")).isEmpty());
+    }
+
+    private JsonObject modeCommand(@Nullable String mode, @Nullable String speed) {
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        if (mode != null) {
+            command.setMode(mode);
+        }
+        if (speed != null) {
+            command.setFanSpeed(speed);
+        }
+        return command(command);
+    }
+
+    @Test
+    public void unicornTimerCommandIsTranslated() {
+        assertEquals(parse("{\"D03110\":0}"), CoapKeyScheme.UNICORN.toDevice(timerCommand(0)));
+        assertEquals(parse("{\"D03110\":2}"), CoapKeyScheme.UNICORN.toDevice(timerCommand(1)));
+        assertEquals(parse("{\"D03110\":13}"), CoapKeyScheme.UNICORN.toDevice(timerCommand(12)));
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(timerCommand(13)).isEmpty());
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(timerCommand(-1)).isEmpty());
+    }
+
+    private JsonObject timerCommand(int hours) {
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setTimer(hours);
+        return command(command);
+    }
+
+    @Test
+    public void unicornThresholdAndDisplayedIndexCommandsAreTranslated() {
+        for (int threshold : new int[] { 1, 4, 7, 10 }) {
+            PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+            command.setAqit(threshold);
+            assertEquals(parse("{\"D0312C\":" + threshold + "}"), CoapKeyScheme.UNICORN.toDevice(command(command)));
+        }
+        PhilipsAirPurifierWritableDataDTO unknownThreshold = new PhilipsAirPurifierWritableDataDTO();
+        unknownThreshold.setAqit(5);
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(command(unknownThreshold)).isEmpty());
+        PhilipsAirPurifierWritableDataDTO textThreshold = new PhilipsAirPurifierWritableDataDTO();
+        textThreshold.setAqit("7");
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(command(textThreshold)).isEmpty());
+
+        for (String index : new String[] { "0", "1" }) {
+            PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+            command.setDisplayIndex(index);
+            assertEquals(parse("{\"D0312A\":" + index + "}"), CoapKeyScheme.UNICORN.toDevice(command(command)));
+        }
+        PhilipsAirPurifierWritableDataDTO gas = new PhilipsAirPurifierWritableDataDTO();
+        gas.setDisplayIndex("2");
+        assertTrue(CoapKeyScheme.UNICORN.toDevice(command(gas)).isEmpty());
+    }
+
+    @Test
+    public void unicornCommandKeepsPowerAndChildLock() {
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setPower("1");
+        command.setChildLock(true);
+
+        assertEquals(parse("{\"D03102\":1,\"D03103\":1}"), CoapKeyScheme.UNICORN.toDevice(command(command)));
+    }
+
+    @Test
+    public void onlyUnicornTranslatesModeTimerThresholdAndIndexCommands() {
+        PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
+        command.setMode("P");
+        command.setFanSpeed("2");
+        command.setTimer(2);
+        command.setAqit(7);
+        command.setDisplayIndex("1");
+
+        assertTrue(CoapKeyScheme.GEN3.toDevice(command(command)).isEmpty());
+        assertTrue(CoapKeyScheme.GEN2.toDevice(command(command)).isEmpty());
+    }
+
+    @Test
     public void childLockCommandIsTranslated() {
         PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
         command.setChildLock(true);

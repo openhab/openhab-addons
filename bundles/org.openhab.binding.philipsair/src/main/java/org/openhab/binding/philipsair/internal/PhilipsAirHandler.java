@@ -587,6 +587,33 @@ public class PhilipsAirHandler extends BaseThingHandler {
         stateDescriptionProvider.setStateOptions(
                 new ChannelUID(thing.getUID(), SENSORS, AIR_QUALITY_NOTIFICATION_THRESHOLD), thresholdOptions);
         logger.debug("Options of {}: displayed index {}, threshold {}", thing.getUID(), indexOptions, thresholdOptions);
+
+        if (RANGE_UNICORN.equalsIgnoreCase(deviceInfo.getRange())) {
+            setUnicornOptions();
+        }
+    }
+
+    /**
+     * The Unicorn range selects its mode and manual fan speed together, and offers a timer of up to 12 hours.
+     */
+    private void setUnicornOptions() {
+        List<StateOption> speedOptions = new ArrayList<>();
+        for (int speed = 1; speed <= UNICORN_MAX_SPEED; speed++) {
+            speedOptions.add(new StateOption(String.valueOf(speed), String.valueOf(speed)));
+        }
+        speedOptions.add(new StateOption("m", "Medium"));
+        speedOptions.add(new StateOption("t", "Turbo"));
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CONTROLS, FAN_MODE), speedOptions);
+
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CONTROLS, MODE),
+                List.of(new StateOption("P", "Auto"), new StateOption("S", "Sleep")));
+
+        List<StateOption> timerOptions = new ArrayList<>();
+        timerOptions.add(new StateOption("0", "Off"));
+        for (int hours = 1; hours <= UNICORN_MAX_TIMER_HOURS; hours++) {
+            timerOptions.add(new StateOption(String.valueOf(hours), hours + " h"));
+        }
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CONTROLS, AUTO_TIMEOFF), timerOptions);
     }
 
     static boolean supportsGasIndex(@Nullable PhilipsAirPurifierDeviceDTO deviceInfo,

@@ -193,6 +193,29 @@ public class PhilipsAirHandlerOptionalChannelsTest {
     }
 
     @Test
+    public void unicornOptionsAndChannelsAreSet() throws PhilipsAirAPIException {
+        // the status as translated by the connection, see CoapKeyScheme
+        String status = """
+                {"modelid":"AC3210/12","range":"Unicorn","pwr":"1","mode":"P","om":"1","dt":0,"dtrs":0,"aqit":7,\
+                "err":0,"rh":46,"temp":24.1,"pm25":1,"iaql":1}""";
+        when(connection.isPushingStatus()).thenReturn(true);
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson(status, PhilipsAirPurifierDeviceDTO.class));
+        when(connection.getAirPurifierStatus(any())).thenReturn(gson.fromJson(status, PhilipsAirPurifierDataDTO.class));
+
+        handler.updateData(connection);
+
+        assertEquals(Set.of("controls#power", "controls#timer", "controls#timer-remaining", "sensors#humidity",
+                "sensors#temperature"), channelIds(handler.getThing().getChannels()));
+        assertEquals(List.of("1", "2", "3", "4", "5", "m", "t"), options(CONTROLS, FAN_MODE));
+        assertEquals(List.of("P", "S"), options(CONTROLS, MODE));
+        assertEquals(List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"),
+                options(CONTROLS, AUTO_TIMEOFF));
+        assertEquals(List.of("0", "1"), options(CONTROLS_UI, DISPLAYED_INDEX));
+        assertEquals(List.of("1", "4", "7", "10"), options(SENSORS, AIR_QUALITY_NOTIFICATION_THRESHOLD));
+    }
+
+    @Test
     public void filterStatusIsRequestedAgainAfterAFailure() throws PhilipsAirAPIException {
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));

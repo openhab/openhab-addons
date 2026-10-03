@@ -49,6 +49,8 @@ public class PhilipsAirBindingConstants {
      * The product range of devices such as the AC3210, as reported by CoAP devices
      */
     public static final String RANGE_UNICORN = "Unicorn";
+    public static final int UNICORN_MAX_SPEED = 5;
+    public static final int UNICORN_MAX_TIMER_HOURS = 12;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_UNIVERSAL = new ThingTypeUID(BINDING_ID, SUPPORTED_MODEL_UNIVERSAL);

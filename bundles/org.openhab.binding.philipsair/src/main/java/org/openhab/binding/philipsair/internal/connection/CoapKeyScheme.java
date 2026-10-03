@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.philipsair.internal.connection;
 
-import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.RANGE_UNICORN;
+import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,14 +61,14 @@ enum CoapKeyScheme {
     private static final String UNICORN_SPEED = "D0310D";
     private static final String UNICORN_TIMER = "D03110";
     private static final String UNICORN_TIMER_LEFT = "D03211";
+    private static final String GEN3_THRESHOLD = "D0312C";
+    private static final String GEN3_DISPLAYED_INDEX = "D0312A";
     private static final int UNICORN_MODE_AUTO = 0;
     private static final int UNICORN_MODE_SLEEP = 17;
     private static final int UNICORN_MODE_TURBO = 18;
     private static final int UNICORN_MODE_MEDIUM = 19;
-    private static final int UNICORN_MAX_SPEED = 5;
     // the timer value is the number of hours plus one, the value 1 is a timer of 30 minutes on other ranges
     private static final int UNICORN_TIMER_OFFSET = 1;
-    private static final int UNICORN_MAX_TIMER_HOURS = 12;
 
     /**
      * Detects the scheme from the field names of the device information, which every status report contains.
@@ -121,10 +121,10 @@ enum CoapKeyScheme {
                 copyNumber(reported, "D03120", classic, "iaql");
                 copyNumber(reported, "D03221", classic, "pm25");
                 copyNumber(reported, "D03125", classic, "rh");
-                copyNumber(reported, "D0312C", classic, "aqit");
+                copyNumber(reported, GEN3_THRESHOLD, classic, "aqit");
                 copyNumber(reported, "D03240", classic, "err");
                 // the displayed index is a number here, a text on the classic models
-                Number displayIndex = getNumber(reported, "D0312A");
+                Number displayIndex = getNumber(reported, GEN3_DISPLAYED_INDEX);
                 if (displayIndex != null) {
                     classic.addProperty("ddp", String.valueOf(displayIndex.intValue()));
                 }
@@ -212,7 +212,60 @@ enum CoapKeyScheme {
         if (this != GEN2 && childLock instanceof JsonPrimitive primitive && primitive.isBoolean()) {
             translated.addProperty(GEN3_CHILD_LOCK, primitive.getAsBoolean() ? 1 : 0);
         }
+        if (this == UNICORN) {
+            unicornToDevice(desired, translated);
+        }
         return translated;
+    }
+
+    private static void unicornToDevice(JsonObject desired, JsonObject translated) {
+        Integer modeCode = toUnicornMode(getString(desired, "mode"), getString(desired, "om"));
+        if (modeCode != null) {
+            translated.addProperty(UNICORN_MODE, modeCode);
+        }
+        Number hours = getNumber(desired, "dt");
+        if (hours != null) {
+            int value = hours.intValue();
+            if (value == 0) {
+                translated.addProperty(UNICORN_TIMER, 0);
+            } else if (value > 0 && value <= UNICORN_MAX_TIMER_HOURS) {
+                translated.addProperty(UNICORN_TIMER, value + UNICORN_TIMER_OFFSET);
+            }
+        }
+        Number threshold = getNumber(desired, "aqit");
+        if (threshold != null) {
+            switch (threshold.intValue()) {
+                case 1, 4, 7, 10 -> translated.addProperty(GEN3_THRESHOLD, threshold.intValue());
+                default -> {
+                }
+            }
+        }
+        // the gas index (2) is not offered, as the range has no gas sensor
+        String displayIndex = getString(desired, "ddp");
+        if ("0".equals(displayIndex) || "1".equals(displayIndex)) {
+            translated.addProperty(GEN3_DISPLAYED_INDEX, "1".equals(displayIndex) ? 1 : 0);
+        }
+    }
+
+    /**
+     * @return the mode code for the classic mode or, in manual mode, the fan speed; null if the device has no such mode
+     */
+    private static @Nullable Integer toUnicornMode(@Nullable String mode, @Nullable String speed) {
+        if ("P".equals(mode)) {
+            return UNICORN_MODE_AUTO;
+        } else if ("S".equals(mode)) {
+            return UNICORN_MODE_SLEEP;
+        } else if (speed == null || (mode != null && !"M".equals(mode))) {
+            return null;
+        } else if ("t".equals(speed)) {
+            return UNICORN_MODE_TURBO;
+        } else if ("m".equals(speed)) {
+            return UNICORN_MODE_MEDIUM;
+        } else if (speed.length() == 1) {
+            int manualSpeed = speed.charAt(0) - '0';
+            return manualSpeed >= 1 && manualSpeed <= UNICORN_MAX_SPEED ? manualSpeed : null;
+        }
+        return null;
     }
 
     private static @Nullable String getString(JsonObject object, String key) {
