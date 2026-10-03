@@ -15,12 +15,12 @@
   <name>openHAB Add-ons :: Bundles :: IO :: EEBus</name>
 
   <properties>
-    <!-- jEEBus.SHIP 2.3.0 requires Netty 4.2.x at the OSGi Import-Package level
+    <!-- jEEBus.SHIP 3.x requires Netty 4.2.x at the OSGi Import-Package level
          (io.netty.*;version="[4.2,5)"). This is intentionally NOT ${netty.version}
          (which openhab-addons pins to the 4.1.x line elsewhere) - the two Netty
          major versions are installed as separate OSGi bundles side by side, which
          the framework resolves independently per importing bundle. -->
-    <eebus.netty.version>4.2.15.Final</eebus.netty.version>
+    <eebus.netty.version>4.2.17.Final</eebus.netty.version>
     <!-- jeebus.ship/spine and BouncyCastle are declared as direct compile deps below, so
          bnd embeds them into this bundle's own jar (Private-Package) rather than treating
          them as external Import-Package - see feature.xml for what actually stays external.
@@ -38,12 +38,12 @@
     <dependency>
       <groupId>org.openmuc.jeebus</groupId>
       <artifactId>ship</artifactId>
-      <version>2.3.0</version>
+      <version>3.2.1</version>
     </dependency>
     <dependency>
       <groupId>org.openmuc.jeebus</groupId>
       <artifactId>spine</artifactId>
-      <version>4.0.1</version>
+      <version>4.2.0</version>
     </dependency>
 
     <!-- LPC (Limitation of Power Consumption, §14a EnWG) and LPP (Limitation of Power
@@ -51,17 +51,17 @@
     <dependency>
       <groupId>org.openmuc.jeebus.usecase.powerlimitation</groupId>
       <artifactId>abstract-controllablesystem</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.openmuc.jeebus.usecase.powerlimitation</groupId>
       <artifactId>lpc-controllablesystem</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.openmuc.jeebus.usecase.powerlimitation</groupId>
       <artifactId>lpp-controllablesystem</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0</version>
     </dependency>
 
     <!-- Used directly by this add-on to provision the SHIP node's self-signed

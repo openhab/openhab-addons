@@ -47,7 +47,7 @@
 		<bundle dependency="true">mvn:com.fasterxml.jackson.module/jackson-module-jakarta-xmlbind-annotations/${jackson.version}</bundle>
 		<bundle dependency="true">mvn:jakarta.xml.bind/jakarta.xml.bind-api/4.0.5</bundle>
 		<bundle dependency="true">mvn:jakarta.activation/jakarta.activation-api/2.1.0</bundle>
-		<bundle dependency="true">mvn:org.jvnet.jaxb/jaxb-plugins-runtime/4.0.12</bundle>
+		<bundle dependency="true">mvn:org.jvnet.jaxb/jaxb-plugins-runtime/4.0.16</bundle>
 		<bundle dependency="true">mvn:org.glassfish.jaxb/jaxb-core/4.0.6</bundle>
 		<bundle dependency="true">mvn:org.eclipse.angus/angus-activation/2.0.3</bundle>
 		<bundle dependency="true">mvn:com.sun.istack/istack-commons-runtime/4.1.2</bundle>

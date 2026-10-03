@@ -43,13 +43,13 @@ public class EEBusSettings {
 
     /**
      * @return true if a change from {@code other} to {@code this} requires tearing down and
-     *         rebuilding the SHIP node (network/identity settings), as opposed to something that
-     *         can be applied without a restart.
+     *         rebuilding the SHIP node (everything except {@code connectPolicy}).
      */
     public boolean requiresRestart(EEBusSettings other) {
         return !Objects.equals(bindAddress, other.bindAddress) || port != other.port
                 || !Objects.equals(wssPath, other.wssPath) || !Objects.equals(serviceDomain, other.serviceDomain)
                 || !Objects.equals(deviceId, other.deviceId) || !Objects.equals(friendlyName, other.friendlyName)
-                || !Objects.equals(deviceType, other.deviceType) || !Objects.equals(entityType, other.entityType);
+                || !Objects.equals(deviceType, other.deviceType) || !Objects.equals(entityType, other.entityType)
+                || !Objects.equals(trustedSkis, other.trustedSkis);
     }
 }

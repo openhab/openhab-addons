@@ -50,8 +50,8 @@ metadata - the same shape used by the HomeKit and Alexa add-ons.
 | connectPolicy       | pairing  | no       | `TRUSTED`             | `TRUSTED` (only pre-trusted SKIs), `ALL` (insecure), or `NONE`.                                                                                                          |
 | trustedSkis         | pairing  | no       | -                      | Comma-separated list of remote SKIs to pre-trust. Used when `connectPolicy` is `TRUSTED`.                                                                                |
 
-Changing a `network` or `identity` parameter restarts the SHIP node.
-`pairing` parameters apply live.
+Changing `connectPolicy` takes effect right away.
+Changing any other parameter restarts the SHIP node.
 
 ## Item Metadata
 
