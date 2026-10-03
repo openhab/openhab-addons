@@ -111,6 +111,7 @@ See section [Discovery](#discovery) for details.
 | shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                                              |
 | shellyplugusg4       | Shelly Plug US Gen4                                      | S4PL-00116US                                                              |
 | shellyplusplugcpm    | Shelly Plus Plug CPM (EU C-type, Gen4)                   | S4PL-00116EU                                                              |
+| shellyplusplugpm     | Shelly Plug PM Gen3 (power meter, no relay)              | S3PL-30116EU                                                              |
 | shellyplusstrip      | Shelly Plus Power Strip 4                                | S4PL-00416EU                                                              |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X                                                    |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                                                |
@@ -2101,6 +2102,27 @@ totalEnergy might reset on restart depending on device type and firmware version
 |       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
 |       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
 |       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+|       | frequency         | Number   | yes       | Grid frequency in Hertz (Hz)                                                                       |
+
+`Note`:
+totalEnergy might reset on restart depending on device type and firmware version
+
+### Shelly Plug PM Gen3 (thing-type: shellyplusplugpm)
+
+The Plug PM Gen3 measures power only, it has no relay to switch.
+
+| Group | Channel           | Type     | read-only | Description                                                                                        |
+| ----- | ----------------- | -------- | --------- | -------------------------------------------------------------------------------------------------- |
+| meter | currentPower      | Number   | yes       | Current power consumption in Watts                                                                 |
+|       | energyHistMin1    | Number   | yes       | Total energy consumed during the previous complete minute, minute -1 (Wh)                          |
+|       | energyHistMin2    | Number   | yes       | Total energy consumed during the complete minute 2 minutes ago, minute -2 (Wh)                     |
+|       | energyHistMin3    | Number   | yes       | Total energy consumed during the complete minute 3 minutes ago, minute -3 (Wh)                     |
+|       | energyAvgLast3Min | Number   | yes       | Average of the total energy per minute over the previous 3 complete minutes, minutes -1 to -3 (Wh) |
+|       | totalEnergy       | Number   | yes       | Total energy consumption in kWh                                                                    |
+|       | resetTotals       | Switch   | r/w       | Send ON to reset the accumulated energy counters for this meter                                    |
+|       | lastUpdate        | DateTime | yes       | Timestamp of the last measurement                                                                  |
+|       | voltage           | Number   | yes       | Voltage in Volt (V)                                                                                |
+|       | current           | Number   | yes       | Current in Ampere (A)                                                                              |
 |       | frequency         | Number   | yes       | Grid frequency in Hertz (Hz)                                                                       |
 
 `Note`:
