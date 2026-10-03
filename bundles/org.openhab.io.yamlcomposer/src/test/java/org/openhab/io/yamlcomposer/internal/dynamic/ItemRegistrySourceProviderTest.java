@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataKey;
+import org.openhab.core.items.MetadataRegistry;
 
 /**
  * Unit tests for {@link ItemRegistrySourceProvider}.
@@ -43,13 +50,16 @@ import org.openhab.core.items.ItemRegistry;
 class ItemRegistrySourceProviderTest {
 
     private @Nullable ItemRegistry itemRegistry;
+    private @Nullable MetadataRegistry metadataRegistry;
     private @Nullable ItemRegistrySourceProvider provider;
     private final List<EntityChange> emittedChanges = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
         itemRegistry = mock(ItemRegistry.class);
-        provider = new ItemRegistrySourceProvider(Objects.requireNonNull(itemRegistry));
+        metadataRegistry = mock(MetadataRegistry.class);
+        provider = new ItemRegistrySourceProvider(Objects.requireNonNull(itemRegistry),
+                Objects.requireNonNull(metadataRegistry));
         provider.setOnChangeListener(emittedChanges::add);
         emittedChanges.clear();
     }
@@ -82,6 +92,27 @@ class ItemRegistrySourceProviderTest {
         assertEquals("Light", map.get("category"));
 
         assertThrows(UnsupportedOperationException.class, () -> map.put("newKey", "value"));
+    }
+
+    @Test
+    void includesMetadataInAdaptedMap() {
+        Item item = mock(Item.class);
+        when(item.getName()).thenReturn("LivingRoom_Light");
+        Metadata metadata = new Metadata(new MetadataKey("stateDescription", "LivingRoom_Light"), "",
+                Map.of("pattern", "%.1f °C"));
+        when(metadataRegistry.getAllNamespaces("LivingRoom_Light")).thenReturn(List.of("stateDescription"));
+        when(metadataRegistry.get(new MetadataKey("stateDescription", "LivingRoom_Light"))).thenReturn(metadata);
+
+        Map<String, @Nullable Object> map = provider.adaptToMap(item);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Map<String, @Nullable Object>> metadataMap = (Map<String, Map<String, @Nullable Object>>) map
+                .get("metadata");
+        assertNotNull(metadataMap);
+        assertEquals("", metadataMap.get("stateDescription").get("value"));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> config = (Map<String, Object>) metadataMap.get("stateDescription").get("config");
+        assertEquals("%.1f °C", config.get("pattern"));
     }
 
     @Test
@@ -119,8 +150,90 @@ class ItemRegistrySourceProviderTest {
     }
 
     @Test
+    void emitsChangeEventsOnMetadataChanges() throws ItemNotFoundException {
+        Item item = mock(Item.class);
+        when(item.getName()).thenReturn("Item1");
+        when(itemRegistry.getItems()).thenReturn(List.of(item));
+        when(itemRegistry.getItem("Item1")).thenReturn(item);
+
+        Metadata oldMetadata = new Metadata(new MetadataKey("unit", "Item1"), "°C", Map.of());
+        Metadata newMetadata = new Metadata(new MetadataKey("unit", "Item1"), "°F", Map.of());
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<RegistryChangeListener<Metadata>> listenerCaptor = ArgumentCaptor
+                .forClass(RegistryChangeListener.class);
+        verify(metadataRegistry).addRegistryChangeListener(listenerCaptor.capture());
+        RegistryChangeListener<Metadata> listener = listenerCaptor.getValue();
+        listener.added(newMetadata);
+        listener.updated(oldMetadata, newMetadata);
+        listener.removed(oldMetadata);
+
+        assertEquals(3, emittedChanges.size());
+        EntityChange added = emittedChanges.get(0);
+        assertEquals("ITEMS", added.source());
+        assertNotNull(added.oldEntity());
+        assertNull(metadataValue(added.oldEntity(), "unit"));
+        assertEquals("°F", metadataValue(added.newEntity(), "unit"));
+
+        EntityChange updated = emittedChanges.get(1);
+        assertEquals("ITEMS", updated.source());
+        assertEquals("°C", metadataValue(updated.oldEntity(), "unit"));
+        assertEquals("°F", metadataValue(updated.newEntity(), "unit"));
+
+        EntityChange removed = emittedChanges.get(2);
+        assertEquals("ITEMS", removed.source());
+        assertEquals("°C", metadataValue(removed.oldEntity(), "unit"));
+        assertNotNull(removed.newEntity());
+        assertNull(metadataValue(removed.newEntity(), "unit"));
+    }
+
+    @Test
+    void metadataChangesForUnrelatedItemsDoNotTriggerRebuild() throws ItemNotFoundException {
+        Item registeredItem = mock(Item.class);
+        when(registeredItem.getName()).thenReturn("Item1");
+        when(itemRegistry.getItems()).thenReturn(List.of(registeredItem));
+        when(itemRegistry.getItem("Item1")).thenReturn(registeredItem);
+        when(itemRegistry.getItem("Item2")).thenThrow(new ItemNotFoundException("Item2"));
+
+        DynamicSourceRegistry dynamicSourceRegistry = new DynamicSourceRegistry(
+                Map.of("ITEMS", Objects.requireNonNull(provider)), 0);
+        Path dependentFile = Path.of("items.yaml");
+        dynamicSourceRegistry.registerDependency(dependentFile, "ITEMS");
+        List<Path> rebuiltFiles = new ArrayList<>();
+        dynamicSourceRegistry.setOnFileRecompileListener(rebuiltFiles::add);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<RegistryChangeListener<Metadata>> listenerCaptor = ArgumentCaptor
+                .forClass(RegistryChangeListener.class);
+        verify(metadataRegistry).addRegistryChangeListener(listenerCaptor.capture());
+        RegistryChangeListener<Metadata> listener = listenerCaptor.getValue();
+
+        listener.added(new Metadata(new MetadataKey("unit", "Item1"), "°C", Map.of()));
+        assertEquals(List.of(dependentFile), rebuiltFiles);
+
+        rebuiltFiles.clear();
+        listener.updated(new Metadata(new MetadataKey("unit", "Item2"), "°C", Map.of()),
+                new Metadata(new MetadataKey("unit", "Item2"), "°F", Map.of()));
+        assertTrue(rebuiltFiles.isEmpty(), "A metadata change for an unregistered item must not rebuild the file");
+
+        dynamicSourceRegistry.clear();
+    }
+
+    @Test
     void unregistersChangeListenerOnDeactivate() {
         provider.deactivate();
         verify(itemRegistry).removeRegistryChangeListener(Objects.requireNonNull(provider));
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<RegistryChangeListener<Metadata>> listenerCaptor = ArgumentCaptor
+                .forClass(RegistryChangeListener.class);
+        verify(metadataRegistry).removeRegistryChangeListener(listenerCaptor.capture());
+    }
+
+    private static @Nullable Object metadataValue(@Nullable Map<String, @Nullable Object> entity, String namespace) {
+        if (entity == null || !(entity.get("metadata") instanceof Map<?, ?> metadataMap)
+                || !(metadataMap.get(namespace) instanceof Map<?, ?> metadataEntry)) {
+            return null;
+        }
+        return metadataEntry.get("value");
     }
 }
