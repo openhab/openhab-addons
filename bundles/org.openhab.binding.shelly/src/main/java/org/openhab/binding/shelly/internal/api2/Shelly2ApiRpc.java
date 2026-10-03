@@ -1592,6 +1592,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 req = buildRequest(method, params); // update RPC message id
                 json = rpcPost(gson.toJson(req));
             } else {
+                // a 429 is retried by handleApiException() after the device's throttle window
                 throw e;
             }
         }
