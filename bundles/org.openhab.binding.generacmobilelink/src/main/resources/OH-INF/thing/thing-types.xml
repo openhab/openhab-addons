@@ -134,7 +134,7 @@
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="batteryVoltage">
 		<item-type>Number:ElectricPotential</item-type>
