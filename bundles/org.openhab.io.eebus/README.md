@@ -47,8 +47,8 @@ metadata - the same shape used by the HomeKit and Alexa add-ons.
 | friendlyName        | identity | no       | `openHAB`             | Human-readable name advertised to pairing partners.                                                                                                                      |
 | deviceType          | identity | no       | `GENERIC`             | SPINE device type reported to pairing partners.                                                                                                                          |
 | entityType          | identity | no       | `CEM`                 | SPINE entity type hosting the LPC/LPP use cases (must be one of CEM, COMPRESSOR, EVSE, HEAT_PUMP_APPLIANCE, INVERTER, SMART_ENERGY_APPLIANCE, SUB_METER_ELECTRICITY). |
-| connectPolicy       | pairing  | no       | `TRUSTED`             | `TRUSTED` (only pre-trusted SKIs), `ALL` (insecure), or `NONE`.                                                                                                          |
-| trustedSkis         | pairing  | no       | -                      | Comma-separated list of remote SKIs to pre-trust. Used when `connectPolicy` is `TRUSTED`.                                                                                |
+| connectPolicy       | pairing  | no       | `TRUSTED`             | Which nodes found via mDNS openHAB connects to: `TRUSTED` (only trusted SKIs), `ALL` (insecure), or `NONE` (wait for the partner to connect). |
+| trustedSkis         | pairing  | no       | -                      | Comma-separated list of remote SKIs to trust.                                                                                                                            |
 
 Changing `connectPolicy` takes effect right away.
 Changing any other parameter restarts the SHIP node.

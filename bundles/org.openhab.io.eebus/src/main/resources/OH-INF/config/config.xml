@@ -95,9 +95,10 @@
 
 		<parameter name="connectPolicy" type="text" groupName="pairing">
 			<label>Connect Policy</label>
-			<description>Which remote SHIP nodes are allowed to connect. TRUSTED only accepts nodes whose SKI
-				is listed below; ALL
-				accepts any node (not recommended); NONE rejects new pairings.</description>
+			<description>Which SHIP nodes found via mDNS openHAB connects to. TRUSTED only connects to nodes whose
+				SKI is listed
+				below, ALL connects to every node found (not recommended), NONE never connects and
+				waits for the partner to connect.</description>
 			<default>TRUSTED</default>
 			<options>
 				<option value="TRUSTED">Trusted SKIs only</option>
@@ -107,9 +108,9 @@
 		</parameter>
 		<parameter name="trustedSkis" type="text" groupName="pairing">
 			<label>Trusted SKIs</label>
-			<description>Comma-separated list of remote SHIP Subject Key Identifiers (SKIs) to pre-trust, e.g.
-				the SKI printed on
-				your CLS gateway. Only used when Connect Policy is "Trusted SKIs only".</description>
+			<description>Comma-separated list of remote SHIP Subject Key Identifiers (SKIs) to trust, e.g. the SKI
+				printed on your
+				CLS gateway.</description>
 		</parameter>
 	</config-description>
 
