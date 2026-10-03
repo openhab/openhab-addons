@@ -107,16 +107,7 @@ public class TedeeLockHandler extends BaseThingHandler {
             try {
                 logger.debug("Sending Tedee action '{}' to lock {}", action, cfg.deviceId);
 
-                switch (action) {
-                    case "LOCK" -> client.lock(cfg.deviceId);
-                    case "UNLOCK" -> client.unlockOrPull(cfg.deviceId);
-                    case "UNLOCK_NO_PULL" -> client.unlockWithoutPull(cfg.deviceId);
-                    case "PULL" -> client.pull(cfg.deviceId);
-                    default -> {
-                        logger.warn("Unsupported Tedee action '{}'", action);
-                        return;
-                    }
-                }
+                executeAction(client, cfg.deviceId, action);
 
                 logger.debug("Tedee action '{}' accepted for lock {}", action, cfg.deviceId);
 
@@ -131,6 +122,16 @@ public class TedeeLockHandler extends BaseThingHandler {
                         e.getMessage());
             }
         });
+    }
+
+    void executeAction(TedeeClient client, int deviceId, String action) throws TedeeApiException {
+        switch (action) {
+            case "LOCK" -> client.lock(deviceId);
+            case "UNLOCK" -> client.unlockOrPull(deviceId);
+            case "UNLOCK_NO_PULL" -> client.unlockWithoutPull(deviceId);
+            case "PULL" -> client.pull(deviceId);
+            default -> logger.warn("Unsupported Tedee action '{}'", action);
+        }
     }
 
     private void refresh() {
