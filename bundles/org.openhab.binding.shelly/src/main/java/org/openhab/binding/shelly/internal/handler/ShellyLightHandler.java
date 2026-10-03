@@ -296,6 +296,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             logger.debug("{}: Switch light {}", thingName, onOffCommand);
             api.setLightParm(lightId, SHELLY_LIGHT_TURN, onOffCommand == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
             col.power = onOffCommand;
+            // the picker derives its switch from the HSB state, so pull the device state right away
+            requestUpdates(1, false);
         } else if (command instanceof IncreaseDecreaseType) {
             if (pickerControlsBrightness(profile, lightId)) {
                 logger.debug("{}: {} brightness by {}", thingName, command, SHELLY_DIM_STEPSIZE);
@@ -426,7 +428,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 setFullColor(colorGroup, col);
 
                 logger.trace("{}: update {}.color picker", thingName, colorGroup);
-                updated |= updateChannel(colorGroup, CHANNEL_COLOR_PICKER, col.toHSB());
+                updated |= updateChannel(colorGroup, CHANNEL_COLOR_PICKER, col.toHSBState());
             }
 
             if (updatesWhiteChannels(profile, lightId)) {

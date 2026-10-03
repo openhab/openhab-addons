@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 
 /**
@@ -82,5 +83,18 @@ public class ShellyColorUtilsTest {
         assertEquals(col.power, copy.power);
         assertEquals(col.mode, copy.mode);
         assertEquals(col.effect, copy.effect);
+    }
+
+    @Test
+    void toHSBStateReportsZeroBrightnessOnlyWhenOff() {
+        ShellyColorUtils col = new ShellyColorUtils();
+        col.setRGBW(255, 0, 0, 0);
+
+        col.power = OnOffType.ON;
+        assertEquals(col.toHSB(), col.toHSBState());
+
+        col.power = OnOffType.OFF;
+        assertEquals(PercentType.ZERO, col.toHSBState().getBrightness());
+        assertEquals(col.toHSB().getHue(), col.toHSBState().getHue());
     }
 }

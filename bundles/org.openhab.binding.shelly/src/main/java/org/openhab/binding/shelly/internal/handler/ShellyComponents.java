@@ -912,17 +912,24 @@ public class ShellyComponents {
                 return false;
             }
             ShellySettingsLight light = orgStatus.lights.get(0);
+            if (!(profile.isDuo && profile.isGen2)) {
+                // live NotifyStatus deltas often carry only "output", not rgb; push power here too since
+                // updateLightMode() skips color-tagged components
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER,
+                        getOnOff(light.ison));
+            }
             if (light.red == null) {
-                return false; // partial NotifyStatus without rgb, nothing to push
+                return updated; // partial NotifyStatus without rgb, nothing more to push
             }
             ShellyColorUtils col = new ShellyColorUtils();
             col.setRGBW(getInteger(light.red), getInteger(light.green), getInteger(light.blue),
                     getInteger(light.white));
+            col.power = getOnOff(light.ison);
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_RED, col.percentRed);
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_GREEN, col.percentGreen);
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_BLUE, col.percentBlue);
             updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_WHITE, col.percentWhite);
-            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER, col.toHSB());
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_COLOR_CONTROL, CHANNEL_COLOR_PICKER, col.toHSBState());
 
         }
         return updated;
