@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.keba.internal.handler;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.keba.internal.KebaBindingConstants;
@@ -35,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = KebaBindingConstants.BINDING_ID)
 @NonNullByDefault
 public class KeContactActions implements ThingActions {
-    private final Logger logger = LoggerFactory.getLogger(KeContactActions.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactActions.class));
     private @Nullable KeContactHandler handler;
 
     @Override
@@ -53,11 +55,12 @@ public class KeContactActions implements ThingActions {
             @ActionInput(name = "text", label = "@text/actionInputTextLabel", description = "@text/actionInputTextDesc") @Nullable String text,
             @ActionInput(name = "durationMin", label = "@text/actionInputDurationMinLabel", description = "@text/actionInputDurationMinDesc") int durationMin,
             @ActionInput(name = "durationMax", label = "@text/actionInputDurationMaxLabel", description = "@text/actionInputDurationMaxDesc") int durationMax) {
-        if (handler == null) {
+        KeContactHandler localHandler = handler;
+        if (localHandler == null) {
             logger.warn("KeContact Action service ThingHandler is null!");
             return;
         }
-        handler.setDisplay(text, durationMin, durationMax);
+        localHandler.setDisplay(text, durationMin, durationMax);
     }
 
     public static void setDisplay(ThingActions actions, @Nullable String text, int durationMin, int durationMax) {
@@ -67,11 +70,12 @@ public class KeContactActions implements ThingActions {
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void setDisplay(
             @ActionInput(name = "text", label = "@text/actionInputTextLabel", description = "@text/actionInputTextDesc") @Nullable String text) {
-        if (handler == null) {
+        KeContactHandler localHandler = handler;
+        if (localHandler == null) {
             logger.warn("KeContact Action service ThingHandler is null!");
             return;
         }
-        handler.setDisplay(text, -1, -1);
+        localHandler.setDisplay(text, -1, -1);
     }
 
     public static void setDisplay(ThingActions actions, @Nullable String text) {

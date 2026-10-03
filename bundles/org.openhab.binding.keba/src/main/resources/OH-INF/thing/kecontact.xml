@@ -25,9 +25,23 @@
 			<channel id="maxpilotcurrentdutycyle" typeId="pilotcurrentdutycyle"/>
 			<channel id="maxsystemcurrent" typeId="maxcurrent"/>
 			<channel id="failsafecurrent" typeId="failsafecurrent"/>
+			<channel id="failsafetimeout" typeId="failsafetimeout"/>
+			<channel id="currtimer" typeId="currtimer"/>
+			<channel id="currtimertimeout" typeId="currtimertimeout"/>
+			<channel id="phaseswitchsource" typeId="phaseswitchsource"/>
+			<channel id="phaseswitchstate" typeId="phaseswitchstate"/>
 			<channel id="output" typeId="x2"/>
 			<channel id="input" typeId="x1"/>
 			<channel id="uptime" typeId="uptime"/>
+			<channel id="backend" typeId="backend"/>
+			<channel id="timequality" typeId="timequality"/>
+			<channel id="bootflag" typeId="bootflag"/>
+			<channel id="dipswitch1" typeId="dipswitch">
+				<label>DIP Switch Block 1</label>
+			</channel>
+			<channel id="dipswitch2" typeId="dipswitch">
+				<label>DIP Switch Block 2</label>
+			</channel>
 			<channel id="I1" typeId="current">
 				<label>Current Phase 1</label>
 			</channel>
@@ -59,7 +73,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -68,9 +82,10 @@
 				<label>Network Address</label>
 				<description>Network address of the wallbox</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false" min="1" unit="s">
+			<parameter name="refreshInterval" type="integer" required="false" min="0" unit="s">
 				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in seconds</description>
+				<description>Refresh interval in seconds; set to 0 to disable cyclic polling while keeping UDP commands such as
+					setDisplay available</description>
 				<default>15</default>
 			</parameter>
 		</config-description>
@@ -218,6 +233,65 @@
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="failsafetimeout" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Failsafe Timeout</label>
+		<description>Communication timeout before the failsafe current is applied</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currtimer" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Delayed Preset Current</label>
+		<description>Current that will replace the preset current once the delayed-current timeout expires, as set by the
+			"currtime" command</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.3f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="currtimertimeout" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Delayed Preset Current Timeout</label>
+		<description>Remaining time before the delayed preset current set by the "currtime" command is applied</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="phaseswitchsource" advanced="true">
+		<item-type>Number</item-type>
+		<label>Phase Switching Source</label>
+		<description>Communication channel allowed to control phase switching, set with the "x2src" command</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="0">No phase toggle source is available</option>
+				<option value="1">Toggle via OCPP</option>
+				<option value="2">Toggle via REST API</option>
+				<option value="3">Toggle via Modbus</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="phaseswitchstate" advanced="true">
+		<item-type>Number</item-type>
+		<label>Phase Switching State</label>
+		<description>Phases currently used by the external phase switch, set with the "x2" command</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="1">Single-phase charging</option>
+				<option value="3">3-phase charging</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="range" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Rel. Current</label>
@@ -346,5 +420,50 @@
 			<tag>Control</tag>
 		</tags>
 		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="backend" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Backend Communication Present</label>
+		<description>Whether backend communication is present</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="timequality" advanced="true">
+		<item-type>Number</item-type>
+		<label>Clock Time Quality</label>
+		<description>Synchronization quality of the wallbox system clock</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">No time quality, clock was never set</option>
+				<option value="1">Clock was set but not synchronized</option>
+				<option value="2">Clock synchronized using an unreliable source</option>
+				<option value="3">Clock synchronized using a reliable source (NTP, OCPP, etc.)</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="bootflag" advanced="true">
+		<item-type>Number</item-type>
+		<label>Boot Flag</label>
+		<description>Raw value reported by report 1 as "setBoot"; not documented in the UDP Programmers Guide V2.05</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="dipswitch" advanced="true">
+		<item-type>String</item-type>
+		<label>DIP Switch Block</label>
+		<description>Raw hexadecimal DIP switch value reported by report 1; not documented in the UDP Programmers Guide
+			V2.05,
+			see the installation manual for the meaning of individual switches</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

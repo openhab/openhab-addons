@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.keba.internal.handler.modbus;
 
+import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * The KEBA Modbus TCP interface only supports reading a single, two-word ({@code UINT32}) register per request, so
  * every readable register is polled independently (see {@link KebaModbusReadRegister}).
  *
- * @author Karel Goderis - Initial contribution
+ * @author MikeTheTux - Initial contribution
  */
 @NonNullByDefault
 public class KeContactModbusHandler extends BaseThingHandler {
@@ -68,8 +70,13 @@ public class KeContactModbusHandler extends BaseThingHandler {
     private static final int MIN_FAST_REFRESH_INTERVAL_SECONDS = 10;
     private static final int MAX_CONSECUTIVE_READ_FAILURES = 3;
     private static final long WRITE_INTERVAL_MILLIS = 5000;
+    private static final String PROPERTY_MODBUS_MODEL = "modbusModel";
+    private static final String MODEL_P30 = "P30";
+    private static final String MODEL_P40 = "P40";
+    private static final List<String> P40_ONLY_CHANNELS = Objects
+            .requireNonNull(List.of(CHANNEL_FAST_CHARGING_STATUS, CHANNEL_ACTIVATE_FAST_CHARGING));
 
-    private final Logger logger = LoggerFactory.getLogger(KeContactModbusHandler.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactModbusHandler.class));
     private final ModbusManager modbusManager;
 
     private KeContactModbusConfiguration config = new KeContactModbusConfiguration();
@@ -77,9 +84,10 @@ public class KeContactModbusHandler extends BaseThingHandler {
     private final List<PollTask> pollTasks = new ArrayList<>();
     private final List<ScheduledFuture<?>> writeTasks = new ArrayList<>();
     private final Object writeLock = new Object();
+    private final Object connectionLock = new Object();
     private final AtomicInteger consecutiveReadFailures = new AtomicInteger();
     private final AtomicInteger connectionGeneration = new AtomicInteger();
-    private long nextWriteNanos;
+    private long lastWriteSubmissionNanos;
     private int slaveId;
 
     public KeContactModbusHandler(Thing thing, ModbusManager modbusManager) {
@@ -117,44 +125,116 @@ public class KeContactModbusHandler extends BaseThingHandler {
         // opening the Modbus TCP connection and registering the polls can involve blocking I/O, so run it in the
         // background instead of blocking the calling thread
         scheduler.execute(() -> {
-            if (generation != connectionGeneration.get()) {
+            if (isStaleGeneration(generation, connectionGeneration.get())) {
                 return;
             }
             ModbusTCPSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint(host, config.port, false);
             EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
             // KEBA recommends at least 0.5s between reads and 5s between writes to the same station
             poolConfiguration.setInterTransactionDelayMillis(500);
-            ModbusCommunicationInterface localComms = comms = modbusManager.newModbusCommunicationInterface(endpoint,
+            ModbusCommunicationInterface localComms = modbusManager.newModbusCommunicationInterface(endpoint,
                     poolConfiguration);
-            if (generation != connectionGeneration.get()) {
-                try {
-                    localComms.close();
-                } catch (Exception e) {
-                    logger.debug("Error closing stale Modbus communication interface: {}", e.getMessage());
+            synchronized (connectionLock) {
+                if (isStaleGeneration(generation, connectionGeneration.get())) {
+                    closeStaleComms(localComms);
+                    return;
                 }
-                return;
-            }
-
-            long initialDelay = 0;
-            for (KebaModbusReadRegister register : KebaModbusReadRegister.values()) {
-                long refreshMillis = (register.isFast() ? config.refreshInterval : config.refreshIntervalSlow) * 1000L;
-                ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
-                        ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, register.getAddress(), READ_REGISTER_LENGTH,
-                        MAX_TRIES);
-                PollTask pollTask = localComms.registerRegularPoll(request, refreshMillis, initialDelay,
-                        result -> handleReadResult(register, result), this::handleReadError);
-                synchronized (pollTasks) {
-                    if (generation == connectionGeneration.get()) {
-                        pollTasks.add(pollTask);
-                    } else {
-                        localComms.unregisterRegularPoll(pollTask);
-                        break;
-                    }
+                comms = localComms;
+                String model = getThing().getProperties().get(PROPERTY_MODBUS_MODEL);
+                if (MODEL_P30.equals(model) || MODEL_P40.equals(model)) {
+                    registerPolls(localComms, generation, MODEL_P40.equals(model));
+                } else {
+                    identifyProduct(localComms, generation);
                 }
-                // stagger the individual polls a bit to avoid bursting the single register-at-a-time interface
-                initialDelay += 200;
             }
         });
+    }
+
+    private void identifyProduct(ModbusCommunicationInterface localComms, int generation) {
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
+                ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, KebaModbusReadRegister.PRODUCT_INFO.getAddress(),
+                READ_REGISTER_LENGTH, MAX_TRIES);
+        localComms.submitOneTimePoll(request, result -> {
+            if (isStaleGeneration(generation, connectionGeneration.get())) {
+                return;
+            }
+            result.getRegisters().ifPresentOrElse(registers -> {
+                ModbusBitUtilities.extractStateFromRegisters(registers, 0, ValueType.UINT32).ifPresentOrElse(value -> {
+                    consecutiveReadFailures.set(0);
+                    if (getThing().getStatus() != ThingStatus.ONLINE) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
+                    long productInfo = value.longValue();
+                    if (isP30Product(productInfo)) {
+                        var thingBuilder = editThing().withProperty(PROPERTY_MODBUS_MODEL, MODEL_P30)
+                                .withProperty(PROPERTY_MODEL, MODEL_P30).withProperty(PROPERTY_PRODUCT_TYPE,
+                                        Objects.requireNonNull(Long.toString(productInfo)));
+                        P40_ONLY_CHANNELS.forEach(
+                                channel -> thingBuilder.withoutChannel(new ChannelUID(getThing().getUID(), channel)));
+                        updateThing(thingBuilder.build());
+                    } else {
+                        boolean isP40 = isP40Product(productInfo);
+                        if (isP40) {
+                            updateProperties(Map.of(PROPERTY_MODBUS_MODEL, MODEL_P40, PROPERTY_MODEL, MODEL_P40,
+                                    PROPERTY_PRODUCT_TYPE, Objects.requireNonNull(Long.toString(productInfo))));
+                        } else {
+                            updateProperties(
+                                    Map.of(PROPERTY_PRODUCT_TYPE, Objects.requireNonNull(Long.toString(productInfo))));
+                        }
+                        registerPolls(localComms, generation, isP40);
+                    }
+                }, () -> registerPolls(localComms, generation, true));
+            }, () -> registerPolls(localComms, generation, true));
+        }, failure -> {
+            if (!isStaleGeneration(generation, connectionGeneration.get())) {
+                handleReadError(KebaModbusReadRegister.PRODUCT_INFO, failure);
+                registerPolls(localComms, generation, true);
+            }
+        });
+    }
+
+    static boolean isP30Product(long productInfo) {
+        return Long.toString(productInfo).startsWith("3");
+    }
+
+    static boolean isP40Product(long productInfo) {
+        return Long.toString(productInfo).startsWith("4");
+    }
+
+    private void registerPolls(ModbusCommunicationInterface localComms, int generation, boolean isP40) {
+        long initialDelay = 0;
+        for (KebaModbusReadRegister register : KebaModbusReadRegister.values()) {
+            if (register.isP40Only() && !isP40) {
+                continue;
+            }
+            long refreshMillis = (register.isFast() ? config.refreshInterval : config.refreshIntervalSlow) * 1000L;
+            ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
+                    ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, register.getAddress(), READ_REGISTER_LENGTH,
+                    MAX_TRIES);
+            PollTask pollTask = localComms.registerRegularPoll(request, refreshMillis, initialDelay,
+                    result -> handleReadResult(register, result), failure -> handleReadError(register, failure));
+            synchronized (pollTasks) {
+                if (!isStaleGeneration(generation, connectionGeneration.get())) {
+                    pollTasks.add(pollTask);
+                } else {
+                    localComms.unregisterRegularPoll(pollTask);
+                    break;
+                }
+            }
+            initialDelay += 200;
+        }
+    }
+
+    private void closeStaleComms(ModbusCommunicationInterface localComms) {
+        try {
+            localComms.close();
+        } catch (Exception e) {
+            logger.debug("Error closing stale Modbus communication interface: {}", e.getMessage());
+        }
+    }
+
+    static boolean isStaleGeneration(int expected, int current) {
+        return expected != current;
     }
 
     @Override
@@ -164,11 +244,17 @@ public class KeContactModbusHandler extends BaseThingHandler {
     }
 
     private void disposeCommunication() {
-        connectionGeneration.incrementAndGet();
+        synchronized (connectionLock) {
+            connectionGeneration.incrementAndGet();
+            disposeCommunicationLocked();
+        }
+    }
+
+    private void disposeCommunicationLocked() {
         synchronized (writeLock) {
             writeTasks.forEach(task -> task.cancel(false));
             writeTasks.clear();
-            nextWriteNanos = 0;
+            lastWriteSubmissionNanos = 0;
         }
         ModbusCommunicationInterface localComms = comms;
         synchronized (pollTasks) {
@@ -196,12 +282,39 @@ public class KeContactModbusHandler extends BaseThingHandler {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
-            ModbusBitUtilities.extractStateFromRegisters(registers, 0, ValueType.UINT32)
-                    .ifPresent(value -> updateState(register.getChannelId(), toState(register, value)));
+            ModbusBitUtilities.extractStateFromRegisters(registers, 0, ValueType.UINT32).ifPresent(value -> {
+                if (register == KebaModbusReadRegister.SERIAL) {
+                    updateProperties(
+                            Map.of(PROPERTY_SERIAL, Objects.requireNonNull(String.valueOf(value.longValue()))));
+                } else {
+                    String propertyName = propertyName(register);
+                    if (propertyName != null) {
+                        updateProperties(
+                                Map.of(propertyName, Objects.requireNonNull(toState(register, value).toString())));
+                    } else {
+                        updateState(register.getChannelId(), toState(register, value));
+                    }
+                }
+            });
         });
     }
 
-    private void handleReadError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+    static @Nullable String propertyName(KebaModbusReadRegister register) {
+        return switch (register) {
+            case PRODUCT_INFO -> PROPERTY_PRODUCT_TYPE;
+            case SOFTWARE_VERSION -> PROPERTY_FIRMWARE;
+            case HARDWARE_REVISION_DEVICE, HARDWARE_REVISION_KC_MS10 -> register.getChannelId();
+            default -> null;
+        };
+    }
+
+    private void handleReadError(KebaModbusReadRegister register,
+            AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
+        if (register.isOptional()) {
+            logger.debug("Optional Modbus register {} is unavailable: {}", register.getAddress(),
+                    getFailureMessage(failure));
+            return;
+        }
         if (consecutiveReadFailures.incrementAndGet() >= MAX_CONSECUTIVE_READ_FAILURES) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-modbus-read [\"" + getFailureMessage(failure) + "\"]");
@@ -210,9 +323,6 @@ public class KeContactModbusHandler extends BaseThingHandler {
 
     private static String getFailureMessage(AsyncModbusFailure<?> failure) {
         Throwable cause = failure.getCause();
-        if (cause == null) {
-            return "Unknown Modbus error";
-        }
         String message = cause.getMessage();
         return message != null ? message : "Unknown Modbus error";
     }
@@ -264,23 +374,52 @@ public class KeContactModbusHandler extends BaseThingHandler {
     private void scheduleWrite(ModbusCommunicationInterface localComms, ModbusWriteRegisterRequestBlueprint request,
             KebaModbusWriteRegister register) {
         synchronized (writeLock) {
-            long now = System.nanoTime();
-            long scheduledAt = Math.max(now, nextWriteNanos);
-            nextWriteNanos = scheduledAt + TimeUnit.MILLISECONDS.toNanos(WRITE_INTERVAL_MILLIS);
-            long delay = TimeUnit.NANOSECONDS.toMillis(scheduledAt - now);
-            ScheduledFuture<?> task = scheduler.schedule(() -> {
-                if (localComms.equals(comms)) {
-                    localComms.submitOneTimeWrite(request, result -> {
-                        logger.debug("Modbus write to register {} successful", register.getAddress());
-                        if (register == KebaModbusWriteRegister.UNLOCK_PLUG) {
-                            updateState(register.getChannelId(), OnOffType.OFF);
-                        }
-                    }, failure -> logger.warn("Modbus write to register {} failed: {}", register.getAddress(),
-                            getFailureMessage(failure)));
-                }
-            }, delay, TimeUnit.MILLISECONDS);
-            writeTasks.add(task);
+            writeTasks.removeIf(ScheduledFuture::isDone);
+            scheduleWriteTask(() -> submitWriteWhenAllowed(localComms, request, register), 1);
         }
+    }
+
+    private void submitWriteWhenAllowed(ModbusCommunicationInterface localComms,
+            ModbusWriteRegisterRequestBlueprint request, KebaModbusWriteRegister register) {
+        synchronized (writeLock) {
+            if (!localComms.equals(comms)) {
+                return;
+            }
+            long now = System.nanoTime();
+            long elapsed = now - lastWriteSubmissionNanos;
+            long intervalNanos = TimeUnit.MILLISECONDS.toNanos(WRITE_INTERVAL_MILLIS);
+            if (lastWriteSubmissionNanos != 0 && !isWriteIntervalElapsed(elapsed, intervalNanos)) {
+                scheduleWriteTask(() -> submitWriteWhenAllowed(localComms, request, register),
+                        TimeUnit.NANOSECONDS.toMillis(intervalNanos - elapsed) + 1);
+                return;
+            }
+            lastWriteSubmissionNanos = now;
+            localComms.submitOneTimeWrite(request, result -> {
+                logger.debug("Modbus write to register {} successful", register.getAddress());
+                if (register.getKind() == KebaModbusWriteRegister.Kind.SWITCH_TRIGGER) {
+                    updateState(register.getChannelId(), OnOffType.OFF);
+                }
+            }, failure -> logger.warn("Modbus write to register {} failed: {}", register.getAddress(),
+                    getFailureMessage(failure)));
+        }
+    }
+
+    static boolean isWriteIntervalElapsed(long elapsedNanos, long intervalNanos) {
+        return elapsedNanos >= intervalNanos;
+    }
+
+    private void scheduleWriteTask(Runnable action, long delayMillis) {
+        final ScheduledFuture<?>[] taskReference = new ScheduledFuture<?>[1];
+        taskReference[0] = scheduler.schedule(() -> {
+            try {
+                action.run();
+            } finally {
+                synchronized (writeLock) {
+                    writeTasks.remove(taskReference[0]);
+                }
+            }
+        }, Math.max(1, delayMillis), TimeUnit.MILLISECONDS);
+        writeTasks.add(taskReference[0]);
     }
 
     private void refreshChannel(ModbusCommunicationInterface comms, String channelId) {
@@ -289,7 +428,8 @@ public class KeContactModbusHandler extends BaseThingHandler {
                 ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                         ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, register.getAddress(), READ_REGISTER_LENGTH,
                         MAX_TRIES);
-                comms.submitOneTimePoll(request, result -> handleReadResult(register, result), this::handleReadError);
+                comms.submitOneTimePoll(request, result -> handleReadResult(register, result),
+                        failure -> handleReadError(register, failure));
                 return;
             }
         }
@@ -299,7 +439,7 @@ public class KeContactModbusHandler extends BaseThingHandler {
         return switch (register.getKind()) {
             case SWITCH -> command == OnOffType.ON ? toRawValue(register, 1)
                     : command == OnOffType.OFF ? toRawValue(register, 0) : null;
-            case SWITCH_TRIGGER -> command == OnOffType.ON ? toRawValue(register, 0) : null;
+            case SWITCH_TRIGGER -> command == OnOffType.ON ? toRawValue(register, register.getMaxRawValue()) : null;
             case NUMBER -> command instanceof DecimalType decimal ? toRawValue(register, decimal.longValue()) : null;
             case CURRENT_MA -> {
                 if (command instanceof QuantityType<?> quantity) {

@@ -16,16 +16,22 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.core.thing.Thing;
 
+/**
+ * Tests for the legacy UDP handler.
+ *
+ * @author MikeTheTux - Initial contribution
+ */
 class KeContactHandlerTest {
 
     @Test
     void ignoresShortProductValuesWithoutCrashingPollingParsing() {
         KeContactHandler handler = new KeContactHandler(mock(Thing.class), mock(KeContactTransceiver.class));
-        ByteBuffer response = ByteBuffer.wrap("{\"Product\":\"P30\"}".getBytes());
+        ByteBuffer response = Objects.requireNonNull(ByteBuffer.wrap("{\"Product\":\"P30\"}".getBytes()));
 
         assertDoesNotThrow(() -> handler.onData(response));
     }
@@ -33,7 +39,8 @@ class KeContactHandlerTest {
     @Test
     void ignoresUnknownProductSeriesWithoutCrashingPollingParsing() {
         KeContactHandler handler = new KeContactHandler(mock(Thing.class), mock(KeContactTransceiver.class));
-        ByteBuffer response = ByteBuffer.wrap("{\"Product\":\"KC-P30-123456Z-XXX\"}".getBytes());
+        ByteBuffer response = Objects
+                .requireNonNull(ByteBuffer.wrap("{\"Product\":\"KC-P30-123456Z-XXX\"}".getBytes()));
 
         assertDoesNotThrow(() -> handler.onData(response));
     }

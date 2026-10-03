@@ -10,23 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.keba.internal.handler.modbus;
+package org.openhab.binding.keba.internal.handler.rest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link KeContactModbusConfiguration} class contains fields mapping thing configuration parameters of the
- * {@code kecontact-modbus} Thing type.
+ * Configuration for the KEBA REST Thing.
  *
  * @author MikeTheTux - Initial contribution
  */
 @NonNullByDefault
-public class KeContactModbusConfiguration {
+public class KeContactRestConfiguration {
 
-    public @Nullable String ipAddress;
-    public int port = 502;
-    public int unitId = 255;
-    public int refreshInterval = 12;
-    public int refreshIntervalSlow = 60;
+    public String baseUrl = "https://";
+    public String username = "admin";
+    public @Nullable String password;
+    public @Nullable String serialNumber;
+    public int refreshInterval = 10;
+    public boolean verifyCertificate;
 }

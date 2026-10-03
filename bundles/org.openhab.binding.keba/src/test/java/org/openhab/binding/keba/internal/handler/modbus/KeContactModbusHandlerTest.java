@@ -13,7 +13,9 @@
 package org.openhab.binding.keba.internal.handler.modbus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
@@ -22,6 +24,11 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 
+/**
+ * Tests for Modbus conversion and command encoding.
+ *
+ * @author MikeTheTux - Initial contribution
+ */
 class KeContactModbusHandlerTest {
 
     @Test
@@ -34,6 +41,11 @@ class KeContactModbusHandlerTest {
     void convertsUnlockTriggerAndRejectsOff() {
         assertEquals(0, KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.UNLOCK_PLUG, OnOffType.ON));
         assertNull(KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.UNLOCK_PLUG, OnOffType.OFF));
+        assertEquals(1, KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.FAILSAFE_PERSIST, OnOffType.ON));
+        assertNull(KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.FAILSAFE_PERSIST, OnOffType.OFF));
+        assertEquals(1,
+                KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.ACTIVATE_FAST_CHARGING, OnOffType.ON));
+        assertNull(KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.ACTIVATE_FAST_CHARGING, OnOffType.OFF));
     }
 
     @Test
@@ -108,5 +120,39 @@ class KeContactModbusHandlerTest {
                 KeContactModbusHandler.toState(KebaModbusReadRegister.RFID_TAG, new DecimalType(12345)));
         assertEquals(new DecimalType(12345),
                 KeContactModbusHandler.toState(KebaModbusReadRegister.STATE, new DecimalType(12345)));
+        assertEquals(new DecimalType(304111),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.PRODUCT_INFO, new DecimalType(304111)));
+        assertEquals(new StringType("030A0D00"),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.SOFTWARE_VERSION, new DecimalType(50990336)));
+        assertEquals(new DecimalType(4),
+                KeContactModbusHandler.toState(KebaModbusReadRegister.FAST_CHARGING_STATUS, new DecimalType(4)));
+    }
+
+    @Test
+    void registersP30AndP40ModelSpecificAddresses() {
+        assertEquals(1016, KebaModbusReadRegister.PRODUCT_INFO.getAddress());
+        assertEquals(1018, KebaModbusReadRegister.SOFTWARE_VERSION.getAddress());
+        assertEquals(1200, KebaModbusReadRegister.FAST_CHARGING_STATUS.getAddress());
+        assertEquals(1700, KebaModbusReadRegister.HARDWARE_REVISION_DEVICE.getAddress());
+        assertEquals(1702, KebaModbusReadRegister.HARDWARE_REVISION_KC_MS10.getAddress());
+        assertEquals("hardwareRevisionDevice",
+                KeContactModbusHandler.propertyName(KebaModbusReadRegister.HARDWARE_REVISION_DEVICE));
+        assertEquals("hardwareRevisionKcMs10",
+                KeContactModbusHandler.propertyName(KebaModbusReadRegister.HARDWARE_REVISION_KC_MS10));
+        assertTrue(KebaModbusReadRegister.FAST_CHARGING_STATUS.isOptional());
+        assertTrue(KebaModbusReadRegister.HARDWARE_REVISION_DEVICE.isOptional());
+        assertTrue(KebaModbusReadRegister.HARDWARE_REVISION_KC_MS10.isOptional());
+        assertEquals(5020, KebaModbusWriteRegister.FAILSAFE_PERSIST.getAddress());
+        assertEquals(5200, KebaModbusWriteRegister.ACTIVATE_FAST_CHARGING.getAddress());
+    }
+
+    @Test
+    void identifiesModelFromProductFamilyCode() {
+        assertTrue(KeContactModbusHandler.isP30Product(304111));
+        assertFalse(KeContactModbusHandler.isP40Product(304111));
+        assertTrue(KeContactModbusHandler.isP40Product(4212311));
+        assertFalse(KeContactModbusHandler.isP30Product(4212311));
+        assertFalse(KeContactModbusHandler.isP30Product(123456));
+        assertFalse(KeContactModbusHandler.isP40Product(123456));
     }
 }

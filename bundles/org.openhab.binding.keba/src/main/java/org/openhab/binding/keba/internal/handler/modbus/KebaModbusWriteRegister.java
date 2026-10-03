@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link KebaModbusWriteRegister} enumerates the writable ({@code UINT16}) holding registers of the KEBA
  * KeContact P30/P40 Modbus TCP interface that are exposed as commandable channels by this binding.
  *
- * @author Karel Goderis - Initial contribution
+ * @author MikeTheTux - Initial contribution
  */
 @NonNullByDefault
 public enum KebaModbusWriteRegister {
@@ -32,7 +32,9 @@ public enum KebaModbusWriteRegister {
     SET_PHASE_SWITCH_SOURCE(5050, CHANNEL_PHASE_SWITCH_SOURCE, Kind.NUMBER, 4),
     TRIGGER_PHASE_SWITCH(5052, CHANNEL_TRIGGER_PHASE_SWITCH, Kind.NUMBER, 1),
     SET_FAILSAFE_CURRENT(5016, CHANNEL_FAILSAFE_CURRENT_SETTING, Kind.CURRENT_MA, 63000),
-    SET_FAILSAFE_TIMEOUT(5018, CHANNEL_FAILSAFE_TIMEOUT_SETTING, Kind.TIME_S, 65535);
+    SET_FAILSAFE_TIMEOUT(5018, CHANNEL_FAILSAFE_TIMEOUT_SETTING, Kind.TIME_S, 65535),
+    FAILSAFE_PERSIST(5020, CHANNEL_FAILSAFE_PERSIST, Kind.SWITCH_TRIGGER, 1),
+    ACTIVATE_FAST_CHARGING(5200, CHANNEL_ACTIVATE_FAST_CHARGING, Kind.SWITCH_TRIGGER, 1);
 
     /**
      * How a {@link org.openhab.core.types.Command} sent to the channel has to be converted into a raw
@@ -49,7 +51,7 @@ public enum KebaModbusWriteRegister {
         TIME_S,
         /** {@code Switch} command, ON writes 1 and OFF writes 0. */
         SWITCH,
-        /** {@code Switch} command, ON writes the fixed trigger value 0; OFF is ignored. */
+        /** {@code Switch} command, ON writes the fixed trigger value; OFF is ignored. */
         SWITCH_TRIGGER
     }
 

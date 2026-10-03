@@ -14,7 +14,10 @@ package org.openhab.binding.keba.internal;
 
 import static org.openhab.binding.keba.internal.KebaBindingConstants.THING_TYPE_KECONTACTP20;
 import static org.openhab.binding.keba.internal.KebaBindingConstants.THING_TYPE_KECONTACT_MODBUS;
+import static org.openhab.binding.keba.internal.KebaBindingConstants.THING_TYPE_KECONTACT_REST;
 
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -22,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.keba.internal.handler.KeContactHandler;
 import org.openhab.binding.keba.internal.handler.KeContactTransceiver;
 import org.openhab.binding.keba.internal.handler.modbus.KeContactModbusHandler;
+import org.openhab.binding.keba.internal.handler.rest.KeContactRestHandler;
 import org.openhab.core.io.transport.modbus.ModbusManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -42,8 +46,13 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class KebaHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_KECONTACTP20,
-            THING_TYPE_KECONTACT_MODBUS);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
+
+    static {
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_KECONTACTP20);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_KECONTACT_MODBUS);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_KECONTACT_REST);
+    }
 
     private final KeContactTransceiver transceiver = new KeContactTransceiver();
 
@@ -61,7 +70,9 @@ public class KebaHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_KECONTACTP20)) {
             return new KeContactHandler(thing, transceiver);
         } else if (thingTypeUID.equals(THING_TYPE_KECONTACT_MODBUS)) {
-            return new KeContactModbusHandler(thing, modbusManager);
+            return new KeContactModbusHandler(thing, Objects.requireNonNull(modbusManager));
+        } else if (thingTypeUID.equals(THING_TYPE_KECONTACT_REST)) {
+            return new KeContactRestHandler(thing);
         }
 
         return null;

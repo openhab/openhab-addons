@@ -20,17 +20,13 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,7 +52,6 @@ import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -82,36 +77,26 @@ public class KeContactHandler extends BaseThingHandler {
     private static final String CACHE_REPORT_100 = "REPORT_100";
     public static final int SOCKET_TIME_OUT_MS = 3000;
     public static final int SOCKET_CHECK_PORT_NUMBER = 80;
-    private static final int MAX_CONSECUTIVE_COMMUNICATION_FAILURES = 3;
 
-    private final Logger logger = LoggerFactory.getLogger(KeContactHandler.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactHandler.class));
 
     private final KeContactTransceiver transceiver;
 
     private @Nullable ScheduledFuture<?> pollingJob;
-    private final List<ScheduledFuture<?>> reportTasks = Collections.synchronizedList(new ArrayList<>());
     private @Nullable ExpiringCacheMap<String, ByteBuffer> cache;
 
-    private String ipAddress = "";
-    private int refreshInterval = POLLING_REFRESH_INTERVAL_DEFAULT;
-    private volatile int maxPresetCurrent = 0;
-    private volatile int maxSystemCurrent = 63000;
+    private int maxPresetCurrent = 0;
+    private int maxSystemCurrent = 63000;
     private @Nullable KebaType type;
     private @Nullable KebaSeries series;
-    private volatile int lastState = -1; // trigger a report100 at startup
-    private final AtomicBoolean isReport100needed = new AtomicBoolean(true);
-    private final AtomicInteger consecutiveCommunicationFailures = new AtomicInteger();
+    private int lastState = -1; // trigger a report100 at startup
+    private boolean isReport100needed = true;
+    private String ipAddress = "";
+    private int refreshInterval = POLLING_REFRESH_INTERVAL_DEFAULT;
 
     public KeContactHandler(Thing thing, KeContactTransceiver transceiver) {
         super(thing);
         this.transceiver = transceiver;
-    }
-
-    @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        super.handleConfigurationUpdate(configurationParameters);
-        dispose();
-        initialize();
     }
 
     @Override
@@ -120,18 +105,13 @@ public class KeContactHandler extends BaseThingHandler {
         String configuredIpAddress = configuration.ipAddress;
         ipAddress = configuredIpAddress != null ? configuredIpAddress : "";
         refreshInterval = configuration.refreshInterval;
-
-        // the reachability check and UDP registration involve blocking I/O, so run them in the background instead
-        // of blocking the calling thread
-        scheduler.execute(() -> {
-            try {
-                if (isKebaReachable()) {
-                    transceiver.registerHandler(this);
-
+        try {
+            if (isKebaReachable()) {
+                transceiver.registerHandler(this);
+                if (refreshInterval > 0) {
                     ExpiringCacheMap<String, ByteBuffer> localCache = new ExpiringCacheMap<>(
-                            Math.max(refreshInterval - 5, 0) * 1000);
+                            Math.max(refreshInterval - 5, 1) * 1000);
                     cache = localCache;
-
                     localCache.put(CACHE_REPORT_1, () -> transceiver.send("report 1", getHandler()));
                     localCache.put(CACHE_REPORT_2, () -> transceiver.send("report 2", getHandler()));
                     localCache.put(CACHE_REPORT_3, () -> transceiver.send("report 3", getHandler()));
@@ -143,30 +123,36 @@ public class KeContactHandler extends BaseThingHandler {
                                 TimeUnit.SECONDS);
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.config-error-address-port");
+                    ByteBuffer response = transceiver.send("report 1", this);
+                    if (response == null) {
+                        logger.debug("Missing response from Keba station for one-time identification");
+                    } else {
+                        onData(response);
+                    }
                 }
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.comm-error-init [\"" + e.getMessage() + "\"]");
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-address-port");
             }
-        });
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-init [\"" + String.valueOf(e.getMessage()) + "\"]");
+        }
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(KeContactActions.class);
+        Collection<Class<? extends ThingHandlerService>> services = new ArrayList<>();
+        services.add(KeContactActions.class);
+        return services;
     }
 
     private boolean isKebaReachable() throws IOException {
         boolean isReachable = false;
         SocketAddress sockAddr = new InetSocketAddress(getIPAddress(), SOCKET_CHECK_PORT_NUMBER);
-        Socket socket = new Socket();
-        try {
+        try (Socket socket = new Socket()) {
             socket.connect(sockAddr, SOCKET_TIME_OUT_MS);
             isReachable = true;
-        } finally {
-            socket.close();
         }
         logger.debug("isKebaReachable() returns {}", isReachable);
         return isReachable;
@@ -175,16 +161,15 @@ public class KeContactHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         ScheduledFuture<?> localPollingJob = pollingJob;
-        if (localPollingJob != null && !localPollingJob.isCancelled()) {
+        if (localPollingJob != null) {
             localPollingJob.cancel(true);
-            pollingJob = null;
-        }
-        synchronized (reportTasks) {
-            reportTasks.forEach(task -> task.cancel(true));
-            reportTasks.clear();
+            if (localPollingJob.equals(pollingJob)) {
+                pollingJob = null;
+            }
         }
 
         transceiver.unRegisterHandler(this);
+        super.dispose();
     }
 
     public String getIPAddress() {
@@ -199,8 +184,9 @@ public class KeContactHandler extends BaseThingHandler {
         return this;
     }
 
-    void updateStatusFromTransceiver(ThingStatus status, ThingStatusDetail statusDetail, String description) {
-        updateStatus(status, statusDetail, description);
+    @Override
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
     }
 
     private void pollingRunnable() {
@@ -209,18 +195,48 @@ public class KeContactHandler extends BaseThingHandler {
             long stamp = System.currentTimeMillis();
             if (!isKebaReachable()) {
                 logger.debug("isKebaReachable() timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
-                markCommunicationFailure(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-timeout");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-timeout");
             } else {
                 ExpiringCacheMap<String, ByteBuffer> localCache = cache;
                 if (localCache == null) {
                     return;
                 }
+                ByteBuffer response = localCache.get(CACHE_REPORT_1);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 1'");
+                } else {
+                    onData(response);
+                }
 
-                processReport(localCache, CACHE_REPORT_1);
-                scheduleReport(localCache, CACHE_REPORT_2, REPORT_INTERVAL);
-                scheduleReport(localCache, CACHE_REPORT_3, REPORT_INTERVAL * 2L);
-                if (isReport100needed.getAndSet(false)) {
-                    scheduleReport(localCache, CACHE_REPORT_100, REPORT_INTERVAL * 3L);
+                Thread.sleep(REPORT_INTERVAL);
+
+                response = localCache.get(CACHE_REPORT_2);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 2'");
+                } else {
+                    onData(response);
+                }
+
+                Thread.sleep(REPORT_INTERVAL);
+
+                response = localCache.get(CACHE_REPORT_3);
+                if (response == null) {
+                    logger.debug("Missing response from Keba station for 'report 3'");
+                } else {
+                    onData(response);
+                }
+
+                if (isReport100needed) {
+                    Thread.sleep(REPORT_INTERVAL);
+
+                    response = localCache.get(CACHE_REPORT_100);
+                    if (response == null) {
+                        logger.debug("Missing response from Keba station for 'report 100'");
+                    } else {
+                        onData(response);
+                    }
+                    isReport100needed = false;
                 }
             }
         } catch (InterruptedIOException e) {
@@ -229,45 +245,20 @@ public class KeContactHandler extends BaseThingHandler {
         } catch (IOException e) {
             logger.debug("An error occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
                     e.getMessage(), e);
-            markCommunicationFailure(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-polling");
-        }
-    }
-
-    private void markCommunicationFailure(ThingStatusDetail detail, String description) {
-        if (consecutiveCommunicationFailures.incrementAndGet() >= MAX_CONSECUTIVE_COMMUNICATION_FAILURES) {
-            updateStatus(ThingStatus.OFFLINE, detail, description);
-        }
-    }
-
-    private void markCommunicationSuccess() {
-        consecutiveCommunicationFailures.set(0);
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    private void scheduleReport(ExpiringCacheMap<String, ByteBuffer> localCache, String report, long delayMillis) {
-        ScheduledFuture<?> task = scheduler.schedule(() -> processReport(localCache, report), delayMillis,
-                TimeUnit.MILLISECONDS);
-        synchronized (reportTasks) {
-            reportTasks.removeIf(ScheduledFuture::isDone);
-            reportTasks.add(task);
-        }
-    }
-
-    private void processReport(ExpiringCacheMap<String, ByteBuffer> localCache, String report) {
-        ByteBuffer response = localCache.get(report);
-        if (response == null) {
-            logger.debug("Missing response from Keba station for '{}'", report);
-        } else {
-            onData(response);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-polling");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
         }
     }
 
     protected void onData(ByteBuffer byteBuffer) {
-        markCommunicationSuccess();
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
 
-        String response = new String(byteBuffer.array(), 0, byteBuffer.limit());
+        String response = new String(byteBuffer.array(), 0, byteBuffer.limit(), StandardCharsets.US_ASCII);
         response = Objects.requireNonNull(StringUtils.chomp(response));
 
         if (response.contains("TCH-OK")) {
@@ -278,11 +269,11 @@ public class KeContactHandler extends BaseThingHandler {
         try {
             JsonObject readObject = JsonParser.parseString(response).getAsJsonObject();
 
-            for (Entry<String, JsonElement> entry : readObject.entrySet()) {
+            for (var entry : readObject.entrySet()) {
                 switch (entry.getKey()) {
                     case "Product": {
                         Map<String, String> properties = editProperties();
-                        String product = entry.getValue().getAsString().trim();
+                        String product = Objects.requireNonNull(entry.getValue().getAsString().trim());
                         properties.put(PROPERTY_MODEL, product);
                         updateProperties(properties);
                         if (product.contains("P20")) {
@@ -303,14 +294,55 @@ public class KeContactHandler extends BaseThingHandler {
                     }
                     case "Serial": {
                         Map<String, String> properties = editProperties();
-                        properties.put(PROPERTY_SERIAL, entry.getValue().getAsString());
+                        properties.put(PROPERTY_SERIAL, Objects.requireNonNull(entry.getValue().getAsString()));
                         updateProperties(properties);
                         break;
                     }
                     case "Firmware": {
                         Map<String, String> properties = editProperties();
-                        properties.put(PROPERTY_FIRMWARE, entry.getValue().getAsString());
+                        properties.put(PROPERTY_FIRMWARE, Objects.requireNonNull(entry.getValue().getAsString()));
                         updateProperties(properties);
+                        break;
+                    }
+                    case "COM-module": {
+                        Map<String, String> properties = editProperties();
+                        properties.put("communicationModulePresent",
+                                Objects.requireNonNull(Boolean.toString(entry.getValue().getAsInt() == 1)));
+                        updateProperties(properties);
+                        break;
+                    }
+                    case "Backend": {
+                        updateState(CHANNEL_BACKEND, OnOffType.from(entry.getValue().getAsInt() == 1));
+                        break;
+                    }
+                    case "timeQ": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_TIME_QUALITY, newState);
+                        break;
+                    }
+                    case "setBoot": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_BOOT_FLAG, newState);
+                        break;
+                    }
+                    case "DIP-Sw1": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_DIP_SWITCH_1, newState);
+                        break;
+                    }
+                    case "DIP-Sw2": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_DIP_SWITCH_2, newState);
+                        break;
+                    }
+                    case "Error1": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_ERROR_1, newState);
+                        break;
+                    }
+                    case "Error2": {
+                        State newState = new StringType(entry.getValue().getAsString().trim());
+                        updateState(CHANNEL_ERROR_2, newState);
                         break;
                     }
                     case "Plug": {
@@ -355,7 +387,7 @@ public class KeContactHandler extends BaseThingHandler {
                         updateState(CHANNEL_STATE, newState);
                         if (lastState != state) {
                             // the state is different from the last one, so we will trigger a report100
-                            isReport100needed.set(true);
+                            isReport100needed = true;
                             lastState = state;
                         }
                         break;
@@ -403,6 +435,24 @@ public class KeContactHandler extends BaseThingHandler {
                         updateState(CHANNEL_FAILSAFE_CURRENT, newState);
                         break;
                     }
+                    case "Tmo FS": {
+                        long state = entry.getValue().getAsLong();
+                        State newState = new QuantityType<>(state, Units.SECOND);
+                        updateState(CHANNEL_FAILSAFE_TIMEOUT, newState);
+                        break;
+                    }
+                    case "Curr timer": {
+                        int state = entry.getValue().getAsInt();
+                        State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
+                        updateState(CHANNEL_CURR_TIMER, newState);
+                        break;
+                    }
+                    case "Tmo CT": {
+                        long state = entry.getValue().getAsLong();
+                        State newState = new QuantityType<>(state, Units.SECOND);
+                        updateState(CHANNEL_CURR_TIMER_TIMEOUT, newState);
+                        break;
+                    }
                     case "Max curr": {
                         int state = entry.getValue().getAsInt();
                         maxPresetCurrent = state;
@@ -448,6 +498,16 @@ public class KeContactHandler extends BaseThingHandler {
                         long state = entry.getValue().getAsLong();
                         State newState = new QuantityType<>(state, Units.SECOND);
                         updateState(CHANNEL_UPTIME, newState);
+                        break;
+                    }
+                    case "X2 phaseSwitch source": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_PHASE_SWITCH_SOURCE, newState);
+                        break;
+                    }
+                    case "X2 phaseSwitch": {
+                        State newState = new DecimalType(entry.getValue().getAsInt());
+                        updateState(CHANNEL_PHASE_SWITCH_STATE, newState);
                         break;
                     }
                     case "U1": {
@@ -635,6 +695,19 @@ public class KeContactHandler extends BaseThingHandler {
                         // cmd must contain ID + CLASS (works only if the RFID TAG is in the whitelist of the Keba
                         // station)
                         transceiver.send("start " + cmd, this);
+                    }
+                    break;
+                }
+                case CHANNEL_PHASE_SWITCH_SOURCE: {
+                    if (command instanceof DecimalType decimalCommand) {
+                        transceiver.send("x2src " + decimalCommand.intValue(), this);
+                    }
+                    break;
+                }
+                case CHANNEL_PHASE_SWITCH_STATE: {
+                    if (command instanceof DecimalType decimalCommand) {
+                        // the wallbox reports/expects phase counts (1 or 3), but the "x2" command takes 0 or 1
+                        transceiver.send("x2 " + (decimalCommand.intValue() >= 3 ? 1 : 0), this);
                     }
                     break;
                 }

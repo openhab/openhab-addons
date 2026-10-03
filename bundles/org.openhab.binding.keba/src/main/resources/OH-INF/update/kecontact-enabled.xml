@@ -13,6 +13,43 @@
 				<type>keba:enableduser</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="failsafetimeout">
+				<type>keba:failsafetimeout</type>
+			</add-channel>
+			<add-channel id="currtimer">
+				<type>keba:currtimer</type>
+			</add-channel>
+			<add-channel id="currtimertimeout">
+				<type>keba:currtimertimeout</type>
+			</add-channel>
+			<add-channel id="phaseswitchsource">
+				<type>keba:phaseswitchsource</type>
+			</add-channel>
+			<add-channel id="phaseswitchstate">
+				<type>keba:phaseswitchstate</type>
+			</add-channel>
+			<add-channel id="commodule">
+				<type>keba:commodule</type>
+			</add-channel>
+			<add-channel id="backend">
+				<type>keba:backend</type>
+			</add-channel>
+			<add-channel id="timequality">
+				<type>keba:timequality</type>
+			</add-channel>
+			<add-channel id="bootflag">
+				<type>keba:bootflag</type>
+			</add-channel>
+			<add-channel id="dipswitch1">
+				<type>keba:dipswitch</type>
+				<label>DIP Switch Block 1</label>
+			</add-channel>
+			<add-channel id="dipswitch2">
+				<type>keba:dipswitch</type>
+				<label>DIP Switch Block 2</label>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

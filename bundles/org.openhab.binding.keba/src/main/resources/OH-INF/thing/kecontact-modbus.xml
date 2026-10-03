@@ -21,7 +21,6 @@
 			<channel id="I3" typeId="modbus-current">
 				<label>Current Phase 3</label>
 			</channel>
-			<channel id="serial" typeId="modbus-serial"/>
 			<channel id="power" typeId="modbus-power"/>
 			<channel id="totalconsumption" typeId="modbus-totalenergy"/>
 			<channel id="U1" typeId="modbus-voltage">
@@ -36,6 +35,7 @@
 			<channel id="powerfactor" typeId="modbus-powerfactor"/>
 			<channel id="maxchargingcurrent" typeId="modbus-maxchargingcurrent"/>
 			<channel id="maxsupportedcurrent" typeId="modbus-maxsupportedcurrent"/>
+			<channel id="fastchargingstatus" typeId="modbus-fastchargingstatus"/>
 			<channel id="sessionrfidtag" typeId="modbus-rfidtag"/>
 			<channel id="sessionconsumption" typeId="modbus-sessionenergy"/>
 			<channel id="phaseswitchsource" typeId="modbus-phaseswitchsource"/>
@@ -47,11 +47,15 @@
 			<channel id="unlockplug" typeId="modbus-unlockplug"/>
 			<channel id="enableduser" typeId="modbus-enableduser"/>
 			<channel id="triggerphaseswitch" typeId="modbus-triggerphaseswitch"/>
+			<channel id="failsafepersist" typeId="modbus-register-trigger">
+				<label>Persist Failsafe Settings</label>
+				<description>Send ON to save the active failsafe settings permanently on a P30 wallbox</description>
+			</channel>
+			<channel id="activatefastcharging" typeId="modbus-register-trigger">
+				<label>Activate Fast Charging</label>
+				<description>Send ON to activate fast charging on a P40 wallbox</description>
+			</channel>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -128,19 +132,13 @@
 	</channel-type>
 	<channel-type id="modbus-current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Current</label>
-		<description>Current</description>
+		<label>Phase Current</label>
+		<description>Measured charging current on this phase</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Current</tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="modbus-serial" advanced="true">
-		<item-type>String</item-type>
-		<label>Serial Number</label>
-		<description>Serial number of the wallbox</description>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="modbus-power">
 		<item-type>Number:Power</item-type>
@@ -164,8 +162,8 @@
 	</channel-type>
 	<channel-type id="modbus-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Voltage</label>
-		<description>Voltage</description>
+		<label>Phase Voltage</label>
+		<description>Measured voltage on this phase</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -198,6 +196,15 @@
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="modbus-fastchargingstatus" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fast Charging Status</label>
+		<description>Raw fast charging status reported by P40 wallboxes</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="modbus-rfidtag" advanced="true">
 		<item-type>String</item-type>
 		<label>RFID Tag</label>
@@ -217,8 +224,7 @@
 	<channel-type id="modbus-phaseswitchsource" advanced="true">
 		<item-type>Number</item-type>
 		<label>Phase Switching Source</label>
-		<description>Source that is allowed to control the phase switching. "Toggle via UDP" can only be reported, not set,
-			since the UDP and Modbus TCP interfaces cannot be enabled at the same time</description>
+		<description>Source that is allowed to control the phase switching</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -291,6 +297,16 @@
 		<description>Send ON to unlock the plug. The charging session must be stopped beforehand</description>
 		<tags>
 			<tag>Control</tag>
+		</tags>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="modbus-register-trigger" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Momentary Register Command</label>
+		<description>Send ON to submit the associated Modbus register value; the channel resets to OFF after a successful
+			write</description>
+		<tags>
+			<tag>Switch</tag>
 		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
