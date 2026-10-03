@@ -51,15 +51,15 @@ Useful tools
 
 ## Supported Things
 
-This binding supports 4 different things types
+This binding supports five different Thing types.
 
-| Thing    | Type   | Description                                                                                                                                                                                                                               |
-| -------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tcp`    | Bridge | Modbus TCP server (Modbus TCP slave)                                                                                                                                                                                                      |
-| `serial` | Bridge | Modbus serial slave                                                                                                                                                                                                                       |
-| `poller2` | Bridge | Modern poller that owns configured read channels. It is a child of `tcp` or `serial`. |
-| `poller` | Bridge | **Legacy topology.** Thing taking care of polling the data from modbus slaves. One poller corresponds to single Modbus read request (FC01, FC02, FC03, or FC04). Is child of `tcp` or `serial`. |
-| `data`   | Thing  | **Legacy topology.** Thing for converting polled data to meaningful numbers. Analogously, is responsible of converting openHAB commands to Modbus write requests. Is child of `poller` (read-only or read-write things) or `tcp`/`serial` (write-only things). |
+| Thing     | Type   | Description                                                                                                                                                                                                                               |
+| --------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tcp`     | Bridge | Modbus TCP server (Modbus TCP slave)                                                                                                                                                                                                      |
+| `serial`  | Bridge | Modbus serial slave                                                                                                                                                                                                                       |
+| `poller2` | Bridge | Modern poller that owns configured read channels. It is a child of `tcp` or `serial`.                                                                                                                                                     |
+| `poller`  | Bridge | Thing taking care of polling the data from modbus slaves. One poller corresponds to single Modbus read request (FC01, FC02, FC03, or FC04). Is child of `tcp` or `serial`.                                                                |
+| `data`    | Thing  | Thing for converting polled data to meaningful numbers. Analogously, is responsible of converting openHAB commands to Modbus write requests. Is child of `poller` (read-only or read-write things) or `tcp`/`serial` (write-only things). |
 
 Typically one defines either `tcp` or `serial` bridge, depending on the variant of Modbus slave.
 For each Modbus read request, a `poller` is defined.
@@ -206,6 +206,8 @@ In some cases when extreme performance is required (e.g. poll period below 10ms)
 With some slower devices on might need to increase the values.
 
 With low baud rates and/or long read requests (that is, many items polled), there might be need to increase the read timeout `receiveTimeoutMillis` to e.g. `5000` (=5 seconds).
+
+The following `poller` and `data` sections document the legacy topology. Configure new channel-owned pollers using the [`poller2` modern channel topology](#poller2-modern-channel-topology) above.
 
 ### `poller` Thing
 
