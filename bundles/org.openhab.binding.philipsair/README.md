@@ -28,33 +28,64 @@ Other models using the same protocols are likely to work as well; feedback on co
 
 CoAP devices such as the AC2889, AC3033, AC3829 and AC4236 series report their state with the classic field names (e.g. `pwr`, `om`, `pm25`) and are fully supported.
 
-Recent models report their state with numbered field names (e.g. `D03-02` or `D03102`) instead.
+Recent models report their state with numbered field names instead: newer models use names like `D03102`, older ones names like `D03-02`.
 Examples are the AC0850, AC0950, AC1715, AC2210, AC3210, AC3420, AC3737, AMF and HU series.
-These models are supported in a limited way, as their modes, fan speeds and light settings differ per model.
-The AC3210 and the other devices of the same product range (reported by the device as `Unicorn`) can also be controlled:
+Their modes, fan speeds and other settings are encoded differently per model, so the binding uses a _device profile_ per model to translate them.
 
-| Channel                               | Recent models                                     | Unicorn range (e.g. AC3210)                       |
-|---------------------------------------|---------------------------------------------------|---------------------------------------------------|
-| `power`                               | read and write                                    | read and write                                    |
-| `child-lock`                          | read and write (only models with `D03xxx` fields) | read and write                                    |
-| `pm25`, `allergen-index`              | read only                                         | read only                                         |
-| `humidity`, `temperature`             | read only (only models with `D03xxx` fields)      | read only                                         |
-| `error-code`                          | read only (only models with `D03xxx` fields)      | read only                                         |
-| `air-quality-threshold`               | read only (only models with `D03xxx` fields)      | read and write                                    |
-| `displayed-index`                     | read only (only models with `D03xxx` fields)      | read and write (`0` allergen index, `1` PM2.5)    |
-| `mode`                                | not supported                                     | read and write: `P` (auto), `S` (sleep)           |
-| `fan-speed`                           | not supported                                     | read and write: `1` to `5`, `m` (medium), `t` (turbo) |
-| `timer`, `timer-remaining`            | not supported                                     | timer 0 (off) to 12 hours, remaining time in minutes |
-| `pre-filter-life`, `hepa-filter-life` | read only                                         | read only                                         |
-| all other channels                    | not supported, the channels stay `NULL`           | not supported, the channels stay `NULL`           |
+#### Device Profiles
 
-On the Unicorn range the mode is `M` (manual) while a fan speed is selected, and the fan speed shows the speed the device chose in auto and sleep mode.
-Selecting a fan speed switches the device to manual mode; there is no separate command for the manual mode.
-The `timer` and `timer-remaining` channels are added once the device reports them.
+The profile is detected from the model that the device reports and is shown in the thing property `deviceProfile`.
+When the model of your device is not detected, you can select the profile of a model that is the same or similar in the advanced thing configuration parameter `deviceProfile`.
+The device then is controlled like that model, without the binding needing an update.
+Select `basic` again if the device does not behave as expected.
+
+| Profile (`deviceProfile`) | Models                                                                  | Field names |
+|---------------------------|-------------------------------------------------------------------------|-------------|
+| `auto`                    | Detects the profile                                                     |             |
+| `basic`                   | Other recent models: sensors, power and child lock                      | both        |
+| `unicorn`                 | AC2210, AC2220, AC2221, AC3210, AC3220, AC3221, AC4220, AC4221          | `D03102`    |
+| `ac3737`                  | AC3737                                                                  | `D03102`    |
+| `ac1715`                  | AC1715                                                                  | `D03-02`    |
+| `ac0850`                  | AC0850 (with the `AWS_Philips_AIR` Wi-Fi firmware)                      | `D03-02`    |
+
+A profile only applies to a device with the field names it is for, otherwise the profile is detected.
+
+| Channel                                     | `basic`                    | `unicorn`                                | `ac3737`                    | `ac1715`, `ac0850`          |
+|---------------------------------------------|----------------------------|------------------------------------------|-----------------------------|-----------------------------|
+| `power`                                     | read and write             | read and write                           | read and write              | read and write              |
+| `child-lock`                                | read and write<sup>1</sup> | read and write                           | read and write              | read and write              |
+| `pm25`, `allergen-index`                    | read only                  | read only                                | read only                   | read only                   |
+| `humidity`, `temperature`, `error-code`     | read only                  | read only                                | read only                   | read only                   |
+| `tvoc`                                      | read only                  | read only                                | read only                   | read only                   |
+| `air-quality-threshold`, `displayed-index`  | read only                  | read and write                           | read and write              | read and write              |
+| `mode`                                      | not supported              | `P` (auto), `S` (sleep)                  | `P`, `S`                    | `P`, `S`                    |
+| `fan-speed`                                 | not supported              | `1` to `5`, `m` (medium), `t` (turbo)    | `1`, `2`, `t`               | `1`, `2`, `t` (`t` only: ac0850) |
+| `timer`                                     | not supported              | 0 (off) to 12 hours                      | not supported               | not supported               |
+| `timer-remaining`                           | read only<sup>2</sup>      | read only                                | read only                   | not supported               |
+| `target-humidity`                           | read only<sup>2</sup>      | read and write                           | read and write              | not supported               |
+| `beep`, `standby-sensors`, `display`, `lamp-mode` | not supported        | read and write                           | not supported               | not supported               |
+| `display-brightness`                        | not supported              | `0` (off), `101` (auto), `115` (low), `123` (bright) | `0`, `50`, `100` | not supported       |
+| `allergy-sleep`                             | not supported              | read and write                           | read and write              | not supported               |
+| `pre-filter-life`, `hepa-filter-life`       | read only                  | read only                                | read only                   | read only                   |
+| all other channels                          | not supported, they stay `NULL` | not supported                       | not supported               | not supported               |
+
+- <sup>1</sup> The older field names (`D03-xx`) only support reading the child lock.
+- <sup>2</sup> Only the newer field names (`D03xxx`).
+
+Notes on the profiles:
+
+- The mode is `M` (manual) while a fan speed is selected, and the fan speed shows the speed the device chose in auto and sleep mode (Unicorn).
+  Selecting a fan speed switches the device to manual mode; there is no separate command for the manual mode.
+  For the `ac3737`, `ac1715` and `ac0850` profiles selecting a mode or fan speed also switches the device on.
+- The timer, `target-humidity` and the settings channels (`beep`, `standby-sensors`, `allergy-sleep`, `display`, `display-brightness` and `lamp-mode`) are added once the device reports them.
+  The `display` switch is on while the display is on.
+- Commands are only sent for the values listed in the table. Other values are ignored.
+
+The profiles follow the Philips Air+ app and the [philips-airpurifier-coap](https://github.com/kongo09/philips-airpurifier-coap) integration.
+Reading the status of an AC3210/12 has been confirmed on a real device; the commands have not been confirmed on a device yet, and neither has any other recent model.
+Feedback is welcome.
 
 The thing properties `modelId`, `firmwareVersion` and `name` are set for these models as well.
-Reading the status of an AC3210/12 has been confirmed on a real device; the commands follow the Philips app and have not been confirmed on a device yet.
-Feedback is welcome.
 If such a device is not discovered, add it manually as `coap` thing with its IP address.
 
 ### Helping to Support a New Model
@@ -108,6 +139,7 @@ Discovered things do not need any configuration.
 | key               | text    | no       |         | Encryption key for HTTP devices. Exchanged with the device automatically when empty. Not used for CoAP devices.   |
 | deviceUUID        | text    | no       |         | Device ID. Set automatically upon discovery and used to identify discovered things.                               |
 | refreshInterval   | integer | no       | 60      | Refresh interval in seconds (minimum 5).                                                                           |
+| deviceProfile     | text    | no       | auto    | CoAP devices only (advanced): the model profile, see [Device Profiles](#device-profiles). Detected when `auto`.    |
 | humidityOffset    | decimal | no       | 0       | Offset in % added to the humidity readings (-100 to 100).                                                          |
 | temperatureOffset | decimal | no       | 0       | Offset in °C added to the temperature readings (-50 to 50).                                                        |
 
@@ -134,7 +166,13 @@ The channels are organized in the groups `controls`, `controls-ui`, `sensors` an
 | controls      | function              | String               | RW         | Function: `P` (purification), `PH` (purification and humidification)                    |
 | controls-ui   | button-light          | Switch               | RW         | Button light                                                                             |
 | controls-ui   | light-level           | Number:Dimensionless | RW         | Display light level (0, 25, 50, 75, 100 %)                                               |
+| controls      | standby-sensors       | Switch               | RW         | The sensors keep measuring in standby (advanced)                                         |
+| controls      | allergy-sleep         | Switch               | RW         | Sleep mode that is gentle for allergic people (advanced)                                |
 | controls-ui   | displayed-index       | String               | RW         | Index shown on the display: `0` (allergen index), `1` (PM2.5), `2` (gas, only offered on models with a gas sensor) |
+| controls-ui   | display-brightness    | String               | RW         | Brightness of the display, with the steps of the model (see the device profiles)         |
+| controls-ui   | display               | Switch               | RW         | The display is on (advanced)                                                             |
+| controls-ui   | lamp-mode             | String               | RW         | What the lamp shows: `0` (off), `1` (air quality), `2` (ambient)                         |
+| controls-ui   | beep                  | Switch               | RW         | The device beeps when a button is pressed (advanced)                                     |
 | sensors       | pm25                  | Number:Density       | R          | PM2.5 particle concentration                                                             |
 | sensors       | allergen-index        | Number               | R          | Allergen index                                                                           |
 | sensors       | air-quality-threshold | Number               | RW         | Air quality level at which the Philips app sends a notification: `1` (good), `4` (fair), `7` (poor), `10` (very poor); on the AC4373 and AC4375 `13`, `19`, `29`, `40` |
@@ -154,6 +192,7 @@ The channels `timer` and `timer-remaining` are only available on models with a s
 The `ac2729` and `ac3829-10` thing types always have these channels.
 For the other thing types, in particular `universal` and `coap`, they are added automatically once the device reports the corresponding value.
 The channels `tvoc` and `rssi` are added the same way on all thing types, as only some models report them.
+The channels `beep`, `display`, `display-brightness`, `lamp-mode`, `standby-sensors` and `allergy-sleep` are added the same way, for the CoAP devices that have these settings.
 
 ## Thing Properties
 
@@ -169,6 +208,7 @@ The channels `tvoc` and `rssi` are added the same way on all thing types, as onl
 | preFilterType   | Type code of the pre-filter, if reported by the device                |
 | hepaFilterType  | Type code of the HEPA filter, e.g. `A3`, if reported by the device    |
 | carbonFilterType | Type code of the active carbon filter, e.g. `C7`, if reported by the device |
+| deviceProfile   | Device profile in use for a CoAP device with the recent field names, e.g. `UNICORN` |
 
 The properties `deviceType`, `manufacturer` and `macAddress` are only set on discovered things.
 
