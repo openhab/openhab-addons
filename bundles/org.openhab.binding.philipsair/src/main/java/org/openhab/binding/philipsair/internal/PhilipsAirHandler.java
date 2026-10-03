@@ -368,18 +368,21 @@ public class PhilipsAirHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         PhilipsAirConfiguration config = loadConfiguration();
-        this.config = config;
+        synchronized (updateLock) {
+            // an update of the previous configuration that is still running stores its profile with its own host
+            this.config = config;
+        }
         if (config.getHost().isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error.missing-host");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
-        if (getStoredProfile(config) == null) {
-            // not inherited by another device; the status of the device stores its profile again
-            getThing().setProperty(PROPERTY_DEVICE_PROFILE, null);
-        }
         synchronized (updateLock) {
+            if (getStoredProfile(config) == null) {
+                // not inherited by another device; the status of the device stores its profile again
+                getThing().setProperty(PROPERTY_DEVICE_PROFILE, null);
+            }
             if (!config.getHost().equals(dataHost)) {
                 currentData = null;
                 deviceInfo = null;
