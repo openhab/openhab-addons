@@ -294,6 +294,21 @@ public class ConversionsTest {
     }
 
     @Test
+    public void getJsonElementIndexedPathThroughJsonStringTest() {
+        // the array itself is a Json string within the response
+        String response = "{\"recipes\":\"[{\\\"id\\\":1,\\\"name\\\":\\\"Fries\\\"},{\\\"id\\\":2,\\\"name\\\":\\\"Pizza\\\"}]\","
+                + "\"text\":\"[not json\"}";
+        for (JsonElement value : new JsonElement[] { new JsonPrimitive(response), JsonParser.parseString(response) }) {
+            assertEquals(JsonParser.parseString("[1,2]"), getJsonElement("recipes[*].id", value));
+            assertEquals(JsonParser.parseString("\"Pizza\""), getJsonElement("recipes[1].name", value));
+            assertEquals(JsonParser.parseString("[{\"id\":1},{\"id\":2}]"), getJsonElement("recipes[*].{id}", value));
+            assertEquals(value, getJsonElement("recipes[2].id", value));
+            // a string that is not a Json array can not be indexed
+            assertEquals(value, getJsonElement("text[0]", value));
+        }
+    }
+
+    @Test
     public void getJsonElementMembersWithPathTest() {
         JsonElement asString = new JsonPrimitive(CLOUD_RECIPES);
         JsonElement asObject = JsonParser.parseString(CLOUD_RECIPES);

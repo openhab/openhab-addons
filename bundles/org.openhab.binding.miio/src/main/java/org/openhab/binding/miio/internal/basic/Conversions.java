@@ -284,6 +284,7 @@ public class Conversions {
         if (index == null) {
             return selectPath(next, segments, pos + 1);
         }
+        next = unwrapJson(next);
         if (!next.isJsonArray()) {
             return null;
         }
