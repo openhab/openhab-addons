@@ -458,6 +458,7 @@ Once the timer expires the device switches to OFFLINE and the bindings starts to
 A battery powered device is not polled while it sleeps, it switches back to ONLINE with its next report.
 If a battery powered device reports less often than configured, the binding learns the longer interval and extends the watchdog period accordingly.
 Buttons and remotes only report when a button is pressed, so they are never set OFFLINE by the watchdog.
+A BLU device set OFFLINE by the watchdog switches back to ONLINE with its next advertisement.
 
 You could also create a rule to catch those status changes or device alarms (see rule examples).
 
