@@ -37,9 +37,9 @@ class EEBusSettingsTest {
     }
 
     @Test
-    void connectPolicyAppliesWithoutRestart() {
+    void connectPolicyChangeRestarts() {
         EEBusSettings policy = new EEBusSettings();
         policy.connectPolicy = "NONE";
-        assertFalse(new EEBusSettings().requiresRestart(policy));
+        assertTrue(new EEBusSettings().requiresRestart(policy));
     }
 }

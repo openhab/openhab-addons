@@ -101,14 +101,9 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
         boolean restart = settings.requiresRestart(newSettings);
         settings = newSettings;
         if (restart && started) {
-            logger.info("EEBus: network/identity/trust settings changed, restarting SHIP node");
+            logger.info("EEBus: settings changed, restarting SHIP node");
             stopNode();
             startNode();
-        } else if (started) {
-            ShipCommunication communication = shipCommunication;
-            if (communication != null) {
-                communication.withConnectClientsTo(ConnectClientsTo.valueOf(settings.connectPolicy));
-            }
         }
     }
 
@@ -142,8 +137,7 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
 
             // The mDNS service instance name gets echoed back as the TLS SNI value by at least some
             // SHIP clients connecting in, so it must be sanitized to a safe charset (see
-            // ServiceNameSanitizer). Trusted SKIs are only read when the node is built - ShipCommunication
-            // does not expose its Ship, so they cannot be changed on a running node.
+            // ServiceNameSanitizer).
             ShipCommunication communication = new ShipCommunication(ConfigBuilder.aShipConfig()
                     .withServerBindAddresses(Set.of(new InetSocketAddress(settings.bindAddress, settings.port)))
                     .withWssPath(settings.wssPath).withId(settings.deviceId).withMDnsDomain(settings.serviceDomain)

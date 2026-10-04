@@ -42,14 +42,15 @@ public class EEBusSettings {
     public String trustedSkis = "";
 
     /**
-     * @return true if a change from {@code other} to {@code this} requires tearing down and
-     *         rebuilding the SHIP node (everything except {@code connectPolicy}).
+     * @return true if any setting differs; jEEBus only reads them when the SHIP node is built, and a
+     *         running node does not re-evaluate devices it has already discovered
      */
     public boolean requiresRestart(EEBusSettings other) {
         return !Objects.equals(bindAddress, other.bindAddress) || port != other.port
                 || !Objects.equals(wssPath, other.wssPath) || !Objects.equals(serviceDomain, other.serviceDomain)
                 || !Objects.equals(deviceId, other.deviceId) || !Objects.equals(friendlyName, other.friendlyName)
                 || !Objects.equals(deviceType, other.deviceType) || !Objects.equals(entityType, other.entityType)
-                || !Objects.equals(trustedSkis, other.trustedSkis);
+                || !Objects.equals(trustedSkis, other.trustedSkis)
+                || !Objects.equals(connectPolicy, other.connectPolicy);
     }
 }

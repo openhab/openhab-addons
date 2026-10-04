@@ -31,8 +31,7 @@ metadata - the same shape used by the HomeKit and Alexa add-ons.
 | connectPolicy       | pairing  | no       | `TRUSTED`             | Which nodes found via mDNS openHAB connects to: `TRUSTED` (only trusted SKIs), `ALL` (insecure), or `NONE` (wait for the partner to connect). |
 | trustedSkis         | pairing  | no       | -                      | Comma-separated list of remote SKIs to trust.                                                                                                                            |
 
-Changing `connectPolicy` takes effect right away.
-Changing any other parameter restarts the SHIP node.
+Changing any parameter restarts the SHIP node.
 
 ## Item Metadata
 
