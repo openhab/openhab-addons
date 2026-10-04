@@ -111,13 +111,12 @@ A minimal file for a device with one switch (the `id` is replaced by a placehold
 
 ### Reloading
 
-- The files are read when the binding starts.
-  The binding also listens for changes of local `.json` files and rescans them, but this has not been verified at runtime.
-  After adding a file or adding model ids, restart the binding to be sure that they are known.
+- The files are read when the binding starts, and again when a local `.json` file is added or changed.
+  If a new file is not picked up, restart the binding.
   In the Karaf console: `bundle:list | grep -i miio` shows the bundle id, `bundle:restart <id>` restarts the binding (or restart openHAB).
 - The channels of a thing are built from the file when the thing is initialized, the file is read again each time.
   After editing a file that is already known for the model, disable and enable the thing to rebuild its channels.
-- A file that cannot be parsed is skipped, the error is only logged at DEBUG level while scanning.
+- A file that cannot be parsed, or that does not contain a JSON object, is skipped and a warning with the file name is logged.
   A model without a file gives the warning `Database entry for model '...' cannot be found.`.
 
 ### Format Rules
@@ -125,8 +124,8 @@ A minimal file for a device with one switch (the `id` is replaced by a placehold
 - The file must contain a single object with the key `deviceMapping`.
 - Key names are case sensitive (for example `ChannelGroup` has a capital C).
   Unknown or misspelled keys are silently ignored.
-- Enumerations (`parameterType`) must be written exactly as documented, in upper case.
-  An unrecognized value (including a lower case one) is not reported as error, but the action then matches none of the parameter types and behaves like `UNKNOWN`.
+- Enumerations (`parameterType`) are not case sensitive, but write them in upper case like the existing files.
+  An unrecognized value behaves like `UNKNOWN`: nothing is sent for ON/OFF and text commands.
 - Use tabs for indentation, like the existing files (the examples in this document use spaces).
 
 ## Field Reference
@@ -254,8 +253,10 @@ Other item types than the ones in this table are not updated.
 | `String` | text, number or boolean as text. A JSON object or list is converted to JSON text | Text. |
 | `Color` | integer in RGB format (`0xRRGGBB`), or text `h,s,b` (with or without `[]`) | HSB color. |
 
+A `unit` is applied to every `Number` and `Number:<Dimension>` channel: the state is a quantity as soon as a `unit` is set, whatever the dimension.
 Always set a `unit` for `Number:<Dimension>` channels.
-Without it, only the dimensions `Temperature` (°C), `ElectricCurrent` (A), `Energy` (W, historical) and `Time` (hour) get a default unit, other dimensions are set without unit.
+The dimension only selects the default unit when the `unit` is empty, so a wrong dimension silently gives a wrong default.
+Without a `unit`, only the dimensions `Temperature` (°C), `ElectricCurrent` (A), `Energy` (W, historical) and `Time` (hour) get a default unit, other dimensions are set without unit.
 
 ### Transformations
 
@@ -309,8 +310,9 @@ For the input `{"recipes":[{"recipeID":1,"recipeName":"Fries","cookCommand":{"ti
 | `getJsonElement-recipes[0].cookCommand` | `{"time":11}` |
 | `getJsonElement-recipes[*].{recipeID,recipeName}` | `[{"recipeID":1,"recipeName":"Fries"},{"recipeID":2,"recipeName":"Pizza"}]` |
 
-Within a path, member names cannot contain `.`, `[`, `]`, `{`, `}` or `,`.
+Within a path, member names cannot contain `.`, `[`, `]`, `{` or `}`; a comma is only a separator inside `{...}`.
 A top level member with such a name can still be selected by its exact name.
+If a `{...}` selection on an object finds none of the listed members, the input is returned unchanged; a `[*]` selection that finds nothing returns an empty array.
 No bundled database file uses the path syntax yet; the examples above are covered by the binding's unit tests.
 
 ### Units
@@ -322,7 +324,7 @@ The binding then tries to create the state from the number and the unit as text,
 
 | Unit | Aliases |
 |------|---------|
-| `CELSIUS` | `C` |
+| `CELSIUS` | `C`, `celcius` |
 | `FAHRENHEIT`, `KELVIN` | `K` for kelvin |
 | `PASCAL`, `HPA` | `pa` for pascal |
 | `SECOND`, `MINUTE`, `HOUR`, `DAY` | `seconds`, `minutes`, `hours`, `days` |
@@ -372,7 +374,7 @@ Three seconds after the command, all channels are refreshed.
 | `EMPTY` | any | The command is ignored, the `parameters` (or the `returnValue` of a matching condition) are the value. For a legacy command the list is sent as one nested element: `command[[...]]`. For MIoT actions it is the `in` list. |
 | `NONE` | any | The value is only available for the `condition`, it is not placed in the `parameters`. |
 | `UNKNOWN` | any | No value for ON/OFF and text commands. Used by generated placeholder actions that never send. |
-| `CUSTOMSTRING` | text | Legacy, do not use in new files. Use `STRING` with a `matchValue` condition and `returnValue`. |
+| `CUSTOMSTRING` | text | The text, converted to lower case, replaces `$value$` in the `parameters` entry that contains it, for example `"color,$value$"`. Without such an entry it behaves like `STRING`. For a fixed list of values, prefer `STRING` or `NUMBER` with a `matchValue` condition and `returnValue`. |
 
 - A number or percent command always results in the number, whatever the `parameterType`, except for `COLOR` and `EMPTY`.
   Combine this with a condition (see the dimmer example in the cookbook) to handle both on/off and numbers on one channel.
@@ -389,7 +391,9 @@ Three seconds after the command, all channels are refreshed.
 - Without `parameters`, the value is the only parameter: `set_power["on"]`.
 - With `parameters`, the value replaces the entry that contains `$value$`, for example `[0, "$value$"]` gives `cron_add[0,30]`.
   Put `$value$` explicitly in every action that has `parameters`.
+  If no entry of the `parameters` contains `$value$`, the value replaces the first entry.
 - `NONE` and `ONOFFPARA` never insert the value, so `parameters` stay as written (including `$variables$`).
+  The command is only sent when a value was determined for the command: ON/OFF or a number for `ONOFFPARA`, a number for `NONE` (ON/OFF and text send nothing), or any command when a condition supplies the value.
 
 ### Variables
 
@@ -400,7 +404,7 @@ A variable that has no value stays in the command as it is.
 | Variable | Value |
 |----------|-------|
 | `deviceId` | The device id of the thing, inserted as quoted string. |
-| `modelId`, `firmwareVersion`, `hardwareVersion`, `wifiFirmware`, `mcuFirmware` | The thing properties, inserted as quoted string. |
+| `modelId`, `firmwareVersion`, `hardwareVersion`, `wifiFirmware`, `mcuFirmware`, `serialNumber` | The thing properties, inserted as quoted string. Any other property of the thing can be used as well, when it is set. |
 | `timestamp` | Time of the last update or command in seconds since 1970, inserted as number. |
 | property name | The last value read for a property, before any transformation, inserted as plain text without quotes, so only useful for numbers and booleans. For a channel with `customRefreshCommand` the name is the channel id. |
 
@@ -538,6 +542,7 @@ The channel itself has no `siid`/`piid`, an empty `property` and no `refresh`.
 
 - The channel label is the `friendlyName`.
   The labels of the bundled files can be translated, the keys `ch.<file name without .json>.<channel>` are generated in `OH-INF/i18n/basic.properties`.
+  Local files have no translations, their labels are the `friendlyName`.
 - Use quantity types (`Number:Temperature`, `Number:Time`, ...) with a `unit` for physical values.
   Use `%unit%` in the `pattern` of such channels.
 - `category` is the icon name, `tags` are the semantic tags.
@@ -891,7 +896,7 @@ The commands of `lumi.plug.mmeu01.json` show that a command can also be a JSON o
 
 Common mistakes:
 
-- A misspelled key, wrong case or a `parameterType` that is not in upper case is silently ignored.
+- A misspelled key, or a key with the wrong case, is silently ignored.
 - A channel without `type` or `channel` is skipped.
 - `refresh` is `false` when omitted, a channel without `refresh` is never read.
 - The `property` of two polled channels must differ, a channel id may only be used once and the `customRefreshCommand` texts must be unique.
