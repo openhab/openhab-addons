@@ -15,6 +15,7 @@ package org.openhab.io.eebus.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -163,5 +164,17 @@ class EEBusChangeListenerTest {
         verify(eventPublisher).post(captor.capture());
         ItemCommandEvent event = assertInstanceOf(ItemCommandEvent.class, captor.getValue());
         assertEquals(new QuantityType<>(4200.0, Units.WATT), event.getItemCommand());
+    }
+
+    @Test
+    void limitUpdatesAfterStopAreIgnored() throws Exception {
+        when(itemRegistry.getItems()).thenReturn(List.of());
+        when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
+        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+
+        listener.stop();
+        listener.onLimitUpdate(ITEM_NAME, null);
+
+        verify(eventPublisher, never()).post(any());
     }
 }

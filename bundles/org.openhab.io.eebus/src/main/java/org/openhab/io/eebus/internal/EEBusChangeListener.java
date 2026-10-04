@@ -71,6 +71,7 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
 
     private @Nullable String lpcItemName;
     private @Nullable String lppItemName;
+    private volatile boolean stopped;
 
     public EEBusChangeListener(ItemRegistry itemRegistry, MetadataRegistry metadataRegistry,
             EventPublisher eventPublisher, Entity entity) {
@@ -108,6 +109,7 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
     }
 
     public void stop() {
+        stopped = true;
         itemRegistry.removeRegistryChangeListener(this);
         metadataRegistry.removeRegistryChangeListener(metadataChangeListener);
     }
@@ -243,6 +245,11 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
      * e.g. after LIMIT_DEACTIVATED or INIT_TIMEOUT).
      */
     void onLimitUpdate(String itemName, @Nullable ActiveLimit limit) {
+        // jEEBus 1.1.0 does not shut down the state machine's executor when the use case is closed,
+        // so its timers can still fire after the node was stopped.
+        if (stopped) {
+            return;
+        }
         try {
             itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e) {
