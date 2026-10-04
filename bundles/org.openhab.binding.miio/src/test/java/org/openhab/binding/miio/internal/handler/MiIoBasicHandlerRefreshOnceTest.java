@@ -67,6 +67,8 @@ public class MiIoBasicHandlerRefreshOnceTest {
     private static final String CHANNEL_JSON = "{\"deviceMapping\":{\"id\":[\"test.model\"],\"propertyMethod\":\"get_prop\",\"channels\":[%s]}}";
     private static final String ONCE_CHANNEL = "{\"property\":\"\",\"channel\":\"once\",\"type\":\"String\",\"refresh\":true,\"refreshInterval\":-1,"
             + "\"customRefreshCommand\":\"/v2/test/query\",\"customRefreshParameters\":{\"model\":\"test.model\"}}";
+    private static final String ONCE_TRANSFORMED_CHANNEL = "{\"property\":\"\",\"channel\":\"once\",\"type\":\"String\",\"refresh\":true,\"refreshInterval\":-1,"
+            + "\"customRefreshCommand\":\"/v2/test/query\",\"transformation\":\"getJsonElement-recipes\"}";
     private static final String ONCE_PROPERTY = "{\"property\":\"power\",\"channel\":\"power\",\"type\":\"String\",\"refresh\":true,\"refreshInterval\":-1}";
     private static final String ONCE_MIOT_PROPERTY = "{\"property\":\"pwr\",\"siid\":2,\"piid\":1,\"channel\":\"power\",\"type\":\"String\",\"refresh\":true,\"refreshInterval\":-1}";
     private static final String ONCE_NUMBER_CHANNEL = "{\"property\":\"\",\"channel\":\"num\",\"type\":\"Number\",\"refresh\":true,\"refreshInterval\":-1,"
@@ -341,6 +343,34 @@ public class MiIoBasicHandlerRefreshOnceTest {
         handler.handleCommand(new ChannelUID(thingUID, "once"), RefreshType.REFRESH);
         assertTrue(handler.awaitUpdate());
         assertTrue(handler.poll(device).contains("/v2/test/query"));
+    }
+
+    @Test
+    public void refreshOfReadOnceChannelThatWasNotReadYetStartsUpdateWhileCacheIsValid() throws InterruptedException {
+        load(ONCE_CHANNEL, EVERY_CYCLE_CHANNEL);
+
+        handler.poll(device);
+        handler.respond("once", "{\"error\":\"timeout\"}");
+        handler.handleCommand(new ChannelUID(thingUID, "always"), RefreshType.REFRESH);
+        assertTrue(handler.awaitUpdate());
+
+        handler.handleCommand(new ChannelUID(thingUID, "once"), RefreshType.REFRESH);
+        assertTrue(handler.awaitUpdate());
+        assertTrue(handler.poll(device).contains("/v2/test/query"));
+    }
+
+    @Test
+    public void readOnceTransformedChannelWithNullResultIsRetried() {
+        load(ONCE_TRANSFORMED_CHANNEL);
+
+        assertEquals(List.of("/v2/test/query"), handler.poll(device));
+        handler.respond("once", "{\"code\":0,\"result\":[null]}");
+        assertEquals(List.of("/v2/test/query"), handler.poll(device));
+        handler.respond("once", "{\"code\":0,\"result\":null}");
+        assertEquals(List.of("/v2/test/query"), handler.poll(device));
+        verify(callback, never()).stateUpdated(any(ChannelUID.class), any(State.class));
+        handler.respond("once", "{\"code\":0,\"result\":[{\"recipes\":\"Fries\"}]}");
+        assertEquals(List.of(), handler.poll(device));
     }
 
     @Test

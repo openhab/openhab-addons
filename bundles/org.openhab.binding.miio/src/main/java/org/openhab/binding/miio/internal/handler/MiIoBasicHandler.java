@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -137,12 +138,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
         if (command == RefreshType.REFRESH) {
             // an explicit refresh request also re-reads channels that are normally read only once
-            final boolean readAgain = refreshedOnce.remove(channelUID.getId());
+            refreshedOnce.remove(channelUID.getId());
             if (updateDataCache.isExpired()) {
                 logger.debug("Refreshing {}", channelUID);
                 updateDataCache.getValue();
-            } else if (readAgain) {
-                // the update that filled the cache left this channel out, and without polling no other update follows
+            } else if (isReadOnce(channelUID.getId())) {
+                // the update that filled the cache left this channel out or failed to read it, and without polling no
+                // other update follows
                 if (readOnceRefreshPending.compareAndSet(false, true)) {
                     logger.debug("Refreshing read once channel {}", channelUID);
                     miIoScheduler.schedule(() -> {
@@ -344,6 +346,11 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         } catch (Exception e) {
             logger.debug("Error while updating '{}': ", getThing().getUID().toString(), e);
         }
+    }
+
+    private boolean isReadOnce(String channelId) {
+        return Stream.concat(refreshList.stream(), refreshListCustomCommands.values().stream())
+                .anyMatch(channel -> channel.getRefreshInterval() < 0 && channelId.equals(channel.getChannel()));
     }
 
     private boolean customRefreshIntervalCheck(MiIoBasicChannel miChannel) {
@@ -593,6 +600,18 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         return null;
     }
 
+    /**
+     * A Json null result, or an array result that starts with a Json null, is the response of a device that has no
+     * value (yet)
+     */
+    private static boolean hasValue(JsonElement result) {
+        if (result.isJsonArray()) {
+            final JsonArray array = result.getAsJsonArray();
+            return array.isEmpty() || !array.get(0).isJsonNull();
+        }
+        return !result.isJsonNull();
+    }
+
     private @Nullable MiIoBasicChannel getCustomRefreshChannel(String channelName) {
         for (MiIoBasicChannel refreshEntry : refreshListCustomCommands.values()) {
             if (refreshEntry.getChannel().equals(channelName)) {
@@ -830,17 +849,14 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                                 response.getResult());
                         final MiIoBasicChannel ch = getCustomRefreshChannel(channel);
                         boolean updated = false;
-                        if (ch != null && !response.getResult().isJsonNull()) {
+                        if (ch != null && hasValue(response.getResult())) {
                             if (response.getResult().isJsonArray()) {
                                 JsonArray cmdResponse = response.getResult().getAsJsonArray();
                                 final String transformation = ch.getTransformation();
                                 if (transformation == null || transformation.isBlank()) {
                                     JsonElement response0 = cmdResponse.get(0);
-                                    if (!response0.isJsonNull()) {
-                                        updated = updateChannel(ch, ch.getChannel(),
-                                                response0.isJsonPrimitive() ? response0
-                                                        : new JsonPrimitive(response0.toString()));
-                                    }
+                                    updated = updateChannel(ch, ch.getChannel(), response0.isJsonPrimitive() ? response0
+                                            : new JsonPrimitive(response0.toString()));
                                 } else {
                                     updated = updateChannel(ch, ch.getChannel(), cmdResponse);
                                 }
