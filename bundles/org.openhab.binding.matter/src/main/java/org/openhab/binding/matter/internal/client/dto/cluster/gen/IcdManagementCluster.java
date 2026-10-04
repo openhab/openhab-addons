@@ -67,7 +67,8 @@ public class IcdManagementCluster extends BaseCluster {
      */
     public List<MonitoringRegistrationStruct> registeredClients; // 3 list R F A
     /**
-     * This attribute returns the value of the ICD Counter.
+     * Indicates the value of the ICD Counter. The ICD Counter is used as the Check-In Counter to encrypt the check-in
+     * message for this client.
      */
     public Integer icdCounter; // 4 uint32 R A
     /**

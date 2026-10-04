@@ -122,7 +122,7 @@ public class OvenModeCluster extends BaseCluster {
          */
         public Integer mode; // uint8
         /**
-         * This field shall contain a list of tags that are associated with the mode option. This may be used by clients
+         * This field shall contain a list of tags that are associated with the mode option. This can be used by clients
          * to determine the full or the partial semantics of a certain mode, depending on which tags they understand,
          * using standard definitions and/or manufacturer specific namespace definitions.
          * The standard mode tags are defined in this cluster specification. For the derived cluster instances, if the

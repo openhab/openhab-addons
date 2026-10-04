@@ -74,6 +74,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
     public static final String ATTRIBUTE_LOCAL_SNAPSHOT_RECORDING_ENABLED = "localSnapshotRecordingEnabled";
     public static final String ATTRIBUTE_STATUS_LIGHT_ENABLED = "statusLightEnabled";
     public static final String ATTRIBUTE_STATUS_LIGHT_BRIGHTNESS = "statusLightBrightness";
+    public static final String ATTRIBUTE_IMAGE_ROTATION_DISCRETE_ANGLES = "imageRotationDiscreteAngles";
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
@@ -278,6 +279,9 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
     public Boolean microphoneAgcEnabled; // 33 bool RW M
     /**
      * This attribute indicates the amount of clockwise rotation in degrees that the image has been subjected to.
+     * This attribute may be present if the underlying hardware allows for arbitrary angle rotation within the full 360
+     * degree range. If this attribute is not present, then discrete angle rotation may be supported via the
+     * ImageRotationDiscreteAngles. A value of 0 means no rotation has been applied.
      */
     public Integer imageRotation; // 34 uint16 RW M
     /**
@@ -310,6 +314,14 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
      * This attribute indicates the brightness level of the status light.
      */
     public ThreeLevelAutoEnum statusLightBrightness; // 40 ThreeLevelAutoEnum RW M
+    /**
+     * This attribute indicates the amount of clockwise rotation in specific angles of 0, 90, 180, and 270 degrees. This
+     * attribute is used by cameras that do not have the capability of full arbitrary rotation angles that can be set
+     * via the ImageRotation attribute. Note that the ImageFlipHorizontal and the ImageFlipVertical attributes only
+     * allow for a lateral inversion or mirror reflection of the image along the horizontal and/or vertical axes. A
+     * value of 0 means no rotation has been applied.
+     */
+    public Integer imageRotationDiscreteAngles; // 41 uint16 RW M
 
     // Structs
     /**
@@ -1203,6 +1215,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
         str += "localSnapshotRecordingEnabled : " + localSnapshotRecordingEnabled + "\n";
         str += "statusLightEnabled : " + statusLightEnabled + "\n";
         str += "statusLightBrightness : " + statusLightBrightness + "\n";
+        str += "imageRotationDiscreteAngles : " + imageRotationDiscreteAngles + "\n";
         return str;
     }
 }

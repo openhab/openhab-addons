@@ -43,6 +43,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     public static final String ATTRIBUTE_CONTAMINATION_STATE = "contaminationState";
     public static final String ATTRIBUTE_SMOKE_SENSITIVITY_LEVEL = "smokeSensitivityLevel";
     public static final String ATTRIBUTE_EXPIRY_DATE = "expiryDate";
+    public static final String ATTRIBUTE_UNMOUNTED = "unmounted";
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
@@ -70,6 +71,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      * detection mechanism is triggered, this attribute shall be set to Warning or Critical, otherwise it shall be set
      * to Normal. The battery state shall also be reflected in the Power Source cluster representing the device's
      * battery using the appropriate supported attributes and events.
+     * If the sensor cannot operate in the set state, the ExpressedState attribute shall be set to Inoperative.
      */
     public AlarmStateEnum batteryAlert; // 3 AlarmStateEnum R V
     /**
@@ -85,6 +87,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     /**
      * Indicates whether the hardware fault detection mechanism is currently triggered. If the detection mechanism is
      * triggered, this attribute shall be set to True, otherwise it shall be set to False.
+     * When this attribute is set to True, and the sensor cannot operate in this state, the ExpressedState attribute
+     * shall be set to Inoperative.
      */
     public Boolean hardwareFaultAlert; // 6 bool R V
     /**
@@ -119,6 +123,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      * based on the ExpiryDate by up to 24 hours to best align with the local time zone.
      */
     public Integer expiryDate; // 12 epoch-s R V
+    public Boolean unmounted; // 13 bool R V
 
     // Structs
     /**
@@ -300,7 +305,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         HARDWARE_FAULT(5, "Hardware Fault"),
         END_OF_SERVICE(6, "End Of Service"),
         INTERCONNECT_SMOKE(7, "Interconnect Smoke"),
-        INTERCONNECT_CO(8, "Interconnect Co");
+        INTERCONNECT_CO(8, "Interconnect Co"),
+        INOPERATIVE(9, "Inoperative");
 
         private final Integer value;
         private final String label;
@@ -452,6 +458,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         str += "contaminationState : " + contaminationState + "\n";
         str += "smokeSensitivityLevel : " + smokeSensitivityLevel + "\n";
         str += "expiryDate : " + expiryDate + "\n";
+        str += "unmounted : " + unmounted + "\n";
         return str;
     }
 }

@@ -155,8 +155,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * This may happen during NFC-based commissioning, when the commissioning channel is NFC Transport Layer (NTL),
      * because it can harvest energy from NFC to operate. However, such a Commissionee must be powered on to switch to
      * the operational channel.
-     * This attribute is used by the Commissioner as described in step 18 of Section 5.5, "Commissioning Flows". This
-     * attribute is linked to the Commissionee behavior after reception of the ConnectNetwork Command.
+     * This attribute is used by the Commissioner as described in initial phase step 17 of Section 5.5, "Commissioning
+     * Flows". This attribute is linked to the Commissionee behavior after reception of the ConnectNetwork Command.
      */
     public Boolean isCommissioningWithoutPower; // 12 bool R V
 
@@ -314,7 +314,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
 
     /**
      * This field shall contain the user responses to the Enhanced Setup Flow Terms & Conditions as a map where each bit
-     * set in the bitmap corresponds to an accepted term in the file located at Section 11.23.6.22,
+     * set in the bitmap corresponds to an accepted term in the file located at Section 11.23.6.23,
      * "EnhancedSetupFlowTCUrl".
      */
     public static class TcUserResponse {

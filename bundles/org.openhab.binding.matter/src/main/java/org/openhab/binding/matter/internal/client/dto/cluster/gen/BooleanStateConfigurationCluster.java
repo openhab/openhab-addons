@@ -191,12 +191,20 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
          * Supports ability to set sensor sensitivity
          */
         public boolean sensitivityLevel;
+        /**
+         * 
+         * This feature shall indicate that the device supports reporting sensor faults. When this feature is supported,
+         * there shall be at least one cause of internal failure that will generate the SensorFault.
+         */
+        public boolean faultEvents;
 
-        public FeatureMap(boolean visual, boolean audible, boolean alarmSuppress, boolean sensitivityLevel) {
+        public FeatureMap(boolean visual, boolean audible, boolean alarmSuppress, boolean sensitivityLevel,
+                boolean faultEvents) {
             this.visual = visual;
             this.audible = audible;
             this.alarmSuppress = alarmSuppress;
             this.sensitivityLevel = sensitivityLevel;
+            this.faultEvents = faultEvents;
         }
     }
 
