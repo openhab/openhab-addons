@@ -285,7 +285,8 @@ public class MiCloudConnector {
                 return resp.getAsJsonObject().get("result").getAsJsonObject();
             }
         } catch (JsonParseException e) {
-            logger.info("{} error while parsing rooms: '{}'", e.getMessage(), Utils.sanitizeForLog(response));
+            // the response itself is logged above at trace level
+            logger.warn("Error while parsing rooms: {}", e.getMessage());
         } catch (MiCloudException e) {
             logger.info("{}", e.getMessage());
             loginFailedCounter++;

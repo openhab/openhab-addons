@@ -248,16 +248,14 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
 
         if (securityStatus != 0) {
             logger.debug("Xiaomi Cloud Step2 response: {}", Utils.sanitizeForLog(CloudUtil.parseJson(content2)));
-            logger.debug(
-                    """
-                            Xiaomi Login code: {}
-                            SecurityStatus: {}
-                            Pwd code: {}
-                            Location login URL: {}
-                            In case of login issues check userId/password details are correct.
-                            If login details are correct, try to login using browser from the openHAB ip using the browser. Alternatively try to complete login with above URL.\
-                            """,
-                    code, securityStatus, pwd, location);
+            logger.debug("""
+                    Xiaomi Login code: {}
+                    SecurityStatus: {}
+                    Pwd code: {}
+                    Location login URL: {}
+                    In case of login issues check userId/password details are correct.
+                    If login details are correct, try to login using browser from the openHAB ip using the browser.\
+                    """, code, securityStatus, pwd, Utils.maskUrl(location));
 
             if (!notificationUrl.isEmpty()) {
                 logger.info("Click submit and get token. Then enter the token in OH:\r\n{} ", notificationUrl);
