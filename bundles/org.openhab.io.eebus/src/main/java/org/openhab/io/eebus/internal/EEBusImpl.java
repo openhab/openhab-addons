@@ -201,7 +201,7 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
     }
 
     @Override
-    public @Nullable String getOwnSki() {
+    public synchronized @Nullable String getOwnSki() {
         ShipCommunication communication = this.shipCommunication;
         return communication == null ? null : communication.getOwnSki();
     }

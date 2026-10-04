@@ -67,8 +67,8 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
 
     private final RegistryChangeListener<Metadata> metadataChangeListener;
 
-    private @Nullable String lpcItemName;
-    private @Nullable String lppItemName;
+    private volatile @Nullable String lpcItemName;
+    private volatile @Nullable String lppItemName;
     private volatile boolean stopped;
 
     public EEBusChangeListener(ItemRegistry itemRegistry, MetadataRegistry metadataRegistry,
