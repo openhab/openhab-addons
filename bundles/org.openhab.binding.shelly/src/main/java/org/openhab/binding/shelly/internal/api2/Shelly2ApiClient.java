@@ -692,22 +692,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
         updateBatteryStatus(0, sensorData, result.devicepower0);
         updateBatteryStatus(1, sensorData, result.devicepower1);
-        // NotifyStatus only carries the components it reports, don't wipe the last known value
-        Shelly2DeviceStatusSys sys = result.sys;
-        if (sys != null) {
-            if (sys.relayInThermostat != null) {
-                status.relayInThermostat = sys.relayInThermostat;
-            }
-            if (sys.sensorInThermostat != null) {
-                status.sensorInThermostat = sys.sensorInThermostat;
-            }
-        }
-        if (result.media != null) {
-            status.media = result.media;
-        }
-        if (result.thermostat0 != null) {
-            status.thermostat = result.thermostat0;
-        }
+        applyWallDisplayStatus(status, result, !channelUpdate);
         updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
         return updated;
@@ -1825,6 +1810,29 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             profile.floodAlarmMode = getString(params.config.alarmMode);
         }
         profile.reportHoldoff = reportHoldoff;
+    }
+
+    /**
+     * A NotifyStatus only carries the components it reports, so only a full GetStatus may clear a component that
+     * disappeared (e.g. the thermostat was disabled), which in turn removes its channels.
+     */
+    static void applyWallDisplayStatus(ShellySettingsStatus status, Shelly2DeviceStatusResult result,
+            boolean fullStatus) {
+        Shelly2DeviceStatusSys sys = result.sys;
+        if (sys != null) {
+            if (fullStatus || sys.relayInThermostat != null) {
+                status.relayInThermostat = sys.relayInThermostat;
+            }
+            if (fullStatus || sys.sensorInThermostat != null) {
+                status.sensorInThermostat = sys.sensorInThermostat;
+            }
+        }
+        if (fullStatus || result.media != null) {
+            status.media = result.media;
+        }
+        if (fullStatus || result.thermostat0 != null) {
+            status.thermostat = result.thermostat0;
+        }
     }
 
     protected static void updateBatteryStatus(int index, ShellyStatusSensor sdata,

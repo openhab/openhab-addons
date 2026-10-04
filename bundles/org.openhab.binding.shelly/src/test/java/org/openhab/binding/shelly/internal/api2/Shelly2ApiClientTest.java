@@ -23,10 +23,12 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower.Shelly2DeviceStatusBattery;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower.Shelly2DeviceStatusCharger;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 
 /**
  * Covers em1data:N (single-phase clamp) total/returned-energy mapping, i.e. #18166 (Pro EM-50 / EM Mini lifetime
@@ -153,6 +155,26 @@ public class Shelly2ApiClientTest {
         Shelly2ApiClient.updateBatteryStatus(0, sdata, power);
 
         assertEquals(Boolean.TRUE, sdata.charger);
+    }
+
+    @Test
+    void fullStatusWithoutThermostatClearsThermostat() {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.thermostat = new Shelly2DeviceStatusThermostat();
+
+        Shelly2ApiClient.applyWallDisplayStatus(status, new Shelly2DeviceStatusResult(), true);
+
+        assertNull(status.thermostat);
+    }
+
+    @Test
+    void notifyStatusWithoutThermostatKeepsThermostat() {
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.thermostat = new Shelly2DeviceStatusThermostat();
+
+        Shelly2ApiClient.applyWallDisplayStatus(status, new Shelly2DeviceStatusResult(), false);
+
+        assertNotNull(status.thermostat);
     }
 
     @Test
