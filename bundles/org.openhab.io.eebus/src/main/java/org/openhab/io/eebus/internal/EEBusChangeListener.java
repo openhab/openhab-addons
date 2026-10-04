@@ -99,12 +99,16 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
 
         itemRegistry.addRegistryChangeListener(this);
         metadataRegistry.addRegistryChangeListener(metadataChangeListener);
-
-        for (Item item : itemRegistry.getItems()) {
-            Metadata metadata = metadataRegistry.get(new MetadataKey(METADATA_NAMESPACE, item.getUID()));
-            if (metadata != null) {
-                bind(metadata);
+        try {
+            for (Item item : itemRegistry.getItems()) {
+                Metadata metadata = metadataRegistry.get(new MetadataKey(METADATA_NAMESPACE, item.getUID()));
+                if (metadata != null) {
+                    bind(metadata);
+                }
             }
+        } catch (RuntimeException e) {
+            stop();
+            throw e;
         }
     }
 
@@ -195,13 +199,18 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
         String value = metadata.getValue();
         Map<String, Object> config = metadata.getConfiguration();
 
-        if (LPC_VALUE.equalsIgnoreCase(value)) {
-            bindLpc(itemName, config);
-        } else if (LPP_VALUE.equalsIgnoreCase(value)) {
-            bindLpp(itemName, config);
-        } else {
-            logger.warn("EEBus: item {} has metadata value '{}', expected \"lpc\" or \"lpp\" - ignoring", itemName,
-                    value);
+        try {
+            if (LPC_VALUE.equalsIgnoreCase(value)) {
+                bindLpc(itemName, config);
+            } else if (LPP_VALUE.equalsIgnoreCase(value)) {
+                bindLpp(itemName, config);
+            } else {
+                logger.warn("EEBus: item {} has metadata value '{}', expected \"lpc\" or \"lpp\" - ignoring", itemName,
+                        value);
+            }
+        } catch (RuntimeException e) {
+            // e.g. a failsafeDuration that jEEBus cannot parse
+            logger.warn("EEBus: invalid eebus metadata on item {}, ignoring it: {}", itemName, e.getMessage());
         }
     }
 

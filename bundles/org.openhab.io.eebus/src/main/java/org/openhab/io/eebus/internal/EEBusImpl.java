@@ -166,6 +166,7 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
             logger.info("EEBus: SHIP node started, own SKI: {}", communication.getOwnSki());
         } catch (RuntimeException e) {
             logger.warn("EEBus: failed to start SHIP node", e);
+            stopNode();
         }
     }
 
@@ -179,6 +180,12 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
         if (dev != null) {
             dev.close();
             this.device = null;
+        } else {
+            // Device.close() disconnects it, but a failed Device.build() leaves it to us
+            ShipCommunication communication = this.shipCommunication;
+            if (communication != null) {
+                communication.disconnect();
+            }
         }
         this.shipCommunication = null;
     }

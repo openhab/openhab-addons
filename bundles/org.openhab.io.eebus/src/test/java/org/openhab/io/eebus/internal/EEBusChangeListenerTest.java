@@ -177,4 +177,31 @@ class EEBusChangeListenerTest {
 
         verify(eventPublisher, never()).post(any());
     }
+
+    @Test
+    void invalidMetadataOnOneItemDoesNotStopTheOthersFromBinding() {
+        Item lpcItem = new NumberItem(ITEM_NAME);
+        Item lppItem = new NumberItem("Test_Lpp_Limit");
+        MetadataKey lppKey = new MetadataKey("eebus", "Test_Lpp_Limit");
+        when(itemRegistry.getItems()).thenReturn(List.of(lpcItem, lppItem));
+        when(metadataRegistry.get(METADATA_KEY)).thenReturn(lpcMetadata(Map.of("failsafeDuration", "two hours")));
+        when(metadataRegistry.get(lppKey)).thenReturn(new Metadata(lppKey, "lpp", Map.of()));
+
+        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+
+        verify(entity, times(1)).addUseCase(any());
+        assertTrue(listener.getLpcItemName().isEmpty());
+        assertEquals("Test_Lpp_Limit", listener.getLppItemName().orElseThrow());
+    }
+
+    @Test
+    void failedInitialScanUnregistersTheListeners() {
+        when(itemRegistry.getItems()).thenThrow(new IllegalStateException("registry not ready"));
+
+        assertThrows(IllegalStateException.class,
+                () -> new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity));
+
+        verify(itemRegistry).removeRegistryChangeListener(any());
+        verify(metadataRegistry).removeRegistryChangeListener(any());
+    }
 }
