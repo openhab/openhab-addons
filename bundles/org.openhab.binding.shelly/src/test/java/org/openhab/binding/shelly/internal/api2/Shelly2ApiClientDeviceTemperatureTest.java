@@ -80,14 +80,52 @@ public class Shelly2ApiClientDeviceTemperatureTest {
         assertDeviceTemp(52.0);
     }
 
+    @Test
+    void nullReadingDropsStaleHottestSwitch() throws ShellyApiException {
+        fill(35.0, 52.0);
+        fill(35.0, null);
+
+        assertDeviceTemp(35.0);
+    }
+
+    @Test
+    void notifyStatusWithoutTemperatureKeepsCachedReading() throws ShellyApiException {
+        fill(35.0, 52.0);
+        apply("{\"switch:1\":{\"id\":1,\"output\":true}}");
+
+        assertDeviceTemp(52.0);
+    }
+
+    @Test
+    void allReadingsNullInvalidatesDeviceTemp() throws ShellyApiException {
+        fill(35.0, 52.0);
+        fill(null, null);
+
+        assertThat(profile.status.temperature, is(SHELLY_API_INVTEMP));
+        assertThat(profile.status.tmp.isValid, is(false));
+    }
+
+    @Test
+    void validReadingAfterNullRestoresDeviceTemp() throws ShellyApiException {
+        fill(35.0, 52.0);
+        fill(null, null);
+        fill(36.0, 48.0);
+
+        assertDeviceTemp(48.0);
+    }
+
     private void fill(Double... temperatures) throws ShellyApiException {
         StringBuilder json = new StringBuilder("{\"sys\":{}");
         for (int i = 0; i < temperatures.length; i++) {
             json.append(",\"switch:%d\":{\"id\":%d,\"output\":false,\"temperature\":{\"tC\":%s}}".formatted(i, i,
                     temperatures[i]));
         }
+        apply(json + "}");
+    }
+
+    private void apply(String json) throws ShellyApiException {
         Shelly2DeviceStatusResult result = Objects
-                .requireNonNull(new Gson().fromJson(json + "}", Shelly2DeviceStatusResult.class));
+                .requireNonNull(new Gson().fromJson(json, Shelly2DeviceStatusResult.class));
         client.fillDeviceStatus(profile.status, result, false);
     }
 

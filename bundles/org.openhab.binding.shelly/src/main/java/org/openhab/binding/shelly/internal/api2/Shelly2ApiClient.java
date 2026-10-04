@@ -21,7 +21,6 @@ import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -733,7 +732,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             sr.timerRemaining = (int) (now() - rs.timerStartetAt);
         }
         Shelly2DeviceStatusTemp temperature = rs.temperature;
-        if (temperature != null && temperature.tC != null) {
+        if (temperature != null) {
             sr.temperature = temperature.tC;
             updateDeviceInnerTemp(status, "switch" + id, temperature);
         }
@@ -818,7 +817,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             sr.ison = rstatus.ison = getBool(bs.output);
         }
         Shelly2DeviceStatusTemp temperature = bs.temperature;
-        if (temperature != null && temperature.tC != null) {
+        if (temperature != null) {
             sr.temperature = temperature.tC;
             updateDeviceInnerTemp(status, "cb" + id, temperature);
         }
@@ -1570,19 +1569,30 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
      * Each switch/breaker/cover/light component reports its own internal temperature; the device temperature is the
      * hottest of their latest readings. Keeping one reading per component lets a NotifyStatus carrying a single
      * component still report the hottest one, and lets the value drop again when the device cools down.
+     * A missing temperature object keeps the cached reading, an explicit tC=null (out of range) discards it.
      */
     private void updateDeviceInnerTemp(ShellySettingsStatus status, String component,
             @Nullable Shelly2DeviceStatusTemp temperature) {
-        Double tC = temperature != null ? temperature.tC : null;
-        if (tC == null) {
+        if (temperature == null) {
             return;
         }
-        componentTemperatures.put(component, tC);
-        double hottest = Collections.max(componentTemperatures.values());
+        Double tC = temperature.tC;
+        if (tC != null) {
+            componentTemperatures.put(component, tC);
+        } else {
+            componentTemperatures.remove(component);
+        }
         ShellySensorTmp tmp = status.tmp;
         if (tmp == null) {
             tmp = new ShellySensorTmp();
             status.tmp = tmp;
+        }
+        Double hottest = componentTemperatures.values().stream().max(Double::compare).orElse(null);
+        if (hottest == null) {
+            tmp.isValid = false;
+            tmp.tC = SHELLY_API_INVTEMP;
+            status.temperature = SHELLY_API_INVTEMP;
+            return;
         }
         tmp.isValid = true;
         tmp.tC = hottest;
