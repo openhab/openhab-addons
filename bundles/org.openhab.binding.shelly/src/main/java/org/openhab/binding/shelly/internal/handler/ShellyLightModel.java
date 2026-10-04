@@ -70,7 +70,18 @@ public class ShellyLightModel extends LightModel {
      */
     public enum Mode {
         WHITE,
-        COLOR
+        COLOR;
+
+        public static @Nullable Mode from(@Nullable String modeString) {
+            if (modeString == null) {
+                return null;
+            }
+            return switch (modeString.toLowerCase(Locale.ROOT)) {
+                case SHELLY_MODE_WHITE, SHELLY_RGBCCT_MODE_CCT -> WHITE;
+                case SHELLY_MODE_COLOR, SHELLY_RGBCCT_MODE_RGB -> COLOR;
+                default -> null;
+            };
+        }
     }
 
     /**

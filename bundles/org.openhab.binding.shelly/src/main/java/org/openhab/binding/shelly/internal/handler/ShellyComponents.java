@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.nio.charset.StandardCharsets;
@@ -992,7 +991,7 @@ public class ShellyComponents {
 
             Mode mode;
             if (value.mode != null) {
-                mode = SHELLY_RGBCCT_MODE_RGB.equals(Objects.requireNonNull(value.mode)) ? Mode.COLOR : Mode.WHITE;
+                mode = Mode.from(value.mode);
                 model.setMode(mode);
                 updated = true;
             } else {

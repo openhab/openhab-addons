@@ -626,7 +626,7 @@ Depending on the device type and firmware release channels might be not availabl
 ### Channel Migration and Deprecated Channels
 
 openHAB 5.2.1 renamed several meter- related channels for naming consistency.
-And openHAB renamed several light- related channels for naming consistency, as well as promoting some channels to 'advanced'.
+And openHAB 5.2.2 renamed several light- related channels for naming consistency, as well as promoting some channels to 'advanced'.
 The binding migrates existing Things automatically at startup (one-time, schema-versioned); no re-discovery is required.
 Old channel IDs stay active as deprecated, advanced channels and keep receiving updates, so existing item links and rules keep working; move to the new channel ID at your convenience since deprecated channels will be removed in a future release.
 
@@ -665,6 +665,10 @@ This is an in-place type change on the same channel ID, not a rename, so there i
 
 `white#temperature` and `lightN#temperature` were hybrid hybrid `Dimmer` and `Number:Temperature` channels and are now pure `Number:Temperature` only.
 So `Dimmer` type items that were linked to `...#temperature` need to be relinked to the counterpart `...#temperature-pct` channels.
+
+Also the `brightnessAutoOn` configuration parameter is removed.
+A brightness value greater than 0 now always switches the light ON.
+A value of 0 switches it OFF.
 
 ### Extra Channels Features for Lights according to openHAB Light Control Convention
 

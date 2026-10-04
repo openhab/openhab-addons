@@ -445,7 +445,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         Map<String, State> updates = new TreeMap<>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
-        boolean coapDataConsumedByLightModel = false;
+        boolean dataHandled = false;
 
         LightModelAccessor accessor = thingHandler instanceof LightModelAccessor lma ? lma : null;
         if (accessor != null) {
@@ -463,7 +463,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                         continue;
                     }
                     if (coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModels)) {
-                        coapDataConsumedByLightModel = true;
+                        dataHandled = true;
                     } else {
                         logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}",
                                 thingName, sen.id, sen.type, sen.desc, s.value, payload);
@@ -475,7 +475,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     CoIotSensor s = deferred.getKey();
                     CoIotDescrSen sen = deferred.getValue();
                     if (coiot.handleStatusUpdate(sensorUpdates, sen, serial, s, updates, lightModels)) {
-                        coapDataConsumedByLightModel = true;
+                        dataHandled = true;
                     } else {
                         logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}",
                                 thingName, sen.id, sen.type, sen.desc, s.value, payload);
@@ -495,7 +495,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             }
         }
 
-        if (!updates.isEmpty() || coapDataConsumedByLightModel) {
+        if (!updates.isEmpty() || dataHandled) {
             int updated = 0;
             boolean sensorGroupUpdated = false;
             for (Map.Entry<String, State> u : updates.entrySet()) {

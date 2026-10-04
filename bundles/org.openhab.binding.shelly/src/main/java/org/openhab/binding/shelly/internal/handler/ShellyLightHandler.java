@@ -20,7 +20,6 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,6 +117,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
                 return true;
             }
             return whatUpdated == WhatUpdated.OTHER;
+        } catch (IllegalArgumentException e) {
+            throw new ShellyApiException(
+                    "Error processing command '%s' for channel '%s'".formatted(command, channelUID), e);
         }
     }
 
@@ -229,9 +231,10 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
      * @param command the command to handle
      * @return the target of the update (LIGHT_MODEL, OTHER, or NONE)
      * @throws ShellyApiException
+     * @throws IllegalArgumentException if the command is invalid for the channel / light model combination
      */
     private WhatUpdated updateLightModelFromChannelCommand(ShellyLightModel model, ChannelUID channelUID,
-            Command command) throws ShellyApiException {
+            Command command) throws IllegalArgumentException, ShellyApiException {
         logger.trace("{}: updateLightModelFromChannelCommand() channel {}, command {})", thingName, channelUID,
                 command);
         switch (channelUID.getIdWithoutGroup()) {
@@ -390,8 +393,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
             logger.trace("{}: updateLightModelFromStatus() with {}", thingName, new Gson().toJson(light));
         }
 
-        String mode = light.mode;
-        Mode remoteMode = mode == null ? null : Mode.valueOf(mode.toUpperCase(Locale.ROOT));
+        Mode remoteMode = Mode.from(light.mode);
 
         // fix Gen 1 issue where status DTO contains fields for inactive mode; i.e. only apply active mode fields
         if (remoteMode != Mode.WHITE) {
@@ -640,28 +642,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
      * @return the light model, or null
      */
     public @Nullable ShellyLightModel getLightModelByChannelUID(ChannelUID channelUID) {
-        String groupId = channelUID.getGroupId();
-        if (groupId == null) {
-            return null;
-        }
-        if (CHANNEL_GROUP_LIGHT_CONTROL.equals(groupId)) {
-            return lightModels.get(0);
-        }
-        if (CHANNEL_GROUP_COLOR_CONTROL.equals(groupId)) {
-            return lightModels.get(0);
-        }
-        if (CHANNEL_GROUP_WHITE_CONTROL.equals(groupId)) {
-            return lightModels.get(0);
-        }
-        if (groupId.startsWith(CHANNEL_GROUP_LIGHT_INDEX)) {
-            try {
-                Integer suffix = Integer.parseInt(groupId.substring(CHANNEL_GROUP_LIGHT_INDEX.length()));
-                return lightModels.get(suffix);
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        }
-        return null;
+        Integer suffix = extractChannelGroupSuffix(channelUID);
+        return suffix == null ? null : lightModels.get(suffix);
     }
 
     /**
