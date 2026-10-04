@@ -32,12 +32,22 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class ValueUnit {
     @SerializedName("Value")
-    private double value;
+    private @Nullable Double value;
     @SerializedName("Unit")
     private @Nullable String unit = "";
 
     public double getValue() {
-        return value;
+        Double value = this.value;
+        return value == null ? 0 : value;
+    }
+
+    /**
+     * @return whether the inverter actually provided a value; some values are always null on some models, e.g. the day
+     *         and year energy on GEN24/Tauro/Verto. Without this check, the null cannot be told apart from a real zero,
+     *         as Gson maps JSON null to 0 for primitives.
+     */
+    public boolean hasValue() {
+        return value != null;
     }
 
     public @Nullable String getUnit() {
@@ -51,6 +61,6 @@ public class ValueUnit {
             logger.debug("The unit for ValueUnit ({})/({}) cannot be parsed", value, this.unit);
             unit = QuantityType.ONE.getUnit();
         }
-        return new QuantityType<>(value, unit);
+        return new QuantityType<>(getValue(), unit);
     }
 }
