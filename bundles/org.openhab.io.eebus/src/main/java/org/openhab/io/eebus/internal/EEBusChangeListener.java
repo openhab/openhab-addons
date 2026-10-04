@@ -30,6 +30,7 @@ import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 import org.openmuc.jeebus.spine.api.Entity;
 import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.ActiveLimit;
 import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.lpc.LpcCs;
@@ -213,7 +214,7 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
             return;
         }
         LpcCs cs = new LpcCs(EEBusLimitationConfigFactory.lpc(config));
-        cs.addListener((event, state, limit) -> pushLimit(itemName, limit));
+        cs.addListener((event, state, limit) -> onLimitUpdate(itemName, limit));
         entity.addUseCase(cs);
         lpcItemName = itemName;
         logger.info("EEBus: LPC bound to item {}", itemName);
@@ -230,25 +231,31 @@ public class EEBusChangeListener implements ItemRegistryChangeListener {
             return;
         }
         LppCs cs = new LppCs(EEBusLimitationConfigFactory.lpp(config));
-        cs.addListener((event, state, limit) -> pushLimit(itemName, limit));
+        cs.addListener((event, state, limit) -> onLimitUpdate(itemName, limit));
         entity.addUseCase(cs);
         lppItemName = itemName;
         logger.info("EEBus: LPP bound to item {}", itemName);
     }
 
-    private void pushLimit(String itemName, ActiveLimit limit) {
-        Double value = limit.getResultingValue();
-        if (value == null) {
-            return;
-        }
-        if (!"W".equals(limit.getUnit())) {
-            logger.debug("EEBus: unexpected active-limit unit '{}' for item {}, expected W", limit.getUnit(), itemName);
-        }
+    /**
+     * Posts the active limit to the item as a command, or sets the item to {@link UnDefType#UNDEF}
+     * when jEEBus reports no active limit ({@code null} in the CONTROLLED and AUTONOMOUS states,
+     * e.g. after LIMIT_DEACTIVATED or INIT_TIMEOUT).
+     */
+    void onLimitUpdate(String itemName, @Nullable ActiveLimit limit) {
         try {
             itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e) {
             logger.warn("EEBus: item {} no longer exists, cannot push limit", itemName);
             return;
+        }
+        Double value = limit == null ? null : limit.getResultingValue();
+        if (limit == null || value == null) {
+            eventPublisher.post(ItemEventFactory.createStateEvent(itemName, UnDefType.UNDEF, COMMAND_SOURCE));
+            return;
+        }
+        if (!"W".equals(limit.getUnit())) {
+            logger.debug("EEBus: unexpected active-limit unit '{}' for item {}, expected W", limit.getUnit(), itemName);
         }
         Command command = new QuantityType<>(value, Units.WATT);
         eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command, COMMAND_SOURCE));

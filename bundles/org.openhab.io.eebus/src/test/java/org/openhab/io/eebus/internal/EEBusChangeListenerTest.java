@@ -12,6 +12,7 @@
  */
 package org.openhab.io.eebus.internal;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -25,14 +26,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.core.common.registry.RegistryChangeListener;
+import org.openhab.core.events.Event;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.items.events.ItemCommandEvent;
+import org.openhab.core.items.events.ItemStateEvent;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.UnDefType;
 import org.openmuc.jeebus.spine.api.Entity;
+import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.ActiveLimit;
 
 /**
  * Tests for {@link EEBusChangeListener}, specifically the two lifecycle bugs found in review on
@@ -122,5 +130,38 @@ class EEBusChangeListenerTest {
         new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
 
         verify(entity, times(2)).addUseCase(any());
+    }
+
+    @Test
+    void deactivatedLimitSetsTheItemToUndef() throws Exception {
+        when(itemRegistry.getItems()).thenReturn(List.of());
+        when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
+        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+
+        // jEEBus passes null as the active limit in the CONTROLLED and AUTONOMOUS states
+        listener.onLimitUpdate(ITEM_NAME, null);
+
+        ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
+        verify(eventPublisher).post(captor.capture());
+        ItemStateEvent event = assertInstanceOf(ItemStateEvent.class, captor.getValue());
+        assertEquals(ITEM_NAME, event.getItemName());
+        assertEquals(UnDefType.UNDEF, event.getItemState());
+    }
+
+    @Test
+    void activeLimitIsPostedAsACommandInWatts() throws Exception {
+        when(itemRegistry.getItems()).thenReturn(List.of());
+        when(itemRegistry.getItem(ITEM_NAME)).thenReturn(new NumberItem(ITEM_NAME));
+        EEBusChangeListener listener = new EEBusChangeListener(itemRegistry, metadataRegistry, eventPublisher, entity);
+        ActiveLimit limit = mock(ActiveLimit.class);
+        when(limit.getResultingValue()).thenReturn(4200.0);
+        when(limit.getUnit()).thenReturn("W");
+
+        listener.onLimitUpdate(ITEM_NAME, limit);
+
+        ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
+        verify(eventPublisher).post(captor.capture());
+        ItemCommandEvent event = assertInstanceOf(ItemCommandEvent.class, captor.getValue());
+        assertEquals(new QuantityType<>(4200.0, Units.WATT), event.getItemCommand());
     }
 }

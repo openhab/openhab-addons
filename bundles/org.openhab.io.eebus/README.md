@@ -65,6 +65,7 @@ once added.
 
 Every active-limit update from a paired partner is posted to the tagged item as a `QuantityType<Power>` command
 (`Units.WATT`), same as any other command.
+When no limit is active any more, for example after the partner lifts it, the item is set to `UNDEF`.
 Route it into your rules the same way you would a manually-entered value, e.g. clamp an EV charger's current limit
 to it.
 
