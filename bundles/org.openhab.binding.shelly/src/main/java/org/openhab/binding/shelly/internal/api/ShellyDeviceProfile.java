@@ -16,8 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
-import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_PRESENCE_ZONE_PREFIX;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
@@ -102,6 +102,7 @@ public class ShellyDeviceProfile {
     public boolean isRGBW2; // true only if it a RGBW2
     public boolean isProRgbwwPm; // true only for a Shelly Pro RGBWW PM (device.profile alone can't tell it apart
                                  // from a Plus RGBW PM running the same rgb/rgbw/light profile)
+    public boolean isPlusRgbwPm; // true only for a Shelly Plus RGBW PM
     public boolean isRGBCCT; // true for Gen3 Multicolor Bulb with rgbcct:0 component (RGB + CCT mode switching)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
     public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
@@ -227,6 +228,7 @@ public class ShellyDeviceProfile {
         isRGBCCT = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
         isProRgbwwPm = THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID);
+        isPlusRgbwPm = THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
