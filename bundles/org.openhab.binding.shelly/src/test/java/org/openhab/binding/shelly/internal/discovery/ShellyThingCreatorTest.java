@@ -301,7 +301,10 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PRO1PM_2, "", THING_TYPE_SHELLYPRO1PM), //
                 Arguments.of(SHELLYDT_PRO1PM_3, "", THING_TYPE_SHELLYPRO1PM), //
                 Arguments.of(SHELLYDT_PRO1PMUL, "", THING_TYPE_SHELLYPRO1PM), //
-                Arguments.of(SHELLYDT_PRO1CB, "", THING_TYPE_SHELLYPRO1CB), //
+                Arguments.of(SHELLYDT_PRO1CB, "", THING_TYPE_SHELLYPROCB), //
+                Arguments.of(SHELLYDT_PRO2CB, "", THING_TYPE_SHELLYPROCB), //
+                Arguments.of(SHELLYDT_PRO3CB, "", THING_TYPE_SHELLYPROCB), //
+                Arguments.of(SHELLYDT_PRO4CB, "", THING_TYPE_SHELLYPROCB), //
                 Arguments.of(SHELLYDT_PRO2, "", THING_TYPE_SHELLYPRO2), //
                 Arguments.of(SHELLYDT_PRO2_2, "", THING_TYPE_SHELLYPRO2), //
                 Arguments.of(SHELLYDT_PRO2_3, "", THING_TYPE_SHELLYPRO2), //
@@ -440,6 +443,7 @@ public class ShellyThingCreatorTest {
         excludedThingTypeUids.addAll(ROLLER_THING_TYPE_BY_DEVICE_TYPE.values());
         excludedThingTypeUids.addAll(GROUP_RGBW2_THING_TYPES);
         excludedThingTypeUids.add(THING_TYPE_SHELLYPLUSDALIDIMMER);
+        excludedThingTypeUids.add(THING_TYPE_SHELLYPRO1CB);
 
         for (ThingTypeUID supportedThingTypeUid : SUPPORTED_THING_TYPES.stream()
                 .filter(uid -> !excludedThingTypeUids.contains(uid)).toList()) {
