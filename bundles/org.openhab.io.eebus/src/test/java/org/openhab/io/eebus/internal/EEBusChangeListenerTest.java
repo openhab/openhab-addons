@@ -44,11 +44,7 @@ import org.openmuc.jeebus.spine.api.Entity;
 import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.ActiveLimit;
 
 /**
- * Tests for {@link EEBusChangeListener}, specifically the two lifecycle bugs found in review on
- * PR #21313: a full item-registry reload re-registering an already-bound use case, and a metadata
- * config update on an already-bound item being silently swallowed instead of either applying or
- * warning. Both would have been invisible without a test that actually counts
- * {@code entity.addUseCase()} calls.
+ * Tests for {@link EEBusChangeListener}.
  *
  * @author Stamate Viorel - Initial contribution
  */

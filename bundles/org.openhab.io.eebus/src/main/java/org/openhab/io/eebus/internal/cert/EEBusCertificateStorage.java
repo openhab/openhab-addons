@@ -30,10 +30,9 @@ import org.openmuc.jeebus.ship.api.cert.CertificateStorage;
 import org.openmuc.jeebus.ship.api.cert.CertificateStoreException;
 
 /**
- * A {@link CertificateStorage} backed by openHAB's own {@link Storage} service instead of a
- * standalone keystore file. Generates and persists a self-signed identity certificate for the
- * given thing on first use, so every {@code controllableSystem} thing gets its own stable SHIP
- * identity (and thus a stable SKI) without any manual keystore provisioning step.
+ * A {@link CertificateStorage} backed by openHAB's {@link Storage} service instead of a keystore
+ * file. Generates and persists a self-signed identity certificate on first use, so the SHIP node
+ * keeps the same identity (and SKI) across restarts.
  *
  * @author Stamate Viorel - Initial contribution
  */
@@ -45,9 +44,9 @@ public class EEBusCertificateStorage implements CertificateStorage {
     private final String subjectDn;
     private final int validityDays;
 
-    public EEBusCertificateStorage(Storage<String> storage, String thingUid, String subjectDn, int validityDays) {
+    public EEBusCertificateStorage(Storage<String> storage, String identityKey, String subjectDn, int validityDays) {
         this.storage = storage;
-        this.keyPrefix = thingUid + ":";
+        this.keyPrefix = identityKey + ":";
         this.subjectDn = subjectDn;
         this.validityDays = validityDays;
     }
@@ -103,14 +102,5 @@ public class EEBusCertificateStorage implements CertificateStorage {
                 .generateCertificate(new ByteArrayInputStream(Base64.getDecoder().decode(encodedCert)));
 
         return new CertificateInfo(privateKey, certificate);
-    }
-
-    /**
-     * Removes this thing's stored identity, so a fresh certificate (and SKI) is generated on next
-     * {@link #readCertificate()}.
-     */
-    public void reset() {
-        storage.remove(keyPrefix + "privateKey");
-        storage.remove(keyPrefix + "certificate");
     }
 }

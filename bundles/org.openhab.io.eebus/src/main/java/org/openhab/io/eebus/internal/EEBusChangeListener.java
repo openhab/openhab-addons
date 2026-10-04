@@ -40,15 +40,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Watches the item and metadata registries for {@code eebus="lpc"}/{@code eebus="lpp"} tagged
- * items, and wires the corresponding EEBus use case to whichever item is tagged - pushing every
- * active-limit update from a paired CEM/CLS gateway directly onto that item as a command.
- * Analogous to {@code org.openhab.io.homekit.internal.HomekitChangeListener}, simplified since
- * EEBus's LPC/LPP are household-wide singleton limits (at most one tagged item each makes sense),
- * not a many-accessories registry.
+ * items and binds the corresponding EEBus use case to the tagged item: an active limit from the
+ * paired CEM/CLS gateway is sent to the item as a command, and the item is set to UNDEF when no
+ * limit is active. LPC/LPP are household-wide limits, so at most one item is bound to each.
  * <p>
- * v1 limitation: once LPC/LPP is bound to an item, un-tagging or re-tagging to a different item
- * is logged but not applied live - jeebus.spine's {@link Entity#addUseCase} has no runtime
- * counterpart for removing a use case, so rebinding needs a restart of this add-on.
+ * Once LPC/LPP is bound, un-tagging or re-tagging to a different item is logged but not applied:
+ * jeebus.spine's {@link Entity#addUseCase} has no counterpart for removing a use case, so
+ * rebinding needs a restart of this add-on.
  *
  * @author Stamate Viorel - Initial contribution
  */

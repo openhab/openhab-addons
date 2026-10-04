@@ -31,7 +31,7 @@ class EEBusCertificateStorageTest {
     @Test
     void generatesAndPersistsACertificateOnFirstRead() throws Exception {
         FakeStorage storage = new FakeStorage();
-        EEBusCertificateStorage certStorage = new EEBusCertificateStorage(storage, "eebus:controllableSystem:test",
+        EEBusCertificateStorage certStorage = new EEBusCertificateStorage(storage, "org.openhab.io.eebus.identity",
                 "CN=openHAB EEBus test", 3650);
 
         assertTrue(storage.getKeys().isEmpty());
@@ -44,7 +44,7 @@ class EEBusCertificateStorageTest {
     @Test
     void returnsTheSameIdentityOnRepeatedReads() throws Exception {
         FakeStorage storage = new FakeStorage();
-        EEBusCertificateStorage certStorage = new EEBusCertificateStorage(storage, "eebus:controllableSystem:test",
+        EEBusCertificateStorage certStorage = new EEBusCertificateStorage(storage, "org.openhab.io.eebus.identity",
                 "CN=openHAB EEBus test", 3650);
 
         CertificateInfo first = certStorage.readCertificate().orElseThrow();
@@ -55,25 +55,10 @@ class EEBusCertificateStorageTest {
     }
 
     @Test
-    void resetCausesAFreshIdentityToBeGenerated() throws Exception {
+    void differentIdentityKeysGetIndependentIdentities() throws Exception {
         FakeStorage storage = new FakeStorage();
-        EEBusCertificateStorage certStorage = new EEBusCertificateStorage(storage, "eebus:controllableSystem:test",
-                "CN=openHAB EEBus test", 3650);
-
-        CertificateInfo first = certStorage.readCertificate().orElseThrow();
-        certStorage.reset();
-        CertificateInfo second = certStorage.readCertificate().orElseThrow();
-
-        assertNotEquals(first.certificate.getSerialNumber(), second.certificate.getSerialNumber());
-    }
-
-    @Test
-    void twoThingsGetIndependentIdentitiesInTheSameStorage() throws Exception {
-        FakeStorage storage = new FakeStorage();
-        EEBusCertificateStorage storageA = new EEBusCertificateStorage(storage, "eebus:controllableSystem:a", "CN=A",
-                3650);
-        EEBusCertificateStorage storageB = new EEBusCertificateStorage(storage, "eebus:controllableSystem:b", "CN=B",
-                3650);
+        EEBusCertificateStorage storageA = new EEBusCertificateStorage(storage, "identity-a", "CN=A", 3650);
+        EEBusCertificateStorage storageB = new EEBusCertificateStorage(storage, "identity-b", "CN=B", 3650);
 
         CertificateInfo a = storageA.readCertificate().orElseThrow();
         CertificateInfo b = storageB.readCertificate().orElseThrow();

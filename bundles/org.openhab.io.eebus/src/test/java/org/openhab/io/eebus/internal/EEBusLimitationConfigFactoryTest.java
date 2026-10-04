@@ -23,12 +23,9 @@ import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.SimpleLimit
 /**
  * Tests for {@link EEBusLimitationConfigFactory}.
  * <p>
- * These specifically guard against transposing {@code nominalMax} and {@code failsafeLimit} into
- * {@link SimpleLimitationConfig}'s constructor - it takes {@code (failsafeDurationMin,
- * failsafeLimit, loadControlLimit, nominalMax)}, not "nominal, then failsafe". Getting that wrong
- * was a real, confirmed bug in the predecessor binding's equivalent factory, found only via live
- * protocol testing - ported here as a standing regression test since the same risk applies to
- * this metadata-driven rewrite.
+ * {@link SimpleLimitationConfig}'s constructor takes {@code (failsafeDurationMin, failsafeLimit,
+ * loadControlLimit, nominalMax)}, so these guard against transposing {@code nominalMax} and
+ * {@code failsafeLimit}.
  *
  * @author Stamate Viorel - Initial contribution
  */

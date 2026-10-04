@@ -75,11 +75,9 @@
 		</parameter>
 		<parameter name="entityType" type="text" groupName="identity">
 			<label>SPINE Entity Type</label>
-			<description>SPINE entity type hosting the LPC/LPP use cases. Limited to the entity types the
-				jEEBus LPC/LPP
-				implementation actually allows (verified live against a real EEBus partner) -
-				CEM is the correct default for a
-				generic controllable system.</description>
+			<description>SPINE entity type hosting the LPC/LPP use cases, limited to the types the jEEBus use cases
+				accept. CEM
+				fits openHAB acting as the energy manager of the household.</description>
 			<default>CEM</default>
 			<advanced>true</advanced>
 			<options>
