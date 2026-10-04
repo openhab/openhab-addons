@@ -23,7 +23,9 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -41,7 +43,6 @@ import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIConnectio
 import org.openhab.binding.philipsair.internal.connection.PhilipsAirAPIException;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.ChannelUID;
@@ -52,7 +53,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 
@@ -84,15 +84,18 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     private final Queue<String> latchTimeouts = new ConcurrentLinkedQueue<>();
     // returned instead of the connection by the creations after the first one
     private volatile @Nullable PhilipsAirAPIConnection replacementConnection;
+    // when set, the updates the handler schedules are collected instead of being run on the scheduler
+    private volatile boolean collectUpdates;
+    private final List<Runnable> collectedUpdates = new CopyOnWriteArrayList<>();
+    private volatile @Nullable RuntimeException executeFailure;
 
     private @NonNullByDefault({}) PhilipsAirHandler handler;
 
     @BeforeEach
     public void setUp() {
-        Configuration config = new Configuration();
-        config.put(PhilipsAirConfiguration.CONFIG_HOST, "1.1.1.1");
-        Thing thing = ThingBuilder.create(THING_TYPE_COAP, THING_UID).withConfiguration(config)
-                .withChannel(ChannelBuilder.create(POWER_CHANNEL, "Switch").build()).build();
+        Thing thing = PhilipsAirHandlerFixture.thing(THING_TYPE_COAP, THING_UID,
+                PhilipsAirHandlerFixture.configuration("1.1.1.1"), Map.of(),
+                List.of(ChannelBuilder.create(POWER_CHANNEL, "Switch").build()));
         handler = new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider) {
             @Override
             PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
@@ -105,6 +108,19 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
                 // a blocking connection attempt does not necessarily react to the interrupt of a cancelled job
                 awaitUninterruptibly(releaseConnection);
                 return connection;
+            }
+
+            @Override
+            void executeUpdate(Runnable task) {
+                RuntimeException failure = executeFailure;
+                if (failure != null) {
+                    throw failure;
+                }
+                if (collectUpdates) {
+                    collectedUpdates.add(task);
+                } else {
+                    super.executeUpdate(task);
+                }
             }
         };
         handler.setCallback(callback);
@@ -157,11 +173,9 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
     }
 
     private Map<String, String> initializeWithStoredProfile(String storedHost) {
-        Configuration config = new Configuration();
-        config.put(PhilipsAirConfiguration.CONFIG_HOST, "1.1.1.1");
-        Thing thing = ThingBuilder.create(THING_TYPE_COAP, THING_UID).withConfiguration(config)
-                .withProperties(Map.of(PROPERTY_DEVICE_PROFILE, "UNICORN", PROPERTY_DEVICE_PROFILE_HOST, storedHost))
-                .build();
+        Thing thing = PhilipsAirHandlerFixture.thing(THING_TYPE_COAP, THING_UID,
+                PhilipsAirHandlerFixture.configuration("1.1.1.1"),
+                Map.of(PROPERTY_DEVICE_PROFILE, "UNICORN", PROPERTY_DEVICE_PROFILE_HOST, storedHost), List.of());
         PhilipsAirHandler storedHandler = new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider) {
             @Override
             PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
@@ -247,6 +261,126 @@ public class PhilipsAirHandlerLifecycleTest extends JavaTest {
         clearInvocations(callback);
         handler.dataReceived(connection);
         verify(callback, never()).stateUpdated(any(), any());
+    }
+
+    private void initializeAndCollectUpdates() {
+        collectUpdates = true;
+        releaseConnection.countDown();
+        handler.initialize();
+        waitForAssert(() -> verify(connection).ensureConnected());
+    }
+
+    private void stubStatus() throws PhilipsAirAPIException {
+        stubConnectionConfig(connection);
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
+    }
+
+    @Test
+    public void notificationsAreCoalescedWhileTheUpdateIsQueued() throws Exception {
+        stubStatus();
+        initializeAndCollectUpdates();
+
+        for (int i = 0; i < 5; i++) {
+            handler.dataReceived(connection);
+        }
+
+        assertEquals(1, collectedUpdates.size());
+        verify(connection, never()).getAirPurifierStatus(any());
+        collectedUpdates.get(0).run();
+        verify(connection, times(1)).getAirPurifierStatus(any());
+    }
+
+    @Test
+    public void notificationWhileTheUpdateRunsIsNotLost() throws Exception {
+        stubConnectionConfig(connection);
+        AtomicInteger requests = new AtomicInteger();
+        when(connection.getAirPurifierStatus(any())).thenAnswer(invocation -> {
+            if (requests.incrementAndGet() == 1) {
+                handler.dataReceived(connection);
+            }
+            return new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class);
+        });
+        initializeAndCollectUpdates();
+
+        handler.dataReceived(connection);
+        assertEquals(1, collectedUpdates.size());
+        collectedUpdates.get(0).run();
+
+        assertEquals(2, collectedUpdates.size());
+        assertEquals(1, requests.get());
+        collectedUpdates.get(1).run();
+        assertEquals(2, requests.get());
+    }
+
+    @Test
+    public void notificationIsScheduledAgainWhenSchedulingFailed() throws Exception {
+        stubStatus();
+        initializeAndCollectUpdates();
+
+        executeFailure = new RejectedExecutionException("shut down");
+        assertDoesNotThrow(() -> handler.dataReceived(connection));
+        assertTrue(collectedUpdates.isEmpty());
+
+        executeFailure = null;
+        handler.dataReceived(connection);
+        assertEquals(1, collectedUpdates.size());
+        collectedUpdates.get(0).run();
+        verify(connection, times(1)).getAirPurifierStatus(any());
+    }
+
+    @Test
+    public void notificationOfAReplacedConnectionDoesNotDisplaceTheCurrentOne() throws Exception {
+        replacementConnection = secondConnection;
+        lenient().when(secondConnection.isPushingStatus()).thenReturn(true);
+        stubConnectionConfig(secondConnection);
+        when(secondConnection.getAirPurifierStatus(any()))
+                .thenReturn(new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
+        collectUpdates = true;
+        releaseConnection.countDown();
+        handler.initialize();
+        waitForAssert(() -> verify(connection).ensureConnected());
+        handler.dispose();
+        handler.initialize();
+        waitForAssert(() -> verify(secondConnection).ensureConnected());
+
+        handler.dataReceived(secondConnection);
+        handler.dataReceived(connection);
+
+        assertEquals(1, collectedUpdates.size());
+        collectedUpdates.get(0).run();
+        verify(secondConnection, times(1)).getAirPurifierStatus(any());
+        verify(connection, never()).getAirPurifierStatus(any());
+    }
+
+    @Test
+    public void concurrentUpdatesRequestTheDeviceInfoOnce() throws Exception {
+        stubConnectionConfig(connection);
+        when(connection.getAirPurifierDevice(any())).thenAnswer(invocation -> {
+            requestStarted.countDown();
+            awaitUninterruptibly(finishRequest);
+            return new Gson().fromJson("{\"modelid\":\"AC2889/10\"}", PhilipsAirPurifierDeviceDTO.class);
+        });
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(new Gson().fromJson("{\"pwr\":\"1\"}", PhilipsAirPurifierDataDTO.class));
+        releaseConnection.countDown();
+        handler.initialize();
+        waitForAssert(() -> verify(connection).ensureConnected());
+
+        CompletableFuture<Void> first = CompletableFuture.runAsync(() -> handler.updateData(connection));
+        assertTrue(requestStarted.await(10, TimeUnit.SECONDS));
+        // the update that overlaps does not request the device info again
+        handler.updateData(connection);
+        finishRequest.countDown();
+        first.get(10, TimeUnit.SECONDS);
+
+        verify(connection, times(1)).getAirPurifierDevice(any());
+        verify(connection, times(2)).getAirPurifierStatus(any());
+
+        // the info of the update that was applied late is known, so the next update does not request it again
+        handler.updateData(connection);
+        verify(connection, times(1)).getAirPurifierDevice(any());
+        verify(connection, times(3)).getAirPurifierStatus(any());
     }
 
     @Test

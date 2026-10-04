@@ -17,17 +17,25 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.philipsair.internal.FakeHttpDevice.Call;
@@ -43,6 +51,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.test.java.JavaTest;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -51,7 +60,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -78,7 +86,10 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
     private static final String DEVICE = "{\"name\":\"Philips\",\"type\":\"AC2889\",\"modelid\":\"AC2889/10\",\"swversion\":\"1.0.4\"}";
     private static final String FILTERS_JSON = "{\"fltsts0\":10,\"fltsts1\":2000,\"fltsts2\":3000}";
+    private static final String FILTERS_WITH_WICK_JSON = "{\"fltsts0\":10,\"fltsts1\":2000,\"fltsts2\":3000,\"wicksts\":400}";
     private static final String STATUS = "{\"om\":\"s\",\"pwr\":\"1\",\"cl\":false,\"aqil\":75,\"uil\":\"1\",\"dt\":0,\"dtrs\":0,\"mode\":\"P\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":8,\"iaql\":2,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0}";
+    // the status with the values of the channels of the settings the devices of some models report
+    private static final String STATUS_WITH_SETTINGS = "{\"om\":\"s\",\"pwr\":\"1\",\"cl\":false,\"aqil\":75,\"uil\":\"1\",\"dt\":0,\"dtrs\":0,\"mode\":\"P\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":8,\"iaql\":2,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0,\"tvoc\":3,\"rssi\":-50,\"beep\":true,\"standby\":false,\"allslp\":true,\"dispon\":true,\"dispbr\":\"115\",\"lamp\":\"2\"}";
     private static final String STATUS_PWR_OFF = "{\"om\":\"0\",\"pwr\":\"0\",\"cl\":false,\"aqil\":75,\"uil\":\"1\",\"dt\":0,\"dtrs\":0,\"mode\":\"P\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":2,\"iaql\":1,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0}";
     private static final String STATUS_UIL_OFF = "{\"om\":\"s\",\"pwr\":\"1\",\"cl\":false,\"aqil\":75,\"uil\":\"0\",\"dt\":0,\"dtrs\":0,\"mode\":\"P\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":6,\"iaql\":2,\"aqit\":4,\"ddp\":\"1\",\"err\":0,\"wl\":0}";
     private static final String STATUS_DDP_0 = "{\"om\":\"s\",\"pwr\":\"1\",\"cl\":false,\"aqil\":75,\"uil\":\"0\",\"dt\":0,\"dtrs\":0,\"mode\":\"P\",\"func\":\"PH\",\"rhset\":40,\"rh\":56,\"temp\":21,\"pm25\":9,\"iaql\":3,\"aqit\":4,\"ddp\":\"0\",\"err\":0,\"wl\":0}";
@@ -91,11 +102,15 @@ public class PhilipsAirHandlerTest extends JavaTest {
     private static final List<String> ALL_CHANNELS = List.of("controls#power:Switch", "controls#fan-speed:String",
             "controls#child-lock:Switch", "controls#mode:String", "controls#timer:Number",
             "controls#timer-remaining:Number", "controls#target-humidity:Number", "controls#function:String",
-            "controls-ui#button-light:Switch", "controls-ui#light-level:Number:Dimensionless",
-            "controls-ui#displayed-index:String", "sensors#pm25:Number:Density", "sensors#allergen-index:Number",
+            "controls#standby-sensors:Switch", "controls#allergy-sleep:Switch", "controls-ui#button-light:Switch",
+            "controls-ui#light-level:Number:Dimensionless", "controls-ui#displayed-index:String",
+            "controls-ui#beep:Switch", "controls-ui#display:Switch", "controls-ui#display-brightness:String",
+            "controls-ui#lamp-mode:String", "sensors#pm25:Number:Density", "sensors#allergen-index:Number",
             "sensors#air-quality-threshold:Number", "sensors#error-code:String",
             "sensors#humidity:Number:Dimensionless", "sensors#temperature:Number:Temperature",
-            "sensors#water-level:Number:Dimensionless");
+            "sensors#water-level:Number:Dimensionless", "sensors#tvoc:Number", "sensors#rssi:Number:Power",
+            "filters#pre-filter-life:Number:Time", "filters#hepa-filter-life:Number:Time",
+            "filters#carbon-filter-life:Number:Time", "filters#wick-filter-life:Number:Time");
 
     private static final Gson GSON = new Gson();
 
@@ -123,15 +138,15 @@ public class PhilipsAirHandlerTest extends JavaTest {
         config.put(PhilipsAirConfiguration.CONFIG_KEY, FAKE_KEY);
         extraConfig.getProperties().forEach(config::put);
 
-        ThingBuilder thingBuilder = ThingBuilder.create(THING_TYPE_AC2889_10, THING_UID).withConfiguration(config);
+        List<Channel> thingChannels = new ArrayList<>();
         for (String channel : channels) {
             String[] parts = channel.split(":", 2);
             ChannelUID channelUID = new ChannelUID(THING_UID, parts[0]);
-            thingBuilder.withChannel(ChannelBuilder.create(channelUID, parts[1]).build());
+            thingChannels.add(ChannelBuilder.create(channelUID, parts[1]).build());
             linkedChannels.add(channelUID);
         }
-        PhilipsAirHandler handler = new PhilipsAirHandler(thingBuilder.build(), device.httpClient(),
-                stateDescriptionProvider) {
+        Thing thing = PhilipsAirHandlerFixture.thing(THING_TYPE_AC2889_10, THING_UID, config, Map.of(), thingChannels);
+        PhilipsAirHandler handler = new PhilipsAirHandler(thing, device.httpClient(), stateDescriptionProvider) {
             @Override
             PhilipsAirAPIConnection createConnection(PhilipsAirConfiguration config) {
                 connectionsCreated.incrementAndGet();
@@ -149,9 +164,13 @@ public class PhilipsAirHandlerTest extends JavaTest {
      * of the time they are requested.
      */
     private void respondWith(String deviceJson, String statusJson) throws Exception {
+        respondWith(deviceJson, statusJson, FILTERS_JSON);
+    }
+
+    private void respondWith(String deviceJson, String statusJson, String filtersJson) throws Exception {
         device.respond(Endpoint.DEVICE, HttpMethod.GET, deviceJson);
         device.respond(Endpoint.STATUS, HttpMethod.GET, statusJson);
-        device.respond(Endpoint.FILTERS, HttpMethod.GET, FILTERS_JSON);
+        device.respond(Endpoint.FILTERS, HttpMethod.GET, filtersJson);
     }
 
     private static boolean isOnline(ThingStatusInfo statusInfo) {
@@ -182,6 +201,21 @@ public class PhilipsAirHandlerTest extends JavaTest {
         return states.get(states.size() - 1);
     }
 
+    /**
+     * Asserts that every state published for the channel so far is the expected one. This also fails when a wrong
+     * state was published and corrected later.
+     */
+    private void assertAllStates(String channel, State expected) {
+        ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
+        verify(callback, atLeastOnce()).stateUpdated(eq(new ChannelUID(THING_UID, channel)), stateCaptor.capture());
+        for (State state : stateCaptor.getAllValues()) {
+            assertEquals(expected, state, channel);
+            if (expected instanceof QuantityType<?> expectedQuantity && state instanceof QuantityType<?> quantity) {
+                assertEquals(expectedQuantity.getUnit(), quantity.getUnit(), channel);
+            }
+        }
+    }
+
     @Test
     public void initializeGoesOnlineAfterFirstData() throws Exception {
         respondWith(DEVICE, STATUS);
@@ -189,11 +223,18 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         initializeAndWaitForOnline(handler);
 
-        ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-        verify(callback, atLeast(2)).statusUpdated(any(Thing.class), statusInfoCaptor.capture());
-        List<ThingStatusInfo> statusInfos = statusInfoCaptor.getAllValues();
-        assertEquals(ThingStatus.UNKNOWN, statusInfos.get(0).getStatus());
-        assertEquals(ThingStatus.ONLINE, statusInfos.get(statusInfos.size() - 1).getStatus());
+        InOrder statusOrder = inOrder(callback);
+        statusOrder.verify(callback, atLeastOnce()).statusUpdated(any(Thing.class),
+                argThat(statusInfo -> statusInfo.getStatus() == ThingStatus.UNKNOWN));
+        statusOrder.verify(callback, atLeastOnce()).statusUpdated(any(Thing.class),
+                argThat(PhilipsAirHandlerTest::isOnline));
+        // no other status in between or after
+        ArgumentCaptor<ThingStatusInfo> statuses = ArgumentCaptor.forClass(ThingStatusInfo.class);
+        verify(callback, atLeastOnce()).statusUpdated(any(Thing.class), statuses.capture());
+        assertTrue(statuses.getAllValues().stream().map(ThingStatusInfo::getStatus)
+                .allMatch(status -> status == ThingStatus.UNKNOWN || status == ThingStatus.ONLINE));
+        assertEquals(ThingStatus.UNKNOWN, statuses.getAllValues().get(0).getStatus());
+        assertEquals(ThingStatus.ONLINE, statuses.getAllValues().get(statuses.getAllValues().size() - 1).getStatus());
         // the first update requests the device info, the status and the filters (to detect the optional filter channel)
         assertEquals(
                 List.of("http://1.1.1.1/di/v1/products/1/device", "http://1.1.1.1/di/v1/products/1/air",
@@ -206,29 +247,41 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
     @Test
     public void stateUpdatesForAllChannels() throws Exception {
-        respondWith(DEVICE, STATUS);
+        respondWith(DEVICE, STATUS_WITH_SETTINGS, FILTERS_WITH_WICK_JSON);
         PhilipsAirHandler handler = createHandler(ALL_CHANNELS, new Configuration());
 
         initializeAndWaitForOnline(handler);
 
-        assertEquals(OnOffType.ON, lastState("controls#power"));
-        assertEquals(new StringType("s"), lastState("controls#fan-speed"));
-        assertEquals(OnOffType.OFF, lastState("controls#child-lock"));
-        assertEquals(new StringType("P"), lastState("controls#mode"));
-        assertEquals(new DecimalType(0), lastState("controls#timer"));
-        assertEquals(new QuantityType<>(0, Units.MINUTE), lastState("controls#timer-remaining"));
-        assertEquals(new QuantityType<>(40, Units.PERCENT), lastState("controls#target-humidity"));
-        assertEquals(new StringType("PH"), lastState("controls#function"));
-        assertEquals(OnOffType.ON, lastState("controls-ui#button-light"));
-        assertEquals(new QuantityType<>(75, Units.PERCENT), lastState("controls-ui#light-level"));
-        assertEquals(new StringType("1"), lastState("controls-ui#displayed-index"));
-        assertEquals(new QuantityType<>(8, DENSITY_UNIT), lastState("sensors#pm25"));
-        assertEquals(new DecimalType(2), lastState("sensors#allergen-index"));
-        assertEquals(new DecimalType(4), lastState("sensors#air-quality-threshold"));
-        assertEquals(new StringType("0"), lastState("sensors#error-code"));
-        assertEquals(56, ((QuantityType<?>) lastState("sensors#humidity")).intValue());
-        assertEquals(21, ((QuantityType<?>) lastState("sensors#temperature")).intValue());
-        assertEquals(new QuantityType<>(0, Units.PERCENT), lastState("sensors#water-level"));
+        assertAllStates("controls#power", OnOffType.ON);
+        assertAllStates("controls#fan-speed", new StringType("s"));
+        assertAllStates("controls#child-lock", OnOffType.OFF);
+        assertAllStates("controls#mode", new StringType("P"));
+        assertAllStates("controls#timer", new DecimalType(0));
+        assertAllStates("controls#timer-remaining", new QuantityType<>(0, Units.MINUTE));
+        assertAllStates("controls#target-humidity", new QuantityType<>(40, Units.PERCENT));
+        assertAllStates("controls#function", new StringType("PH"));
+        assertAllStates("controls#standby-sensors", OnOffType.OFF);
+        assertAllStates("controls#allergy-sleep", OnOffType.ON);
+        assertAllStates("controls-ui#button-light", OnOffType.ON);
+        assertAllStates("controls-ui#light-level", new QuantityType<>(75, Units.PERCENT));
+        assertAllStates("controls-ui#displayed-index", new StringType("1"));
+        assertAllStates("controls-ui#beep", OnOffType.ON);
+        assertAllStates("controls-ui#display", OnOffType.ON);
+        assertAllStates("controls-ui#display-brightness", new StringType("115"));
+        assertAllStates("controls-ui#lamp-mode", new StringType("2"));
+        assertAllStates("sensors#pm25", new QuantityType<>(8, DENSITY_UNIT));
+        assertAllStates("sensors#allergen-index", new DecimalType(2));
+        assertAllStates("sensors#air-quality-threshold", new DecimalType(4));
+        assertAllStates("sensors#error-code", new StringType("0"));
+        assertAllStates("sensors#humidity", new QuantityType<>(56, HUMIDITY_UNIT));
+        assertAllStates("sensors#temperature", new QuantityType<>(21, TEMPERATURE_UNIT));
+        assertAllStates("sensors#water-level", new QuantityType<>(0, Units.PERCENT));
+        assertAllStates("sensors#tvoc", new DecimalType(3));
+        assertAllStates("sensors#rssi", new QuantityType<>(-50, Units.DECIBEL_MILLIWATTS));
+        assertAllStates("filters#pre-filter-life", new QuantityType<>(10, Units.HOUR));
+        assertAllStates("filters#hepa-filter-life", new QuantityType<>(2000, Units.HOUR));
+        assertAllStates("filters#carbon-filter-life", new QuantityType<>(3000, Units.HOUR));
+        assertAllStates("filters#wick-filter-life", new QuantityType<>(400, Units.HOUR));
     }
 
     @Test
@@ -242,15 +295,49 @@ public class PhilipsAirHandlerTest extends JavaTest {
 
         initializeAndWaitForOnline(handler);
 
-        QuantityType<?> humidity = (QuantityType<?>) lastState("sensors#humidity");
-        assertEquals(55f, humidity.floatValue());
-        assertEquals(HUMIDITY_UNIT, humidity.getUnit());
-        QuantityType<?> temperature = (QuantityType<?>) lastState("sensors#temperature");
-        assertEquals(22f, temperature.floatValue());
-        assertEquals(TEMPERATURE_UNIT, temperature.getUnit());
+        assertAllStates("sensors#humidity", new QuantityType<>(55, HUMIDITY_UNIT));
+        assertAllStates("sensors#temperature", new QuantityType<>(22, TEMPERATURE_UNIT));
     }
 
-    private void sendCommandTemplate(String channel, Command command, State stateBefore, State stateAfter,
+    @ParameterizedTest
+    @CsvSource({ "50.0, 100", "-100.0, 0" })
+    public void humidityWithOffsetStaysWithinTheRange(double offset, float expected) throws Exception {
+        respondWith(DEVICE, STATUS);
+        Configuration offsets = new Configuration();
+        offsets.put(PhilipsAirConfiguration.CONFIG_HUMIDITY_OFFSET, offset);
+        PhilipsAirHandler handler = createHandler(List.of("sensors#humidity:Number:Dimensionless"), offsets);
+
+        initializeAndWaitForOnline(handler);
+
+        assertAllStates("sensors#humidity", new QuantityType<>(expected, HUMIDITY_UNIT));
+    }
+
+    static Stream<Arguments> commandCases() {
+        return Stream.of(
+                Arguments.of("power", "controls#power:Switch", OnOffType.OFF, OnOffType.ON, OnOffType.OFF, STATUS,
+                        STATUS_PWR_OFF, "{\"pwr\":\"0\"}"),
+                Arguments.of("button light", "controls-ui#button-light:Switch", OnOffType.OFF, OnOffType.ON,
+                        OnOffType.OFF, STATUS, STATUS_UIL_OFF, "{\"uil\":\"0\"}"),
+                Arguments.of("displayed index", "controls-ui#displayed-index:String", new StringType("0"),
+                        new StringType("1"), new StringType("0"), STATUS, STATUS_DDP_0, "{\"ddp\":\"0\"}"),
+                Arguments.of("manual fan speed", "controls#fan-speed:String", new StringType("1"), new StringType("s"),
+                        new StringType("1"), STATUS, STATUS_OM_1, "{\"om\":\"1\",\"mode\":\"M\"}"),
+                Arguments.of("silent fan speed", "controls#fan-speed:String", new StringType("s"), new StringType("1"),
+                        new StringType("s"), STATUS_OM_1, STATUS, "{\"om\":\"s\",\"mode\":\"M\"}"),
+                Arguments.of("light level", "controls-ui#light-level:Number:Dimensionless", new DecimalType(25),
+                        new QuantityType<>(75, Units.PERCENT), new QuantityType<>(25, Units.PERCENT), STATUS,
+                        STATUS_AQIL_25, "{\"aqil\":25}"),
+                Arguments.of("timer", "controls#timer:Number", new DecimalType(1), new DecimalType(0),
+                        new DecimalType(1), STATUS, STATUS_DT_1, "{\"dt\":1}"),
+                Arguments.of("mode", "controls#mode:String", new StringType("A"), new StringType("P"),
+                        new StringType("A"), STATUS, STATUS_MODE_A, "{\"mode\":\"A\"}"),
+                Arguments.of("child lock", "controls#child-lock:Switch", OnOffType.ON, OnOffType.OFF, OnOffType.ON,
+                        STATUS, STATUS_CL_ON, "{\"cl\":true}"));
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("commandCases")
+    public void commandIsSent(String name, String channel, Command command, State stateBefore, State stateAfter,
             String statusBefore, String commandResponse, String expectedBody) throws Exception {
         respondWith(DEVICE, statusBefore);
         device.respondToCommandWithStatus(commandResponse);
@@ -267,61 +354,6 @@ public class PhilipsAirHandlerTest extends JavaTest {
         assertEquals(1, commands.size());
         assertEquals("http://1.1.1.1/di/v1/products/1/air", commands.get(0).url());
         assertEquals(expectedBody, device.decryptedBody(commands.get(0)));
-    }
-
-    @Test
-    public void powerCommandIsSent() throws Exception {
-        sendCommandTemplate("controls#power:Switch", OnOffType.OFF, OnOffType.ON, OnOffType.OFF, STATUS, STATUS_PWR_OFF,
-                "{\"pwr\":\"0\"}");
-    }
-
-    @Test
-    public void buttonLightCommandIsSent() throws Exception {
-        sendCommandTemplate("controls-ui#button-light:Switch", OnOffType.OFF, OnOffType.ON, OnOffType.OFF, STATUS,
-                STATUS_UIL_OFF, "{\"uil\":\"0\"}");
-    }
-
-    @Test
-    public void displayedIndexCommandIsSent() throws Exception {
-        sendCommandTemplate("controls-ui#displayed-index:String", new StringType("0"), new StringType("1"),
-                new StringType("0"), STATUS, STATUS_DDP_0, "{\"ddp\":\"0\"}");
-    }
-
-    @Test
-    public void manualFanSpeedCommandIsSent() throws Exception {
-        sendCommandTemplate("controls#fan-speed:String", new StringType("1"), new StringType("s"), new StringType("1"),
-                STATUS, STATUS_OM_1, "{\"om\":\"1\",\"mode\":\"M\"}");
-    }
-
-    @Test
-    public void silentFanSpeedCommandIsSent() throws Exception {
-        sendCommandTemplate("controls#fan-speed:String", new StringType("s"), new StringType("1"), new StringType("s"),
-                STATUS_OM_1, STATUS, "{\"om\":\"s\",\"mode\":\"M\"}");
-    }
-
-    @Test
-    public void lightLevelCommandIsSent() throws Exception {
-        sendCommandTemplate("controls-ui#light-level:Number:Dimensionless", new DecimalType(25),
-                new QuantityType<>(75, Units.PERCENT), new QuantityType<>(25, Units.PERCENT), STATUS, STATUS_AQIL_25,
-                "{\"aqil\":25}");
-    }
-
-    @Test
-    public void timerCommandIsSent() throws Exception {
-        sendCommandTemplate("controls#timer:Number", new DecimalType(1), new DecimalType(0), new DecimalType(1), STATUS,
-                STATUS_DT_1, "{\"dt\":1}");
-    }
-
-    @Test
-    public void modeCommandIsSent() throws Exception {
-        sendCommandTemplate("controls#mode:String", new StringType("A"), new StringType("P"), new StringType("A"),
-                STATUS, STATUS_MODE_A, "{\"mode\":\"A\"}");
-    }
-
-    @Test
-    public void childLockCommandIsSent() throws Exception {
-        sendCommandTemplate("controls#child-lock:Switch", OnOffType.ON, OnOffType.OFF, OnOffType.ON, STATUS,
-                STATUS_CL_ON, "{\"cl\":true}");
     }
 
     @Test

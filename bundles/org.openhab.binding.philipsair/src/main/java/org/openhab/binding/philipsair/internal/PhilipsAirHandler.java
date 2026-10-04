@@ -19,12 +19,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Time;
@@ -87,11 +88,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
             Map.entry(TVOC, SENSORS), Map.entry(RSSI, SENSORS), Map.entry(WICKS_FILTER, FILTERS),
             Map.entry(BEEP, CONTROLS_UI), Map.entry(DISPLAY_BRIGHTNESS, CONTROLS_UI), Map.entry(LAMP_MODE, CONTROLS_UI),
             Map.entry(DISPLAY, CONTROLS_UI), Map.entry(STANDBY_SENSORS, CONTROLS), Map.entry(ALLERGY_SLEEP, CONTROLS));
-    /**
-     * Model id prefixes of the devices that can show the gas (TVOC) index on the display, as offered by the Philips
-     * app.
-     */
-    private static final List<String> GAS_INDEX_MODELS = List.of("AC45", "AC6675", "AC56", "MS3", "MS4");
     private static final String DISPLAYED_INDEX_ALLERGEN = "0";
     private static final String DISPLAYED_INDEX_PM25 = "1";
     private static final String DISPLAYED_INDEX_GAS = "2";
@@ -102,7 +98,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private static final List<String> THRESHOLD_LABELS = List.of("Good", "Fair", "Poor", "Very poor");
     private static final List<Integer> THRESHOLDS = List.of(1, 4, 7, 10);
     private static final List<Integer> TEXT_THRESHOLDS = List.of(13, 19, 29, 40);
-    private static final List<String> TEXT_THRESHOLD_MODELS = List.of("AC4373", "AC4375");
     /**
      * The options of the channels as defined by the channel types, which are set again when the options of a device
      * profile are not used anymore.
@@ -131,6 +126,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
     private long generation;
     private @Nullable PhilipsAirPurifierDataDTO currentData;
     private volatile @Nullable PhilipsAirPurifierDeviceDTO deviceInfo;
+    // The update requested by the notifications that have not been handled yet. A task is queued while it is set, and
+    // notifications arriving before that task runs are replaced by the newest one, as each update requests the
+    // current status anyway.
+    private final AtomicReference<@Nullable PendingUpdate> pendingUpdate = new AtomicReference<>();
+    private final AtomicBoolean deviceInfoRequested = new AtomicBoolean();
     private @Nullable PhilipsAirPurifierFiltersDTO filters;
     // the host the data above was received from, it is discarded when the thing is configured for another device
     private String dataHost = "";
@@ -282,7 +282,7 @@ public class PhilipsAirHandler extends BaseThingHandler {
                 if (intCommand == null) {
                     return null;
                 }
-                if (hasTextThresholds(deviceInfo)) {
+                if (PhilipsAirModels.hasTextThresholds(deviceInfo)) {
                     data.setAqit(intCommand.toString());
                 } else {
                     data.setAqit(intCommand);
@@ -522,15 +522,44 @@ public class PhilipsAirHandler extends BaseThingHandler {
      * Called by a connection when the device pushed a new status.
      */
     void dataReceived(PhilipsAirAPIConnection source) {
-        long generation;
+        PendingUpdate pending;
+        boolean queued;
+        // stored under the lock the connection is replaced under, so a notification of a replaced connection cannot
+        // overwrite one of the current connection
         synchronized (connectionLock) {
             if (!source.equals(connection)) {
                 return;
             }
-            generation = this.generation;
+            pending = new PendingUpdate(source, generation);
+            queued = pendingUpdate.getAndSet(pending) == null;
         }
-        // not on the thread of the connection, as updating calls the framework
-        scheduler.execute(() -> updateData(source, generation));
+        if (queued) {
+            try {
+                executeUpdate(this::runPendingUpdate);
+            } catch (RuntimeException e) {
+                // not rethrown, the connection thread has no use for it. Without a queued task the next notification
+                // has to schedule one.
+                pendingUpdate.set(null);
+                logger.debug("Could not schedule the update of {}: {}", thing.getUID(), e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Runs the update on the scheduler, not on the thread of the connection, as updating calls the framework.
+     */
+    void executeUpdate(Runnable task) {
+        scheduler.execute(task);
+    }
+
+    private void runPendingUpdate() {
+        PendingUpdate pending = pendingUpdate.getAndSet(null);
+        if (pending != null) {
+            updateData(pending.connection(), pending.generation());
+        }
+    }
+
+    private record PendingUpdate(PhilipsAirAPIConnection connection, long generation) {
     }
 
     void updateData(@Nullable PhilipsAirAPIConnection connection) {
@@ -553,7 +582,16 @@ public class PhilipsAirHandler extends BaseThingHandler {
         }
         synchronized (updateLock) {
             // the request may have blocked while the handler was disposed
-            if (!isCurrent(generation) || sequence < appliedSequence) {
+            if (!isCurrent(generation)) {
+                return;
+            }
+            if (sequence < appliedSequence) {
+                // the device info is static, so it is kept although a later request was applied first. What is derived
+                // from it is applied by the next update.
+                PhilipsAirPurifierDeviceDTO received = status != null ? status.deviceInfo() : null;
+                if (this.deviceInfo == null && received != null) {
+                    this.deviceInfo = received;
+                }
                 return;
             }
             appliedSequence = sequence;
@@ -594,7 +632,15 @@ public class PhilipsAirHandler extends BaseThingHandler {
 
         String host = config.getHost();
         // the device info is static, so it is only requested once
-        PhilipsAirPurifierDeviceDTO deviceInfo = this.deviceInfo == null ? connection.getAirPurifierDevice(host) : null;
+        PhilipsAirPurifierDeviceDTO deviceInfo = null;
+        // a concurrent update proceeds without it, the next update has it
+        if (this.deviceInfo == null && deviceInfoRequested.compareAndSet(false, true)) {
+            try {
+                deviceInfo = connection.getAirPurifierDevice(host);
+            } finally {
+                deviceInfoRequested.set(false);
+            }
+        }
         PhilipsAirPurifierDataDTO data = connection.getAirPurifierStatus(host);
         PhilipsAirPurifierFiltersDTO filters = null;
         List<Channel> filterGroup = thing.getChannelsOfGroup(PhilipsAirBindingConstants.FILTERS);
@@ -705,13 +751,13 @@ public class PhilipsAirHandler extends BaseThingHandler {
         List<StateOption> indexOptions = new ArrayList<>(
                 List.of(new StateOption(DISPLAYED_INDEX_ALLERGEN, "Allergen Index"),
                         new StateOption(DISPLAYED_INDEX_PM25, "PM2.5")));
-        if (supportsGasIndex(deviceInfo, currentData)) {
+        if (PhilipsAirModels.supportsGasIndex(deviceInfo, currentData)) {
             indexOptions.add(new StateOption(DISPLAYED_INDEX_GAS, "Gas"));
         }
         stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CONTROLS_UI, DISPLAYED_INDEX),
                 indexOptions);
 
-        List<Integer> thresholds = hasTextThresholds(deviceInfo) ? TEXT_THRESHOLDS : THRESHOLDS;
+        List<Integer> thresholds = PhilipsAirModels.hasTextThresholds(deviceInfo) ? TEXT_THRESHOLDS : THRESHOLDS;
         List<StateOption> thresholdOptions = new ArrayList<>();
         for (int i = 0; i < thresholds.size(); i++) {
             thresholdOptions.add(new StateOption(thresholds.get(i).toString(), THRESHOLD_LABELS.get(i)));
@@ -757,35 +803,6 @@ public class PhilipsAirHandler extends BaseThingHandler {
         } else if (profileOptionChannels.remove(channelUID)) {
             stateDescriptionProvider.setStateOptions(channelUID, defaultOptions);
         }
-    }
-
-    static boolean supportsGasIndex(@Nullable PhilipsAirPurifierDeviceDTO deviceInfo,
-            @Nullable PhilipsAirPurifierDataDTO data) {
-        String model = getModel(deviceInfo);
-        if (model != null && GAS_INDEX_MODELS.stream().anyMatch(model::startsWith)) {
-            return true;
-        }
-        // models unknown to the Philips app are recognized by their gas sensor
-        return data != null && data.getTvoc() != null;
-    }
-
-    static boolean hasTextThresholds(@Nullable PhilipsAirPurifierDeviceDTO deviceInfo) {
-        String model = getModel(deviceInfo);
-        return model != null && TEXT_THRESHOLD_MODELS.stream().anyMatch(model::startsWith);
-    }
-
-    /**
-     * @return the upper case model id, or the device type if the device reports no model id
-     */
-    private static @Nullable String getModel(@Nullable PhilipsAirPurifierDeviceDTO deviceInfo) {
-        if (deviceInfo == null) {
-            return null;
-        }
-        String model = deviceInfo.getModelId();
-        if (model == null || model.isBlank()) {
-            model = deviceInfo.getType();
-        }
-        return model != null ? model.toUpperCase(Locale.ROOT) : null;
     }
 
     private static boolean isReported(String channelId, @Nullable PhilipsAirPurifierDataDTO data,
@@ -890,9 +907,11 @@ public class PhilipsAirHandler extends BaseThingHandler {
                     return errorCode != null ? errorCode.toString() : null;
                 case HUMIDITY:
                     Float humidity = data.getHumidity();
-                    return humidity != null
-                            ? new QuantityType<Dimensionless>(humidity + config.getHumidityOffset(), HUMIDITY_UNIT)
-                            : null;
+                    if (humidity == null) {
+                        return null;
+                    }
+                    float offsetHumidity = Math.max(0f, Math.min(100f, humidity + config.getHumidityOffset()));
+                    return new QuantityType<Dimensionless>(offsetHumidity, HUMIDITY_UNIT);
                 case HUMIDITY_SETPOINT:
                     return toPercent(data.getHumiditySetpoint());
                 case TEMPERATURE:

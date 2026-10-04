@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,9 +34,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -57,7 +53,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.StateOption;
 import org.w3c.dom.Document;
@@ -89,6 +84,23 @@ public class PhilipsAirHandlerOptionalChannelsTest {
             "pwr":"1","cl":false,"aqil":0,"uil":"0","mode":"M","pm25":3,"iaql":1,"aqit":4,"aqit_ext":0,"tvoc":1,\
             "ddp":"0","rddp":"0","err":0,"fltt1":"A3","fltt2":"C7","fltsts0":344,"fltsts1":1985,"fltsts2":1985}""";
 
+    // the channel type each optional channel has, as defined in channel-groups.xml and channels.xml
+    private static final Map<String, String> OPTIONAL_CHANNEL_TYPES = Map.ofEntries(
+            Map.entry("controls#timer", "philipsair:timer"),
+            Map.entry("controls#timer-remaining", "philipsair:timer-remaining"),
+            Map.entry("controls#target-humidity", "philipsair:target-humidity"),
+            Map.entry("controls#function", "philipsair:function"),
+            Map.entry("controls#standby-sensors", "philipsair:standby-sensors"),
+            Map.entry("controls#allergy-sleep", "philipsair:allergy-sleep"),
+            Map.entry("controls-ui#beep", "philipsair:beep"), Map.entry("controls-ui#display", "philipsair:display"),
+            Map.entry("controls-ui#display-brightness", "philipsair:display-brightness"),
+            Map.entry("controls-ui#lamp-mode", "philipsair:lamp-mode"),
+            Map.entry("sensors#humidity", "philipsair:humidity"),
+            Map.entry("sensors#temperature", "philipsair:temperature"),
+            Map.entry("sensors#water-level", "philipsair:water-level"), Map.entry("sensors#tvoc", "philipsair:tvoc"),
+            Map.entry("sensors#rssi", "philipsair:rssi"),
+            Map.entry("filters#wick-filter-life", "philipsair:wick-filter-life"));
+
     private final Gson gson = new Gson();
     // the channel type the handler requested for each channel it added
     private final Map<ChannelUID, ChannelTypeUID> requestedChannelTypes = new HashMap<>();
@@ -103,23 +115,33 @@ public class PhilipsAirHandlerOptionalChannelsTest {
     @BeforeEach
     public void setUp() {
         ThingUID thingUID = new ThingUID(THING_TYPE_COAP, "test");
-        Thing thing = ThingBuilder.create(THING_TYPE_COAP, thingUID).withConfiguration(new Configuration())
-                .withChannel(ChannelBuilder.create(new ChannelUID(thingUID, CONTROLS, POWER), "Switch").build())
-                .build();
-        handler = new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider);
-        handler.setCallback(callback);
-        // lenient, as these are only used by the tests that update the data or add channels
-        lenient().when(callback.createChannelBuilder(any(ChannelUID.class), any(ChannelTypeUID.class)))
-                .thenAnswer(invocation -> {
-                    ChannelUID channelUID = invocation.getArgument(0);
-                    requestedChannelTypes.put(channelUID, invocation.getArgument(1));
-                    return ChannelBuilder.create(channelUID, "Number");
-                });
-        lenient().when(connection.getConfig()).thenReturn(new PhilipsAirConfiguration());
+        Thing thing = PhilipsAirHandlerFixture.thing(THING_TYPE_COAP, thingUID, new Configuration(), Map.of(),
+                List.of(ChannelBuilder.create(new ChannelUID(thingUID, CONTROLS, POWER), "Switch").build()));
+        handler = PhilipsAirHandlerFixture.handler(thing, httpClient, stateDescriptionProvider, callback);
+    }
+
+    /**
+     * Makes the connection report its configuration, which the handler reads after each update that has data.
+     */
+    private void stubConnectionConfig() {
+        when(connection.getConfig()).thenReturn(new PhilipsAirConfiguration());
+    }
+
+    /**
+     * Makes the callback create the channels the handler adds, and records the channel type it requested for them.
+     */
+    private void stubChannelCreation() {
+        when(callback.createChannelBuilder(any(ChannelUID.class), any(ChannelTypeUID.class))).thenAnswer(invocation -> {
+            ChannelUID channelUID = invocation.getArgument(0);
+            requestedChannelTypes.put(channelUID, invocation.getArgument(1));
+            return ChannelBuilder.create(channelUID, "Number");
+        });
     }
 
     @Test
     public void reportedOptionalChannelsAreAddedOnce() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(gson.fromJson(HUMIDIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
 
@@ -136,18 +158,24 @@ public class PhilipsAirHandlerOptionalChannelsTest {
         handler.updateData(connection);
 
         verify(callback, times(1)).thingUpdated(any());
-        // the channels were only requested once, with the channel type of their id
-        assertEquals(7, requestedChannelTypes.size());
-        assertChannelTypesAreNamedAfterTheChannels();
+        // the channels were only requested once, each with its channel type
+        assertEquals(
+                Map.of("controls#timer", "philipsair:timer", "controls#timer-remaining", "philipsair:timer-remaining",
+                        "controls#target-humidity", "philipsair:target-humidity", "controls#function",
+                        "philipsair:function", "sensors#humidity", "philipsair:humidity", "sensors#temperature",
+                        "philipsair:temperature", "sensors#water-level", "philipsair:water-level"),
+                requestedChannelTypeIds());
     }
 
-    private void assertChannelTypesAreNamedAfterTheChannels() {
-        requestedChannelTypes.forEach((channelUID, channelTypeUID) -> assertEquals(
-                new ChannelTypeUID(BINDING_ID, channelUID.getIdWithoutGroup()), channelTypeUID, channelUID.getId()));
+    private Map<String, String> requestedChannelTypeIds() {
+        return requestedChannelTypes.entrySet().stream()
+                .collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue().toString()));
     }
 
     @Test
     public void everyOptionalChannelHasAChannelType() throws Exception {
+        stubChannelCreation();
+        stubConnectionConfig();
         // reports every value that adds an optional channel
         String status = """
                 {"modelid":"AC3210/12","pwr":"1","dt":0,"dtrs":0,"rhset":50,"func":"PH","rh":50,"temp":20,"wl":50,\
@@ -159,11 +187,9 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
         handler.updateData(connection);
 
-        Set<String> requestedIds = requestedChannelTypes.keySet().stream().map(ChannelUID::getId)
-                .collect(Collectors.toSet());
-        assertEquals(requestedIds, channelIds(handler.getThing().getChannels()).stream()
+        assertEquals(OPTIONAL_CHANNEL_TYPES.keySet(), channelIds(handler.getThing().getChannels()).stream()
                 .filter(id -> !"controls#power".equals(id)).collect(Collectors.toSet()));
-        assertChannelTypesAreNamedAfterTheChannels();
+        assertEquals(OPTIONAL_CHANNEL_TYPES, requestedChannelTypeIds());
         Set<String> channelTypeIds = channelTypeIds();
         requestedChannelTypes.values()
                 .forEach(channelTypeUID -> assertTrue(channelTypeIds.contains(channelTypeUID.getId()),
@@ -189,6 +215,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void tvocAndRssiChannelsAndFilterTypesAreAdded() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         when(connection.isPushingStatus()).thenReturn(true);
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(gson.fromJson(AC5659_STATUS, PhilipsAirPurifierDataDTO.class));
@@ -207,6 +235,7 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void unreportedOptionalChannelsAreNotAdded() throws PhilipsAirAPIException {
+        stubConnectionConfig();
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
 
@@ -218,6 +247,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void wickFilterChannelIsAddedWithoutLinkedFilterChannels() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
         when(connection.getAirPurifierFiltersStatus(any()))
@@ -231,6 +262,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void modelOptionsIncludeGasOnGasModelsAndAreSetOnce() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         when(connection.getAirPurifierDevice(any()))
                 .thenReturn(gson.fromJson(AC5659_STATUS, PhilipsAirPurifierDeviceDTO.class));
         when(connection.getAirPurifierStatus(any()))
@@ -248,6 +281,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void modelOptionsAreNotDecidedBeforeTheDeviceInfoIsKnown() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(gson.fromJson(AC5659_STATUS, PhilipsAirPurifierDataDTO.class));
 
@@ -267,6 +302,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void unicornOptionsAndChannelsAreSet() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         // the status as translated by the connection, see CoapProfile
         String status = """
                 {"modelid":"AC3210/12","pwr":"1","mode":"P","om":"1","dt":0,"dtrs":0,"aqit":7,\
@@ -292,6 +329,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void settingChannelsAreAddedAndControlled() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         // the status as translated by the connection, see CoapProfile
         String status = """
                 {"modelid":"AC3210/12","pwr":"1","beep":true,"standby":false,"allslp":false,"dispon":true,\
@@ -334,6 +373,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void defaultOptionsAreSetAgainWhenTheProfileChanges() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         String status = """
                 {"modelid":"AC3210/12","pwr":"1","mode":"P","om":"1","dt":0,"dtrs":0}""";
         when(connection.getDeviceProfile()).thenReturn(CoapProfile.UNICORN);
@@ -354,9 +395,11 @@ public class PhilipsAirHandlerOptionalChannelsTest {
         when(connection.getDeviceProfile()).thenReturn(CoapProfile.BASIC_GEN3);
         handler.updateData(connection);
 
-        assertEquals(List.of("s", "1", "2", "3", "t"), lastOptions(fanSpeed));
-        assertEquals(List.of("P", "A", "S", "M", "B", "N"), lastOptions(mode));
-        assertEquals(List.of("0", "1", "2", "3", "4", "5"), lastOptions(timer));
+        assertEquals(List.of(List.of("1", "2", "3", "4", "5", "m", "t"), List.of("s", "1", "2", "3", "t")),
+                allOptions(fanSpeed));
+        assertEquals(List.of(List.of("P", "S"), List.of("P", "A", "S", "M", "B", "N")), allOptions(mode));
+        assertEquals(List.of(List.of("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"),
+                List.of("0", "1", "2", "3", "4", "5")), allOptions(timer));
 
         // and not again for the same profile
         clearInvocations(stateDescriptionProvider);
@@ -366,6 +409,7 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void classicDevicesHaveNoProfileOptionsButStoreTheProfile() throws PhilipsAirAPIException {
+        stubConnectionConfig();
         when(connection.getDeviceProfile()).thenReturn(CoapProfile.CLASSIC);
         when(connection.getAirPurifierDevice(any()))
                 .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDeviceDTO.class));
@@ -380,14 +424,9 @@ public class PhilipsAirHandlerOptionalChannelsTest {
     }
 
     private PhilipsAirHandler handlerOf(String host, Map<String, String> properties) {
-        ThingUID thingUID = new ThingUID(THING_TYPE_COAP, "stored");
-        Configuration configuration = new Configuration();
-        configuration.put(PhilipsAirConfiguration.CONFIG_HOST, host);
-        Thing thing = ThingBuilder.create(THING_TYPE_COAP, thingUID).withConfiguration(configuration)
-                .withProperties(properties).build();
-        PhilipsAirHandler storedHandler = new PhilipsAirHandler(thing, httpClient, stateDescriptionProvider);
-        storedHandler.setCallback(callback);
-        return storedHandler;
+        Thing thing = PhilipsAirHandlerFixture.thing(THING_TYPE_COAP, new ThingUID(THING_TYPE_COAP, "stored"),
+                PhilipsAirHandlerFixture.configuration(host), properties, List.of());
+        return PhilipsAirHandlerFixture.handler(thing, httpClient, stateDescriptionProvider, callback);
     }
 
     private static PhilipsAirConfiguration configurationOf(String host) {
@@ -419,6 +458,7 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void statusWithAnotherProfileReplacesTheStoredProfile() throws PhilipsAirAPIException {
+        stubConnectionConfig();
         PhilipsAirHandler stored = handlerOf("1.1.1.1",
                 Map.of(PROPERTY_DEVICE_PROFILE, "BASIC_GEN3", PROPERTY_DEVICE_PROFILE_HOST, "1.1.1.1"));
         when(connection.getDeviceProfile()).thenReturn(CoapProfile.UNICORN);
@@ -437,6 +477,7 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void statusWithTheStoredProfileDoesNotUpdateTheThing() throws PhilipsAirAPIException {
+        stubConnectionConfig();
         PhilipsAirHandler stored = handlerOf("1.1.1.1", Map.of(PROPERTY_DEVICE_PROFILE, "UNICORN",
                 PROPERTY_DEVICE_PROFILE_HOST, "1.1.1.1", Thing.PROPERTY_VENDOR, VENDOR));
         when(connection.getDeviceProfile()).thenReturn(CoapProfile.UNICORN);
@@ -453,6 +494,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void filterStatusIsRequestedAgainAfterAFailure() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
         when(connection.getAirPurifierFiltersStatus(any())).thenThrow(new PhilipsAirAPIException("busy"))
@@ -472,6 +515,7 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void filterStatusIsNoLongerRequestedAfterTheProbeAttemptsFailed() throws PhilipsAirAPIException {
+        stubConnectionConfig();
         when(connection.getAirPurifierStatus(any()))
                 .thenReturn(gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class));
         when(connection.getAirPurifierFiltersStatus(any())).thenThrow(new PhilipsAirAPIException("busy"));
@@ -486,6 +530,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void displayedIndexOptionsExcludeGasOnOtherModels() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         when(connection.getAirPurifierDevice(any()))
                 .thenReturn(gson.fromJson(HUMIDIFIER_STATUS, PhilipsAirPurifierDeviceDTO.class));
         when(connection.getAirPurifierStatus(any()))
@@ -498,6 +544,7 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void thresholdsOfAc4373AreSentAsText() throws PhilipsAirAPIException {
+        stubConnectionConfig();
         String status = """
                 {"modelid":"AC4373/10","type":"AC4373","pwr":"1","aqit":"19","ddp":"1"}""";
         when(connection.getAirPurifierDevice(any()))
@@ -517,6 +564,8 @@ public class PhilipsAirHandlerOptionalChannelsTest {
 
     @Test
     public void thresholdsOfOtherModelsAreSentAsNumber() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
         when(connection.getAirPurifierDevice(any()))
                 .thenReturn(gson.fromJson(AC5659_STATUS, PhilipsAirPurifierDeviceDTO.class));
         when(connection.getAirPurifierStatus(any()))
@@ -529,75 +578,52 @@ public class PhilipsAirHandlerOptionalChannelsTest {
     }
 
     @Test
-    public void gasIndexOfUnknownModelsDependsOnTheGasSensor() {
-        PhilipsAirPurifierDeviceDTO unknownModel = gson.fromJson("{\"modelid\":\"XY1234/10\"}",
-                PhilipsAirPurifierDeviceDTO.class);
+    public void optionLabelsOfGasModelsAreTheTranslatedTexts() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson(AC5659_STATUS, PhilipsAirPurifierDeviceDTO.class));
+        when(connection.getAirPurifierStatus(any()))
+                .thenReturn(gson.fromJson(AC5659_STATUS, PhilipsAirPurifierDataDTO.class));
 
-        assertTrue(PhilipsAirHandler.supportsGasIndex(unknownModel,
-                gson.fromJson("{\"tvoc\":1}", PhilipsAirPurifierDataDTO.class)));
-        assertFalse(PhilipsAirHandler.supportsGasIndex(unknownModel,
-                gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class)));
-        assertTrue(PhilipsAirHandler
-                .supportsGasIndex(gson.fromJson("{\"type\":\"AC4558\"}", PhilipsAirPurifierDeviceDTO.class), null));
-    }
+        handler.updateData(connection);
 
-    private PhilipsAirPurifierDeviceDTO deviceOf(String json) {
-        return Objects.requireNonNull(gson.fromJson(json, PhilipsAirPurifierDeviceDTO.class));
-    }
-
-    @ParameterizedTest
-    @CsvSource({ "AC4558/10", "AC4550/10", "AC6675/10", "AC5659/10", "AC5660/10", "MS3000/10", "MS4000/10", "ac5659/10",
-            "ms3000/10" })
-    public void gasIndexIsSupportedByTheGasModels(String modelId) {
-        assertTrue(PhilipsAirHandler.supportsGasIndex(deviceOf("{\"modelid\":\"" + modelId + "\"}"), null));
-    }
-
-    @ParameterizedTest
-    @CsvSource({ "AC2889/10", "AC3829/10", "AC4373/10", "AC4375/10", "AC5000/10", "MS2000/10", "ac2889/10" })
-    public void gasIndexIsNotSupportedByOtherModels(String modelId) {
-        assertFalse(PhilipsAirHandler.supportsGasIndex(deviceOf("{\"modelid\":\"" + modelId + "\"}"), null));
-    }
-
-    @ParameterizedTest
-    @CsvSource({ "AC4373/10", "AC4375/10", "AC4373/11", "ac4373/10", "ac4375/10" })
-    public void thresholdsAreTextForTheTextThresholdModels(String modelId) {
-        assertTrue(PhilipsAirHandler.hasTextThresholds(deviceOf("{\"modelid\":\"" + modelId + "\"}")));
-    }
-
-    @ParameterizedTest
-    @CsvSource({ "AC4374/10", "AC4558/10", "AC5659/10", "AC2889/10", "AC3829/10", "MS3000/10" })
-    public void thresholdsAreNumbersForOtherModels(String modelId) {
-        assertFalse(PhilipsAirHandler.hasTextThresholds(deviceOf("{\"modelid\":\"" + modelId + "\"}")));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = { "", " " })
-    public void blankModelIdFallsBackToTheType(String modelId) {
-        PhilipsAirPurifierDeviceDTO textModel = deviceOf("{\"modelid\":\"" + modelId + "\",\"type\":\"AC4373\"}");
-        assertTrue(PhilipsAirHandler.hasTextThresholds(textModel));
-        assertFalse(PhilipsAirHandler.supportsGasIndex(textModel, null));
-        assertTrue(PhilipsAirHandler.supportsGasIndex(deviceOf("{\"modelid\":\"" + modelId + "\",\"type\":\"AC4558\"}"),
-                null));
+        assertEquals(Set.of(DISPLAYED_INDEX, AIR_QUALITY_NOTIFICATION_THRESHOLD), assertSetOptionLabelsAreTranslated());
     }
 
     @Test
-    public void modelIdTakesPrecedenceOverTheType() {
-        PhilipsAirPurifierDeviceDTO device = deviceOf("{\"modelid\":\"AC2889/10\",\"type\":\"AC4558\"}");
+    public void optionLabelsOfTextThresholdsAreTheTranslatedTexts() throws PhilipsAirAPIException {
+        stubConnectionConfig();
+        String status = """
+                {"modelid":"AC4373/10","type":"AC4373","pwr":"1","aqit":"19","ddp":"1"}""";
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson(status, PhilipsAirPurifierDeviceDTO.class));
+        when(connection.getAirPurifierStatus(any())).thenReturn(gson.fromJson(status, PhilipsAirPurifierDataDTO.class));
 
-        assertFalse(PhilipsAirHandler.supportsGasIndex(device, null));
+        handler.updateData(connection);
+
+        assertEquals(Set.of(DISPLAYED_INDEX, AIR_QUALITY_NOTIFICATION_THRESHOLD), assertSetOptionLabelsAreTranslated());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = { "{}", "{\"modelid\":\"\"}", "{\"modelid\":\" \"}" })
-    public void deviceWithoutModelOnlyHasTheGasIndexWithAGasSensor(String json) {
-        PhilipsAirPurifierDeviceDTO device = deviceOf(json);
+    @Test
+    public void optionLabelsOfProfilesAndDefaultsAreTheTranslatedTexts() throws PhilipsAirAPIException {
+        stubChannelCreation();
+        stubConnectionConfig();
+        String status = """
+                {"modelid":"AC3210/12","pwr":"1","mode":"P","om":"1","dt":0,"dtrs":0,"beep":true,"dispbr":"115",\
+                "lamp":"2"}""";
+        when(connection.getDeviceProfile()).thenReturn(CoapProfile.UNICORN);
+        when(connection.isPushingStatus()).thenReturn(true);
+        when(connection.getAirPurifierDevice(any()))
+                .thenReturn(gson.fromJson(status, PhilipsAirPurifierDeviceDTO.class));
+        when(connection.getAirPurifierStatus(any())).thenReturn(gson.fromJson(status, PhilipsAirPurifierDataDTO.class));
+        handler.updateData(connection);
+        // the options of the channel types are set again for a profile without options of its own
+        when(connection.getDeviceProfile()).thenReturn(CoapProfile.BASIC_GEN3);
+        handler.updateData(connection);
 
-        assertFalse(PhilipsAirHandler.hasTextThresholds(device));
-        assertFalse(PhilipsAirHandler.supportsGasIndex(device, null));
-        assertFalse(PhilipsAirHandler.supportsGasIndex(device,
-                gson.fromJson(PURIFIER_STATUS, PhilipsAirPurifierDataDTO.class)));
-        assertTrue(PhilipsAirHandler.supportsGasIndex(device,
-                gson.fromJson("{\"tvoc\":1}", PhilipsAirPurifierDataDTO.class)));
+        assertEquals(Set.of(FAN_MODE, MODE, AUTO_TIMEOFF, DISPLAYED_INDEX, AIR_QUALITY_NOTIFICATION_THRESHOLD,
+                DISPLAY_BRIGHTNESS, LAMP_MODE), assertSetOptionLabelsAreTranslated());
     }
 
     @SuppressWarnings("unchecked")
@@ -613,12 +639,39 @@ public class PhilipsAirHandlerOptionalChannelsTest {
         return stateOptions(group, channelId).stream().map(StateOption::getValue).toList();
     }
 
+    /**
+     * @return the values of the options of each time the options of the channel were set, in order
+     */
     @SuppressWarnings("unchecked")
-    private List<String> lastOptions(ChannelUID channelUID) {
+    private List<List<String>> allOptions(ChannelUID channelUID) {
         ArgumentCaptor<List<StateOption>> optionsCaptor = ArgumentCaptor.forClass(List.class);
         verify(stateDescriptionProvider, atLeastOnce()).setStateOptions(eq(channelUID), optionsCaptor.capture());
-        List<List<StateOption>> all = optionsCaptor.getAllValues();
-        return all.get(all.size() - 1).stream().map(StateOption::getValue).toList();
+        return optionsCaptor.getAllValues().stream()
+                .map(options -> options.stream().map(StateOption::getValue).toList()).toList();
+    }
+
+    /**
+     * Asserts that the labels of all options that were set are the translated texts.
+     *
+     * @return the ids of the channels that were given options
+     */
+    @SuppressWarnings("unchecked")
+    private Set<String> assertSetOptionLabelsAreTranslated() {
+        ArgumentCaptor<ChannelUID> channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);
+        ArgumentCaptor<List<StateOption>> optionsCaptor = ArgumentCaptor.forClass(List.class);
+        verify(stateDescriptionProvider, atLeastOnce()).setStateOptions(channelCaptor.capture(),
+                optionsCaptor.capture());
+        Set<String> channelIds = new HashSet<>();
+        for (int i = 0; i < channelCaptor.getAllValues().size(); i++) {
+            String channelId = channelCaptor.getAllValues().get(i).getIdWithoutGroup();
+            List<StateOption> options = optionsCaptor.getAllValues().get(i);
+            OptionLabelTranslations.assertLabelsAreTranslated(channelId, options);
+            // channels without default options are reset to none when their profile is not used anymore
+            if (!options.isEmpty()) {
+                channelIds.add(channelId);
+            }
+        }
+        return channelIds;
     }
 
     private static Set<String> channelIds(List<Channel> channels) {

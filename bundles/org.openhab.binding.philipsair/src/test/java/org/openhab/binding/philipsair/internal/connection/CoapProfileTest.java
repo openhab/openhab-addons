@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.philipsair.internal.OptionLabelTranslations;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDataDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierFiltersDTO;
@@ -455,6 +456,24 @@ public class CoapProfileTest {
         assertEquals(List.of("0", "1", "2"), values(CoapProfile.UNICORN.getLampModeOptions()));
         assertTrue(CoapProfile.AC3737.getLampModeOptions().isEmpty());
         assertTrue(CoapProfile.BASIC_GEN3.getDisplayBrightnessOptions().isEmpty());
+    }
+
+    @Test
+    public void optionLabelsAreTheTranslatedTexts() {
+        int checked = 0;
+        for (CoapProfile profile : CoapProfile.values()) {
+            checked += assertLabelsAreTranslated("fan-speed", profile.getFanSpeedOptions());
+            checked += assertLabelsAreTranslated("mode", profile.getModeOptions());
+            checked += assertLabelsAreTranslated("timer", profile.getTimerOptions());
+            checked += assertLabelsAreTranslated("display-brightness", profile.getDisplayBrightnessOptions());
+            checked += assertLabelsAreTranslated("lamp-mode", profile.getLampModeOptions());
+        }
+        assertTrue(checked > 0);
+    }
+
+    private static int assertLabelsAreTranslated(String channelId, List<StateOption> options) {
+        OptionLabelTranslations.assertLabelsAreTranslated(channelId, options);
+        return options.size();
     }
 
     @Test

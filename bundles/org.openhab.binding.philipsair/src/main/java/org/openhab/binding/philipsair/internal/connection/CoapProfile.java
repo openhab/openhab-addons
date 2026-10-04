@@ -304,6 +304,7 @@ public enum CoapProfile {
     }
 
     private static Generation detectGeneration(JsonObject reported) {
+        // a device only uses one scheme of field names, so the first key of a scheme decides
         for (String key : reported.keySet()) {
             if (key.startsWith("D01S")) {
                 return Generation.GEN3;
