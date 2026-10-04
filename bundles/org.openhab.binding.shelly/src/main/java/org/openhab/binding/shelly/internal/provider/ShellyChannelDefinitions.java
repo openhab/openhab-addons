@@ -414,7 +414,7 @@ public class ShellyChannelDefinitions {
 
                 // Wall Display Media Player
                 .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_CONTROL, "mediaControl", ITEMT_PLAYER))
-                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_VOLUME, "mediaVolume", ITEMT_DIMMER))
+                .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_VOLUME, "system:volume", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_TITLE, "mediaTitle", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_ARTIST, "mediaArtist", ITEMT_STRING))
                 .add(new ShellyChannel(m, CHGR_MEDIA, CHANNEL_MEDIA_ALBUM, "mediaAlbum", ITEMT_STRING))

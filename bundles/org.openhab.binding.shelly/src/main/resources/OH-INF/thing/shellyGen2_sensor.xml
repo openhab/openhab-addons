@@ -152,13 +152,6 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="mediaVolume">
-		<item-type>Dimmer</item-type>
-		<label>Volume</label>
-		<description>Media player volume in percent</description>
-		<state readOnly="false" min="0" max="100" pattern="%.0f %%"/>
-	</channel-type>
-
 	<channel-type id="mediaTitle" advanced="true">
 		<item-type>String</item-type>
 		<label>Title</label>
