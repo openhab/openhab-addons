@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,9 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 @ExtendWith(MockitoExtension.class)
 public class PhilipsAirHandlerFactoryTest {
 
+    private static final List<String> THING_TYPE_IDS = List.of("universal", "coap", "ac2889-10", "ac2729", "ac1214-10",
+            "ac3829-10");
+
     private @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
     private @Mock @NonNullByDefault({}) HttpClient httpClient;
     private @Mock @NonNullByDefault({}) PhilipsAirStateDescriptionOptionProvider stateDescriptionProvider;
@@ -62,10 +66,10 @@ public class PhilipsAirHandlerFactoryTest {
 
     @Test
     public void supportsExactlyTheSupportedThingTypes() {
-        assertEquals(Set.of("universal", "coap", "ac2889-10", "ac2729", "ac1214-10", "ac3829-10"),
+        assertEquals(Set.copyOf(THING_TYPE_IDS),
                 SUPPORTED_THING_TYPES_UIDS.stream().map(ThingTypeUID::getId).collect(Collectors.toSet()));
-        for (ThingTypeUID thingTypeUID : SUPPORTED_THING_TYPES_UIDS) {
-            assertTrue(factory.supportsThingType(thingTypeUID), thingTypeUID.toString());
+        for (String thingTypeId : THING_TYPE_IDS) {
+            assertTrue(factory.supportsThingType(new ThingTypeUID(BINDING_ID, thingTypeId)), thingTypeId);
         }
         assertFalse(factory.supportsThingType(new ThingTypeUID(BINDING_ID, "ac9999")));
         assertFalse(factory.supportsThingType(new ThingTypeUID("other", SUPPORTED_MODEL_COAP)));
@@ -73,10 +77,13 @@ public class PhilipsAirHandlerFactoryTest {
 
     @Test
     public void handlerIsCreatedForSupportedThingTypes() {
-        for (ThingTypeUID thingTypeUID : SUPPORTED_THING_TYPES_UIDS) {
-            ThingHandler handler = factory.createHandler(thing(thingTypeUID));
+        for (String thingTypeId : THING_TYPE_IDS) {
+            Thing thing = thing(new ThingTypeUID(BINDING_ID, thingTypeId));
 
-            assertInstanceOf(PhilipsAirHandler.class, handler, thingTypeUID.toString());
+            ThingHandler handler = factory.createHandler(thing);
+
+            PhilipsAirHandler created = assertInstanceOf(PhilipsAirHandler.class, handler, thingTypeId);
+            assertSame(thing, created.getThing(), thingTypeId);
         }
     }
 

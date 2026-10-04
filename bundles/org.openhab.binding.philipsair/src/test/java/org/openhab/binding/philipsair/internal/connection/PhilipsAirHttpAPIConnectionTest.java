@@ -110,23 +110,23 @@ public class PhilipsAirHttpAPIConnectionTest {
 
     @Test
     public void keyExchangeWithKnownExponentSendsPublicValueAndDerivesSessionKey() throws Exception {
-        FakeHttpDevice knownDevice = new FakeHttpDevice(HOST, PhilipsAirCipherTest.DEVICE_SESSION_KEY);
+        FakeHttpDevice knownDevice = new FakeHttpDevice(HOST, CipherTestVectors.DEVICE_SESSION_KEY);
         knownDevice.respondRaw(SECURITY, HttpMethod.PUT, 200,
-                "{\"key\":\"" + PhilipsAirCipherTest.ENCRYPTED_KEY_LONG_SECRET + "\",\"hellman\":\""
-                        + PhilipsAirCipherTest.HELLMAN_LONG_SECRET + "\"}");
+                "{\"key\":\"" + CipherTestVectors.ENCRYPTED_KEY_LONG_SECRET + "\",\"hellman\":\""
+                        + CipherTestVectors.HELLMAN_LONG_SECRET + "\"}");
         knownDevice.respond(STATUS, HttpMethod.GET, STATUS_JSON);
 
         PhilipsAirHttpAPIConnection connection = new PhilipsAirHttpAPIConnection(config, knownDevice.httpClient()) {
             @Override
             PhilipsAirCipher createCipher() throws GeneralSecurityException {
-                return new PhilipsAirCipher(PhilipsAirCipherTest.EXPONENT);
+                return new PhilipsAirCipher(CipherTestVectors.EXPONENT);
             }
         };
 
-        assertEquals(PhilipsAirCipherTest.DEVICE_SESSION_KEY, config.getKey());
+        assertEquals(CipherTestVectors.DEVICE_SESSION_KEY, config.getKey());
         List<Call> exchanges = knownDevice.calls(SECURITY, HttpMethod.PUT);
         assertEquals(1, exchanges.size());
-        assertEquals("{\"diffie\":\"" + PhilipsAirCipherTest.PUBLIC_VALUE + "\"}", exchanges.get(0).body());
+        assertEquals("{\"diffie\":\"" + CipherTestVectors.PUBLIC_VALUE + "\"}", exchanges.get(0).body());
         // the derived key is the one the device encrypts with
         PhilipsAirPurifierDataDTO data = connection.getAirPurifierStatus(HOST);
         assertNotNull(data);
