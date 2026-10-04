@@ -989,9 +989,8 @@ public class ShellyComponents {
                 throw new ShellyApiException("updateRGBCCT() failed: index:%d model missing".formatted(idx));
             }
 
-            Mode mode;
-            if (value.mode != null) {
-                mode = Mode.from(value.mode);
+            Mode mode = Mode.from(value.mode);
+            if (mode != null) {
                 model.setMode(mode);
                 updated = true;
             } else {
