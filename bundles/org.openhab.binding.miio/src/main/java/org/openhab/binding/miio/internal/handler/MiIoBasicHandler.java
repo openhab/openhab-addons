@@ -707,8 +707,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         final String transformation = basicChannel.getTransformation();
         if (transformation != null) {
             JsonElement transformed = Conversions.execute(transformation, val, deviceVariables);
-            logger.debug("Transformed with '{}': {} {} -> {} ", transformation, basicChannel.getFriendlyName(), val,
-                    transformed);
+            logger.debug("Transformed with '{}': {} {} -> {} ", transformation, basicChannel.getFriendlyName(),
+                    Utils.sanitizeForLog(val), Utils.sanitizeForLog(transformed));
             val = transformed;
         }
         try {
@@ -846,7 +846,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     String channel = cmds.get(response.getId());
                     if (channel != null) {
                         logger.debug("Processing custom refresh command response for '{}' - {}", response.getMethod(),
-                                response.getResult());
+                                Utils.sanitizeForLog(response.getResult()));
                         final MiIoBasicChannel ch = getCustomRefreshChannel(channel);
                         boolean updated = false;
                         if (ch != null && hasValue(response.getResult())) {
