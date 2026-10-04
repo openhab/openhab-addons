@@ -64,8 +64,8 @@ A profile only applies to a device with the field names it is for, otherwise the
 | `humidity`, `temperature`                  | read only                       | read only                                            | not reported         | read only        | read only                        |
 | `tvoc`                                     | read only                       | read only                                            | read only            | read only        | read only                        |
 | `air-quality-threshold`, `displayed-index` | read only                       | read and write                                       | read and write       | read and write   | read and write                   |
-| `mode`                                     | not supported                   | `P` (auto), `S` (sleep)                              | `P`, `S`             | `P`, `S`         | `P`, `S`                         |
-| `fan-speed`                                | not supported                   | `1` to `5`, `m` (medium), `t` (turbo)                | `1` to `5`, `m`, `t` | `1`, `2`, `t`    | `1`, `2`, `t` (`t` only: ac0850) |
+| `mode`                                     | not supported                   | `P` (auto), `S` (sleep)                              | `P`, `S`, `GT`, `T`  | `P`, `S`         | `P`, `S`                         |
+| `fan-speed`                                | not supported                   | `1` to `5`, `m` (medium), `t` (turbo)                | read only            | `1`, `2`, `t`    | `1`, `2`, `t` (`t` only: ac0850) |
 | `timer`                                    | not supported                   | 0 (off) to 12 hours                                  | 0 (off) to 12 hours  | not supported    | not supported                    |
 | `timer-remaining`                          | read only<sup>2</sup>           | read only                                            | read only            | read only        | not supported                    |
 | `target-humidity`                          | read only<sup>2</sup>           | read and write                                       | not supported        | read and write   | not supported                    |
@@ -88,6 +88,8 @@ Notes on the profiles:
   Its `mode` is `AG` (auto), `GT` (gentle), `S` (sleep) or `T` (turbo).
   The device selects the fan speed for the mode itself, so `fan-speed` shows the speed and has no manual mode to set it.
 - The `ac0950` profile is the `unicorn` profile for the small models of that range.
+  Like in the Philips app, these models have the modes `P` (auto), `S` (sleep), `GT` (gentle) and `T` (turbo) in `mode`.
+  The device selects the fan speed for the mode itself, so `fan-speed` only shows it: `1` in auto and sleep mode, `2` in gentle mode and `t` in turbo mode.
   These models do not report `humidity` and `temperature` and have no `target-humidity`, `allergy-sleep`, `display` and `lamp-mode`.
   Their `display-brightness` is `0` (off), `115` (low) or `123` (bright).
 - The timer, `target-humidity` and the settings channels (`beep`, `standby-sensors`, `allergy-sleep`, `display`, `display-brightness` and `lamp-mode`) are added once the device reports them.

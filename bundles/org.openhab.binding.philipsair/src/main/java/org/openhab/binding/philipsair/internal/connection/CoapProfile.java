@@ -67,12 +67,13 @@ public enum CoapProfile {
                     .settings(Setting.BEEP, Setting.STANDBY_SENSORS, Setting.ALLERGY_SLEEP, Setting.DISPLAY_SWITCH)
                     .displayBrightness(Tables.unicornBrightness()).lampModes(Tables.lampModes())),
     /**
-     * AC0950 and AC0951, the small variant of the Unicorn range: no humidity, temperature and lamp, and a display
-     * brightness without the automatic setting
+     * AC0950 and AC0951, the small variant of the Unicorn range: no humidity, temperature and lamp, a display
+     * brightness without the automatic setting, and the four modes of the app with a fan speed that is only reported
      */
     AC0950("ac0950", Generation.GEN3,
-            new Spec().modes(Tables.unicornModes()).speedFallbackKey("D0310D").timer(new Timer("D03110", 1, 12))
-                    .settings(Setting.BEEP, Setting.STANDBY_SENSORS).displayBrightness(Tables.ac0950Brightness())),
+            new Spec().modes(Tables.ac0950Modes()).reportedSpeeds("D0310D", Tables.ac0950Speeds())
+                    .timer(new Timer("D03110", 1, 12)).settings(Setting.BEEP, Setting.STANDBY_SENSORS)
+                    .displayBrightness(Tables.ac0950Brightness())),
     /** AC3737 */
     AC3737("ac3737", Generation.GEN3,
             new Spec().modes(Tables.ac3737Modes()).modePowersOn().humiditySetpoint().settings(Setting.ALLERGY_SLEEP)
@@ -92,7 +93,8 @@ public enum CoapProfile {
     /**
      * A combination of the classic mode and fan speed and the device fields that select it.
      *
-     * @param mode the classic mode: {@code P} (auto), {@code S} (sleep) or {@code M} (manual)
+     * @param mode the classic mode: {@code P} (auto), {@code S} (sleep) or {@code M} (manual), or for the models that
+     *            have gentle and turbo as modes of their own {@code GT} (gentle) or {@code T} (turbo)
      * @param speed the classic fan speed of the manual mode, null for the other modes
      * @param fields the device fields that are sent to select this mode
      * @param readKey the field that tells the device is in this mode, as the other fields are not reported for every
@@ -139,6 +141,9 @@ public enum CoapProfile {
         @Nullable
         String speedFallbackKey;
         @Nullable
+        String reportedSpeedKey;
+        Map<Integer, String> reportedSpeeds = Map.of();
+        @Nullable
         Timer timer;
         boolean modePowersOn;
         boolean humiditySetpoint;
@@ -155,6 +160,17 @@ public enum CoapProfile {
         /** The modes of a model with the classic field names, which need no translation */
         Spec modeOptions(List<StateOption> modeOptions) {
             this.modeOptions = modeOptions;
+            return this;
+        }
+
+        /**
+         * The field with the fan speed of a model that has no manual speeds, and the speed each of its values stands
+         * for.
+         * The speed can only be read, as the model selects it with its mode.
+         */
+        Spec reportedSpeeds(String key, Map<Integer, String> speeds) {
+            this.reportedSpeedKey = key;
+            this.reportedSpeeds = speeds;
             return this;
         }
 
@@ -245,6 +261,8 @@ public enum CoapProfile {
     private final List<ModeEntry> modes;
     private final List<StateOption> modeOptions;
     private final @Nullable String speedFallbackKey;
+    private final @Nullable String reportedSpeedKey;
+    private final Map<Integer, String> reportedSpeeds;
     private final @Nullable Timer timer;
     private final boolean modePowersOn;
     private final boolean humiditySetpoint;
@@ -259,6 +277,8 @@ public enum CoapProfile {
         this.modes = spec.modes;
         this.modeOptions = spec.modeOptions;
         this.speedFallbackKey = spec.speedFallbackKey;
+        this.reportedSpeedKey = spec.reportedSpeedKey;
+        this.reportedSpeeds = spec.reportedSpeeds;
         this.timer = spec.timer;
         this.modePowersOn = spec.modePowersOn;
         this.humiditySetpoint = spec.humiditySetpoint;
@@ -398,7 +418,12 @@ public enum CoapProfile {
         List<StateOption> options = new ArrayList<>();
         for (ModeEntry entry : modes) {
             if (entry.speed() == null) {
-                options.add(new StateOption(entry.mode(), "P".equals(entry.mode()) ? "Auto" : "Sleep"));
+                options.add(new StateOption(entry.mode(), switch (entry.mode()) {
+                    case "P" -> "Auto";
+                    case "GT" -> "Gentle";
+                    case "T" -> "Turbo";
+                    default -> "Sleep";
+                }));
             }
         }
         return options;
@@ -507,6 +532,7 @@ public enum CoapProfile {
                 break;
         }
         modesToClassic(reported, classic);
+        reportedSpeedToClassic(reported, classic);
         timerToClassic(reported, classic);
         settingsToClassic(reported, classic);
         return classic;
@@ -526,6 +552,15 @@ public enum CoapProfile {
         Number lamp = getNumber(reported, GEN3_LAMP_MODE);
         if (lamp != null && !lampModes.isEmpty()) {
             classic.addProperty("lamp", String.valueOf(lamp.intValue()));
+        }
+    }
+
+    private void reportedSpeedToClassic(JsonObject reported, JsonObject classic) {
+        String key = reportedSpeedKey;
+        Number code = key != null ? getNumber(reported, key) : null;
+        String speed = code != null ? reportedSpeeds.get(code.intValue()) : null;
+        if (speed != null) {
+            classic.addProperty("om", speed);
         }
     }
 
@@ -744,6 +779,20 @@ public enum CoapProfile {
             modes.add(entry("M", "m", "D0310C", 19));
             modes.add(entry("M", "t", "D0310C", 18));
             return List.copyOf(modes);
+        }
+
+        /**
+         * The AC0950 has an auto, sleep, gentle and turbo mode, selected with the mode field only, as the Philips app
+         * does. The device sets the fan speed field for the mode itself.
+         */
+        static List<ModeEntry> ac0950Modes() {
+            return List.of(entry("P", null, "D0310C", 0), entry("S", null, "D0310C", 17),
+                    entry("GT", null, "D0310C", 19), entry("T", null, "D0310C", 18));
+        }
+
+        /** The fan speeds the AC0950 reports: 1 in auto and sleep mode, 2 in gentle mode and 18 in turbo mode */
+        static Map<Integer, String> ac0950Speeds() {
+            return Map.of(1, "1", 2, "2", 18, "t");
         }
 
         /**

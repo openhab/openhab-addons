@@ -163,9 +163,37 @@ public class CoapProfileTest {
     }
 
     @Test
+    public void ac0950ModesAreRead() {
+        // the fields as reported by an AC0950/10 in each mode
+        assertAc0950ModeAndSpeed("P", "1", "{\"D0310C\":0,\"D0310D\":1}");
+        assertAc0950ModeAndSpeed("S", "1", "{\"D0310C\":17,\"D0310D\":1}");
+        assertAc0950ModeAndSpeed("GT", "2", "{\"D0310C\":19,\"D0310D\":2}");
+        assertAc0950ModeAndSpeed("T", "t", "{\"D0310C\":18,\"D0310D\":18}");
+        // values the model is not known to report
+        assertAc0950ModeAndSpeed(null, null, "{\"D0310C\":3,\"D0310D\":3}");
+        assertAc0950ModeAndSpeed("P", null, "{\"D0310C\":0}");
+        assertAc0950ModeAndSpeed("P", null, "{\"D0310C\":0,\"D0310D\":\"1\"}");
+    }
+
+    private void assertAc0950ModeAndSpeed(@Nullable String mode, @Nullable String speed, String reported) {
+        JsonObject classic = CoapProfile.AC0950.toClassic(parse("{\"D01S05\":\"AC0950/10\"," + reported.substring(1)));
+
+        PhilipsAirPurifierDataDTO data = gson.fromJson(classic, PhilipsAirPurifierDataDTO.class);
+        assertNotNull(data);
+        assertEquals(mode, data.getMode(), reported);
+        assertEquals(speed, data.getFanSpeed(), reported);
+    }
+
+    @Test
     public void ac0950CommandsAreTranslated() {
+        // only the mode field is sent, the device sets the fan speed field itself
+        assertEquals(parse("{\"D0310C\":0}"), CoapProfile.AC0950.toDevice(modeCommand("P", null)));
         assertEquals(parse("{\"D0310C\":17}"), CoapProfile.AC0950.toDevice(modeCommand("S", null)));
-        assertEquals(parse("{\"D0310C\":18}"), CoapProfile.AC0950.toDevice(modeCommand("M", "t")));
+        assertEquals(parse("{\"D0310C\":19}"), CoapProfile.AC0950.toDevice(modeCommand("GT", null)));
+        assertEquals(parse("{\"D0310C\":18}"), CoapProfile.AC0950.toDevice(modeCommand("T", null)));
+        // there are no fan speeds to select
+        assertTrue(CoapProfile.AC0950.toDevice(modeCommand("M", "t")).isEmpty());
+        assertTrue(CoapProfile.AC0950.toDevice(modeCommand(null, "3")).isEmpty());
         assertEquals(parse("{\"D03110\":3}"), CoapProfile.AC0950.toDevice(timerCommand(2)));
 
         PhilipsAirPurifierWritableDataDTO command = new PhilipsAirPurifierWritableDataDTO();
@@ -477,6 +505,8 @@ public class CoapProfileTest {
     @Test
     public void settingOptionsDependOnTheModel() {
         assertEquals(List.of("0", "101", "115", "123"), values(CoapProfile.UNICORN.getDisplayBrightnessOptions()));
+        assertEquals(List.of("P", "S", "GT", "T"), values(CoapProfile.AC0950.getModeOptions()));
+        assertTrue(CoapProfile.AC0950.getFanSpeedOptions().isEmpty());
         assertEquals(List.of("0", "115", "123"), values(CoapProfile.AC0950.getDisplayBrightnessOptions()));
         assertTrue(CoapProfile.AC0950.getLampModeOptions().isEmpty());
         assertEquals(List.of("0", "50", "100"), values(CoapProfile.AC3737.getDisplayBrightnessOptions()));
