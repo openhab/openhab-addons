@@ -74,6 +74,12 @@ public final class Poller2WriteChannel {
 
     public Optional<ModbusWriteRequestBlueprint> requestFor(Command command, int slaveId,
             @Nullable PollerRegisterCache registerCache) {
+        return requestFor(command, slaveId, registerCache, false);
+    }
+
+    public Optional<ModbusWriteRequestBlueprint> requestFor(Command command, int slaveId,
+            @Nullable PollerRegisterCache registerCache, boolean writeMultipleOverride) {
+        boolean effectiveWriteMultiple = writeMultiple || writeMultipleOverride;
         Command magnitudeCommand = command instanceof QuantityType<?> quantity
                 ? new DecimalType(quantity.toBigDecimal())
                 : command;
@@ -83,8 +89,9 @@ public final class Poller2WriteChannel {
             return Optional.empty();
         }
         if (coil) {
-            return ModbusBitUtilities.translateCommand2Boolean(transformed.get()).<ModbusWriteRequestBlueprint> map(
-                    value -> new ModbusWriteCoilRequestBlueprint(slaveId, address, value, writeMultiple, maxTries));
+            return ModbusBitUtilities.translateCommand2Boolean(transformed.get())
+                    .<ModbusWriteRequestBlueprint> map(value -> new ModbusWriteCoilRequestBlueprint(slaveId, address,
+                            value, effectiveWriteMultiple, maxTries));
         }
         if (bit >= 0) {
             if (registerCache == null) {
@@ -93,12 +100,12 @@ public final class Poller2WriteChannel {
             return ModbusBitUtilities.translateCommand2Boolean(transformed.get())
                     .flatMap(value -> registerCache.overlayRegisterBit(address, bit, value))
                     .map(registers -> new ModbusWriteRegisterRequestBlueprint(slaveId, address, registers,
-                            writeMultiple, maxTries));
+                            effectiveWriteMultiple, maxTries));
         }
         try {
             ModbusRegisterArray registers = ModbusBitUtilities.commandToRegisters(transformed.get(), valueType);
             return Optional.of(new ModbusWriteRegisterRequestBlueprint(slaveId, address, registers,
-                    writeMultiple || registers.size() > 1, maxTries));
+                    effectiveWriteMultiple || registers.size() > 1, maxTries));
         } catch (IllegalArgumentException e) {
             return Optional.empty();
         }

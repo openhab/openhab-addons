@@ -35,6 +35,27 @@ import org.openhab.core.thing.Bridge;
 public class ModbusPoller2ActionsTest {
 
     @Test
+    public void createsHoldingRequestWithExplicitWriteMultiple() {
+        Poller2WriteRequest request = Poller2WriteRequest.holding("setpoint", new DecimalType("12.5"), true);
+
+        assertTrue(request.writeMultiple());
+    }
+
+    @Test
+    public void submitsHoldingScalarWithExplicitWriteMultipleToBoundPoller() {
+        ModbusPoller2ThingHandler handler = mock(ModbusPoller2ThingHandler.class);
+        ModbusPoller2Actions actions = new ModbusPoller2Actions();
+        actions.setThingHandler(handler);
+        Poller2WriteRequest request = Poller2WriteRequest.holding("setpoint", new DecimalType("12.5"), true);
+        when(handler.submitActionWrite(request)).thenReturn(Poller2WriteResult.ACCEPTED);
+
+        Poller2WriteResult result = actions.writeHolding("setpoint", 12.5, true);
+
+        assertEquals(Poller2WriteResult.ACCEPTED, result);
+        verify(handler).submitActionWrite(request);
+    }
+
+    @Test
     public void submitsHoldingScalarToBoundPoller() {
         ModbusPoller2ThingHandler handler = mock(ModbusPoller2ThingHandler.class);
         ModbusPoller2Actions actions = new ModbusPoller2Actions();
@@ -43,6 +64,20 @@ public class ModbusPoller2ActionsTest {
         when(handler.submitActionWrite(request)).thenReturn(Poller2WriteResult.ACCEPTED);
 
         Poller2WriteResult result = actions.writeHolding("setpoint", 12.5);
+
+        assertEquals(Poller2WriteResult.ACCEPTED, result);
+        verify(handler).submitActionWrite(request);
+    }
+
+    @Test
+    public void submitsCoilValueWithExplicitWriteMultipleToBoundPoller() {
+        ModbusPoller2ThingHandler handler = mock(ModbusPoller2ThingHandler.class);
+        ModbusPoller2Actions actions = new ModbusPoller2Actions();
+        actions.setThingHandler(handler);
+        Poller2WriteRequest request = Poller2WriteRequest.coil("enable", OnOffType.ON, true);
+        when(handler.submitActionWrite(request)).thenReturn(Poller2WriteResult.ACCEPTED);
+
+        Poller2WriteResult result = actions.writeCoil("enable", true, true);
 
         assertEquals(Poller2WriteResult.ACCEPTED, result);
         verify(handler).submitActionWrite(request);

@@ -23,7 +23,7 @@ import org.openhab.core.types.Command;
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public record Poller2WriteRequest(String channelId, Command command, Type type) {
+public record Poller2WriteRequest(String channelId, Command command, Type type, boolean writeMultiple) {
     public enum Type {
         HOLDING,
         COIL
@@ -39,10 +39,18 @@ public record Poller2WriteRequest(String channelId, Command command, Type type) 
     }
 
     public static Poller2WriteRequest holding(String channelId, Command command) {
-        return new Poller2WriteRequest(channelId, command, Type.HOLDING);
+        return holding(channelId, command, false);
+    }
+
+    public static Poller2WriteRequest holding(String channelId, Command command, boolean writeMultiple) {
+        return new Poller2WriteRequest(channelId, command, Type.HOLDING, writeMultiple);
     }
 
     public static Poller2WriteRequest coil(String channelId, Command command) {
-        return new Poller2WriteRequest(channelId, command, Type.COIL);
+        return coil(channelId, command, false);
+    }
+
+    public static Poller2WriteRequest coil(String channelId, Command command, boolean writeMultiple) {
+        return new Poller2WriteRequest(channelId, command, Type.COIL, writeMultiple);
     }
 }

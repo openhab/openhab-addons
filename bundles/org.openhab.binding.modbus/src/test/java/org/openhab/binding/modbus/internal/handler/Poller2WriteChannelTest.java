@@ -27,6 +27,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusWriteFunctionCode;
 import org.openhab.core.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.core.library.types.OnOffType;
@@ -49,6 +51,26 @@ public class Poller2WriteChannelTest {
         assertEquals(42, registerRequest.getReference());
         assertEquals(2, registerRequest.getMaxTries());
         assertEquals(17, registerRequest.getRegisters().getRegister(0));
+    }
+
+    @Test
+    public void usesWriteMultipleForExplicitScalarHoldingWrite() {
+        Poller2WriteChannel channel = new Poller2WriteChannel(42, ValueType.INT16, List.of("default"), 2, false);
+
+        ModbusWriteRequestBlueprint request = channel
+                .requestFor(new org.openhab.core.library.types.DecimalType("17"), 9, null, true).orElseThrow();
+
+        assertEquals(ModbusWriteFunctionCode.WRITE_MULTIPLE_REGISTERS, request.getFunctionCode());
+    }
+
+    @Test
+    public void usesWriteMultipleForExplicitScalarCoilWrite() {
+        Poller2WriteChannel channel = new Poller2WriteChannel(42, ValueType.BIT, List.of("default"), 2, false, true);
+
+        ModbusWriteCoilRequestBlueprint request = assertInstanceOf(ModbusWriteCoilRequestBlueprint.class,
+                channel.requestFor(OnOffType.ON, 9, null, true).orElseThrow());
+
+        assertEquals(ModbusWriteFunctionCode.WRITE_MULTIPLE_COILS, request.getFunctionCode());
     }
 
     @Test

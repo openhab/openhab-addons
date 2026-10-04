@@ -221,7 +221,7 @@ public class ModbusPoller2ThingHandler extends ModbusPollerThingHandler {
             return Poller2WriteResult.NOT_READY;
         }
         Optional<ModbusWriteRequestBlueprint> writeRequest = writeChannel.requestFor(actionRequest.command(),
-                readRequest.getUnitID(), registerCache);
+                readRequest.getUnitID(), registerCache, actionRequest.writeMultiple());
         if (writeRequest.isEmpty()) {
             return Poller2WriteResult.INVALID_COMMAND;
         }
