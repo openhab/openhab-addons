@@ -30,7 +30,8 @@ public class KebaBindingConstants {
     public static final String BINDING_ID = "keba";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_KECONTACTP20 = new ThingTypeUID(BINDING_ID, "kecontact");
+    public static final ThingTypeUID THING_TYPE_KECONTACT = new ThingTypeUID(BINDING_ID, "kecontact");
+    public static final ThingTypeUID THING_TYPE_KECONTACT_UDP = new ThingTypeUID(BINDING_ID, "kecontact-udp");
     public static final ThingTypeUID THING_TYPE_KECONTACT_MODBUS = new ThingTypeUID(BINDING_ID, "kecontact-modbus");
     public static final ThingTypeUID THING_TYPE_KECONTACT_REST = new ThingTypeUID(BINDING_ID, "kecontact-rest");
 

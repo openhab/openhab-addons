@@ -10,13 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.keba.internal.handler;
+package org.openhab.binding.keba.internal.handler.udp;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Configuration for the UDP-based {@code kecontact} Thing type.
+ * Configuration for the UDP-based {@code kecontact-udp} Thing type.
+ *
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class KeContactConfiguration {

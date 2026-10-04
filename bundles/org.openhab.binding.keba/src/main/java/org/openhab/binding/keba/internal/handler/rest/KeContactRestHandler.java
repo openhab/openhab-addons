@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,6 +31,8 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -41,7 +44,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -56,9 +58,10 @@ import com.google.gson.JsonParser;
  * Handler for KEBA's authenticated REST API.
  *
  * @author Michael Weger - Initial contribution
+ * @author Michael Weger - Supplemental polling and lifecycle handling
  */
 @NonNullByDefault
-public class KeContactRestHandler extends BaseThingHandler {
+public class KeContactRestHandler extends KeContactProtocolHandler {
 
     private static final String API_PREFIX = "/v2";
     private static final int CONNECT_TIMEOUT_SECONDS = 5;
@@ -69,9 +72,20 @@ public class KeContactRestHandler extends BaseThingHandler {
     private @Nullable HttpClient httpClient;
     private @Nullable String accessToken;
     private @Nullable ScheduledFuture<?> pollingJob;
+    private final boolean supplemental;
+    private final Object lifecycleLock = new Object();
+    private final Object requestLock = new Object();
+    private final AtomicInteger generation = new AtomicInteger();
+    private boolean initializing;
+    private boolean disposed;
 
     public KeContactRestHandler(Thing thing) {
-        super(thing);
+        this(thing, null, null);
+    }
+
+    public KeContactRestHandler(Thing thing, @Nullable Configuration configuration, @Nullable Listener listener) {
+        super(thing, configuration, listener);
+        this.supplemental = listener != null;
     }
 
     @Override
@@ -91,25 +105,76 @@ public class KeContactRestHandler extends BaseThingHandler {
             return;
         }
         String password = configuredPassword;
+        int expectedGeneration;
+        synchronized (lifecycleLock) {
+            if (initializing || pollingJob != null) {
+                return;
+            }
+            disposed = false;
+            initializing = true;
+            expectedGeneration = generation.incrementAndGet();
+        }
         scheduler.execute(() -> {
+            HttpClient client = createHttpClient(verifyCertificate);
             try {
-                HttpClient client = createHttpClient(verifyCertificate);
                 client.start();
                 disableAuthenticationProtocolHandler(client);
-                httpClient = client;
-                login(username, password);
-                String resolvedSerialNumber = configuredSerialNumber;
-                if (resolvedSerialNumber == null || resolvedSerialNumber.isBlank()) {
-                    resolvedSerialNumber = discoverSerialNumber();
+                synchronized (lifecycleLock) {
+                    if (expectedGeneration != generation.get()) {
+                        client.stop();
+                        return;
+                    }
+                    httpClient = client;
                 }
-                serialNumber = resolvedSerialNumber;
-                pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
+                synchronized (requestLock) {
+                    login(username, password);
+                    String resolvedSerialNumber = configuredSerialNumber;
+                    if (resolvedSerialNumber == null || resolvedSerialNumber.isBlank()) {
+                        resolvedSerialNumber = discoverSerialNumber();
+                    }
+                    synchronized (lifecycleLock) {
+                        if (expectedGeneration != generation.get()) {
+                            return;
+                        }
+                        serialNumber = resolvedSerialNumber;
+                        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                            if (expectedGeneration == generation.get()) {
+                                synchronized (requestLock) {
+                                    if (expectedGeneration == generation.get()) {
+                                        poll();
+                                    }
+                                }
+                            }
+                        }, 0, refreshInterval, TimeUnit.SECONDS);
+                        initializing = false;
+                    }
+                }
             } catch (Exception e) {
                 logger.debug("REST initialization failed: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.comm-error-rest [\"" + messageOf(e) + "\"]");
+                synchronized (lifecycleLock) {
+                    if (expectedGeneration == generation.get()) {
+                        initializing = false;
+                        httpClient = null;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/offline.comm-error-rest [\"" + messageOf(e) + "\"]");
+                    }
+                }
+                try {
+                    client.stop();
+                } catch (Exception stopError) {
+                    logger.debug("Failed to stop REST client: {}", stopError.getMessage());
+                }
             }
         });
+    }
+
+    public void retryInitialization() {
+        synchronized (lifecycleLock) {
+            if (disposed || initializing || pollingJob != null) {
+                return;
+            }
+            initialize();
+        }
     }
 
     @Override
@@ -126,21 +191,27 @@ public class KeContactRestHandler extends BaseThingHandler {
     }
 
     private void disposeCommunication() {
-        ScheduledFuture<?> task = pollingJob;
-        if (task != null) {
-            task.cancel(false);
-            pollingJob = null;
+        HttpClient client;
+        synchronized (lifecycleLock) {
+            generation.incrementAndGet();
+            disposed = true;
+            initializing = false;
+            ScheduledFuture<?> task = pollingJob;
+            if (task != null) {
+                task.cancel(false);
+                pollingJob = null;
+            }
+            accessToken = null;
+            serialNumber = null;
+            client = httpClient;
+            httpClient = null;
         }
-        accessToken = null;
-        serialNumber = null;
-        HttpClient client = httpClient;
         if (client != null) {
             try {
                 client.stop();
             } catch (Exception e) {
                 logger.debug("Failed to stop REST client: {}", e.getMessage());
             }
-            httpClient = null;
         }
     }
 
@@ -169,10 +240,24 @@ public class KeContactRestHandler extends BaseThingHandler {
     private void poll() {
         try {
             JsonObject wallbox = request("/wallboxes/" + serialNumber(), "GET", null, true);
+            updateStatus(ThingStatus.ONLINE);
             updateWallbox(wallbox);
-            updateDipSwitchInterpretation();
-            updatePhaseSwitchSource();
-            updateSession();
+            if (!supplemental || isLinked("dipswitchinterpretation")) {
+                updateDipSwitchInterpretation();
+            }
+            if (!supplemental || isLinked("phaseswitchsource")) {
+                updatePhaseSwitchSource();
+            }
+            if (!supplemental || isLinked("sessionstart") || isLinked("sessionduration")) {
+                try {
+                    updateSession();
+                } catch (Exception e) {
+                    if (!supplemental) {
+                        throw e;
+                    }
+                    logger.debug("Failed to read supplemental REST session: {}", e.getMessage());
+                }
+            }
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("REST polling failed: {}", e.getMessage());
@@ -416,7 +501,7 @@ public class KeContactRestHandler extends BaseThingHandler {
         }
     }
 
-    private JsonObject request(String path, String method, @Nullable String body, boolean authenticated)
+    protected JsonObject request(String path, String method, @Nullable String body, boolean authenticated)
             throws Exception {
         return request(path, method, body, authenticated, true);
     }

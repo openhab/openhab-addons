@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
@@ -46,7 +48,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -61,9 +62,10 @@ import org.slf4j.LoggerFactory;
  * every readable register is polled independently (see {@link KebaModbusReadRegister}).
  *
  * @author Michael Weger - Initial contribution
+ * @author Michael Weger - Combined Thing selective polling
  */
 @NonNullByDefault
-public class KeContactModbusHandler extends BaseThingHandler {
+public class KeContactModbusHandler extends KeContactProtocolHandler {
 
     private static final int READ_REGISTER_LENGTH = 2;
     private static final int MAX_TRIES = 3;
@@ -89,9 +91,18 @@ public class KeContactModbusHandler extends BaseThingHandler {
     private final AtomicInteger connectionGeneration = new AtomicInteger();
     private long lastWriteSubmissionNanos;
     private int slaveId;
+    private @Nullable ScheduledFuture<?> identificationJob;
+    private boolean pollsRegistered;
+    private boolean p40;
+    private boolean identityRead;
 
     public KeContactModbusHandler(Thing thing, ModbusManager modbusManager) {
-        super(thing);
+        this(thing, modbusManager, null, null);
+    }
+
+    public KeContactModbusHandler(Thing thing, ModbusManager modbusManager, @Nullable Configuration configuration,
+            @Nullable Listener listener) {
+        super(thing, configuration, listener);
         this.modbusManager = modbusManager;
     }
 
@@ -172,6 +183,9 @@ public class KeContactModbusHandler extends BaseThingHandler {
                         P40_ONLY_CHANNELS.forEach(
                                 channel -> thingBuilder.withoutChannel(new ChannelUID(getThing().getUID(), channel)));
                         updateThing(thingBuilder.build());
+                        if (isCombined()) {
+                            registerPolls(localComms, generation, false);
+                        }
                     } else {
                         boolean isP40 = isP40Product(productInfo);
                         if (isP40) {
@@ -183,14 +197,28 @@ public class KeContactModbusHandler extends BaseThingHandler {
                         }
                         registerPolls(localComms, generation, isP40);
                     }
-                }, () -> registerPolls(localComms, generation, true));
-            }, () -> registerPolls(localComms, generation, true));
+                }, () -> retryIdentification(localComms, generation));
+            }, () -> retryIdentification(localComms, generation));
         }, failure -> {
             if (!isStaleGeneration(generation, connectionGeneration.get())) {
                 handleReadError(KebaModbusReadRegister.PRODUCT_INFO, failure);
-                registerPolls(localComms, generation, true);
+                retryIdentification(localComms, generation);
             }
         });
+    }
+
+    private void retryIdentification(ModbusCommunicationInterface localComms, int generation) {
+        if (!isCombined()) {
+            registerPolls(localComms, generation, true);
+            return;
+        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Modbus identification failed");
+        synchronized (connectionLock) {
+            if (generation == connectionGeneration.get()) {
+                identificationJob = scheduler.schedule(() -> identifyProduct(localComms, generation), 300,
+                        TimeUnit.SECONDS);
+            }
+        }
     }
 
     static boolean isP30Product(long productInfo) {
@@ -202,17 +230,47 @@ public class KeContactModbusHandler extends BaseThingHandler {
     }
 
     private void registerPolls(ModbusCommunicationInterface localComms, int generation, boolean isP40) {
+        if (generation != connectionGeneration.get()) {
+            return;
+        }
+        pollsRegistered = true;
+        p40 = isP40;
         long initialDelay = 0;
         for (KebaModbusReadRegister register : KebaModbusReadRegister.values()) {
             if (register.isP40Only() && !isP40) {
+                continue;
+            }
+            if (isCombined() && register != KebaModbusReadRegister.STATE && register != KebaModbusReadRegister.SERIAL
+                    && propertyName(register) == null && !isLinked(register.getChannelId())) {
                 continue;
             }
             long refreshMillis = (register.isFast() ? config.refreshInterval : config.refreshIntervalSlow) * 1000L;
             ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, register.getAddress(), READ_REGISTER_LENGTH,
                     MAX_TRIES);
-            PollTask pollTask = localComms.registerRegularPoll(request, refreshMillis, initialDelay,
-                    result -> handleReadResult(register, result), failure -> handleReadError(register, failure));
+            if (isCombined() && (register == KebaModbusReadRegister.SERIAL || propertyName(register) != null)) {
+                if (!identityRead && register != KebaModbusReadRegister.PRODUCT_INFO) {
+                    localComms.submitOneTimePoll(request, result -> {
+                        if (generation == connectionGeneration.get()) {
+                            handleReadResult(register, result);
+                        }
+                    }, failure -> {
+                        if (generation == connectionGeneration.get()) {
+                            handleReadError(register, failure);
+                        }
+                    });
+                }
+                continue;
+            }
+            PollTask pollTask = localComms.registerRegularPoll(request, refreshMillis, initialDelay, result -> {
+                if (generation == connectionGeneration.get()) {
+                    handleReadResult(register, result);
+                }
+            }, failure -> {
+                if (generation == connectionGeneration.get()) {
+                    handleReadError(register, failure);
+                }
+            });
             synchronized (pollTasks) {
                 if (!isStaleGeneration(generation, connectionGeneration.get())) {
                     pollTasks.add(pollTask);
@@ -223,6 +281,7 @@ public class KeContactModbusHandler extends BaseThingHandler {
             }
             initialDelay += 200;
         }
+        identityRead = true;
     }
 
     private void closeStaleComms(ModbusCommunicationInterface localComms) {
@@ -230,6 +289,20 @@ public class KeContactModbusHandler extends BaseThingHandler {
             localComms.close();
         } catch (Exception e) {
             logger.debug("Error closing stale Modbus communication interface: {}", e.getMessage());
+        }
+    }
+
+    public void refreshLinkedPolls() {
+        synchronized (connectionLock) {
+            ModbusCommunicationInterface localComms = comms;
+            if (!isCombined() || localComms == null || !pollsRegistered) {
+                return;
+            }
+            synchronized (pollTasks) {
+                pollTasks.forEach(localComms::unregisterRegularPoll);
+                pollTasks.clear();
+            }
+            registerPolls(localComms, connectionGeneration.get(), p40);
         }
     }
 
@@ -251,6 +324,13 @@ public class KeContactModbusHandler extends BaseThingHandler {
     }
 
     private void disposeCommunicationLocked() {
+        pollsRegistered = false;
+        identityRead = false;
+        ScheduledFuture<?> localIdentificationJob = identificationJob;
+        if (localIdentificationJob != null) {
+            localIdentificationJob.cancel(false);
+            identificationJob = null;
+        }
         synchronized (writeLock) {
             writeTasks.forEach(task -> task.cancel(false));
             writeTasks.clear();

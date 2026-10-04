@@ -43,10 +43,12 @@
 				<label>Voltage Phase 3</label>
 			</channel>
 			<channel id="input" typeId="rest-status">
-				<label>X2 Input</label>
+				<label>REST X2 Active</label>
+				<description>Raw x2active flag reported by the REST API. It is not assumed to be the UDP X1 enable-input signal.</description>
 			</channel>
 			<channel id="reserved" typeId="rest-status">
 				<label>Reserved</label>
+				<description>Whether the wallbox has an active reservation, reported by the REST reserved field.</description>
 			</channel>
 			<channel id="authon" typeId="rest-status">
 				<label>Authentication Enabled</label>

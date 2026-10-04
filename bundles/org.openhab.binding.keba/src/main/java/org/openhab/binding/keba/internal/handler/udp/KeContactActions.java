@@ -10,13 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.keba.internal.handler;
+package org.openhab.binding.keba.internal.handler.udp;
 
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.keba.internal.KebaBindingConstants;
+import org.openhab.binding.keba.internal.handler.KeContactCombinedHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
@@ -38,11 +39,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class KeContactActions implements ThingActions {
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactActions.class));
-    private @Nullable KeContactHandler handler;
+    private @Nullable ThingHandler handler;
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        this.handler = (KeContactHandler) handler;
+        this.handler = handler;
     }
 
     @Override
@@ -55,12 +56,16 @@ public class KeContactActions implements ThingActions {
             @ActionInput(name = "text", label = "@text/actionInputTextLabel", description = "@text/actionInputTextDesc") @Nullable String text,
             @ActionInput(name = "durationMin", label = "@text/actionInputDurationMinLabel", description = "@text/actionInputDurationMinDesc") int durationMin,
             @ActionInput(name = "durationMax", label = "@text/actionInputDurationMaxLabel", description = "@text/actionInputDurationMaxDesc") int durationMax) {
-        KeContactHandler localHandler = handler;
+        ThingHandler localHandler = handler;
         if (localHandler == null) {
             logger.warn("KeContact Action service ThingHandler is null!");
             return;
         }
-        localHandler.setDisplay(text, durationMin, durationMax);
+        if (localHandler instanceof KeContactHandler udpHandler) {
+            udpHandler.setDisplay(text, durationMin, durationMax);
+        } else if (localHandler instanceof KeContactCombinedHandler combinedHandler) {
+            combinedHandler.setDisplay(text, durationMin, durationMax);
+        }
     }
 
     public static void setDisplay(ThingActions actions, @Nullable String text, int durationMin, int durationMax) {
@@ -70,12 +75,7 @@ public class KeContactActions implements ThingActions {
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void setDisplay(
             @ActionInput(name = "text", label = "@text/actionInputTextLabel", description = "@text/actionInputTextDesc") @Nullable String text) {
-        KeContactHandler localHandler = handler;
-        if (localHandler == null) {
-            logger.warn("KeContact Action service ThingHandler is null!");
-            return;
-        }
-        localHandler.setDisplay(text, -1, -1);
+        setDisplay(text, -1, -1);
     }
 
     public static void setDisplay(ThingActions actions, @Nullable String text) {

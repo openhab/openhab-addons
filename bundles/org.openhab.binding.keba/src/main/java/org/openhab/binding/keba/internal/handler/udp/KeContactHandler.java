@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.keba.internal.handler;
+package org.openhab.binding.keba.internal.handler.udp;
 
 import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
 
@@ -32,7 +32,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
+import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
 import org.openhab.core.cache.ExpiringCacheMap;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -43,7 +45,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -61,9 +62,10 @@ import com.google.gson.JsonParser;
  * are sent to one of the channels.
  *
  * @author Karel Goderis - Initial contribution
+ * @author Michael Weger - Combined Thing UDP integration
  */
 @NonNullByDefault
-public class KeContactHandler extends BaseThingHandler {
+public class KeContactHandler extends KeContactProtocolHandler {
 
     public static final String IP_ADDRESS = "ipAddress";
     public static final String POLLING_REFRESH_INTERVAL = "refreshInterval";
@@ -95,8 +97,42 @@ public class KeContactHandler extends BaseThingHandler {
     private int refreshInterval = POLLING_REFRESH_INTERVAL_DEFAULT;
 
     public KeContactHandler(Thing thing, KeContactTransceiver transceiver) {
-        super(thing);
+        this(thing, transceiver, null, null);
+    }
+
+    public KeContactHandler(Thing thing, KeContactTransceiver transceiver, @Nullable Configuration configuration,
+            @Nullable Listener listener) {
+        super(thing, configuration, listener);
         this.transceiver = transceiver;
+    }
+
+    public void initializeCommands(String host) {
+        ipAddress = host;
+        refreshInterval = 0;
+        transceiver.registerHandler(this);
+    }
+
+    public boolean readReport(int report) {
+        ByteBuffer response = transceiver.send("report " + report, this);
+        if (response == null) {
+            logger.debug("No UDP response for report {} from {}", report, ipAddress);
+            return false;
+        }
+        try {
+            JsonObject data = JsonParser
+                    .parseString(new String(response.array(), 0, response.limit(), StandardCharsets.US_ASCII).trim())
+                    .getAsJsonObject();
+            if (!data.has("ID") || data.get("ID").getAsInt() != report || report == 1 && !data.has("Product")
+                    || report == 2 && !data.has("State")) {
+                logger.debug("Unexpected UDP response for report {} from {}", report, ipAddress);
+                return false;
+            }
+            onData(response);
+            return true;
+        } catch (JsonParseException | IllegalStateException | NumberFormatException e) {
+            logger.debug("Invalid UDP response for report {} from {}", report, ipAddress);
+            return false;
+        }
     }
 
     @Override
@@ -406,7 +442,7 @@ public class KeContactHandler extends BaseThingHandler {
                         State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_MAX_SYSTEM_CURRENT, newState);
                         if (maxSystemCurrent != 0) {
-                            if (maxSystemCurrent < maxPresetCurrent) {
+                            if (!isCombined() && maxSystemCurrent < maxPresetCurrent) {
                                 transceiver.send("curr " + maxSystemCurrent, this);
                                 updateState(CHANNEL_MAX_PRESET_CURRENT,
                                         new QuantityType<>(maxSystemCurrent / 1000.0, Units.AMPERE));
@@ -423,7 +459,7 @@ public class KeContactHandler extends BaseThingHandler {
                         maxPresetCurrent = state;
                         State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_MAX_PRESET_CURRENT, newState);
-                        if (maxSystemCurrent != 0) {
+                        if (maxSystemCurrent > 6000) {
                             updateState(CHANNEL_MAX_PRESET_CURRENT_RANGE, new QuantityType<>(
                                     Math.min(100, (state - 6000) * 100 / (maxSystemCurrent - 6000)), Units.PERCENT));
                         }

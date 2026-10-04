@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.keba.internal;
 
-import static org.openhab.binding.keba.internal.KebaBindingConstants.THING_TYPE_KECONTACTP20;
+import static org.openhab.binding.keba.internal.KebaBindingConstants.THING_TYPE_KECONTACT;
 import static org.openhab.binding.keba.internal.KebaBindingConstants.THING_TYPE_KECONTACT_MODBUS;
 import static org.openhab.binding.keba.internal.KebaBindingConstants.THING_TYPE_KECONTACT_REST;
+import static org.openhab.binding.keba.internal.KebaBindingConstants.THING_TYPE_KECONTACT_UDP;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -22,10 +23,11 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.keba.internal.handler.KeContactHandler;
-import org.openhab.binding.keba.internal.handler.KeContactTransceiver;
+import org.openhab.binding.keba.internal.handler.KeContactCombinedHandler;
 import org.openhab.binding.keba.internal.handler.modbus.KeContactModbusHandler;
 import org.openhab.binding.keba.internal.handler.rest.KeContactRestHandler;
+import org.openhab.binding.keba.internal.handler.udp.KeContactHandler;
+import org.openhab.binding.keba.internal.handler.udp.KeContactTransceiver;
 import org.openhab.core.io.transport.modbus.ModbusManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -49,9 +51,10 @@ public class KebaHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 
     static {
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_KECONTACTP20);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_KECONTACT);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_KECONTACT_MODBUS);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_KECONTACT_REST);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_KECONTACT_UDP);
     }
 
     private final KeContactTransceiver transceiver = new KeContactTransceiver();
@@ -67,7 +70,9 @@ public class KebaHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_KECONTACTP20)) {
+        if (thingTypeUID.equals(THING_TYPE_KECONTACT)) {
+            return new KeContactCombinedHandler(thing, Objects.requireNonNull(modbusManager), transceiver);
+        } else if (thingTypeUID.equals(THING_TYPE_KECONTACT_UDP)) {
             return new KeContactHandler(thing, transceiver);
         } else if (thingTypeUID.equals(THING_TYPE_KECONTACT_MODBUS)) {
             return new KeContactModbusHandler(thing, Objects.requireNonNull(modbusManager));
