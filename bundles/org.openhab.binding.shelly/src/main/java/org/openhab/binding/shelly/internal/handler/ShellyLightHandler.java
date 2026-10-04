@@ -191,11 +191,12 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
             Channel channel = channels.get(i);
             String id = channel.getUID().getId();
             ChannelTypeUID type = channel.getChannelTypeUID();
-            if (CHAN_FULL_LIGHT_POWER.equals(id) && !TYPE_UID_ADV_POWER.equals(type)) {
+            if (CHAN_FULL_CONTROL_POWER.equals(id) && !TYPE_UID_ADV_POWER.equals(type)) {
                 Channel advanced = ChannelBuilder.create(channel).withType(TYPE_UID_ADV_POWER).build();
                 channels.set(i, advanced);
                 dirty = true;
-            } else if (CHAN_FULL_WHITE_BRIGHT.equals(id) && hasPrimaryColor && !TYPE_UID_ADV_BRIGHT.equals(type)) {
+            } else if ((CHAN_FULL_CONTROL_BRIGHT.equals(id) || CHAN_FULL_WHITE_BRIGHT.equals(id)) //
+                    && hasPrimaryColor && !TYPE_UID_ADV_BRIGHT.equals(type)) {
                 Channel advanced = ChannelBuilder.create(channel).withType(TYPE_UID_ADV_BRIGHT).build();
                 channels.set(i, advanced);
                 dirty = true;

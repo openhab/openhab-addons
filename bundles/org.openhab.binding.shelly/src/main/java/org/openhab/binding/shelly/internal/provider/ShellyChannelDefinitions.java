@@ -256,6 +256,10 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_AUTOOFF, "timerAutoOff", ITEMT_TIME))
                 .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_TIMER_ACTIVE, "timerActive", ITEMT_SWITCH))
 
+                // RGBW PM color mode: brightness share the color component's own "control" group, since
+                // these Thing types never declare a "white" channel-group (only Bulb/Duo do)
+                .add(new ShellyChannel(m, CHGR_LIGHT, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
+
                 // RGBW2-white
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_BRIGHTNESS, "whiteBrightness", ITEMT_DIMMER))
                 .add(new ShellyChannel(m, CHGR_LIGHTCH, CHANNEL_TIMER_AUTOON, "timerAutoOn", ITEMT_TIME))
@@ -652,14 +656,16 @@ public class ShellyChannelDefinitions {
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
 
-            String group = profile.getControlGroup(idx);
-            String whiteGroup = profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHGR_WHITE;
-
+            boolean isRgbwInColorMode = profile.isRGBW2 && profile.hasColorTag(idx) && profile.inColor;
             boolean isGen3Light = profile.isGen2 && profile.isDuo;
             boolean isLegacyLight = !profile.isGen2 && (profile.isVintage || profile.isBulb || profile.isDuo);
             boolean hasPower = (profile.hasColorTag(idx) && !isGen3Light) || isLegacyLight;
+            boolean hasCT = !isRgbwInColorMode
+                    && (status.temp != null || (profile.isDuo && profile.isGen2) || profile.isBulb);
 
-            boolean hasCT = status.temp != null || (profile.isDuo && profile.isGen2) || profile.isBulb;
+            String group = profile.getControlGroup(idx);
+            String whiteGroup = isRgbwInColorMode ? group
+                    : (profile.isRGBW2 && !profile.hasColorTag(idx) ? group : CHGR_WHITE);
 
             // dynamically add missing control group channels
             addChannel(thing, add, hasPower, group, CHANNEL_LIGHT_POWER);

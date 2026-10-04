@@ -1526,7 +1526,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
         lights.set(idx, ds);
 
-        if (profile.isDuo) { // TODO check the filtering logic here
+        if (profile.isDuo) {
             updateComponentMeter(status, idx, value.apower, value.aenergy, null, null, channelUpdate);
         }
 
@@ -1573,7 +1573,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
 
         lights.set(idx, ds);
-        if (profile.isRGBW2) {
+
+        if (profile.isProRgbwwPm || profile.isPlusRgbwPm || profile.isDuo) {
             // the light components (Plus RGBW PM: light0..3, Pro RGBWW PM: light0..4) report power metering data
             updateComponentMeter(status, idx, value.apower, value.aenergy, value.voltage, value.current, channelUpdate);
         }

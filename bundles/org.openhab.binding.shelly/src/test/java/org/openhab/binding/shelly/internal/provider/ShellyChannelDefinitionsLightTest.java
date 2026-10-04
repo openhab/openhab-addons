@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.mkChannelId;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +127,7 @@ public class ShellyChannelDefinitionsLightTest {
                 profile, status, 0);
 
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS)));
-        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_COLOR_TEMP)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_COLOR_TEMP)));
         assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS)));
         assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_COLOR_TEMP)));
     }

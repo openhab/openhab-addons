@@ -102,6 +102,7 @@ public class ShellyDeviceProfile {
     public boolean isRGBW2; // true only if it a RGBW2
     public boolean isProRgbwwPm; // true only for a Shelly Pro RGBWW PM (device.profile alone can't tell it apart
                                  // from a Plus RGBW PM running the same rgb/rgbw/light profile)
+    public boolean isPlusRgbwPm; // true only for a Shelly Plus RGBW PM
     public boolean isRGBCCT; // true for Gen3 Multicolor Bulb with rgbcct:0 component (RGB + CCT mode switching)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
     public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
@@ -227,6 +228,7 @@ public class ShellyDeviceProfile {
         isRGBCCT = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
         isProRgbwwPm = THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID);
+        isPlusRgbwPm = THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
