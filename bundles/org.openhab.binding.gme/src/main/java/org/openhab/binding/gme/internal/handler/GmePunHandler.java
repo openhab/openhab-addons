@@ -99,6 +99,7 @@ public class GmePunHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         lifecycleGeneration.incrementAndGet();
+        cancelJobs();
         updateStatus(ThingStatus.UNKNOWN);
 
         if (!linkBridge()) {
@@ -137,6 +138,7 @@ public class GmePunHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             lifecycleGeneration.incrementAndGet();
+            cancelJobs();
             if (bridgeHandler != null || linkBridge()) {
                 scheduleChannelRefresh();
                 scheduleApiRefresh();
