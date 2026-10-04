@@ -12,47 +12,58 @@ https://www.eclipse.org/legal/epl-2.0/.
 
 https://github.com/openhab/openhab-addons
 
-== Third Party Dependencies
+== Third-party Content
 
-The following dependencies are embedded into this bundle's own jar (Private-Package) rather than
-resolved as separate OSGi bundles at runtime - see pom.xml and src/main/feature/feature.xml.
+The following libraries are embedded in this bundle.
 
-=== org.openmuc.jeebus:ship, org.openmuc.jeebus:spine
-Author: Fraunhofer ISE / OpenMUC
-URL: https://www.openmuc.org/eebus/
-License: Eclipse Public License 2.0
+jEEBus SHIP and SPINE (org.openmuc.jeebus:ship, org.openmuc.jeebus:spine)
+* License: EPL 2.0 License
+* Project: https://www.openmuc.org/eebus/
+* Source:  https://github.com/openmuc/jeebus.ship, https://github.com/openmuc/jeebus.spine
 
-=== org.openmuc.jeebus.usecase.powerlimitation:{abstract-controllablesystem,lpc-controllablesystem,lpp-controllablesystem}
-Author: Fraunhofer ISE / OpenMUC
-URL: https://www.openmuc.org/eebus/
-License: Eclipse Public License 2.0
+jEEBus power limitation use cases (org.openmuc.jeebus.usecase.powerlimitation:abstract-controllablesystem, lpc-controllablesystem, lpp-controllablesystem)
+* License: EPL 2.0 License
+* Project: https://www.openmuc.org/eebus/
+* Source:  https://github.com/openmuc/jeebus.usecase.powerlimitation.controllablesystem
 
-=== org.bouncycastle:bcprov-jdk18on, org.bouncycastle:bcpkix-jdk18on, org.bouncycastle:bcutil-jdk18on
-Author: The Legion of the Bouncy Castle Inc.
-URL: https://www.bouncycastle.org/
-License: MIT License
+Bouncy Castle (org.bouncycastle:bcprov-jdk18on, bcpkix-jdk18on, bcutil-jdk18on)
+* License: MIT License (Bouncy Castle Licence)
+* Project: https://www.bouncycastle.org/
+* Source:  https://github.com/bcgit/bc-java
 
-=== io.netty:netty-*
-Author: The Netty Project
-URL: https://netty.io/
-License: Apache License Version 2.0
+The following libraries are installed as separate bundles by the add-on's Karaf feature.
 
-=== com.fasterxml.jackson.core:*, com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations
-Author: FasterXML LLC
-URL: https://github.com/FasterXML/jackson-databind
-License: Apache License Version 2.0
+Netty (io.netty:netty-buffer, netty-codec-base, netty-codec-compression, netty-codec-http, netty-common, netty-handler, netty-resolver, netty-transport, netty-transport-native-unix-common)
+* License: Apache 2.0 License
+* Project: https://netty.io/
+* Source:  https://github.com/netty/netty
 
-=== org.glassfish.jaxb:jaxb-core, org.glassfish.jaxb:txw2, org.eclipse.angus:angus-activation, com.sun.istack:istack-commons-runtime, org.jvnet.jaxb:jaxb-plugins-runtime, jakarta.xml.bind:jakarta.xml.bind-api, jakarta.activation:jakarta.activation-api
-Author: Eclipse Foundation
-URL: https://eclipse-ee4j.github.io/jaxb-ri/
-License: Eclipse Distribution License 1.0 (BSD-3-Clause)
+Jackson (com.fasterxml.jackson.core:jackson-core, jackson-databind, jackson-annotations, com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations)
+* License: Apache 2.0 License
+* Project: https://github.com/FasterXML/jackson
+* Source:  https://github.com/FasterXML/jackson-databind
 
-=== com.google.code.gson:gson
-Author: Google Inc.
-URL: https://github.com/google/gson
-License: Apache License Version 2.0
+Jakarta XML Binding and Activation (jakarta.xml.bind:jakarta.xml.bind-api, jakarta.activation:jakarta.activation-api, org.glassfish.jaxb:jaxb-core, txw2, org.eclipse.angus:angus-activation, com.sun.istack:istack-commons-runtime)
+* License: EDL 1.0 License (BSD-3-Clause)
+* Project: https://eclipse-ee4j.github.io/jaxb-ri/
+* Source:  https://github.com/eclipse-ee4j/jaxb-ri, https://github.com/jakartaee/jaxb-api, https://github.com/jakartaee/jaf-api, https://github.com/eclipse-ee4j/angus-activation, https://github.com/eclipse-ee4j/jaxb-istack-commons
 
-=== org.jmdns:jmdns
-Author: JmDNS contributors
-URL: https://github.com/jmdns/jmdns
-License: Apache License Version 2.0
+JAXB Tools plugins runtime (org.jvnet.jaxb:jaxb-plugins-runtime)
+* License: BSD-style License
+* Project: https://github.com/highsource/jaxb-tools
+* Source:  https://github.com/highsource/jaxb-tools
+
+Gson (com.google.code.gson:gson)
+* License: Apache 2.0 License
+* Project: https://github.com/google/gson
+* Source:  https://github.com/google/gson
+
+JmDNS (org.jmdns:jmdns)
+* License: Apache 2.0 License
+* Project: https://jmdns.org
+* Source:  https://github.com/jmdns/jmdns
+
+JSR-305 annotations (com.google.code.findbugs:jsr305)
+* License: Apache 2.0 License
+* Project: https://code.google.com/archive/p/jsr-305/
+* Source:  https://code.google.com/archive/p/jsr-305/
