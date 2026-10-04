@@ -46,6 +46,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.thing.Channel;
@@ -612,7 +613,7 @@ public class ShellyChannelDefinitions {
      */
     public static Map<String, Channel> createMediaChannels(final Thing thing, final ShellySettingsStatus status) {
         Map<String, Channel> add = new LinkedHashMap<>();
-        boolean hasMedia = status.media != null && status.media.playback != null;
+        boolean hasMedia = hasMediaPlayback(status);
         addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_CONTROL);
         addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_VOLUME);
         addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_TITLE);
@@ -652,7 +653,12 @@ public class ShellyChannelDefinitions {
      *         component (dis)appearing entirely, which happens across device/app variants, not per-toggle.
      */
     public static Set<String> getObsoleteMediaChannelIds(final ShellySettingsStatus status) {
-        return status.media == null || status.media.playback == null ? MEDIA_CHANNELS : Set.of();
+        return hasMediaPlayback(status) ? Set.of() : MEDIA_CHANNELS;
+    }
+
+    private static boolean hasMediaPlayback(final ShellySettingsStatus status) {
+        Shelly2DeviceStatusMedia media = status.media;
+        return media != null && media.playback != null;
     }
 
     /**
