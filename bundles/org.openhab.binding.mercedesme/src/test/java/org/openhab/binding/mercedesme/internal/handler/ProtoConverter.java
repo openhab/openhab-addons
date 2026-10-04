@@ -21,6 +21,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
@@ -30,7 +31,6 @@ import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePoint;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.ClockHourUnit;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.CombustionConsumptionUnit;
@@ -41,7 +41,9 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.PressureU
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.RatioUnit;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.SpeedUnit;
 import com.daimler.mbcarkit.proto.VehicleEvents.VehicleAttributeStatus.TemperatureUnit;
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdate;
 import com.google.protobuf.Int32Value;
+import com.google.protobuf.TextFormat;
 
 /**
  * {@link ProtoConverter} Proto conversions for Unit Tests and not necessary for binding
@@ -51,7 +53,7 @@ import com.google.protobuf.Int32Value;
 @NonNullByDefault
 public class ProtoConverter {
 
-    public static VEPUpdate json2Proto(String json, boolean fullUpdate) {
+    public static VehicleStatusAttributes json2Proto(String json, boolean fullUpdate) {
         JSONObject jsonObj = new JSONObject(json);
         Map<String, VehicleAttributeStatus> updateMap = new HashMap<>();
         Iterator<String> keyIter = jsonObj.keys();
@@ -177,7 +179,42 @@ public class ProtoConverter {
             }
             updateMap.put(key, builder.build());
         }
-        return VEPUpdate.newBuilder().setFullUpdate(fullUpdate).putAllAttributes(updateMap).build();
+        return new VehicleStatusAttributes(fullUpdate, updateMap);
+    }
+
+    /**
+     * Parses a {@code VehicleStatusUpdate} capture in protobuf TextFormat ({@code .raw} fixtures under
+     * {@code src/test/resources/vehiclestatusupdates}) into the internal carrier type used by the live push path.
+     *
+     * @param rawText the TextFormat dump of a single {@code VehicleStatusUpdate} message
+     * @param fullUpdate the full/partial flag to attach, since a raw capture itself carries none
+     */
+    public static VehicleStatusAttributes raw2Proto(String rawText, boolean fullUpdate) {
+        String protoText = stripLogPrefix(rawText);
+        VehicleStatusUpdate.Builder vsuBuilder = VehicleStatusUpdate.newBuilder();
+        try {
+            TextFormat.getParser().merge(protoText, vsuBuilder);
+        } catch (TextFormat.ParseException e) {
+            throw new IllegalArgumentException("Failed to parse VehicleStatusUpdate raw fixture", e);
+        }
+        Map<String, VehicleAttributeStatus> updateMap = Mapper.fromVehicleStatusUpdate(vsuBuilder.build());
+        return new VehicleStatusAttributes(fullUpdate, updateMap);
+    }
+
+    /**
+     * Some {@code .raw} fixtures still carry the leading TRACE line pasted from the openHAB log; strip it so
+     * only the protobuf TextFormat content is parsed.
+     */
+    private static String stripLogPrefix(String rawText) {
+        int firstNewline = rawText.indexOf('\n');
+        if (firstNewline < 0) {
+            return rawText;
+        }
+        String firstLine = rawText.substring(0, firstNewline);
+        if (firstLine.contains("Raw VehicleStatusUpdate for")) {
+            return rawText.substring(firstNewline + 1);
+        }
+        return rawText;
     }
 
     public static JSONObject clientMessage2Json(ClientMessage cm) {
@@ -199,6 +236,17 @@ public class ProtoConverter {
             Int32Value soc = (Int32Value) cc.get("max_soc");
             cc.put("max_soc", soc.getValue());
             return cc;
+        }
+        // DoorsLock/DoorsUnlock carry no distinguishing fields, so expose which oneof case was set
+        if (cr.hasDoorsLock()) {
+            JSONObject dl = Utils.getJsonObject(cr.getDoorsLock().getAllFields());
+            dl.put("commandType", "doorsLock");
+            return dl;
+        }
+        if (cr.hasDoorsUnlock()) {
+            JSONObject du = Utils.getJsonObject(cr.getDoorsUnlock().getAllFields());
+            du.put("commandType", "doorsUnlock");
+            return du;
         }
         return cmJson;
     }

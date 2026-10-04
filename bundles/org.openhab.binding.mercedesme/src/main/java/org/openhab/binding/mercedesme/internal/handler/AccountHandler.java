@@ -34,6 +34,7 @@ import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryServ
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeApiException;
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeAuthException;
 import org.openhab.binding.mercedesme.internal.exception.MercedesMeBindingException;
+import org.openhab.binding.mercedesme.internal.utils.Mapper;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.i18n.LocaleProvider;
@@ -50,13 +51,16 @@ import org.slf4j.LoggerFactory;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
 import com.daimler.mbcarkit.proto.Protos.AcknowledgeAssignedVehicles;
-import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
+import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVehicleStatusUpdates;
+import com.daimler.mbcarkit.proto.VehicleEvents.DoubleAttribute;
 import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
-import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdate;
+import com.daimler.mbcarkit.proto.VehicleEvents.VehicleStatusUpdates;
 import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsRequest;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsResponse;
 
 /**
  * The {@link AccountHandler} acts as Bridge between MercedesMe Account and the associated vehicles
@@ -67,10 +71,15 @@ import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsRequest;
 public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefreshListener {
     private static final int VARIANCE_PERCENT = 15; // 15% variance for refresh interval
 
+    // placeholders replacing personal data in TRACE output - see anonymizeForTrace()
+    private static final String TRACE_VIN_PLACEHOLDER = "ANONYMIZED";
+    private static final double TRACE_POSITION_LAT_PLACEHOLDER = 1.23;
+    private static final double TRACE_POSITION_LONG_PLACEHOLDER = 4.56;
+
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final Map<String, Map<String, Object>> vinCapabilitiesMap = new HashMap<>();
     private final Map<String, VehicleHandler> activeVehicleHandlerMap = new HashMap<>();
-    private final Map<String, VEPUpdate> vepUpdateMap = new HashMap<>();
+    private final Map<String, VehicleStatusAttributes> vehicleStatusMap = new HashMap<>();
     private final List<String> keepAliveList = new ArrayList<>();
     private final MercedesMeDiscoveryService discoveryService;
     private final LocaleProvider localeProvider;
@@ -124,17 +133,10 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             return;
         }
         if (api.authTokenIsValid()) {
-            /**
-             * Pattern of the update strategy
-             * - if all vehicles are in status idle (no keep alive) pull the status updates from the server
-             * - each vehicle is deciding on the new attributes if it needs to be kept alive (driving or charging)
-             * - if any vehicle needs to be kept alive start websocketUpdate to get frequent updates
-             */
-            if (keepAliveList.isEmpty() && !activeVehicleHandlerMap.isEmpty()) {
-                pullUpdates();
-            } else {
-                api.websocketUpdate();
-            }
+            // The REST "vehicleattributes" endpoint only returns the small widget-tile attribute set and can
+            // never trigger keepAlive(), so every refresh goes through the WebSocket; each vehicle then decides
+            // whether it needs to stay alive (driving or charging).
+            api.websocketUpdate();
         } else {
             // token is not valid - try to resume login
             authorize();
@@ -156,9 +158,15 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         refreshScheduler = scheduler.schedule(this::refresh, delayInSeconds, TimeUnit.SECONDS);
     }
 
-    public void authorize() {
+    /**
+     * @return {@code true} if the login actually succeeded. Callers must not use
+     *         {@code Websocket.authTokenIsValid()} instead - stale token values survive a failed login.
+     */
+    public boolean authorize() {
         try {
             api.login();
+            // login() throws unless a usable token pair was stored, so reaching this line is the real outcome
+            return true;
         } catch (MercedesMeAuthException e) {
             handleAuthError(e);
         } catch (MercedesMeApiException e) {
@@ -166,6 +174,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         } catch (MercedesMeBindingException e) {
             handleBindingError(e);
         }
+        return false;
     }
 
     /**
@@ -230,7 +239,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         discoveryService.vehicleRemove(this, vin, handler.getThing().getThingTypeUID().getId());
         activeVehicleHandlerMap.put(vin, handler);
         discovery(vin); // update properties for added vehicle
-        VEPUpdate updateForVin = vepUpdateMap.get(vin);
+        VehicleStatusAttributes updateForVin = vehicleStatusMap.get(vin);
         if (updateForVin != null) {
             handler.enqueueUpdate(updateForVin);
         } else {
@@ -283,12 +292,31 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     private void handleMessage(PushMessage pm) {
-        if (pm.hasVepUpdates()) {
-            boolean distributed = distributeVepUpdates(pm.getVepUpdates().getUpdatesMap());
+        // debug on purpose - this is the one line telling us which message types actually arrive
+        logger.debug("AccountHandler handling message type {}", pm.getMsgCase());
+        if (pm.hasVehicleStatusUpdates()) {
+            // Mapper.fromVehicleStatusUpdate() builds the subset of MB_KEY_* attributes that maps 1:1 onto the
+            // existing VehicleAttributeStatus pipeline.
+            VehicleStatusUpdates vsu = pm.getVehicleStatusUpdates();
+            logger.debug("Received VehicleStatusUpdates seq {} for {} VIN(s)", vsu.getSequenceNumber(),
+                    vsu.getVehicleStatusUpdatesMap().size());
+            // TRACE-only dump of the raw update in protobuf TextFormat, meant to be turned into a test fixture;
+            // VIN and GPS position are anonymized first (see anonymizeForTrace()).
+            if (logger.isTraceEnabled()) {
+                vsu.getVehicleStatusUpdatesMap()
+                        .forEach((vin, update) -> logger.trace("Raw VehicleStatusUpdate for {}:\n{}",
+                                TRACE_VIN_PLACEHOLDER, anonymizeForTrace(update)));
+            }
+            Map<String, VehicleStatusAttributes> converted = new HashMap<>();
+            vsu.getVehicleStatusUpdatesMap().forEach((vin, update) -> converted.put(vin,
+                    new VehicleStatusAttributes(update.getFullUpdate(), Mapper.fromVehicleStatusUpdate(update))));
+            // acknowledge only after delivery: the server never resends an acknowledged sequence, so an
+            // undelivered partial update must not be acknowledged
+            boolean distributed = distributeVehicleUpdates(converted);
             if (distributed) {
-                AcknowledgeVEPUpdatesByVIN ack = AcknowledgeVEPUpdatesByVIN.newBuilder()
-                        .setSequenceNumber(pm.getVepUpdates().getSequenceNumber()).build();
-                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVepUpdatesByVin(ack).build();
+                AcknowledgeVehicleStatusUpdates ack = AcknowledgeVehicleStatusUpdates.newBuilder()
+                        .setSequenceNumber(vsu.getSequenceNumber()).build();
+                ClientMessage cm = ClientMessage.newBuilder().setAcknowledgeVehicleStatusUpdates(ack).build();
                 api.sendAcknowledgeMessage(cm);
             }
         } else if (pm.hasAssignedVehicles()) {
@@ -311,6 +339,12 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             if (!pending.getAllFields().isEmpty()) {
                 logger.trace("Pending Command {}", pending.getAllFields());
             }
+            // vehicleapi.proto requires an answer to this request; without it the server never proceeds to
+            // pushing regular vehicle status updates. Commands aren't tracked across restarts, so reply empty.
+            AppTwinPendingCommandsResponse response = AppTwinPendingCommandsResponse.newBuilder().build();
+            ClientMessage cm = ClientMessage.newBuilder().setApptwinPendingCommandsResponse(response).build();
+            api.sendAcknowledgeMessage(cm);
+            logger.debug("Answered AppTwinPendingCommandsRequest with an empty AppTwinPendingCommandsResponse");
         } else if (pm.hasDebugMessage()) {
             logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
         } else {
@@ -318,15 +352,35 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
         }
     }
 
-    public boolean distributeVepUpdates(Map<String, VEPUpdate> map) {
+    /**
+     * Returns a copy of the given {@link VehicleStatusUpdate} with the personal data ({@code fin_or_vin} and the
+     * GPS position) replaced by fixed placeholders, so it is safe to log at TRACE level.
+     *
+     * @param update the raw update as received from the backend
+     * @return an anonymized copy of update, safe for logging
+     */
+    private static VehicleStatusUpdate anonymizeForTrace(VehicleStatusUpdate update) {
+        VehicleStatusUpdate.Builder anonymized = update.toBuilder().setFinOrVin(TRACE_VIN_PLACEHOLDER);
+        if (update.hasPositionLat()) {
+            anonymized.setPositionLat(
+                    DoubleAttribute.newBuilder(update.getPositionLat()).setValue(TRACE_POSITION_LAT_PLACEHOLDER));
+        }
+        if (update.hasPositionLong()) {
+            anonymized.setPositionLong(
+                    DoubleAttribute.newBuilder(update.getPositionLong()).setValue(TRACE_POSITION_LONG_PLACEHOLDER));
+        }
+        return anonymized.build();
+    }
+
+    public boolean distributeVehicleUpdates(Map<String, VehicleStatusAttributes> map) {
         List<String> notFoundList = new ArrayList<>();
         map.forEach((key, value) -> {
             VehicleHandler h = activeVehicleHandlerMap.get(key);
             if (h != null) {
                 h.enqueueUpdate(value);
             } else {
-                if (value.getFullUpdate()) {
-                    vepUpdateMap.put(key, value);
+                if (value.fullUpdate()) {
+                    vehicleStatusMap.put(key, value);
                 }
                 notFoundList.add(key);
             }
@@ -400,19 +454,6 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
                 api.websocketKeepAlive(false);
             }
         }
-    }
-
-    private void pullUpdates() {
-        activeVehicleHandlerMap.entrySet().forEach(entry -> {
-            try {
-                VEPUpdate update = api.restGetVehicleAttributes(entry.getKey());
-                entry.getValue().enqueueUpdate(update);
-                logger.trace("Pull update delivered {} updates", update.getAttributesCount());
-                updateStatus(ThingStatus.ONLINE);
-            } catch (MercedesMeApiException e) {
-                handleApiError(e);
-            }
-        });
     }
 
     private void handleAuthError(MercedesMeAuthException e) {
