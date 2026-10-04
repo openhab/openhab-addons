@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.keba.internal.handler;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -23,14 +26,33 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class KeContactCombinedConfiguration {
     public String ipAddress = "";
+    public int refreshIntervalSlow = 60;
+    public boolean modbusEnabled = true;
+    public String modbusIpAddress = "";
     public int port = 502;
     public int unitId = 255;
     public int refreshInterval = 12;
-    public String udpIpAddress = "";
     public boolean udpEnabled = true;
-    public String baseUrl = "";
+    public boolean restEnabled = false;
+    public int restPort = 8443;
     public String username = "admin";
     public @Nullable String password;
     public boolean verifyCertificate = true;
-    public int refreshIntervalSlow = 60;
+
+    public String getModbusAddress() {
+        return modbusIpAddress.isBlank() ? ipAddress : modbusIpAddress;
+    }
+
+    public String getRestBaseUrl() {
+        try {
+            URI uri = new URI("https", null, ipAddress, restPort, null, null, null);
+            if (uri.getHost() == null || uri.getUserInfo() != null || uri.getPort() != restPort
+                    || !"".equals(uri.getRawPath()) || uri.getRawQuery() != null || uri.getRawFragment() != null) {
+                throw new IllegalArgumentException("Invalid wallbox network address");
+            }
+            return uri.toString();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid wallbox network address", e);
+        }
+    }
 }

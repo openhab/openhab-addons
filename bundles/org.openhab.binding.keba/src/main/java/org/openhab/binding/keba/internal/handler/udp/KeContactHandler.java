@@ -32,6 +32,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaSeries;
 import org.openhab.binding.keba.internal.KebaBindingConstants.KebaType;
+import org.openhab.binding.keba.internal.handler.KeContactCombinedConfiguration;
 import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.core.Configuration;
@@ -67,9 +68,6 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class KeContactHandler extends KeContactProtocolHandler {
 
-    public static final String IP_ADDRESS = "ipAddress";
-    public static final String POLLING_REFRESH_INTERVAL = "refreshInterval";
-    public static final int POLLING_REFRESH_INTERVAL_DEFAULT = 15;
     public static final int REPORT_INTERVAL = 3000;
     public static final int BUFFER_SIZE = 1024;
     public static final int REMOTE_PORT_NUMBER = 7090;
@@ -94,7 +92,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
     private int lastState = -1; // trigger a report100 at startup
     private boolean isReport100needed = true;
     private String ipAddress = "";
-    private int refreshInterval = POLLING_REFRESH_INTERVAL_DEFAULT;
+    private int refreshInterval;
 
     public KeContactHandler(Thing thing, KeContactTransceiver transceiver) {
         this(thing, transceiver, null, null);
@@ -137,10 +135,9 @@ public class KeContactHandler extends KeContactProtocolHandler {
 
     @Override
     public void initialize() {
-        KeContactConfiguration configuration = getConfigAs(KeContactConfiguration.class);
-        String configuredIpAddress = configuration.ipAddress;
-        ipAddress = configuredIpAddress != null ? configuredIpAddress : "";
-        refreshInterval = configuration.refreshInterval;
+        KeContactCombinedConfiguration configuration = getConfigAs(KeContactCombinedConfiguration.class);
+        ipAddress = configuration.ipAddress;
+        refreshInterval = configuration.refreshIntervalSlow;
         try {
             if (isKebaReachable()) {
                 transceiver.registerHandler(this);

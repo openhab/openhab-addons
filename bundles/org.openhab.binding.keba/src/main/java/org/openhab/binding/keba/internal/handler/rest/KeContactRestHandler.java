@@ -31,6 +31,7 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.keba.internal.handler.KeContactCombinedConfiguration;
 import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
@@ -67,11 +68,13 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
     private static final int CONNECT_TIMEOUT_SECONDS = 5;
 
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactRestHandler.class));
-    private KeContactRestConfiguration config = new KeContactRestConfiguration();
+    private KeContactCombinedConfiguration config = new KeContactCombinedConfiguration();
     private @Nullable String serialNumber;
     private @Nullable HttpClient httpClient;
     private @Nullable String accessToken;
     private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable Long lastWallboxPoll;
+    private long nextSupplementalPoll;
     private final boolean supplemental;
     private final Object lifecycleLock = new Object();
     private final Object requestLock = new Object();
@@ -90,17 +93,21 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
 
     @Override
     public void initialize() {
-        KeContactRestConfiguration configuration = getConfigAs(KeContactRestConfiguration.class);
+        KeContactCombinedConfiguration configuration = getConfigAs(KeContactCombinedConfiguration.class);
         config = configuration;
-        String baseUrl = configuration.baseUrl;
         String username = configuration.username;
         @Nullable
         String configuredPassword = configuration.password;
-        @Nullable
-        String configuredSerialNumber = configuration.serialNumber;
-        int refreshInterval = configuration.refreshInterval;
         boolean verifyCertificate = configuration.verifyCertificate;
-        if (baseUrl.isBlank() || configuredPassword == null || configuredPassword.isBlank() || refreshInterval <= 0) {
+        if (!configuration.restEnabled || configuration.ipAddress.isBlank() || configuration.restPort < 1
+                || configuration.restPort > 65535 || configuredPassword == null || configuredPassword.isBlank()
+                || configuration.refreshInterval < 10 || configuration.refreshIntervalSlow < 10) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-rest");
+            return;
+        }
+        try {
+            configuration.getRestBaseUrl();
+        } catch (IllegalArgumentException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-rest");
             return;
         }
@@ -128,15 +135,14 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                 }
                 synchronized (requestLock) {
                     login(username, password);
-                    String resolvedSerialNumber = configuredSerialNumber;
-                    if (resolvedSerialNumber == null || resolvedSerialNumber.isBlank()) {
-                        resolvedSerialNumber = discoverSerialNumber();
-                    }
+                    String resolvedSerialNumber = discoverSerialNumber();
                     synchronized (lifecycleLock) {
                         if (expectedGeneration != generation.get()) {
                             return;
                         }
                         serialNumber = resolvedSerialNumber;
+                        lastWallboxPoll = null;
+                        nextSupplementalPoll = 0;
                         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
                             if (expectedGeneration == generation.get()) {
                                 synchronized (requestLock) {
@@ -145,7 +151,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                                     }
                                 }
                             }
-                        }, 0, refreshInterval, TimeUnit.SECONDS);
+                        }, 0, 1, TimeUnit.SECONDS);
                         initializing = false;
                     }
                 }
@@ -238,17 +244,33 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
     }
 
     private void poll() {
+        long now = pollingTime();
+        int interval = isPrimary() ? Math.min(config.refreshInterval, config.refreshIntervalSlow)
+                : config.refreshIntervalSlow;
+        @Nullable
+        Long lastPoll = lastWallboxPoll;
+        boolean wallboxDue = lastPoll == null || now - lastPoll >= TimeUnit.SECONDS.toNanos(interval);
+        boolean supplementalDue = now >= nextSupplementalPoll;
+        if (!wallboxDue && !supplementalDue) {
+            return;
+        }
+        if (supplementalDue) {
+            nextSupplementalPoll = now + TimeUnit.SECONDS.toNanos(config.refreshIntervalSlow);
+        }
         try {
-            JsonObject wallbox = request("/wallboxes/" + serialNumber(), "GET", null, true);
-            updateStatus(ThingStatus.ONLINE);
-            updateWallbox(wallbox);
-            if (!supplemental || isLinked("dipswitchinterpretation")) {
+            if (wallboxDue) {
+                lastWallboxPoll = now;
+                JsonObject wallbox = request("/wallboxes/" + serialNumber(), "GET", null, true);
+                updateStatus(ThingStatus.ONLINE);
+                updateWallbox(wallbox);
+            }
+            if (supplementalDue && (!supplemental || isLinked("dipswitchinterpretation"))) {
                 updateDipSwitchInterpretation();
             }
-            if (!supplemental || isLinked("phaseswitchsource")) {
+            if (supplementalDue && (!supplemental || isLinked("phaseswitchsource"))) {
                 updatePhaseSwitchSource();
             }
-            if (!supplemental || isLinked("sessionstart") || isLinked("sessionduration")) {
+            if (supplementalDue && (!supplemental || isLinked("sessionstart") || isLinked("sessionduration"))) {
                 try {
                     updateSession();
                 } catch (Exception e) {
@@ -258,12 +280,18 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                     logger.debug("Failed to read supplemental REST session: {}", e.getMessage());
                 }
             }
-            updateStatus(ThingStatus.ONLINE);
+            if (wallboxDue) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (Exception e) {
             logger.debug("REST polling failed: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-rest [\"" + messageOf(e) + "\"]");
         }
+    }
+
+    protected long pollingTime() {
+        return System.nanoTime();
     }
 
     private void updateWallbox(JsonObject wallbox) {
@@ -567,8 +595,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
     }
 
     private String normalizedBaseUrl() {
-        String baseUrl = config.baseUrl;
-        return baseUrl.endsWith("/") ? Objects.requireNonNull(baseUrl.substring(0, baseUrl.length() - 1)) : baseUrl;
+        return config.getRestBaseUrl();
     }
 
     private static HttpClient createHttpClient(boolean verifyCertificate) {

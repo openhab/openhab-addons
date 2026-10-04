@@ -14,12 +14,14 @@ package org.openhab.binding.keba.internal.handler;
 
 import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
 
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -39,13 +41,19 @@ import org.openhab.core.io.transport.modbus.ModbusManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelDefinition;
+import org.openhab.core.thing.type.ThingType;
+import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -68,23 +76,40 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     private static final Set<String> UDP_REPORT_1 = Set.of("backend", "timequality", "bootflag", "dipswitch1",
             "dipswitch2");
     private static final Set<String> UDP_REPORT_2 = Set.of("enabledsystem", "enableduser", "maxpresetcurrent",
-            "maxpresetcurrentrange", "error1", "error2", "maxchargingcurrent", "maxpilotcurrentdutycyle",
-            "maxsupportedcurrent", "failsafecurrentsetting", "failsafetimeoutsetting", "currtimer", "currtimertimeout",
-            "output", "inputx1", "uptime", "authreq", "authon");
+            "maxpresetcurrentrange", "error1", "error2", "maxpilotcurrent", "maxpilotcurrentdutycyle",
+            "maxsystemcurrent", "failsafecurrent", "failsafetimeout", "currtimer", "currtimertimeout", "output",
+            "input", "uptime", "authreq", "authon");
     private static final Set<String> UDP_REPORT_100 = Set.of("sessionrfidclass", "sessionid");
     private static final Set<String> REST_ONLY = Set.of("reststate", "session", "error", "reserved", "temperature",
-            "input", "sessionstart", "sessionduration", "externalmeter", "maxphases", "phaseconfiguration",
+            "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases", "phaseconfiguration",
             "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop", "reboot", "unlock");
     private static final Set<String> UDP_COMMANDS = Set.of("display", "output", "authenticate", "maxpresetcurrent",
             "maxpresetcurrentrange");
     private static final Set<String> REST_SHARED = Set.of("state", "I1", "I2", "I3", "U1", "U2", "U3", "power",
-            "powerfactor", "totalconsumption", "sessionconsumption", "maxchargingcurrent", "maxsupportedcurrent",
+            "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent",
             "phaseswitchstate", "phaseswitchsource");
-    private static final Set<String> REMOVED_COMPATIBILITY_CHANNELS = Set.of("maxsystemcurrent", "maxpilotcurrent",
-            "failsafecurrent", "failsafetimeout");
+    private static final Set<String> MODBUS_CHANNELS = Set.of("state", "cablestate", "errorcode", "I1", "I2", "I3",
+            "power", "totalconsumption", "U1", "U2", "U3", "powerfactor", "maxpilotcurrent", "maxsystemcurrent",
+            "fastchargingstatus", "sessionrfidtag", "sessionconsumption", "phaseswitchsource", "phaseswitchstate",
+            "failsafecurrent", "failsafetimeout", "maxpresetcurrent", "setenergylimit", "unlockplug", "enableduser",
+            "triggerphaseswitch", "failsafepersist", "activatefastcharging");
+    private static final Set<String> UDP_CHANNELS = Set.of("backend", "timequality", "bootflag", "dipswitch1",
+            "dipswitch2", "enabledsystem", "enableduser", "maxpresetcurrent", "maxpresetcurrentrange", "error1",
+            "error2", "state", "wallbox", "vehicle", "locked", "maxpilotcurrent", "maxpilotcurrentdutycyle",
+            "maxsystemcurrent", "failsafecurrent", "failsafetimeout", "currtimer", "currtimertimeout", "output",
+            "input", "uptime", "authreq", "authon", "I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
+            "totalconsumption", "sessionconsumption", "sessionrfidtag", "sessionrfidclass", "sessionid", "display",
+            "authenticate", "setenergylimit", "phaseswitchsource", "phaseswitchstate", "triggerphaseswitch");
+    private static final Set<String> REST_CHANNELS = Set.of("reststate", "session", "error", "reserved", "temperature",
+            "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases", "phaseconfiguration",
+            "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop", "reboot", "unlock",
+            "authon", "enableduser", "vehicle", "state", "I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
+            "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent", "phaseswitchstate",
+            "phaseswitchsource");
 
     private final ModbusManager modbusManager;
     private final KeContactTransceiver transceiver;
+    private final @Nullable ThingTypeRegistry thingTypeRegistry;
     private volatile @Nullable Session session;
 
     private static final class Session {
@@ -94,7 +119,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         volatile boolean modbusOnline;
         volatile boolean restOnline;
         volatile boolean udpOnline;
-        volatile boolean modbusPending = true;
+        volatile boolean modbusPending;
         volatile boolean restPending;
         volatile boolean udpPending;
         volatile boolean udpIdentified;
@@ -102,6 +127,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         volatile String product = "";
         long nextUdpProbe;
         long nextUdpPoll;
+        long nextUdpSupplementalPoll;
         long nextRestRetry;
         @Nullable
         KeContactModbusHandler modbus;
@@ -116,74 +142,133 @@ public class KeContactCombinedHandler extends BaseThingHandler {
 
         Session(KeContactCombinedConfiguration config) {
             this.config = config;
-            restPending = !config.baseUrl.isBlank();
+            modbusPending = config.modbusEnabled;
+            restPending = config.restEnabled;
             udpPending = config.udpEnabled;
         }
     }
 
     public KeContactCombinedHandler(Thing thing, ModbusManager modbusManager, KeContactTransceiver transceiver) {
+        this(thing, modbusManager, transceiver, null);
+    }
+
+    public KeContactCombinedHandler(Thing thing, ModbusManager modbusManager, KeContactTransceiver transceiver,
+            @Nullable ThingTypeRegistry thingTypeRegistry) {
         super(thing);
         this.modbusManager = modbusManager;
         this.transceiver = transceiver;
+        this.thingTypeRegistry = thingTypeRegistry;
     }
 
     @Override
     public void initialize() {
+        stopSession();
         KeContactCombinedConfiguration config = getConfigAs(KeContactCombinedConfiguration.class);
-        if (config.ipAddress.isBlank() || config.refreshInterval < 10 || config.refreshIntervalSlow < 10
-                || config.port < 1 || config.port > 65535 || config.unitId < 0 || config.unitId > 255) {
+        boolean restEnabled = config.restEnabled;
+        boolean hasProtocol = config.modbusEnabled || config.udpEnabled || restEnabled;
+        boolean validModbus = !config.modbusEnabled || !config.getModbusAddress().isBlank() && config.port >= 1
+                && config.port <= 65535 && config.unitId >= 0 && config.unitId <= 255;
+        boolean validWallboxAddress = !(config.udpEnabled || restEnabled) || !config.ipAddress.isBlank();
+        boolean validRestPort = !restEnabled || config.restPort >= 1 && config.restPort <= 65535;
+        if (!validModbus || !validWallboxAddress || !validRestPort || config.refreshInterval < 10
+                || config.refreshIntervalSlow < 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configure an address, valid Modbus port/unit ID and refresh intervals of at least 10 seconds");
+                    "Configure enabled protocol endpoints and valid refresh intervals");
             return;
         }
         String password = config.password;
-        boolean restEnabled = !config.baseUrl.isBlank();
         if (restEnabled && (password == null || password.isBlank())) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configure REST credentials or leave the REST URL empty to disable REST");
+                    "Configure REST credentials or disable REST");
             return;
         }
+        if (restEnabled) {
+            try {
+                config.getRestBaseUrl();
+            } catch (IllegalArgumentException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Invalid wallbox network address for REST");
+                return;
+            }
+        }
         Session localSession = new Session(config);
+        @Nullable
+        String model = getThing().getProperties().get(PROPERTY_MODEL);
+        if (model == null) {
+            model = getThing().getProperties().get("modbusModel");
+        }
+        if (model != null) {
+            localSession.product = model;
+        }
         session = localSession;
+        reconcileChannels(localSession);
         updateStatus(ThingStatus.UNKNOWN);
-        updateProperties(Map.of("modbusAvailable", "unknown", "udpAvailable",
+        updateProperties(Map.of("modbusAvailable", config.modbusEnabled ? "unknown" : "disabled", "udpAvailable",
                 config.udpEnabled ? "unknown" : "disabled", "restAvailable", restEnabled ? "unknown" : "disabled"));
-        Configuration modbusConfig = new Configuration(
-                Map.of("ipAddress", config.ipAddress, "port", config.port, "unitId", config.unitId, "refreshInterval",
-                        config.refreshInterval, "refreshIntervalSlow", config.refreshIntervalSlow));
-        KeContactModbusHandler modbus = new KeContactModbusHandler(protocolThing(), modbusManager, modbusConfig,
-                listener(localSession, Protocol.MODBUS));
-        localSession.modbus = modbus;
-        modbus.initialize();
+        if (config.modbusEnabled) {
+            Configuration modbusConfig = new Configuration(Map.of("ipAddress", config.getModbusAddress(), "port",
+                    config.port, "unitId", config.unitId, "refreshInterval", config.refreshInterval,
+                    "refreshIntervalSlow", config.refreshIntervalSlow));
+            KeContactModbusHandler modbus = new KeContactModbusHandler(protocolThing(), modbusManager, modbusConfig,
+                    listener(localSession, Protocol.MODBUS));
+            localSession.modbus = modbus;
+            modbus.initialize();
+        }
         if (config.udpEnabled) {
             KeContactHandler udp = new KeContactHandler(protocolThing(), transceiver, new Configuration(),
                     listener(localSession, Protocol.UDP));
             localSession.udp = udp;
         }
         if (restEnabled && password != null) {
-            String baseUrl = config.baseUrl;
-            try {
-                URI restUri = URI.create(baseUrl);
-                if (!"https".equals(restUri.getScheme()) || restUri.getHost() == null
-                        || restUri.getUserInfo() != null) {
-                    throw new IllegalArgumentException(
-                            "REST URL must be HTTPS with a host and no embedded credentials");
-                }
-            } catch (IllegalArgumentException e) {
-                dispose();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid REST URL");
-                return;
-            }
-            Configuration restConfig = new Configuration(
-                    Map.of("baseUrl", baseUrl, "username", config.username, "password", password, "refreshInterval",
-                            config.refreshIntervalSlow, "verifyCertificate", config.verifyCertificate));
+            Configuration restConfig = new Configuration(Map.of("ipAddress", config.ipAddress, "restPort",
+                    config.restPort, "restEnabled", true, "username", config.username, "password", password,
+                    "refreshInterval", config.refreshInterval, "refreshIntervalSlow", config.refreshIntervalSlow,
+                    "verifyCertificate", config.verifyCertificate));
             KeContactRestHandler rest = new KeContactRestHandler(protocolThing(), restConfig,
                     listener(localSession, Protocol.REST));
             localSession.rest = rest;
             rest.initialize();
         }
-        localSession.job = scheduler.scheduleWithFixedDelay(() -> pollSupplemental(localSession), 0, 1,
-                TimeUnit.SECONDS);
+        if (hasProtocol) {
+            localSession.job = scheduler.scheduleWithFixedDelay(() -> pollSupplemental(localSession), 0, 1,
+                    TimeUnit.SECONDS);
+        }
+        updateCombinedStatus(localSession);
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        super.handleConfigurationUpdate(configurationParameters);
+        initialize();
+    }
+
+    private void stopSession() {
+        Session localSession = session;
+        session = null;
+        if (localSession == null) {
+            return;
+        }
+        localSession.active.set(false);
+        ScheduledFuture<?> job = localSession.job;
+        if (job != null) {
+            job.cancel(true);
+        }
+        ScheduledFuture<?> linkJob = localSession.linkJob;
+        if (linkJob != null) {
+            linkJob.cancel(false);
+        }
+        KeContactHandler udp = localSession.udp;
+        if (udp != null) {
+            udp.dispose();
+        }
+        KeContactRestHandler rest = localSession.rest;
+        if (rest != null) {
+            rest.dispose();
+        }
+        KeContactModbusHandler modbus = localSession.modbus;
+        if (modbus != null) {
+            modbus.dispose();
+        }
     }
 
     private Thing protocolThing() {
@@ -206,21 +291,123 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         if (model == null) {
             model = properties.get(PROPERTY_MODEL);
         }
+        Session localSession = session;
+        if (model != null && localSession != null
+                && (localSession.product.isBlank() || model.length() >= localSession.product.length())) {
+            localSession.product = model;
+        }
         boolean p30 = model != null && model.toUpperCase(Locale.ROOT).contains("P30");
-        var removedChannels = getThing().getChannels().stream()
-                .filter(channel -> REMOVED_COMPATIBILITY_CHANNELS.contains(channel.getUID().getIdWithoutGroup())
-                        || p30 && Set.of(CHANNEL_FAST_CHARGING_STATUS, CHANNEL_ACTIVATE_FAST_CHARGING)
-                                .contains(channel.getUID().getIdWithoutGroup()))
-                .toList();
-        if (!removedChannels.isEmpty()) {
-            var builder = editThing();
-            removedChannels.forEach(channel -> builder.withoutChannel(channel.getUID()));
+        if (localSession != null) {
+            reconcileChannels(localSession);
+        } else if (p30) {
+            var removedChannels = getThing().getChannels().stream()
+                    .filter(channel -> Set.of(CHANNEL_FAST_CHARGING_STATUS, CHANNEL_ACTIVATE_FAST_CHARGING)
+                            .contains(channel.getUID().getIdWithoutGroup()))
+                    .toList();
+            if (!removedChannels.isEmpty()) {
+                var builder = editThing();
+                removedChannels.forEach(channel -> builder.withoutChannel(channel.getUID()));
+                updateThing(builder.build());
+            }
+        }
+    }
+
+    private void reconcileChannels(Session localSession) {
+        if (!current(localSession)) {
+            return;
+        }
+        Map<String, org.openhab.core.thing.Channel> existing = new HashMap<>();
+        getThing().getChannels().forEach(channel -> existing.put(channel.getUID().getIdWithoutGroup(), channel));
+        List<org.openhab.core.thing.Channel> desired = new ArrayList<>();
+        Set<String> added = new HashSet<>();
+        @Nullable
+        ThingTypeRegistry registry = thingTypeRegistry;
+        @Nullable
+        ThingType thingType = registry == null ? null : registry.getThingType(getThing().getThingTypeUID());
+        boolean repaired = false;
+        if (thingType != null) {
+            @Nullable
+            ThingHandlerCallback callback = getCallback();
+            if (callback == null) {
+                return;
+            }
+            for (ChannelDefinition definition : thingType.getChannelDefinitions()) {
+                String id = definition.getId();
+                if (!channelSupported(id, localSession)) {
+                    continue;
+                }
+                @Nullable
+                Channel channel = existing.get(id);
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), id);
+                ChannelBuilder builder = callback.createChannelBuilder(channelUID, definition.getChannelTypeUID());
+                Channel canonical = builder.build();
+                // XML candidates can be absent from the Thing after protocol-driven pruning.
+                if (channel == null) {
+                    builder.withProperties(definition.getProperties());
+                    @Nullable
+                    String label = definition.getLabel();
+                    if (label != null) {
+                        builder.withLabel(label);
+                    }
+                    @Nullable
+                    String description = definition.getDescription();
+                    if (description != null) {
+                        builder.withDescription(description);
+                    }
+                    if (definition.getAutoUpdatePolicy() != null) {
+                        builder.withAutoUpdatePolicy(definition.getAutoUpdatePolicy());
+                    }
+                    channel = builder.build();
+                } else if (!definition.getChannelTypeUID().equals(channel.getChannelTypeUID())
+                        || !Objects.equals(canonical.getAcceptedItemType(), channel.getAcceptedItemType())
+                        || canonical.getKind() != channel.getKind()) {
+                    channel = ChannelBuilder.create(channel).withType(definition.getChannelTypeUID())
+                            .withAcceptedItemType(canonical.getAcceptedItemType()).withKind(canonical.getKind())
+                            .build();
+                    repaired = true;
+                }
+                desired.add(channel);
+                added.add(id);
+            }
+        } else {
+            for (org.openhab.core.thing.Channel channel : existing.values()) {
+                String id = channel.getUID().getIdWithoutGroup();
+                if (channelSupported(id, localSession)) {
+                    desired.add(channel);
+                    added.add(id);
+                }
+            }
+        }
+        if (repaired || desired.size() != existing.size() || !existing.keySet().equals(added)) {
+            var builder = editThing().withChannels(desired);
             updateThing(builder.build());
         }
     }
 
+    private boolean channelSupported(String channel, Session localSession) {
+        String product = localSession.product.toUpperCase(Locale.ROOT);
+        if (product.contains("P30")
+                && Set.of(CHANNEL_FAST_CHARGING_STATUS, CHANNEL_ACTIVATE_FAST_CHARGING).contains(channel)) {
+            return false;
+        }
+        boolean modbusSupported = localSession.config.modbusEnabled && !product.contains("P20");
+        boolean udpSupported = localSession.config.udpEnabled && !product.contains("P40") && !product.contains("P0");
+        boolean restSupported = localSession.config.restEnabled && !restUnsupportedForProduct(product);
+        return modbusSupported && MODBUS_CHANNELS.contains(channel) || udpSupported && UDP_CHANNELS.contains(channel)
+                || restSupported && REST_CHANNELS.contains(channel);
+    }
+
     private KeContactProtocolHandler.Listener listener(Session localSession, Protocol protocol) {
         return new KeContactProtocolHandler.Listener() {
+            @Override
+            public boolean isPrimary() {
+                return current(localSession) && switch (protocol) {
+                    case MODBUS -> true;
+                    case REST -> !localSession.modbusOnline;
+                    case UDP -> !localSession.modbusOnline && !localSession.restOnline;
+                };
+            }
+
             @Override
             public void stateUpdated(String channel, State state) {
                 if (current(localSession) && (protocol != Protocol.REST || localSession.rest != null)) {
@@ -297,8 +484,15 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         if ("authon".equals(channel) || "enableduser".equals(channel)) {
             return restOnline ? Protocol.REST : Protocol.UDP;
         }
+        String modbusChannel = switch (channel) {
+            case "maxsystemcurrent" -> CHANNEL_MAX_SUPPORTED_CURRENT;
+            case "maxpilotcurrent" -> CHANNEL_MAX_CHARGING_CURRENT;
+            case "failsafecurrent" -> CHANNEL_FAILSAFE_CURRENT_SETTING;
+            case "failsafetimeout" -> CHANNEL_FAILSAFE_TIMEOUT_SETTING;
+            default -> channel;
+        };
         for (KebaModbusReadRegister register : KebaModbusReadRegister.values()) {
-            if (register.getChannelId().equals(channel)) {
+            if (register.getChannelId().equals(modbusChannel)) {
                 return modbusOnline ? Protocol.MODBUS
                         : restOnline && REST_SHARED.contains(channel) ? Protocol.REST : Protocol.UDP;
             }
@@ -335,15 +529,6 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     }
 
     private void publish(Session localSession, Protocol protocol, String originalChannel, State state) {
-        if (protocol == Protocol.UDP && "input".equals(originalChannel)) {
-            if (getThing().getChannel(resolveChannelId("inputx1")) != null) {
-                updateState("inputx1", state);
-            }
-            if (!localSession.restOnline && getThing().getChannel("input") != null) {
-                updateState("input", state);
-            }
-            return;
-        }
         if (protocol == Protocol.UDP && "dipswitch1".equals(originalChannel)) {
             try {
                 localSession.udpCommands = (Long.decode(state.toString()) & 0x20) != 0;
@@ -352,23 +537,25 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             }
         }
         String channel = switch (protocol) {
-            case UDP -> switch (originalChannel) {
-                case "maxsystemcurrent" -> "maxsupportedcurrent";
-                case "maxpilotcurrent" -> "maxchargingcurrent";
-                case "failsafecurrent" -> "failsafecurrentsetting";
-                case "failsafetimeout" -> "failsafetimeoutsetting";
-                default -> originalChannel;
-            };
+            case UDP -> originalChannel;
             case REST -> switch (originalChannel) {
                 case "state" -> "reststate";
                 case "energy" -> CHANNEL_TOTAL_CONSUMPTION;
-                case "current" -> CHANNEL_MAX_CHARGING_CURRENT;
+                case "current" -> CHANNEL_PILOT_CURRENT;
+                case "maxsupportedcurrent" -> CHANNEL_MAX_SYSTEM_CURRENT;
+                case "input" -> "restinput";
                 default -> originalChannel;
             };
-            case MODBUS -> originalChannel;
+            case MODBUS -> switch (originalChannel) {
+                case "maxsupportedcurrent" -> CHANNEL_MAX_SYSTEM_CURRENT;
+                case "maxchargingcurrent" -> CHANNEL_PILOT_CURRENT;
+                case "failsafecurrentsetting" -> CHANNEL_FAILSAFE_CURRENT;
+                case "failsafetimeoutsetting" -> CHANNEL_FAILSAFE_TIMEOUT;
+                default -> originalChannel;
+            };
         };
-        if (protocol == Protocol.REST && "reststate".equals(channel) && !localSession.modbusOnline
-                && !localSession.udpOnline) {
+        if (protocol == Protocol.REST && "reststate".equals(channel)
+                && sourceFor(CHANNEL_STATE, localSession.modbusOnline, localSession.restOnline) == Protocol.REST) {
             updateState(CHANNEL_STATE, numericRestState(state.toString()));
         }
         if (sourceFor(channel, localSession.modbusOnline, localSession.restOnline) != protocol) {
@@ -415,7 +602,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         if (!current(localSession)) {
             return;
         }
-        long now = System.nanoTime();
+        long now = pollingTime();
         KeContactRestHandler rest = localSession.rest;
         if (rest != null && !localSession.restOnline && restUnsupportedForProduct(localSession.product)) {
             localSession.rest = null;
@@ -450,8 +637,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 }
                 localSession.nextUdpProbe = now + TimeUnit.SECONDS.toNanos(300);
                 localSession.udpPending = true;
-                udp.initializeCommands(localSession.config.udpIpAddress.isBlank() ? localSession.config.ipAddress
-                        : localSession.config.udpIpAddress);
+                udp.initializeCommands(localSession.config.ipAddress);
                 localSession.udpIdentified = udp.readReport(1);
                 if (!current(localSession)) {
                     udp.dispose();
@@ -465,12 +651,21 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                     return;
                 }
             }
-            if (now < localSession.nextUdpPoll) {
+            boolean baseline = !localSession.modbusOnline && !localSession.restOnline;
+            boolean operationalDue = baseline && now >= localSession.nextUdpPoll;
+            boolean supplementalDue = now >= localSession.nextUdpSupplementalPoll;
+            if (!operationalDue && !supplementalDue) {
                 return;
             }
-            localSession.nextUdpPoll = now + TimeUnit.SECONDS.toNanos(localSession.config.refreshIntervalSlow);
-            boolean baseline = !localSession.modbusOnline && !localSession.restOnline;
-            boolean report2 = baseline || needsReport(localSession, UDP_REPORT_2);
+            if (operationalDue) {
+                int interval = Math.min(localSession.config.refreshInterval, localSession.config.refreshIntervalSlow);
+                localSession.nextUdpPoll = now + TimeUnit.SECONDS.toNanos(interval);
+            }
+            if (supplementalDue) {
+                localSession.nextUdpSupplementalPoll = now
+                        + TimeUnit.SECONDS.toNanos(localSession.config.refreshIntervalSlow);
+            }
+            boolean report2 = operationalDue || !baseline && supplementalDue && needsReport(localSession, UDP_REPORT_2);
             if (report2) {
                 localSession.udpOnline = udp.readReport(2);
                 localSession.udpCommands = localSession.udpOnline;
@@ -483,17 +678,15 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 }
                 updateProperty("udpAvailable", "available");
             }
-            if (needsReport(localSession, UDP_REPORT_1)) {
+            if (supplementalDue && needsReport(localSession, UDP_REPORT_1)) {
                 udp.readReport(1);
             }
-            if (!localSession.modbusOnline && !localSession.restOnline
-                    && List.of("I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor", "totalconsumption",
-                            "sessionconsumption").stream().anyMatch(this::isLinked)) {
+            if (operationalDue && List.of("I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
+                    "totalconsumption", "sessionconsumption").stream().anyMatch(this::isLinked)) {
                 udp.readReport(3);
             }
-            if (needsReport(localSession, UDP_REPORT_100)) {
-                udp.readReport(100);
-            } else if (!localSession.modbusOnline && isLinked("sessionrfidtag")) {
+            if (supplementalDue && (needsReport(localSession, UDP_REPORT_100)
+                    || !localSession.modbusOnline && isLinked("sessionrfidtag"))) {
                 udp.readReport(100);
             }
             if (current(localSession)) {
@@ -501,6 +694,10 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 updateCombinedStatus(localSession);
             }
         }
+    }
+
+    long pollingTime() {
+        return System.nanoTime();
     }
 
     private void updateCombinedStatus(Session localSession) {
@@ -567,19 +764,20 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             KeContactModbusHandler modbus = localSession.modbus;
             KeContactRestHandler rest = localSession.rest;
             KeContactHandler udp = localSession.udp;
+            String modbusChannel = "maxpresetcurrent".equals(channel) ? CHANNEL_SET_CHARGING_CURRENT : channel;
             boolean modbusCommand = List.of(KebaModbusWriteRegister.values()).stream()
-                    .anyMatch(register -> register.getChannelId().equals(channel));
+                    .anyMatch(register -> register.getChannelId().equals(modbusChannel));
             if (modbusCommand && localSession.modbusOnline && modbus != null) {
-                modbus.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
+                modbus.handleCommand(new ChannelUID(getThing().getUID(), modbusChannel), command);
             } else if ((REST_ONLY.contains(channel) || "enableduser".equals(channel)
                     || "phaseswitchsource".equals(channel)) && localSession.restOnline && rest != null) {
                 rest.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
-            } else if (udp != null && (UDP_COMMANDS.contains(channel) || Set.of("setchargingcurrent", "setenergylimit",
-                    "enableduser", "phaseswitchsource", "triggerphaseswitch").contains(channel))) {
+            } else if (udp != null && (UDP_COMMANDS.contains(channel)
+                    || Set.of("setenergylimit", "enableduser", "phaseswitchsource", "triggerphaseswitch")
+                            .contains(channel))) {
                 synchronized (localSession.udpLock) {
                     if (current(localSession) && ensureUdpCommands(localSession, udp)) {
                         String udpChannel = switch (channel) {
-                            case "setchargingcurrent" -> "maxpresetcurrent";
                             case "triggerphaseswitch" -> "phaseswitchstate";
                             default -> channel;
                         };
@@ -634,31 +832,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        Session localSession = session;
-        session = null;
-        if (localSession != null) {
-            localSession.active.set(false);
-            ScheduledFuture<?> job = localSession.job;
-            if (job != null) {
-                job.cancel(true);
-            }
-            ScheduledFuture<?> linkJob = localSession.linkJob;
-            if (linkJob != null) {
-                linkJob.cancel(false);
-            }
-            KeContactHandler udp = localSession.udp;
-            if (udp != null) {
-                udp.dispose();
-            }
-            KeContactRestHandler rest = localSession.rest;
-            if (rest != null) {
-                rest.dispose();
-            }
-            KeContactModbusHandler modbus = localSession.modbus;
-            if (modbus != null) {
-                modbus.dispose();
-            }
-        }
+        stopSession();
         super.dispose();
     }
 }

@@ -31,9 +31,6 @@ public class KebaBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_KECONTACT = new ThingTypeUID(BINDING_ID, "kecontact");
-    public static final ThingTypeUID THING_TYPE_KECONTACT_UDP = new ThingTypeUID(BINDING_ID, "kecontact-udp");
-    public static final ThingTypeUID THING_TYPE_KECONTACT_MODBUS = new ThingTypeUID(BINDING_ID, "kecontact-modbus");
-    public static final ThingTypeUID THING_TYPE_KECONTACT_REST = new ThingTypeUID(BINDING_ID, "kecontact-rest");
 
     // List of all Channel ids
     public static final String CHANNEL_MODEL = "model";

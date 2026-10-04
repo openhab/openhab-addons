@@ -1,242 +1,231 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
-
 	<thing-type uid="keba:kecontact">
 		<instruction-set targetVersion="1">
 			<remove-channel id="enabled"/>
 			<add-channel id="enabledsystem">
-				<type>keba:enabledsystem</type>
+				<type>keba:enabled-system</type>
 			</add-channel>
 			<add-channel id="enableduser">
-				<type>keba:enableduser</type>
+				<type>keba:enabled-user</type>
 			</add-channel>
 		</instruction-set>
 		<instruction-set targetVersion="2">
-			<add-channel id="currtimer" groupIds="udp">
-				<type>keba:currtimer</type>
+			<add-channel id="currtimer">
+				<type>keba:current-timer</type>
 			</add-channel>
-			<add-channel id="currtimertimeout" groupIds="udp">
-				<type>keba:currtimertimeout</type>
+			<add-channel id="currtimertimeout">
+				<type>keba:current-timer-timeout</type>
 			</add-channel>
-			<add-channel id="phaseswitchsource" groupIds="modbus">
-				<type>keba:modbus-phaseswitchsource</type>
+			<add-channel id="phaseswitchsource">
+				<type>keba:phase-switch-source</type>
 			</add-channel>
-			<add-channel id="phaseswitchstate" groupIds="modbus">
-				<type>keba:modbus-phaseswitchstate</type>
+			<add-channel id="phaseswitchstate">
+				<type>keba:phase-switch-state</type>
 			</add-channel>
-			<add-channel id="backend" groupIds="udp">
+			<add-channel id="backend">
 				<type>keba:backend</type>
 			</add-channel>
-			<add-channel id="timequality" groupIds="udp">
-				<type>keba:timequality</type>
+			<add-channel id="timequality">
+				<type>keba:time-quality</type>
 			</add-channel>
-			<add-channel id="bootflag" groupIds="udp">
-				<type>keba:bootflag</type>
+			<add-channel id="bootflag">
+				<type>keba:boot-flag</type>
 			</add-channel>
-			<add-channel id="dipswitch1" groupIds="udp">
-				<type>keba:dipswitch</type>
+			<add-channel id="dipswitch1">
+				<type>keba:dip-switch</type>
 				<label>DIP Switch Block 1</label>
 			</add-channel>
-			<add-channel id="dipswitch2" groupIds="udp">
-				<type>keba:dipswitch</type>
+			<add-channel id="dipswitch2">
+				<type>keba:dip-switch</type>
 				<label>DIP Switch Block 2</label>
 			</add-channel>
-			<update-channel id="enabledsystem" groupIds="udp">
-				<type>keba:enabledsystem</type>
+			<update-channel id="enabledsystem">
+				<type>keba:enabled-system</type>
 			</update-channel>
-			<update-channel id="enableduser" groupIds="modbus">
-				<type>keba:modbus-enableduser</type>
+			<update-channel id="enableduser">
+				<type>keba:enabled-user</type>
 			</update-channel>
-			<update-channel id="state" groupIds="modbus">
-				<type>keba:modbus-state</type>
+			<update-channel id="state">
+				<type>keba:state</type>
 			</update-channel>
-			<update-channel id="maxpresetcurrent" groupIds="udp">
-				<type>keba:current_settable</type>
+			<update-channel id="maxpresetcurrent">
+				<type>keba:current-setpoint</type>
 			</update-channel>
-			<update-channel id="maxpresetcurrentrange" groupIds="udp">
+			<update-channel id="maxpresetcurrentrange">
 				<type>keba:range</type>
 			</update-channel>
-			<update-channel id="power" groupIds="modbus">
-				<type>keba:modbus-power</type>
+			<update-channel id="power">
+				<type>keba:power</type>
 			</update-channel>
-			<update-channel id="powerfactor" groupIds="modbus">
-				<type>keba:modbus-powerfactor</type>
+			<update-channel id="powerfactor">
+				<type>keba:power-factor</type>
 			</update-channel>
-			<update-channel id="error1" groupIds="udp">
-				<type>keba:error1</type>
+			<update-channel id="error1">
+				<type>keba:error-word-1</type>
 			</update-channel>
-			<update-channel id="error2" groupIds="udp">
-				<type>keba:error2</type>
+			<update-channel id="error2">
+				<type>keba:error-word-2</type>
 			</update-channel>
-			<update-channel id="wallbox" groupIds="modbus">
-				<type>keba:plugwallbox</type>
+			<update-channel id="wallbox">
+				<type>keba:plug-wallbox</type>
 			</update-channel>
-			<update-channel id="vehicle" groupIds="modbus">
-				<type>keba:plugvehicle</type>
+			<update-channel id="vehicle">
+				<type>keba:plug-vehicle</type>
 			</update-channel>
-			<update-channel id="locked" groupIds="modbus">
+			<update-channel id="locked">
 				<type>keba:locked</type>
 			</update-channel>
-			<update-channel id="maxpilotcurrentdutycyle" groupIds="udp">
-				<type>keba:pilotcurrentdutycyle</type>
+			<update-channel id="maxpilotcurrentdutycyle">
+				<type>keba:pilot-current-duty-cycle</type>
 			</update-channel>
-			<update-channel id="output" groupIds="udp">
+			<update-channel id="output">
 				<type>keba:x2</type>
 			</update-channel>
-			<update-channel id="uptime" groupIds="udp">
+			<update-channel id="uptime">
 				<type>keba:uptime</type>
 			</update-channel>
-			<update-channel id="I1" groupIds="modbus">
-				<type>keba:modbus-current</type>
+			<update-channel id="I1">
+				<type>keba:current</type>
 			</update-channel>
-			<update-channel id="I2" groupIds="modbus">
-				<type>keba:modbus-current</type>
+			<update-channel id="I2">
+				<type>keba:current</type>
 			</update-channel>
-			<update-channel id="I3" groupIds="modbus">
-				<type>keba:modbus-current</type>
+			<update-channel id="I3">
+				<type>keba:current</type>
 			</update-channel>
-			<update-channel id="U1" groupIds="modbus">
-				<type>keba:modbus-voltage</type>
+			<update-channel id="U1">
+				<type>keba:voltage</type>
 			</update-channel>
-			<update-channel id="U2" groupIds="modbus">
-				<type>keba:modbus-voltage</type>
+			<update-channel id="U2">
+				<type>keba:voltage</type>
 			</update-channel>
-			<update-channel id="U3" groupIds="modbus">
-				<type>keba:modbus-voltage</type>
+			<update-channel id="U3">
+				<type>keba:voltage</type>
 			</update-channel>
-			<update-channel id="sessionconsumption" groupIds="modbus">
-				<type>keba:modbus-sessionenergy</type>
+			<update-channel id="sessionconsumption">
+				<type>keba:energy</type>
 			</update-channel>
-			<update-channel id="totalconsumption" groupIds="modbus">
-				<type>keba:modbus-totalenergy</type>
+			<update-channel id="totalconsumption">
+				<type>keba:total-energy</type>
 			</update-channel>
-			<update-channel id="display" groupIds="udp">
+			<update-channel id="display">
 				<type>keba:display</type>
 			</update-channel>
-			<update-channel id="authreq" groupIds="udp">
-				<type>keba:authreq</type>
+			<update-channel id="authreq">
+				<type>keba:authentication-required</type>
 			</update-channel>
-			<update-channel id="authon" groupIds="rest">
-				<type>keba:authon</type>
+			<update-channel id="authon">
+				<type>keba:authentication-enabled</type>
 			</update-channel>
-			<update-channel id="sessionrfidtag" groupIds="modbus">
-				<type>keba:modbus-rfidtag</type>
+			<update-channel id="sessionrfidtag">
+				<type>keba:session-rfid-tag</type>
 			</update-channel>
-			<update-channel id="sessionrfidclass" groupIds="udp">
-				<type>keba:sessionrfidclass</type>
+			<update-channel id="sessionrfidclass">
+				<type>keba:session-rfid-class</type>
 			</update-channel>
-			<update-channel id="sessionid" groupIds="udp">
-				<type>keba:sessionid</type>
+			<update-channel id="sessionid">
+				<type>keba:session-id</type>
 			</update-channel>
-			<update-channel id="setenergylimit" groupIds="modbus">
-				<type>keba:modbus-setenergylimit</type>
+			<update-channel id="setenergylimit">
+				<type>keba:set-energy-limit</type>
 			</update-channel>
-			<update-channel id="authenticate" groupIds="udp">
+			<update-channel id="authenticate">
 				<type>keba:authenticate</type>
 			</update-channel>
-			<remove-channel id="input"/>
-			<remove-channel id="maxpilotcurrent"/>
-			<remove-channel id="maxsystemcurrent"/>
-			<remove-channel id="failsafecurrent"/>
-			<remove-channel id="failsafetimeout"/>
-			<add-channel id="inputx1" groupIds="udp">
+			<add-channel id="cablestate">
+				<type>keba:cable-state</type>
+			</add-channel>
+			<add-channel id="unlockplug">
+				<type>keba:unlock-plug</type>
+			</add-channel>
+			<add-channel id="errorcode">
+				<type>keba:error-code</type>
+			</add-channel>
+			<add-channel id="triggerphaseswitch">
+				<type>keba:phase-switch-trigger</type>
+			</add-channel>
+			<add-channel id="failsafepersist">
+				<type>keba:register-trigger</type>
+			</add-channel>
+			<add-channel id="fastchargingstatus">
+				<type>keba:fast-charging-status</type>
+			</add-channel>
+			<add-channel id="activatefastcharging">
+				<type>keba:register-trigger</type>
+			</add-channel>
+			<add-channel id="reststate">
+				<type>keba:textual-state</type>
+			</add-channel>
+			<add-channel id="error">
+				<type>keba:error-name</type>
+			</add-channel>
+			<add-channel id="reserved">
+				<type>keba:status</type>
+			</add-channel>
+			<add-channel id="temperature">
+				<type>keba:temperature</type>
+			</add-channel>
+			<add-channel id="externalmeter">
+				<type>keba:status</type>
+			</add-channel>
+			<add-channel id="session">
+				<type>keba:session-active</type>
+			</add-channel>
+			<add-channel id="sessionstart">
+				<type>keba:session-start</type>
+			</add-channel>
+			<add-channel id="sessionduration">
+				<type>keba:session-duration</type>
+			</add-channel>
+			<add-channel id="start">
+				<type>keba:command</type>
+			</add-channel>
+			<add-channel id="stop">
+				<type>keba:command</type>
+			</add-channel>
+			<add-channel id="permanentlylocked">
+				<type>keba:permanent-lock</type>
+			</add-channel>
+			<add-channel id="unlock">
+				<type>keba:command</type>
+			</add-channel>
+			<add-channel id="maxphases">
+				<type>keba:numeric-value</type>
+			</add-channel>
+			<add-channel id="phaseconfiguration">
+				<type>keba:phase-configuration</type>
+			</add-channel>
+			<add-channel id="dipswitchsettings">
+				<type>keba:dipswitch-settings</type>
+			</add-channel>
+			<add-channel id="dipswitchinterpretation">
+				<type>keba:dipswitch-interpretation</type>
+			</add-channel>
+			<add-channel id="reboot">
+				<type>keba:command</type>
+			</add-channel>
+			<update-channel id="input">
 				<type>keba:x1</type>
-				<label>X1 Enable Input</label>
-			</add-channel>
-			<add-channel id="input" groupIds="rest">
-				<type>keba:rest-status</type>
+			</update-channel>
+			<update-channel id="maxpilotcurrent">
+				<type>keba:pilot-current</type>
+			</update-channel>
+			<update-channel id="maxsystemcurrent">
+				<type>keba:hardware-current-limit</type>
+			</update-channel>
+			<update-channel id="failsafecurrent">
+				<type>keba:failsafe-current-setting</type>
+			</update-channel>
+			<update-channel id="failsafetimeout">
+				<type>keba:failsafe-timeout-setting</type>
+			</update-channel>
+			<add-channel id="restinput">
+				<type>keba:status</type>
 				<label>REST X2 Active</label>
-			</add-channel>
-			<add-channel id="cablestate" groupIds="modbus">
-				<type>keba:modbus-cablestate</type>
-			</add-channel>
-			<add-channel id="unlockplug" groupIds="modbus">
-				<type>keba:modbus-unlockplug</type>
-			</add-channel>
-			<add-channel id="errorcode" groupIds="modbus">
-				<type>keba:modbus-errorcode</type>
-			</add-channel>
-			<add-channel id="maxsupportedcurrent" groupIds="modbus">
-				<type>keba:modbus-maxsupportedcurrent</type>
-			</add-channel>
-			<add-channel id="maxchargingcurrent" groupIds="modbus">
-				<type>keba:modbus-maxchargingcurrent</type>
-			</add-channel>
-			<add-channel id="setchargingcurrent" groupIds="modbus">
-				<type>keba:modbus-setchargingcurrent</type>
-			</add-channel>
-			<add-channel id="triggerphaseswitch" groupIds="modbus">
-				<type>keba:modbus-triggerphaseswitch</type>
-			</add-channel>
-			<add-channel id="failsafecurrentsetting" groupIds="modbus">
-				<type>keba:modbus-failsafecurrent</type>
-			</add-channel>
-			<add-channel id="failsafetimeoutsetting" groupIds="modbus">
-				<type>keba:modbus-failsafetimeout</type>
-			</add-channel>
-			<add-channel id="failsafepersist" groupIds="modbus">
-				<type>keba:modbus-register-trigger</type>
-			</add-channel>
-			<add-channel id="fastchargingstatus" groupIds="modbus">
-				<type>keba:modbus-fastchargingstatus</type>
-			</add-channel>
-			<add-channel id="activatefastcharging" groupIds="modbus">
-				<type>keba:modbus-register-trigger</type>
-			</add-channel>
-			<add-channel id="reststate" groupIds="rest">
-				<type>keba:rest-state</type>
-			</add-channel>
-			<add-channel id="error" groupIds="rest">
-				<type>keba:rest-error</type>
-			</add-channel>
-			<add-channel id="reserved" groupIds="rest">
-				<type>keba:rest-status</type>
-			</add-channel>
-			<add-channel id="temperature" groupIds="rest">
-				<type>keba:rest-temperature</type>
-			</add-channel>
-			<add-channel id="externalmeter" groupIds="rest">
-				<type>keba:rest-status</type>
-			</add-channel>
-			<add-channel id="session" groupIds="rest">
-				<type>keba:rest-session</type>
-			</add-channel>
-			<add-channel id="sessionstart" groupIds="rest">
-				<type>keba:rest-session-start</type>
-			</add-channel>
-			<add-channel id="sessionduration" groupIds="rest">
-				<type>keba:rest-session-duration</type>
-			</add-channel>
-			<add-channel id="start" groupIds="rest">
-				<type>keba:rest-command</type>
-			</add-channel>
-			<add-channel id="stop" groupIds="rest">
-				<type>keba:rest-command</type>
-			</add-channel>
-			<add-channel id="permanentlylocked" groupIds="rest">
-				<type>keba:rest-permanently-locked</type>
-			</add-channel>
-			<add-channel id="unlock" groupIds="rest">
-				<type>keba:rest-command</type>
-			</add-channel>
-			<add-channel id="maxphases" groupIds="rest">
-				<type>keba:rest-number</type>
-			</add-channel>
-			<add-channel id="phaseconfiguration" groupIds="rest">
-				<type>keba:rest-phase-configuration</type>
-			</add-channel>
-			<add-channel id="dipswitchsettings" groupIds="rest">
-				<type>keba:rest-dipswitch-settings</type>
-			</add-channel>
-			<add-channel id="dipswitchinterpretation" groupIds="rest">
-				<type>keba:rest-dipswitch-interpretation</type>
-			</add-channel>
-			<add-channel id="reboot" groupIds="rest">
-				<type>keba:rest-command</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
-
 </update:update-descriptions>

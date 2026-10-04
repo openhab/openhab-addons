@@ -40,6 +40,10 @@ public abstract class KeContactProtocolHandler extends BaseThingHandler {
         void propertiesUpdated(Map<String, String> properties);
 
         boolean isLinked(String channel);
+
+        default boolean isPrimary() {
+            return false;
+        }
     }
 
     private final @Nullable Listener listener;
@@ -54,6 +58,11 @@ public abstract class KeContactProtocolHandler extends BaseThingHandler {
 
     protected final boolean isCombined() {
         return listener != null;
+    }
+
+    protected final boolean isPrimary() {
+        Listener localListener = listener;
+        return localListener == null || localListener.isPrimary();
     }
 
     @Override

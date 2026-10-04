@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.keba.internal.handler.KeContactCombinedConfiguration;
 import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
@@ -81,7 +82,7 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(KeContactModbusHandler.class));
     private final ModbusManager modbusManager;
 
-    private KeContactModbusConfiguration config = new KeContactModbusConfiguration();
+    private KeContactCombinedConfiguration config = new KeContactCombinedConfiguration();
     private volatile @Nullable ModbusCommunicationInterface comms;
     private final List<PollTask> pollTasks = new ArrayList<>();
     private final List<ScheduledFuture<?>> writeTasks = new ArrayList<>();
@@ -115,8 +116,8 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(KeContactModbusConfiguration.class);
-        String host = config.ipAddress;
+        config = getConfigAs(KeContactCombinedConfiguration.class);
+        String host = config.getModbusAddress();
         if (host == null || host.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-no-address");
