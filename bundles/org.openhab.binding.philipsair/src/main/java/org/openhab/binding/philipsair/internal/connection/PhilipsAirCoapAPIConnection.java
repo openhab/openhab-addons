@@ -67,6 +67,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private static final long TIMEOUT = 25000;
     private static final long PING_TIMEOUT = 5000;
     private static final int MAX_MID = 0xFFFF;
+    private static final int NO_MID = -1;
     private static final long MIN_PING_AFTER_MS = 30000;
     private static final long MIN_STALE_AFTER_MS = 60000;
 
@@ -100,8 +101,9 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
     private volatile long lastContact = 0L;
     // set when the device did not answer, as it may have lost the observe relation when it comes back
     private volatile boolean deviceMissed = false;
-    // The highest MID of the notifications and of the observe requests sent. Written by the Californium thread.
-    private volatile int mid;
+    // The highest MID of the notifications and of the observe requests sent, NO_MID before a notification arrived.
+    // Written by the Californium thread.
+    private volatile int mid = NO_MID;
 
     /**
      * @param config the thing configuration
@@ -193,7 +195,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             // Workaround for the deduplication of the device: once it sent a notification, the request continues
             // after the highest MID seen, instead of the MID Californium would assign. A MID is never used twice.
             int lastMid = this.mid;
-            if (lastMid > 0) {
+            if (lastMid != NO_MID) {
                 int requestMid = lastMid % MAX_MID + 1;
                 request.setMID(requestMid);
                 this.mid = requestMid;
@@ -285,7 +287,8 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                 if (processNotification(content, uri)) {
                     int notificationMid = response.advanced().getMID();
                     // a MID is only replaced by a later one, so restarts do not use the MID of an earlier request again
-                    if (((notificationMid - this.mid) & MAX_MID) < MAX_MID / 2) {
+                    int lastMid = this.mid;
+                    if (lastMid == NO_MID || ((notificationMid - lastMid) & MAX_MID) < MAX_MID / 2) {
                         this.mid = notificationMid;
                     }
                 }
@@ -450,11 +453,16 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
         }
         try {
             synchronized (exchangeLock) {
-                if (listener == null) {
+                if (isDisposed()) {
                     logger.debug("Command '{}' not sent to {}, the connection is disposed", command, host);
                     return null;
                 }
                 OptionalLong synced = exchangeCounter(client);
+                if (isDisposed()) {
+                    logger.debug("Command '{}' not sent to {}, the connection was disposed during the counter sync",
+                            command, host);
+                    return null;
+                }
                 if (synced.isEmpty()) {
                     logger.warn("Counter sync with {} failed, command '{}' ({} profile) not sent", host, command,
                             profile);
@@ -479,6 +487,10 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
             logger.debug("Error sending command '{}': {}", command, e.getMessage());
         }
         return null;
+    }
+
+    private boolean isDisposed() {
+        return listener == null;
     }
 
     private @Nullable String encryptCommand(JsonObject desired, long controlCounter) {

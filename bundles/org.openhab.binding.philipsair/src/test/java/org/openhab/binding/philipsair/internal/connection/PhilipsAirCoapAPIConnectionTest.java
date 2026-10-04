@@ -25,6 +25,7 @@ import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapObserveRelation;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
+import org.eclipse.californium.core.coap.Message;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.config.CoapConfig;
@@ -207,6 +208,7 @@ public class PhilipsAirCoapAPIConnectionTest {
         volatile @Nullable String syncAnswer = "00000020";
         volatile String controlAnswer = "{\"status\":\"success\"}";
         volatile long now = 1_000_000L;
+        volatile @Nullable Runnable onSync;
 
         FakeDevice(@Nullable CoapProfile initialProfile) {
             super(newConfiguration(), notifications::add, initialProfile);
@@ -216,6 +218,10 @@ public class PhilipsAirCoapAPIConnectionTest {
         String post(CoapClient client, String server, int port, String resourcePath, String body)
                 throws ConnectorException, IOException {
             posts.add(new Post(resourcePath, body, client.getTimeout()));
+            Runnable syncAction = onSync;
+            if (syncAction != null && resourcePath.endsWith("/sync")) {
+                syncAction.run();
+            }
             IOException failure = syncFailure;
             if (failure != null && resourcePath.endsWith("/sync")) {
                 throw failure;
@@ -568,6 +574,61 @@ public class PhilipsAirCoapAPIConnectionTest {
         assertEquals(6, device.observes.get(1).request().getMID());
     }
 
+    /**
+     * Delivers the notifications with the MIDs, restarts the observe relation and returns the MID of the new request.
+     */
+    private int midOfRestartedRequestAfter(int... notificationMids) {
+        FakeDevice device = device(null);
+        device.ensureConnected();
+        Observe first = device.observes.get(0);
+        for (int notificationMid : notificationMids) {
+            first.handler().onLoad(response(encrypt(STATUS), notificationMid));
+        }
+        assertEquals(notificationMids.length, notifications.size());
+
+        when(first.relation().isCanceled()).thenReturn(true);
+        device.ensureConnected();
+
+        assertEquals(2, device.observes.size());
+        return device.observes.get(1).request().getMID();
+    }
+
+    @Test
+    public void restartedRelationContinuesAtOneAfterTheHighestMid() {
+        assertEquals(1, midOfRestartedRequestAfter(65535));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "40000,40001", "32767,32768", "32766,32767" })
+    public void firstNotificationMidIsContinuedAfterWhateverItsValue(int notificationMid, int expectedMid) {
+        assertEquals(expectedMid, midOfRestartedRequestAfter(notificationMid));
+    }
+
+    @Test
+    public void laterMidsAreContinuedAfterAHighFirstMid() {
+        assertEquals(50001, midOfRestartedRequestAfter(40000, 40001, 50000));
+    }
+
+    @Test
+    public void storedMidZeroIsStillContinuedAfter() {
+        assertEquals(1, midOfRestartedRequestAfter(30000, 60000, 0));
+    }
+
+    @Test
+    public void restartedRequestWithoutNotificationLeavesTheMidToCalifornium() {
+        assertEquals(Message.NONE, midOfRestartedRequestAfter());
+    }
+
+    @Test
+    public void olderMidDoesNotReplaceTheMidOfALaterNotification() {
+        assertEquals(101, midOfRestartedRequestAfter(100, 90));
+    }
+
+    @Test
+    public void laterMidAfterTheWrapAroundReplacesTheMid() {
+        assertEquals(6, midOfRestartedRequestAfter(65530, 5));
+    }
+
     @Test
     public void disposedConnectionDoesNotContactTheDevice() {
         FakeDevice device = device(CoapProfile.BASIC_GEN3);
@@ -579,6 +640,18 @@ public class PhilipsAirCoapAPIConnectionTest {
 
         assertTrue(device.posts.isEmpty());
         assertTrue(device.observes.isEmpty());
+    }
+
+    @Test
+    public void noControlPostIsSentWhenTheConnectionIsDisposedDuringTheCounterSync() {
+        // the device answers the sync, so only the dispose keeps the command from being posted
+        FakeDevice device = device(CoapProfile.BASIC_GEN3);
+        device.onSync = device::dispose;
+
+        device.sendCommand("power", powerOn());
+
+        assertEquals(1, device.posts("/sys/dev/sync").size());
+        assertTrue(device.posts("/sys/dev/control").isEmpty());
     }
 
     @Test
