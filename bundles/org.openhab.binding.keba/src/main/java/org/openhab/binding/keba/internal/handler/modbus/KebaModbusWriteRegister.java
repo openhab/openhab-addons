@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link KebaModbusWriteRegister} enumerates the writable ({@code UINT16}) holding registers of the KEBA
  * KeContact P30/P40 Modbus TCP interface that are exposed as commandable channels by this binding.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public enum KebaModbusWriteRegister {

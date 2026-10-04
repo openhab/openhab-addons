@@ -24,7 +24,7 @@ import org.openhab.core.thing.Thing;
 /**
  * Tests for the legacy UDP handler.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 class KeContactHandlerTest {
 

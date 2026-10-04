@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The KEBA Modbus TCP interface only allows reading a single register (2 words / {@code UINT32}) per request, so
  * every entry below is polled with its own request.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public enum KebaModbusReadRegister {

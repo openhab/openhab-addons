@@ -27,7 +27,7 @@ import org.openhab.core.library.unit.Units;
 /**
  * Tests for Modbus conversion and command encoding.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 class KeContactModbusHandlerTest {
 

@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link KeContactModbusConfiguration} class contains fields mapping thing configuration parameters of the
  * {@code kecontact-modbus} Thing type.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class KeContactModbusConfiguration {

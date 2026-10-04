@@ -55,7 +55,7 @@ import com.google.gson.JsonParser;
 /**
  * Handler for KEBA's authenticated REST API.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class KeContactRestHandler extends BaseThingHandler {

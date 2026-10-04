@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for Modbus lifecycle and scheduling decisions.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 class KeContactModbusConcurrencyTest {
 

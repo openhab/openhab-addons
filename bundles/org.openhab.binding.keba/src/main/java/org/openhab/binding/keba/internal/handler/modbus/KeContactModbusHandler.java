@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * The KEBA Modbus TCP interface only supports reading a single, two-word ({@code UINT32}) register per request, so
  * every readable register is polled independently (see {@link KebaModbusReadRegister}).
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class KeContactModbusHandler extends BaseThingHandler {
