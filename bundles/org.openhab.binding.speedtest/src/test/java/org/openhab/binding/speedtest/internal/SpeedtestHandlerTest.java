@@ -13,10 +13,12 @@
 package org.openhab.binding.speedtest.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -29,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -321,6 +325,33 @@ class SpeedtestHandlerTest {
     }
 
     @Test
+    void commandTimeoutTerminatesBackgroundChildWhenShellExits() throws Exception {
+        assumeTrue(SpeedtestHandler.getOperatingSystemType() != SpeedtestHandler.OS.WINDOWS);
+        BlockingSpeedtestHandler handler = createHandler(null);
+        Path pidFile = Files.createTempFile("speedtest-child-", ".pid");
+        String quotedPidFile = "'" + pidFile.toString().replace("'", "'\"'\"'") + "'";
+        String command = "sleep 30 & child=$!; printf '%s' \"$child\" > " + quotedPidFile + "; exit";
+        try {
+            assertTimeoutPreemptively(Duration.ofSeconds(5), () -> handler.executeCmd(command, 1000));
+            long childPid = Long.parseLong(Files.readString(pidFile));
+            ProcessHandle.of(childPid).ifPresent(child -> {
+                try {
+                    child.onExit().get(5, TimeUnit.SECONDS);
+                    assertFalse(child.isAlive());
+                } catch (Exception e) {
+                    throw new AssertionError("Background child survived command timeout", e);
+                }
+            });
+        } finally {
+            String childPid = Files.readString(pidFile);
+            if (!childPid.isBlank()) {
+                ProcessHandle.of(Long.parseLong(childPid)).ifPresent(ProcessHandle::destroyForcibly);
+            }
+            Files.deleteIfExists(pidFile);
+        }
+    }
+
+    @Test
     void interruptedOutputReadTerminatesProcessAndRestoresInterrupt() throws Exception {
         BlockingSpeedtestHandler handler = createHandler(null);
         Process process = mock(Process.class);
@@ -335,6 +366,7 @@ class SpeedtestHandlerTest {
         when(process.toHandle()).thenReturn(processHandle);
         when(processHandle.descendants()).thenReturn(Stream.empty());
         when(process.destroyForcibly()).thenReturn(process);
+        when(process.waitFor(100, TimeUnit.MILLISECONDS)).thenThrow(new InterruptedException());
 
         try {
             handler.readOutput(process, "test command");
@@ -395,6 +427,48 @@ class SpeedtestHandlerTest {
         }
     }
 
+    @Test
+    void reconfigurationStartsFirstPollWhileStaleManualTestIsRunning() throws Exception {
+        Map<String, Object> configuration = new HashMap<>();
+        configuration.put("execPath", "test-speedtest");
+        configuration.put("refreshInterval", 60);
+        when(thing.getConfiguration()).thenReturn(new Configuration(configuration));
+        ReconfigurationSpeedtestHandler handler = new ReconfigurationSpeedtestHandler(thing, timeZoneProvider);
+        handler.setCallback(callback);
+        CountDownLatch channelsUpdated = new CountDownLatch(1);
+        org.mockito.Mockito.doAnswer(invocation -> {
+            channelsUpdated.countDown();
+            return null;
+        }).when(callback).stateUpdated(any(), any());
+        ChannelUID triggerChannel = new ChannelUID(thing.getUID(), SpeedtestBindingConstants.TRIGGER_TEST);
+
+        try (ExecutorService executor = Executors.newSingleThreadExecutor()) {
+            Future<?> oldRun = executor.submit(() -> handler.handleCommand(triggerChannel, OnOffType.ON));
+            try {
+                handler.awaitRequest();
+                assertEquals(1, handler.measurementCount.get());
+                handler.thingUpdated(thing);
+                assertTrue(handler.newRequestStarted.await(5, TimeUnit.SECONDS));
+                handler.getSpeed(1);
+                assertEquals(2, handler.measurementCount.get());
+
+                handler.releaseRequest();
+                oldRun.get(5, TimeUnit.SECONDS);
+                verify(callback, never()).stateUpdated(any(), any());
+
+                handler.getSpeed(0);
+                handler.getSpeed(1);
+                assertEquals(2, handler.measurementCount.get());
+                handler.newRequestRelease.countDown();
+                assertTrue(channelsUpdated.await(5, TimeUnit.SECONDS));
+            } finally {
+                handler.releaseRequest();
+                handler.newRequestRelease.countDown();
+                handler.dispose();
+            }
+        }
+    }
+
     private BlockingSpeedtestHandler createHandler(@Nullable ResultContainer result) {
         BlockingSpeedtestHandler handler = new BlockingSpeedtestHandler(thing, timeZoneProvider, result);
         handler.setCallback(callback);
@@ -440,6 +514,44 @@ class SpeedtestHandlerTest {
             ResultsContainerServerList serverList = new ResultsContainerServerList();
             serverList.servers = List.of();
             return type.cast(serverList);
+        }
+    }
+
+    private static class ReconfigurationSpeedtestHandler extends BlockingSpeedtestHandler {
+        private final AtomicInteger measurementCount = new AtomicInteger();
+        private final CountDownLatch newRequestStarted = new CountDownLatch(1);
+        private final CountDownLatch newRequestRelease = new CountDownLatch(1);
+
+        ReconfigurationSpeedtestHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+            super(thing, timeZoneProvider, RESULT);
+        }
+
+        @Override
+        public boolean checkConfig(String execPath) {
+            return true;
+        }
+
+        @Override
+        protected @Nullable <T> T doExecuteRequest(String arguments, Class<T> type) {
+            if (type == String.class) {
+                return type.cast("Speedtest by Ookla 1.0" + System.lineSeparator());
+            }
+            if (type == ResultsContainerServerList.class) {
+                ResultsContainerServerList serverList = new ResultsContainerServerList();
+                serverList.servers = List.of();
+                return type.cast(serverList);
+            }
+            if (measurementCount.incrementAndGet() == 1) {
+                return super.doExecuteRequest(arguments, type);
+            }
+            newRequestStarted.countDown();
+            try {
+                assertTrue(newRequestRelease.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return null;
+            }
+            return type.cast(RESULT);
         }
     }
 

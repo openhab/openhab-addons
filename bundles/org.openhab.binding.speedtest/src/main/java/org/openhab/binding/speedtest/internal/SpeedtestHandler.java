@@ -28,7 +28,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -77,7 +76,7 @@ public class SpeedtestHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> initializationJob;
     public volatile boolean isRunning = false;
     private volatile int initId = 0;
-    private final AtomicBoolean speedTestRunning = new AtomicBoolean();
+    private @Nullable Integer speedTestRunningInitId;
     private final Object lifecycleLock = new Object();
 
     public static final String[] SHELL_WINDOWS = new String[] { "cmd" };
@@ -322,15 +321,25 @@ public class SpeedtestHandler extends BaseThingHandler {
      * Get the speedtest data and convert it from JSON and send it to update the channels.
      */
     void getSpeed(int currentInitId) {
-        if (!speedTestRunning.compareAndSet(false, true)) {
-            logger.debug("Speed measurement already running");
-            return;
+        synchronized (lifecycleLock) {
+            if (currentInitId != initId) {
+                return;
+            }
+            if (speedTestRunningInitId != null && speedTestRunningInitId == currentInitId) {
+                logger.debug("Speed measurement already running");
+                return;
+            }
+            speedTestRunningInitId = currentInitId;
         }
 
         try {
             getSpeedResult(currentInitId);
         } finally {
-            speedTestRunning.set(false);
+            synchronized (lifecycleLock) {
+                if (speedTestRunningInitId != null && speedTestRunningInitId == currentInitId) {
+                    speedTestRunningInitId = null;
+                }
+            }
         }
     }
 
@@ -638,6 +647,9 @@ public class SpeedtestHandler extends BaseThingHandler {
                 shell = SHELL_NIX;
                 logger.debug("OS: *NIX ({})", getOperatingSystemName());
                 cmdArray = createCmdArray(shell, "-c", commandLine);
+                if (cmdArray.length >= 3 && "-c".equals(cmdArray[1])) {
+                    cmdArray[2] = "trap 'wait' 0\n" + cmdArray[2];
+                }
                 break;
             default:
                 logger.debug("OS: Unknown ({})", getOperatingSystemName());
@@ -697,7 +709,14 @@ public class SpeedtestHandler extends BaseThingHandler {
 
     private void terminateProcess(Process process) {
         process.toHandle().descendants().forEach(ProcessHandle::destroyForcibly);
-        process.destroyForcibly();
+        try {
+            if (!process.waitFor(100, TimeUnit.MILLISECONDS)) {
+                process.destroyForcibly();
+            }
+        } catch (InterruptedException e) {
+            process.destroyForcibly();
+            Thread.currentThread().interrupt();
+        }
         try {
             process.getInputStream().close();
         } catch (InterruptedIOException e) {
