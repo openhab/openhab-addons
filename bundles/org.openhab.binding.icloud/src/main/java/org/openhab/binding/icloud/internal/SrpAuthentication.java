@@ -138,6 +138,7 @@ public class SrpAuthentication {
         BigInteger B = new BigInteger(1, b64Decode(initBody.get("b").getAsString()));
         byte[] s = b64Decode(initBody.get("salt").getAsString());
         String c = initBody.get("c").getAsString();
+        String protocol = initBody.get("protocol").getAsString();
         int iterations = initBody.get("iteration").getAsInt();
         int keyLength = 32;
 
@@ -150,7 +151,7 @@ public class SrpAuthentication {
 
         // Calculate S
         Digest digest = new SHA256Digest();
-        BigInteger x = SRP6Util.calculateX(digest, N, s, "".getBytes(StandardCharsets.UTF_8), srpPassword.encode());
+        BigInteger x = SRP6Util.calculateX(digest, N, s, new byte[0], srpPassword.encode(protocol));
         BigInteger u = SRP6Util.calculateU(digest, N, A, B);
 
         BigInteger k = SRP6Util.calculateK(digest, N, g);
