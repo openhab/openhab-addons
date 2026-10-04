@@ -24,6 +24,7 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELL
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -70,6 +71,24 @@ public class ShellyBluApiTest {
     void getStatusSucceedsWhenConnected() throws Exception {
         ShellyBluApi api = buildBluApi();
         setField(api, "connected", true);
+        assertDoesNotThrow(api::getStatus);
+    }
+
+    @Test
+    void closeDisconnectsSoNextEventBringsThingOnline() throws Exception {
+        ShellyBluApi api = buildBluApi();
+        ShellyThingInterface thing = Objects.requireNonNull(thingMock);
+        setField(api, "connected", true);
+
+        api.close();
+        assertThrows(ShellyApiException.class, api::getStatus);
+
+        api.onNotifyEvent("""
+                {"src": "shellyblugw-test", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 1, "Battery": 85}}]}}
+                """);
+
+        verify(thing).setThingOnline();
         assertDoesNotThrow(api::getStatus);
     }
 

@@ -431,8 +431,9 @@ The binding sets the following Thing status depending on the device status:
 For more details see  [Thing Concept](https://www.openhab.org/docs/concepts/things.html#status-details) in openHAB documentation.
 
 `Battery powered devices:`
-If the device is in sleep mode and can't be reached by the binding, the Thing will change into CONFIG_PENDING.
+If the device is in sleep mode and hasn't been initialized yet, the Thing will change into CONFIG_PENDING.
 Once the device wakes up, the Thing will perform initialization and the state will change to ONLINE.
+Afterwards the Thing stays ONLINE while the device sleeps, the watchdog detects a device that stops reporting (see below).
 
 The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted.  Waking up the device triggers the a status report (CoIoT packet for event url for Gen1 and WebSocket call for Gen2), which is processed by the binding and triggers initialization. Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart unless you change the battery. In this case press the button and run the discovery again.
 
@@ -448,11 +449,16 @@ Communication errors are handled depending on the device type:
 The binding also monitors that the device is responding at least once within a given time period.
 The period is computed depending on the device type and configuration:
 
-- battery  powered devices: &lt;sleepPeriod from device config&gt; + 10min, usually 12h+10min=730min
+- battery powered devices: &lt;sleepPeriod from device config&gt; + 10% + 1min, usually 12h → 13h13min (Smoke: another 30min).
+  If the device doesn't provide its sleep period, the longest possible period of 24h is assumed.
 - else, if CoIoT or WebSocket is enabled: 3*&lt;update Period from device settings&gt;+10sec, usually3*15+10=45sec
 - else 2*60+10sec = 130sec
 
 Once the timer expires the device switches to OFFLINE and the bindings starts to re-initialize the device periodically.
+A battery powered device is not polled while it sleeps, it switches back to ONLINE with its next report.
+If a battery powered device reports less often than configured, the binding learns the longer interval and extends the watchdog period accordingly.
+Buttons and remotes only report when a button is pressed, so they are never set OFFLINE by the watchdog.
+A BLU device set OFFLINE by the watchdog switches back to ONLINE with its next advertisement.
 
 You could also create a rule to catch those status changes or device alarms (see rule examples).
 
