@@ -23,6 +23,8 @@ import org.openhab.core.storage.Storage;
 /**
  * A trivial in-memory {@link Storage} used to unit-test {@link EEBusCertificateStorage} without an
  * OSGi runtime.
+ *
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public class FakeStorage implements Storage<String> {

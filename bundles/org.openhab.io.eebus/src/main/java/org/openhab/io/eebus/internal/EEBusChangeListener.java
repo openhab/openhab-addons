@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * is logged but not applied live - jeebus.spine's {@link Entity#addUseCase} has no runtime
  * counterpart for removing a use case, so rebinding needs a restart of this add-on.
  *
- * @author openHAB EEBus Add-on Contributors - Initial contribution
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public class EEBusChangeListener implements ItemRegistryChangeListener {

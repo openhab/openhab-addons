@@ -43,7 +43,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * globally via {@code java.security.Security}, so this does not affect other bundles in the OSGi
  * runtime.
  *
- * @author openHAB EEBus Binding Contributors - Initial contribution
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public final class SelfSignedCertificateFactory {

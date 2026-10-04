@@ -35,7 +35,7 @@ import org.openmuc.jeebus.ship.api.cert.CertificateStoreException;
  * given thing on first use, so every {@code controllableSystem} thing gets its own stable SHIP
  * identity (and thus a stable SKI) without any manual keystore provisioning step.
  *
- * @author openHAB EEBus Binding Contributors - Initial contribution
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public class EEBusCertificateStorage implements CertificateStorage {

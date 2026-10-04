@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * A private key paired with its self-signed certificate, independent of jEEBus's own
  * {@code CertificateInfo} type so callers generating a certificate don't need that dependency.
  *
- * @author openHAB EEBus Binding Contributors - Initial contribution
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public record KeyAndCertificate(PrivateKey privateKey, X509Certificate certificate) {

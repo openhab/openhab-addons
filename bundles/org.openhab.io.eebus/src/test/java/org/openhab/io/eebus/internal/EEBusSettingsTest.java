@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link EEBusSettings#requiresRestart}.
+ *
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 class EEBusSettingsTest {

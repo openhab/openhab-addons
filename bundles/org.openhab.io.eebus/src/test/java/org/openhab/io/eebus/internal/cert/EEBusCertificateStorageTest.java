@@ -22,6 +22,8 @@ import org.openmuc.jeebus.ship.api.cert.CertificateInfo;
 
 /**
  * Tests for {@link EEBusCertificateStorage}.
+ *
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 class EEBusCertificateStorageTest {

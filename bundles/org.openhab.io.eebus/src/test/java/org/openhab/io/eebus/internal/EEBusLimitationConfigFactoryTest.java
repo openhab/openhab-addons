@@ -29,6 +29,8 @@ import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.SimpleLimit
  * was a real, confirmed bug in the predecessor binding's equivalent factory, found only via live
  * protocol testing - ported here as a standing regression test since the same risk applies to
  * this metadata-driven rewrite.
+ *
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 class EEBusLimitationConfigFactoryTest {

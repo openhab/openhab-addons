@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * EEBus integration API.
  *
- * @author openHAB EEBus Add-on Contributors - Initial contribution
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public interface EEBus {

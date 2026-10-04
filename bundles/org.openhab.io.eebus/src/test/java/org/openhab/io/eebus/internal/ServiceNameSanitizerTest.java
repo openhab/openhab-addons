@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link ServiceNameSanitizer}.
+ *
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 class ServiceNameSanitizerTest {

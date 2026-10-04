@@ -49,6 +49,8 @@ import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.ActiveLimit
  * config update on an already-bound item being silently swallowed instead of either applying or
  * warning. Both would have been invisible without a test that actually counts
  * {@code entity.addUseCase()} calls.
+ *
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 class EEBusChangeListenerTest {

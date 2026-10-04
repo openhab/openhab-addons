@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * {@code $OPENHAB_CONF/services/eebus.cfg} and the MainUI "Other Services" page), analogous to
  * {@code org.openhab.io.homekit.internal.HomekitSettings}.
  *
- * @author openHAB EEBus Add-on Contributors - Initial contribution
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public class EEBusSettings {

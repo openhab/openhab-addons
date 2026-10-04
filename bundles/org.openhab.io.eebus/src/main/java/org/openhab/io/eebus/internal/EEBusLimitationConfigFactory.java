@@ -30,7 +30,7 @@ import org.openmuc.jeebus.usecase.powerlimitation.controllablesystem.SimpleLimit
  * {@code EEBusLimitationConfigFactoryTest}), which is why this mapping is centralised and tested
  * here rather than inlined at each call site.
  *
- * @author openHAB EEBus Add-on Contributors - Initial contribution
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public final class EEBusLimitationConfigFactory {

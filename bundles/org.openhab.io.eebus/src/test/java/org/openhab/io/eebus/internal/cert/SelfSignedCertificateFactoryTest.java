@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link SelfSignedCertificateFactory}.
+ *
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 class SelfSignedCertificateFactoryTest {

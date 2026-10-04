@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * {@link IllegalArgumentException} in the JDK's strict SNI hostname validation. Confirmed live
  * against a real EEBus peer (meisel2000/eebus-cbsim) on 2026-08-01.
  *
- * @author openHAB EEBus Binding Contributors - Initial contribution
+ * @author Stamate Viorel - Initial contribution
  */
 @NonNullByDefault
 public final class ServiceNameSanitizer {

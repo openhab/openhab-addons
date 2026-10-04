@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * (EEBus's LPC/LPP use cases are household-wide singleton limits, unlike HomeKit's
  * many-accessories model).
  *
- * @author openHAB EEBus Add-on Contributors - Initial contribution
+ * @author Stamate Viorel - Initial contribution
  */
 @Component(service = { EEBus.class }, configurationPid = EEBusSettings.CONFIG_PID, property = {
         Constants.SERVICE_PID + "=org.openhab.eebus" })
