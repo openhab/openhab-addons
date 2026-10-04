@@ -265,6 +265,30 @@ public class BaseCluster {
         }
     }
 
+    public enum CertificationTypeEnum implements MatterEnum {
+        DEVICE_ATTESTATION_PKI(0, "DeviceAttestationPki"),
+        OPERATIONAL_PKI(1, "OperationalPki"),
+        VID_SIGNER_PKI(2, "VidSignerPki");
+
+        public final Integer value;
+        public final String label;
+
+        private CertificationTypeEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
     public enum MeasurementTypeEnum implements MatterEnum {
         UNSPECIFIED(0, "Unspecified"),
         VOLTAGE(1, "Voltage"),
@@ -477,7 +501,10 @@ public class BaseCluster {
         CLOSURE_PANEL(69, "ClosurePanel"),
         CLOSURE_COVERING(70, "ClosureCovering"),
         CLOSURE_WINDOW(71, "ClosureWindow"),
-        CLOSURE_CABINET(72, "ClosureCabinet");
+        CLOSURE_CABINET(72, "ClosureCabinet"),
+        IDENTIFIED_OBJECT(73, "IdentifiedObject"),
+        IDENTIFIED_SOUND(74, "IdentifiedSound"),
+        IDENTIFIED_HUMAN_ACTIVITY(75, "IdentifiedHumanActivity");
 
         public final Integer value;
         public final String label;

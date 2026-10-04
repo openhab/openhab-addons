@@ -42,6 +42,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
     public static final String ATTRIBUTE_ACTIVE_RADIO_FAULTS = "activeRadioFaults";
     public static final String ATTRIBUTE_ACTIVE_NETWORK_FAULTS = "activeNetworkFaults";
     public static final String ATTRIBUTE_TEST_EVENT_TRIGGERS_ENABLED = "testEventTriggersEnabled";
+    public static final String ATTRIBUTE_DEVICE_LOAD_STATUS = "deviceLoadStatus";
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
@@ -114,6 +115,10 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
      * fabrics on the Node).
      */
     public Boolean testEventTriggersEnabled; // 8 bool R V
+    /**
+     * Indicates the status of various resources used.
+     */
+    public DeviceLoadStruct deviceLoadStatus; // 10 DeviceLoadStruct R V
 
     // Structs
     /**
@@ -247,6 +252,53 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
             this.iPv4Addresses = iPv4Addresses;
             this.iPv6Addresses = iPv6Addresses;
             this.type = type;
+        }
+    }
+
+    /**
+     * This structure describes some important resource utilization metrics for the Node, as provided in the
+     * DeviceLoadStatus attribute.
+     * > [!NOTE]
+     * > NOTE: For all the fields, the value shall remain at the maximum representable (clamp to max) if the maximum
+     * value is reached.
+     */
+    public static class DeviceLoadStruct {
+        /**
+         * This field shall indicate the number of currently-active Interaction Model subscriptions across all fabrics
+         * on the node.
+         */
+        public Integer currentSubscriptions; // uint16
+        /**
+         * This field shall indicate the number of currently-active Interaction Model subscriptions for the accessing
+         * fabric only. If no accessing fabric is available, this field shall be set to zero.
+         */
+        public Integer currentSubscriptionsForFabric; // uint16
+        /**
+         * This field shall indicate the total number of Interaction Model subscriptions successfully established across
+         * all fabrics on the node since start-up.
+         */
+        public Integer totalSubscriptionsEstablished; // uint32
+        /**
+         * This field shall indicate the number of outgoing Interaction Model protocol messages sent since start-up.
+         * These are messages that have the Protocol ID set to PROTOCOL_ID_INTERACTION_MODEL, excluding any retries of
+         * such messages.
+         */
+        public Integer totalInteractionModelMessagesSent; // uint32
+        /**
+         * This field shall indicate the number of incoming Interaction Model protocol messages received since start-up.
+         * These are messages that have the Protocol ID set to PROTOCOL_ID_INTERACTION_MODEL, excluding any retries of
+         * such messages.
+         */
+        public Integer totalInteractionModelMessagesReceived; // uint32
+
+        public DeviceLoadStruct(Integer currentSubscriptions, Integer currentSubscriptionsForFabric,
+                Integer totalSubscriptionsEstablished, Integer totalInteractionModelMessagesSent,
+                Integer totalInteractionModelMessagesReceived) {
+            this.currentSubscriptions = currentSubscriptions;
+            this.currentSubscriptionsForFabric = currentSubscriptionsForFabric;
+            this.totalSubscriptionsEstablished = totalSubscriptionsEstablished;
+            this.totalInteractionModelMessagesSent = totalInteractionModelMessagesSent;
+            this.totalInteractionModelMessagesReceived = totalInteractionModelMessagesReceived;
         }
     }
 
@@ -478,6 +530,7 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         str += "activeRadioFaults : " + activeRadioFaults + "\n";
         str += "activeNetworkFaults : " + activeNetworkFaults + "\n";
         str += "testEventTriggersEnabled : " + testEventTriggersEnabled + "\n";
+        str += "deviceLoadStatus : " + deviceLoadStatus + "\n";
         return str;
     }
 }

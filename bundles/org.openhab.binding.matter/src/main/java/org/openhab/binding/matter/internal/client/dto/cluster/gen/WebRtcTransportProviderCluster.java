@@ -41,35 +41,6 @@ public class WebRtcTransportProviderCluster extends BaseCluster {
      */
     public List<WebRtcTransportDefinitionsCluster.WebRTCSessionStruct> currentSessions; // 0 list R S M
 
-    // Structs
-    /**
-     * This type shall specify the RFC 9605 data needed to use SFrames as an end-to-end encryption mechanism with
-     * WebRTC.
-     */
-    public static class SFrameStruct {
-        /**
-         * This field shall specify the SFrame cipher suite value as defined in RFC 9605 Section 8.1 Cipher Suites
-         * table, and maintained in the IANA SFrame Registry.
-         */
-        public Integer cipherSuite; // uint16
-        /**
-         * This field shall specify the SFrame base_key value to use for a session. The length of this key depends on
-         * the selected cipher suite's Nk value as defined in Section 4.5 Cipher Suites.
-         */
-        public OctetString baseKey; // octstr
-        /**
-         * This field shall specify the initial SFrame KID (Key Id) value to be used. The bottom 8 bits of this value
-         * will be overwritten and used for ratchet step tracking.
-         */
-        public OctetString kid; // octstr
-
-        public SFrameStruct(Integer cipherSuite, OctetString baseKey, OctetString kid) {
-            this.cipherSuite = cipherSuite;
-            this.baseKey = baseKey;
-            this.kid = kid;
-        }
-    }
-
     // Bitmaps
     public static class FeatureMap {
         /**
@@ -79,8 +50,6 @@ public class WebRtcTransportProviderCluster extends BaseCluster {
          * supported on a per session basis.
          * This feature is designed to be JSEP compliant with the RTCDataChannel object interface and consists of
          * AVMetadataStruct content.
-         * If SFrame End-to-End Encryption is active in a session, all metadata transmissions shall be sent using the
-         * protocol name urn:csa:matter:sframe:av-metadata instead with each transmission being wrapped in SFrames.
          */
         public boolean metadata;
 
@@ -105,8 +74,7 @@ public class WebRtcTransportProviderCluster extends BaseCluster {
     public static ClusterCommand solicitOffer(StreamUsageEnum streamUsage, Integer originatingEndpointId,
             Integer videoStreamId, Integer audioStreamId,
             List<WebRtcTransportDefinitionsCluster.ICEServerStruct> iceServers, String iceTransportPolicy,
-            Boolean metadataEnabled, SFrameStruct sFrameConfig, List<Integer> videoStreams,
-            List<Integer> audioStreams) {
+            Boolean metadataEnabled, List<Integer> videoStreams, List<Integer> audioStreams) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (streamUsage != null) {
             map.put("streamUsage", streamUsage);
@@ -129,9 +97,6 @@ public class WebRtcTransportProviderCluster extends BaseCluster {
         if (metadataEnabled != null) {
             map.put("metadataEnabled", metadataEnabled);
         }
-        if (sFrameConfig != null) {
-            map.put("sFrameConfig", sFrameConfig);
-        }
         if (videoStreams != null) {
             map.put("videoStreams", videoStreams);
         }
@@ -148,8 +113,7 @@ public class WebRtcTransportProviderCluster extends BaseCluster {
     public static ClusterCommand provideOffer(Integer webRtcSessionId, String sdp, StreamUsageEnum streamUsage,
             Integer originatingEndpointId, Integer videoStreamId, Integer audioStreamId,
             List<WebRtcTransportDefinitionsCluster.ICEServerStruct> iceServers, String iceTransportPolicy,
-            Boolean metadataEnabled, SFrameStruct sFrameConfig, List<Integer> videoStreams,
-            List<Integer> audioStreams) {
+            Boolean metadataEnabled, List<Integer> videoStreams, List<Integer> audioStreams) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (webRtcSessionId != null) {
             map.put("webRtcSessionId", webRtcSessionId);
@@ -177,9 +141,6 @@ public class WebRtcTransportProviderCluster extends BaseCluster {
         }
         if (metadataEnabled != null) {
             map.put("metadataEnabled", metadataEnabled);
-        }
-        if (sFrameConfig != null) {
-            map.put("sFrameConfig", sFrameConfig);
         }
         if (videoStreams != null) {
             map.put("videoStreams", videoStreams);

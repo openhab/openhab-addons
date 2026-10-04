@@ -80,6 +80,10 @@ public class ThermostatCluster extends BaseCluster {
     public static final String ATTRIBUTE_PRESETS = "presets";
     public static final String ATTRIBUTE_SCHEDULES = "schedules";
     public static final String ATTRIBUTE_SETPOINT_HOLD_EXPIRY_TIMESTAMP = "setpointHoldExpiryTimestamp";
+    public static final String ATTRIBUTE_MAX_THERMOSTAT_SUGGESTIONS = "maxThermostatSuggestions";
+    public static final String ATTRIBUTE_THERMOSTAT_SUGGESTIONS = "thermostatSuggestions";
+    public static final String ATTRIBUTE_CURRENT_THERMOSTAT_SUGGESTION = "currentThermostatSuggestion";
+    public static final String ATTRIBUTE_THERMOSTAT_SUGGESTION_NOT_FOLLOWING_REASON = "thermostatSuggestionNotFollowingReason";
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
@@ -105,7 +109,17 @@ public class ThermostatCluster extends BaseCluster {
      * Refer to Setpoint Limits for constraints
      */
     public Integer absMinHeatSetpointLimit; // 3 temperature R V
+    /**
+     * Indicates the absolute maximum level that the heating setpoint may be set to. This is a limitation imposed by the
+     * manufacturer.
+     * Refer to Setpoint Limits for constraints
+     */
     public Integer absMaxHeatSetpointLimit; // 4 temperature R V
+    /**
+     * Indicates the absolute minimum level that the cooling setpoint may be set to. This is a limitation imposed by the
+     * manufacturer.
+     * Refer to Setpoint Limits for constraints
+     */
     public Integer absMinCoolSetpointLimit; // 5 temperature R V
     /**
      * Indicates the absolute maximum level that the cooling setpoint may be set to. This is a limitation imposed by the
@@ -445,7 +459,17 @@ public class ThermostatCluster extends BaseCluster {
      * status shall be INVALID_IN_STATE.
      * 3. If the removed PresetHandle is equal to the value of the ActivePresetHandle attribute, the attribute status
      * shall be INVALID_IN_STATE.
-     * 2. Otherwise, the attribute status shall be SUCCESS.
+     * 2. If the attribute status has not yet been determined:
+     * 1. The attribute status shall be SUCCESS.
+     * 2. For all existing presets:
+     * 1. If, after applying all pending changes, the updated value of the Presets attribute would not contain a
+     * PresetStruct with a matching PresetHandle field, indicating the removal of the PresetStruct, the server shall
+     * ensure that the preset being removed is unused, as follows:
+     * 1. If the PresetHandle field of the removed preset is equal to the value of the PresetHandle field of the
+     * CurrentThermostatSuggestion attribute's value, the CurrentThermostatSuggestion attribute shall be set to null.
+     * 2. If the PresetHandle field of the removed preset is equal to the value of the PresetHandle field of one or more
+     * of the entries in the ThermostatSuggestions attribute, the server shall delete any such entries from the
+     * ThermostatSuggestions attribute.
      */
     public List<PresetStruct> presets; // 80 list RW VM
     /**
@@ -529,8 +553,235 @@ public class ThermostatCluster extends BaseCluster {
      * no hold on the Thermostat.
      */
     public Integer setpointHoldExpiryTimestamp; // 82 epoch-s R V
+    /**
+     * Indicates the maximum number of entries supported by the ThermostatSuggestions attribute.
+     */
+    public Integer maxThermostatSuggestions; // 83 uint8 R V
+    /**
+     * Indicates an unordered set of thermostat suggestions.
+     * The suggested value shall be a PresetHandle that shall match the PresetHandle of one of the entries in the
+     * Presets attribute.
+     * The Thermostat may use this information to ensure user comfort while also prioritizing other factors (e.g. energy
+     * savings, cost, and so on). Entries with effective times in the future may be used for pre-cool or pre-heat
+     * decisions.
+     * See Section 4.3.7, "Re-evaluation of Current Thermostat Suggestion" for what to do if this attribute's value
+     * changes.
+     */
+    public List<ThermostatSuggestionStruct> thermostatSuggestions; // 84 list R V
+    /**
+     * Indicates an entry in the entries, which identifies the current thermostat suggestion.
+     * A value of null shall indicate that there is no current thermostat suggestion. When this attribute's value
+     * changes to a null value, the server may decide to set the ActivePresetHandle attribute to a value of its choice,
+     * based on schedules, occupancy sensors, etc.
+     * When the server is "following the suggestion" that means that the server shall ensure that the value of the
+     * ActivePresetHandle attribute matches the value of this attribute.
+     * When there is a current thermostat suggestion and the server is unable to follow the suggestion or the server is
+     * unable to choose a current thermostat suggestion due to conflicting suggestions, it shall set the
+     * ThermostatSuggestionNotFollowingReason attribute to a non-null value as described in the definition of the
+     * ThermostatSuggestionNotFollowingReason attribute. Otherwise, the server shall follow the suggestion and set the
+     * ThermostatSuggestionNotFollowingReason attribute to null.
+     * Whenever the state of the server changes such that it might need to start or stop following the suggestion, the
+     * server shall re-evaluate whether it is doing so and update the ActivePresetHandle and
+     * ThermostatSuggestionNotFollowingReason attributes as needed.
+     */
+    public ThermostatSuggestionStruct currentThermostatSuggestion; // 85 ThermostatSuggestionStruct R V
+    /**
+     * Indicates the reasons the Thermostat is unable to follow suggestions.
+     * When the server is unable to follow the suggestion, it shall set the appropriate bits in the value of the
+     * ThermostatSuggestionNotFollowingReason attribute to indicate the reasons due to which the suggestion is not being
+     * followed. The value of the ThermostatSuggestionNotFollowingReason attribute shall be 0 (all bits cleared) if
+     * there are no bits defined in ThermostatSuggestionNotFollowingReasonBitmap that represent the reasons the
+     * suggestion is not being followed.
+     * If the CurrentThermostatSuggestion attribute is null, this attribute shall be set to null.
+     */
+    public ThermostatSuggestionNotFollowingReasonBitmap thermostatSuggestionNotFollowingReason; // 86
+                                                                                                // ThermostatSuggestionNotFollowingReasonBitmap
+                                                                                                // R V
 
     // Structs
+    /**
+     * This event shall be generated when the SystemMode attribute changes.
+     */
+    public static class SystemModeChange {
+        /**
+         * This field shall indicate the previous value of the SystemMode attribute. If the previous value is
+         * unavailable, this field shall be omitted.
+         */
+        public SystemModeEnum previousSystemMode; // SystemModeEnum
+        /**
+         * This field shall indicate the current (after the change that caused the event to be generated) value of the
+         * SystemMode attribute.
+         */
+        public SystemModeEnum currentSystemMode; // SystemModeEnum
+
+        public SystemModeChange(SystemModeEnum previousSystemMode, SystemModeEnum currentSystemMode) {
+            this.previousSystemMode = previousSystemMode;
+            this.currentSystemMode = currentSystemMode;
+        }
+    }
+
+    /**
+     * This event shall be generated when the LocalTemperature attribute changes significantly.
+     * Significant changes are:
+     * - Changes from null to not null, or from not null to null.
+     * - Changes from one not-null value to another not-null value that are sufficiently large, as determined by the
+     * server.
+     * LocalTemperatureChange events shall NOT be generated more often than once every 60 seconds.
+     */
+    public static class LocalTemperatureChange {
+        /**
+         * This field shall indicate the current value of the LocalTemperature attribute.
+         */
+        public Integer currentLocalTemperature; // temperature
+
+        public LocalTemperatureChange(Integer currentLocalTemperature) {
+            this.currentLocalTemperature = currentLocalTemperature;
+        }
+    }
+
+    /**
+     * This event shall be generated when the Occupancy attribute changes.
+     */
+    public static class OccupancyChange {
+        /**
+         * This field shall indicate the previous value of the Occupancy attribute. If the previous value is
+         * unavailable, this field shall be omitted.
+         */
+        public OccupancyBitmap previousOccupancy; // OccupancyBitmap
+        /**
+         * This field shall indicate the current (after the change that caused the event to be generated) value of the
+         * Occupancy attribute.
+         */
+        public OccupancyBitmap currentOccupancy; // OccupancyBitmap
+
+        public OccupancyChange(OccupancyBitmap previousOccupancy, OccupancyBitmap currentOccupancy) {
+            this.previousOccupancy = previousOccupancy;
+            this.currentOccupancy = currentOccupancy;
+        }
+    }
+
+    /**
+     * This event shall be generated when the value of any of the OccupiedHeatingSetpoint, UnoccupiedHeatingSetpoint,
+     * OccupiedCoolingSetpoint, or UnoccupiedCoolingSetpoint attributes is changed.
+     */
+    public static class SetpointChange {
+        /**
+         * This field shall indicate the system mode associated with the changed attribute. If the changed attribute is
+         * OccupiedHeatingSetpoint or UnoccupiedHeatingSetpoint, the value of this field shall be Heat. If the changed
+         * attribute is OccupiedCoolingSetpoint or UnoccupiedCoolingSetpoint, the value of this field shall be Cool.
+         */
+        public SystemModeEnum systemMode; // SystemModeEnum
+        /**
+         * This field shall indicate the occupancy associated with the changed attribute. If the changed attribute is
+         * OccupiedHeatingSetpoint or OccupiedCoolingSetpoint, the value of this field shall be 1. If the changed
+         * attribute is UnoccupiedHeatingSetpoint or UnoccupiedCoolingSetpoint, the value of this field shall be 0.
+         */
+        public OccupancyBitmap occupancy; // OccupancyBitmap
+        /**
+         * This field shall indicate the previous value of the changed attribute. If the previous value is unavailable,
+         * this field shall be omitted.
+         */
+        public Integer previousSetpoint; // temperature
+        /**
+         * This field shall indicate the current (after the change that caused the event to be generated) value of the
+         * changed attribute.
+         */
+        public Integer currentSetpoint; // temperature
+
+        public SetpointChange(SystemModeEnum systemMode, OccupancyBitmap occupancy, Integer previousSetpoint,
+                Integer currentSetpoint) {
+            this.systemMode = systemMode;
+            this.occupancy = occupancy;
+            this.previousSetpoint = previousSetpoint;
+            this.currentSetpoint = currentSetpoint;
+        }
+    }
+
+    /**
+     * This event shall be generated when the ThermostatRunningState attribute changes.
+     */
+    public static class RunningStateChange {
+        /**
+         * This field shall indicate the previous value of the ThermostatRunningState attribute. If the previous value
+         * is unavailable, this field shall be omitted.
+         */
+        public RelayStateBitmap previousRunningState; // RelayStateBitmap
+        /**
+         * This field shall indicate the current (after the change that caused the event to be generated) value of the
+         * ThermostatRunningState attribute.
+         */
+        public RelayStateBitmap currentRunningState; // RelayStateBitmap
+
+        public RunningStateChange(RelayStateBitmap previousRunningState, RelayStateBitmap currentRunningState) {
+            this.previousRunningState = previousRunningState;
+            this.currentRunningState = currentRunningState;
+        }
+    }
+
+    /**
+     * This event shall be generated when the ThermostatRunningMode attribute changes.
+     */
+    public static class RunningModeChange {
+        /**
+         * This field shall indicate the previous value of the ThermostatRunningMode attribute. If the previous value is
+         * unavailable, this field shall be omitted.
+         */
+        public ThermostatRunningModeEnum previousRunningMode; // ThermostatRunningModeEnum
+        /**
+         * This field shall indicate the current (after the change that caused the event to be generated) value of the
+         * ThermostatRunningMode attribute.
+         */
+        public ThermostatRunningModeEnum currentRunningMode; // ThermostatRunningModeEnum
+
+        public RunningModeChange(ThermostatRunningModeEnum previousRunningMode,
+                ThermostatRunningModeEnum currentRunningMode) {
+            this.previousRunningMode = previousRunningMode;
+            this.currentRunningMode = currentRunningMode;
+        }
+    }
+
+    /**
+     * This event shall be generated when the ActiveScheduleHandle attribute changes.
+     */
+    public static class ActiveScheduleChange {
+        /**
+         * This field shall indicate the previous value of the ActiveScheduleHandle attribute. If the previous value is
+         * unavailable, this field shall be omitted.
+         */
+        public OctetString previousScheduleHandle; // octstr
+        /**
+         * This field shall indicate the current (after the change that caused the event to be generated) value of the
+         * ActiveScheduleHandle attribute.
+         */
+        public OctetString currentScheduleHandle; // octstr
+
+        public ActiveScheduleChange(OctetString previousScheduleHandle, OctetString currentScheduleHandle) {
+            this.previousScheduleHandle = previousScheduleHandle;
+            this.currentScheduleHandle = currentScheduleHandle;
+        }
+    }
+
+    /**
+     * This event shall be generated when the ActivePresetHandle attribute changes.
+     */
+    public static class ActivePresetChange {
+        /**
+         * This field shall indicate the previous value of the ActivePresetHandle attribute. If the previous value is
+         * unavailable, this field shall be omitted.
+         */
+        public OctetString previousPresetHandle; // octstr
+        /**
+         * This field shall indicate the current (after the change that caused the event to be generated) value of the
+         * ActivePresetHandle attribute.
+         */
+        public OctetString currentPresetHandle; // octstr
+
+        public ActivePresetChange(OctetString previousPresetHandle, OctetString currentPresetHandle) {
+            this.previousPresetHandle = previousPresetHandle;
+            this.currentPresetHandle = currentPresetHandle;
+        }
+    }
+
     public static class PresetStruct {
         /**
          * This field shall indicate a device generated identifier for this preset. It shall be unique on the device,
@@ -789,6 +1040,35 @@ public class ThermostatCluster extends BaseCluster {
             this.systemMode = systemMode;
             this.numberOfSchedules = numberOfSchedules;
             this.scheduleTypeFeatures = scheduleTypeFeatures;
+        }
+    }
+
+    public static class ThermostatSuggestionStruct {
+        /**
+         * This field shall have a generated identifier that identifies a distinct entry of type
+         * ThermostatSuggestionStruct.
+         */
+        public Integer uniqueId; // uint8
+        /**
+         * This field shall indicate the PresetHandle of the PresetStruct that represents the thermostat suggestion
+         * value.
+         */
+        public OctetString presetHandle; // octstr
+        /**
+         * This field shall indicate the UTC timestamp at which the suggestion shall take effect.
+         */
+        public Integer effectiveTime; // epoch-s
+        /**
+         * This field shall indicate the UTC timestamp at which the suggestion shall expire.
+         */
+        public Integer expirationTime; // epoch-s
+
+        public ThermostatSuggestionStruct(Integer uniqueId, OctetString presetHandle, Integer effectiveTime,
+                Integer expirationTime) {
+            this.uniqueId = uniqueId;
+            this.presetHandle = presetHandle;
+            this.effectiveTime = effectiveTime;
+            this.expirationTime = expirationTime;
         }
     }
 
@@ -1276,6 +1556,30 @@ public class ThermostatCluster extends BaseCluster {
         }
     }
 
+    public static class ThermostatSuggestionNotFollowingReasonBitmap {
+        public boolean demandResponseEvent;
+        public boolean ongoingHold;
+        public boolean schedule;
+        public boolean occupancy;
+        public boolean vacationMode;
+        public boolean timeOfUseCostSavings;
+        public boolean preCoolingOrPreHeating;
+        public boolean conflictingSuggestions;
+
+        public ThermostatSuggestionNotFollowingReasonBitmap(boolean demandResponseEvent, boolean ongoingHold,
+                boolean schedule, boolean occupancy, boolean vacationMode, boolean timeOfUseCostSavings,
+                boolean preCoolingOrPreHeating, boolean conflictingSuggestions) {
+            this.demandResponseEvent = demandResponseEvent;
+            this.ongoingHold = ongoingHold;
+            this.schedule = schedule;
+            this.occupancy = occupancy;
+            this.vacationMode = vacationMode;
+            this.timeOfUseCostSavings = timeOfUseCostSavings;
+            this.preCoolingOrPreHeating = preCoolingOrPreHeating;
+            this.conflictingSuggestions = conflictingSuggestions;
+        }
+    }
+
     public static class FeatureMap {
         /**
          * 
@@ -1315,9 +1619,21 @@ public class ThermostatCluster extends BaseCluster {
          * Thermostat supports setpoint presets
          */
         public boolean presets;
+        /**
+         * 
+         * Thermostat supports events
+         */
+        public boolean events;
+        /**
+         * 
+         * This feature indicates that the thermostat can process suggestions. If this feature is supported, the
+         * thermostat shall support a mechanism to do time synchronization.
+         */
+        public boolean thermostatSuggestions;
 
         public FeatureMap(boolean heating, boolean cooling, boolean occupancy, boolean autoMode,
-                boolean localTemperatureNotExposed, boolean matterScheduleConfiguration, boolean presets) {
+                boolean localTemperatureNotExposed, boolean matterScheduleConfiguration, boolean presets,
+                boolean events, boolean thermostatSuggestions) {
             this.heating = heating;
             this.cooling = cooling;
             this.occupancy = occupancy;
@@ -1325,6 +1641,8 @@ public class ThermostatCluster extends BaseCluster {
             this.localTemperatureNotExposed = localTemperatureNotExposed;
             this.matterScheduleConfiguration = matterScheduleConfiguration;
             this.presets = presets;
+            this.events = events;
+            this.thermostatSuggestions = thermostatSuggestions;
         }
     }
 
@@ -1371,6 +1689,35 @@ public class ThermostatCluster extends BaseCluster {
             map.put("presetHandle", presetHandle);
         }
         return new ClusterCommand("setActivePresetRequest", map);
+    }
+
+    /**
+     * This command will add a new suggestion based on the specified values.
+     */
+    public static ClusterCommand addThermostatSuggestion(OctetString presetHandle, Integer effectiveTime,
+            Integer expirationInMinutes) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (presetHandle != null) {
+            map.put("presetHandle", presetHandle);
+        }
+        if (effectiveTime != null) {
+            map.put("effectiveTime", effectiveTime);
+        }
+        if (expirationInMinutes != null) {
+            map.put("expirationInMinutes", expirationInMinutes);
+        }
+        return new ClusterCommand("addThermostatSuggestion", map);
+    }
+
+    /**
+     * This command will remove the specified suggestion.
+     */
+    public static ClusterCommand removeThermostatSuggestion(Integer uniqueId) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (uniqueId != null) {
+            map.put("uniqueId", uniqueId);
+        }
+        return new ClusterCommand("removeThermostatSuggestion", map);
     }
 
     public static ClusterCommand atomicRequest(Integer requestType, List<Integer> attributeRequests, Integer timeout) {
@@ -1438,6 +1785,10 @@ public class ThermostatCluster extends BaseCluster {
         str += "presets : " + presets + "\n";
         str += "schedules : " + schedules + "\n";
         str += "setpointHoldExpiryTimestamp : " + setpointHoldExpiryTimestamp + "\n";
+        str += "maxThermostatSuggestions : " + maxThermostatSuggestions + "\n";
+        str += "thermostatSuggestions : " + thermostatSuggestions + "\n";
+        str += "currentThermostatSuggestion : " + currentThermostatSuggestion + "\n";
+        str += "thermostatSuggestionNotFollowingReason : " + thermostatSuggestionNotFollowingReason + "\n";
         return str;
     }
 }

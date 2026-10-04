@@ -223,18 +223,6 @@ public class PushAvStreamTransportCluster extends BaseCluster {
          */
         public String trackName; // string
         /**
-         * This field, if present, shall indicate the CENC key to be used to encrypt the CMAF data. When absent, the
-         * CMAF data shall be sent without CENC encryption added. See CMAF Background for further details on CMAF CENC
-         * encryption.
-         */
-        public OctetString cencKey; // octstr
-        /**
-         * This field, if present, shall indicate the opaque CENC Key ID (KID) that represents the key in the
-         * Controllers ecosystem. This fields maps to the KID value as specified in ISO 23001-7:2023 or later. See CMAF
-         * Background for further details on CMAF CENC encryption.
-         */
-        public OctetString cencKeyId; // octstr
-        /**
          * This field, if present and true, indicates that AVMetadataStruct based Metadata tracks and boxes may be
          * included in the CMAF segments. If this field is not present or is false, metadata tracks and boxes shall NOT
          * be included.
@@ -250,15 +238,12 @@ public class PushAvStreamTransportCluster extends BaseCluster {
         public Boolean metadataEnabled; // bool
 
         public CMAFContainerOptionsStruct(CMAFInterfaceEnum cmafInterface, Integer segmentDuration,
-                Integer chunkDuration, Integer sessionGroup, String trackName, OctetString cencKey,
-                OctetString cencKeyId, Boolean metadataEnabled) {
+                Integer chunkDuration, Integer sessionGroup, String trackName, Boolean metadataEnabled) {
             this.cmafInterface = cmafInterface;
             this.segmentDuration = segmentDuration;
             this.chunkDuration = chunkDuration;
             this.sessionGroup = sessionGroup;
             this.trackName = trackName;
-            this.cencKey = cencKey;
-            this.cencKeyId = cencKeyId;
             this.metadataEnabled = metadataEnabled;
         }
     }
@@ -310,7 +295,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
 
     /**
      * This struct encodes the conditions and options that configures the trigger for the push transport. The transport
-     * shall only start transmitting AV Streams when it's associated trigger is activated.
+     * shall only start transmitting AV Streams when its associated trigger is activated.
      */
     public static class TransportTriggerOptionsStruct {
         /**
@@ -319,8 +304,8 @@ public class PushAvStreamTransportCluster extends BaseCluster {
         public TransportTriggerTypeEnum triggerType; // TransportTriggerTypeEnum
         /**
          * This field shall be a list of TransportZoneOptionsStruct containing the Motion Zones to trigger on. If this
-         * list is null, empty, or the Zone Management Cluster is not supported on this endpoint, then motion anywhere
-         * shall cause the trigger to activate. The maximum size of this list is MaxZones.
+         * list is null, empty, or if the Zone Management Cluster is not supported on this endpoint, then motion
+         * anywhere shall cause the trigger to activate. The maximum size of this list is MaxZones
          */
         public List<TransportZoneOptionsStruct> motionZones; // list
         /**

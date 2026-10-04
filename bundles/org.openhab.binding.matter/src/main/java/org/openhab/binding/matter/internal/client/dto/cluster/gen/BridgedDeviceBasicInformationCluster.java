@@ -315,10 +315,40 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
          * Transaction".
          */
         public Integer subscriptionsPerFabric; // uint16
+        /**
+         * This field shall indicate the actual maximum number of concurrent Invoke interactions that can be processed
+         * simultaneously by the node before possibly returning a BUSY status code.
+         */
+        public Integer simultaneousInvocationsSupported; // uint16
+        /**
+         * This field shall indicate the actual minimum number of concurrent Write interactions that can be processed
+         * simultaneously by the node before possibly returning a BUSY status code.
+         */
+        public Integer simultaneousWritesSupported; // uint16
+        /**
+         * This field shall indicate the actual maximum number of read paths (i.e. the sum of lengths of the lists of
+         * AttributePathIB and EventPathIB in the action) which a node guarantees being able to process in any Read
+         * Request Action.
+         * This is related to Section 2.11.2.1, "Read Interaction Limits".
+         */
+        public Integer readPathsSupported; // uint16
+        /**
+         * This field shall indicate the actual maximum number of subscription paths (i.e. the sum of lengths of the
+         * lists of AttributePathIB and EventPathIB in the action) which a node guarantees being able to process in any
+         * Subscribe Request Action.
+         * This is related to Section 2.11.2.2, "Subscribe Interaction Limits".
+         */
+        public Integer subscribePathsSupported; // uint16
 
-        public CapabilityMinimaStruct(Integer caseSessionsPerFabric, Integer subscriptionsPerFabric) {
+        public CapabilityMinimaStruct(Integer caseSessionsPerFabric, Integer subscriptionsPerFabric,
+                Integer simultaneousInvocationsSupported, Integer simultaneousWritesSupported,
+                Integer readPathsSupported, Integer subscribePathsSupported) {
             this.caseSessionsPerFabric = caseSessionsPerFabric;
             this.subscriptionsPerFabric = subscriptionsPerFabric;
+            this.simultaneousInvocationsSupported = simultaneousInvocationsSupported;
+            this.simultaneousWritesSupported = simultaneousWritesSupported;
+            this.readPathsSupported = readPathsSupported;
+            this.subscribePathsSupported = subscribePathsSupported;
         }
     }
 

@@ -45,6 +45,9 @@ public class SemanticTags {
         COMMON_POSITION(8, CommonPositionTag.values()),
         COMMON_RELATIVE_POSITION(18, CommonRelativePositionTag.values()),
         ELECTRICAL_MEASUREMENT(10, ElectricalMeasurementTag.values()),
+        IDENTIFIED_HUMAN_ACTIVITY(75, IdentifiedHumanActivityTag.values()),
+        IDENTIFIED_OBJECT(73, IdentifiedObjectTag.values()),
+        IDENTIFIED_SOUND(74, IdentifiedSoundTag.values()),
         LAUNDRY(14, LaundryTag.values()),
         POWER_SOURCE(15, PowerSourceTag.values()),
         REFRIGERATOR(65, RefrigeratorTag.values()),
@@ -796,6 +799,123 @@ public class SemanticTags {
         private final String label;
 
         ElectricalMeasurementTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "IdentifiedHumanActivity" namespace.
+     */
+    public enum IdentifiedHumanActivityTag implements BaseCluster.MatterEnum {
+        UNKNOWN(0, "Unknown"),
+        FALL(1, "Fall"),
+        SLEEPING(2, "Sleeping"),
+        WALKING(3, "Walking"),
+        WORKOUT(4, "Workout"),
+        SITTING(5, "Sitting"),
+        STANDING(6, "Standing"),
+        DANCING(7, "Dancing"),
+        PACKAGE_DELIVERY(8, "PackageDelivery"),
+        PACKAGE_RETRIEVAL(9, "PackageRetrieval");
+
+        private final Integer value;
+        private final String label;
+
+        IdentifiedHumanActivityTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "IdentifiedObject" namespace.
+     */
+    public enum IdentifiedObjectTag implements BaseCluster.MatterEnum {
+        UNKNOWN(0, "Unknown"),
+        ADULT(1, "Adult"),
+        CHILD(2, "Child"),
+        PERSON(3, "Person"),
+        RVC(4, "RVC"),
+        PET(5, "Pet"),
+        DOG(6, "Dog"),
+        CAT(7, "Cat"),
+        ANIMAL(8, "Animal"),
+        CAR(9, "Car"),
+        VEHICLE(10, "Vehicle"),
+        PACKAGE(11, "Package"),
+        CLOTHES(12, "Clothes");
+
+        private final Integer value;
+        private final String label;
+
+        IdentifiedObjectTag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    /**
+     * Tags for the "IdentifiedSound" namespace.
+     */
+    public enum IdentifiedSoundTag implements BaseCluster.MatterEnum {
+        UNKNOWN(0, "Unknown"),
+        OBJECT_FALL(1, "ObjectFall"),
+        SNORING(2, "Snoring"),
+        COUGHING(3, "Coughing"),
+        BARKING(4, "Barking"),
+        SHATTERING(5, "Shattering"),
+        BABY_CRYING(6, "BabyCrying"),
+        UTILITY_ALARM(7, "UtilityAlarm"),
+        URGENT_SHOUTING(8, "UrgentShouting"),
+        DOORBELL(9, "Doorbell"),
+        KNOCKING(10, "Knocking"),
+        URGENT_SIREN(11, "UrgentSiren"),
+        FAUCET_RUNNING(12, "FaucetRunning"),
+        KETTLE_BOILING(13, "KettleBoiling"),
+        FAN_DRYER(14, "FanDryer"),
+        CLAPPING(15, "Clapping"),
+        FINGER_SNAPPING(16, "FingerSnapping"),
+        MEOWING(17, "Meowing"),
+        LAUGHING(18, "Laughing"),
+        GLASS_BREAKING(19, "GlassBreaking"),
+        DOOR_KNOCKING(20, "DoorKnocking"),
+        PERSON_TALKING(21, "PersonTalking");
+
+        private final Integer value;
+        private final String label;
+
+        IdentifiedSoundTag(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
