@@ -64,6 +64,7 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
     private volatile GmeGranularity granularity = GmeGranularity.PT60;
     private @Nullable ScheduledFuture<?> passwordRefreshJob;
     private final AtomicLong lifecycleGeneration = new AtomicLong();
+    private final Object lifecycleLock = new Object();
 
     public GmeApiBridgeHandler(Bridge bridge, HttpClient httpClient, Storage<String> storage) {
         this(bridge, httpClient, storage, Clock.system(GME_ZONE));
@@ -78,8 +79,12 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        long generation = lifecycleGeneration.incrementAndGet();
-        cancelPasswordRefresh();
+        long generation;
+        synchronized (lifecycleLock) {
+            generation = lifecycleGeneration.incrementAndGet();
+            cancelPasswordRefresh();
+            authManager = null;
+        }
 
         GmeApiConfiguration config = getConfigAs(GmeApiConfiguration.class);
         refreshInterval = Math.max(1, config.refreshInterval);
@@ -115,16 +120,18 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
                     return;
                 }
 
-                authManager = manager;
-                credentialTracker.updateAfterSuccessfulAuthentication(config.username, config.password,
-                        config.initialPasswordChangedAt);
-                if (!isCurrentGeneration(generation)) {
-                    return;
-                }
+                synchronized (lifecycleLock) {
+                    if (!isCurrentGeneration(generation)) {
+                        return;
+                    }
 
-                updatePasswordChannels();
-                schedulePasswordRefresh(generation);
-                updateStatus(ThingStatus.ONLINE);
+                    authManager = manager;
+                    credentialTracker.updateAfterSuccessfulAuthentication(config.username, config.password,
+                            config.initialPasswordChangedAt);
+                    updatePasswordChannels();
+                    schedulePasswordRefresh(generation);
+                    updateStatus(ThingStatus.ONLINE);
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 if (isCurrentGeneration(generation)) {
@@ -176,9 +183,11 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        lifecycleGeneration.incrementAndGet();
-        cancelPasswordRefresh();
-        authManager = null;
+        synchronized (lifecycleLock) {
+            lifecycleGeneration.incrementAndGet();
+            cancelPasswordRefresh();
+            authManager = null;
+        }
         super.dispose();
     }
 
