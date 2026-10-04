@@ -127,6 +127,117 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                 case CHANNEL_SURROUND_PROGRAM:
                     connector.sendSurroundProgramCommand(command);
                     break;
+                case CHANNEL_ALL_ZONE_STEREO:
+                    connector.sendAllZoneStereoCommand(command);
+                    break;
+                case CHANNEL_SPEAKER_PRESET:
+                    connector.sendSpeakerPresetCommand(command);
+                    break;
+                case CHANNEL_CVFL:
+                    connector.sendChannelVolumeCommand(command, "CVFL");
+                    break;
+                case CHANNEL_CVFR:
+                    connector.sendChannelVolumeCommand(command, "CVFR");
+                    break;
+                case CHANNEL_CVC:
+                    connector.sendChannelVolumeCommand(command, "CVC");
+                    break;
+                case CHANNEL_CVSW:
+                    connector.sendChannelVolumeCommand(command, "CVSW");
+                    break;
+                case CHANNEL_CVSW2:
+                    connector.sendChannelVolumeCommand(command, "CVSW2");
+                    break;
+                case CHANNEL_CVSW3:
+                    connector.sendChannelVolumeCommand(command, "CVSW3");
+                    break;
+                case CHANNEL_CVSW4:
+                    connector.sendChannelVolumeCommand(command, "CVSW4");
+                    break;
+                case CHANNEL_CVSL:
+                    connector.sendChannelVolumeCommand(command, "CVSL");
+                    break;
+                case CHANNEL_CVSR:
+                    connector.sendChannelVolumeCommand(command, "CVSR");
+                    break;
+                case CHANNEL_CVSBL:
+                    connector.sendChannelVolumeCommand(command, "CVSBL");
+                    break;
+                case CHANNEL_CVSBR:
+                    connector.sendChannelVolumeCommand(command, "CVSBR");
+                    break;
+                case CHANNEL_CVSB:
+                    connector.sendChannelVolumeCommand(command, "CVSB");
+                    break;
+                case CHANNEL_CVFHL:
+                    connector.sendChannelVolumeCommand(command, "CVFHL");
+                    break;
+                case CHANNEL_CVFHR:
+                    connector.sendChannelVolumeCommand(command, "CVFHR");
+                    break;
+                case CHANNEL_CVFWL:
+                    connector.sendChannelVolumeCommand(command, "CVFWL");
+                    break;
+                case CHANNEL_CVFWR:
+                    connector.sendChannelVolumeCommand(command, "CVFWR");
+                    break;
+                case CHANNEL_CVTFL:
+                    connector.sendChannelVolumeCommand(command, "CVTFL");
+                    break;
+                case CHANNEL_CVTFR:
+                    connector.sendChannelVolumeCommand(command, "CVTFR");
+                    break;
+                case CHANNEL_CVTML:
+                    connector.sendChannelVolumeCommand(command, "CVTML");
+                    break;
+                case CHANNEL_CVTMR:
+                    connector.sendChannelVolumeCommand(command, "CVTMR");
+                    break;
+                case CHANNEL_CVTRL:
+                    connector.sendChannelVolumeCommand(command, "CVTRL");
+                    break;
+                case CHANNEL_CVTRR:
+                    connector.sendChannelVolumeCommand(command, "CVTRR");
+                    break;
+                case CHANNEL_CVRHL:
+                    connector.sendChannelVolumeCommand(command, "CVRHL");
+                    break;
+                case CHANNEL_CVRHR:
+                    connector.sendChannelVolumeCommand(command, "CVRHR");
+                    break;
+                case CHANNEL_CVFDL:
+                    connector.sendChannelVolumeCommand(command, "CVFDL");
+                    break;
+                case CHANNEL_CVFDR:
+                    connector.sendChannelVolumeCommand(command, "CVFDR");
+                    break;
+                case CHANNEL_CVSDL:
+                    connector.sendChannelVolumeCommand(command, "CVSDL");
+                    break;
+                case CHANNEL_CVSDR:
+                    connector.sendChannelVolumeCommand(command, "CVSDR");
+                    break;
+                case CHANNEL_CVBDL:
+                    connector.sendChannelVolumeCommand(command, "CVBDL");
+                    break;
+                case CHANNEL_CVBDR:
+                    connector.sendChannelVolumeCommand(command, "CVBDR");
+                    break;
+                case CHANNEL_CVSHL:
+                    connector.sendChannelVolumeCommand(command, "CVSHL");
+                    break;
+                case CHANNEL_CVSHR:
+                    connector.sendChannelVolumeCommand(command, "CVSHR");
+                    break;
+                case CHANNEL_CVTS:
+                    connector.sendChannelVolumeCommand(command, "CVTS");
+                    break;
+                case CHANNEL_CVCH:
+                    connector.sendChannelVolumeCommand(command, "CVCH");
+                    break;
+                case CHANNEL_CVTTR:
+                    connector.sendChannelVolumeCommand(command, "CVTTR");
+                    break;
                 case CHANNEL_COMMAND:
                     connector.sendCustomCommand(command);
                     break;

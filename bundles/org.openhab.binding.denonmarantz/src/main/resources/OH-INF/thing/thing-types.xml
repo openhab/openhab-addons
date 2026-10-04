@@ -28,6 +28,10 @@
 				<label>Zone 4 Control</label>
 				<description>Channels for zone4 of this AVR.</description>
 			</channel-group>
+			<channel-group id="channelVolume" typeId="channelVolume">
+				<label>Channel Volume</label>
+				<description>Individual speaker channel volume controls.</description>
+			</channel-group>
 		</channel-groups>
 
 		<properties>
@@ -106,6 +110,8 @@
 				<description>Power ON/OFF the AVR</description>
 			</channel>
 			<channel id="surroundProgram" typeId="surroundProgram"/>
+			<channel id="allZoneStereo" typeId="allZoneStereo"/>
+			<channel id="speakerPreset" typeId="speakerPreset"/>
 			<channel id="artist" typeId="artist"/>
 			<channel id="album" typeId="album"/>
 			<channel id="track" typeId="track"/>
@@ -205,6 +211,74 @@
 		<description>Select the surround program of the AVR</description>
 		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="allZoneStereo">
+		<item-type>Switch</item-type>
+		<label>All Zone Stereo</label>
+		<description>Enable or disable All Zone Stereo on the AVR</description>
+	</channel-type>
+
+	<channel-type id="speakerPreset">
+		<item-type>Number</item-type>
+		<label>Speaker Preset</label>
+		<description>Speaker preset selection.</description>
+		<state min="1" max="2" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-group-type id="channelVolume">
+		<label>Channel Volume</label>
+		<description>Individual speaker channel volume controls.</description>
+		<channels>
+			<channel id="frontLeft" typeId="channelVolume"/>
+			<channel id="frontRight" typeId="channelVolume"/>
+			<channel id="center" typeId="channelVolume"/>
+			<channel id="subwoofer" typeId="channelVolume"/>
+			<channel id="subwoofer2" typeId="channelVolume"/>
+			<channel id="subwoofer3" typeId="channelVolume"/>
+			<channel id="subwoofer4" typeId="channelVolume"/>
+			<channel id="surroundLeft" typeId="channelVolume"/>
+			<channel id="surroundRight" typeId="channelVolume"/>
+			<channel id="surroundBackLeft" typeId="channelVolume"/>
+			<channel id="surroundBackRight" typeId="channelVolume"/>
+			<channel id="surroundBack" typeId="channelVolume"/>
+			<channel id="frontHeightLeft" typeId="channelVolume"/>
+			<channel id="frontHeightRight" typeId="channelVolume"/>
+			<channel id="frontWideLeft" typeId="channelVolume"/>
+			<channel id="frontWideRight" typeId="channelVolume"/>
+			<channel id="topFrontLeft" typeId="channelVolume"/>
+			<channel id="topFrontRight" typeId="channelVolume"/>
+			<channel id="topMiddleLeft" typeId="channelVolume"/>
+			<channel id="topMiddleRight" typeId="channelVolume"/>
+			<channel id="topRearLeft" typeId="channelVolume"/>
+			<channel id="topRearRight" typeId="channelVolume"/>
+			<channel id="rearHeightLeft" typeId="channelVolume"/>
+			<channel id="rearHeightRight" typeId="channelVolume"/>
+			<channel id="frontDolbyLeft" typeId="channelVolume"/>
+			<channel id="frontDolbyRight" typeId="channelVolume"/>
+			<channel id="surroundDolbyLeft" typeId="channelVolume"/>
+			<channel id="surroundDolbyRight" typeId="channelVolume"/>
+			<channel id="backDolbyLeft" typeId="channelVolume"/>
+			<channel id="backDolbyRight" typeId="channelVolume"/>
+			<channel id="surroundHeightLeft" typeId="channelVolume"/>
+			<channel id="surroundHeightRight" typeId="channelVolume"/>
+			<channel id="topSurround" typeId="channelVolume"/>
+			<channel id="centerHeight" typeId="channelVolume"/>
+			<channel id="tactileTransducer" typeId="channelVolume"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="channelVolume">
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
+		<label>Channel Volume</label>
+		<description>Individual speaker channel volume in dB.</description>
+		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
+		<state min="-12" max="12" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
 
 	<channel-type id="artist">
 		<item-type>String</item-type>

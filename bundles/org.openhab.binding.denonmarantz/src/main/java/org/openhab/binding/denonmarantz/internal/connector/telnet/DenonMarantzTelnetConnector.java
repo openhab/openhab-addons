@@ -16,12 +16,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.denonmarantz.internal.DenonMarantzBindingConstants;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
 import org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector;
@@ -47,6 +49,43 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
     private static final Pattern DISPLAY_PATTERN = Pattern.compile("^(E|A)([0-9]{1})(.+)$");
 
     private static final BigDecimal NINETYNINE = new BigDecimal("99");
+
+    private static final Map<String, String> CHANNEL_VOLUME_COMMANDS = Map.ofEntries(
+            Map.entry("CVFL", DenonMarantzBindingConstants.CHANNEL_CVFL),
+            Map.entry("CVFR", DenonMarantzBindingConstants.CHANNEL_CVFR),
+            Map.entry("CVC", DenonMarantzBindingConstants.CHANNEL_CVC),
+            Map.entry("CVSW", DenonMarantzBindingConstants.CHANNEL_CVSW),
+            Map.entry("CVSW2", DenonMarantzBindingConstants.CHANNEL_CVSW2),
+            Map.entry("CVSW3", DenonMarantzBindingConstants.CHANNEL_CVSW3),
+            Map.entry("CVSW4", DenonMarantzBindingConstants.CHANNEL_CVSW4),
+            Map.entry("CVSL", DenonMarantzBindingConstants.CHANNEL_CVSL),
+            Map.entry("CVSR", DenonMarantzBindingConstants.CHANNEL_CVSR),
+            Map.entry("CVSBL", DenonMarantzBindingConstants.CHANNEL_CVSBL),
+            Map.entry("CVSBR", DenonMarantzBindingConstants.CHANNEL_CVSBR),
+            Map.entry("CVSB", DenonMarantzBindingConstants.CHANNEL_CVSB),
+            Map.entry("CVFHL", DenonMarantzBindingConstants.CHANNEL_CVFHL),
+            Map.entry("CVFHR", DenonMarantzBindingConstants.CHANNEL_CVFHR),
+            Map.entry("CVFWL", DenonMarantzBindingConstants.CHANNEL_CVFWL),
+            Map.entry("CVFWR", DenonMarantzBindingConstants.CHANNEL_CVFWR),
+            Map.entry("CVTFL", DenonMarantzBindingConstants.CHANNEL_CVTFL),
+            Map.entry("CVTFR", DenonMarantzBindingConstants.CHANNEL_CVTFR),
+            Map.entry("CVTML", DenonMarantzBindingConstants.CHANNEL_CVTML),
+            Map.entry("CVTMR", DenonMarantzBindingConstants.CHANNEL_CVTMR),
+            Map.entry("CVTRL", DenonMarantzBindingConstants.CHANNEL_CVTRL),
+            Map.entry("CVTRR", DenonMarantzBindingConstants.CHANNEL_CVTRR),
+            Map.entry("CVRHL", DenonMarantzBindingConstants.CHANNEL_CVRHL),
+            Map.entry("CVRHR", DenonMarantzBindingConstants.CHANNEL_CVRHR),
+            Map.entry("CVFDL", DenonMarantzBindingConstants.CHANNEL_CVFDL),
+            Map.entry("CVFDR", DenonMarantzBindingConstants.CHANNEL_CVFDR),
+            Map.entry("CVSDL", DenonMarantzBindingConstants.CHANNEL_CVSDL),
+            Map.entry("CVSDR", DenonMarantzBindingConstants.CHANNEL_CVSDR),
+            Map.entry("CVBDL", DenonMarantzBindingConstants.CHANNEL_CVBDL),
+            Map.entry("CVBDR", DenonMarantzBindingConstants.CHANNEL_CVBDR),
+            Map.entry("CVSHL", DenonMarantzBindingConstants.CHANNEL_CVSHL),
+            Map.entry("CVSHR", DenonMarantzBindingConstants.CHANNEL_CVSHR),
+            Map.entry("CVTS", DenonMarantzBindingConstants.CHANNEL_CVTS),
+            Map.entry("CVCH", DenonMarantzBindingConstants.CHANNEL_CVCH),
+            Map.entry("CVTTR", DenonMarantzBindingConstants.CHANNEL_CVTTR));
 
     private @Nullable DenonMarantzTelnetClientThread telnetClientThread;
 
@@ -116,7 +155,8 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
     private void refreshState() {
         // Sends a series of state query commands over the telnet connection
         telnetStateRequest = scheduler.submit(() -> {
-            List<String> cmds = new ArrayList<>(Arrays.asList("PW?", "MS?", "MV?", "ZM?", "MU?", "SI?"));
+            List<String> cmds = new ArrayList<>(
+                    Arrays.asList("PW?", "MS?", "MV?", "ZM?", "MU?", "SI?", "CV?", "MNZST?", "CVTTR ?", "SPPR ?"));
             if (config.getZoneCount() > 1) {
                 cmds.add("Z2?");
                 cmds.add("Z2MU?");
@@ -151,10 +191,25 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
              * This splits the commandString into the command and the parameter. SICD
              * for example has SI as the command and CD as the parameter.
              */
-            String command = line.substring(0, 2);
-            String value = line.substring(2, line.length()).trim();
+            String command;
+            String value;
+
+            int spaceIndex = line.indexOf(' ');
+            if (spaceIndex > 0) {
+                command = line.substring(0, spaceIndex);
+                value = line.substring(spaceIndex + 1).trim();
+            } else {
+                command = line.substring(0, 2);
+                value = line.substring(2).trim();
+            }
 
             logger.debug("Received Command: {}, value: {}", command, value);
+
+            String channel = CHANNEL_VOLUME_COMMANDS.get(command);
+            if (channel != null) {
+                processChannelVolume(value, channel);
+                return;
+            }
 
             // use received command (event) from telnet to update state
             switch (command) {
@@ -168,6 +223,16 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
                     break;
                 case "MS": // Main zone surround program
                     state.setSurroundProgram(value);
+                    break;
+                case "MNZST": // All Zone Stereo
+                    if ("ON".equals(value) || "OFF".equals(value)) {
+                        state.setAllZoneStereo("ON".equals(value));
+                    }
+                    break;
+                case "SPPR":
+                    if ("1".equals(value) || "2".equals(value)) {
+                        state.setSpeakerPreset(new BigDecimal(value));
+                    }
                     break;
                 case "MV": // Main zone volume
                     if (value.chars().allMatch(Character::isDigit)) {
@@ -223,6 +288,15 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
             }
         } else {
             logger.trace("Ignoring received line: '{}'", line);
+        }
+    }
+
+    private void processChannelVolume(String value, String channel) {
+        if (value.chars().allMatch(Character::isDigit)) {
+            BigDecimal denonValue = fromDenonValue(value);
+            BigDecimal db = denonValue.subtract(DenonMarantzBindingConstants.CHANNEL_VOLUME_DB_OFFSET);
+
+            state.setChannelVolume(channel, db);
         }
     }
 
