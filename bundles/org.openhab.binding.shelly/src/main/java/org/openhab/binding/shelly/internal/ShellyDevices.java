@@ -99,9 +99,11 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUSPLUGUSG4 = "S4PL-00116US"; // Shelly Plug US Gen4
     public static final String SHELLYDT_PLUSI4 = "SNSN-0024X";
     public static final String SHELLYDT_PLUSI4G3 = "S3SN-0024X";
+    public static final String SHELLYDT_PLUSI4G4 = "S4SN-0A24X";
     public static final String SHELLYDT_PLUSI4DC = "SNSN-0D24X";
     public static final String SHELLYDT_PLUSHT = "SNSN-0013A";
     public static final String SHELLYDT_PLUSHTG3 = "S3SN-0U12A";
+    public static final String SHELLYDT_PLUSAZHTG3 = "S3SN-1U12A"; // Shelly AZ H&T
     public static final String SHELLYDT_PLUSSMOKE = "SNSN-0031Z";
     public static final String SHELLYDT_PLUSFLOODG4 = "S4SN-0071A"; // Shelly Flood Gen4
     public static final String SHELLYDT_PLUSFLOODSG4 = "S4SN-0071Z"; // Shelly Flood S Gen4
@@ -122,8 +124,10 @@ public class ShellyDevices {
     public static final String SHELLYDT_PLUSRGBWPM = "SNDC-0D4P10WW";
     public static final String SHELLYDT_PRORGBWWPM = "SPDC-0D5PE16EU";
     public static final String SHELLYDT_PLUSSTRIP = "S4PL-00416EU";
+    public static final String SHELLYDT_PLUSSTRIP_2 = "S4PL-10416EU";
     public static final String SHELLYDT_PLUSPLUGCPM = "S4PL-00116EU"; // Shelly Plus Plug CPM (Gen4)
     public static final String SHELLYDT_PLUSEM = "S3EM-002CXCEU";
+    public static final String SHELLYDT_PLUSEMG4 = "S4EM-002CXCEU";
     public static final String SHELLYDT_PLUS3EM63 = "S3EM-003CXCEU63";
     public static final String SHELLYDT_PLUSBLUGW = "SNGW-BT01";
     public static final String SHELLYDT_PLUSBLUGWG3 = "S3GW-1DBT001";
@@ -147,6 +151,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_PRO3 = "SPSW-003XE16EU";
     public static final String SHELLYDT_PRO4PM = "SPSW-004PE16EU";
     public static final String SHELLYDT_PRO4PM_2 = "SPSW-104PE16EU";
+    public static final String SHELLYDT_PRO4PM_3 = "SPSW-204PE16EU";
     public static final String SHELLYDT_4PRO = "SHPSW04P";
     public static final String SHELLYDT_PROEM50 = "SPEM-002CEBEU50";
     public static final String SHELLYDT_PRO3EM = "SPEM-003CEBEU";
@@ -167,6 +172,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_MINI_PM = "SNPM-001PCEU16";
     public static final String SHELLYDT_MINI_PMG3 = "S3PM-001PCEU16";
     public static final String SHELLYDT_MINI_EM = "S4EM-001PXCEU16"; // PM was renamed to EM in Gen4
+    public static final String SHELLYDT_EM63G4 = "S4EM-001CXCEU63";
 
     // Shelly Gen3 Bulb Series
     public static final String SHELLYDT_DUOBULBG3 = "S3BL-D010009AEU"; // Shelly Duo Bulb E27 Gen3
@@ -487,11 +493,14 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PLUSPLUGUSG4, THING_TYPE_SHELLYPLUGUSG4),
             Map.entry(SHELLYDT_PLUSPLUGCPM, THING_TYPE_SHELLYPLUSPLUGCPM),
             Map.entry(SHELLYDT_PLUSSTRIP, THING_TYPE_SHELLYPLUSSTRIP),
+            Map.entry(SHELLYDT_PLUSSTRIP_2, THING_TYPE_SHELLYPLUSSTRIP),
             Map.entry(SHELLYDT_PLUSI4, THING_TYPE_SHELLYPLUSI4), //
             Map.entry(SHELLYDT_PLUSI4G3, THING_TYPE_SHELLYPLUSI4),
+            Map.entry(SHELLYDT_PLUSI4G4, THING_TYPE_SHELLYPLUSI4),
             Map.entry(SHELLYDT_PLUSI4DC, THING_TYPE_SHELLYPLUSI4DC),
             Map.entry(SHELLYDT_PLUSHT, THING_TYPE_SHELLYPLUSHT), //
             Map.entry(SHELLYDT_PLUSHTG3, THING_TYPE_SHELLYPLUSHT),
+            Map.entry(SHELLYDT_PLUSAZHTG3, THING_TYPE_SHELLYPLUSHT),
             Map.entry(SHELLYDT_PLUSSMOKE, THING_TYPE_SHELLYPLUSSMOKE),
             Map.entry(SHELLYDT_PLUSFLOODG4, THING_TYPE_SHELLYPLUSFLOOD),
             Map.entry(SHELLYDT_PLUSFLOODSG4, THING_TYPE_SHELLYPLUSFLOOD),
@@ -509,7 +518,8 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PLUSDIMMERDALIG4, THING_TYPE_SHELLYPLUSDALIDIMMER),
             Map.entry(SHELLYDT_PLUSRGBWPM, THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry(SHELLYDT_PRORGBWWPM, THING_TYPE_SHELLYPRORGBWWPM),
-            Map.entry(SHELLYDT_PLUSEM, THING_TYPE_SHELLYPLUSEM),
+            Map.entry(SHELLYDT_PLUSEM, THING_TYPE_SHELLYPLUSEM), //
+            Map.entry(SHELLYDT_PLUSEMG4, THING_TYPE_SHELLYPLUSEM),
             Map.entry(SHELLYDT_PLUS3EM63, THING_TYPE_SHELLYPLUS3EM63),
             Map.entry(SHELLYDT_PLUSBLUGW, THING_TYPE_SHELLYPLUSBLUGW), //
             Map.entry(SHELLYDT_PLUSBLUGWG3, THING_TYPE_SHELLYPLUSBLUGW),
@@ -520,7 +530,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_MINI_1G4, THING_TYPE_SHELLYMINI_1),
             Map.entry(SHELLYDT_MINI_PM, THING_TYPE_SHELLYMINI_PM),
             Map.entry(SHELLYDT_MINI_PMG3, THING_TYPE_SHELLYMINI_PM),
-            Map.entry(SHELLYDT_MINI_EM, THING_TYPE_SHELLYMINI_EM),
+            Map.entry(SHELLYDT_MINI_EM, THING_TYPE_SHELLYMINI_EM), Map.entry(SHELLYDT_EM63G4, THING_TYPE_SHELLYMINI_EM),
             Map.entry(SHELLYDT_MINI_1PM, THING_TYPE_SHELLYMINI_1PM),
             Map.entry(SHELLYDT_MINI_1PMG3, THING_TYPE_SHELLYMINI_1PM),
             Map.entry(SHELLYDT_MINI_1PMG4, THING_TYPE_SHELLYMINI_1PM),
@@ -541,6 +551,7 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO3, THING_TYPE_SHELLYPRO3), //
             Map.entry(SHELLYDT_PRO4PM, THING_TYPE_SHELLYPRO4PM), //
             Map.entry(SHELLYDT_PRO4PM_2, THING_TYPE_SHELLYPRO4PM), //
+            Map.entry(SHELLYDT_PRO4PM_3, THING_TYPE_SHELLYPRO4PM), //
             Map.entry(SHELLYDT_4PRO, THING_TYPE_SHELLYPRO4PM), //
             Map.entry(SHELLYDT_PROEM50, THING_TYPE_SHELLYPROEM50), //
             Map.entry(SHELLYDT_PRO3EM, THING_TYPE_SHELLYPRO3EM), //
@@ -694,8 +705,10 @@ public class ShellyDevices {
             Map.entry("shellyplusplugcpm", THING_TYPE_SHELLYPLUSPLUGCPM),
             Map.entry("shellyplusi4", THING_TYPE_SHELLYPLUSI4), //
             Map.entry("shellyi4g3", THING_TYPE_SHELLYPLUSI4), //
+            Map.entry("shellyi4g4", THING_TYPE_SHELLYPLUSI4), //
             Map.entry("shellyplusi4dc", THING_TYPE_SHELLYPLUSI4DC), //
             Map.entry("shellyplusht", THING_TYPE_SHELLYPLUSHT), //
+            Map.entry("shellyazht", THING_TYPE_SHELLYPLUSHT), //
             Map.entry("shellyplussmoke", THING_TYPE_SHELLYPLUSSMOKE),
             Map.entry("shellyplusflood", THING_TYPE_SHELLYPLUSFLOOD), //
             Map.entry("shellyfloodg4", THING_TYPE_SHELLYPLUSFLOOD),
@@ -714,11 +727,13 @@ public class ShellyDevices {
             Map.entry("shelly0110dimg4", THING_TYPE_SHELLYPLUSDIMMER10V), // Gen4
             Map.entry("shellyplusrgbwpm", THING_TYPE_SHELLYPLUSRGBWPM),
             Map.entry("shellyprorgbwwpm", THING_TYPE_SHELLYPRORGBWWPM),
-            Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP),
+            Map.entry("shellyplusstrip", THING_TYPE_SHELLYPLUSSTRIP), //
+            Map.entry("shellypstripg4", THING_TYPE_SHELLYPLUSSTRIP),
             Map.entry("shellyblugw", THING_TYPE_SHELLYPLUSBLUGW), //
             Map.entry("shellyblugwg3", THING_TYPE_SHELLYPLUSBLUGW), //
             Map.entry("shellyplusem", THING_TYPE_SHELLYPLUSEM), //
             Map.entry("shellyemg3", THING_TYPE_SHELLYPLUSEM), //
+            Map.entry("shellyemg4", THING_TYPE_SHELLYPLUSEM), //
             Map.entry("shellyplus3em63", THING_TYPE_SHELLYPLUS3EM63), //
             Map.entry("shelly3em63g3", THING_TYPE_SHELLYPLUS3EM63), //
 
