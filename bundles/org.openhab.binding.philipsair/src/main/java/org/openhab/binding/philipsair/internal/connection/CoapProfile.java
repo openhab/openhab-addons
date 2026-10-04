@@ -51,6 +51,11 @@ public enum CoapProfile {
      * HTTP protocol with early firmware.
      */
     CLASSIC("classic", Generation.CLASSIC, Spec.NONE),
+    /**
+     * AC2939 of the MarsLE range: classic field names, with modes of its own. The device selects the fan speed for the
+     * mode itself, so it has no manual mode.
+     */
+    AC2939("ac2939", Generation.CLASSIC, new Spec().modeOptions(Tables.ac2939ModeOptions())),
     /** Field names like {@code D03-02}, e.g. AC0850, AC1715 */
     BASIC_GEN2("basic", Generation.GEN2, Spec.NONE),
     /** Field names like {@code D03102}, e.g. AC3420, AMF and HU series */
@@ -130,6 +135,7 @@ public enum CoapProfile {
         static final Spec NONE = new Spec();
 
         List<ModeEntry> modes = List.of();
+        List<StateOption> modeOptions = List.of();
         @Nullable
         String speedFallbackKey;
         @Nullable
@@ -143,6 +149,12 @@ public enum CoapProfile {
         /** The modes and fan speeds of the model */
         Spec modes(List<ModeEntry> modes) {
             this.modes = modes;
+            return this;
+        }
+
+        /** The modes of a model with the classic field names, which need no translation */
+        Spec modeOptions(List<StateOption> modeOptions) {
+            this.modeOptions = modeOptions;
             return this;
         }
 
@@ -197,6 +209,9 @@ public enum CoapProfile {
 
     private static final String CLASSIC_POWER = "pwr";
     private static final String CLASSIC_CHILD_LOCK = "cl";
+    private static final String CLASSIC_MODEL = "modelid";
+    private static final String CLASSIC_RANGE = "range";
+    private static final String RANGE_MARS_LE = "MarsLE";
 
     private static final String GEN2_MODEL = "D01-05";
     private static final String GEN2_POWER = "D03-02";
@@ -228,6 +243,7 @@ public enum CoapProfile {
     private final String id;
     private final Generation generation;
     private final List<ModeEntry> modes;
+    private final List<StateOption> modeOptions;
     private final @Nullable String speedFallbackKey;
     private final @Nullable Timer timer;
     private final boolean modePowersOn;
@@ -241,6 +257,7 @@ public enum CoapProfile {
         this.id = id;
         this.generation = generation;
         this.modes = spec.modes;
+        this.modeOptions = spec.modeOptions;
         this.speedFallbackKey = spec.speedFallbackKey;
         this.timer = spec.timer;
         this.modePowersOn = spec.modePowersOn;
@@ -341,6 +358,10 @@ public enum CoapProfile {
                 }
                 return BASIC_GEN3;
             default:
+                model = upperCase(getString(reported, CLASSIC_MODEL));
+                if (model.startsWith("AC2939") || RANGE_MARS_LE.equalsIgnoreCase(getString(reported, CLASSIC_RANGE))) {
+                    return AC2939;
+                }
                 return CLASSIC;
         }
     }
@@ -371,6 +392,9 @@ public enum CoapProfile {
      * @return the modes that can be selected without a fan speed, empty if the profile has no model specific modes
      */
     public List<StateOption> getModeOptions() {
+        if (!modeOptions.isEmpty()) {
+            return modeOptions;
+        }
         List<StateOption> options = new ArrayList<>();
         for (ModeEntry entry : modes) {
             if (entry.speed() == null) {
@@ -752,6 +776,11 @@ public enum CoapProfile {
         static List<StateOption> lampModes() {
             return List.of(new StateOption("0", "Off"), new StateOption("1", "Air quality"),
                     new StateOption("2", "Ambient"));
+        }
+
+        static List<StateOption> ac2939ModeOptions() {
+            return List.of(new StateOption("AG", "Auto"), new StateOption("GT", "Gentle"),
+                    new StateOption("S", "Sleep"), new StateOption("T", "Turbo"));
         }
 
         static List<ModeEntry> ac1715Modes() {

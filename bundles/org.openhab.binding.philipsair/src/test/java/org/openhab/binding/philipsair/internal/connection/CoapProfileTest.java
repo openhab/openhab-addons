@@ -58,6 +58,14 @@ public class CoapProfileTest {
             "D01S12":"0.2.3","D03102":1,"D03103":0,"D03105":101,"D0310A":2,"D0310C":0,"D0310D":1,"D03110":0,
             "D03211":0,"D03120":1,"D03221":1,"D03224":241,"D03125":46,"D0312A":1,"D0312C":7,"D03240":0,
             "D05207":720,"D05408":9600,"D0520D":601,"D0540E":2870}""";
+    // status of an AC2939/10 reported on the openHAB community forum, without the device and network details
+    private static final String AC2939_STATUS = """
+            {"name":"Living room","type":"AC2939","modelid":"AC2939/10","swversion":"Ms2106","range":"MarsLE",
+            "om":"1","pwr":"1","cl":false,"aqil":100,"uil":"1","uaset":"A","mode":"AG","pm25":2,"iaql":1,"aqit":7,
+            "tvoc":1,"ddp":"1","rddp":"1","err":0,"fltt1":"A3","fltt2":"none","fltsts0":192,"fltsts1":1488,
+            "fltsts2":0}
+            """;
+
     // status of an AC0950/10 reported on the openHAB community forum, without the device and network details
     private static final String AC0950_STATUS = """
             {"D01102":0,"D01S03":"Bedroom","D01S04":"Unicorn","D01S05":"AC0950/10","D01108":3,"D0110C":18,
@@ -90,6 +98,25 @@ public class CoapProfileTest {
                     model);
         }
         assertEquals(CoapProfile.BASIC_GEN3, CoapProfile.resolve("auto", parse("{\"D01S05\":\"AC4228/10\"}")));
+    }
+
+    @Test
+    public void ac2939IsDetectedFromTheModelOrTheRange() {
+        assertEquals(CoapProfile.AC2939, CoapProfile.resolve("auto", parse(AC2939_STATUS)));
+        assertEquals(CoapProfile.AC2939, CoapProfile.resolve("auto", parse("{\"modelid\":\"ac2939/10\"}")));
+        assertEquals(CoapProfile.AC2939, CoapProfile.resolve("auto", parse("{\"range\":\"MarsLE\"}")));
+        assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("auto", parse("{\"modelid\":\"AC2889/10\"}")));
+        assertEquals(CoapProfile.AC2939, CoapProfile.resolve("ac2939", parse(CLASSIC_STATUS)));
+        assertEquals(CoapProfile.CLASSIC, CoapProfile.resolve("classic", parse(AC2939_STATUS)));
+    }
+
+    @Test
+    public void ac2939StatusAndCommandsAreNotTranslated() {
+        JsonObject status = parse(AC2939_STATUS);
+        assertEquals(status, CoapProfile.AC2939.toClassic(status));
+        assertEquals(List.of("AG", "GT", "S", "T"), values(CoapProfile.AC2939.getModeOptions()));
+        assertTrue(CoapProfile.AC2939.getFanSpeedOptions().isEmpty());
+        assertEquals(parse("{\"mode\":\"GT\"}"), CoapProfile.AC2939.toDevice(modeCommand("GT", null)));
     }
 
     @Test

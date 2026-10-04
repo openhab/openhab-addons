@@ -49,6 +49,7 @@ Select `basic` again if the device does not behave as expected.
 | `unicorn`                 | AC2210, AC2220, AC2221, AC3210, AC3220, AC3221, AC4220, AC4221          | `D03102`    |
 | `ac0950`                  | AC0950, AC0951                                                          | `D03102`    |
 | `ac3737`                  | AC3737                                                                  | `D03102`    |
+| `ac2939`                  | AC2939 and other models of the `MarsLE` range                           | classic     |
 | `ac1715`                  | AC1715                                                                  | `D03-02`    |
 | `ac0850`                  | AC0850 (with the `AWS_Philips_AIR` Wi-Fi firmware)                      | `D03-02`    |
 
@@ -83,6 +84,9 @@ Notes on the profiles:
 - The mode is `M` (manual) while a fan speed is selected, and the fan speed shows the speed the device chose in auto and sleep mode (Unicorn).
   Selecting a fan speed switches the device to manual mode; there is no separate command for the manual mode.
   For the `ac3737`, `ac1715` and `ac0850` profiles selecting a mode or fan speed also switches the device on.
+- The `ac2939` profile is for a model with the classic field names, so all channels of the classic models apply.
+  Its `mode` is `AG` (auto), `GT` (gentle), `S` (sleep) or `T` (turbo).
+  The device selects the fan speed for the mode itself, so `fan-speed` shows the speed and has no manual mode to set it.
 - The `ac0950` profile is the `unicorn` profile for the small models of that range.
   These models do not report `humidity` and `temperature` and have no `target-humidity`, `allergy-sleep`, `display` and `lamp-mode`.
   Their `display-brightness` is `0` (off), `115` (low) or `123` (bright).
@@ -92,7 +96,7 @@ Notes on the profiles:
 - The `display-brightness` values `101`, `115` and `123` are the codes the device uses, not percentages.
 
 The profiles follow the Philips Air+ app and the [philips-airpurifier-coap](https://github.com/kongo09/philips-airpurifier-coap) integration.
-Reading the status of an AC3210/12 and an AC0950/10 has been confirmed on a real device; the commands have not been confirmed on a device yet, and neither has any other recent model.
+Reading the status of an AC3210/12, an AC0950/10 and an AC2939/10 has been confirmed on a real device; the commands have not been confirmed on a device yet, and neither has any other recent model.
 Feedback is welcome.
 
 The thing properties `modelId`, `firmwareVersion` and `name` are set for these models as well.
