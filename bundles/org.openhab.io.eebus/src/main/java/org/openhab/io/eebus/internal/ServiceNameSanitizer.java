@@ -17,14 +17,11 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Sanitizes a free-text name (e.g. the {@code friendlyName} config parameter) into a value safe
- * to use as an EEBus SHIP mDNS service instance name.
+ * Reduces a configured name to letters, digits and hyphens (LDH), for use as the SHIP ID, the mDNS
+ * service instance name and the certificate CN.
  * <p>
- * That name is advertised via mDNS and echoed back as the TLS SNI value by at least some SHIP
- * clients connecting in - a name containing characters outside the LDH (letters/digits/hyphen)
- * charset, e.g. plain spaces, crashes the inbound TLS handshake with an unhandled
- * {@link IllegalArgumentException} in the JDK's strict SNI hostname validation. Confirmed live
- * against a real EEBus peer (meisel2000/eebus-cbsim) on 2026-08-01.
+ * SHIP clients connecting in send the mDNS host name (derived from the SHIP ID) or the service
+ * instance name as TLS SNI, and the JDK rejects a non-LDH SNI value during the handshake.
  *
  * @author Stamate Viorel - Initial contribution
  */

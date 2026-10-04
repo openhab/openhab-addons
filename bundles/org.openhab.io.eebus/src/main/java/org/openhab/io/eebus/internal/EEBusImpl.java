@@ -130,17 +130,19 @@ public class EEBusImpl implements EEBus, ReadyService.ReadyTracker {
             Storage<String> certStorage = storageService.getStorage(EEBusCertificateStorage.class.getName(),
                     EEBusCertificateStorage.class.getClassLoader());
             EEBusCertificateStorage certificateStorage = new EEBusCertificateStorage(certStorage, IDENTITY_STORAGE_KEY,
-                    "CN=" + settings.friendlyName, CERTIFICATE_VALIDITY_DAYS);
+                    "CN=" + ServiceNameSanitizer.sanitize(settings.friendlyName), CERTIFICATE_VALIDITY_DAYS);
 
             DeviceTypeEnumType deviceType = DeviceTypeEnumType.valueOf(settings.deviceType);
             EntityTypeEnumType entityType = EntityTypeEnumType.valueOf(settings.entityType);
 
-            // The mDNS service instance name gets echoed back as the TLS SNI value by at least some
-            // SHIP clients connecting in, so it must be sanitized to a safe charset (see
-            // ServiceNameSanitizer).
+            // jEEBus uses the SHIP ID as the mDNS host name, and SHIP clients connecting in send the
+            // host name or the service instance name as TLS SNI, which the JDK rejects unless it is
+            // LDH-only. A SPINE device address such as "d:_i:..." contains an underscore, so the SHIP
+            // ID is a sanitized copy of it; the SPINE device below keeps the configured address.
             ShipCommunication communication = new ShipCommunication(ConfigBuilder.aShipConfig()
                     .withServerBindAddresses(Set.of(new InetSocketAddress(settings.bindAddress, settings.port)))
-                    .withWssPath(settings.wssPath).withId(settings.deviceId).withMDnsDomain(settings.serviceDomain)
+                    .withWssPath(settings.wssPath).withId(ServiceNameSanitizer.sanitize(settings.deviceId))
+                    .withMDnsDomain(settings.serviceDomain)
                     .withMDnsServiceInstance(ServiceNameSanitizer.sanitize(settings.friendlyName))
                     .withCertificateStorage(certificateStorage).withCertificateDistinguishedName("CN=openhab-eebus")
                     .withCertificateValidity(CERTIFICATE_VALIDITY_DAYS)

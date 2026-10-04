@@ -40,6 +40,11 @@ class ServiceNameSanitizerTest {
     }
 
     @Test
+    void turnsASpineDeviceAddressIntoAnLdhShipId() {
+        assertEquals("d-i-openHAB-eebus-01", ServiceNameSanitizer.sanitize("d:_i:openHAB:eebus-01"));
+    }
+
+    @Test
     void collapsesConsecutiveUnsafeCharactersAndTrimsHyphens() {
         assertEquals("a-b", ServiceNameSanitizer.sanitize("  a___b!!  "));
     }
