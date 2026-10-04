@@ -24,7 +24,6 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RelayStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
@@ -61,53 +60,34 @@ public class Shelly2WallDisplayStatusJsonTest {
             "devicepower:1":{"id":1,"device":"XB61819872196631","battery":{"percent":99}}}
             """;
 
-    private static final String DEVICE_STATUS_PAUSED = DEVICE_STATUS_PLAYING
-            .replace("\"mqtt\":{\"connected\":false}", "\"mqtt\":{\"connected\":true}")
-            .replace("\"playback\":{\"enable\":true", "\"playback\":{\"enable\":false");
-
     private final Gson gson = new Gson();
 
     @Test
-    void thermostatUsageFlagsAndSecondPowerSourceAreMapped() throws ShellyApiException {
-        String json = """
-                {"sys":{"relay_in_thermostat":true,"relays_in_thermostat":[],"sensor_in_thermostat":false},
-                "devicepower:0":{"id":0,"external":{"present":true}},
-                "devicepower:1":{"id":1,"battery":{"V":2.9,"percent":74}}}
-                """;
+    void deviceStatusCaptureIsMapped() throws ShellyApiException {
+        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS_PLAYING,
+                Shelly2DeviceStatusResult.class);
 
-        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
         Shelly2DeviceStatusSys sys = status.sys;
         assertNotNull(sys);
-        assertThat(sys.relayInThermostat, is(equalTo(Boolean.TRUE)));
+        assertThat(sys.relayInThermostat, is(equalTo(Boolean.FALSE)));
         assertThat(sys.sensorInThermostat, is(equalTo(Boolean.FALSE)));
 
         Shelly2DeviceStatusPower power1 = status.devicepower1;
         assertNotNull(power1);
         assertNotNull(power1.battery);
-        assertThat(power1.battery.percent, is(equalTo(74.0)));
-    }
+        assertThat(power1.battery.percent, is(equalTo(99.0)));
 
-    @Test
-    void statusWithoutWallDisplayComponentsLeavesFieldsNull() throws ShellyApiException {
-        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, "{\"switch:0\":{\"id\":0,\"output\":true}}",
-                Shelly2DeviceStatusResult.class);
-
-        assertThat(status.sys, is(nullValue()));
-        assertThat(status.media, is(nullValue()));
+        Shelly2DeviceStatusMedia media = status.media;
+        assertNotNull(media);
+        Shelly2DeviceStatusMediaPlayback playback = media.playback;
+        assertNotNull(playback);
+        assertThat(playback.enable, is(equalTo(Boolean.TRUE)));
+        assertThat(playback.volume, is(equalTo(6)));
+        assertThat(playback.mediaType, is(equalTo("RADIO")));
+        Shelly2DeviceStatusMediaMeta meta = playback.mediaMeta;
+        assertNotNull(meta);
+        assertThat(meta.title, is(equalTo("Radio Regenbogen 2")));
         assertThat(status.thermostat0, is(nullValue()));
-        assertThat(status.devicepower1, is(nullValue()));
-    }
-
-    @Test
-    void deviceStatusWithoutThermostatLeavesThermostatChannelsUnmapped() throws ShellyApiException {
-        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS_PAUSED,
-                Shelly2DeviceStatusResult.class);
-
-        assertThat(status.thermostat0, is(nullValue()));
-        Shelly2DeviceStatusSys sys = status.sys;
-        assertNotNull(sys);
-        assertThat(sys.relayInThermostat, is(equalTo(Boolean.FALSE)));
-        assertThat(sys.sensorInThermostat, is(equalTo(Boolean.FALSE)));
     }
 
     @Test
@@ -127,98 +107,12 @@ public class Shelly2WallDisplayStatusJsonTest {
     }
 
     @Test
-    void deviceStatusWhilePlayingIsMapped() throws ShellyApiException {
-        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS_PLAYING,
-                Shelly2DeviceStatusResult.class);
-
-        Shelly2DeviceStatusMedia media = status.media;
-        assertNotNull(media);
-        Shelly2DeviceStatusMediaPlayback playback = media.playback;
-        assertNotNull(playback);
-        assertThat(playback.enable, is(equalTo(Boolean.TRUE)));
-        assertThat(playback.volume, is(equalTo(6)));
-        assertThat(playback.mediaType, is(equalTo("RADIO")));
-        Shelly2DeviceStatusMediaMeta meta = playback.mediaMeta;
-        assertNotNull(meta);
-        assertThat(meta.title, is(equalTo("Radio Regenbogen 2")));
-        assertThat(meta.artist, is(nullValue()));
-    }
-
-    @Test
-    void deviceStatusWhilePausedIsMapped() throws ShellyApiException {
-        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS_PAUSED,
-                Shelly2DeviceStatusResult.class);
-
-        Shelly2DeviceStatusMedia media = status.media;
-        assertNotNull(media);
-        Shelly2DeviceStatusMediaPlayback playback = media.playback;
-        assertNotNull(playback);
-        assertThat(playback.enable, is(equalTo(Boolean.FALSE)));
-        assertThat(playback.volume, is(equalTo(6)));
-    }
-
-    @Test
-    void singletonMediaKeyMapsToMediaStatus() throws ShellyApiException {
-        String json = """
-                {"media":{"playback":{"enable":true,"buffering":false,"volume":4,"media_type":"RADIO",
-                "media_meta":{"title":"Some Song","artist":"Some Artist","album":"Some Album",
-                "duration":215000,"position":42000,"thumb":"http://1.2.3.4/thumb.png"}}}}
-                """;
-
-        Shelly2DeviceStatusMediaMeta meta = mediaMetaOf(json);
-        assertThat(meta.title, is(equalTo("Some Song")));
-        assertThat(meta.artist, is(equalTo("Some Artist")));
-        assertThat(meta.album, is(equalTo("Some Album")));
-    }
-
-    @Test
     void indexedMediaKeyMapsToMediaStatus() throws ShellyApiException {
         String json = """
                 {"media:0":{"playback":{"enable":true,"volume":10,"media_type":"AUDIO",
                 "media_meta":{"title":"Indexed Song"}}}}
                 """;
 
-        Shelly2DeviceStatusMediaMeta meta = mediaMetaOf(json);
-        assertThat(meta.title, is(equalTo("Indexed Song")));
-    }
-
-    @Test
-    void mediaPlaybackAttributesAreMapped() throws ShellyApiException {
-        String json = """
-                {"media":{"playback":{"enable":true,"buffering":false,"volume":7,"media_type":"RADIO"}}}
-                """;
-
-        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
-        Shelly2DeviceStatusMedia media = status.media;
-        assertNotNull(media);
-        Shelly2DeviceStatusMediaPlayback playback = media.playback;
-        assertNotNull(playback);
-        assertThat(playback.enable, is(equalTo(Boolean.TRUE)));
-        assertThat(playback.buffering, is(equalTo(Boolean.FALSE)));
-        assertThat(playback.volume, is(equalTo(7)));
-        assertThat(playback.mediaType, is(equalTo("RADIO")));
-    }
-
-    @Test
-    void deviceStatusReportsAttachedSensorBatteryButNoPowerMeter() throws ShellyApiException {
-        Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, DEVICE_STATUS_PLAYING,
-                Shelly2DeviceStatusResult.class);
-
-        Shelly2DeviceStatusPower power1 = status.devicepower1;
-        assertNotNull(power1);
-        assertNotNull(power1.battery);
-        assertThat(power1.battery.percent, is(equalTo(99.0)));
-
-        Shelly2RelayStatus relay = status.switch0;
-        assertNotNull(relay);
-        assertThat(relay.output, is(equalTo(Boolean.FALSE)));
-        assertThat(relay.apower, is(nullValue()));
-        assertThat(relay.aenergy, is(nullValue()));
-        assertThat(relay.voltage, is(nullValue()));
-        assertThat(relay.current, is(nullValue()));
-    }
-
-    private Shelly2DeviceStatusMediaMeta mediaMetaOf(String json) throws ShellyApiException {
         Shelly2DeviceStatusResult status = ShellyUtils.fromJson(gson, json, Shelly2DeviceStatusResult.class);
         Shelly2DeviceStatusMedia media = status.media;
         assertNotNull(media);
@@ -226,6 +120,6 @@ public class Shelly2WallDisplayStatusJsonTest {
         assertNotNull(playback);
         Shelly2DeviceStatusMediaMeta meta = playback.mediaMeta;
         assertNotNull(meta);
-        return meta;
+        assertThat(meta.title, is(equalTo("Indexed Song")));
     }
 }

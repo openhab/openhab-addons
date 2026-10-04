@@ -132,7 +132,6 @@ public class Shelly2ApiClientTest {
 
     @Test
     void secondDevicePowerWithoutBatteryDoesNotCreateAttachedSensorBattery() {
-        // devicepower:1 without a battery block must not create the channels for an attached sensor
         ShellyStatusSensor sdata = new ShellyStatusSensor();
         Shelly2DeviceStatusPower power = new Shelly2DeviceStatusPower();
         power.external = new Shelly2DeviceStatusCharger();

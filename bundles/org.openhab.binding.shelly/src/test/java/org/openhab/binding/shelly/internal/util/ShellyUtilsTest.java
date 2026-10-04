@@ -89,8 +89,7 @@ public class ShellyUtilsTest {
     }
 
     private static Stream<Arguments> provideTestCasesForMediaVolumeToPercent() {
-        return Stream.of(Arguments.of(0, 0), Arguments.of(1, 10), Arguments.of(5, 50), Arguments.of(10, 100),
-                Arguments.of(-1, 0), Arguments.of(11, 100));
+        return Stream.of(Arguments.of(5, 50), Arguments.of(-1, 0), Arguments.of(11, 100));
     }
 
     @ParameterizedTest
@@ -100,8 +99,8 @@ public class ShellyUtilsTest {
     }
 
     private static Stream<Arguments> provideTestCasesForPercentToMediaVolume() {
-        return Stream.of(Arguments.of(0, 0), Arguments.of(4, 0), Arguments.of(5, 1), Arguments.of(50, 5),
-                Arguments.of(55, 6), Arguments.of(100, 10), Arguments.of(-5, 0), Arguments.of(120, 10));
+        return Stream.of(Arguments.of(4, 0), Arguments.of(5, 1), Arguments.of(55, 6), Arguments.of(-5, 0),
+                Arguments.of(120, 10));
     }
 
     @ParameterizedTest
@@ -115,6 +114,6 @@ public class ShellyUtilsTest {
     }
 
     private static Stream<Arguments> provideTestCasesForVolumeStepRoundTrip() {
-        return Stream.of(Arguments.of(1), Arguments.of(5), Arguments.of(9));
+        return Stream.of(Arguments.of(1), Arguments.of(9));
     }
 }

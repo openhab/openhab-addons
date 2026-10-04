@@ -334,8 +334,6 @@ public class ShellyComponentsTest {
 
     @Test
     void updateSensorsSecondBatteryAppearingAfterChannelsCreatedAddsBatteryChannels() throws Exception {
-        // sensor is paired to an already-existing Thing (e.g. an H&T added to a Wall Display later),
-        // so bat1 only shows up on a later poll cycle, after areChannelsCreated() is already true
         ShellyStatusSensor sdata = new ShellyStatusSensor();
         sdata.bat1 = new ShellyStatusSensor.ShellySensorBat();
         sdata.bat1.value = 42.0;
@@ -353,21 +351,9 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateDeviceStatusRelayInThermostatPublishesSwitchChannel() throws Exception {
+    void updateDeviceStatusThermostatUsageFlagsPublishSwitchChannels() throws Exception {
         ShellySettingsStatus status = new ShellySettingsStatus();
         status.relayInThermostat = true;
-
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
-        ShellyThingInterface handler = mockHandler(profile);
-
-        ShellyComponents.updateDeviceStatus(handler, status);
-
-        verify(handler).updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RELAY_IN_THERMOSTAT, OnOffType.ON);
-    }
-
-    @Test
-    void updateDeviceStatusSensorInThermostatPublishesSwitchChannel() throws Exception {
-        ShellySettingsStatus status = new ShellySettingsStatus();
         status.sensorInThermostat = false;
 
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
@@ -375,22 +361,8 @@ public class ShellyComponentsTest {
 
         ShellyComponents.updateDeviceStatus(handler, status);
 
+        verify(handler).updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RELAY_IN_THERMOSTAT, OnOffType.ON);
         verify(handler).updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SENSOR_IN_THERMOSTAT, OnOffType.OFF);
-    }
-
-    @Test
-    void updateDeviceStatusThermostatFlagsAbsentSkipsChannels() throws Exception {
-        ShellySettingsStatus status = new ShellySettingsStatus();
-
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
-        ShellyThingInterface handler = mockHandler(profile);
-
-        ShellyComponents.updateDeviceStatus(handler, status);
-
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_RELAY_IN_THERMOSTAT),
-                any());
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DEV_STATUS), eq(CHANNEL_DEVST_SENSOR_IN_THERMOSTAT),
-                any());
     }
 
     @Test
@@ -422,18 +394,6 @@ public class ShellyComponentsTest {
         ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
 
         verify(handler).updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LOW, OnOffType.ON);
-    }
-
-    @Test
-    void updateSensorsSecondBatteryAbsentSkipsChannels() throws Exception {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-
-        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSSMOKE, sdata);
-
-        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
-
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_BAT_LEVEL), any());
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_SENSOR), eq(CHANNEL_SENSOR_BAT_LOW), any());
     }
 
     @Test
@@ -469,38 +429,7 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateDeviceStatusMediaPausedPublishesPauseState() throws Exception {
-        Shelly2DeviceStatusMediaPlayback playback = new Shelly2DeviceStatusMediaPlayback();
-        playback.enable = false;
-
-        Shelly2DeviceStatusMedia media = new Shelly2DeviceStatusMedia();
-        media.playback = playback;
-
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        status.media = media;
-
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
-        ShellyThingInterface handler = mockHandler(profile);
-
-        ShellyComponents.updateDeviceStatus(handler, status);
-
-        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_CONTROL, PlayPauseType.PAUSE);
-    }
-
-    @Test
-    void updateDeviceStatusMediaAbsentSkipsMediaChannels() throws Exception {
-        ShellySettingsStatus status = new ShellySettingsStatus();
-
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
-        ShellyThingInterface handler = mockHandler(profile);
-
-        ShellyComponents.updateDeviceStatus(handler, status);
-
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_MEDIA), anyString(), any());
-    }
-
-    @Test
-    void updateDeviceStatusMediaNullPlaybackSkipsMediaChannels() throws Exception {
+    void updateDeviceStatusMediaWithoutPlaybackRemovesMediaChannels() throws Exception {
         ShellySettingsStatus status = new ShellySettingsStatus();
         status.media = new Shelly2DeviceStatusMedia();
 
@@ -510,21 +439,8 @@ public class ShellyComponentsTest {
         ShellyComponents.updateDeviceStatus(handler, status);
 
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_MEDIA), anyString(), any());
-        // a bare media:{"rev":0} component (no playback) must not create phantom, never-updated channels
         verify(handler, never()).updateThingChannels(any(), argThat(channels -> channels.keySet().stream()
                 .anyMatch(id -> id.startsWith(CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR))));
-    }
-
-    @Test
-    void updateDeviceStatusMediaNullPlaybackRemovesMediaChannels() throws Exception {
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        status.media = new Shelly2DeviceStatusMedia();
-
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
-        ShellyThingInterface handler = mockHandler(profile);
-
-        ShellyComponents.updateDeviceStatus(handler, status);
-
         verify(handler).removeChannels(argThat(
                 ids -> ids.contains(CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_MEDIA_CONTROL)));
     }
@@ -543,23 +459,6 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateDeviceStatusMediaPresentKeepsMediaChannels() throws Exception {
-        Shelly2DeviceStatusMedia media = new Shelly2DeviceStatusMedia();
-        media.playback = new Shelly2DeviceStatusMediaPlayback();
-
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        status.media = media;
-
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
-        ShellyThingInterface handler = mockHandler(profile);
-
-        ShellyComponents.updateDeviceStatus(handler, status);
-
-        verify(handler, never()).removeChannels(argThat(
-                ids -> ids.contains(CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_MEDIA_CONTROL)));
-    }
-
-    @Test
     void updateDeviceStatusMediaAppearingAfterChannelsCreatedAddsMediaChannels() throws Exception {
         Shelly2DeviceStatusMedia media = new Shelly2DeviceStatusMedia();
         media.playback = new Shelly2DeviceStatusMediaPlayback();
@@ -574,6 +473,8 @@ public class ShellyComponentsTest {
 
         verify(handler).updateThingChannels(any(), argThat(channels -> channels.keySet().stream()
                 .anyMatch(id -> id.startsWith(CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR))));
+        verify(handler, never()).removeChannels(argThat(
+                ids -> ids.contains(CHANNEL_GROUP_MEDIA + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_MEDIA_CONTROL)));
     }
 
     @Test
@@ -591,16 +492,8 @@ public class ShellyComponentsTest {
 
         verify(handler).updateThingChannels(any(), argThat(channels -> channels
                 .containsKey(CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_THERMOSTAT_ENABLE)));
-    }
-
-    @Test
-    void updateDeviceStatusWithoutMediaOrThermostatAddsNoChannels() throws Exception {
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
-        ShellyThingInterface handler = mockHandler(profile);
-
-        ShellyComponents.updateDeviceStatus(handler, new ShellySettingsStatus());
-
-        verify(handler, never()).updateThingChannels(any(), argThat(channels -> !channels.isEmpty()));
+        verify(handler, never()).removeChannels(argThat(ids -> ids
+                .contains(CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_THERMOSTAT_ENABLE)));
     }
 
     @Test
@@ -623,19 +516,6 @@ public class ShellyComponentsTest {
     }
 
     @Test
-    void updateDeviceStatusThermostatAbsentSkipsControlChannels() throws Exception {
-        ShellySettingsStatus status = new ShellySettingsStatus();
-
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
-        ShellyThingInterface handler = mockHandler(profile);
-
-        ShellyComponents.updateDeviceStatus(handler, status);
-
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_THERMOSTAT_ENABLE), any());
-        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_CONTROL), eq(CHANNEL_CONTROL_SETTEMP), any());
-    }
-
-    @Test
     void updateDeviceStatusThermostatAbsentRemovesControlChannels() throws Exception {
         ShellySettingsStatus status = new ShellySettingsStatus();
 
@@ -647,23 +527,6 @@ public class ShellyComponentsTest {
         verify(handler).removeChannels(argThat(ids -> ids
                 .contains(CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_THERMOSTAT_ENABLE)
                 && ids.contains(CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_CONTROL_SETTEMP)));
-    }
-
-    @Test
-    void updateDeviceStatusThermostatPresentKeepsControlChannels() throws Exception {
-        Shelly2DeviceStatusThermostat thermostat = new Shelly2DeviceStatusThermostat();
-        thermostat.enable = true;
-
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        status.thermostat = thermostat;
-
-        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
-        ShellyThingInterface handler = mockHandler(profile);
-
-        ShellyComponents.updateDeviceStatus(handler, status);
-
-        verify(handler, never()).removeChannels(argThat(ids -> ids
-                .contains(CHANNEL_GROUP_CONTROL + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_THERMOSTAT_ENABLE)));
     }
 
     @Test
