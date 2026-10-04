@@ -56,6 +56,54 @@ public class Poller2ChannelTest {
                 Arguments.of(ValueType.FLOAT32, 100, registers(0x7FC0, 0x0000), UnDefType.UNDEF));
     }
 
+    static Stream<Arguments> numericBoundaries() {
+        return Stream.of(Arguments.of(ValueType.INT8, registers(0x0080), new DecimalType("-128")),
+                Arguments.of(ValueType.INT8, registers(0x007F), new DecimalType("127")),
+                Arguments.of(ValueType.UINT8, registers(0x0000), DecimalType.ZERO),
+                Arguments.of(ValueType.UINT8, registers(0x00FF), new DecimalType("255")),
+                Arguments.of(ValueType.INT16, registers(0x8000), new DecimalType("-32768")),
+                Arguments.of(ValueType.INT16, registers(0x7FFF), new DecimalType("32767")),
+                Arguments.of(ValueType.UINT16, registers(0x0000), DecimalType.ZERO),
+                Arguments.of(ValueType.UINT16, registers(0xFFFF), new DecimalType("65535")),
+                Arguments.of(ValueType.INT32, registers(0x8000, 0x0000), new DecimalType("-2147483648")),
+                Arguments.of(ValueType.INT32, registers(0x7FFF, 0xFFFF), new DecimalType("2147483647")),
+                Arguments.of(ValueType.UINT32, registers(0x0000, 0x0000), DecimalType.ZERO),
+                Arguments.of(ValueType.UINT32, registers(0xFFFF, 0xFFFF), new DecimalType("4294967295")),
+                Arguments.of(ValueType.INT64, registers(0x8000, 0x0000, 0x0000, 0x0000),
+                        new DecimalType("-9223372036854775808")),
+                Arguments.of(ValueType.INT64, registers(0x7FFF, 0xFFFF, 0xFFFF, 0xFFFF),
+                        new DecimalType("9223372036854775807")),
+                Arguments.of(ValueType.UINT64, registers(0x0000, 0x0000, 0x0000, 0x0000), DecimalType.ZERO),
+                Arguments.of(ValueType.UINT64, registers(0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF),
+                        new DecimalType("18446744073709551615")),
+                Arguments.of(ValueType.INT32_SWAP, registers(0x0000, 0x8000), new DecimalType("-2147483648")),
+                Arguments.of(ValueType.INT32_SWAP, registers(0xFFFF, 0x7FFF), new DecimalType("2147483647")),
+                Arguments.of(ValueType.UINT32_SWAP, registers(0x0000, 0x0000), DecimalType.ZERO),
+                Arguments.of(ValueType.UINT32_SWAP, registers(0xFFFF, 0xFFFF), new DecimalType("4294967295")),
+                Arguments.of(ValueType.INT64_SWAP, registers(0x0000, 0x0000, 0x0000, 0x8000),
+                        new DecimalType("-9223372036854775808")),
+                Arguments.of(ValueType.INT64_SWAP, registers(0xFFFF, 0xFFFF, 0xFFFF, 0x7FFF),
+                        new DecimalType("9223372036854775807")),
+                Arguments.of(ValueType.UINT64_SWAP, registers(0x0000, 0x0000, 0x0000, 0x0000), DecimalType.ZERO),
+                Arguments.of(ValueType.UINT64_SWAP, registers(0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF),
+                        new DecimalType("18446744073709551615")));
+    }
+
+    static Stream<Arguments> floatingPointValues() {
+        return Stream.of(Arguments.of(ValueType.FLOAT32, registers(0x3F80, 0x0000), new DecimalType("1.0")),
+                Arguments.of(ValueType.FLOAT32_SWAP, registers(0x0000, 0x3F80), new DecimalType("1.0")),
+                Arguments.of(ValueType.FLOAT32, registers(0x0000, 0x0001), new DecimalType("1.4E-45")),
+                Arguments.of(ValueType.FLOAT32, registers(0x7F80, 0x0000), UnDefType.UNDEF),
+                Arguments.of(ValueType.FLOAT32, registers(0xFF80, 0x0000), UnDefType.UNDEF),
+                Arguments.of(ValueType.FLOAT32, registers(0x7FC0, 0x0000), UnDefType.UNDEF),
+                Arguments.of(ValueType.FLOAT32_SWAP, registers(0x0000, 0x7F80), UnDefType.UNDEF));
+    }
+
+    static Stream<Arguments> failurePolicies() {
+        return Stream.of(Arguments.of(PollerReadFailurePolicy.UNDEF, UnDefType.UNDEF),
+                Arguments.of(PollerReadFailurePolicy.KEEP_LAST, new DecimalType("42")));
+    }
+
     static Stream<Arguments> indexedValues() {
         return Stream.of(Arguments.of("100.0", ValueType.BIT, registers(0x0001, 0x8000), new DecimalType("1")),
                 Arguments.of("100.15", ValueType.BIT, registers(0x0001, 0x8000), DecimalType.ZERO),
@@ -84,6 +132,34 @@ public class Poller2ChannelTest {
         Poller2Channel channel = new Poller2Channel(address, valueType, PollerReadFailurePolicy.UNDEF);
 
         assertEquals(expectedState, channel.acceptRegisters(registers, 100));
+    }
+
+    @ParameterizedTest
+    @MethodSource("numericBoundaries")
+    public void decodesAllIntegerCodecBoundaries(ValueType valueType, ModbusRegisterArray registers,
+            Object expectedState) {
+        Poller2Channel channel = new Poller2Channel(100, valueType, PollerReadFailurePolicy.UNDEF);
+
+        assertEquals(expectedState, channel.acceptRegisters(registers, 100));
+    }
+
+    @ParameterizedTest
+    @MethodSource("floatingPointValues")
+    public void decodesFiniteFloatsAndRejectsNonFiniteFloats(ValueType valueType, ModbusRegisterArray registers,
+            Object expectedState) {
+        Poller2Channel channel = new Poller2Channel(100, valueType, PollerReadFailurePolicy.UNDEF);
+
+        assertEquals(expectedState, channel.acceptRegisters(registers, 100));
+    }
+
+    @ParameterizedTest
+    @MethodSource("failurePolicies")
+    public void appliesTheReadFailurePolicyToMalformedShortResponses(PollerReadFailurePolicy failurePolicy,
+            Object expectedState) {
+        Poller2Channel channel = new Poller2Channel(100, ValueType.INT32, failurePolicy);
+        assertEquals(new DecimalType("42"), channel.acceptRegisters(registers(0x0000, 0x002A), 100));
+
+        assertEquals(expectedState, channel.acceptRegisters(registers(0x0000), 100));
     }
 
     @ParameterizedTest

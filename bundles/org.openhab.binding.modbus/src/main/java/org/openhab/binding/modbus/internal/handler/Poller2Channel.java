@@ -70,7 +70,7 @@ public final class Poller2Channel {
         long index = valueType.getBits() < Short.SIZE ? registerOffset * (Short.SIZE / valueType.getBits()) + subAddress
                 : registerOffset;
         if (index < 0 || index > Integer.MAX_VALUE) {
-            state.acceptSuccessfulState(UnDefType.UNDEF);
+            state.acceptReadFailure();
             return state.currentState();
         }
 
@@ -78,7 +78,7 @@ public final class Poller2Channel {
         try {
             decodedValue = ModbusBitUtilities.extractStateFromRegisters(registers, (int) index, valueType);
         } catch (IllegalArgumentException e) {
-            state.acceptSuccessfulState(UnDefType.UNDEF);
+            state.acceptReadFailure();
             return state.currentState();
         }
         State decoded = UnDefType.UNDEF;
