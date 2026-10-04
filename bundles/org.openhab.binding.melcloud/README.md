@@ -195,11 +195,11 @@ convention chosen to match the legacy MELCloud binding's numbering and are not i
 | Channel                        | Type                | Description                                                                          | Read Only |
 |---------------------------------|--------------------|---------------------------------------------------------------------------------------|-----------|
 | power                           | Switch              | Power status of the unit.                                                           | False     |
-| operation-status                | String              | What the unit is doing right now (e.g. Stop, HotWater, a zone mode).                | True      |
-| zone1-operation-mode            | String              | Configured heating/cooling strategy for zone 1: `HeatRoomTemperature`, `HeatFlowTemperature`, `HeatCurve`, `CoolRoomTemperature`, `CoolFlowTemperature`. | False |
+| operation-status                | Number              | What the unit is doing right now: `1` = Stop, `2` = Hot Water, `3` = Heating, `4` = Cooling, `5` = Freeze Stat, `6` = Legionella Prevention. | True      |
+| zone1-operation-mode            | Number              | Heating/cooling strategy for zone 1: `0` = Heat Room Temperature, `1` = Heat Flow Temperature, `2` = Heat Curve, `3` = Cool Room Temperature, `4` = Cool Flow Temperature, `5` = Dry Floor. | False |
 | set-temperature-zone1           | Number:Temperature  | Set temperature Zone 1: Min = 10, Max = 30.                                         | False     |
 | room-temperature-zone1          | Number:Temperature  | Room temperature Zone 1.                                                             | True      |
-| zone2-operation-mode            | String              | Same options as `zone1-operation-mode`, for zone 2. Only present if the unit reports a second zone. | False |
+| zone2-operation-mode            | Number              | Same codes as `zone1-operation-mode`, for zone 2. Only present if the unit reports a second zone. | False |
 | set-temperature-zone2           | Number:Temperature  | Set temperature Zone 2: Min = 10, Max = 30. Only present if the unit reports a second zone. | False |
 | room-temperature-zone2          | Number:Temperature  | Room temperature Zone 2. Only present if the unit reports a second zone.            | True      |
 | tank-water-temperature          | Number:Temperature  | Tank water temperature.                                                             | True      |
@@ -333,8 +333,8 @@ String      homeErrorCode                { channel="melcloud:ata-unit:myhomeacco
 Switch      homeInStandbyMode            { channel="melcloud:ata-unit:myhomeaccount:livingroom:in-standby-mode" }
 
 Switch      homeHeatpumpPower                      { channel="melcloud:atw-unit:myhomeaccount:attic:power" }
-String      homeHeatpumpOperationStatus            { channel="melcloud:atw-unit:myhomeaccount:attic:operation-status" }
-String      homeHeatpumpZone1OperationMode         { channel="melcloud:atw-unit:myhomeaccount:attic:zone1-operation-mode" }
+Number      homeHeatpumpOperationStatus            { channel="melcloud:atw-unit:myhomeaccount:attic:operation-status" }
+Number      homeHeatpumpZone1OperationMode         { channel="melcloud:atw-unit:myhomeaccount:attic:zone1-operation-mode" }
 Number      homeHeatpumpSetTemperatureZone1        { channel="melcloud:atw-unit:myhomeaccount:attic:set-temperature-zone1" }
 Number      homeHeatpumpRoomTemperatureZone1       { channel="melcloud:atw-unit:myhomeaccount:attic:room-temperature-zone1" }
 Number      homeHeatpumpTankWaterTemperature       { channel="melcloud:atw-unit:myhomeaccount:attic:tank-water-temperature" }

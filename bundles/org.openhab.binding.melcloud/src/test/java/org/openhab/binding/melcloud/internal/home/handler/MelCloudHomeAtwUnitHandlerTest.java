@@ -30,9 +30,11 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHA
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_SET_TEMPERATURE_ZONE1;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_TANK_WATER_TEMPERATURE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_OPERATION_STATUS;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_RSSI;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ZONE1_OPERATION_MODE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_FTC_MODEL;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_COOLING_MODE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_ESTIMATED_ENERGY_CONSUMPTION;
@@ -65,6 +67,7 @@ import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeSetting;
 import org.openhab.binding.melcloud.internal.mock.CallbackMock;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -268,6 +271,79 @@ class MelCloudHomeAtwUnitHandlerTest {
 
         // Assert
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_SET_TEMPERATURE_ZONE1));
+    }
+
+    @Test
+    void whenZone1OperationModeWordIsReportedThenChannelIsUpdatedWithMappedCode() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("OperationModeZone1", "HeatCurve");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(new DecimalType(2), callback.getState(CHANNEL_ZONE1_OPERATION_MODE));
+    }
+
+    @Test
+    void whenZone1OperationModeWordIsUnknownThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("OperationModeZone1", "SomeNewMode");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ZONE1_OPERATION_MODE));
+    }
+
+    @Test
+    void whenOperationStatusWordIsReportedThenChannelIsUpdatedWithMappedCode() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("OperationMode", "HotWater");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(new DecimalType(2), callback.getState(CHANNEL_OPERATION_STATUS));
+    }
+
+    @Test
+    void whenZone1OperationModeCodeCommandIsSentThenControlAtwUnitIsCalledWithMappedWord() throws Exception {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_ZONE1_OPERATION_MODE);
+
+        // Act
+        handler.handleCommand(channelUID, new DecimalType(1));
+
+        // Assert
+        ArgumentCaptor<MelCloudHomeAtwControlRequest> captor = ArgumentCaptor
+                .forClass(MelCloudHomeAtwControlRequest.class);
+        verify(apiClient).controlAtwUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), captor.capture());
+        assertEquals("HeatFlowTemperature", captor.getValue().operationModeZone1);
+    }
+
+    @Test
+    void whenZone1OperationModeCommandHasUnknownCodeThenNoControlCallIsMade() throws Exception {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_ZONE1_OPERATION_MODE);
+
+        // Act
+        handler.handleCommand(channelUID, new DecimalType(99));
+
+        // Assert
+        verify(apiClient, never()).controlAtwUnit(any(), any(), any());
     }
 
     @Test

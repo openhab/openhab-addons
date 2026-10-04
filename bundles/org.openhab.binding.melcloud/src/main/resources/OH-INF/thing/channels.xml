@@ -404,7 +404,7 @@
 	</channel-type>
 
 	<channel-type id="zoneOperationMode-channel">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Zone Operation Mode</label>
 		<description>Configured heating/cooling strategy for a zone</description>
 		<tags>
@@ -413,24 +413,34 @@
 		</tags>
 		<state>
 			<options>
-				<option value="HeatRoomTemperature">Heat Room Temperature</option>
-				<option value="HeatFlowTemperature">Heat Flow Temperature</option>
-				<option value="HeatCurve">Heat Curve</option>
-				<option value="CoolRoomTemperature">Cool Room Temperature</option>
-				<option value="CoolFlowTemperature">Cool Flow Temperature</option>
+				<option value="0">Heat Room Temperature</option>
+				<option value="1">Heat Flow Temperature</option>
+				<option value="2">Heat Curve</option>
+				<option value="3">Cool Room Temperature</option>
+				<option value="4">Cool Flow Temperature</option>
+				<option value="5">Dry Floor</option>
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="operationStatus-channel">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Operation Status</label>
-		<description>What the unit is doing right now (e.g. Stop, HotWater, a zone mode)</description>
+		<description>What the unit is doing right now</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="1">Stop</option>
+				<option value="2">Hot Water</option>
+				<option value="3">Heating</option>
+				<option value="4">Cooling</option>
+				<option value="5">Freeze Stat</option>
+				<option value="6">Legionella Prevention</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="energyConsumed-channel">

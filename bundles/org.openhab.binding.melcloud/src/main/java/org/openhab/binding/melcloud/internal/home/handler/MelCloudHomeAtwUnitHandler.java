@@ -92,6 +92,25 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
             "heatflowtemperature", 1, "heatcurve", 2);
 
     /**
+     * Maps the API's zone operation mode word onto the numeric code exposed by the {@code zoneOperationMode-channel}
+     * Number channel. The codes are the values of the MELCloud Home app's own {@code AtwOperationModesZone} enum. A
+     * word the API starts sending that is not listed here needs a new entry (and a channel option) before it is shown.
+     */
+    private static final Map<String, Integer> ZONE_MODE_WORD_TO_CODE = Map.of("HeatRoomTemperature", 0,
+            "HeatFlowTemperature", 1, "HeatCurve", 2, "CoolRoomTemperature", 3, "CoolFlowTemperature", 4, "DryFloor",
+            5);
+    private static final Map<Integer, String> ZONE_MODE_CODE_TO_WORD = ZONE_MODE_WORD_TO_CODE.entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+
+    /**
+     * Maps the API's read-only operation status word onto the numeric code exposed by the
+     * {@code operationStatus-channel} Number channel. The codes are the values of the MELCloud Home app's own
+     * {@code AtwOperationMode} enum ({@code 0} = Unknown is intentionally not mapped).
+     */
+    private static final Map<String, Integer> OPERATION_STATUS_WORD_TO_CODE = Map.of("Stop", 1, "HotWater", 2,
+            "Heating", 3, "Cooling", 4, "FreezeStat", 5, "LegionellaPrevention", 6);
+
+    /**
      * Day-name-to-number mapping for schedule writes, per the {@code melcloudhome} project's documented convention
      * (0=Sunday..6=Saturday) — unconfirmed against real ATW traffic, see ADR-012.
      */
@@ -220,7 +239,10 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                 request.setTemperatureZone2 = zone2Temperature;
                 break;
             case CHANNEL_ZONE1_OPERATION_MODE:
-                String operationModeZone1 = command.toString();
+                String operationModeZone1 = toZoneModeWord(command);
+                if (operationModeZone1 == null) {
+                    return;
+                }
                 if (lastUnit != null && operationModeZone1.equals(lastUnit.getOperationModeZone1())) {
                     logger.debug("Skipping zone1 operation mode command, unit already reports {}", operationModeZone1);
                     return;
@@ -228,7 +250,10 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                 request.operationModeZone1 = operationModeZone1;
                 break;
             case CHANNEL_ZONE2_OPERATION_MODE:
-                String operationModeZone2 = command.toString();
+                String operationModeZone2 = toZoneModeWord(command);
+                if (operationModeZone2 == null) {
+                    return;
+                }
                 if (lastUnit != null
                         && lastUnit.getOperationModeZone2().filter(operationModeZone2::equals).isPresent()) {
                     logger.debug("Skipping zone2 operation mode command, unit already reports {}", operationModeZone2);
@@ -277,8 +302,8 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
         updateCapabilityProperties(unit.capabilities);
         updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_POWER, OnOffType.from(unit.isPower()));
-        updateState(CHANNEL_OPERATION_STATUS, new StringType(unit.getOperationStatus()));
-        updateState(CHANNEL_ZONE1_OPERATION_MODE, new StringType(unit.getOperationModeZone1()));
+        updateCodeState(CHANNEL_OPERATION_STATUS, OPERATION_STATUS_WORD_TO_CODE, unit.getOperationStatus());
+        updateCodeState(CHANNEL_ZONE1_OPERATION_MODE, ZONE_MODE_WORD_TO_CODE, unit.getOperationModeZone1());
         unit.getSetTemperatureZone1().ifPresentOrElse(
                 value -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE1, new QuantityType<>(value, SIUnits.CELSIUS)),
                 () -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE1, UnDefType.UNDEF));
@@ -287,7 +312,7 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                 () -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE1, UnDefType.UNDEF));
         if (unit.hasZone2()) {
             unit.getOperationModeZone2().ifPresentOrElse(
-                    value -> updateState(CHANNEL_ZONE2_OPERATION_MODE, new StringType(value)),
+                    value -> updateCodeState(CHANNEL_ZONE2_OPERATION_MODE, ZONE_MODE_WORD_TO_CODE, value),
                     () -> updateState(CHANNEL_ZONE2_OPERATION_MODE, UnDefType.UNDEF));
             unit.getSetTemperatureZone2().ifPresentOrElse(
                     value -> updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE2,
@@ -641,6 +666,27 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
             logger.debug("Telemetry poll failed for ATW unit {}, reason {}. ",
                     SensitiveDataMasker.maskId(config.unitId), e.getMessage());
         }
+    }
+
+    private void updateCodeState(String channelId, Map<String, Integer> wordToCode, String word) {
+        Integer code = wordToCode.get(word);
+        if (code == null) {
+            logger.debug("Unknown value '{}' for channel {}, no mapping defined", word, channelId);
+            updateState(channelId, UnDefType.UNDEF);
+            return;
+        }
+        updateState(channelId, new DecimalType(code));
+    }
+
+    private @Nullable String toZoneModeWord(Command command) {
+        if (command instanceof DecimalType decimalCommand) {
+            String word = ZONE_MODE_CODE_TO_WORD.get(decimalCommand.intValue());
+            if (word != null) {
+                return word;
+            }
+        }
+        logger.debug("Can't convert '{}' to a zone operation mode", command);
+        return null;
     }
 
     private @Nullable Double toCelsius(Command command) {
