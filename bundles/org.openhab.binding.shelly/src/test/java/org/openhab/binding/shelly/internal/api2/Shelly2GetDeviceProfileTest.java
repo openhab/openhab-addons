@@ -25,6 +25,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_TOGGLE;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_GETCONFIG;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_PM1_RESETCOUNTERS;
 
 import java.util.List;
 import java.util.Map;
@@ -357,6 +358,17 @@ public class Shelly2GetDeviceProfileTest {
         StubApiClient client = new StubApiClient(discoveryConfig(), withPm10(gson));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
         assertThat(profile.numMeters, is(1));
+    }
+
+    @Test
+    void pm1OnlyDeviceHasMeterWithoutRelay() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withPm10(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSPLUGPM, deviceInfo());
+        assertThat(profile.hasRelays, is(false));
+        assertThat(profile.numRelays, is(0));
+        assertThat(profile.numMeters, is(1));
+        assertThat(Shelly2ApiRpc.resetCountersMethod(profile), is(SHELLYRPC_METHOD_PM1_RESETCOUNTERS));
     }
 
     @Test
