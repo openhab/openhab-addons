@@ -42,6 +42,7 @@ import org.openhab.binding.gme.internal.model.GmePriceEntry;
 import org.openhab.binding.gme.internal.model.GmeRequestDataResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 
 /**
  * Client for the GME market data API.
@@ -80,7 +81,12 @@ public class GmeApiClient {
                     response.getStatus());
         }
 
-        GmeAuthResponse authResponse = gson.fromJson(response.getContentAsString(), GmeAuthResponse.class);
+        GmeAuthResponse authResponse;
+        try {
+            authResponse = gson.fromJson(response.getContentAsString(), GmeAuthResponse.class);
+        } catch (JsonParseException e) {
+            throw new IllegalStateException("GME authentication returned malformed JSON", e);
+        }
 
         if (authResponse == null || !authResponse.success) {
             String reason = authResponse != null && authResponse.reason != null ? authResponse.reason
@@ -132,8 +138,12 @@ public class GmeApiClient {
                     response.getStatus());
         }
 
-        GmeRequestDataResponse requestResponse = gson.fromJson(response.getContentAsString(),
-                GmeRequestDataResponse.class);
+        GmeRequestDataResponse requestResponse;
+        try {
+            requestResponse = gson.fromJson(response.getContentAsString(), GmeRequestDataResponse.class);
+        } catch (JsonParseException e) {
+            throw new IllegalStateException("GME RequestData returned malformed JSON", e);
+        }
 
         if (requestResponse == null) {
             throw new IllegalStateException("GME RequestData returned an empty response");
