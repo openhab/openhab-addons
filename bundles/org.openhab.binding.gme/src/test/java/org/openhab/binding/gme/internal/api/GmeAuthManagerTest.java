@@ -55,6 +55,51 @@ class GmeAuthManagerTest {
     }
 
     @Test
+    void retriesMarketPricesOnceAfterAuthenticationError() throws Exception {
+        GmeApiClient apiClient = mock(GmeApiClient.class);
+
+        GmePriceEntry entry = new GmePriceEntry(DATE, 1, "MGP", "PUN", new java.math.BigDecimal("200.000000"), 1,
+                GmeGranularity.PT15, null);
+
+        when(apiClient.authenticate("user", "password")).thenReturn("token-1", "token-2");
+        when(apiClient.requestMarketPrices(DATE, "token-1", GmeGranularity.PT15))
+                .thenThrow(new GmeApiException("Unauthorized", 401));
+        when(apiClient.requestMarketPrices(DATE, "token-2", GmeGranularity.PT15)).thenReturn(List.of(entry));
+
+        GmeAuthManager authManager = new GmeAuthManager(apiClient, "user", "password");
+
+        List<GmePriceEntry> result = authManager.requestMarketPrices(DATE, GmeGranularity.PT15);
+
+        assertEquals(List.of(entry), result);
+        verify(apiClient, times(2)).authenticate("user", "password");
+        verify(apiClient).requestMarketPrices(DATE, "token-1", GmeGranularity.PT15);
+        verify(apiClient).requestMarketPrices(DATE, "token-2", GmeGranularity.PT15);
+        verifyNoMoreInteractions(apiClient);
+    }
+
+    @Test
+    void doesNotRetryMarketPricesMoreThanOnceAfterRepeatedAuthenticationError() throws Exception {
+        GmeApiClient apiClient = mock(GmeApiClient.class);
+
+        when(apiClient.authenticate("user", "password")).thenReturn("token-1", "token-2");
+        when(apiClient.requestMarketPrices(DATE, "token-1", GmeGranularity.PT30))
+                .thenThrow(new GmeApiException("Unauthorized", 401));
+        when(apiClient.requestMarketPrices(DATE, "token-2", GmeGranularity.PT30))
+                .thenThrow(new GmeApiException("Unauthorized", 401));
+
+        GmeAuthManager authManager = new GmeAuthManager(apiClient, "user", "password");
+
+        GmeApiException exception = assertThrows(GmeApiException.class,
+                () -> authManager.requestMarketPrices(DATE, GmeGranularity.PT30));
+
+        assertEquals(401, exception.getStatusCode());
+        verify(apiClient, times(2)).authenticate("user", "password");
+        verify(apiClient).requestMarketPrices(DATE, "token-1", GmeGranularity.PT30);
+        verify(apiClient).requestMarketPrices(DATE, "token-2", GmeGranularity.PT30);
+        verifyNoMoreInteractions(apiClient);
+    }
+
+    @Test
     void doesNotRetryMoreThanOnceAfterRepeatedAuthenticationError() throws Exception {
         GmeApiClient apiClient = mock(GmeApiClient.class);
 
