@@ -335,6 +335,10 @@ class KeContactCombinedHandlerTest {
                     assertTrue(optionValues.add(value),
                             "Duplicate option value " + value + " for " + typeDefinition.getAttribute("id"));
                 }
+                if ("phase-switch-trigger".equals(typeDefinition.getAttribute("id"))) {
+                    assertEquals(Set.of("1", "3"), optionValues);
+                    assertEquals("Number", typeDefinition.getElementsByTagName("item-type").item(0).getTextContent());
+                }
             }
             assertTrue(channelTypes.stream().allMatch(type -> type.matches("[a-z0-9]+(-[a-z0-9]+)*")));
             assertTrue(channelTypes.contains("session-start"));
@@ -376,9 +380,10 @@ class KeContactCombinedHandlerTest {
                 assertEquals(1, descriptions.getLength(), "Missing specific description: " + channel);
                 assertTrue(descriptions.item(0).getTextContent().strip().length() > 20, channel);
             }
-            assertEquals(70, channels.size());
+            assertEquals(71, channels.size());
             assertTrue(channels.containsAll(List.of("maxsystemcurrent", "maxpilotcurrent", "failsafecurrent",
-                    "failsafetimeout", "input", "restinput")));
+                    "failsafetimeout", "input", "restinput", "togglephaseswitch")));
+            assertEquals("command", channelTypesById.get("togglephaseswitch"));
             assertFalse(channels.contains("maxsupportedcurrent"));
             assertFalse(channels.contains("maxchargingcurrent"));
             assertFalse(channels.contains("setchargingcurrent"));
@@ -668,6 +673,58 @@ class KeContactCombinedHandlerTest {
             assertTrue(inputReceived.await(30, TimeUnit.SECONDS));
             verify(callback).stateUpdated(x1, OnOffType.ON);
             verify(callback, never()).stateUpdated(eq(restInput), any());
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(40)
+    void udpPhaseSwitchAcceptsOnlyOneOrThreePhases() throws Exception {
+        ThingUID uid = new ThingUID("keba:kecontact:phasecounts");
+        ChannelUID trigger = new ChannelUID(uid, "triggerphaseswitch");
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "modbusEnabled", false,
+                        "refreshInterval", 3600, "refreshIntervalSlow", 3600)))
+                .withChannels(ChannelBuilder.create(trigger, "Number").build()).build();
+        BlockingQueue<String> writes = new LinkedBlockingQueue<>();
+        CountDownLatch initialized = new CountDownLatch(1);
+        KeContactTransceiver transceiver = new KeContactTransceiver() {
+            @Override
+            public void registerHandler(KeContactHandler handler) {
+            }
+
+            @Override
+            protected @Nullable ByteBuffer send(String message, KeContactHandler handler) {
+                if (message.startsWith("x2 ")) {
+                    writes.add(message);
+                }
+                String response = switch (message) {
+                    case "report 1" -> "{\"ID\":1,\"Product\":\"KC-P30-123456A-XXX\"}";
+                    case "report 2" -> "{\"ID\":2,\"State\":3}";
+                    default -> null;
+                };
+                if ("report 2".equals(message)) {
+                    initialized.countDown();
+                }
+                return response == null ? null : ByteBuffer.wrap(response.getBytes(StandardCharsets.US_ASCII));
+            }
+        };
+        KeContactCombinedHandler handler = new KeContactCombinedHandler(thing,
+                Objects.requireNonNull(mock(ModbusManager.class)), transceiver);
+        handler.setCallback(Objects.requireNonNull(mock(ThingHandlerCallback.class)));
+        try {
+            handler.initialize();
+            assertTrue(initialized.await(5, TimeUnit.SECONDS));
+            handler.handleCommand(trigger, new DecimalType(1));
+            assertEquals("x2 0", writes.poll(5, TimeUnit.SECONDS));
+            handler.handleCommand(trigger, new DecimalType(3));
+            assertEquals("x2 1", writes.poll(5, TimeUnit.SECONDS));
+            for (String value : List.of("0", "2", "4", "-1", "1.5", "3.1")) {
+                handler.handleCommand(trigger, new DecimalType(value));
+            }
+            handler.handleCommand(trigger, OnOffType.ON);
+            assertNull(writes.poll(1200, TimeUnit.MILLISECONDS));
         } finally {
             handler.dispose();
         }
@@ -965,6 +1022,131 @@ class KeContactCombinedHandlerTest {
     }
 
     @Test
+    @Timeout(20)
+    void restPhaseTogglePostsOnlyOnAndResetsAfterSuccess() throws Exception {
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:resttoggle")).build();
+        CountDownLatch ready = new CountDownLatch(1);
+        AtomicBoolean failToggle = new AtomicBoolean();
+        BlockingQueue<String> posts = new LinkedBlockingQueue<>();
+        KeContactProtocolHandler.Listener listener = Objects
+                .requireNonNull(mock(KeContactProtocolHandler.Listener.class));
+        doAnswer(invocation -> {
+            ready.countDown();
+            return null;
+        }).when(listener).statusUpdated(eq(ThingStatus.ONLINE), any(), any());
+        KeContactRestHandler rest = new KeContactRestHandler(thing,
+                new Configuration(Map.of("ipAddress", "192.0.2.1", "restEnabled", true, "password", "test-password",
+                        "refreshInterval", 3600, "refreshIntervalSlow", 3600)),
+                listener) {
+            @Override
+            protected JsonObject request(String path, String method, @Nullable String body, boolean authenticated) {
+                if ("/jwt/login".equals(path)) {
+                    return JsonParser.parseString("{\"accessToken\":\"test-token\"}").getAsJsonObject();
+                }
+                if ("/serialnumber".equals(path)) {
+                    return JsonParser.parseString("{\"value\":\"12345\"}").getAsJsonObject();
+                }
+                if ("POST".equals(method)) {
+                    assertEquals("/wallboxes/12345/phase-toggle", path);
+                    assertNull(body);
+                    assertTrue(authenticated);
+                    posts.add(path);
+                    if (failToggle.get()) {
+                        throw new IllegalStateException("Test failure");
+                    }
+                }
+                return new JsonObject();
+            }
+        };
+        ChannelUID toggle = new ChannelUID(thing.getUID(), "togglephaseswitch");
+        try {
+            rest.initialize();
+            assertTrue(ready.await(5, TimeUnit.SECONDS));
+            rest.handleCommand(toggle, OnOffType.OFF);
+            rest.handleCommand(toggle, new DecimalType(1));
+            rest.handleCommand(new ChannelUID(thing.getUID(), "triggerphaseswitch"), OnOffType.ON);
+            assertTrue(posts.isEmpty());
+            rest.handleCommand(toggle, OnOffType.ON);
+            assertEquals("/wallboxes/12345/phase-toggle", posts.poll(5, TimeUnit.SECONDS));
+            verify(listener).stateUpdated("togglephaseswitch", OnOffType.OFF);
+
+            clearInvocations(listener);
+            failToggle.set(true);
+            rest.handleCommand(toggle, OnOffType.ON);
+            assertEquals("/wallboxes/12345/phase-toggle", posts.poll(5, TimeUnit.SECONDS));
+            verify(listener, never()).stateUpdated("togglephaseswitch", OnOffType.OFF);
+        } finally {
+            rest.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(20)
+    void restOnlyThingExposesRoutesAndRemovesPhaseToggle() throws Exception {
+        ThingUID uid = new ThingUID("keba:kecontact:restonlytoggle");
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "modbusEnabled", false,
+                        "udpEnabled", false, "restEnabled", true, "password", "test-password")))
+                .build();
+        List<ChannelDefinition> definitions = new ArrayList<>();
+        for (String id : List.of("triggerphaseswitch", "togglephaseswitch")) {
+            ChannelDefinition definition = Objects.requireNonNull(mock(ChannelDefinition.class));
+            when(definition.getId()).thenReturn(id);
+            when(definition.getChannelTypeUID()).thenReturn(
+                    new ChannelTypeUID("keba", "togglephaseswitch".equals(id) ? "command" : "phase-switch-trigger"));
+            when(definition.getProperties()).thenReturn(Map.of());
+            definitions.add(definition);
+        }
+        ThingType type = Objects.requireNonNull(mock(ThingType.class));
+        when(type.getChannelDefinitions()).thenReturn(definitions);
+        ThingTypeRegistry registry = Objects.requireNonNull(mock(ThingTypeRegistry.class));
+        when(registry.getThingType(new ThingTypeUID("keba", "kecontact"))).thenReturn(type);
+        ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+        when(callback.createChannelBuilder(any(ChannelUID.class), any(ChannelTypeUID.class))).thenAnswer(invocation -> {
+            ChannelUID channelUID = invocation.getArgument(0);
+            ChannelTypeUID typeUID = invocation.getArgument(1);
+            return ChannelBuilder.create(channelUID, "Switch").withType(typeUID);
+        });
+        List<KeContactProtocolHandler.Listener> listeners = new ArrayList<>();
+        try (var adapters = mockConstruction(KeContactRestHandler.class, (adapter, context) -> {
+            KeContactProtocolHandler.Listener listener = (KeContactProtocolHandler.Listener) Objects
+                    .requireNonNull(context.arguments().get(2));
+            listeners.add(listener);
+            doAnswer(invocation -> {
+                listener.statusUpdated(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+                return null;
+            }).when(adapter).initialize();
+        })) {
+            ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
+            KeContactTransceiver transceiver = Objects.requireNonNull(mock(KeContactTransceiver.class));
+            KeContactCombinedHandler handler = new KeContactCombinedHandler(thing, manager, transceiver, registry);
+            handler.setCallback(callback);
+            ChannelUID toggle = new ChannelUID(uid, "togglephaseswitch");
+            try {
+                handler.initialize();
+                var channel = Objects.requireNonNull(handler.getThing().getChannel(toggle));
+                assertEquals("Switch", channel.getAcceptedItemType());
+                assertEquals(new ChannelTypeUID("keba", "command"), channel.getChannelTypeUID());
+                assertNull(handler.getThing().getChannel("triggerphaseswitch"));
+                KeContactRestHandler rest = adapters.constructed().get(0);
+                handler.handleCommand(toggle, OnOffType.ON);
+                verify(rest, timeout(5000)).handleCommand(toggle, OnOffType.ON);
+                listeners.get(0).stateUpdated("togglephaseswitch", OnOffType.OFF);
+                verify(callback).stateUpdated(toggle, OnOffType.OFF);
+                assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("togglephaseswitch", true, true));
+                verifyNoInteractions(manager, transceiver);
+
+                handler.handleConfigurationUpdate(Map.of("restEnabled", false));
+                assertNull(handler.getThing().getChannel(toggle));
+                verify(rest).dispose();
+            } finally {
+                handler.dispose();
+            }
+        }
+    }
+
+    @Test
     void keepsNumericStateAndDoesNotInventUnknownValues() {
         assertEquals(new DecimalType(3), KeContactCombinedHandler.numericRestState("CHARGING"));
         assertEquals(new DecimalType(2), KeContactCombinedHandler.numericRestState("READY_FOR_CHARGING"));
@@ -1128,6 +1310,95 @@ class KeContactCombinedHandlerTest {
             } finally {
                 handler.dispose();
             }
+        }
+    }
+
+    @Test
+    @Timeout(80)
+    void reidentifiesModbusModelForEachNewEndpoint() throws Exception {
+        ThingUID uid = new ThingUID("keba:kecontact:modelchanges");
+        List<ChannelDefinition> definitions = new ArrayList<>();
+        for (String id : List.of("state", "fastchargingstatus", "activatefastcharging")) {
+            ChannelDefinition definition = Objects.requireNonNull(mock(ChannelDefinition.class));
+            when(definition.getId()).thenReturn(id);
+            when(definition.getChannelTypeUID()).thenReturn(new ChannelTypeUID("keba", id));
+            when(definition.getProperties()).thenReturn(Map.of());
+            definitions.add(definition);
+        }
+        ThingType thingType = Objects.requireNonNull(mock(ThingType.class));
+        when(thingType.getChannelDefinitions()).thenReturn(definitions);
+        ThingTypeRegistry registry = Objects.requireNonNull(mock(ThingTypeRegistry.class));
+        when(registry.getThingType(new ThingTypeUID("keba", "kecontact"))).thenReturn(thingType);
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "udpEnabled", false)))
+                .withProperties(Map.of("modbusModel", "P30", "model", "P30")).build();
+        ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
+        List<ModbusCommunicationInterface> interfaces = List.of(
+                Objects.requireNonNull(mock(ModbusCommunicationInterface.class)),
+                Objects.requireNonNull(mock(ModbusCommunicationInterface.class)),
+                Objects.requireNonNull(mock(ModbusCommunicationInterface.class)));
+        when(manager.newModbusCommunicationInterface(any(), any())).thenReturn(interfaces.get(0), interfaces.get(1),
+                interfaces.get(2));
+        BlockingQueue<Read> identifications = new LinkedBlockingQueue<>();
+        List<List<Integer>> pollAddresses = List.of(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        for (int interfaceIndex = 0; interfaceIndex < interfaces.size(); interfaceIndex++) {
+            ModbusCommunicationInterface comms = interfaces.get(interfaceIndex);
+            List<Integer> addresses = pollAddresses.get(interfaceIndex);
+            when(comms.submitOneTimePoll(any(), any(), any())).thenAnswer(invocation -> {
+                ModbusReadRequestBlueprint request = invocation.getArgument(0);
+                if (request.getReference() == 1016) {
+                    identifications.add(new Read(request, invocation.getArgument(1)));
+                }
+                return java.util.concurrent.CompletableFuture.completedFuture(null);
+            });
+            when(comms.registerRegularPoll(any(), anyLong(), anyLong(), any(), any())).thenAnswer(invocation -> {
+                ModbusReadRequestBlueprint request = invocation.getArgument(0);
+                addresses.add(request.getReference());
+                return Objects.requireNonNull(mock(PollTask.class));
+            });
+        }
+        ThingHandlerCallback callback = Objects.requireNonNull(mock(ThingHandlerCallback.class));
+        when(callback.isChannelLinked(any())).thenReturn(true);
+        when(callback.createChannelBuilder(any(ChannelUID.class), any(ChannelTypeUID.class))).thenAnswer(invocation -> {
+            ChannelUID channelUID = invocation.getArgument(0);
+            ChannelTypeUID channelTypeUID = invocation.getArgument(1);
+            return ChannelBuilder.create(channelUID, "Number").withType(channelTypeUID);
+        });
+        KeContactCombinedHandler handler = new KeContactCombinedHandler(thing, manager,
+                Objects.requireNonNull(mock(KeContactTransceiver.class)), registry);
+        handler.setCallback(callback);
+        try {
+            handler.initialize();
+            Read first = Objects.requireNonNull(identifications.poll(5, TimeUnit.SECONDS));
+            assertTrue(pollAddresses.get(0).isEmpty());
+            first.respond(304111);
+            assertEquals("P30", handler.getThing().getProperties().get("modbusModel"));
+            assertFalse(pollAddresses.get(0).contains(1200));
+            assertNull(handler.getThing().getChannel("fastchargingstatus"));
+
+            handler.handleConfigurationUpdate(Map.of("ipAddress", "192.0.2.2"));
+            Read second = Objects.requireNonNull(identifications.poll(5, TimeUnit.SECONDS));
+            verify(interfaces.get(0)).close();
+            assertTrue(pollAddresses.get(1).isEmpty());
+            second.respond(4212311);
+            assertEquals("P40", handler.getThing().getProperties().get("modbusModel"));
+            assertTrue(pollAddresses.get(1).contains(1200));
+            assertNotNull(handler.getThing().getChannel("fastchargingstatus"));
+            assertNotNull(handler.getThing().getChannel("activatefastcharging"));
+            first.respond(304111);
+            assertEquals("P40", handler.getThing().getProperties().get("modbusModel"));
+
+            handler.handleConfigurationUpdate(Map.of("ipAddress", "192.0.2.3"));
+            Read third = Objects.requireNonNull(identifications.poll(5, TimeUnit.SECONDS));
+            verify(interfaces.get(1)).close();
+            assertTrue(pollAddresses.get(2).isEmpty());
+            third.respond(304111);
+            assertEquals("P30", handler.getThing().getProperties().get("modbusModel"));
+            assertFalse(pollAddresses.get(2).contains(1200));
+            assertNull(handler.getThing().getChannel("fastchargingstatus"));
+            assertNull(handler.getThing().getChannel("activatefastcharging"));
+        } finally {
+            handler.dispose();
         }
     }
 

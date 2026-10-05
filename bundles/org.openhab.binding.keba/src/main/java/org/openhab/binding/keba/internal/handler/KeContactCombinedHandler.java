@@ -14,6 +14,7 @@ package org.openhab.binding.keba.internal.handler;
 
 import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -82,7 +83,8 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     private static final Set<String> UDP_REPORT_100 = Set.of("sessionrfidclass", "sessionid");
     private static final Set<String> REST_ONLY = Set.of("reststate", "session", "error", "reserved", "temperature",
             "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases", "phaseconfiguration",
-            "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop", "reboot", "unlock");
+            "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop", "reboot", "unlock",
+            "togglephaseswitch");
     private static final Set<String> UDP_COMMANDS = Set.of("display", "output", "authenticate", "maxpresetcurrent",
             "maxpresetcurrentrange");
     private static final Set<String> REST_SHARED = Set.of("state", "I1", "I2", "I3", "U1", "U2", "U3", "power",
@@ -105,7 +107,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop", "reboot", "unlock",
             "authon", "enableduser", "vehicle", "state", "I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
             "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent", "phaseswitchstate",
-            "phaseswitchsource");
+            "phaseswitchsource", "togglephaseswitch");
 
     private final ModbusManager modbusManager;
     private final KeContactTransceiver transceiver;
@@ -782,13 +784,11 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                             default -> channel;
                         };
                         if ("triggerphaseswitch".equals(channel) && (!(command instanceof DecimalType value)
-                                || value.intValue() < 0 || value.intValue() > 1)) {
+                                || value.toBigDecimal().compareTo(BigDecimal.ONE) != 0
+                                        && value.toBigDecimal().compareTo(BigDecimal.valueOf(3)) != 0)) {
                             return;
                         }
-                        Command udpCommand = "triggerphaseswitch".equals(channel)
-                                && command instanceof DecimalType value ? new DecimalType(value.intValue() == 0 ? 1 : 3)
-                                        : command;
-                        udp.handleCommand(new ChannelUID(getThing().getUID(), udpChannel), udpCommand);
+                        udp.handleCommand(new ChannelUID(getThing().getUID(), udpChannel), command);
                     }
                 }
             }

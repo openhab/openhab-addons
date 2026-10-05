@@ -404,7 +404,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
                 case "unlock" -> wallboxPath + "/unlock";
                 case "start" -> wallboxPath + "/start-charging";
                 case "stop" -> wallboxPath + "/stop-charging";
-                case "triggerphaseswitch" -> wallboxPath + "/phase-toggle";
+                case "togglephaseswitch" -> wallboxPath + "/phase-toggle";
                 case "reboot" -> wallboxPath + "/reboot";
                 default -> null;
             };

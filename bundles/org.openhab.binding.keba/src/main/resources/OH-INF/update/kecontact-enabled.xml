@@ -186,6 +186,10 @@
 			<add-channel id="stop">
 				<type>keba:command</type>
 			</add-channel>
+			<add-channel id="togglephaseswitch">
+				<type>keba:command</type>
+				<label>Toggle Phase Switch</label>
+			</add-channel>
 			<add-channel id="permanentlylocked">
 				<type>keba:permanent-lock</type>
 			</add-channel>

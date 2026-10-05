@@ -16,13 +16,35 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
+import org.openhab.core.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.core.io.transport.modbus.ModbusManager;
+import org.openhab.core.io.transport.modbus.ModbusReadCallback;
+import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 
 /**
  * Tests for Modbus conversion and command encoding.
@@ -30,6 +52,64 @@ import org.openhab.core.library.unit.Units;
  * @author Michael Weger - Initial contribution
  */
 class KeContactModbusHandlerTest {
+
+    @Test
+    @Timeout(20)
+    void persistedModelDoesNotReplaceIdentificationOnNewConnections() throws Exception {
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:persistedmodel"))
+                .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1")))
+                .withProperties(Map.of("modbusModel", "P30", "model", "P30")).build();
+        ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
+        ModbusCommunicationInterface firstComms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
+        ModbusCommunicationInterface secondComms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
+        when(manager.newModbusCommunicationInterface(any(), any())).thenReturn(firstComms, secondComms);
+        record Identification(ModbusReadRequestBlueprint request, ModbusReadCallback callback) {
+            void respond(int product) {
+                callback.handle(
+                        new AsyncModbusReadResult(request, new ModbusRegisterArray(product >>> 16, product & 0xffff)));
+            }
+        }
+        BlockingQueue<Identification> identifications = new LinkedBlockingQueue<>();
+        for (ModbusCommunicationInterface comms : java.util.List.of(firstComms, secondComms)) {
+            when(comms.submitOneTimePoll(any(), any(), any())).thenAnswer(invocation -> {
+                ModbusReadRequestBlueprint request = invocation.getArgument(0);
+                if (request.getReference() == 1016) {
+                    identifications.add(new Identification(request, invocation.getArgument(1)));
+                }
+                return java.util.concurrent.CompletableFuture.completedFuture(null);
+            });
+            when(comms.registerRegularPoll(any(), anyLong(), anyLong(), any(), any()))
+                    .thenReturn(Objects.requireNonNull(mock(PollTask.class)));
+        }
+        KeContactProtocolHandler.Listener listener = Objects
+                .requireNonNull(mock(KeContactProtocolHandler.Listener.class));
+        when(listener.isLinked(any())).thenReturn(true);
+        KeContactModbusHandler handler = new KeContactModbusHandler(thing, manager, null, listener);
+        try {
+            handler.initialize();
+            Identification first = Objects.requireNonNull(identifications.poll(5, TimeUnit.SECONDS));
+            verify(firstComms, never()).registerRegularPoll(any(), anyLong(), anyLong(), any(), any());
+            first.respond(4212311);
+            assertEquals("P40", handler.getThing().getProperties().get("modbusModel"));
+            verify(firstComms).registerRegularPoll(argThat(request -> request.getReference() == 1200), anyLong(),
+                    anyLong(), any(), any());
+            handler.refreshLinkedPolls();
+            verify(firstComms, times(1)).submitOneTimePoll(argThat(request -> request.getReference() == 1016), any(),
+                    any());
+
+            handler.handleConfigurationUpdate(Map.of("ipAddress", "192.0.2.2"));
+            Identification second = Objects.requireNonNull(identifications.poll(5, TimeUnit.SECONDS));
+            verify(firstComms).close();
+            verify(secondComms, never()).registerRegularPoll(any(), anyLong(), anyLong(), any(), any());
+            second.respond(304111);
+            assertEquals("P30", handler.getThing().getProperties().get("modbusModel"));
+            verify(secondComms, never()).registerRegularPoll(argThat(request -> request.getReference() == 1200),
+                    anyLong(), anyLong(), any(), any());
+        } finally {
+            handler.dispose();
+        }
+    }
 
     @Test
     void convertsSwitchCommands() {
@@ -56,6 +136,23 @@ class KeContactModbusHandlerTest {
                 KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.SET_PHASE_SWITCH_SOURCE, new DecimalType(5)));
         assertNull(
                 KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.TRIGGER_PHASE_SWITCH, new DecimalType(-1)));
+    }
+
+    @Test
+    void convertsPhaseCountsToModbusPhaseSwitchValues() {
+        assertEquals(0,
+                KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.TRIGGER_PHASE_SWITCH, new DecimalType(1)));
+        assertEquals(1,
+                KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.TRIGGER_PHASE_SWITCH, new DecimalType(3)));
+        assertEquals(0, KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.TRIGGER_PHASE_SWITCH,
+                new DecimalType("1.0")));
+        for (String value : java.util.List.of("0", "2", "4", "-1", "1.5", "3.1")) {
+            assertNull(KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.TRIGGER_PHASE_SWITCH,
+                    new DecimalType(value)));
+        }
+        assertNull(KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.TRIGGER_PHASE_SWITCH, OnOffType.ON));
+        assertNull(
+                KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.TRIGGER_PHASE_SWITCH, new StringType("1")));
     }
 
     @Test

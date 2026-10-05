@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
 import java.nio.ByteBuffer;
+import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ClosedSelectorException;
 import java.nio.channels.DatagramChannel;
@@ -163,9 +164,13 @@ public class KeContactTransceiver {
     }
 
     public void stop() {
+        stop(false);
+    }
+
+    void stop(boolean onlyIfEmpty) {
         Thread localTransceiverThread;
         synchronized (lifecycleLock) {
-            if (!isStarted) {
+            if (!isStarted || onlyIfEmpty && !handlers.isEmpty()) {
                 return;
             }
             isStarted = false;
@@ -187,8 +192,6 @@ public class KeContactTransceiver {
                     closeQuietly(datagramChannels.remove(listener));
                 }
             }
-            locks.clear();
-            conditions.clear();
             requests.clear();
 
             if (localTransceiverThread != null) {
@@ -218,12 +221,12 @@ public class KeContactTransceiver {
 
     public void registerHandler(KeContactHandler handler) {
         synchronized (lifecycleLock) {
-            if (!handlers.add(handler)) {
-                return;
+            boolean added = handlers.add(handler);
+            if (added || locks.get(handler) == null || conditions.get(handler) == null) {
+                ReentrantLock handlerLock = new ReentrantLock();
+                locks.put(handler, handlerLock);
+                conditions.put(handler, handlerLock.newCondition());
             }
-            ReentrantLock handlerLock = new ReentrantLock();
-            locks.put(handler, handlerLock);
-            conditions.put(handler, handlerLock.newCondition());
 
             if (logger.isTraceEnabled()) {
                 logger.trace("There are now {} KEBA KeContact handlers registered with the transceiver",
@@ -242,7 +245,6 @@ public class KeContactTransceiver {
     }
 
     public void unRegisterHandler(KeContactHandler handler) {
-        boolean stopWhenEmpty;
         synchronized (lifecycleLock) {
             cancelPendingSend(handler);
             locks.remove(handler);
@@ -259,11 +261,8 @@ public class KeContactTransceiver {
             if (localSelector != null) {
                 removeConnection(handler, localSelector);
             }
-            stopWhenEmpty = handlers.isEmpty() && isStarted;
         }
-        if (stopWhenEmpty) {
-            stop();
-        }
+        stop(true);
     }
 
     private Set<KeContactHandler> handlerSnapshot() {
@@ -571,6 +570,10 @@ public class KeContactTransceiver {
             } catch (InterruptedException | ClosedSelectorException e) {
                 Thread.currentThread().interrupt();
                 return;
+            } catch (CancelledKeyException e) {
+                if (Thread.currentThread().isInterrupted() || !localSelector.isOpen()) {
+                    return;
+                }
             }
         }
     }

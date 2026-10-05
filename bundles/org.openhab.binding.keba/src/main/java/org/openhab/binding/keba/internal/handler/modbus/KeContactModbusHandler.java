@@ -14,6 +14,7 @@ package org.openhab.binding.keba.internal.handler.modbus;
 
 import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -152,12 +153,7 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
                     return;
                 }
                 comms = localComms;
-                String model = getThing().getProperties().get(PROPERTY_MODBUS_MODEL);
-                if (MODEL_P30.equals(model) || MODEL_P40.equals(model)) {
-                    registerPolls(localComms, generation, MODEL_P40.equals(model));
-                } else {
-                    identifyProduct(localComms, generation);
-                }
+                identifyProduct(localComms, generation);
             }
         });
     }
@@ -521,7 +517,19 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
             case SWITCH -> command == OnOffType.ON ? toRawValue(register, 1)
                     : command == OnOffType.OFF ? toRawValue(register, 0) : null;
             case SWITCH_TRIGGER -> command == OnOffType.ON ? toRawValue(register, register.getMaxRawValue()) : null;
-            case NUMBER -> command instanceof DecimalType decimal ? toRawValue(register, decimal.longValue()) : null;
+            case NUMBER -> {
+                if (!(command instanceof DecimalType decimal)) {
+                    yield null;
+                }
+                if (register == KebaModbusWriteRegister.TRIGGER_PHASE_SWITCH) {
+                    BigDecimal phases = decimal.toBigDecimal();
+                    if (phases.compareTo(BigDecimal.ONE) == 0) {
+                        yield toRawValue(register, 0);
+                    }
+                    yield phases.compareTo(BigDecimal.valueOf(3)) == 0 ? toRawValue(register, 1) : null;
+                }
+                yield toRawValue(register, decimal.longValue());
+            }
             case CURRENT_MA -> {
                 if (command instanceof QuantityType<?> quantity) {
                     QuantityType<?> ampere = Objects.requireNonNull(quantity.toUnit(Units.AMPERE));

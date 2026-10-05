@@ -26,6 +26,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -46,16 +47,23 @@ class KeContactTransceiverTest {
     @Test
     @Timeout(20)
     void sendDeliversReportAndReceivesReplyWhileCallerWaits() throws Exception {
-        assertRoundTrip(false);
+        assertRoundTrip(false, false);
     }
 
     @Test
     @Timeout(20)
     void sendReceivesReplyOnSharedListenerPort() throws Exception {
-        assertRoundTrip(true);
+        assertRoundTrip(true, false);
     }
 
-    private static void assertRoundTrip(boolean useListenerPort) throws Exception {
+    @Test
+    @Timeout(40)
+    void registeredHandlerCanSendAfterTransceiverRestart() throws Exception {
+        assertRoundTrip(false, true);
+        assertRoundTrip(true, true);
+    }
+
+    private static void assertRoundTrip(boolean useListenerPort, boolean restart) throws Exception {
         try (DatagramSocket wallbox = new DatagramSocket(new InetSocketAddress("127.0.0.1", 0))) {
             wallbox.setSoTimeout(10000);
             KeContactTransceiver transceiver = new KeContactTransceiver(0, wallbox.getLocalPort());
@@ -65,11 +73,16 @@ class KeContactTransceiverTest {
             sender.setDaemon(true);
             try {
                 transceiver.registerHandler(handler);
+                if (restart) {
+                    transceiver.stop();
+                    transceiver.start();
+                }
                 sender.start();
                 DatagramPacket request = new DatagramPacket(new byte[1024], 1024);
                 wallbox.receive(request);
                 assertEquals("report 1", new String(request.getData(), request.getOffset(), request.getLength(),
                         StandardCharsets.US_ASCII));
+                transceiver.registerHandler(handler);
                 byte[] reply = "{\"ID\":1,\"Product\":\"P30\"}".getBytes(StandardCharsets.US_ASCII);
                 wallbox.send(new DatagramPacket(reply, reply.length,
                         useListenerPort ? new InetSocketAddress("127.0.0.1", transceiver.getLocalPort())
@@ -82,6 +95,123 @@ class KeContactTransceiverTest {
                         new String(received.array(), 0, received.limit(), StandardCharsets.US_ASCII));
             } finally {
                 transceiver.unRegisterHandler(handler);
+                sender.interrupt();
+                sender.join(TimeUnit.SECONDS.toMillis(5));
+                transceiver.stop();
+            }
+        }
+    }
+
+    @Test
+    @Timeout(20)
+    void repeatedRegistrationRetriesStartupAfterListenerPortBecomesAvailable() throws Exception {
+        try (DatagramSocket wallbox = new DatagramSocket(new InetSocketAddress("127.0.0.1", 0));
+                DatagramSocket occupiedPort = new DatagramSocket(0)) {
+            wallbox.setSoTimeout(5000);
+            int listenerPort = occupiedPort.getLocalPort();
+            KeContactTransceiver transceiver = new KeContactTransceiver(listenerPort, wallbox.getLocalPort());
+            KeContactHandler handler = Objects.requireNonNull(createHandler("127.0.0.1"));
+            AtomicReference<ByteBuffer> response = new AtomicReference<>();
+            Thread sender = new Thread(() -> response.set(transceiver.send("report 2", handler)));
+            sender.setDaemon(true);
+            try {
+                transceiver.registerHandler(handler);
+                assertEquals(-1, transceiver.getLocalPort());
+                occupiedPort.close();
+
+                transceiver.registerHandler(handler);
+                assertEquals(listenerPort, transceiver.getLocalPort());
+                sender.start();
+                DatagramPacket request = new DatagramPacket(new byte[1024], 1024);
+                wallbox.receive(request);
+                assertEquals("report 2", new String(request.getData(), request.getOffset(), request.getLength(),
+                        StandardCharsets.US_ASCII));
+                byte[] reply = "{\"ID\":2}".getBytes(StandardCharsets.US_ASCII);
+                wallbox.send(new DatagramPacket(reply, reply.length, request.getSocketAddress()));
+                sender.join(TimeUnit.SECONDS.toMillis(5));
+                assertFalse(sender.isAlive());
+                ByteBuffer received = response.get();
+                assertNotNull(received);
+                assertEquals("{\"ID\":2}",
+                        new String(received.array(), 0, received.limit(), StandardCharsets.US_ASCII));
+            } finally {
+                transceiver.unRegisterHandler(handler);
+                sender.interrupt();
+                sender.join(TimeUnit.SECONDS.toMillis(5));
+                transceiver.stop();
+            }
+        }
+    }
+
+    @Test
+    @Timeout(20)
+    void unregisterDoesNotStopAConcurrentlyRegisteredHandler() throws Exception {
+        try (DatagramSocket wallbox = new DatagramSocket(new InetSocketAddress("127.0.0.1", 0))) {
+            wallbox.setSoTimeout(5000);
+            CountDownLatch beforeStop = new CountDownLatch(1);
+            CountDownLatch resumeStop = new CountDownLatch(1);
+            KeContactTransceiver transceiver = new KeContactTransceiver(0, wallbox.getLocalPort()) {
+                @Override
+                void stop(boolean onlyIfEmpty) {
+                    if (onlyIfEmpty) {
+                        beforeStop.countDown();
+                        try {
+                            if (!resumeStop.await(5, TimeUnit.SECONDS)) {
+                                throw new IllegalStateException("Timed out waiting to resume conditional stop");
+                            }
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new IllegalStateException(e);
+                        }
+                    }
+                    super.stop(onlyIfEmpty);
+                }
+            };
+            KeContactHandler oldHandler = Objects.requireNonNull(createHandler("127.0.0.1"));
+            KeContactHandler newHandler = Objects.requireNonNull(createHandler("127.0.0.1"));
+            AtomicReference<Throwable> unregisterFailure = new AtomicReference<>();
+            Thread unregister = new Thread(() -> {
+                try {
+                    transceiver.unRegisterHandler(oldHandler);
+                } catch (RuntimeException | Error e) {
+                    unregisterFailure.set(e);
+                }
+            });
+            AtomicReference<ByteBuffer> response = new AtomicReference<>();
+            Thread sender = new Thread(() -> response.set(transceiver.send("report 2", newHandler)));
+            unregister.setDaemon(true);
+            sender.setDaemon(true);
+            try {
+                transceiver.registerHandler(oldHandler);
+                int listenerPort = transceiver.getLocalPort();
+                unregister.start();
+                assertTrue(beforeStop.await(5, TimeUnit.SECONDS));
+                transceiver.registerHandler(newHandler);
+                resumeStop.countDown();
+                unregister.join(TimeUnit.SECONDS.toMillis(5));
+                assertFalse(unregister.isAlive());
+                assertNull(unregisterFailure.get());
+                assertEquals(listenerPort, transceiver.getLocalPort());
+
+                sender.start();
+                DatagramPacket request = new DatagramPacket(new byte[1024], 1024);
+                wallbox.receive(request);
+                assertEquals("report 2", new String(request.getData(), request.getOffset(), request.getLength(),
+                        StandardCharsets.US_ASCII));
+                byte[] reply = "{\"ID\":2}".getBytes(StandardCharsets.US_ASCII);
+                wallbox.send(new DatagramPacket(reply, reply.length, request.getSocketAddress()));
+                sender.join(TimeUnit.SECONDS.toMillis(5));
+                assertFalse(sender.isAlive());
+                ByteBuffer received = response.get();
+                assertNotNull(received);
+                assertEquals("{\"ID\":2}",
+                        new String(received.array(), 0, received.limit(), StandardCharsets.US_ASCII));
+            } finally {
+                resumeStop.countDown();
+                unregister.interrupt();
+                unregister.join(TimeUnit.SECONDS.toMillis(5));
+                transceiver.unRegisterHandler(oldHandler);
+                transceiver.unRegisterHandler(newHandler);
                 sender.interrupt();
                 sender.join(TimeUnit.SECONDS.toMillis(5));
                 transceiver.stop();

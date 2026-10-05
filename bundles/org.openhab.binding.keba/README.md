@@ -16,8 +16,8 @@ temperature and other REST-only information. Enable any supported combination of
 | KeContact P30 a-series                  | SKU-dependent                                   | Not supported                 | Not supported                     | Not supported                                             |
 | KeContact P30 b-series                  | SKU-dependent; some variants have no Ethernet   | SKU-dependent                 | SKU-dependent                     | Not supported                                             |
 | **KeContact P30 c-series**              | Yes                                             | Supported, firmware 3.9.24+   | Supported, firmware 3.10.16+      | Not supported                                             |
-| **KeContact P30 x-series**              | Yes                                             | Supported                     | Supported, firmware 1.11+         | Supported, developed and tested against firmeware 2.1.0   |
-| BMW wallbox (P30 x-series)              | Yes                                             | Supported                     | Supported, firmware 1.11+         | Supported, developed and tested against firmeware 2.1.0   |
+| **KeContact P30 x-series**              | Yes                                             | Supported                     | Supported, firmware 1.11+         | Supported, developed and tested against firmware 2.1.0    |
+| BMW wallbox (P30 x-series)              | Yes                                             | Supported                     | Supported, firmware 1.11+         | Supported, developed and tested against firmware 2.1.0    |
 |                                         |                                                 |                               |                                   |                                                           |
 | **KeContact P40 / P40 Pro**             | Yes                                             | Not supported                 | Supported                         | Supported                                                 |
 
@@ -128,11 +128,13 @@ For example, a P20 using UDP keeps UDP-supported channels and does not expose Mo
 channels. Protocol-only channels are removed when that protocol is disabled or the model does not support it.
 During initial detection, the full candidate set may be present until the wallbox model is identified.
 
-The combined Thing defines 70 candidate channels before capability pruning. It does not expose duplicate
+The combined Thing defines 71 candidate channels before capability pruning. It does not expose duplicate
 protocol-specific aliases for shared values. The numeric operational state is `state`; REST's textual state is
-`reststate`. `triggerphaseswitch` uses the numeric command (0 = one phase, 1 = three phases), not the REST toggle
-command. The `vehicle`, `wallbox`, and `locked` switches use Modbus cable state when available, with UDP or REST
-fallback where supported.
+`reststate`. `triggerphaseswitch` accepts the requested phase count (1 = one phase, 3 = three phases) through
+Modbus or UDP. REST exposes a separate `togglephaseswitch` Switch: send ON to toggle between single-phase and
+three-phase charging. OFF is ignored, and the channel resets to OFF after a successful request. It does not
+select a target phase count or emulate one through read-then-toggle. The `vehicle`, `wallbox`, and `locked`
+switches use Modbus cable state when available, with UDP or REST fallback where supported.
 
 Use `maxsystemcurrent` for the wallbox hardware limit, `maxpilotcurrent` for the current offered to the vehicle,
 and `maxpresetcurrent` for the writable user setpoint. The setpoint is sent through Modbus when available and
@@ -206,6 +208,7 @@ When UDP is enabled and supported by the wallbox, the combined Thing exposes the
 | currtimertimeout        | Number:Time              | yes       | remaining time before the delayed preset current is applied             |
 | phaseswitchsource       | Number                   | no        | communication source allowed to control phase switching                 |
 | phaseswitchstate        | Number                   | no        | phase-switch state (1 or 3 phases), writable using the X2 phase command |
+| triggerphaseswitch      | Number                   | no        | requests a phase count: 1 = single-phase, 3 = three-phase charging      |
 | uptime                  | Number:Time              | yes       | system uptime since the last reset of the wallbox                       |
 | sessionconsumption      | Number:Energy            | yes       | energy delivered in current session                                     |
 | totalconsumption        | Number:Energy            | yes       | total energy delivered since the last reset of the wallbox              |
@@ -246,7 +249,7 @@ Modbus contributes these additional measurements and commands when enabled:
 | setenergylimit          | Number:Energy            | no        | set an energy limit for an already running or the next charging session |
 | unlockplug              | Switch                   | no        | send ON to unlock the plug (charging must be stopped first)             |
 | enableduser             | Switch                   | no        | enable or disable the wallbox                                           |
-| triggerphaseswitch      | Number                   | no        | triggers the phase switch (0 = 1 phase, 1 = 3 phases)                   |
+| triggerphaseswitch      | Number                   | no        | requests a phase count: 1 = single-phase, 3 = three-phase charging      |
 
 REST contributes these additional values and commands when configured:
 
@@ -282,7 +285,7 @@ REST contributes these additional values and commands when configured:
 | unlock                  | Switch                   | no        | send ON to unlock the wallbox                                                                             |
 | start                   | Switch                   | no        | send ON to start charging                                                                                 |
 | stop                    | Switch                   | no        | send ON to stop charging                                                                                  |
-| triggerphaseswitch      | Switch                   | no        | send ON to toggle between single-phase and three-phase charging                                           |
+| togglephaseswitch       | Switch                   | no        | send ON to toggle single-/three-phase charging; OFF ignored; resets to OFF after success                  |
 | reboot                  | Switch                   | no        | send ON to reboot the wallbox                                                                             |
 
 ### REST State and Error Values
