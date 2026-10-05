@@ -144,9 +144,7 @@
 			<add-channel id="errorcode">
 				<type>keba:error-code</type>
 			</add-channel>
-			<add-channel id="triggerphaseswitch">
-				<type>keba:phase-switch-trigger</type>
-			</add-channel>
+			<remove-channel id="triggerphaseswitch"/>
 			<add-channel id="failsafepersist">
 				<type>keba:register-trigger</type>
 			</add-channel>

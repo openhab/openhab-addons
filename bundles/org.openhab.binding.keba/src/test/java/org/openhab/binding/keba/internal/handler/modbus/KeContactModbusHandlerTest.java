@@ -140,6 +140,7 @@ class KeContactModbusHandlerTest {
 
     @Test
     void convertsPhaseCountsToModbusPhaseSwitchValues() {
+        assertEquals("phaseswitchstate", KebaModbusWriteRegister.TRIGGER_PHASE_SWITCH.getChannelId());
         assertEquals(0,
                 KeContactModbusHandler.toRawValue(KebaModbusWriteRegister.TRIGGER_PHASE_SWITCH, new DecimalType(1)));
         assertEquals(1,

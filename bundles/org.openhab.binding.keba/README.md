@@ -60,6 +60,7 @@ Configuration is grouped with Common settings first, followed by Modbus TCP, UDP
 | Modbus TCP | port                | Modbus TCP port                                                  | 502       |
 | Modbus TCP | unitId              | Modbus slave address                                             | 255       |
 | UDP        | udpEnabled          | Enable UDP                                                       | true      |
+| UDP        | udpDisplayOnly      | Restrict UDP to display commands without cyclic polling          | false     |
 | REST API   | restEnabled         | Enable REST                                                      | false     |
 | REST API   | restPort            | REST HTTPS port                                                  | 8443      |
 | REST API   | username            | REST username                                                    | admin     |
@@ -68,6 +69,17 @@ Configuration is grouped with Common settings first, followed by Modbus TCP, UDP
 
 When updating an earlier development build, replace `udpIpAddress` with the common `ipAddress` and move any
 Modbus proxy address to `modbusIpAddress`. Replace `baseUrl` with `restEnabled=true` and its port with `restPort`.
+
+For UDP display commands only, set `udpEnabled=true` and `udpDisplayOnly=true`. This is useful when Modbus or
+REST supplies measurements and additional UDP data is not needed. It replaces the former zero-cycle-time mode
+without changing the shared polling intervals. Only the UDP `display` channel and `setDisplay` rule actions
+remain available; channels supplied by Modbus or REST are unaffected.
+
+Display-only mode sends no startup probes or cyclic UDP reports. The first display request reads report 1 for
+identification and uses the UDP-enable flag to check command availability. Report 2 is read on demand only if
+that check is still needed. Later display requests reuse successful identification; failed identification is
+retried on the next display request, not periodically. This mode supplies no UDP measurement fallback, and
+Modbus or REST remains responsible for operational Thing status.
 
 `refreshInterval` applies to fast Modbus values and primary UDP or REST operational data. The preferred
 available source is Modbus, then REST, then UDP. If Modbus becomes unavailable, REST operational reads use
@@ -91,6 +103,8 @@ To reduce device traffic:
   online, report 2 is read slowly only for linked UDP-specific values. A report needed for both fast and slow
   data is not requested twice. A display action does not start cyclic polling: command availability can be
   checked with an on-demand report 2 without changing either cyclic deadline.
+- Display-only UDP skips all cyclic reports and automatic discovery retries. It initializes the connection
+  only when a display channel command or `setDisplay` action is requested.
 - REST reads the wallbox at the fast interval when Modbus is unavailable, otherwise at the slow interval.
   Session and DIP-switch interpretation endpoints stay slow and are requested only when their channels are
   linked. Phase-source configuration also stays slow and is read only when linked and Modbus is unavailable.
@@ -98,7 +112,8 @@ To reduce device traffic:
   optional interface does not take the Thing offline while another interface supplies baseline data.
 
 The properties `modbusAvailable`, `udpAvailable` and `restAvailable` expose observed availability. Values include
-`unknown`, `available`, `unavailable`, `disabled`, `unsupported` and UDP `identification-only`.
+`unknown`, `available`, `unavailable`, `disabled`, `unsupported`, UDP `identification-only` and UDP `display-only`.
+`display-only` identifies the configured limited mode; it does not establish operational UDP data availability.
 `unavailable` can mean an interface is disabled, unreachable, or authentication/certificate validation failed; it
 does not mean the model permanently lacks that interface. P40 and identified P0 devices skip further UDP probes.
 Identified P20 and P30 c-series devices stop unsuccessful REST probing; an actual working REST response takes
@@ -128,13 +143,18 @@ For example, a P20 using UDP keeps UDP-supported channels and does not expose Mo
 channels. Protocol-only channels are removed when that protocol is disabled or the model does not support it.
 During initial detection, the full candidate set may be present until the wallbox model is identified.
 
-The combined Thing defines 71 candidate channels before capability pruning. It does not expose duplicate
+The combined Thing defines 70 candidate channels before capability pruning. It does not expose duplicate
 protocol-specific aliases for shared values. The numeric operational state is `state`; REST's textual state is
-`reststate`. `triggerphaseswitch` accepts the requested phase count (1 = one phase, 3 = three phases) through
-Modbus or UDP. REST exposes a separate `togglephaseswitch` Switch: send ON to toggle between single-phase and
+`reststate`. `phaseswitchstate` reports the phase count (1 = one phase, 3 = three phases) and accepts those same
+values as commands through Modbus or UDP. It is read-only through REST. REST exposes a separate
+`togglephaseswitch` Switch: send ON to toggle between single-phase and
 three-phase charging. OFF is ignored, and the channel resets to OFF after a successful request. It does not
 select a target phase count or emulate one through read-then-toggle. The `vehicle`, `wallbox`, and `locked`
 switches use Modbus cable state when available, with UDP or REST fallback where supported.
+
+The development-only `triggerphaseswitch` channel has been removed. Relink its Number Items to `phaseswitchstate`
+and send the requested phase count, 1 or 3. The `output` channel remains separate and unchanged; the wallbox's
+X2 output can have multiple purposes depending on its configuration.
 
 Use `maxsystemcurrent` for the wallbox hardware limit, `maxpilotcurrent` for the current offered to the vehicle,
 and `maxpresetcurrent` for the writable user setpoint. The setpoint is sent through Modbus when available and
@@ -176,7 +196,8 @@ UDP X1 signal and `output` controls X2. `restinput` is labelled **REST X2 Active
 
 Only the combined `kecontact` Thing type is available.
 
-When UDP is enabled and supported by the wallbox, the combined Thing exposes these channels:
+When UDP is enabled in full-data mode and supported by the wallbox, the combined Thing exposes these channels.
+With `udpDisplayOnly=true`, only `display` from this table is retained; shared channels can still come from Modbus or REST.
 
 | Channel ID              | Item Type                | Read-only | Description                                                             |
 | ----------------------- | ------------------------ | --------- | ----------------------------------------------------------------------- |
@@ -207,8 +228,7 @@ When UDP is enabled and supported by the wallbox, the combined Thing exposes the
 | currtimer               | Number:ElectricCurrent   | yes       | delayed preset current applied when its timer expires                   |
 | currtimertimeout        | Number:Time              | yes       | remaining time before the delayed preset current is applied             |
 | phaseswitchsource       | Number                   | no        | communication source allowed to control phase switching                 |
-| phaseswitchstate        | Number                   | no        | phase-switch state (1 or 3 phases), writable using the X2 phase command |
-| triggerphaseswitch      | Number                   | no        | requests a phase count: 1 = single-phase, 3 = three-phase charging      |
+| phaseswitchstate        | Number                   | no        | phase-switch state (1 or 3 phases)                                      |
 | uptime                  | Number:Time              | yes       | system uptime since the last reset of the wallbox                       |
 | sessionconsumption      | Number:Energy            | yes       | energy delivered in current session                                     |
 | totalconsumption        | Number:Energy            | yes       | total energy delivered since the last reset of the wallbox              |
@@ -240,7 +260,7 @@ Modbus contributes these additional measurements and commands when enabled:
 | fastchargingstatus      | Number                   | yes       | raw P40 fast-charging status (register 1200)                            |
 | sessionrfidtag          | String                   | yes       | RFID tag used for the last charging session (RFID enabled)              |
 | phaseswitchsource       | Number                   | no        | source that is allowed to control the phase switching                   |
-| phaseswitchstate        | Number                   | yes       | number of phases currently used (1 or 3)                                |
+| phaseswitchstate        | Number                   | no        | phase-switch state (1 or 3 phases)                                      |
 | failsafecurrent         | Number:ElectricCurrent   | no        | charging current to fall back to if the connection is lost              |
 | failsafetimeout         | Number:Time              | no        | timeout after which the failsafe current is applied                     |
 | failsafepersist         | Switch                   | no        | send ON to persist P30 EMS failsafe settings (register 5020)            |
@@ -249,7 +269,6 @@ Modbus contributes these additional measurements and commands when enabled:
 | setenergylimit          | Number:Energy            | no        | set an energy limit for an already running or the next charging session |
 | unlockplug              | Switch                   | no        | send ON to unlock the plug (charging must be stopped first)             |
 | enableduser             | Switch                   | no        | enable or disable the wallbox                                           |
-| triggerphaseswitch      | Number                   | no        | requests a phase count: 1 = single-phase, 3 = three-phase charging      |
 
 REST contributes these additional values and commands when configured:
 
@@ -353,6 +372,7 @@ demo.Things:
 
 ```java
 Thing keba:kecontact:combined [ipAddress="192.168.0.67", modbusEnabled=true, udpEnabled=true, restEnabled=true, restPort=8443, password="secret"]
+Thing keba:kecontact:restdisplay [ipAddress="192.168.0.67", modbusEnabled=false, udpEnabled=true, udpDisplayOnly=true, restEnabled=true, password="secret"]
 Thing keba:kecontact:p20      [ipAddress="192.168.0.64", modbusEnabled=false, udpEnabled=true, restEnabled=false]
 Thing keba:kecontact:proxied  [ipAddress="192.168.0.69", modbusIpAddress="192.168.0.20", modbusEnabled=true, unitId=255]
 ```

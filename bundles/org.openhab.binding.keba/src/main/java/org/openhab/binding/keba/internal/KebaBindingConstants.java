@@ -98,7 +98,6 @@ public class KebaBindingConstants {
     public static final String CHANNEL_FAILSAFE_PERSIST = "failsafepersist";
     public static final String CHANNEL_ACTIVATE_FAST_CHARGING = "activatefastcharging";
     public static final String CHANNEL_UNLOCK_PLUG = "unlockplug";
-    public static final String CHANNEL_TRIGGER_PHASE_SWITCH = "triggerphaseswitch";
 
     public enum KebaType {
         P20,

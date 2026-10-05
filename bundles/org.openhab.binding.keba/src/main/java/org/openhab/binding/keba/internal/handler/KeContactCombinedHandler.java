@@ -14,7 +14,6 @@ package org.openhab.binding.keba.internal.handler;
 
 import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,6 +52,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelDefinition;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.types.Command;
@@ -94,14 +94,14 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             "power", "totalconsumption", "U1", "U2", "U3", "powerfactor", "maxpilotcurrent", "maxsystemcurrent",
             "fastchargingstatus", "sessionrfidtag", "sessionconsumption", "phaseswitchsource", "phaseswitchstate",
             "failsafecurrent", "failsafetimeout", "maxpresetcurrent", "setenergylimit", "unlockplug", "enableduser",
-            "triggerphaseswitch", "failsafepersist", "activatefastcharging");
+            "failsafepersist", "activatefastcharging");
     private static final Set<String> UDP_CHANNELS = Set.of("backend", "timequality", "bootflag", "dipswitch1",
             "dipswitch2", "enabledsystem", "enableduser", "maxpresetcurrent", "maxpresetcurrentrange", "error1",
             "error2", "state", "wallbox", "vehicle", "locked", "maxpilotcurrent", "maxpilotcurrentdutycyle",
             "maxsystemcurrent", "failsafecurrent", "failsafetimeout", "currtimer", "currtimertimeout", "output",
             "input", "uptime", "authreq", "authon", "I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
             "totalconsumption", "sessionconsumption", "sessionrfidtag", "sessionrfidclass", "sessionid", "display",
-            "authenticate", "setenergylimit", "phaseswitchsource", "phaseswitchstate", "triggerphaseswitch");
+            "authenticate", "setenergylimit", "phaseswitchsource", "phaseswitchstate");
     private static final Set<String> REST_CHANNELS = Set.of("reststate", "session", "error", "reserved", "temperature",
             "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases", "phaseconfiguration",
             "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop", "reboot", "unlock",
@@ -146,7 +146,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             this.config = config;
             modbusPending = config.modbusEnabled;
             restPending = config.restEnabled;
-            udpPending = config.udpEnabled;
+            udpPending = config.udpEnabled && !config.udpDisplayOnly;
         }
     }
 
@@ -206,7 +206,8 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         reconcileChannels(localSession);
         updateStatus(ThingStatus.UNKNOWN);
         updateProperties(Map.of("modbusAvailable", config.modbusEnabled ? "unknown" : "disabled", "udpAvailable",
-                config.udpEnabled ? "unknown" : "disabled", "restAvailable", restEnabled ? "unknown" : "disabled"));
+                !config.udpEnabled ? "disabled" : config.udpDisplayOnly ? "display-only" : "unknown", "restAvailable",
+                restEnabled ? "unknown" : "disabled"));
         if (config.modbusEnabled) {
             Configuration modbusConfig = new Configuration(Map.of("ipAddress", config.getModbusAddress(), "port",
                     config.port, "unitId", config.unitId, "refreshInterval", config.refreshInterval,
@@ -338,10 +339,15 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 if (!channelSupported(id, localSession)) {
                     continue;
                 }
+                ChannelTypeUID typeUID = definition.getChannelTypeUID();
+                if (CHANNEL_PHASE_SWITCH_STATE.equals(id) && !protocolSupported(Protocol.MODBUS, localSession)
+                        && (!protocolSupported(Protocol.UDP, localSession) || localSession.config.udpDisplayOnly)) {
+                    typeUID = new ChannelTypeUID(BINDING_ID, "phase-switch-state-readonly");
+                }
                 @Nullable
                 Channel channel = existing.get(id);
                 ChannelUID channelUID = new ChannelUID(getThing().getUID(), id);
-                ChannelBuilder builder = callback.createChannelBuilder(channelUID, definition.getChannelTypeUID());
+                ChannelBuilder builder = callback.createChannelBuilder(channelUID, typeUID);
                 Channel canonical = builder.build();
                 // XML candidates can be absent from the Thing after protocol-driven pruning.
                 if (channel == null) {
@@ -360,10 +366,10 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                         builder.withAutoUpdatePolicy(definition.getAutoUpdatePolicy());
                     }
                     channel = builder.build();
-                } else if (!definition.getChannelTypeUID().equals(channel.getChannelTypeUID())
+                } else if (!typeUID.equals(channel.getChannelTypeUID())
                         || !Objects.equals(canonical.getAcceptedItemType(), channel.getAcceptedItemType())
                         || canonical.getKind() != channel.getKind()) {
-                    channel = ChannelBuilder.create(channel).withType(definition.getChannelTypeUID())
+                    channel = ChannelBuilder.create(channel).withType(typeUID)
                             .withAcceptedItemType(canonical.getAcceptedItemType()).withKind(canonical.getKind())
                             .build();
                     repaired = true;
@@ -392,11 +398,22 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 && Set.of(CHANNEL_FAST_CHARGING_STATUS, CHANNEL_ACTIVATE_FAST_CHARGING).contains(channel)) {
             return false;
         }
-        boolean modbusSupported = localSession.config.modbusEnabled && !product.contains("P20");
-        boolean udpSupported = localSession.config.udpEnabled && !product.contains("P40") && !product.contains("P0");
-        boolean restSupported = localSession.config.restEnabled && !restUnsupportedForProduct(product);
-        return modbusSupported && MODBUS_CHANNELS.contains(channel) || udpSupported && UDP_CHANNELS.contains(channel)
+        boolean modbusSupported = protocolSupported(Protocol.MODBUS, localSession);
+        boolean udpSupported = protocolSupported(Protocol.UDP, localSession);
+        boolean restSupported = protocolSupported(Protocol.REST, localSession);
+        return modbusSupported && MODBUS_CHANNELS.contains(channel)
+                || udpSupported && (localSession.config.udpDisplayOnly ? CHANNEL_DISPLAY.equals(channel)
+                        : UDP_CHANNELS.contains(channel))
                 || restSupported && REST_CHANNELS.contains(channel);
+    }
+
+    private boolean protocolSupported(Protocol protocol, Session localSession) {
+        String product = localSession.product.toUpperCase(Locale.ROOT);
+        return switch (protocol) {
+            case MODBUS -> localSession.config.modbusEnabled && !product.contains("P20");
+            case UDP -> localSession.config.udpEnabled && !product.contains("P40") && !product.contains("P0");
+            case REST -> localSession.config.restEnabled && !restUnsupportedForProduct(product);
+        };
     }
 
     private KeContactProtocolHandler.Listener listener(Session localSession, Protocol protocol) {
@@ -538,6 +555,9 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 localSession.udpCommands = false;
             }
         }
+        if (protocol == Protocol.UDP && localSession.config.udpDisplayOnly) {
+            return;
+        }
         String channel = switch (protocol) {
             case UDP -> originalChannel;
             case REST -> switch (originalChannel) {
@@ -616,6 +636,9 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         if (rest != null && !localSession.restOnline && now >= localSession.nextRestRetry) {
             localSession.nextRestRetry = now + TimeUnit.SECONDS.toNanos(300);
             rest.retryInitialization();
+        }
+        if (localSession.config.udpDisplayOnly) {
+            return;
         }
         KeContactHandler udp = localSession.udp;
         if (!current(localSession) || udp == null || localSession.product.contains("P40")
@@ -774,21 +797,11 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             } else if ((REST_ONLY.contains(channel) || "enableduser".equals(channel)
                     || "phaseswitchsource".equals(channel)) && localSession.restOnline && rest != null) {
                 rest.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
-            } else if (udp != null && (UDP_COMMANDS.contains(channel)
-                    || Set.of("setenergylimit", "enableduser", "phaseswitchsource", "triggerphaseswitch")
-                            .contains(channel))) {
+            } else if (udp != null && !localSession.config.udpDisplayOnly && (UDP_COMMANDS.contains(channel) || Set
+                    .of("setenergylimit", "enableduser", "phaseswitchsource", "phaseswitchstate").contains(channel))) {
                 synchronized (localSession.udpLock) {
                     if (current(localSession) && ensureUdpCommands(localSession, udp)) {
-                        String udpChannel = switch (channel) {
-                            case "triggerphaseswitch" -> "phaseswitchstate";
-                            default -> channel;
-                        };
-                        if ("triggerphaseswitch".equals(channel) && (!(command instanceof DecimalType value)
-                                || value.toBigDecimal().compareTo(BigDecimal.ONE) != 0
-                                        && value.toBigDecimal().compareTo(BigDecimal.valueOf(3)) != 0)) {
-                            return;
-                        }
-                        udp.handleCommand(new ChannelUID(getThing().getUID(), udpChannel), command);
+                        udp.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
                     }
                 }
             }
@@ -796,13 +809,27 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     }
 
     private boolean ensureUdpCommands(Session localSession, KeContactHandler udp) {
+        if (!protocolSupported(Protocol.UDP, localSession)) {
+            return false;
+        }
+        if (!localSession.udpIdentified && localSession.config.udpDisplayOnly) {
+            udp.initializeCommands(localSession.config.ipAddress);
+            localSession.udpIdentified = udp.readReport(1);
+            if (!current(localSession)) {
+                udp.dispose();
+                return false;
+            }
+            updateProperty("udpAvailable", !localSession.udpIdentified ? "unavailable"
+                    : localSession.udpCommands ? "display-only" : "identification-only");
+        }
         if (!localSession.udpIdentified) {
             return false;
         }
         if (!localSession.udpCommands) {
             localSession.udpCommands = udp.readReport(2);
             if (current(localSession)) {
-                updateProperty("udpAvailable", localSession.udpCommands ? "available" : "identification-only");
+                updateProperty("udpAvailable", !localSession.udpCommands ? "identification-only"
+                        : localSession.config.udpDisplayOnly ? "display-only" : "available");
             }
         }
         return current(localSession) && localSession.udpCommands;

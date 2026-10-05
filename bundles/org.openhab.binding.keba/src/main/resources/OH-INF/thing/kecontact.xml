@@ -95,12 +95,8 @@
 				<description>Communication source allowed to control phase switching: disabled, OCPP, REST, Modbus or UDP.</description>
 			</channel>
 			<channel id="phaseswitchstate" typeId="phase-switch-state">
-				<description>Number of phases currently used by charging, normally one or three.</description>
-			</channel>
-			<channel id="triggerphaseswitch" typeId="phase-switch-trigger">
-				<description>Request a phase change: send 1 for one phase or 3 for three phases through Modbus or UDP. This is not
-					the REST toggle
-					command.</description>
+				<description>Phase-switch state, 1 for single-phase or 3 for three-phase charging. Writable through Modbus or UDP;
+					read-only through REST. Use togglephaseswitch for a REST phase toggle.</description>
 			</channel>
 			<channel id="failsafecurrent" typeId="failsafe-current-setting">
 				<label>Failsafe Current Setting</label>
@@ -226,7 +222,7 @@
 			<channel id="restinput" typeId="status">
 				<label>REST X2 Active</label>
 				<description>Raw x2active flag reported by the REST API. This is not assumed to be the UDP X1 enable-input signal;
-					use udp#inputx1 for that physical input.</description>
+					use input for that physical input.</description>
 			</channel>
 			<channel id="temperature" typeId="temperature">
 				<description>Internal wallbox temperature from the REST meter data, in degrees Celsius.</description>
@@ -343,6 +339,13 @@
 				<label>Enable UDP</label>
 				<description>Use UDP for display commands and UDP-only data when supported by the wallbox</description>
 				<default>true</default>
+			</parameter>
+			<parameter name="udpDisplayOnly" type="boolean" groupName="udp">
+				<label>Display Only</label>
+				<description>Limit UDP to display commands without cyclic reports. Identification and command checks run only
+					when a
+					display command is sent.</description>
+				<default>false</default>
 			</parameter>
 			<parameter name="restEnabled" type="boolean" groupName="rest">
 				<label>Enable REST</label>
@@ -543,11 +546,25 @@
 	<channel-type id="phase-switch-state" advanced="true">
 		<item-type>Number</item-type>
 		<label>Phase Switching State</label>
-		<description>Phases currently used by the external phase switch, set with the "x2" command</description>
+		<description>Phase-switch state: 1 for single-phase charging or 3 for three-phase charging</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
 		<state readOnly="false">
+			<options>
+				<option value="1">Single-phase charging</option>
+				<option value="3">3-phase charging</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="phase-switch-state-readonly" advanced="true">
+		<item-type>Number</item-type>
+		<label>Phase Switching State</label>
+		<description>Phase-switch state: 1 for single-phase charging or 3 for three-phase charging</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
 			<options>
 				<option value="1">Single-phase charging</option>
 				<option value="3">3-phase charging</option>
@@ -800,20 +817,6 @@
 			<tag>Switch</tag>
 		</tags>
 		<state readOnly="false"/>
-	</channel-type>
-	<channel-type id="phase-switch-trigger" advanced="true">
-		<item-type>Number</item-type>
-		<label>Trigger Phase Switch</label>
-		<description>Request single-phase charging with 1 or three-phase charging with 3</description>
-		<tags>
-			<tag>Control</tag>
-		</tags>
-		<state readOnly="false">
-			<options>
-				<option value="1">1 phase</option>
-				<option value="3">3 phases</option>
-			</options>
-		</state>
 	</channel-type>
 	<channel-type id="textual-state">
 		<item-type>String</item-type>

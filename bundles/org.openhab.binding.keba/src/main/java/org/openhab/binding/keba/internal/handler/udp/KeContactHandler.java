@@ -16,6 +16,7 @@ import static org.openhab.binding.keba.internal.KebaBindingConstants.*;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -738,7 +739,9 @@ public class KeContactHandler extends KeContactProtocolHandler {
                     break;
                 }
                 case CHANNEL_PHASE_SWITCH_STATE: {
-                    if (command instanceof DecimalType decimalCommand) {
+                    if (command instanceof DecimalType decimalCommand
+                            && (decimalCommand.toBigDecimal().compareTo(BigDecimal.ONE) == 0
+                                    || decimalCommand.toBigDecimal().compareTo(BigDecimal.valueOf(3)) == 0)) {
                         // the wallbox reports/expects phase counts (1 or 3), but the "x2" command takes 0 or 1
                         transceiver.send("x2 " + (decimalCommand.intValue() >= 3 ? 1 : 0), this);
                     }

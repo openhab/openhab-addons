@@ -33,6 +33,7 @@ public class KeContactCombinedConfiguration {
     public int unitId = 255;
     public int refreshInterval = 12;
     public boolean udpEnabled = true;
+    public boolean udpDisplayOnly = false;
     public boolean restEnabled = false;
     public int restPort = 8443;
     public String username = "admin";
