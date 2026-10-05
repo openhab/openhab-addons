@@ -21,6 +21,8 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.now;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -211,6 +213,8 @@ class ShellyBaseHandlerWatchdogTest {
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
         setField(handler, "messages", mock(ShellyTranslationProvider.class));
         setField(handler, "stats", new ShellyDeviceStats());
+        setField(handler, "vibrationFilter", new AtomicInteger());
+        setField(handler, "lastWakeupReason", new AtomicReference<>(""));
         setField(handler, "initLock", new Object());
         setField(handler, "skipCount", 1);
         setField(handler, "watchdog", now());
