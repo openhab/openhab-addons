@@ -142,7 +142,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
     private volatile boolean refreshSettings;
-    private final Object channelLock = new Object();
+    // guards read-modify-write of the Thing's channel list
+    protected final Object channelLock = new Object();
     private final Object initLock = new Object();
     private volatile @Nullable ScheduledFuture<?> statusJob;
     private volatile @Nullable ScheduledFuture<?> initJob;
