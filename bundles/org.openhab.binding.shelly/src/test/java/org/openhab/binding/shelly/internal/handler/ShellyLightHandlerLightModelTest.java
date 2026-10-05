@@ -1160,4 +1160,92 @@ class ShellyLightHandlerLightModelTest {
         // @formatter:on
         );
     }
+
+    private static ChannelUID createChannelUID(ThingTypeUID thingTypeUID, String group, String channel) {
+        return new ChannelUID(new ChannelGroupUID(new ThingUID(thingTypeUID, "test"), group), channel);
+    }
+
+    private static ShellyTestLightHandler createGen2RgbHandler() {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPRORGBWWPM);
+        handler.profile.device.profile = SHELLY2_PROFILE_RGB;
+        handler.profile.isGen2 = true;
+        handler.profile.isRGBW2 = true;
+        handler.profile.inColor = true;
+        return handler;
+    }
+
+    @Test
+    void isMainLightIsTrueOnlyForChannelGroupSuffixZero() {
+        ShellyTestLightHandler handler = createGen2RgbHandler();
+        assertTrue(ShellyLightModel.create(handler, 0, handler.profile, DIM_STEPSIZE).isMainLight());
+        assertFalse(ShellyLightModel.create(handler, 1, handler.profile, DIM_STEPSIZE).isMainLight());
+    }
+
+    @Test
+    void gen2ColorModeBrightnessCommandIsSentToDevice() throws Exception {
+        ShellyTestLightHandler handler = createGen2RgbHandler();
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
+        doNothing().when(api).setLightParms(anyInt(), anyMap());
+
+        boolean handled = handler.handleDeviceCommand(
+                createChannelUID(THING_TYPE_SHELLYPRORGBWWPM, CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS),
+                new PercentType(40));
+        assertTrue(handled);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, String>> parmsCaptor = ArgumentCaptor
+                .forClass((Class<Map<String, String>>) (Class<?>) Map.class);
+        verify(api).setLightParms(eq(0), parmsCaptor.capture());
+        assertEquals("40", parmsCaptor.getValue().get(SHELLY_COLOR_BRIGHTNESS));
+    }
+
+    @Test
+    void gen1ColorModeBrightnessCommandIsNotSentAsBrightness() throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYBULB);
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
+        doNothing().when(api).setLightParms(anyInt(), anyMap());
+
+        handler.handleDeviceCommand(
+                createChannelUID(THING_TYPE_SHELLYBULB, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS),
+                new PercentType(40));
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, String>> parmsCaptor = ArgumentCaptor
+                .forClass((Class<Map<String, String>>) (Class<?>) Map.class);
+        verify(api, atLeast(0)).setLightParms(anyInt(), parmsCaptor.capture());
+        parmsCaptor.getAllValues().forEach(parms -> assertFalse(parms.containsKey(SHELLY_COLOR_BRIGHTNESS),
+                "Gen1 color mode must use gain, not brightness"));
+    }
+
+    @Test
+    void secondaryLightModelDoesNotOverwriteControlGroupOnForcedUpdate() throws Exception {
+        ShellyTestLightHandler handler = createGen2RgbHandler();
+        handler.profile.device.profile = SHELLY2_PROFILE_RGBCCT; // model 0 = COLOR, model 1 = WHITE
+
+        ShellyLightModel main = ShellyLightModel.create(handler, 0, handler.profile, DIM_STEPSIZE);
+        ShellyLightModel secondary = ShellyLightModel.create(handler, 1, handler.profile, DIM_STEPSIZE);
+        handler.lightModels.put(0, main);
+        handler.lightModels.put(1, secondary);
+
+        // main light writes its state to the control group (positive control)
+        try (LightModels models = handler.acquire()) {
+            models.setForceChannelUpdates(true);
+            main.setRGBX(new int[] { 0, 0, 128 });
+            main.setBrightness(40);
+            main.setOnOff(true);
+        }
+        Map<String, State> updates = handler.getChannelUpdates();
+        assertEquals(new PercentType(40), updates.get("control#brightness"));
+        assertEquals(OnOffType.ON, updates.get("control#mode"));
+
+        // forced update of the secondary model alone must not touch the control group
+        updates.clear();
+        handler.updateChannelsFromLightModel(secondary, true);
+
+        assertTrue(updates.keySet().stream().noneMatch(key -> key.startsWith("control#")),
+                "secondary light model must not update the control group, but updated: " + updates.keySet());
+        assertEquals(PercentType.ZERO, updates.get("light1#brightness"));
+    }
 }
