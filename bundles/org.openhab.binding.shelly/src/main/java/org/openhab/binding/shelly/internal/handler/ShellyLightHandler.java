@@ -356,7 +356,9 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         }
 
         // BRIGHTNESS: align Gen 1/2 behaviour; only include brightness if light is on
-        if (model.supportsBrightnessChannel() && model.isBrightnessDirty() && Mode.WHITE == model.getMode()
+        // applies in WHITE mode, or COLOR mode when no gain channel exists e.g. Gen 2 devices
+        if (model.supportsBrightnessChannel() && model.isBrightnessDirty()
+                && (Mode.WHITE == model.getMode() || !model.supportsGainChannel())
                 && model.getBrightnessState() instanceof PercentType pct && OnOffType.ON == model.getOnOff(true)) {
             parms.put(SHELLY_COLOR_BRIGHTNESS, String.valueOf(pct.intValue()));
         }
@@ -499,7 +501,7 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         }
 
         // MODE:
-        if (forceChannelUpdates || model.isModeDirty()) {
+        if (model.isMainLight() && (forceChannelUpdates || model.isModeDirty())) {
             group = CHANNEL_GROUP_LIGHT_CONTROL;
             updated |= updateChannel(group, CHANNEL_LIGHT_COLOR_MODE, model.getModeState());
         }
@@ -534,8 +536,11 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         if (model.supportsBrightnessChannel() && (forceChannelUpdates || model.isBrightnessDirty())) {
             group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : lightChannelGroupPrefix(profile) + groupSuffix;
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
-            group = CHANNEL_GROUP_LIGHT_CONTROL;
-            updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
+            // only the main light model may update the control group brightness (if existing)
+            if (model.isMainLight()) {
+                group = CHANNEL_GROUP_LIGHT_CONTROL;
+                updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
+            }
         }
 
         // COLOR TEMP:
