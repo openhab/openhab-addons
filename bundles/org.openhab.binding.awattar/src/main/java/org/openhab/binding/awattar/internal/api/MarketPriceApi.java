@@ -10,20 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.awattar.internal;
+package org.openhab.binding.awattar.internal.api;
+
+import java.util.SortedSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.awattar.internal.AwattarPrice;
 
 /**
- * Stores the bridge configuration
- *
- * @author Wolfgang Klimt - initial contribution
+ * Provider-neutral contract for retrieving timestamped market prices.
  */
 @NonNullByDefault
-public class AwattarBridgeConfiguration {
-    public String provider = "awattar";
-    public double basePrice;
-    public double vatPercent;
-    public double serviceFee;
-    public String country = "";
+public interface MarketPriceApi {
+    SortedSet<AwattarPrice> getData() throws MarketPriceApiException;
 }
