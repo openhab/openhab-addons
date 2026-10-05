@@ -49,6 +49,7 @@ class ShellyBaseHandlerDisposeTest {
 
         setField(handler, "api", api);
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
+        setField(handler, "initLock", new Object());
         handler.profile = profile;
         handler.scheduledUpdates = 1;
         doReturn(thing).when(handler).getThing();
@@ -75,6 +76,7 @@ class ShellyBaseHandlerDisposeTest {
 
         setField(handler, "api", api);
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
+        setField(handler, "initLock", new Object());
         handler.profile = profile;
         handler.scheduledUpdates = 1;
         doReturn(thing).when(handler).getThing();

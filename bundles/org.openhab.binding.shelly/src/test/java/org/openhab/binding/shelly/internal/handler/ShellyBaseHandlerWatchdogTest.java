@@ -211,6 +211,7 @@ class ShellyBaseHandlerWatchdogTest {
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
         setField(handler, "messages", mock(ShellyTranslationProvider.class));
         setField(handler, "stats", new ShellyDeviceStats());
+        setField(handler, "initLock", new Object());
         setField(handler, "skipCount", 1);
         setField(handler, "watchdog", now());
         setField(handler, "thing", thing);

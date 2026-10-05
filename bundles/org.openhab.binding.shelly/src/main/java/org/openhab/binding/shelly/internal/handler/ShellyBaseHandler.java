@@ -141,8 +141,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private int skipUpdate = 0;
     private volatile boolean refreshSettings;
     private final Object channelLock = new Object();
-    private @Nullable ScheduledFuture<?> statusJob;
-    private @Nullable ScheduledFuture<?> initJob;
+    private final Object initLock = new Object();
+    private volatile @Nullable ScheduledFuture<?> statusJob;
+    private volatile @Nullable ScheduledFuture<?> initJob;
 
     /**
      * Constructor
@@ -334,6 +335,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      * @throws ShellyApiException e.g. http returned non-ok response, check e.getMessage() for details.
      */
     public boolean initializeThing() throws ShellyApiException {
+        // init job, command and status threads may all trigger it; dedicated lock as it does blocking I/O
+        synchronized (initLock) {
+            return initializeThingSerialized();
+        }
+    }
+
+    private boolean initializeThingSerialized() throws ShellyApiException {
         // Init from thing type to have a basic profile, gets updated when device info is received from API
         refreshSettings = false;
         lastWakeupReason = "";
@@ -680,9 +688,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
                 ShellySettingsStatus status = api.getStatus();
                 boolean restarted = checkRestarted(status);
-                profile = getProfile(refreshSettings || restarted);
-                profile.status = status;
-                profile.updateFromStatus(status);
+                ShellyDeviceProfile prf = getProfile(refreshSettings || restarted);
+                prf.status = status;
+                prf.updateFromStatus(status);
                 if (stopping) {
                     // dispose() may have run while the blocking calls above were in flight
                     return;
@@ -1376,7 +1384,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     /**
      * Start the background updates
      */
-    protected void startUpdateJob() {
+    protected synchronized void startUpdateJob() {
+        if (stopping) {
+            // the init job may complete after dispose() cancelled the jobs
+            return;
+        }
         ScheduledFuture<?> statusJob = this.statusJob;
         if ((statusJob == null) || statusJob.isCancelled()) {
             this.statusJob = scheduler.scheduleWithFixedDelay(this::refreshStatus, 2, UPDATE_STATUS_INTERVAL_SECONDS,
@@ -1848,6 +1860,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     public void stop() {
         logger.debug("{}: Shutting down", thingName);
+        cancelJobs();
+        api.close();
+        profile.initialized = false;
+    }
+
+    private synchronized void cancelJobs() {
         ScheduledFuture<?> job = this.initJob;
         if (job != null) {
             job.cancel(true);
@@ -1859,8 +1877,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             statusJob = null;
             logger.debug("{}: Shelly statusJob stopped", thingName);
         }
-        api.close();
-        profile.initialized = false;
     }
 
     /**
