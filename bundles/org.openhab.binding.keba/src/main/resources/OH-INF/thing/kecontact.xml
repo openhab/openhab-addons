@@ -29,7 +29,8 @@
 				<description>Whether the charging plug is locked, derived from cable state when Modbus is available.</description>
 			</channel>
 			<channel id="unlockplug" typeId="unlock-plug">
-				<description>Send ON to unlock the charging plug. Charging must be stopped before unlocking.</description>
+				<description>Send ON to unlock the charging plug through Modbus or UDP. Charging must be stopped before
+					unlocking.</description>
 			</channel>
 			<channel id="errorcode" typeId="error-code">
 				<label>Modbus Error Code</label>
@@ -100,18 +101,19 @@
 			</channel>
 			<channel id="failsafecurrent" typeId="failsafe-current-setting">
 				<label>Failsafe Current Setting</label>
-				<description>Charging-current limit applied after communication is lost, in amperes, reported by Modbus or UDP. This
-					setting is separate from the normal charging-current setpoint.</description>
+				<description>Failsafe current in amperes. Read and written through Modbus; UDP writes combine this value with the
+					current timeout from report 2.</description>
 			</channel>
 			<channel id="failsafetimeout" typeId="failsafe-timeout-setting">
 				<label>Failsafe Timeout Setting</label>
-				<description>Communication timeout after which the failsafe current is applied, in seconds, reported by Modbus or
-					UDP.
-					This is not the delayed UDP user-current timer.</description>
+				<description>Communication timeout after which failsafe current is applied, in seconds. Read and written through
+					Modbus; UDP writes combine this value with the failsafe current from report 2. This is not the delayed user-current
+					timer.</description>
 			</channel>
 			<channel id="failsafepersist" typeId="register-trigger">
 				<label>Persist Failsafe Settings</label>
-				<description>Send ON to save the active EMS failsafe settings permanently on a P30 wallbox.</description>
+				<description>Send ON to save the active failsafe settings permanently on a P30 wallbox through Modbus or
+					UDP.</description>
 			</channel>
 			<channel id="fastchargingstatus" typeId="fast-charging-status">
 				<description>P40-only raw fast-charging status from Modbus register 1200. Removed after a P30 model is identified.</description>

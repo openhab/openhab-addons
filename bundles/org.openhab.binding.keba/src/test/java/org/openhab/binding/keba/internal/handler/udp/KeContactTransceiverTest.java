@@ -22,7 +22,9 @@ import static org.mockito.Mockito.when;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -57,6 +59,12 @@ class KeContactTransceiverTest {
     }
 
     @Test
+    @Timeout(20)
+    void sendReceivesSharedListenerReplyForHostnameConfiguredHandler() throws Exception {
+        assertRoundTrip(true, false, "localhost");
+    }
+
+    @Test
     @Timeout(40)
     void registeredHandlerCanSendAfterTransceiverRestart() throws Exception {
         assertRoundTrip(false, true);
@@ -64,10 +72,15 @@ class KeContactTransceiverTest {
     }
 
     private static void assertRoundTrip(boolean useListenerPort, boolean restart) throws Exception {
-        try (DatagramSocket wallbox = new DatagramSocket(new InetSocketAddress("127.0.0.1", 0))) {
+        assertRoundTrip(useListenerPort, restart, "127.0.0.1");
+    }
+
+    private static void assertRoundTrip(boolean useListenerPort, boolean restart, String host) throws Exception {
+        InetAddress wallboxAddress = InetAddress.getByName(host);
+        try (DatagramSocket wallbox = new DatagramSocket(new InetSocketAddress(wallboxAddress, 0))) {
             wallbox.setSoTimeout(10000);
             KeContactTransceiver transceiver = new KeContactTransceiver(0, wallbox.getLocalPort());
-            KeContactHandler handler = Objects.requireNonNull(createHandler("127.0.0.1"));
+            KeContactHandler handler = Objects.requireNonNull(createHandler(host));
             AtomicReference<ByteBuffer> response = new AtomicReference<>();
             Thread sender = new Thread(() -> response.set(transceiver.send("report 1", handler)));
             sender.setDaemon(true);
@@ -84,9 +97,10 @@ class KeContactTransceiverTest {
                         StandardCharsets.US_ASCII));
                 transceiver.registerHandler(handler);
                 byte[] reply = "{\"ID\":1,\"Product\":\"P30\"}".getBytes(StandardCharsets.US_ASCII);
-                wallbox.send(new DatagramPacket(reply, reply.length,
-                        useListenerPort ? new InetSocketAddress("127.0.0.1", transceiver.getLocalPort())
-                                : request.getSocketAddress()));
+                SocketAddress replyAddress = useListenerPort
+                        ? new InetSocketAddress(request.getAddress(), transceiver.getLocalPort())
+                        : request.getSocketAddress();
+                wallbox.send(new DatagramPacket(reply, reply.length, replyAddress));
                 sender.join(TimeUnit.SECONDS.toMillis(5));
                 assertFalse(sender.isAlive());
                 ByteBuffer received = response.get();

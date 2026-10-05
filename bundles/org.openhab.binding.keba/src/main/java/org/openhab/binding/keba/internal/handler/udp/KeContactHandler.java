@@ -88,6 +88,11 @@ public class KeContactHandler extends KeContactProtocolHandler {
 
     private int maxPresetCurrent = 0;
     private int maxSystemCurrent = 63000;
+    private int failsafeCurrent;
+    private long failsafeTimeout;
+    private boolean hasFailsafeCurrent;
+    private boolean hasFailsafeTimeout;
+    private String sessionRfidTag = "";
     private @Nullable KebaType type;
     private @Nullable KebaSeries series;
     private int lastState = -1; // trigger a report100 at startup
@@ -465,12 +470,16 @@ public class KeContactHandler extends KeContactProtocolHandler {
                     }
                     case "Curr FS": {
                         int state = entry.getValue().getAsInt();
+                        failsafeCurrent = state;
+                        hasFailsafeCurrent = true;
                         State newState = new QuantityType<>(state / 1000.0, Units.AMPERE);
                         updateState(CHANNEL_FAILSAFE_CURRENT, newState);
                         break;
                     }
                     case "Tmo FS": {
                         long state = entry.getValue().getAsLong();
+                        failsafeTimeout = state;
+                        hasFailsafeTimeout = true;
                         State newState = new QuantityType<>(state, Units.SECOND);
                         updateState(CHANNEL_FAILSAFE_TIMEOUT, newState);
                         break;
@@ -618,6 +627,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
                     }
                     case "RFID tag": {
                         String state = entry.getValue().getAsString().trim();
+                        sessionRfidTag = state;
                         State newState = new StringType(state);
                         updateState(CHANNEL_SESSION_RFID_TAG, newState);
                         break;
@@ -657,8 +667,9 @@ public class KeContactHandler extends KeContactProtocolHandler {
                 case CHANNEL_MAX_PRESET_CURRENT: {
                     if (command instanceof QuantityType<?> quantityCommand) {
                         QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit("mA"));
-
-                        transceiver.send("curr " + Math.min(Math.max(6000, value.intValue()), maxSystemCurrent), this);
+                        transceiver.send(
+                                "currtime " + Math.min(Math.max(6000, value.intValue()), maxSystemCurrent) + " 1",
+                                this);
                     }
                     break;
                 }
@@ -680,7 +691,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
                         } else {
                             return;
                         }
-                        transceiver.send("curr " + newValue, this);
+                        transceiver.send("currtime " + newValue + " 1", this);
                     }
                     break;
                 }
@@ -705,6 +716,45 @@ public class KeContactHandler extends KeContactProtocolHandler {
                         } else {
                             return;
                         }
+                    }
+                    break;
+                }
+                case CHANNEL_UNLOCK_PLUG: {
+                    if (command == OnOffType.ON) {
+                        ByteBuffer response = transceiver.send("unlock", this);
+                        if (isCommandAcknowledged(response)) {
+                            updateState(CHANNEL_UNLOCK_PLUG, OnOffType.OFF);
+                        }
+                    }
+                    break;
+                }
+                case "stop": {
+                    sessionRfidTag = "";
+                    if (command == OnOffType.ON && readReport(100) && isUsableRfidTag(sessionRfidTag)) {
+                        ByteBuffer response = transceiver.send("stop " + sessionRfidTag, this);
+                        if (isCommandAcknowledged(response)) {
+                            updateState("stop", OnOffType.OFF);
+                        }
+                    }
+                    break;
+                }
+                case CHANNEL_FAILSAFE_CURRENT: {
+                    Integer current = failsafeCurrentValue(command);
+                    if (current != null) {
+                        sendFailsafe(null, current, 0);
+                    }
+                    break;
+                }
+                case CHANNEL_FAILSAFE_TIMEOUT: {
+                    Long timeout = failsafeTimeoutValue(command);
+                    if (timeout != null) {
+                        sendFailsafe(timeout, null, 0);
+                    }
+                    break;
+                }
+                case CHANNEL_FAILSAFE_PERSIST: {
+                    if (command == OnOffType.ON) {
+                        sendFailsafe(null, null, 1);
                     }
                     break;
                 }
@@ -746,6 +796,58 @@ public class KeContactHandler extends KeContactProtocolHandler {
                         transceiver.send("x2 " + (decimalCommand.intValue() >= 3 ? 1 : 0), this);
                     }
                     break;
+                }
+            }
+        }
+    }
+
+    private static boolean isUsableRfidTag(String tag) {
+        return tag.matches("(?i)(?!0{16})[0-9a-f]{16}");
+    }
+
+    private static boolean isCommandAcknowledged(@Nullable ByteBuffer response) {
+        return response != null
+                && new String(response.array(), 0, response.limit(), StandardCharsets.US_ASCII).contains("TCH-OK");
+    }
+
+    private @Nullable Integer failsafeCurrentValue(Command command) {
+        long milliAmperes;
+        if (command instanceof QuantityType<?> quantity) {
+            milliAmperes = Math.round(Objects.requireNonNull(quantity.toUnit(Units.AMPERE)).doubleValue() * 1000);
+        } else if (command instanceof DecimalType decimal) {
+            milliAmperes = decimal.longValue();
+        } else {
+            return null;
+        }
+        return milliAmperes == 0 || milliAmperes >= 6000 && milliAmperes <= 63000 ? (int) milliAmperes : null;
+    }
+
+    private @Nullable Long failsafeTimeoutValue(Command command) {
+        long seconds;
+        if (command instanceof QuantityType<?> quantity) {
+            seconds = Math.round(Objects.requireNonNull(quantity.toUnit(Units.SECOND)).doubleValue());
+        } else if (command instanceof DecimalType decimal) {
+            seconds = decimal.longValue();
+        } else {
+            return null;
+        }
+        return seconds == 0 || seconds >= 5 && seconds <= 600 ? seconds : null;
+    }
+
+    private void sendFailsafe(@Nullable Long timeoutOverride, @Nullable Integer currentOverride, int saved) {
+        if (!hasFailsafeCurrent || !hasFailsafeTimeout) {
+            readReport(2);
+        }
+        long timeout = timeoutOverride != null ? timeoutOverride : failsafeTimeout;
+        int current = currentOverride != null ? currentOverride : failsafeCurrent;
+        if (hasFailsafeCurrent && hasFailsafeTimeout && (timeout == 0 || timeout >= 5 && timeout <= 600)
+                && (current == 0 || current >= 6000 && current <= 63000)) {
+            ByteBuffer response = transceiver.send("failsafe " + timeout + " " + current + " " + saved, this);
+            if (isCommandAcknowledged(response)) {
+                failsafeTimeout = timeout;
+                failsafeCurrent = current;
+                if (saved == 1) {
+                    updateState(CHANNEL_FAILSAFE_PERSIST, OnOffType.OFF);
                 }
             }
         }

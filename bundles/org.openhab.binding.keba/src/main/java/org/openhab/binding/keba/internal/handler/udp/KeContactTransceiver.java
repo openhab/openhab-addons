@@ -13,8 +13,10 @@
 package org.openhab.binding.keba.internal.handler.udp;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
@@ -496,8 +498,8 @@ public class KeContactTransceiver {
                                     broadcastBuffer.flip();
                                     if (broadcastBuffer.remaining() > 0) {
                                         for (KeContactHandler handler : handlerSnapshot()) {
-                                            if (clientAddress != null && handler.getIPAddress()
-                                                    .equals(clientAddress.getAddress().getHostAddress())) {
+                                            if (clientAddress != null
+                                                    && matchesRemoteAddress(handler, clientAddress.getAddress())) {
                                                 receiveData(handler, broadcastBuffer.duplicate());
                                             }
                                         }
@@ -651,6 +653,22 @@ public class KeContactTransceiver {
                 handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "An exception occurred while closing the datagramchannel");
             }
+        }
+    }
+
+    private boolean matchesRemoteAddress(KeContactHandler handler, @Nullable InetAddress sourceAddress) {
+        DatagramChannel channel = datagramChannels.get(handler);
+        if (sourceAddress == null || channel == null) {
+            return false;
+        }
+        try {
+            SocketAddress remoteAddress = channel.getRemoteAddress();
+            return remoteAddress instanceof InetSocketAddress socketAddress
+                    && sourceAddress.equals(socketAddress.getAddress());
+        } catch (IOException e) {
+            logger.debug("Could not resolve the connected UDP peer for '{}': {}", handler.getThing().getUID(),
+                    e.getMessage());
+            return false;
         }
     }
 

@@ -90,18 +90,19 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     private static final Set<String> REST_SHARED = Set.of("state", "I1", "I2", "I3", "U1", "U2", "U3", "power",
             "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent",
             "phaseswitchstate", "phaseswitchsource");
-    private static final Set<String> MODBUS_CHANNELS = Set.of("state", "cablestate", "errorcode", "I1", "I2", "I3",
-            "power", "totalconsumption", "U1", "U2", "U3", "powerfactor", "maxpilotcurrent", "maxsystemcurrent",
-            "fastchargingstatus", "sessionrfidtag", "sessionconsumption", "phaseswitchsource", "phaseswitchstate",
-            "failsafecurrent", "failsafetimeout", "maxpresetcurrent", "setenergylimit", "unlockplug", "enableduser",
-            "failsafepersist", "activatefastcharging");
+    private static final Set<String> MODBUS_CHANNELS = Set.of("state", "cablestate", "wallbox", "vehicle", "locked",
+            "errorcode", "I1", "I2", "I3", "power", "totalconsumption", "U1", "U2", "U3", "powerfactor",
+            "maxpilotcurrent", "maxsystemcurrent", "fastchargingstatus", "sessionrfidtag", "sessionconsumption",
+            "phaseswitchsource", "phaseswitchstate", "failsafecurrent", "failsafetimeout", "maxpresetcurrent",
+            "setenergylimit", "unlockplug", "enableduser", "failsafepersist", "activatefastcharging");
     private static final Set<String> UDP_CHANNELS = Set.of("backend", "timequality", "bootflag", "dipswitch1",
             "dipswitch2", "enabledsystem", "enableduser", "maxpresetcurrent", "maxpresetcurrentrange", "error1",
             "error2", "state", "wallbox", "vehicle", "locked", "maxpilotcurrent", "maxpilotcurrentdutycyle",
             "maxsystemcurrent", "failsafecurrent", "failsafetimeout", "currtimer", "currtimertimeout", "output",
             "input", "uptime", "authreq", "authon", "I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
             "totalconsumption", "sessionconsumption", "sessionrfidtag", "sessionrfidclass", "sessionid", "display",
-            "authenticate", "setenergylimit", "phaseswitchsource", "phaseswitchstate");
+            "authenticate", "setenergylimit", "phaseswitchsource", "phaseswitchstate", "unlockplug", "stop",
+            "failsafepersist");
     private static final Set<String> REST_CHANNELS = Set.of("reststate", "session", "error", "reserved", "temperature",
             "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases", "phaseconfiguration",
             "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop", "reboot", "unlock",
@@ -493,6 +494,9 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     }
 
     static Protocol sourceFor(String channel, boolean modbusOnline, boolean restOnline) {
+        if ("stop".equals(channel)) {
+            return restOnline ? Protocol.REST : Protocol.UDP;
+        }
         if (REST_ONLY.contains(channel)) {
             return Protocol.REST;
         }
@@ -778,6 +782,9 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             return;
         }
         String channel = channelUID.getIdWithoutGroup();
+        if ("phaseswitchsource".equals(channel) && !isValidPhaseSwitchSource(command)) {
+            return;
+        }
         if ("display".equals(channel) && command instanceof StringType text) {
             setDisplay(text.toString(), -1, -1);
             return;
@@ -797,8 +804,11 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             } else if ((REST_ONLY.contains(channel) || "enableduser".equals(channel)
                     || "phaseswitchsource".equals(channel)) && localSession.restOnline && rest != null) {
                 rest.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
-            } else if (udp != null && !localSession.config.udpDisplayOnly && (UDP_COMMANDS.contains(channel) || Set
-                    .of("setenergylimit", "enableduser", "phaseswitchsource", "phaseswitchstate").contains(channel))) {
+            } else if (udp != null && !localSession.config.udpDisplayOnly
+                    && (UDP_COMMANDS.contains(channel) || Set
+                            .of("setenergylimit", "enableduser", "phaseswitchsource", "phaseswitchstate", "unlockplug",
+                                    "stop", "failsafecurrent", "failsafetimeout", "failsafepersist")
+                            .contains(channel))) {
                 synchronized (localSession.udpLock) {
                     if (current(localSession) && ensureUdpCommands(localSession, udp)) {
                         udp.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
@@ -806,6 +816,18 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 }
             }
         });
+    }
+
+    static boolean isValidPhaseSwitchSource(Command command) {
+        if (!(command instanceof DecimalType decimalCommand)) {
+            return false;
+        }
+        try {
+            int source = decimalCommand.toBigDecimal().intValueExact();
+            return source >= 0 && source <= 4;
+        } catch (ArithmeticException e) {
+            return false;
+        }
     }
 
     private boolean ensureUdpCommands(Session localSession, KeContactHandler udp) {

@@ -156,6 +156,26 @@ The development-only `triggerphaseswitch` channel has been removed. Relink its N
 and send the requested phase count, 1 or 3. The `output` channel remains separate and unchanged; the wallbox's
 X2 output can have multiple purposes depending on its configuration.
 
+UDP command coverage for shared channels:
+
+- `maxpresetcurrent` and `maxpresetcurrentrange` use `currtime <mA> 1`. The final `1` is the activation delay in
+  seconds, not how long the setting lasts. The existing channels do not expose a configurable delay.
+- `failsafecurrent` and `failsafetimeout` use the UDP compound `failsafe` command. Changing either setting
+  preserves the other value from report 2; the command defaults to non-persistent mode. `failsafepersist` sends
+  the save flag and resets after an acknowledgement.
+- `unlockplug` sends UDP `unlock`. `stop` reads report 100 and sends its non-zero session RFID tag; it is ignored
+  when a usable tag is unavailable.
+- `authenticate` sends UDP `start` with the caller-provided tag and class. The REST `start` Switch cannot use UDP
+  because it has no RFID credentials. UDP `setdatetime` is not exposed because there is no existing writable
+  date/time channel.
+
+Other guide entries without a separate existing channel: the basic `i` probe is replaced by the richer
+`report 1` identification request; report 100 is supported, but historical reports 101–130 are not exposed
+because there are no per-session history channels. The existing `output` Switch supports relay open/close only;
+the guide's persistent pulse-rate form (`output >=10`) cannot be represented by that channel. The binding also
+does not explicitly enforce the guide's 100 ms minimum between commands, 5-second minimum between scheduled
+repeats, or 2-second wait after `ena 0`.
+
 Use `maxsystemcurrent` for the wallbox hardware limit, `maxpilotcurrent` for the current offered to the vehicle,
 and `maxpresetcurrent` for the writable user setpoint. The setpoint is sent through Modbus when available and
 falls back to UDP; the separate `setchargingcurrent` channel is not exposed by the combined Thing. REST's meter
@@ -223,8 +243,9 @@ With `udpDisplayOnly=true`, only `display` from this table is retained; shared c
 | bootflag                | Number                   | yes       | raw `setBoot` value; not documented in the UDP Programmer's Guide       |
 | dipswitch1/2            | String                   | yes       | raw hexadecimal DIP-switch block values                                 |
 | maxsystemcurrent        | Number:ElectricCurrent   | yes       | maximum current the wallbox can deliver                                 |
-| failsafecurrent         | Number:ElectricCurrent   | yes       | maximum current the wallbox can deliver, if network is lost             |
-| failsafetimeout         | Number:Time              | yes       | time before the failsafe current is applied                             |
+| failsafecurrent         | Number:ElectricCurrent   | no        | failsafe current; UDP writes combine this with the report-2 timeout     |
+| failsafetimeout         | Number:Time              | no        | failsafe timeout; UDP writes combine this with the report-2 current      |
+| failsafepersist         | Switch                   | no        | send ON to save P30 failsafe settings through Modbus or UDP              |
 | currtimer               | Number:ElectricCurrent   | yes       | delayed preset current applied when its timer expires                   |
 | currtimertimeout        | Number:Time              | yes       | remaining time before the delayed preset current is applied             |
 | phaseswitchsource       | Number                   | no        | communication source allowed to control phase switching                 |
@@ -239,6 +260,8 @@ With `udpDisplayOnly=true`, only `display` from this table is retained; shared c
 | sessionid               | Number                   | yes       | session ID of the last charging session                                 |
 | setenergylimit          | Number:Energy            | no        | set an energy limit for an already running or the next charging session |
 | authenticate            | String                   | no        | authenticate and start a session using RFID tag+RFID class              |
+| unlockplug              | Switch                   | no        | send ON to unlock the plug; charging must be stopped first               |
+| stop                    | Switch                   | no        | send ON to stop an authorized session using its current RFID tag        |
 | maxpilotcurrent         | Number:ElectricCurrent   | yes       | current offered to the vehicle via control pilot signalization          |
 | maxpilotcurrentdutycyle | Number:Dimensionless     | yes       | duty cycle of the control pilot signal                                  |
 
@@ -309,7 +332,7 @@ REST contributes these additional values and commands when configured:
 
 ### REST State and Error Values
 
-The `state` channel returns one of these values:
+The REST-specific `reststate` channel returns one of these values:
 
 | Value                    | Meaning                                                             |
 |--------------------------|---------------------------------------------------------------------|

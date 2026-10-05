@@ -119,7 +119,8 @@ class KeContactCombinedHandlerTest {
     void p20WithoutModbusKeepsUdpChannelsAndRemovesUnsupportedChannels() {
         ThingUID uid = new ThingUID("keba:kecontact:p20udp");
         List<String> exposedChannels = List.of("input", "maxpilotcurrent", "maxsystemcurrent", "failsafecurrent",
-                "failsafetimeout", "power", "cablestate", "errorcode", "unlockplug", "temperature", "restinput");
+                "failsafetimeout", "power", "cablestate", "errorcode", "unlockplug", "stop", "failsafepersist",
+                "temperature", "restinput");
         var channels = exposedChannels.stream()
                 .map(channel -> ChannelBuilder.create(new ChannelUID(uid, channel), "String").build()).toList();
         Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
@@ -134,10 +135,10 @@ class KeContactCombinedHandlerTest {
             handler.initialize();
             handler.updateProperties(Map.of("model", "KEBA P20"));
             for (String channel : List.of("input", "maxpilotcurrent", "maxsystemcurrent", "failsafecurrent",
-                    "failsafetimeout", "power")) {
+                    "failsafetimeout", "power", "unlockplug", "stop", "failsafepersist")) {
                 assertNotNull(handler.getThing().getChannel(new ChannelUID(uid, channel)), channel);
             }
-            for (String channel : List.of("cablestate", "errorcode", "unlockplug", "temperature", "restinput")) {
+            for (String channel : List.of("cablestate", "errorcode", "temperature", "restinput")) {
                 assertNull(handler.getThing().getChannel(new ChannelUID(uid, channel)), channel);
             }
             verifyNoInteractions(manager);
@@ -150,9 +151,11 @@ class KeContactCombinedHandlerTest {
     @Timeout(60)
     void dynamicallyReconcilesChannelsWhenProtocolsChange() throws Exception {
         ThingUID uid = new ThingUID("keba:kecontact:dynamicprotocols");
-        List<String> channelIds = List.of("input", "display", "state", "power", "cablestate", "temperature");
+        List<String> channelIds = List.of("input", "display", "state", "power", "cablestate", "temperature", "wallbox",
+                "vehicle", "locked");
         Map<String, String> channelTypeIds = Map.of("input", "x1", "display", "display", "state", "state", "power",
-                "power", "cablestate", "cable-state", "temperature", "temperature");
+                "power", "cablestate", "cable-state", "temperature", "temperature", "wallbox", "plug-wallbox",
+                "vehicle", "plug-vehicle", "locked", "locked");
         List<ChannelDefinition> definitions = new ArrayList<>();
         List<org.openhab.core.thing.Channel> initialChannels = new ArrayList<>();
         for (String channel : channelIds) {
@@ -241,6 +244,9 @@ class KeContactCombinedHandlerTest {
             assertNull(handler.getThing().getChannel(new ChannelUID(uid, "input")));
             assertNotNull(handler.getThing().getChannel(new ChannelUID(uid, "cablestate")));
             assertNotNull(handler.getThing().getChannel(new ChannelUID(uid, "power")));
+            for (String channel : List.of("wallbox", "vehicle", "locked")) {
+                assertNotNull(handler.getThing().getChannel(new ChannelUID(uid, channel)), channel);
+            }
         } finally {
             handler.dispose();
         }
@@ -933,6 +939,20 @@ class KeContactCombinedHandlerTest {
         assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("power", false, false));
         assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("sessionrfidtag", false, true));
         assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("failsafecurrent", false, true));
+        assertEquals(Protocol.REST, KeContactCombinedHandler.sourceFor("stop", false, true));
+        assertEquals(Protocol.UDP, KeContactCombinedHandler.sourceFor("stop", false, false));
+    }
+
+    @Test
+    void phaseSwitchSourceAcceptsOnlyIntegerValuesFromZeroThroughFour() {
+        for (int source = 0; source <= 4; source++) {
+            assertTrue(KeContactCombinedHandler.isValidPhaseSwitchSource(new DecimalType(source)));
+        }
+        assertTrue(KeContactCombinedHandler.isValidPhaseSwitchSource(new DecimalType("1.0")));
+        assertFalse(KeContactCombinedHandler.isValidPhaseSwitchSource(new DecimalType("1.5")));
+        assertFalse(KeContactCombinedHandler.isValidPhaseSwitchSource(new DecimalType(-1)));
+        assertFalse(KeContactCombinedHandler.isValidPhaseSwitchSource(new DecimalType(5)));
+        assertFalse(KeContactCombinedHandler.isValidPhaseSwitchSource(OnOffType.ON));
     }
 
     @Test
