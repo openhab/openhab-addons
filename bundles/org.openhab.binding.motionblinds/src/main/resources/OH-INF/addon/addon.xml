@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="motionblinds" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>MotionBlinds Binding</name>
+	<description>This is the binding for Wi-Fi motors of Motion Blinds, Dooya and other brands controlled by the
+		Connector
+		app, using the local network API.</description>
+	<connection>local</connection>
+
+</addon:addon>

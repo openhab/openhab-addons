@@ -307,6 +307,7 @@
     <module>org.openhab.binding.modbus.stiebeleltron</module>
     <module>org.openhab.binding.modbus.helioseasycontrols</module>
     <module>org.openhab.binding.monopriceaudio</module>
+    <module>org.openhab.binding.motionblinds</module>
     <module>org.openhab.binding.mpd</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.awtrixlight</module>
