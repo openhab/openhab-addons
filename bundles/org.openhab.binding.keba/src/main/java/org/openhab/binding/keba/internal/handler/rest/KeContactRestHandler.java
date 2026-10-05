@@ -270,7 +270,8 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
             if (supplementalDue && (!supplemental || isLinked("phaseswitchsource"))) {
                 updatePhaseSwitchSource();
             }
-            if (supplementalDue && (!supplemental || isLinked("sessionstart") || isLinked("sessionduration"))) {
+            if (supplementalDue && (!supplemental || isLinked("sessionstart") || isLinked("sessionduration")
+                    || isLinked("sessionconsumption"))) {
                 try {
                     updateSession();
                 } catch (Exception e) {

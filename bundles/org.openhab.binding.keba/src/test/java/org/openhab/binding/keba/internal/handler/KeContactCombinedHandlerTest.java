@@ -888,9 +888,14 @@ class KeContactCombinedHandlerTest {
     void routesFlatCommandToModbus() throws Exception {
         ThingUID uid = new ThingUID("keba:kecontact:flatcommand");
         ChannelUID enabled = new ChannelUID(uid, "enableduser");
+        ChannelUID failsafeCurrent = new ChannelUID(uid, "failsafecurrent");
+        ChannelUID failsafeTimeout = new ChannelUID(uid, "failsafetimeout");
         Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
                 .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1", "udpEnabled", false)))
-                .withChannels(ChannelBuilder.create(enabled, "Switch").build()).build();
+                .withChannels(ChannelBuilder.create(enabled, "Switch").build(),
+                        ChannelBuilder.create(failsafeCurrent, "Number:ElectricCurrent").build(),
+                        ChannelBuilder.create(failsafeTimeout, "Number:Time").build())
+                .build();
         ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
         ModbusCommunicationInterface comms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
         when(manager.newModbusCommunicationInterface(any(), any())).thenReturn(comms);
@@ -919,6 +924,18 @@ class KeContactCombinedHandlerTest {
             assertNotNull(write);
             assertEquals(5014, write.getReference());
             assertEquals(1, write.getRegisters().getRegister(0));
+
+            handler.handleCommand(failsafeCurrent, new QuantityType<>(8, Units.AMPERE));
+            write = writes.poll(15, TimeUnit.SECONDS);
+            assertNotNull(write);
+            assertEquals(5016, write.getReference());
+            assertEquals(8000, write.getRegisters().getRegister(0));
+
+            handler.handleCommand(failsafeTimeout, new QuantityType<>(30, Units.SECOND));
+            write = writes.poll(15, TimeUnit.SECONDS);
+            assertNotNull(write);
+            assertEquals(5018, write.getReference());
+            assertEquals(30, write.getRegisters().getRegister(0));
         } finally {
             handler.dispose();
         }
@@ -958,7 +975,9 @@ class KeContactCombinedHandlerTest {
     @Test
     @Timeout(40)
     void supplementalRestSkipsDuplicateAndUnlinkedEndpoints() throws Exception {
-        for (Set<String> linked : List.of(Set.<String> of(), Set.of("sessionstart", "dipswitchinterpretation"))) {
+        for (Set<String> linked : List.of(Set.<String> of(), Set.of("sessionstart", "dipswitchinterpretation"),
+                Set.of("sessionconsumption"))) {
+            boolean sessionsExpected = linked.contains("sessionstart") || linked.contains("sessionconsumption");
             BlockingQueue<String> requests = new LinkedBlockingQueue<>();
             Map<String, String> restProperties = new ConcurrentHashMap<>();
             Map<String, State> restStates = new ConcurrentHashMap<>();
@@ -974,7 +993,7 @@ class KeContactCombinedHandlerTest {
 
                 @Override
                 public void statusUpdated(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
-                    if (status == ThingStatus.ONLINE && onlineEvents.incrementAndGet() == 2) {
+                    if (!sessionsExpected && status == ThingStatus.ONLINE && onlineEvents.incrementAndGet() == 2) {
                         completed.countDown();
                     }
                 }
@@ -996,6 +1015,9 @@ class KeContactCombinedHandlerTest {
                 @Override
                 protected JsonObject request(String path, String method, @Nullable String body, boolean authenticated) {
                     requests.add(path);
+                    if (path.startsWith("/sessions?")) {
+                        completed.countDown();
+                    }
                     if ("/jwt/login".equals(path)) {
                         return JsonParser.parseString("{\"accessToken\":\"test-token\"}").getAsJsonObject();
                     }
@@ -1018,8 +1040,7 @@ class KeContactCombinedHandlerTest {
                 assertFalse(requests.contains("/configs/lmgmt/"));
                 assertEquals(linked.contains("dipswitchinterpretation"),
                         requests.contains("/wallboxes/dipswitch/12345"));
-                assertEquals(linked.contains("sessionstart"),
-                        requests.stream().anyMatch(path -> path.startsWith("/sessions?")));
+                assertEquals(sessionsExpected, requests.stream().anyMatch(path -> path.startsWith("/sessions?")));
             } finally {
                 rest.dispose();
             }
@@ -1322,6 +1343,35 @@ class KeContactCombinedHandlerTest {
 
             verify(comms, timeout(5000)).close();
             assertEquals("unsupported", handler.getThing().getProperties().get("modbusAvailable"));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(20)
+    void persistedP20IdentityDoesNotSuppressModbusProbeForNewSession() throws Exception {
+        ThingUID uid = new ThingUID("keba:kecontact:persisted-p20-new-endpoint");
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                .withConfiguration(
+                        new Configuration(Map.of("ipAddress", "192.0.2.2", "udpEnabled", false, "restEnabled", false)))
+                .withProperties(Map.of("model", "P20", "modbusModel", "P20")).build();
+        ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
+        ModbusCommunicationInterface comms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
+        when(manager.newModbusCommunicationInterface(any(), any())).thenReturn(comms);
+        KeContactCombinedHandler handler = new KeContactCombinedHandler(thing, manager,
+                Objects.requireNonNull(mock(KeContactTransceiver.class)));
+        handler.setCallback(Objects.requireNonNull(mock(ThingHandlerCallback.class)));
+        try {
+            handler.initialize();
+
+            verify(manager, timeout(5000)).newModbusCommunicationInterface(any(), any());
+            assertEquals("unknown", handler.getThing().getProperties().get("modbusAvailable"));
+
+            handler.updateProperties(Map.of("model", "P40"));
+
+            verify(comms, never()).close();
+            assertEquals("unknown", handler.getThing().getProperties().get("modbusAvailable"));
         } finally {
             handler.dispose();
         }

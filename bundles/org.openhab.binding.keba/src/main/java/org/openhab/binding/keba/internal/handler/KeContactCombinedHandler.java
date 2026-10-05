@@ -128,6 +128,8 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         volatile boolean udpIdentified;
         volatile boolean udpCommands;
         volatile String product = "";
+        volatile String modelHint = "";
+        volatile boolean productIdentified;
         long nextUdpProbe;
         long nextUdpPoll;
         long nextUdpSupplementalPoll;
@@ -200,20 +202,15 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             model = getThing().getProperties().get("modbusModel");
         }
         if (model != null) {
-            localSession.product = model;
+            localSession.modelHint = model;
         }
-        boolean modbusUnsupported = modbusUnsupportedForProduct(localSession.product);
-        boolean restUnsupported = restUnsupportedForProduct(localSession.product);
-        localSession.modbusPending = config.modbusEnabled && !modbusUnsupported;
-        localSession.restPending = restEnabled && !restUnsupported;
         session = localSession;
         reconcileChannels(localSession);
         updateStatus(ThingStatus.UNKNOWN);
-        updateProperties(Map.of("modbusAvailable",
-                !config.modbusEnabled ? "disabled" : modbusUnsupported ? "unsupported" : "unknown", "udpAvailable",
+        updateProperties(Map.of("modbusAvailable", config.modbusEnabled ? "unknown" : "disabled", "udpAvailable",
                 !config.udpEnabled ? "disabled" : config.udpDisplayOnly ? "display-only" : "unknown", "restAvailable",
-                !restEnabled ? "disabled" : restUnsupported ? "unsupported" : "unknown"));
-        if (config.modbusEnabled && !modbusUnsupported) {
+                restEnabled ? "unknown" : "disabled"));
+        if (config.modbusEnabled) {
             Configuration modbusConfig = new Configuration(Map.of("ipAddress", config.getModbusAddress(), "port",
                     config.port, "unitId", config.unitId, "refreshInterval", config.refreshInterval,
                     "refreshIntervalSlow", config.refreshIntervalSlow));
@@ -227,7 +224,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                     listener(localSession, Protocol.UDP));
             localSession.udp = udp;
         }
-        if (restEnabled && password != null && !restUnsupported) {
+        if (restEnabled && password != null) {
             Configuration restConfig = new Configuration(Map.of("ipAddress", config.ipAddress, "restPort",
                     config.restPort, "restEnabled", true, "username", config.username, "password", password,
                     "refreshInterval", config.refreshInterval, "refreshIntervalSlow", config.refreshIntervalSlow,
@@ -303,6 +300,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         if (model != null && localSession != null
                 && (localSession.product.isBlank() || model.length() >= localSession.product.length())) {
             localSession.product = model;
+            localSession.productIdentified = true;
         }
         boolean p30 = model != null && model.toUpperCase(Locale.ROOT).contains("P30");
         if (localSession != null) {
@@ -400,7 +398,8 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     }
 
     private boolean channelSupported(String channel, Session localSession) {
-        String product = localSession.product.toUpperCase(Locale.ROOT);
+        String product = (localSession.productIdentified ? localSession.product : localSession.modelHint)
+                .toUpperCase(Locale.ROOT);
         if (product.contains("P30")
                 && Set.of(CHANNEL_FAST_CHARGING_STATUS, CHANNEL_ACTIVATE_FAST_CHARGING).contains(channel)) {
             return false;
@@ -415,7 +414,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     }
 
     private void stopUnsupportedAdapters(Session localSession) {
-        if (!current(localSession)) {
+        if (!current(localSession) || !localSession.productIdentified) {
             return;
         }
         if (localSession.config.modbusEnabled && modbusUnsupportedForProduct(localSession.product)) {
@@ -474,6 +473,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             @Override
             public void statusUpdated(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
                 if (!current(localSession) || protocol == Protocol.UDP
+                        || protocol == Protocol.MODBUS && localSession.modbus == null
                         || protocol == Protocol.REST && localSession.rest == null) {
                     return;
                 }
@@ -842,7 +842,12 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             KeContactModbusHandler modbus = localSession.modbus;
             KeContactRestHandler rest = localSession.rest;
             KeContactHandler udp = localSession.udp;
-            String modbusChannel = "maxpresetcurrent".equals(channel) ? CHANNEL_SET_CHARGING_CURRENT : channel;
+            String modbusChannel = switch (channel) {
+                case "maxpresetcurrent" -> CHANNEL_SET_CHARGING_CURRENT;
+                case CHANNEL_FAILSAFE_CURRENT -> CHANNEL_FAILSAFE_CURRENT_SETTING;
+                case CHANNEL_FAILSAFE_TIMEOUT -> CHANNEL_FAILSAFE_TIMEOUT_SETTING;
+                default -> channel;
+            };
             boolean modbusCommand = List.of(KebaModbusWriteRegister.values()).stream()
                     .anyMatch(register -> register.getChannelId().equals(modbusChannel));
             if (modbusCommand && localSession.modbusOnline && modbus != null) {
