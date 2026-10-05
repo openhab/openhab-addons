@@ -134,10 +134,18 @@ class CalDavDiscoveryServiceTest {
             assertEquals(url + "calendar/", result.getProperties().get("path"));
             assertEquals(1, service.scans.get());
             assertEquals(1, requests.get());
-            assertEquals(url + "calendar/", result.getProperties().get("calendarUid"));
-            assertEquals("calendarUid", result.getRepresentationProperty());
+            assertEquals(Map.of("path", url + "calendar/"), result.getProperties());
+            assertNull(result.getRepresentationProperty());
+            assertEquals(bridge.getUID(), result.getBridgeUID());
+            assertEquals("Calendar", result.getLabel());
             service.startScan(null);
-            assertNotNull(service.results.poll(10, TimeUnit.SECONDS));
+            DiscoveryResult repeated = service.results.poll(10, TimeUnit.SECONDS);
+            assertNotNull(repeated);
+            assertEquals(result.getThingUID(), repeated.getThingUID());
+            assertEquals(result.getBridgeUID(), repeated.getBridgeUID());
+            assertEquals(result.getLabel(), repeated.getLabel());
+            assertEquals(result.getProperties(), repeated.getProperties());
+            assertNull(repeated.getRepresentationProperty());
             assertEquals(2, service.scans.get());
             assertEquals(2, requests.get());
         } finally {
@@ -145,6 +153,50 @@ class CalDavDiscoveryServiceTest {
             handler.dispose();
             http.stop();
             server.stop(0);
+        }
+    }
+
+    @Test
+    void sameCalendarPathOnDifferentAccountBridgesProducesDistinctThings() {
+        String path = "https://example.org/dav/calendars/shared/";
+        Bridge anonymousBridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "account-a")
+                .withConfiguration(
+                        new Configuration(Map.of("url", "https://example.org/dav/", "username", "", "password", "")))
+                .build();
+        Bridge authenticatedBridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "account-b")
+                .withConfiguration(new Configuration(
+                        Map.of("url", "https://example.org/dav/", "username", "user", "password", "secret")))
+                .build();
+        LinkedBlockingQueue<Consumer<List<CalendarCollection>>> anonymousCallbacks = new LinkedBlockingQueue<>();
+        LinkedBlockingQueue<Consumer<List<CalendarCollection>>> authenticatedCallbacks = new LinkedBlockingQueue<>();
+        Service anonymousService = new Service();
+        Service authenticatedService = new Service();
+        anonymousService.setThingHandler(callbackHandler(anonymousBridge, anonymousCallbacks));
+        authenticatedService.setThingHandler(callbackHandler(authenticatedBridge, authenticatedCallbacks));
+        try {
+            List<CalendarCollection> collections = List.of(new CalendarCollection(URI.create(path), "Shared"));
+            anonymousService.startScan();
+            authenticatedService.startScan();
+            Objects.requireNonNull(anonymousCallbacks.poll()).accept(collections);
+            Objects.requireNonNull(authenticatedCallbacks.poll()).accept(collections);
+            DiscoveryResult anonymous = anonymousService.results.poll();
+            DiscoveryResult authenticated = authenticatedService.results.poll();
+            assertNotNull(anonymous);
+            assertNotNull(authenticated);
+            assertEquals(Map.of("path", path), anonymous.getProperties());
+            assertEquals(Map.of("path", path), authenticated.getProperties());
+            assertNotEquals(anonymous.getThingUID(), authenticated.getThingUID());
+            assertEquals(anonymousBridge.getUID(), anonymous.getBridgeUID());
+            assertEquals(authenticatedBridge.getUID(), authenticated.getBridgeUID());
+            assertNotEquals(anonymous.getBridgeUID(), authenticated.getBridgeUID());
+            assertEquals(List.of("account-a"), anonymous.getThingUID().getBridgeIds());
+            assertEquals(List.of("account-b"), authenticated.getThingUID().getBridgeIds());
+            assertEquals(anonymous.getThingUID().getId(), authenticated.getThingUID().getId());
+            assertNull(anonymous.getRepresentationProperty());
+            assertNull(authenticated.getRepresentationProperty());
+        } finally {
+            anonymousService.dispose();
+            authenticatedService.dispose();
         }
     }
 

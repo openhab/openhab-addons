@@ -128,8 +128,6 @@
 			<channel-group id="sync" typeId="sync"/>
 		</channel-groups>
 
-		<representation-property>calendarUid</representation-property>
-
 		<config-description>
 			<parameter-group name="calendar">
 				<label>@text/config.group.calendar.label</label>

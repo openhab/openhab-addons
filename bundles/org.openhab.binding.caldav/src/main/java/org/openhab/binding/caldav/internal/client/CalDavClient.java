@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.Request;
@@ -36,6 +37,7 @@ import org.openhab.binding.caldav.internal.config.AccountConfiguration;
  * 
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Account transport and security limits
+ * @author Andreas Vilippus - Preemptive BASIC authentication
  */
 @NonNullByDefault
 public final class CalDavClient implements DavTransport {
@@ -43,23 +45,29 @@ public final class CalDavClient implements DavTransport {
     private final HttpClient client;
     private final URI origin;
     private final int timeout;
+    private final Authentication.@Nullable Result preemptiveAuthentication;
 
     public CalDavClient(HttpClient client, AccountConfiguration configuration) {
         this.client = client;
         this.origin = CalDavUris.validate(URI.create(configuration.url));
         this.timeout = configuration.requestTimeout;
+        Authentication.@Nullable Result authentication = null;
         if (!configuration.username.isBlank()) {
             URI authRoot = origin.resolve("/");
-            var store = client.getAuthenticationStore();
-            if (!"BASIC".equals(configuration.authType)) {
+            if ("BASIC".equals(configuration.authType)) {
+                authentication = new BasicAuthentication.BasicResult(authRoot, configuration.username,
+                        configuration.password);
+            } else {
+                var store = client.getAuthenticationStore();
                 store.addAuthentication(new DigestAuthentication(authRoot, Authentication.ANY_REALM,
                         configuration.username, configuration.password));
-            }
-            if (!"DIGEST".equals(configuration.authType)) {
-                store.addAuthentication(new BasicAuthentication(authRoot, Authentication.ANY_REALM,
-                        configuration.username, configuration.password));
+                if (!"DIGEST".equals(configuration.authType)) {
+                    store.addAuthentication(new BasicAuthentication(authRoot, Authentication.ANY_REALM,
+                            configuration.username, configuration.password));
+                }
             }
         }
+        this.preemptiveAuthentication = authentication;
     }
 
     @Override
@@ -69,6 +77,10 @@ public final class CalDavClient implements DavTransport {
                 .timeout(timeout, TimeUnit.SECONDS).header("Depth", depth);
         if (!body.isEmpty()) {
             request.content(new StringContentProvider("application/xml", body, StandardCharsets.UTF_8));
+        }
+        Authentication.Result authentication = preemptiveAuthentication;
+        if (authentication != null) {
+            authentication.apply(request);
         }
         CompletableFuture<String> result = new CompletableFuture<>();
         request.send(new BufferingResponseListener(MAX_RESPONSE_BYTES) {

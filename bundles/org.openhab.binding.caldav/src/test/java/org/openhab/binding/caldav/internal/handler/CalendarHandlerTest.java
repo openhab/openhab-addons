@@ -25,12 +25,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.openhab.binding.caldav.internal.client.CalDavHttpException;
 import org.openhab.binding.caldav.internal.client.DavTransport;
 import org.openhab.binding.caldav.internal.config.AccountConfiguration;
 import org.openhab.core.config.core.Configuration;
@@ -51,6 +53,7 @@ import org.openhab.core.types.UnDefType;
  * Observable publication, cache recovery and disposal regression tests.
  * 
  * @author Andreas Vilippus - Initial contribution
+ * @author Andreas Vilippus - Initial synchronization status tests
  */
 @NonNullByDefault
 @Timeout(15)
@@ -94,6 +97,8 @@ class CalendarHandlerTest {
         final CountDownLatch restored = new CountDownLatch(1);
         private final @Nullable Bridge bridge;
         volatile ThingStatus status = ThingStatus.UNKNOWN;
+        volatile ThingStatusDetail detail = ThingStatusDetail.NONE;
+        volatile @Nullable String description;
 
         Handler() {
             this(new MemoryStorage(), null);
@@ -119,7 +124,14 @@ class CalendarHandlerTest {
 
         @Override
         protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
-            this.status = status;
+            switch (status) {
+                case UNKNOWN, ONLINE, OFFLINE, REMOVED -> {
+                    this.status = status;
+                    this.detail = detail;
+                    this.description = description;
+                }
+                default -> throw new IllegalArgumentException("Illegal binding status: " + status);
+            }
         }
     }
 
@@ -148,6 +160,106 @@ class CalendarHandlerTest {
                 : "<d:response><d:href>/calendar/one.ics</d:href><d:propstat><d:prop><c:calendar-data>" + data
                         + "</c:calendar-data></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response>")
                 + "</d:multistatus>";
+    }
+
+    @Test
+    void initializationWaitsForSynchronizationWithoutError() {
+        Handler h = new Handler();
+        try {
+            h.initialize();
+            assertEquals(ThingStatus.UNKNOWN, h.status);
+            assertEquals(ThingStatusDetail.NONE, h.detail);
+            assertEquals("Waiting for initial calendar synchronization", h.description);
+            assertEquals("SYNCING", Objects.requireNonNull(h.published.get("sync#status")).toString());
+            assertEquals("", Objects.requireNonNull(h.published.get("sync#error")).toString());
+        } finally {
+            h.dispose();
+        }
+    }
+
+    @Test
+    @Timeout(30)
+    void initialFetchRemainsUnknownUntilSuccess() throws Exception {
+        checkStatusDuringFetch(false);
+    }
+
+    @Test
+    @Timeout(30)
+    void subsequentFetchRemainsOnline() throws Exception {
+        checkStatusDuringFetch(true);
+    }
+
+    private void checkStatusDuringFetch(boolean synchronizedBefore) throws Exception {
+        Handler h = new Handler();
+        CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+        var worker = Executors.newSingleThreadExecutor();
+        try {
+            h.initialize();
+            if (synchronizedBefore) {
+                h.synchronize((m, u, b, d) -> response(false), account(), () -> true);
+                assertEquals(ThingStatus.ONLINE, h.status);
+            }
+            DavTransport transport = (m, u, b, d) -> {
+                entered.countDown();
+                if (!release.await(10, TimeUnit.SECONDS)) {
+                    throw new IOException("timeout");
+                }
+                return response(false);
+            };
+            var work = worker.submit(() -> {
+                h.synchronize(transport, account(), () -> true);
+                return null;
+            });
+            assertTrue(entered.await(10, TimeUnit.SECONDS));
+            assertEquals(synchronizedBefore ? ThingStatus.ONLINE : ThingStatus.UNKNOWN, h.status);
+            assertEquals(ThingStatusDetail.NONE, h.detail);
+            if (!synchronizedBefore) {
+                assertEquals("Fetching calendar data", h.description);
+            }
+            assertEquals("SYNCING", Objects.requireNonNull(h.published.get("sync#status")).toString());
+            assertEquals("", Objects.requireNonNull(h.published.get("sync#error")).toString());
+            release.countDown();
+            work.get(10, TimeUnit.SECONDS);
+            assertEquals(ThingStatus.ONLINE, h.status);
+            assertEquals(ThingStatusDetail.NONE, h.detail);
+            assertEquals("OK", Objects.requireNonNull(h.published.get("sync#status")).toString());
+            assertEquals("", Objects.requireNonNull(h.published.get("sync#error")).toString());
+            assertNotEquals(UnDefType.UNDEF, h.published.get("sync#last"));
+        } finally {
+            h.dispose();
+            release.countDown();
+            worker.shutdownNow();
+            assertTrue(worker.awaitTermination(10, TimeUnit.SECONDS));
+        }
+    }
+
+    @Test
+    void firstFetchFailureKeepsExistingErrorDetails() throws Exception {
+        checkFirstFailure((m, u, b, d) -> {
+            throw new IOException("offline");
+        }, ThingStatusDetail.COMMUNICATION_ERROR);
+        checkFirstFailure((m, u, b, d) -> {
+            throw new IllegalArgumentException("invalid calendar data");
+        }, ThingStatusDetail.CONFIGURATION_ERROR);
+        for (int status : new int[] { 401, 403, 404, 503 }) {
+            checkFirstFailure((m, u, b, d) -> {
+                throw new CalDavHttpException(m, status);
+            }, status == 503 ? ThingStatusDetail.COMMUNICATION_ERROR : ThingStatusDetail.CONFIGURATION_ERROR);
+        }
+    }
+
+    private void checkFirstFailure(DavTransport transport, ThingStatusDetail expected) throws Exception {
+        Handler h = new Handler();
+        try {
+            h.initialize();
+            h.synchronize(transport, account(), () -> true);
+            assertEquals(ThingStatus.OFFLINE, h.status);
+            assertEquals(expected, h.detail);
+            assertEquals("ERROR", Objects.requireNonNull(h.published.get("sync#status")).toString());
+            assertFalse(Objects.requireNonNull(h.published.get("sync#error")).toString().isEmpty());
+        } finally {
+            h.dispose();
+        }
     }
 
     @Test
@@ -228,7 +340,7 @@ class CalendarHandlerTest {
     }
 
     @Test
-    void restoresPersistentCacheWhileAccountIsOfflineAndRemovesItWithThing() throws Exception {
+    void restoresPersistentCacheBeforeLiveSyncAndRemovesItWithThing() throws Exception {
         MemoryStorage storage = new MemoryStorage();
         Handler first = new Handler(storage, null);
         first.initialize();
@@ -250,7 +362,13 @@ class CalendarHandlerTest {
             assertTrue(second.restored.await(10, TimeUnit.SECONDS));
             assertEquals(first.published.get("events#json"), second.published.get("events#json"));
             assertEquals(first.published.get("sync#last"), second.published.get("sync#last"));
+            assertEquals(ThingStatus.UNKNOWN, second.status);
+            assertEquals(ThingStatusDetail.NONE, second.detail);
+            assertEquals("SYNCING", Objects.requireNonNull(second.published.get("sync#status")).toString());
+            assertEquals("", Objects.requireNonNull(second.published.get("sync#error")).toString());
+            second.bridgeConnectionFailed();
             assertEquals(ThingStatus.OFFLINE, second.status);
+            assertEquals(ThingStatusDetail.BRIDGE_OFFLINE, second.detail);
             assertEquals("ERROR", Objects.requireNonNull(second.published.get("sync#status")).toString());
             second.handleRemoval();
             assertFalse(storage.containsKey(second.getThing().getUID().toString()));

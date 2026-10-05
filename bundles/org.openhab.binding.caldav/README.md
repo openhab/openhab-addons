@@ -33,7 +33,8 @@ The `discoveryMode` parameter defines what the configured `url` represents and t
 In `AUTO` mode, all `calendar-home-set` URLs returned for the principal are processed and the discovered Calendar Collections are deduplicated by collection URI.
 
 A principal URL is not a separate discovery mode because it would only skip the initial `current-user-principal` request.
-If the URL of an individual calendar is already known, no collection discovery is required; configure that URL as the Calendar Thing's `path`.
+If the URL of an individual calendar is already known, the Calendar Thing can be configured manually with that URL as its `path`.
+This does not disable Calendar Collection discovery for the account; the account still performs its initial discovery scan and scans explicitly requested from the Inbox.
 
 The binding does not perform RFC 6764 bootstrapping through DNS SRV/TXT records or `/.well-known/caldav`.
 Redirects are not followed, including redirects from a well-known URL.
@@ -80,11 +81,14 @@ The `syncMode` Account parameter selects the synchronization strategy:
 
 A complete update publishes `sync#status=OK` and updates `sync#last`.
 If some calendar data cannot be read, the status is `PARTIAL`; usable events remain available and `sync#last` retains the last complete success.
-A failed update publishes `ERROR` and preserves the last usable calendar data.
+A failed update sets the Calendar Thing to `OFFLINE`, publishes `sync#status=ERROR` and preserves the last usable calendar data.
 Bridge connection failures also set Calendar Things to `BRIDGE_OFFLINE` and their sync state to `ERROR`.
 
 Previously synchronized calendar data can remain available after an openHAB restart.
-Until synchronization succeeds, the Calendar Thing remains offline and its sync status is `ERROR`.
+Before and during the initial calendar synchronization, the Calendar Thing is `UNKNOWN` and `sync#status` is `SYNCING`.
+The `UNKNOWN` state indicates that live calendar data has not yet been confirmed.
+After the first successful synchronization, it becomes `ONLINE`.
+During later synchronization checks, an online Calendar Thing stays `ONLINE` while `sync#status` temporarily changes to `SYNCING`.
 Connection failures are retried automatically; a failure affecting one calendar does not take other calendars offline.
 
 `REFRESH` on calendar channels republishes local state without making a network request.

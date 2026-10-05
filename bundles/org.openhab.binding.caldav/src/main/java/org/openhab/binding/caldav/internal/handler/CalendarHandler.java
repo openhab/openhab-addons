@@ -104,9 +104,9 @@ public class CalendarHandler extends BaseThingHandler {
             configuration = initial;
             clearEvents();
             cacheIdentity = "";
-            set("sync#status", new StringType("ERROR"));
-            set("sync#error", new StringType("Waiting for account synchronization"));
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            set("sync#status", new StringType("SYNCING"));
+            set("sync#error", new StringType(""));
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for initial calendar synchronization");
         }
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof AccountHandler account) {
@@ -197,6 +197,10 @@ public class CalendarHandler extends BaseThingHandler {
                 }
                 worker = Objects.requireNonNull(synchronizer);
                 set("sync#status", new StringType("SYNCING"));
+                set("sync#error", new StringType(""));
+                if (!synchronizedOnce) {
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Fetching calendar data");
+                }
             }
             CalendarSynchronizer.Result result = worker.synchronize(horizon, zone, account.syncMode,
                     config.includeCancelled);

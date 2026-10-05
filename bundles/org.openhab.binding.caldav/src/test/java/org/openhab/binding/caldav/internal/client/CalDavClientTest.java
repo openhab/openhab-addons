@@ -43,6 +43,7 @@ import com.sun.net.httpserver.HttpServer;
  * Loopback transport tests with real HTTP challenges and bounded responses.
  * 
  * @author Andreas Vilippus - Initial contribution
+ * @author Andreas Vilippus - Preemptive BASIC authentication tests
  */
 @NonNullByDefault
 @Timeout(30)
@@ -58,15 +59,46 @@ class CalDavClientTest {
     }
 
     @Test
-    void basicChallengeAndRedirectDoNotLeakCredentials() throws Exception {
+    void basicAuthenticatesFirstRequestWithoutChallenge() throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicInteger requests = new AtomicInteger();
+        AtomicReference<@Nullable String> authorization = new AtomicReference<>();
+        server.createContext("/", exchange -> {
+            try (exchange) {
+                if (requests.incrementAndGet() == 1) {
+                    authorization.set(exchange.getRequestHeaders().getFirst("Authorization"));
+                }
+                exchange.sendResponseHeaders(207, 2);
+                exchange.getResponseBody().write("ok".getBytes(StandardCharsets.UTF_8));
+            }
+        });
+        HttpClient http = new HttpClient();
+        try {
+            server.start();
+            http.start();
+            var config = config(server, "BASIC");
+            var client = new CalDavClient(http, config);
+            assertEquals("ok", client.request("PROPFIND", URI.create(config.url), "", "0"));
+            assertEquals(1, requests.get());
+            assertEquals("Basic dXNlcjpzZWNyZXQ=", authorization.get());
+        } finally {
+            http.stop();
+            server.stop(0);
+        }
+    }
+
+    @Test
+    void basicAuthenticationAndRedirectDoNotLeakCredentials() throws Exception {
         checkBasicChallenge("BASIC");
     }
 
     private void checkBasicChallenge(String authType) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         AtomicInteger redirected = new AtomicInteger();
+        AtomicInteger requests = new AtomicInteger();
         server.createContext("/", exchange -> {
             try (exchange) {
+                requests.incrementAndGet();
                 String auth = exchange.getRequestHeaders().getFirst("Authorization");
                 if (auth == null) {
                     exchange.getResponseHeaders().set("WWW-Authenticate", "Basic realm=\"calendar\"");
@@ -100,6 +132,7 @@ class CalDavClientTest {
             var config = config(server, authType);
             var client = new CalDavClient(http, config);
             assertEquals("ok", client.request("PROPFIND", URI.create(config.url), "", "0"));
+            assertEquals("BASIC".equals(authType) ? 1 : 2, requests.get());
             assertEquals(302, assertThrows(CalDavHttpException.class,
                     () -> client.request("GET", URI.create(config.url + "redirect"), "", "0")).statusCode());
             assertEquals(0, redirected.get());
@@ -118,8 +151,10 @@ class CalDavClientTest {
 
     private void checkDigestChallenge(String authType) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicInteger requests = new AtomicInteger();
         server.createContext("/", exchange -> {
             try (exchange) {
+                requests.incrementAndGet();
                 String auth = exchange.getRequestHeaders().getFirst("Authorization");
                 if (auth == null) {
                     exchange.getResponseHeaders().set("WWW-Authenticate",
@@ -145,6 +180,7 @@ class CalDavClientTest {
             var config = config(server, authType);
             assertEquals("",
                     new CalDavClient(http, config).request("REPORT", URI.create(config.url), "<report/>", "1"));
+            assertEquals(2, requests.get());
         } finally {
             http.stop();
             server.stop(0);

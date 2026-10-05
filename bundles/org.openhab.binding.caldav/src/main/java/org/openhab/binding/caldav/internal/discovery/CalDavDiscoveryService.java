@@ -69,11 +69,9 @@ public class CalDavDiscoveryService extends AbstractThingHandlerDiscoveryService
                 ThingUID uid = new ThingUID(new ThingTypeUID(BINDING_ID, CALENDAR_THING_TYPE),
                         handler.getThing().getUID(), thingId(collection.uri()));
                 Map<String, Object> properties = new HashMap<>();
-                properties.put("calendarUid", collection.uri().toString());
                 properties.put("path", collection.uri().toString());
                 DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(handler.getThing().getUID())
-                        .withLabel(collection.name()).withProperties(properties)
-                        .withRepresentationProperty("calendarUid").build();
+                        .withLabel(collection.name()).withProperties(properties).build();
                 if (!publishIfCurrent(current, result)) {
                     return;
                 }
