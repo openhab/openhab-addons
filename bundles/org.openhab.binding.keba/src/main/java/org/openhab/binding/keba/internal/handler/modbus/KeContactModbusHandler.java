@@ -119,7 +119,7 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
     public void initialize() {
         config = getConfigAs(KeContactCombinedConfiguration.class);
         String host = config.getModbusAddress();
-        if (host == null || host.isBlank()) {
+        if (host.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-no-address");
             return;
