@@ -42,6 +42,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -52,6 +54,28 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
  * @author Michael Weger - Initial contribution
  */
 class KeContactModbusHandlerTest {
+
+    @Test
+    @Timeout(10)
+    void reportsInvalidCommunicationSetupAsConfigurationError() {
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:invalid-modbus-pool"))
+                .withConfiguration(new Configuration(Map.of("ipAddress", "192.0.2.1"))).build();
+        ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
+        when(manager.newModbusCommunicationInterface(any(), any()))
+                .thenThrow(new IllegalArgumentException("conflicting endpoint/pool configuration"));
+        KeContactProtocolHandler.Listener listener = Objects
+                .requireNonNull(mock(KeContactProtocolHandler.Listener.class));
+        KeContactModbusHandler handler = new KeContactModbusHandler(thing, manager, null, listener);
+        try {
+            handler.initialize();
+            verify(listener, timeout(5_000)).statusUpdated(eq(ThingStatus.OFFLINE),
+                    eq(ThingStatusDetail.CONFIGURATION_ERROR),
+                    contains("Invalid Modbus endpoint or pool configuration"));
+        } finally {
+            handler.dispose();
+        }
+    }
 
     @Test
     @Timeout(20)

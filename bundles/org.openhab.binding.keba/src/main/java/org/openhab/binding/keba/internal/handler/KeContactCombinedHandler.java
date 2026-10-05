@@ -168,7 +168,6 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         stopSession();
         KeContactCombinedConfiguration config = getConfigAs(KeContactCombinedConfiguration.class);
         boolean restEnabled = config.restEnabled;
-        boolean hasProtocol = config.modbusEnabled || config.udpEnabled || restEnabled;
         boolean validModbus = !config.modbusEnabled || !config.getModbusAddress().isBlank() && config.port >= 1
                 && config.port <= 65535 && config.unitId >= 0 && config.unitId <= 255;
         boolean validWallboxAddress = !(config.udpEnabled || restEnabled) || !config.ipAddress.isBlank();
@@ -203,13 +202,18 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         if (model != null) {
             localSession.product = model;
         }
+        boolean modbusUnsupported = modbusUnsupportedForProduct(localSession.product);
+        boolean restUnsupported = restUnsupportedForProduct(localSession.product);
+        localSession.modbusPending = config.modbusEnabled && !modbusUnsupported;
+        localSession.restPending = restEnabled && !restUnsupported;
         session = localSession;
         reconcileChannels(localSession);
         updateStatus(ThingStatus.UNKNOWN);
-        updateProperties(Map.of("modbusAvailable", config.modbusEnabled ? "unknown" : "disabled", "udpAvailable",
+        updateProperties(Map.of("modbusAvailable",
+                !config.modbusEnabled ? "disabled" : modbusUnsupported ? "unsupported" : "unknown", "udpAvailable",
                 !config.udpEnabled ? "disabled" : config.udpDisplayOnly ? "display-only" : "unknown", "restAvailable",
-                restEnabled ? "unknown" : "disabled"));
-        if (config.modbusEnabled) {
+                !restEnabled ? "disabled" : restUnsupported ? "unsupported" : "unknown"));
+        if (config.modbusEnabled && !modbusUnsupported) {
             Configuration modbusConfig = new Configuration(Map.of("ipAddress", config.getModbusAddress(), "port",
                     config.port, "unitId", config.unitId, "refreshInterval", config.refreshInterval,
                     "refreshIntervalSlow", config.refreshIntervalSlow));
@@ -223,7 +227,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                     listener(localSession, Protocol.UDP));
             localSession.udp = udp;
         }
-        if (restEnabled && password != null) {
+        if (restEnabled && password != null && !restUnsupported) {
             Configuration restConfig = new Configuration(Map.of("ipAddress", config.ipAddress, "restPort",
                     config.restPort, "restEnabled", true, "username", config.username, "password", password,
                     "refreshInterval", config.refreshInterval, "refreshIntervalSlow", config.refreshIntervalSlow,
@@ -233,7 +237,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             localSession.rest = rest;
             rest.initialize();
         }
-        if (hasProtocol) {
+        if (localSession.modbus != null || localSession.udp != null || localSession.rest != null) {
             localSession.job = scheduler.scheduleWithFixedDelay(() -> pollSupplemental(localSession), 0, 1,
                     TimeUnit.SECONDS);
         }
@@ -302,7 +306,9 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         }
         boolean p30 = model != null && model.toUpperCase(Locale.ROOT).contains("P30");
         if (localSession != null) {
+            stopUnsupportedAdapters(localSession);
             reconcileChannels(localSession);
+            updateCombinedStatus(localSession);
         } else if (p30) {
             var removedChannels = getThing().getChannels().stream()
                     .filter(channel -> Set.of(CHANNEL_FAST_CHARGING_STATUS, CHANNEL_ACTIVATE_FAST_CHARGING)
@@ -406,6 +412,36 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 || udpSupported && (localSession.config.udpDisplayOnly ? CHANNEL_DISPLAY.equals(channel)
                         : UDP_CHANNELS.contains(channel))
                 || restSupported && REST_CHANNELS.contains(channel);
+    }
+
+    private void stopUnsupportedAdapters(Session localSession) {
+        if (!current(localSession)) {
+            return;
+        }
+        if (localSession.config.modbusEnabled && modbusUnsupportedForProduct(localSession.product)) {
+            KeContactModbusHandler modbus = localSession.modbus;
+            if (modbus != null) {
+                localSession.modbus = null;
+                localSession.modbusOnline = false;
+                localSession.modbusPending = false;
+                updateProperty("modbusAvailable", "unsupported");
+                modbus.dispose();
+            }
+        }
+        if (localSession.config.restEnabled && restUnsupportedForProduct(localSession.product)) {
+            KeContactRestHandler rest = localSession.rest;
+            if (rest != null) {
+                localSession.rest = null;
+                localSession.restOnline = false;
+                localSession.restPending = false;
+                updateProperty("restAvailable", "unsupported");
+                rest.dispose();
+            }
+        }
+    }
+
+    private static boolean modbusUnsupportedForProduct(String product) {
+        return product.toUpperCase(Locale.ROOT).contains("P20");
     }
 
     private boolean protocolSupported(Protocol protocol, Session localSession) {
@@ -744,8 +780,18 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     }
 
     static boolean restUnsupportedForProduct(String product) {
-        return product.contains("P20") || product.contains("P30") && product.length() > 13
-                && KebaSeries.C.matchesSeries(Character.toUpperCase(product.charAt(13)));
+        String normalizedProduct = product.toUpperCase(Locale.ROOT);
+        if (normalizedProduct.contains("P20")) {
+            return true;
+        }
+        if (!normalizedProduct.contains("P30") || normalizedProduct.length() <= 13) {
+            return false;
+        }
+        try {
+            return KebaSeries.getSeries(normalizedProduct.charAt(13)) != KebaSeries.X;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     @Override

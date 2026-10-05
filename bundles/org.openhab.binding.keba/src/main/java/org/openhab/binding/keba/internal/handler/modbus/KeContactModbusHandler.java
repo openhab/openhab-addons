@@ -141,12 +141,17 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
             if (isStaleGeneration(generation, connectionGeneration.get())) {
                 return;
             }
-            ModbusTCPSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint(host, config.port, false);
-            EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
-            // KEBA recommends at least 0.5s between reads and 5s between writes to the same station
-            poolConfiguration.setInterTransactionDelayMillis(500);
-            ModbusCommunicationInterface localComms = modbusManager.newModbusCommunicationInterface(endpoint,
-                    poolConfiguration);
+            ModbusCommunicationInterface localComms;
+            try {
+                ModbusTCPSlaveEndpoint endpoint = new ModbusTCPSlaveEndpoint(host, config.port, false);
+                EndpointPoolConfiguration poolConfiguration = new EndpointPoolConfiguration();
+                // KEBA recommends at least 0.5s between reads and 5s between writes to the same station
+                poolConfiguration.setInterTransactionDelayMillis(500);
+                localComms = modbusManager.newModbusCommunicationInterface(endpoint, poolConfiguration);
+            } catch (RuntimeException e) {
+                reportSetupFailure(generation, e);
+                return;
+            }
             synchronized (connectionLock) {
                 if (isStaleGeneration(generation, connectionGeneration.get())) {
                     closeStaleComms(localComms);
@@ -156,6 +161,21 @@ public class KeContactModbusHandler extends KeContactProtocolHandler {
                 identifyProduct(localComms, generation);
             }
         });
+    }
+
+    private void reportSetupFailure(int generation, RuntimeException failure) {
+        synchronized (connectionLock) {
+            if (isStaleGeneration(generation, connectionGeneration.get())) {
+                return;
+            }
+            boolean invalidConfiguration = failure instanceof IllegalArgumentException;
+            ThingStatusDetail detail = invalidConfiguration ? ThingStatusDetail.CONFIGURATION_ERROR
+                    : ThingStatusDetail.COMMUNICATION_ERROR;
+            String description = (invalidConfiguration ? "Invalid Modbus endpoint or pool configuration: "
+                    : "Could not create Modbus communication interface: ") + failure.getMessage();
+            logger.warn("Modbus communication setup failed: {}", failure.getMessage());
+            updateStatus(ThingStatus.OFFLINE, detail, description);
+        }
     }
 
     private void identifyProduct(ModbusCommunicationInterface localComms, int generation) {

@@ -506,8 +506,8 @@ values used for wallbox state, meter readings, and session details must be prese
 version that changes or omits those v2 data elements may cause corresponding channels to remain undefined or the
 Thing to report a communication error.
 
-For local installations with a self-signed certificate, leave `verifyCertificate` disabled unless the certificate
-is trusted by openHAB and matches the configured host. Enable `DEBUG` logging for `org.openhab.binding.keba` to
+For local installations with a self-signed certificate, explicitly set `verifyCertificate=false` unless the
+certificate is trusted by openHAB and matches the configured host. Enable `DEBUG` logging for `org.openhab.binding.keba` to
 inspect REST initialization, polling, and request failures; never include passwords or bearer tokens when sharing
 logs.
 

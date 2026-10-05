@@ -1290,13 +1290,41 @@ class KeContactCombinedHandlerTest {
     @Test
     void disablesRestOnlyForIdentifiedUnsupportedModels() {
         assertTrue(KeContactCombinedHandler.restUnsupportedForProduct("KC-P20"));
-        assertTrue(KeContactCombinedHandler.restUnsupportedForProduct("KC-P30-1234562-XXX"));
-        assertTrue(KeContactCombinedHandler.restUnsupportedForProduct("KC-P30-123456A-XXX"));
-        assertFalse(KeContactCombinedHandler.restUnsupportedForProduct("KC-P30-123456C-XXX"));
+        for (String series : List.of("0", "1", "2", "3", "A")) {
+            assertTrue(KeContactCombinedHandler.restUnsupportedForProduct("KC-P30-123456" + series + "-XXX"));
+        }
         assertFalse(KeContactCombinedHandler.restUnsupportedForProduct("KC-P30-123456B-XXX"));
+        assertFalse(KeContactCombinedHandler.restUnsupportedForProduct("KC-P30-123456C-XXX"));
         assertFalse(KeContactCombinedHandler.restUnsupportedForProduct("KC-P30-123456Z-XXX"));
         assertFalse(KeContactCombinedHandler.restUnsupportedForProduct("P30"));
         assertFalse(KeContactCombinedHandler.restUnsupportedForProduct("P40"));
+    }
+
+    @Test
+    @Timeout(20)
+    void stopsModbusAndMarksP20UnsupportedWhenModelIsIdentified() throws Exception {
+        ThingUID uid = new ThingUID("keba:kecontact:p20-modbus");
+        Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), uid)
+                .withConfiguration(
+                        new Configuration(Map.of("ipAddress", "192.0.2.1", "udpEnabled", false, "restEnabled", false)))
+                .build();
+        ModbusManager manager = Objects.requireNonNull(mock(ModbusManager.class));
+        ModbusCommunicationInterface comms = Objects.requireNonNull(mock(ModbusCommunicationInterface.class));
+        when(manager.newModbusCommunicationInterface(any(), any())).thenReturn(comms);
+        KeContactCombinedHandler handler = new KeContactCombinedHandler(thing, manager,
+                Objects.requireNonNull(mock(KeContactTransceiver.class)));
+        handler.setCallback(Objects.requireNonNull(mock(ThingHandlerCallback.class)));
+        try {
+            handler.initialize();
+            verify(manager, timeout(5000)).newModbusCommunicationInterface(any(), any());
+
+            handler.updateProperties(Map.of("model", "P20"));
+
+            verify(comms, timeout(5000)).close();
+            assertEquals("unsupported", handler.getThing().getProperties().get("modbusAvailable"));
+        } finally {
+            handler.dispose();
+        }
     }
 
     @Test
