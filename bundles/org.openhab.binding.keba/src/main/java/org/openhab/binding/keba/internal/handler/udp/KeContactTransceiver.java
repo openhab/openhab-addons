@@ -500,7 +500,8 @@ public class KeContactTransceiver {
                                         for (KeContactHandler handler : handlerSnapshot()) {
                                             if (clientAddress != null
                                                     && matchesRemoteAddress(handler, clientAddress.getAddress())) {
-                                                receiveData(handler, broadcastBuffer.duplicate());
+                                                receiveData(handler,
+                                                        Objects.requireNonNull(broadcastBuffer.duplicate()));
                                             }
                                         }
                                     }

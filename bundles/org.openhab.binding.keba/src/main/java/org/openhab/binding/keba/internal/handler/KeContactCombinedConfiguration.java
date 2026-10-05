@@ -14,6 +14,7 @@ package org.openhab.binding.keba.internal.handler;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -51,7 +52,7 @@ public class KeContactCombinedConfiguration {
                     || !"".equals(uri.getRawPath()) || uri.getRawQuery() != null || uri.getRawFragment() != null) {
                 throw new IllegalArgumentException("Invalid wallbox network address");
             }
-            return uri.toString();
+            return Objects.requireNonNull(uri.toString());
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Invalid wallbox network address", e);
         }

@@ -74,41 +74,42 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         REST
     }
 
-    private static final Set<String> UDP_REPORT_1 = Set.of("backend", "timequality", "bootflag", "dipswitch1",
-            "dipswitch2");
-    private static final Set<String> UDP_REPORT_2 = Set.of("enabledsystem", "enableduser", "maxpresetcurrent",
-            "maxpresetcurrentrange", "error1", "error2", "maxpilotcurrent", "maxpilotcurrentdutycyle",
-            "maxsystemcurrent", "failsafecurrent", "failsafetimeout", "currtimer", "currtimertimeout", "output",
-            "input", "uptime", "authreq", "authon");
-    private static final Set<String> UDP_REPORT_100 = Set.of("sessionrfidclass", "sessionid");
-    private static final Set<String> REST_ONLY = Set.of("reststate", "session", "error", "reserved", "temperature",
-            "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases", "phaseconfiguration",
-            "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop", "reboot", "unlock",
-            "togglephaseswitch");
-    private static final Set<String> UDP_COMMANDS = Set.of("display", "output", "authenticate", "maxpresetcurrent",
-            "maxpresetcurrentrange");
-    private static final Set<String> REST_SHARED = Set.of("state", "I1", "I2", "I3", "U1", "U2", "U3", "power",
-            "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent",
-            "phaseswitchstate", "phaseswitchsource");
-    private static final Set<String> MODBUS_CHANNELS = Set.of("state", "cablestate", "wallbox", "vehicle", "locked",
-            "errorcode", "I1", "I2", "I3", "power", "totalconsumption", "U1", "U2", "U3", "powerfactor",
-            "maxpilotcurrent", "maxsystemcurrent", "fastchargingstatus", "sessionrfidtag", "sessionconsumption",
-            "phaseswitchsource", "phaseswitchstate", "failsafecurrent", "failsafetimeout", "maxpresetcurrent",
-            "setenergylimit", "unlockplug", "enableduser", "failsafepersist", "activatefastcharging");
-    private static final Set<String> UDP_CHANNELS = Set.of("backend", "timequality", "bootflag", "dipswitch1",
-            "dipswitch2", "enabledsystem", "enableduser", "maxpresetcurrent", "maxpresetcurrentrange", "error1",
-            "error2", "state", "wallbox", "vehicle", "locked", "maxpilotcurrent", "maxpilotcurrentdutycyle",
+    private static final Set<String> UDP_REPORT_1 = Objects
+            .requireNonNull(Set.of("backend", "timequality", "bootflag", "dipswitch1", "dipswitch2"));
+    private static final Set<String> UDP_REPORT_2 = Objects.requireNonNull(Set.of("enabledsystem", "enableduser",
+            "maxpresetcurrent", "maxpresetcurrentrange", "error1", "error2", "maxpilotcurrent",
+            "maxpilotcurrentdutycyle", "maxsystemcurrent", "failsafecurrent", "failsafetimeout", "currtimer",
+            "currtimertimeout", "output", "input", "uptime", "authreq", "authon"));
+    private static final Set<String> UDP_REPORT_100 = Objects.requireNonNull(Set.of("sessionrfidclass", "sessionid"));
+    private static final Set<String> REST_ONLY = Objects.requireNonNull(Set.of("reststate", "session", "error",
+            "reserved", "temperature", "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases",
+            "phaseconfiguration", "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop",
+            "reboot", "unlock", "togglephaseswitch"));
+    private static final Set<String> UDP_COMMANDS = Objects
+            .requireNonNull(Set.of("display", "output", "authenticate", "maxpresetcurrent", "maxpresetcurrentrange"));
+    private static final Set<String> REST_SHARED = Objects.requireNonNull(Set.of("state", "I1", "I2", "I3", "U1", "U2",
+            "U3", "power", "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent",
+            "maxsystemcurrent", "phaseswitchstate", "phaseswitchsource"));
+    private static final Set<String> MODBUS_CHANNELS = Objects
+            .requireNonNull(Set.of("state", "cablestate", "wallbox", "vehicle", "locked", "errorcode", "I1", "I2", "I3",
+                    "power", "totalconsumption", "U1", "U2", "U3", "powerfactor", "maxpilotcurrent", "maxsystemcurrent",
+                    "fastchargingstatus", "sessionrfidtag", "sessionconsumption", "phaseswitchsource",
+                    "phaseswitchstate", "failsafecurrent", "failsafetimeout", "maxpresetcurrent", "setenergylimit",
+                    "unlockplug", "enableduser", "failsafepersist", "activatefastcharging"));
+    private static final Set<String> UDP_CHANNELS = Objects.requireNonNull(Set.of("backend", "timequality", "bootflag",
+            "dipswitch1", "dipswitch2", "enabledsystem", "enableduser", "maxpresetcurrent", "maxpresetcurrentrange",
+            "error1", "error2", "state", "wallbox", "vehicle", "locked", "maxpilotcurrent", "maxpilotcurrentdutycyle",
             "maxsystemcurrent", "failsafecurrent", "failsafetimeout", "currtimer", "currtimertimeout", "output",
             "input", "uptime", "authreq", "authon", "I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
             "totalconsumption", "sessionconsumption", "sessionrfidtag", "sessionrfidclass", "sessionid", "display",
             "authenticate", "setenergylimit", "phaseswitchsource", "phaseswitchstate", "unlockplug", "stop",
-            "failsafepersist");
-    private static final Set<String> REST_CHANNELS = Set.of("reststate", "session", "error", "reserved", "temperature",
-            "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases", "phaseconfiguration",
-            "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop", "reboot", "unlock",
-            "authon", "enableduser", "vehicle", "state", "I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
-            "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent", "phaseswitchstate",
-            "phaseswitchsource", "togglephaseswitch");
+            "failsafepersist"));
+    private static final Set<String> REST_CHANNELS = Objects.requireNonNull(Set.of("reststate", "session", "error",
+            "reserved", "temperature", "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases",
+            "phaseconfiguration", "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop",
+            "reboot", "unlock", "authon", "enableduser", "vehicle", "state", "I1", "I2", "I3", "U1", "U2", "U3",
+            "power", "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent",
+            "phaseswitchstate", "phaseswitchsource", "togglephaseswitch"));
 
     private final ModbusManager modbusManager;
     private final KeContactTransceiver transceiver;
@@ -398,8 +399,9 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     }
 
     private boolean channelSupported(String channel, Session localSession) {
-        String product = (localSession.productIdentified ? localSession.product : localSession.modelHint)
-                .toUpperCase(Locale.ROOT);
+        String product = Objects
+                .requireNonNull((localSession.productIdentified ? localSession.product : localSession.modelHint)
+                        .toUpperCase(Locale.ROOT));
         if (product.contains("P30")
                 && Set.of(CHANNEL_FAST_CHARGING_STATUS, CHANNEL_ACTIVATE_FAST_CHARGING).contains(channel)) {
             return false;
@@ -444,7 +446,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     }
 
     private boolean protocolSupported(Protocol protocol, Session localSession) {
-        String product = localSession.product.toUpperCase(Locale.ROOT);
+        String product = Objects.requireNonNull(localSession.product.toUpperCase(Locale.ROOT));
         return switch (protocol) {
             case MODBUS -> localSession.config.modbusEnabled && !product.contains("P20");
             case UDP -> localSession.config.udpEnabled && !product.contains("P40") && !product.contains("P0");
@@ -590,7 +592,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
     private void publish(Session localSession, Protocol protocol, String originalChannel, State state) {
         if (protocol == Protocol.UDP && "dipswitch1".equals(originalChannel)) {
             try {
-                localSession.udpCommands = (Long.decode(state.toString()) & 0x20) != 0;
+                localSession.udpCommands = (Long.decode(Objects.requireNonNull(state.toString())) & 0x20) != 0;
             } catch (NumberFormatException e) {
                 localSession.udpCommands = false;
             }
@@ -618,7 +620,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         };
         if (protocol == Protocol.REST && "reststate".equals(channel)
                 && sourceFor(CHANNEL_STATE, localSession.modbusOnline, localSession.restOnline) == Protocol.REST) {
-            updateState(CHANNEL_STATE, numericRestState(state.toString()));
+            updateState(CHANNEL_STATE, numericRestState(Objects.requireNonNull(state.toString())));
         }
         if (sourceFor(channel, localSession.modbusOnline, localSession.restOnline) != protocol) {
             return;
@@ -746,8 +748,10 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             if (supplementalDue && needsReport(localSession, UDP_REPORT_1)) {
                 udp.readReport(1);
             }
-            if (operationalDue && List.of("I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
-                    "totalconsumption", "sessionconsumption").stream().anyMatch(this::isLinked)) {
+            if (operationalDue && List
+                    .of("I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor", "totalconsumption",
+                            "sessionconsumption")
+                    .stream().anyMatch(channel -> isLinked(Objects.requireNonNull(channel)))) {
                 udp.readReport(3);
             }
             if (supplementalDue && (needsReport(localSession, UDP_REPORT_100)
@@ -927,7 +931,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(KeContactActions.class);
+        return Objects.requireNonNull(List.of(KeContactActions.class));
     }
 
     @Override

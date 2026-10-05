@@ -626,14 +626,14 @@ public class KeContactHandler extends KeContactProtocolHandler {
                         break;
                     }
                     case "RFID tag": {
-                        String state = entry.getValue().getAsString().trim();
+                        String state = Objects.requireNonNull(entry.getValue().getAsString().trim());
                         sessionRfidTag = state;
                         State newState = new StringType(state);
                         updateState(CHANNEL_SESSION_RFID_TAG, newState);
                         break;
                     }
                     case "RFID class": {
-                        String state = entry.getValue().getAsString().trim();
+                        String state = Objects.requireNonNull(entry.getValue().getAsString().trim());
                         State newState = new StringType(state);
                         updateState(CHANNEL_SESSION_RFID_CLASS, newState);
                         break;
