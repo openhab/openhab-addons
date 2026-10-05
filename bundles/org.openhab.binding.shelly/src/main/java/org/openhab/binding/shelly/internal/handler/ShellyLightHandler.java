@@ -534,6 +534,8 @@ public class ShellyLightHandler extends ShellyBaseHandler implements LightModelA
         if (model.supportsBrightnessChannel() && (forceChannelUpdates || model.isBrightnessDirty())) {
             group = groupSuffix == 0 ? CHANNEL_GROUP_WHITE_CONTROL : lightChannelGroupPrefix(profile) + groupSuffix;
             updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
+            group = CHANNEL_GROUP_LIGHT_CONTROL;
+            updated |= updateChannel(group, CHANNEL_BRIGHTNESS, model.getBrightnessState());
         }
 
         // COLOR TEMP:
