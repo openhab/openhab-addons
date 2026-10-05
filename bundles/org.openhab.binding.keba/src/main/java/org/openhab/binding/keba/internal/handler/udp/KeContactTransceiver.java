@@ -13,6 +13,7 @@
 package org.openhab.binding.keba.internal.handler.udp;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
@@ -159,8 +160,13 @@ public class KeContactTransceiver {
                 }
                 closeQuietly(localBroadcastChannel);
                 closeQuietly(localSelector);
-                logger.error("An exception occurred while starting the KEBA KeContact transceiver: {}", e.getMessage(),
-                        e);
+                if (e instanceof BindException) {
+                    logger.error("An exception occurred while starting the KEBA KeContact transceiver: {}",
+                            e.getMessage());
+                } else {
+                    logger.error("An exception occurred while starting the KEBA KeContact transceiver: {}",
+                            e.getMessage(), e);
+                }
             }
         }
     }
