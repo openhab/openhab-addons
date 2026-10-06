@@ -1,6 +1,6 @@
 # Bluetooth Grundfos Alpha Adapter
 
-This binding adds support for reading out the data of Grundfos Alpha pumps with a [Grundfos Alpha Reader](https://product-selection.grundfos.com/products/alpha-reader) or [Alpha3 pump](https://product-selection.grundfos.com/products/alpha/alpha3) with built-in Bluetooth.
+This binding supports reading data from Grundfos Alpha pumps with a [Grundfos Alpha Reader](https://product-selection.grundfos.com/products/alpha-reader) or [Alpha3 pump](https://product-selection.grundfos.com/products/alpha/alpha3) with built-in Bluetooth.
 
 The reverse engineering of the Alpha Reader protocol was taken from [https://github.com/JsBergbau/AlphaDecoder](https://github.com/JsBergbau/AlphaDecoder).
 

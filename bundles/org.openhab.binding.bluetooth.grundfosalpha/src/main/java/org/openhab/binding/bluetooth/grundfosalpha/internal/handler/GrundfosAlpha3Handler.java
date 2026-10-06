@@ -35,14 +35,12 @@ import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
 import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.ConnectedBluetoothHandler;
 import org.openhab.binding.bluetooth.grundfosalpha.internal.CharacteristicRequest;
-import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.MessageType;
-import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.ResponseMessage;
-import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.SensorDataType;
+import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.GeniMeasurand;
+import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.GeniReadRequest;
+import org.openhab.binding.bluetooth.grundfosalpha.internal.protocol.GeniResponseDecoder;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -75,7 +73,7 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
 
     private @Nullable ScheduledFuture<?> refreshFuture;
     private @Nullable WriteCharacteristicThread senderThread;
-    private ResponseMessage responseMessage = new ResponseMessage();
+    private GeniResponseDecoder responseDecoder = new GeniResponseDecoder();
 
     public GrundfosAlpha3Handler(Thing thing) {
         super(thing);
@@ -135,9 +133,9 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
         }
 
         if (FLOW_HEAD_CHANNELS.contains(channelUID.getId())) {
-            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, MessageType.FlowHead));
+            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.FlowHead));
         } else if (POWER_CHANNELS.contains(channelUID.getId())) {
-            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, MessageType.Power));
+            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.Power));
         }
     }
 
@@ -193,10 +191,10 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
                 return;
             }
 
-            if (responseMessage.addPacket(value)) {
-                Map<SensorDataType, BigDecimal> values = responseMessage.decode();
+            if (responseDecoder.addPacket(value)) {
+                Map<GeniMeasurand, BigDecimal> values = responseDecoder.decode();
                 updateChannels(values);
-                responseMessage = new ResponseMessage();
+                responseDecoder = new GeniResponseDecoder();
             }
         } finally {
             stateLock.unlock();
@@ -209,23 +207,24 @@ public class GrundfosAlpha3Handler extends ConnectedBluetoothHandler {
         }
 
         if (FLOW_HEAD_CHANNELS.stream().anyMatch(this::isLinked)) {
-            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, MessageType.FlowHead));
+            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.FlowHead));
         }
 
         if (POWER_CHANNELS.stream().anyMatch(this::isLinked)) {
-            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, MessageType.Power));
+            sendQueue.add(new CharacteristicRequest(UUID_CHARACTERISTIC_GENI, GeniReadRequest.Power));
         }
     }
 
-    private void updateChannels(Map<SensorDataType, BigDecimal> values) {
-        for (Entry<SensorDataType, BigDecimal> entry : values.entrySet()) {
+    private void updateChannels(Map<GeniMeasurand, BigDecimal> values) {
+        for (Entry<GeniMeasurand, BigDecimal> entry : values.entrySet()) {
             BigDecimal stateValue = entry.getValue();
+            QuantityType<?> quantity = new QuantityType<>(stateValue, entry.getKey().unit());
             switch (entry.getKey()) {
-                case Flow -> updateState(CHANNEL_FLOW_RATE, new QuantityType<>(stateValue, Units.CUBICMETRE_PER_HOUR));
-                case Head -> updateState(CHANNEL_PUMP_HEAD, new QuantityType<>(stateValue, SIUnits.METRE));
-                case VoltageAC -> updateState(CHANNEL_VOLTAGE_AC, new QuantityType<>(stateValue, Units.VOLT));
-                case PowerConsumption -> updateState(CHANNEL_POWER, new QuantityType<>(stateValue, Units.WATT));
-                case MotorSpeed -> updateState(CHANNEL_MOTOR_SPEED, new QuantityType<>(stateValue, Units.RPM));
+                case Flow -> updateState(CHANNEL_FLOW_RATE, quantity);
+                case Head -> updateState(CHANNEL_PUMP_HEAD, quantity);
+                case VoltageAC -> updateState(CHANNEL_VOLTAGE_AC, quantity);
+                case PowerConsumption -> updateState(CHANNEL_POWER, quantity);
+                case MotorSpeed -> updateState(CHANNEL_MOTOR_SPEED, quantity);
             }
         }
     }
