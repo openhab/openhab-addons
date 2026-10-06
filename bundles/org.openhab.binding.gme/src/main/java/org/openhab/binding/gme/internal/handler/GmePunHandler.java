@@ -112,14 +112,14 @@ public class GmePunHandler extends BaseThingHandler {
             scheduleApiRefresh();
             refreshPrices(false);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "GME API bridge is not online.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.gme.bridge-offline");
         }
     }
 
     private boolean linkBridge() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "GME API bridge is missing.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "@text/status.gme.bridge-missing");
             return false;
         }
 
@@ -130,7 +130,7 @@ public class GmePunHandler extends BaseThingHandler {
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "Configured bridge is not a GME API bridge.");
+                "@text/status.gme.wrong-bridge");
         return false;
     }
 
@@ -147,7 +147,7 @@ public class GmePunHandler extends BaseThingHandler {
         } else {
             lifecycleGeneration.incrementAndGet();
             cancelJobs();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "GME API bridge is not online.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.gme.bridge-offline");
         }
     }
 
@@ -330,14 +330,14 @@ public class GmePunHandler extends BaseThingHandler {
                 GmeApiBridgeHandler currentBridgeHandler = bridgeHandler;
                 if (currentBridgeHandler == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                            "GME API bridge handler is unavailable.");
+                            "@text/status.gme.bridge-handler-unavailable");
                     return;
                 }
 
                 GmeAuthManager authManager = currentBridgeHandler.getAuthManager();
                 if (authManager == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                            "GME authentication manager is unavailable.");
+                            "@text/status.gme.auth-manager-unavailable");
                     return;
                 }
 
@@ -382,7 +382,7 @@ public class GmePunHandler extends BaseThingHandler {
 
                             if (!GmePriceTimeline.isCompleteDailySet(newTodayPrices, today, GME_ZONE, granularity)) {
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "GME returned an incomplete PUN price dataset for today.");
+                                        "@text/status.gme.incomplete-today-dataset");
                                 return;
                             }
 
@@ -524,12 +524,12 @@ public class GmePunHandler extends BaseThingHandler {
                 Thread.currentThread().interrupt();
                 if (isCurrentGeneration(generation)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "GME price refresh was interrupted.");
+                            "@text/status.gme.refresh-interrupted");
                 }
             } catch (IOException | TimeoutException | ExecutionException | IllegalStateException e) {
                 if (isCurrentGeneration(generation)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unable to retrieve GME prices: " + e.getMessage());
+                            "@text/status.gme.price-retrieval-failed [\"" + e.getMessage() + "\"]");
                 }
             } finally {
                 refreshInProgress.set(false);
