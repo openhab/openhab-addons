@@ -18,6 +18,9 @@ import static org.openhab.binding.doorbird.internal.DoorbirdBindingConstants.CHA
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serial;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -100,6 +103,16 @@ public class DoorbirdHTTPServlet extends HttpServlet {
             return;
         }
 
+        String remoteIp = req.getRemoteAddr();
+        List<String> ipWhitelist = handler.getWebhookIpWhitelist();
+        if (!isDoorbirdHost(handler.getDoorbirdHost(), remoteIp) && !isIpWhitelisted(ipWhitelist, remoteIp)) {
+            logger.debug(
+                    "Doorbird webhook rejected: Remote IP '{}' is not in the whitelist of allowed IPs for thing '{}'",
+                    remoteIp, thingUidParam);
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         if (CHANNEL_DOORBELL.equalsIgnoreCase(eventParam)) {
             logger.debug("Triggering doorbell channel via webhook for thing {}", handler.getThing().getUID());
             handler.updateDoorbellChannel(System.currentTimeMillis() / 1000L);
@@ -122,5 +135,50 @@ public class DoorbirdHTTPServlet extends HttpServlet {
             writer.print("OK");
             writer.flush();
         }
+    }
+
+    private boolean isDoorbirdHost(@Nullable String doorbirdHost, @Nullable String remoteIp) {
+        if (doorbirdHost == null || remoteIp == null || remoteIp.isBlank()) {
+            return false;
+        }
+        if (doorbirdHost.equals(remoteIp)) {
+            return true;
+        }
+        try {
+            InetAddress remoteAddress = InetAddress.getByName(remoteIp);
+            for (InetAddress hostAddress : InetAddress.getAllByName(doorbirdHost)) {
+                if (hostAddress.equals(remoteAddress)) {
+                    return true;
+                }
+            }
+        } catch (UnknownHostException | SecurityException e) {
+            logger.debug("Failed to resolve doorbirdHost '{}' or remoteIp '{}': {}", doorbirdHost, remoteIp,
+                    e.getMessage());
+        }
+        return false;
+    }
+
+    private boolean isIpWhitelisted(List<String> ipWhitelist, @Nullable String remoteIp) {
+        if (remoteIp == null || remoteIp.isBlank()) {
+            return false;
+        }
+        if (ipWhitelist.contains(remoteIp)) {
+            return true;
+        }
+        try {
+            InetAddress remoteAddress = InetAddress.getByName(remoteIp);
+            for (String allowedIp : ipWhitelist) {
+                try {
+                    if (InetAddress.getByName(allowedIp).equals(remoteAddress)) {
+                        return true;
+                    }
+                } catch (UnknownHostException e) {
+                    // Ignore unresolvable entry in whitelist
+                }
+            }
+        } catch (UnknownHostException | SecurityException e) {
+            // Ignore invalid remote IP
+        }
+        return false;
     }
 }
