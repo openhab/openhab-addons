@@ -62,7 +62,7 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
      * This attribute may indicates the time at which the resource has been changed, if supported by the server. The
      * attribute shall be null if it was never set or is unknown.
      */
-    public Integer lastChangedTime; // 4 epoch-s RW VO
+    public Long lastChangedTime; // 4 epoch-s RW VO
     /**
      * Indicates the list of supported products that may be used as replacements for the current resource. Each item in
      * this list represents a unique ReplacementProductStruct.

@@ -142,7 +142,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             requirePinForRemoteOperation = cluster.requirePinForRemoteOperation;
         }
         if (cluster.autoRelockTime != null) {
-            autoRelockTime = cluster.autoRelockTime;
+            autoRelockTime = cluster.autoRelockTime.intValue();
         }
         if (cluster.enableOneTouchLocking != null) {
             enableOneTouchLocking = cluster.enableOneTouchLocking;
@@ -714,7 +714,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             UserStatusEnum status = userStatus != null ? userStatus : UserStatusEnum.OCCUPIED_ENABLED;
             UserTypeEnum type = userType != null ? userType : UserTypeEnum.UNRESTRICTED_USER;
             String name = userName != null ? userName : "User " + userIndex;
-            command = DoorLockCluster.setUser(operationType, userIndex, name, 0, status, type,
+            command = DoorLockCluster.setUser(operationType, userIndex, name, 0L, status, type,
                     DoorLockCluster.CredentialRuleEnum.SINGLE);
         }
 

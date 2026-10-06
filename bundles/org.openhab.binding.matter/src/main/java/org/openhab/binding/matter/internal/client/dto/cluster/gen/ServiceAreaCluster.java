@@ -117,7 +117,7 @@ public class ServiceAreaCluster extends BaseCluster {
      * - each item in this list shall match the AreaID field of an entry in the SupportedAreas attribute's list
      * - each entry in this list shall have a unique value
      */
-    public List<Integer> selectedAreas; // 2 list R V
+    public List<Long> selectedAreas; // 2 list R V
     /**
      * If the device is mobile, this attribute shall indicate the area where the device is currently located, regardless
      * of whether it is operating or not, such as while traveling between areas.
@@ -136,7 +136,7 @@ public class ServiceAreaCluster extends BaseCluster {
      * If not null, the value of this attribute shall match the AreaID field of an entry on the SupportedAreas
      * attribute's list.
      */
-    public Integer currentArea; // 3 uint32 R V
+    public Long currentArea; // 3 uint32 R V
     /**
      * Indicates the estimated Epoch time for completing operating at the area indicated by the CurrentArea attribute,
      * in seconds.
@@ -154,7 +154,7 @@ public class ServiceAreaCluster extends BaseCluster {
      * > NOTE: If the device is capable of pausing its operation, this attribute may be set to null, to indicate that
      * completion time is unknown, or increment the value while being in the paused state.
      */
-    public Integer estimatedEndTime; // 4 epoch-s R V
+    public Long estimatedEndTime; // 4 epoch-s R V
     /**
      * Indicates the operating status at one or more areas.
      * Each entry in this list shall have a unique value for the AreaID field.
@@ -269,14 +269,14 @@ public class ServiceAreaCluster extends BaseCluster {
         /**
          * This field shall represent the map's identifier.
          */
-        public Integer mapId; // uint32
+        public Long mapId; // uint32
         /**
          * This field shall represent a human understandable map description.
          * For example: "Main Floor", or "Second Level".
          */
         public String name; // string
 
-        public MapStruct(Integer mapId, String name) {
+        public MapStruct(Long mapId, String name) {
             this.mapId = mapId;
             this.name = name;
         }
@@ -289,14 +289,14 @@ public class ServiceAreaCluster extends BaseCluster {
         /**
          * This field shall represent the identifier of the area.
          */
-        public Integer areaId; // uint32
+        public Long areaId; // uint32
         /**
          * This field shall indicate the map identifier which the area is associated with. A value of null indicates
          * that the area is not associated with a map.
          * If the SupportedMaps attribute is not empty, this field shall match the MapID field of an entry from the
          * SupportedMaps attribute's list. If the SupportedMaps attribute is empty, this field shall be null.
          */
-        public Integer mapId; // uint32
+        public Long mapId; // uint32
         /**
          * This field shall contain data describing the area.
          * This SHOULD be used by clients to determine the name and/or the full, or the partial, semantics of a certain
@@ -307,7 +307,7 @@ public class ServiceAreaCluster extends BaseCluster {
          */
         public AreaInfoStruct areaInfo; // AreaInfoStruct
 
-        public AreaStruct(Integer areaId, Integer mapId, AreaInfoStruct areaInfo) {
+        public AreaStruct(Long areaId, Long mapId, AreaInfoStruct areaInfo) {
             this.areaId = areaId;
             this.mapId = mapId;
             this.areaInfo = areaInfo;
@@ -322,7 +322,7 @@ public class ServiceAreaCluster extends BaseCluster {
          * This field shall indicate the identifier of the area, and the identifier shall be an entry in the
          * SupportedAreas attribute's list.
          */
-        public Integer areaId; // uint32
+        public Long areaId; // uint32
         /**
          * This field shall indicate the operational status of the device regarding the area indicated by the AreaID
          * field.
@@ -337,7 +337,7 @@ public class ServiceAreaCluster extends BaseCluster {
          * attribute, and in such instances this attribute shall be populated with null.
          * Null if the Status field is not set to Completed or Skipped.
          */
-        public Integer totalOperationalTime; // elapsed-s
+        public Long totalOperationalTime; // elapsed-s
         /**
          * This field shall indicate the estimated time for the operation, in seconds, from when the device will start
          * operating at the area indicated by the AreaID field, until the operation completes, excluding any time spent
@@ -347,10 +347,10 @@ public class ServiceAreaCluster extends BaseCluster {
          * After initializing the ProgressStruct instance, the server SHOULD NOT change the value of this field, except
          * when repopulating the entire instance, to avoid excessive reporting of the Progress attribute changes.
          */
-        public Integer estimatedTime; // elapsed-s
+        public Long estimatedTime; // elapsed-s
 
-        public ProgressStruct(Integer areaId, OperationalStatusEnum status, Integer totalOperationalTime,
-                Integer estimatedTime) {
+        public ProgressStruct(Long areaId, OperationalStatusEnum status, Long totalOperationalTime,
+                Long estimatedTime) {
             this.areaId = areaId;
             this.status = status;
             this.totalOperationalTime = totalOperationalTime;
@@ -473,7 +473,7 @@ public class ServiceAreaCluster extends BaseCluster {
      * This command is used to select a set of device areas, where the device is to operate.
      * On receipt of this command the device shall respond with a SelectAreasResponse command.
      */
-    public static ClusterCommand selectAreas(List<Integer> newAreas) {
+    public static ClusterCommand selectAreas(List<Long> newAreas) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (newAreas != null) {
             map.put("newAreas", newAreas);
@@ -486,7 +486,7 @@ public class ServiceAreaCluster extends BaseCluster {
      * attribute list.
      * On receipt of this command the device shall respond with a SkipAreaResponse command.
      */
-    public static ClusterCommand skipArea(Integer skippedArea) {
+    public static ClusterCommand skipArea(Long skippedArea) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (skippedArea != null) {
             map.put("skippedArea", skippedArea);

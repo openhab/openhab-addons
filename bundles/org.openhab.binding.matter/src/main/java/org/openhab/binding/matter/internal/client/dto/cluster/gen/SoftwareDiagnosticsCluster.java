@@ -100,22 +100,22 @@ public class SoftwareDiagnosticsCluster extends BaseCluster {
          * The StackFreeCurrent field shall indicate the current amount of stack memory, in bytes, that are not being
          * utilized on the respective thread.
          */
-        public Integer stackFreeCurrent; // uint32
+        public Long stackFreeCurrent; // uint32
         /**
          * The StackFreeMinimum field shall indicate the minimum amount of stack memory, in bytes, that has been
          * available at any point between the current time and this attribute being reset or initialized on the
          * respective thread. This value shall only be reset upon a Node reboot or upon receiving of the ResetWatermarks
          * command.
          */
-        public Integer stackFreeMinimum; // uint32
+        public Long stackFreeMinimum; // uint32
         /**
          * The StackSize field shall indicate the amount of stack memory, in bytes, that has been allocated for use by
          * the respective thread.
          */
-        public Integer stackSize; // uint32
+        public Long stackSize; // uint32
 
-        public ThreadMetricsStruct(BigInteger id, String name, Integer stackFreeCurrent, Integer stackFreeMinimum,
-                Integer stackSize) {
+        public ThreadMetricsStruct(BigInteger id, String name, Long stackFreeCurrent, Long stackFreeMinimum,
+                Long stackSize) {
             this.id = id;
             this.name = name;
             this.stackFreeCurrent = stackFreeCurrent;

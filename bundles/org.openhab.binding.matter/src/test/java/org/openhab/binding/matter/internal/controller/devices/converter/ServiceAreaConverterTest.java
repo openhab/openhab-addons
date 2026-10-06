@@ -61,10 +61,10 @@ class ServiceAreaConverterTest extends BaseMatterConverterTest {
         List<ServiceAreaCluster.AreaStruct> areas = new ArrayList<>();
         AreaInfoStruct info1 = new AreaInfoStruct(new Locationdesc("Kitchen", null, 47), null);
         AreaInfoStruct info2 = new AreaInfoStruct(new Locationdesc("Bathroom", null, 6), null);
-        areas.add(new AreaStruct(2, 0, info1));
-        areas.add(new AreaStruct(3, 0, info2));
+        areas.add(new AreaStruct(2L, 0L, info1));
+        areas.add(new AreaStruct(3L, 0L, info2));
         mockCluster.supportedAreas = areas;
-        mockCluster.currentArea = 2;
+        mockCluster.currentArea = 2L;
         converter = new ServiceAreaConverter(mockCluster, mockHandler, 1, "Vacuum");
     }
 

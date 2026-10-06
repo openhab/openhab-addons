@@ -71,7 +71,7 @@ public class RvcOperationalStateCluster extends BaseCluster {
      * As this attribute is not being reported during a regular countdown, clients SHOULD NOT rely on the reporting of
      * this attribute in order to keep track of the remaining duration.
      */
-    public Integer countdownTime; // 2 elapsed-s R V
+    public Long countdownTime; // 2 elapsed-s R V
     /**
      * This attribute describes the set of possible operational states that the device exposes. An operational state is
      * a fundamental device state such as Running or Error. Details of the phase of a device when, for example, in a
@@ -130,15 +130,15 @@ public class RvcOperationalStateCluster extends BaseCluster {
          * There may be cases whereby the total operational time exceeds the maximum value that can be conveyed by this
          * attribute, in such instances, this attribute shall be populated with null.
          */
-        public Integer totalOperationalTime; // elapsed-s
+        public Long totalOperationalTime; // elapsed-s
         /**
          * The total time spent in the paused state, in seconds. There may be cases whereby the total paused time
          * exceeds the maximum value that can be conveyed by this attribute, in such instances, this attribute shall be
          * populated with null.
          */
-        public Integer pausedTime; // elapsed-s
+        public Long pausedTime; // elapsed-s
 
-        public OperationCompletion(Integer completionErrorCode, Integer totalOperationalTime, Integer pausedTime) {
+        public OperationCompletion(Integer completionErrorCode, Long totalOperationalTime, Long pausedTime) {
             this.completionErrorCode = completionErrorCode;
             this.totalOperationalTime = totalOperationalTime;
             this.pausedTime = pausedTime;

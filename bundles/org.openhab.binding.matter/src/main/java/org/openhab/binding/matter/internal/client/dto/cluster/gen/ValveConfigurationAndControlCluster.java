@@ -50,14 +50,14 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
      * A value of null shall indicate the duration is not set, meaning that the valve will remain open until closed by
      * the user or some other automation.
      */
-    public Integer openDuration; // 0 elapsed-s R V
+    public Long openDuration; // 0 elapsed-s R V
     /**
      * Indicates the default duration, in seconds, for which the valve will remain open, if the OpenDuration field is
      * not present in the Open command.
      * A value of null shall indicate the duration is not set, meaning that the valve will remain open until closed by
      * the user or some other automation.
      */
-    public Integer defaultOpenDuration; // 1 elapsed-s RW VO
+    public Long defaultOpenDuration; // 1 elapsed-s RW VO
     /**
      * Indicates the UTC time when the valve will close, depending on value of the OpenDuration attribute.
      * Null:
@@ -89,7 +89,7 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
      * position. The behavior of transitioning to the closed position shall match the behavior described in the Close
      * command.
      */
-    public Integer remainingDuration; // 3 elapsed-s R V
+    public Long remainingDuration; // 3 elapsed-s R V
     /**
      * Indicates the current state of the valve.
      * A value of null shall indicate that the current state is not known.
@@ -276,7 +276,7 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     /**
      * This command is used to set the valve to its open position.
      */
-    public static ClusterCommand open(Integer openDuration, Integer targetLevel) {
+    public static ClusterCommand open(Long openDuration, Integer targetLevel) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (openDuration != null) {
             map.put("openDuration", openDuration);

@@ -386,7 +386,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
          * This field shall indicate the maximum duration (in seconds) after initial motion detection that additional
          * motion will be detected.
          */
-        public Integer maxDuration; // elapsed-s
+        public Long maxDuration; // elapsed-s
         /**
          * This field shall indicate the duration (in seconds) after a transport finishes transmitting that the Node
          * shall NOT activate the trigger again.
@@ -394,7 +394,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
         public Integer blindDuration; // uint16
 
         public TransportMotionTriggerTimeControlStruct(Integer initialDuration, Integer augmentationDuration,
-                Integer maxDuration, Integer blindDuration) {
+                Long maxDuration, Integer blindDuration) {
             this.initialDuration = initialDuration;
             this.augmentationDuration = augmentationDuration;
             this.maxDuration = maxDuration;
@@ -461,7 +461,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
          * This field shall be an unsigned 32 bit integer representing the TTL in seconds of a transport allocation. If
          * not present, the transport shall never expire.
          */
-        public Integer expiryTime; // epoch-s
+        public Long expiryTime; // epoch-s
         /**
          * This field shall be a list of VideoStreamStruct which indicates the requested video streams and the stream
          * names for this transport.
@@ -475,7 +475,7 @@ public class PushAvStreamTransportCluster extends BaseCluster {
 
         public TransportOptionsStruct(StreamUsageEnum streamUsage, Integer videoStreamId, Integer audioStreamId,
                 Integer tlsEndpointId, String url, TransportTriggerOptionsStruct triggerOptions,
-                IngestMethodsEnum ingestMethod, ContainerOptionsStruct containerOptions, Integer expiryTime,
+                IngestMethodsEnum ingestMethod, ContainerOptionsStruct containerOptions, Long expiryTime,
                 List<VideoStreamStruct> videoStreams, List<AudioStreamStruct> audioStreams) {
             this.streamUsage = streamUsage;
             this.videoStreamId = videoStreamId;

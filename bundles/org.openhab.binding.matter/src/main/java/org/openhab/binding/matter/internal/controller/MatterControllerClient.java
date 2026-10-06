@@ -336,6 +336,31 @@ public class MatterControllerClient extends MatterWebsocketClient {
     }
 
     /**
+     * Read several attributes of a cluster from the device in a single read interaction
+     *
+     * @param type the cluster class to deserialize the attributes into, only the requested attributes are set
+     * @param nodeId the node ID to read the attributes from
+     * @param endpointId the endpoint ID to read the attributes from
+     * @param clusterName the cluster name to read the attributes from
+     * @param attributeNames the attribute names to read
+     * @return a future that completes with the cluster, or exceptionally with a {@link MatterRequestException} if
+     *         the request fails or a {@link JsonParseException} if the result cannot be deserialized
+     */
+    public <T extends BaseCluster> CompletableFuture<T> clusterReadAttributes(Class<T> type, BigInteger nodeId,
+            Integer endpointId, String clusterName, List<String> attributeNames) {
+        Object[] clusterArgs = { String.valueOf(nodeId), endpointId, clusterName, attributeNames };
+        CompletableFuture<JsonElement> future = sendMessage("clusters", "readAttributes", clusterArgs);
+        return future.thenApply(obj -> {
+            @Nullable
+            T result = gson.fromJson(obj, type);
+            if (result == null) {
+                throw new JsonParseException("Could not deserialize attributes of " + clusterName);
+            }
+            return result;
+        });
+    }
+
+    /**
      * Get the session information for the controller
      * 
      * @return a future that completes when the session information is retrieved

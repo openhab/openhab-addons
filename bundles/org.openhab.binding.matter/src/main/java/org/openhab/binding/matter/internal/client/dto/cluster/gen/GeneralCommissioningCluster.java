@@ -133,7 +133,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * updated Terms and Conditions, as described in Section 5.7.4.6, "Presenting Updated Terms and Conditions".
      * A null value indicates that there is no pending deadline for updated TC acceptance.
      */
-    public Integer tcUpdateDeadline; // 9 uint32 R A
+    public Long tcUpdateDeadline; // 9 uint32 R A
     /**
      * This attribute shall contain the identifier to be included in the advertisements used during the Network Recovery
      * Flow. This identifier is intended to be advertised over the air and used by an Administrator to establish a

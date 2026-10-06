@@ -166,7 +166,7 @@ public class JointFabricAdministratorCluster extends BaseCluster {
      * The parameters for OpenJointCommissioningWindow command are as follows:
      */
     public static ClusterCommand openJointCommissioningWindow(Integer commissioningTimeout,
-            OctetString pakePasscodeVerifier, Integer discriminator, Integer iterations, OctetString salt) {
+            OctetString pakePasscodeVerifier, Integer discriminator, Long iterations, OctetString salt) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (commissioningTimeout != null) {
             map.put("commissioningTimeout", commissioningTimeout);

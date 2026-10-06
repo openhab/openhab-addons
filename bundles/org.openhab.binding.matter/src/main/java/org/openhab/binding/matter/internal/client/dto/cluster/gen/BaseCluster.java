@@ -44,11 +44,11 @@ public class BaseCluster {
     public static final String ATTRIBUTE_GENERATED_COMMAND_LIST = "generatedCommandList";
 
     // Global cluster attributes (present in all clusters per Matter spec)
-    public List<Integer> acceptedCommandList; // 65529 list
-    public List<Integer> attributeList; // 65531 list
+    public List<Long> acceptedCommandList; // 65529 list
+    public List<Long> attributeList; // 65531 list
     public Integer clusterRevision; // 65533 uint16
     public List<Integer> eventList; // 65530
-    public List<Integer> generatedCommandList; // 65528 list
+    public List<Long> generatedCommandList; // 65528 list
 
     public interface MatterEnum {
         Integer getValue();
@@ -116,10 +116,10 @@ public class BaseCluster {
 
     // Structs
     public static class AtomicAttributeStatusStruct {
-        public Integer attributeId; // attrib-id
+        public Long attributeId; // attrib-id
         public Status statusCode; // status
 
-        public AtomicAttributeStatusStruct(Integer attributeId, Status statusCode) {
+        public AtomicAttributeStatusStruct(Long attributeId, Status statusCode) {
             this.attributeId = attributeId;
             this.statusCode = statusCode;
         }
