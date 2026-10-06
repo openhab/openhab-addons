@@ -44,5 +44,9 @@ public class GrundfosAlphaBindingConstants {
     public static final String CHANNEL_PUMP_TEMPERATURE = "pump-temperature";
     public static final String CHANNEL_VOLTAGE_AC = "voltage-ac";
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_MOTOR_SPEED = "motor-speed";
+    public static final String CHANNEL_MOTOR_CURRENT = "motor-current";
+    public static final String CHANNEL_OPERATING_TIME = "operating-time";
+    public static final String CHANNEL_START_COUNT = "start-count";
 }
