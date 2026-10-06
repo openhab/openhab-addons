@@ -158,6 +158,39 @@ public class ShellyComponents {
         return false; // device status never triggers update
     }
 
+    /**
+     * Publish the binding-computed health diagnostics (Gen2+ only): restart/error counters, the last alarm and the
+     * maximum internal temperature measured since the Thing was initialized.
+     *
+     * @param thingHandler Thing Handler instance
+     * @param stats the handler's running statistics
+     */
+    public static void updateDiagnosticsStats(ShellyThingInterface thingHandler, ShellyDeviceStats stats) {
+        ShellyDeviceProfile profile = thingHandler.getProfile();
+        if (!profile.isGen2 || profile.isBlu) {
+            return;
+        }
+
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_RESTARTS, getDecimal(stats.restarts.get()));
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_TIMEOUTERRORS,
+                getDecimal(stats.timeoutErrors.get()));
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_ALARMS, getDecimal(stats.alarms.get()));
+        thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_PROTOCOLERRORS,
+                getDecimal(stats.protocolErrors.get()));
+
+        ShellyDeviceStats.ShellyDeviceAlarm lastAlarm = stats.lastAlarm.get();
+        if (lastAlarm != null) {
+            thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_LASTALARM,
+                    getStringType(lastAlarm.message() + " (" + convertTimestamp(lastAlarm.timeStamp()) + ")"));
+        }
+
+        int maxTemp = stats.maxInternalTemp.get();
+        if (maxTemp > 0) {
+            thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_MAXITEMP,
+                    toQuantityType((double) maxTemp, DIGITS_TEMP, SIUnits.CELSIUS));
+        }
+    }
+
     public static boolean updateRelay(ShellyBaseHandler thingHandler, ShellySettingsStatus status, int id) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
         ShellySettingsRelay relay = status.relays.get(id);

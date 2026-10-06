@@ -237,4 +237,57 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="restarts" advanced="true">
+		<item-type>Number</item-type>
+		<label>Restarts</label>
+		<description>Number of unexpected device restarts detected since the Thing was initialized</description>
+		<state pattern="%.0f" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="timeoutErrors" advanced="true">
+		<item-type>Number</item-type>
+		<label>Timeout Errors</label>
+		<description>Number of API request timeouts since the Thing was initialized</description>
+		<state pattern="%.0f" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="alarms" advanced="true">
+		<item-type>Number</item-type>
+		<label>Alarm Count</label>
+		<description>Number of alarms triggered since the Thing was initialized</description>
+		<state pattern="%.0f" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="lastAlarm" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Alarm</label>
+		<description>Message and timestamp of the last alarm triggered by the device</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="protocolErrors" advanced="true">
+		<item-type>Number</item-type>
+		<label>Protocol Errors</label>
+		<description>Number of protocol errors (e.g. malformed WebSocket messages) since the Thing was initialized</description>
+		<state pattern="%.0f" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="maxInternalTemp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Maximum Internal Temperature</label>
+		<description>Highest internal device temperature measured since the Thing was initialized</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>

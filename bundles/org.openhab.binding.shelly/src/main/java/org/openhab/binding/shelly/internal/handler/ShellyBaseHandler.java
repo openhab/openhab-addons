@@ -990,6 +990,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (!alarm.isEmpty()) {
             postEvent(alarm, false);
         }
+
+        ShellyComponents.updateDiagnosticsStats(this, stats);
     }
 
     @Override

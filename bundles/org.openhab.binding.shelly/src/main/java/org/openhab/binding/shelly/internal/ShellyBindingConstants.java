@@ -284,6 +284,12 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DIAG_TOTALFS = "totalFS";
     public static final String CHANNEL_DIAG_FREEFS = "freeFS";
     public static final String CHANNEL_DIAG_RESTARTREQ = "restartReq";
+    public static final String CHANNEL_DIAG_RESTARTS = "restarts";
+    public static final String CHANNEL_DIAG_TIMEOUTERRORS = "timeoutErrors";
+    public static final String CHANNEL_DIAG_ALARMS = "alarms";
+    public static final String CHANNEL_DIAG_LASTALARM = "lastAlarm";
+    public static final String CHANNEL_DIAG_PROTOCOLERRORS = "protocolErrors";
+    public static final String CHANNEL_DIAG_MAXITEMP = "maxInternalTemp";
 
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";

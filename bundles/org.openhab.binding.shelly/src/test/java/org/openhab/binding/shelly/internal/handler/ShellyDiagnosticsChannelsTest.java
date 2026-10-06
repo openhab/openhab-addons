@@ -33,8 +33,10 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -99,7 +101,10 @@ public class ShellyDiagnosticsChannelsTest {
         Map<String, Channel> channels = ShellyChannelDefinitions.createDiagnosticsChannels(thing(),
                 new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1), status);
 
-        assertThat(channels.keySet(), hasItems(diag(CHANNEL_DIAG_TOTALMEM), diag(CHANNEL_DIAG_FREEFS)));
+        assertThat(channels.keySet(),
+                hasItems(diag(CHANNEL_DIAG_TOTALMEM), diag(CHANNEL_DIAG_FREEFS), diag(CHANNEL_DIAG_RESTARTS),
+                        diag(CHANNEL_DIAG_TIMEOUTERRORS), diag(CHANNEL_DIAG_ALARMS), diag(CHANNEL_DIAG_LASTALARM),
+                        diag(CHANNEL_DIAG_PROTOCOLERRORS)));
         assertThat(channels.keySet(), not(hasItem(diag(CHANNEL_DIAG_FREEMEM))));
         assertThat(channels.keySet(), not(hasItem(diag(CHANNEL_DIAG_TOTALFS))));
         assertThat(channels.keySet(), not(hasItem(diag(CHANNEL_DIAG_RESTARTREQ))));
@@ -135,6 +140,49 @@ public class ShellyDiagnosticsChannelsTest {
         status.ramTotal = 50000L;
 
         ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DIAG), anyString(), any());
+    }
+
+    @Test
+    void updateDiagnosticsStatsPublishesCountersAndLastAlarm() {
+        ShellyThingInterface handler = handler(THING_TYPE_SHELLYPLUS1);
+        ShellyDeviceStats stats = new ShellyDeviceStats();
+        stats.restarts.set(2);
+        stats.timeoutErrors.set(3);
+        stats.alarms.set(1);
+        stats.protocolErrors.set(4);
+        stats.maxInternalTemp.set(55);
+        stats.lastAlarm.set(new ShellyDeviceStats.ShellyDeviceAlarm("OVERTEMP", 0));
+
+        ShellyComponents.updateDiagnosticsStats(handler, stats);
+
+        verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_RESTARTS, new DecimalType(2));
+        verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_TIMEOUTERRORS, new DecimalType(3));
+        verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_ALARMS, new DecimalType(1));
+        verify(handler).updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_PROTOCOLERRORS, new DecimalType(4));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_MAXITEMP),
+                argThat(s -> s instanceof QuantityType<?> q && q.intValue() == 55));
+        verify(handler).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_LASTALARM),
+                argThat(s -> s instanceof StringType && s.toString().startsWith("OVERTEMP")));
+    }
+
+    @Test
+    void updateDiagnosticsStatsSkipsMaxTempAndLastAlarmWhenUnset() {
+        ShellyThingInterface handler = handler(THING_TYPE_SHELLYPLUS1);
+
+        ShellyComponents.updateDiagnosticsStats(handler, new ShellyDeviceStats());
+
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_MAXITEMP), any());
+        verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DIAG), eq(CHANNEL_DIAG_LASTALARM), any());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "shelly1", "shellyblubutton" })
+    void updateDiagnosticsStatsSkipsGen1AndBlu(String thingTypeId) {
+        ShellyThingInterface handler = handler(thingType(thingTypeId));
+
+        ShellyComponents.updateDiagnosticsStats(handler, new ShellyDeviceStats());
 
         verify(handler, never()).updateChannel(eq(CHANNEL_GROUP_DIAG), anyString(), any());
     }

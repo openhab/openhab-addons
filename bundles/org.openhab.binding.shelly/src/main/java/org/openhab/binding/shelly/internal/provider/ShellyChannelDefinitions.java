@@ -217,6 +217,12 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_TOTALFS, "totalFS", ITEMT_DATA))
                 .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_FREEFS, "freeFS", ITEMT_DATA))
                 .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_RESTARTREQ, "restartReq", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_RESTARTS, "restarts", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_TIMEOUTERRORS, "timeoutErrors", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_ALARMS, "alarms", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_LASTALARM, "lastAlarm", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_PROTOCOLERRORS, "protocolErrors", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_MAXITEMP, "maxInternalTemp", ITEMT_TEMP))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -491,6 +497,7 @@ public class ShellyChannelDefinitions {
                 hasTemp = false;
             }
             addChannel(thing, add, hasTemp, CHGR_DEVST, CHANNEL_DEVST_ITEMP);
+            addChannel(thing, add, hasTemp && profile.isGen2 && !profile.isBlu, CHGR_DIAG, CHANNEL_DIAG_MAXITEMP);
         }
         addChannel(thing, add, profile.settings.sleepTime != null, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME);
 
@@ -530,7 +537,8 @@ public class ShellyChannelDefinitions {
     }
 
     /**
-     * Auto-create device utilization/diagnostics channels (Gen2+ only) for the fields the device reports.
+     * Auto-create device utilization/diagnostics channels (Gen2+ only): device-reported utilization fields plus the
+     * binding-computed health stats.
      *
      * @return channels to be added to the thing, keyed by channel id
      */
@@ -547,6 +555,12 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, status.fsFree != null, CHGR_DIAG, CHANNEL_DIAG_FREEFS);
         addChannel(thing, add, status.restartRequired != null, CHGR_DIAG, CHANNEL_DIAG_RESTARTREQ);
 
+        // Binding-computed health stats, always tracked once a Gen2+ Thing is initialized
+        addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_RESTARTS);
+        addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_TIMEOUTERRORS);
+        addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_ALARMS);
+        addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_LASTALARM);
+        addChannel(thing, add, true, CHGR_DIAG, CHANNEL_DIAG_PROTOCOLERRORS);
         return add;
     }
 

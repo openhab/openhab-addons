@@ -591,6 +591,7 @@ If you want to use those events triggering a rule:
 
 The binding provides health monitoring functions for the device.
 When an alarm condition is detected the channel alarm gets triggered and provides one of the following alarm types:
+For Gen2+ devices the accumulated health counters are also exposed as channels, see [Diagnostics](#diagnostics-channel-group-diagnostics).
 
 A new alarm will be triggered on a new condition or every 5 minutes if the condition persists.
 
@@ -762,8 +763,9 @@ The add-on firmware version is shown in the Thing property `addonFirmware`; the 
 ### Diagnostics (Channel Group: diagnostics)
 
 Gen2+ devices (Plus, Pro, Gen3, Gen4; not BLU) expose a `diagnostics` channel group.
-It provides device utilization data read from the device.
+It provides device utilization data read from the device plus health counters the binding accumulates while the Thing is online.
 All channels are `advanced` and read-only.
+Counters reset when the Thing is re-initialized.
 
 | Group       | Channel         | Type               | read-only | Description                                                                          |
 | ----------- | --------------- | ------------------ | --------- | ------------------------------------------------------------------------------------ |
@@ -772,6 +774,12 @@ All channels are `advanced` and read-only.
 |             | totalFS         | Number:DataAmount  | yes       | Total size of the device's internal filesystem.                                      |
 |             | freeFS          | Number:DataAmount  | yes       | Currently free filesystem space.                                                     |
 |             | restartReq      | Switch             | yes       | ON: a configuration change needs a device restart to take effect.                    |
+|             | restarts        | Number             | yes       | Unexpected device restarts detected since the Thing was initialized.                 |
+|             | timeoutErrors   | Number             | yes       | API request timeouts since the Thing was initialized.                                |
+|             | alarms          | Number             | yes       | Alarms triggered since the Thing was initialized.                                    |
+|             | lastAlarm       | String             | yes       | Message and timestamp of the last alarm.                                             |
+|             | protocolErrors  | Number             | yes       | Protocol errors (e.g. malformed WebSocket messages) since the Thing was initialized. |
+|             | maxInternalTemp | Number:Temperature | yes       | Highest internal device temperature measured since the Thing was initialized.        |
 
 ### Shelly 1 (thing-type: shelly1)
 
