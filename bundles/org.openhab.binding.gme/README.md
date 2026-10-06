@@ -102,20 +102,20 @@ The estimated password expiry is six months after the tracked password change da
 |---------|------|------------|-------------|
 | `current-price` | Number:EnergyPrice | R | Current PUN price for the active market interval |
 | `next-price` | Number:EnergyPrice | R | Next PUN price for the following market interval |
-| `today-prices` | Number:EnergyPrice | R | Today's PUN prices as a time series at the configured market granularity |
-| `tomorrow-prices` | Number:EnergyPrice | R | Tomorrow's PUN prices as a time series at the configured market granularity |
-| `today-zonal-prices` | Number:EnergyPrice | R | Today's prices for the configured market zone as a time series at the configured market granularity |
-| `tomorrow-zonal-prices` | Number:EnergyPrice | R | Tomorrow's prices for the configured market zone as a time series at the configured market granularity |
-| `today-average` | Number:EnergyPrice | R | Average PUN price for today |
-| `today-min` | Number:EnergyPrice | R | Minimum PUN price for today |
-| `today-max` | Number:EnergyPrice | R | Maximum PUN price for today |
-| `today-min-time` | DateTime | R | Start time of today's minimum-price period |
-| `today-max-time` | DateTime | R | Start time of today's maximum-price period |
-| `tomorrow-average` | Number:EnergyPrice | R | Average PUN price for tomorrow |
-| `tomorrow-min` | Number:EnergyPrice | R | Minimum PUN price for tomorrow |
-| `tomorrow-max` | Number:EnergyPrice | R | Maximum PUN price for tomorrow |
-| `tomorrow-min-time` | DateTime | R | Start time of tomorrow's minimum-price period |
-| `tomorrow-max-time` | DateTime | R | Start time of tomorrow's maximum-price period |
+| `today#prices` | Number:EnergyPrice | R | Today's PUN prices as a time series at the configured market granularity |
+| `tomorrow#prices` | Number:EnergyPrice | R | Tomorrow's PUN prices as a time series at the configured market granularity |
+| `today#zonal-prices` | Number:EnergyPrice | R | Today's prices for the configured market zone as a time series at the configured market granularity |
+| `tomorrow#zonal-prices` | Number:EnergyPrice | R | Tomorrow's prices for the configured market zone as a time series at the configured market granularity |
+| `today#average` | Number:EnergyPrice | R | Average PUN price for today |
+| `today#min` | Number:EnergyPrice | R | Minimum PUN price for today |
+| `today#max` | Number:EnergyPrice | R | Maximum PUN price for today |
+| `today#min-time` | DateTime | R | Start time of today's minimum-price period |
+| `today#max-time` | DateTime | R | Start time of today's maximum-price period |
+| `tomorrow#average` | Number:EnergyPrice | R | Average PUN price for tomorrow |
+| `tomorrow#min` | Number:EnergyPrice | R | Minimum PUN price for tomorrow |
+| `tomorrow#max` | Number:EnergyPrice | R | Maximum PUN price for tomorrow |
+| `tomorrow#min-time` | DateTime | R | Start time of tomorrow's minimum-price period |
+| `tomorrow#max-time` | DateTime | R | Start time of tomorrow's maximum-price period |
 | `tomorrow-available` | Switch | R | Indicates whether tomorrow's market data are available |
 | `last-update` | DateTime | R | Time of the most recent successful market data update |
 
@@ -156,11 +156,11 @@ The `initialPasswordChangedAt` parameter can be omitted once password tracking h
 ```java
 Number:EnergyPrice GME_CurrentPrice "Current PUN [%.6f %unit%]" { channel="gme:pun:account:pun:current-price" }
 Number:EnergyPrice GME_NextPrice "Next PUN [%.6f %unit%]" { channel="gme:pun:account:pun:next-price" }
-Number:EnergyPrice GME_TodayAverage "Today's Average [%.6f %unit%]" { channel="gme:pun:account:pun:today-average" }
-Number:EnergyPrice GME_TodayMinimum "Today's Minimum [%.6f %unit%]" { channel="gme:pun:account:pun:today-min" }
-Number:EnergyPrice GME_TodayMaximum "Today's Maximum [%.6f %unit%]" { channel="gme:pun:account:pun:today-max" }
-DateTime GME_TodayMinimumTime "Today's Minimum Time [%1$tH:%1$tM]" { channel="gme:pun:account:pun:today-min-time" }
-DateTime GME_TodayMaximumTime "Today's Maximum Time [%1$tH:%1$tM]" { channel="gme:pun:account:pun:today-max-time" }
+Number:EnergyPrice GME_TodayAverage "Today's Average [%.6f %unit%]" { channel="gme:pun:account:pun:today#average" }
+Number:EnergyPrice GME_TodayMinimum "Today's Minimum [%.6f %unit%]" { channel="gme:pun:account:pun:today#min" }
+Number:EnergyPrice GME_TodayMaximum "Today's Maximum [%.6f %unit%]" { channel="gme:pun:account:pun:today#max" }
+DateTime GME_TodayMinimumTime "Today's Minimum Time [%1$tH:%1$tM]" { channel="gme:pun:account:pun:today#min-time" }
+DateTime GME_TodayMaximumTime "Today's Maximum Time [%1$tH:%1$tM]" { channel="gme:pun:account:pun:today#max-time" }
 Switch GME_TomorrowAvailable "Tomorrow Available" { channel="gme:pun:account:pun:tomorrow-available" }
 DateTime GME_LastUpdate "Last Update [%1$td/%1$tm/%1$tY %1$tH:%1$tM]" { channel="gme:pun:account:pun:last-update" }
 DateTime GME_PasswordLastChanged "GME Password Last Changed [%1$td/%1$tm/%1$tY]" { channel="gme:api:account:password-last-changed" }
