@@ -21,6 +21,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Base64;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -73,9 +74,17 @@ public class ShellyHttpClient {
     protected AtomicInteger timeoutsRecovered = new AtomicInteger(0);
     protected volatile boolean basicAuth = false;
 
-    private final Object ncLock = new Object();
-    private @Nullable String ncNonce;
-    private long ncCounter;
+    private static final int NC_MAX_NONCES = 4;
+
+    // per-nonce counters: an in-flight request for an older nonce must not reset the counter of the current one
+    private final Map<String, Long> ncCounters = new LinkedHashMap<>(NC_MAX_NONCES + 1, 0.75f, true) {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected boolean removeEldestEntry(Map.@Nullable Entry<String, Long> eldest) {
+            return size() > NC_MAX_NONCES;
+        }
+    };
 
     protected final ShellyApiConfiguration config;
 
@@ -268,14 +277,15 @@ public class ShellyHttpClient {
         response.realm = challenge.realm;
         response.nonce = challenge.nonce;
         response.cnonce = Long.toHexString((long) Math.floor(Math.random() * 10e8));
-        synchronized (ncLock) {
+        long nc;
+        synchronized (ncCounters) {
             // a cached nonce is reused, a repeated nc looks like a replay and drives the device into 429 throttling
-            if (!getString(challenge.nonce).equals(ncNonce)) {
-                ncNonce = challenge.nonce;
-                ncCounter = 0;
-            }
-            response.nc = String.format(Locale.ROOT, "%08x", ++ncCounter);
+            String nonce = getString(challenge.nonce);
+            Long previous = ncCounters.get(nonce);
+            nc = previous != null ? previous + 1 : 1;
+            ncCounters.put(nonce, nc);
         }
+        response.nc = String.format(Locale.ROOT, "%08x", nc);
         response.authType = challenge.authType;
         response.algorithm = challenge.algorithm;
         String ha1 = sha256(response.username + ":" + response.realm + ":" + password);

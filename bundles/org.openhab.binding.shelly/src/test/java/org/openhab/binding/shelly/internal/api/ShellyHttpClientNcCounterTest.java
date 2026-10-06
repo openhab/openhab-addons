@@ -44,6 +44,17 @@ class ShellyHttpClientNcCounterTest {
         assertEquals("00000001", client.buildAuthResponse("/rpc", digestChallenge("nonce-2"), "admin", "pw").nc);
     }
 
+    @Test
+    void delayedRequestForOlderNonceDoesNotResetCurrentNonceCounter() throws Exception {
+        ShellyHttpClient client = buildClient();
+        Shelly2AuthChallenge older = digestChallenge("nonce-A");
+        Shelly2AuthChallenge current = digestChallenge("nonce-B");
+        client.buildAuthResponse("/rpc", older, "admin", "pw");
+        assertEquals("00000001", client.buildAuthResponse("/rpc", current, "admin", "pw").nc);
+        assertEquals("00000002", client.buildAuthResponse("/rpc", older, "admin", "pw").nc);
+        assertEquals("00000002", client.buildAuthResponse("/rpc", current, "admin", "pw").nc);
+    }
+
     private static ShellyHttpClient buildClient() throws Exception {
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
                 .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, "192.168.1.1"));
