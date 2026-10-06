@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.gme</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Gme Binding</name>
+  <name>openHAB Add-ons :: Bundles :: GME Binding</name>
 
 </project>
