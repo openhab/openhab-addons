@@ -17,11 +17,17 @@ import static org.mockito.Mockito.*;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.doorbird.internal.handler.DoorbellHandler;
@@ -35,10 +41,13 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 public class DoorbirdHTTPServletTest {
+    private static final String DOORBIRD_HOST = "192.168.1.50";
+
     private @NonNullByDefault({}) DoorbirdHTTPServlet servlet;
     private @NonNullByDefault({}) DoorbellHandler handler;
     private @NonNullByDefault({}) Thing thing;
     private @NonNullByDefault({}) ThingUID thingUID;
+    private @NonNullByDefault({}) List<String> allowedIps;
 
     @BeforeEach
     public void setUp() {
@@ -46,9 +55,12 @@ public class DoorbirdHTTPServletTest {
         handler = mock(DoorbellHandler.class);
         thing = mock(Thing.class);
         thingUID = new ThingUID("doorbird:d101:doorbell");
+        allowedIps = new ArrayList<>();
 
         when(handler.getThing()).thenReturn(thing);
         when(thing.getUID()).thenReturn(thingUID);
+        when(handler.getDoorbirdHost()).thenReturn(DOORBIRD_HOST);
+        when(handler.getWebhookIpWhitelist()).thenReturn(allowedIps);
     }
 
     @Test
@@ -61,6 +73,7 @@ public class DoorbirdHTTPServletTest {
         PrintWriter pw = new PrintWriter(sw);
 
         when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/doorbell");
+        when(req.getRemoteAddr()).thenReturn(DOORBIRD_HOST);
         when(resp.getWriter()).thenReturn(pw);
 
         servlet.doGet(req, resp);
@@ -80,11 +93,202 @@ public class DoorbirdHTTPServletTest {
         PrintWriter pw = new PrintWriter(sw);
 
         when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/motion");
+        when(req.getRemoteAddr()).thenReturn(DOORBIRD_HOST);
         when(resp.getWriter()).thenReturn(pw);
 
         servlet.doGet(req, resp);
 
         verify(handler).updateMotionChannel(anyLong());
+        verify(resp).setStatus(HttpServletResponse.SC_OK);
+        assertEquals("OK", sw.toString());
+    }
+
+    @Test
+    public void testDisallowedIpReturnsForbidden() throws Exception {
+        allowedIps.add("192.168.1.100");
+
+        servlet.registerHandler(thingUID, handler);
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+
+        when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/doorbell");
+        when(req.getRemoteAddr()).thenReturn("10.0.0.99");
+
+        servlet.doGet(req, resp);
+
+        verify(resp).sendError(HttpServletResponse.SC_FORBIDDEN);
+        verify(handler, never()).updateDoorbellChannel(anyLong());
+        verify(handler, never()).updateMotionChannel(anyLong());
+    }
+
+    @Test
+    public void testDisallowedIpWithoutWhitelistReturnsForbidden() throws Exception {
+        servlet.registerHandler(thingUID, handler);
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+
+        when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/doorbell");
+        when(req.getRemoteAddr()).thenReturn("10.0.0.99");
+
+        servlet.doGet(req, resp);
+
+        verify(resp).sendError(HttpServletResponse.SC_FORBIDDEN);
+        verify(handler, never()).updateDoorbellChannel(anyLong());
+        verify(handler, never()).updateMotionChannel(anyLong());
+    }
+
+    @Test
+    public void testAllowedIpReturnsOk() throws Exception {
+        allowedIps.add("192.168.1.100");
+
+        servlet.registerHandler(thingUID, handler);
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+
+        when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/doorbell");
+        when(req.getRemoteAddr()).thenReturn("192.168.1.100");
+        when(resp.getWriter()).thenReturn(pw);
+
+        servlet.doGet(req, resp);
+
+        verify(handler).updateDoorbellChannel(anyLong());
+        verify(resp).setStatus(HttpServletResponse.SC_OK);
+        assertEquals("OK", sw.toString());
+    }
+
+    @Test
+    public void testDoorbirdHostAllowedWithoutWhitelist() throws Exception {
+        servlet.registerHandler(thingUID, handler);
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+
+        when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/doorbell");
+        when(req.getRemoteAddr()).thenReturn(DOORBIRD_HOST);
+        when(resp.getWriter()).thenReturn(pw);
+
+        servlet.doGet(req, resp);
+
+        verify(handler).updateDoorbellChannel(anyLong());
+        verify(resp).setStatus(HttpServletResponse.SC_OK);
+        assertEquals("OK", sw.toString());
+    }
+
+    @Test
+    public void testDoorbirdHostAsHostnameResolvesToIPv4() throws Exception {
+        when(handler.getDoorbirdHost()).thenReturn("localhost");
+
+        servlet.registerHandler(thingUID, handler);
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+
+        when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/doorbell");
+        when(req.getRemoteAddr()).thenReturn("127.0.0.1");
+        when(resp.getWriter()).thenReturn(pw);
+
+        servlet.doGet(req, resp);
+
+        verify(handler).updateDoorbellChannel(anyLong());
+        verify(resp).setStatus(HttpServletResponse.SC_OK);
+        assertEquals("OK", sw.toString());
+    }
+
+    @Test
+    public void testDoorbirdHostAsHostnameResolvesToIPv6() throws Exception {
+        boolean hasIpv6Localhost = Arrays.stream(InetAddress.getAllByName("localhost"))
+                .anyMatch(a -> a instanceof Inet6Address);
+        Assumptions.assumeTrue(hasIpv6Localhost, "IPv6 localhost not supported");
+
+        when(handler.getDoorbirdHost()).thenReturn("localhost");
+
+        servlet.registerHandler(thingUID, handler);
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+
+        when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/doorbell");
+        when(req.getRemoteAddr()).thenReturn("::1");
+        when(resp.getWriter()).thenReturn(pw);
+
+        servlet.doGet(req, resp);
+
+        verify(handler).updateDoorbellChannel(anyLong());
+        verify(resp).setStatus(HttpServletResponse.SC_OK);
+        assertEquals("OK", sw.toString());
+    }
+
+    @Test
+    public void testDoorbirdHostUnresolvableHostnameAllowsWhitelistedIp() throws Exception {
+        allowedIps.add("192.168.1.100");
+        when(handler.getDoorbirdHost()).thenReturn("unresolvable.invalid");
+
+        servlet.registerHandler(thingUID, handler);
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+
+        when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/doorbell");
+        when(req.getRemoteAddr()).thenReturn("192.168.1.100");
+        when(resp.getWriter()).thenReturn(pw);
+
+        servlet.doGet(req, resp);
+
+        verify(handler).updateDoorbellChannel(anyLong());
+        verify(resp).setStatus(HttpServletResponse.SC_OK);
+        assertEquals("OK", sw.toString());
+    }
+
+    @Test
+    public void testDoorbirdHostUnresolvableHostnameDisallowedIpReturnsForbidden() throws Exception {
+        when(handler.getDoorbirdHost()).thenReturn("unresolvable.invalid");
+
+        servlet.registerHandler(thingUID, handler);
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+
+        when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/doorbell");
+        when(req.getRemoteAddr()).thenReturn("10.0.0.99");
+
+        servlet.doGet(req, resp);
+
+        verify(resp).sendError(HttpServletResponse.SC_FORBIDDEN);
+        verify(handler, never()).updateDoorbellChannel(anyLong());
+        verify(handler, never()).updateMotionChannel(anyLong());
+    }
+
+    @Test
+    public void testWhitelistedIpMatchesIPv6Variations() throws Exception {
+        allowedIps.add("::1");
+
+        servlet.registerHandler(thingUID, handler);
+
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+
+        when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/doorbell");
+        when(req.getRemoteAddr()).thenReturn("0:0:0:0:0:0:0:1");
+        when(resp.getWriter()).thenReturn(pw);
+
+        servlet.doGet(req, resp);
+
+        verify(handler).updateDoorbellChannel(anyLong());
         verify(resp).setStatus(HttpServletResponse.SC_OK);
         assertEquals("OK", sw.toString());
     }
@@ -113,6 +317,7 @@ public class DoorbirdHTTPServletTest {
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
         when(req.getPathInfo()).thenReturn("/doorbird:d101:doorbell/unknown_event");
+        when(req.getRemoteAddr()).thenReturn(DOORBIRD_HOST);
 
         servlet.doGet(req, resp);
 
