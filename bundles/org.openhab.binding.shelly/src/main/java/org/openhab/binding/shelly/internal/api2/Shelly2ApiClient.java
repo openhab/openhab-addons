@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -109,6 +110,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,6 +123,8 @@ import org.slf4j.LoggerFactory;
 public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscoveryInterface {
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiClient.class);
     protected final ShellyStatusRelay relayStatus = new ShellyStatusRelay();
+    // written by the poll and the WebSocket thread
+    private final Map<String, Double> componentTemperatures = new ConcurrentHashMap<>();
     protected final ShellyStatusSensor sensorData = new ShellyStatusSensor();
     protected final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
     protected @Nullable ShellyThingInterface thing;
@@ -716,20 +720,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
         Shelly2DeviceStatusTemp temperature = rs.temperature;
         if (temperature != null) {
-            Double tC = temperature.tC;
-            if (tC != null) {
-                if (status.tmp == null) {
-                    status.tmp = new ShellySensorTmp();
-                }
-                status.tmp.isValid = true;
-                status.tmp.tC = tC;
-                status.tmp.tF = temperature.tF;
-                status.tmp.units = "C";
-                sr.temperature = tC;
-                if (status.temperature == null || tC > status.temperature) {
-                    status.temperature = sr.temperature;
-                }
-            }
+            sr.temperature = temperature.tC;
+            updateDeviceInnerTemp(status, "switch" + id, temperature);
         }
 
         String[] errors = rs.errors;
@@ -811,21 +803,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (bs.output != null) {
             sr.ison = rstatus.ison = getBool(bs.output);
         }
-        if (bs.temperature != null) {
-            Double tC = bs.temperature.tC;
-            if (tC != null) {
-                if (status.tmp == null) {
-                    status.tmp = new ShellySensorTmp();
-                }
-                status.tmp.isValid = true;
-                status.tmp.tC = tC;
-                status.tmp.tF = bs.temperature.tF;
-                status.tmp.units = "C";
-                sr.temperature = getDouble(tC);
-                if (status.temperature == null || getDouble(tC) > status.temperature) {
-                    status.temperature = sr.temperature;
-                }
-            }
+        Shelly2DeviceStatusTemp temperature = bs.temperature;
+        if (temperature != null) {
+            sr.temperature = temperature.tC;
+            updateDeviceInnerTemp(status, "cb" + id, temperature);
         }
 
         // Pro CB never has em1:x clamp components — hasEM1Clamps is always false for
@@ -1170,13 +1151,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (csMoveStartedAt != null) {
             rs.duration = (int) (now() - csMoveStartedAt.longValue());
         }
-        Shelly2DeviceStatusTemp csTemperature = cs.temperature;
-        if (csTemperature != null && getDouble(csTemperature.tC) > getDouble(status.temperature)) {
-            if (status.tmp == null) {
-                status.tmp = new ShellySensorTmp();
-            }
-            status.temperature = status.tmp.tC = getDouble(csTemperature.tC);
-        }
+        updateDeviceInnerTemp(status, "cover" + id, cs.temperature);
         if (cs.apower != null) {
             rs.power = emeter.power = cs.apower;
         }
@@ -1400,7 +1375,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             updateMeter(status, dimId, emeter, channelUpdate);
         }
 
-        updateDeviceInnerTemp(status, value.temperature);
+        updateDeviceInnerTemp(status, "light" + dimId, value.temperature);
 
         return channelUpdate ? ShellyComponents.updateDimmers(getThing(), status) : false;
     }
@@ -1578,29 +1553,45 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     /**
-     * Copies the Gen2 temperature payload into the Gen1-compatible {@code status.tmp} field.
-     * Keeps the highest observed temperature only for the aggregate {@code status.temperature} field.
+     * Each switch/breaker/cover/light component reports its own internal temperature; the device temperature is the
+     * hottest of their latest readings. Keeping one reading per component lets a NotifyStatus carrying a single
+     * component still report the hottest one, and lets the value drop again when the device cools down.
+     * A missing temperature object keeps the cached reading, an explicit tC=null (out of range) discards it.
+     * When the last valid reading is discarded the channel is set to UNDEF, the status update paths skip invalid
+     * readings and would otherwise keep showing the previous temperature.
      */
-    private void updateDeviceInnerTemp(ShellySettingsStatus status, @Nullable Shelly2DeviceStatusTemp temperature) {
+    private void updateDeviceInnerTemp(ShellySettingsStatus status, String component,
+            @Nullable Shelly2DeviceStatusTemp temperature) {
         if (temperature == null) {
             return;
         }
         Double tC = temperature.tC;
-        if (tC == null) {
-            return;
+        boolean lastReadingDropped = false;
+        if (tC != null) {
+            componentTemperatures.put(component, tC);
+        } else {
+            lastReadingDropped = componentTemperatures.remove(component) != null && componentTemperatures.isEmpty();
         }
         ShellySensorTmp tmp = status.tmp;
         if (tmp == null) {
             tmp = new ShellySensorTmp();
             status.tmp = tmp;
         }
-        tmp.isValid = true;
-        tmp.tC = tC;
-        tmp.tF = temperature.tF;
-        tmp.units = "C";
-        if (status.temperature == null || tC > status.temperature) {
-            status.temperature = tC;
+        Double hottest = componentTemperatures.values().stream().max(Double::compare).orElse(null);
+        if (hottest == null) {
+            tmp.isValid = false;
+            tmp.tC = SHELLY_API_INVTEMP;
+            status.temperature = SHELLY_API_INVTEMP;
+            ShellyThingInterface thing = this.thing;
+            if (lastReadingDropped && thing != null) {
+                thing.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP, UnDefType.UNDEF);
+            }
+            return;
         }
+        tmp.isValid = true;
+        tmp.tC = hottest;
+        tmp.units = "C";
+        status.temperature = hottest;
     }
 
     protected @Nullable Integer getDuration(@Nullable Double timerStartedAt, @Nullable Double timerDuration) {
