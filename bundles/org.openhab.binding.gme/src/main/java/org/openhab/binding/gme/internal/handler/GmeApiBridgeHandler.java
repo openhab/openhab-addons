@@ -93,19 +93,20 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
         try {
             granularity = GmeGranularity.fromApiValue(config.granularity);
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/status.gme.invalid-granularity [\"" + e.getMessage() + "\"]");
             return;
         }
 
         if (!marketZone.isBlank() && !MARKET_ZONES.contains(marketZone)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid GME market zone: " + marketZone);
+                    "@text/status.gme.invalid-market-zone [\"" + marketZone + "\"]");
             return;
         }
 
         if (config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "GME username and password must be configured.");
+                    "@text/status.gme.credentials-missing");
             return;
         }
 
@@ -136,12 +137,12 @@ public class GmeApiBridgeHandler extends BaseBridgeHandler {
                 Thread.currentThread().interrupt();
                 if (isCurrentGeneration(generation)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "GME authentication was interrupted.");
+                            "@text/status.gme.authentication-interrupted");
                 }
             } catch (TimeoutException | ExecutionException | IllegalStateException e) {
                 if (isCurrentGeneration(generation)) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "GME authentication failed: " + e.getMessage());
+                            "@text/status.gme.authentication-failed [\"" + e.getMessage() + "\"]");
                 }
             }
         });
