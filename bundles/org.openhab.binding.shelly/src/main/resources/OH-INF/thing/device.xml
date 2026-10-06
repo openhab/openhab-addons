@@ -184,7 +184,7 @@
 		<description>Device diagnostics (Gen2+ only)</description>
 	</channel-group-type>
 
-	<channel-type id="totalMem" advanced="true">
+	<channel-type id="diagTotalMem" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Total Memory</label>
 		<description>Total RAM available on the device</description>
@@ -195,7 +195,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="freeMem" advanced="true">
+	<channel-type id="diagFreeMem" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Free Memory</label>
 		<description>Currently free RAM on the device</description>
@@ -206,7 +206,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="totalFS" advanced="true">
+	<channel-type id="diagTotalFS" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Total Filesystem Size</label>
 		<description>Total size of the device's internal filesystem</description>
@@ -217,7 +217,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="freeFS" advanced="true">
+	<channel-type id="diagFreeFS" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Free Filesystem Space</label>
 		<description>Currently free space on the device's internal filesystem</description>
@@ -228,7 +228,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="restartReq" advanced="true">
+	<channel-type id="diagRestartReq" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Restart Required</label>
 		<description>ON: The device configuration changed and requires a restart to take effect</description>
@@ -237,7 +237,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="restarts" advanced="true">
+	<channel-type id="diagRestarts" advanced="true">
 		<item-type>Number</item-type>
 		<label>Restarts</label>
 		<description>Number of unexpected device restarts detected since the Thing was initialized</description>
@@ -245,7 +245,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="timeoutErrors" advanced="true">
+	<channel-type id="diagTimeoutErrors" advanced="true">
 		<item-type>Number</item-type>
 		<label>Timeout Errors</label>
 		<description>Number of API request timeouts since the Thing was initialized</description>
@@ -253,7 +253,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="alarms" advanced="true">
+	<channel-type id="diagAlarms" advanced="true">
 		<item-type>Number</item-type>
 		<label>Alarm Count</label>
 		<description>Number of alarms triggered since the Thing was initialized</description>
@@ -261,7 +261,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="lastAlarm" advanced="true">
+	<channel-type id="diagLastAlarm" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Alarm</label>
 		<description>Message and timestamp of the last alarm triggered by the device</description>
@@ -269,7 +269,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="protocolErrors" advanced="true">
+	<channel-type id="diagProtocolErrors" advanced="true">
 		<item-type>Number</item-type>
 		<label>Protocol Errors</label>
 		<description>Number of protocol errors (e.g. malformed WebSocket messages) since the Thing was initialized</description>
@@ -277,7 +277,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="maxInternalTemp" advanced="true">
+	<channel-type id="diagMaxInternalTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Maximum Internal Temperature</label>
 		<description>Highest internal device temperature measured since the Thing was initialized</description>
