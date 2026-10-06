@@ -28,6 +28,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.StateDescription;
 
 import com.google.gson.Gson;
@@ -117,6 +118,10 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
                 .filter(name -> !OPTIONAL_ATTRIBUTES.contains(name) || wasReported(name)).toList();
         handler.readAttributes(ThreadNetworkDiagnosticsCluster.class, endpointNumber,
                 ThreadNetworkDiagnosticsCluster.CLUSTER_NAME, attributeNames).thenAccept(cluster -> {
+                    // The read can finish after the thing went offline or was disposed
+                    if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
+                        return;
+                    }
                     for (String name : attributeNames) {
                         // Attributes missing from the reply keep their last known value
                         Object value = POLLED_ATTRIBUTES.get(name).apply(cluster);

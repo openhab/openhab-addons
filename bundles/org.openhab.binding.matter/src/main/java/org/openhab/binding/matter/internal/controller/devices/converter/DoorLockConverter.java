@@ -113,7 +113,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
     private int numberOfTotalUsersSupported = 0;
     private int minPinCodeLength = 0;
     private int maxPinCodeLength = 255; // Maximum length of a PIN code if not specified is 255
-    private int autoRelockTime = 0;
+    private long autoRelockTime = 0;
     private boolean pinCredentialSupported = false;
     private boolean userFeatureSupported = false;
     private boolean requirePinForRemoteOperation = false;
@@ -142,7 +142,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             requirePinForRemoteOperation = cluster.requirePinForRemoteOperation;
         }
         if (cluster.autoRelockTime != null) {
-            autoRelockTime = cluster.autoRelockTime.intValue();
+            autoRelockTime = cluster.autoRelockTime;
         }
         if (cluster.enableOneTouchLocking != null) {
             enableOneTouchLocking = cluster.enableOneTouchLocking;
@@ -245,7 +245,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                 break;
             case DoorLockCluster.ATTRIBUTE_AUTO_RELOCK_TIME:
                 if (message.value instanceof Number autoRelockTime) {
-                    this.autoRelockTime = autoRelockTime.intValue();
+                    this.autoRelockTime = autoRelockTime.longValue();
                     handler.updateConfiguration(
                             Map.of(MatterBindingConstants.CONFIG_DOORLOCK_AUTO_RELOCK_TIME, this.autoRelockTime));
                 }
@@ -363,8 +363,8 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
 
         Object autoRelockTimeValue = config.get(MatterBindingConstants.CONFIG_DOORLOCK_AUTO_RELOCK_TIME);
         if (autoRelockTimeValue instanceof Number number) {
-            int configuredTime = number.intValue();
-            final int currentTime = autoRelockTime;
+            long configuredTime = number.longValue();
+            final long currentTime = autoRelockTime;
             if (currentTime != configuredTime) {
                 logger.debug("Updating auto relock time from {} to {}", currentTime, configuredTime);
                 handler.writeAttribute(endpointNumber, DoorLockCluster.CLUSTER_NAME,

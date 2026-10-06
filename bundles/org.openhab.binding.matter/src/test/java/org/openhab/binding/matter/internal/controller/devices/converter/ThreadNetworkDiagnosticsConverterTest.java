@@ -43,6 +43,9 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkD
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster.RoutingRoleEnum;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -72,6 +75,7 @@ class ThreadNetworkDiagnosticsConverterTest extends BaseMatterConverterTest {
         mockCluster.panId = 0x1234; // 4660
         mockCluster.extendedPanId = BigInteger.valueOf(223372036854775807L);
         mockCluster.rloc16 = 0xABCD; // 43981
+        mockHandler.getThing().setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
         converter = Mockito.spy(new ThreadNetworkDiagnosticsConverter(mockCluster, mockHandler, 1, "TestLabel"));
     }
 
@@ -283,6 +287,19 @@ class ThreadNetworkDiagnosticsConverterTest extends BaseMatterConverterTest {
                 .getAsJsonObject().get("extAddress").getAsString());
         verify(converter).updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE),
                 eq("[]"));
+    }
+
+    @Test
+    void testPollClusterDropsReplyAfterThingWentOffline() {
+        CompletableFuture<ThreadNetworkDiagnosticsCluster> pending = new CompletableFuture<>();
+        replyWith(pending);
+        converter.pollCluster();
+        mockHandler.getThing()
+                .setStatusInfo(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, null));
+        ThreadNetworkDiagnosticsCluster reply = new ThreadNetworkDiagnosticsCluster(BigInteger.ONE, 1);
+        reply.routingRole = RoutingRoleEnum.ROUTER;
+        pending.complete(reply);
+        verify(converter, never()).updateThingAttributeProperty(any(), any());
     }
 
     @Test
