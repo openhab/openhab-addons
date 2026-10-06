@@ -98,67 +98,52 @@
 			<channel id="next-price" typeId="energy-price">
 				<label>Next Price</label>
 			</channel>
-			<channel id="today-prices" typeId="energy-price">
-				<label>Today's Prices</label>
-				<description>PUN prices for today at the configured GME market granularity as a time series.</description>
-			</channel>
-			<channel id="tomorrow-prices" typeId="energy-price">
-				<label>Tomorrow's Prices</label>
-				<description>PUN prices for tomorrow at the configured GME market granularity as a time series.</description>
-			</channel>
-
-			<channel id="today-zonal-prices" typeId="energy-price">
-				<label>Today's Zonal Prices</label>
-				<description>Prices for today for the configured GME market zone at the configured GME market granularity as a time
-					series.</description>
-			</channel>
-			<channel id="tomorrow-zonal-prices" typeId="energy-price">
-				<label>Tomorrow's Zonal Prices</label>
-				<description>Prices for tomorrow for the configured GME market zone at the configured GME market granularity as a
-					time series.</description>
-			</channel>
-
-			<channel id="today-average" typeId="energy-price">
-				<label>Today Average</label>
-			</channel>
-			<channel id="today-min" typeId="energy-price">
-				<label>Today Minimum</label>
-			</channel>
-			<channel id="today-max" typeId="energy-price">
-				<label>Today Maximum</label>
-			</channel>
-			<channel id="today-min-time" typeId="timestamp">
-				<label>Today Minimum Time</label>
-			</channel>
-			<channel id="today-max-time" typeId="timestamp">
-				<label>Today Maximum Time</label>
-			</channel>
-
-			<channel id="tomorrow-average" typeId="energy-price">
-				<label>Tomorrow Average</label>
-			</channel>
-			<channel id="tomorrow-min" typeId="energy-price">
-				<label>Tomorrow Minimum</label>
-			</channel>
-			<channel id="tomorrow-max" typeId="energy-price">
-				<label>Tomorrow Maximum</label>
-			</channel>
-			<channel id="tomorrow-min-time" typeId="timestamp">
-				<label>Tomorrow Minimum Time</label>
-			</channel>
-			<channel id="tomorrow-max-time" typeId="timestamp">
-				<label>Tomorrow Maximum Time</label>
-			</channel>
-
 			<channel id="tomorrow-available" typeId="availability">
 				<label>Tomorrow Available</label>
 			</channel>
-
 			<channel id="last-update" typeId="timestamp">
 				<label>Last Update</label>
 			</channel>
 		</channels>
+
+		<channel-groups>
+			<channel-group id="today" typeId="daily-prices">
+				<label>Today</label>
+			</channel-group>
+			<channel-group id="tomorrow" typeId="daily-prices">
+				<label>Tomorrow</label>
+			</channel-group>
+		</channel-groups>
 	</thing-type>
+
+	<channel-group-type id="daily-prices">
+		<label>Daily Prices</label>
+		<channels>
+			<channel id="prices" typeId="energy-price">
+				<label>Prices</label>
+				<description>PUN prices for the day at the configured GME market granularity as a time series.</description>
+			</channel>
+			<channel id="zonal-prices" typeId="energy-price">
+				<label>Zonal Prices</label>
+				<description>Prices for the configured GME market zone for the day as a time series.</description>
+			</channel>
+			<channel id="average" typeId="energy-price">
+				<label>Average</label>
+			</channel>
+			<channel id="min" typeId="energy-price">
+				<label>Minimum</label>
+			</channel>
+			<channel id="max" typeId="energy-price">
+				<label>Maximum</label>
+			</channel>
+			<channel id="min-time" typeId="timestamp">
+				<label>Minimum Time</label>
+			</channel>
+			<channel id="max-time" typeId="timestamp">
+				<label>Maximum Time</label>
+			</channel>
+		</channels>
+	</channel-group-type>
 
 	<channel-type id="energy-price">
 		<item-type>Number:EnergyPrice</item-type>
