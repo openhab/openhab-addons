@@ -276,6 +276,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_VOLTAGE = "supplyVoltage";
     public static final String CHANNEL_DEVST_CALIBRATED = "calibrated";
     public static final String CHANNEL_DEVST_FIRMWARE = "firmware";
+    public static final String CHANNEL_DEVST_DEBUG = "deviceDebug";
 
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";

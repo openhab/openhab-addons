@@ -24,6 +24,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBase
 import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2CoverStatus;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyCoverJsonDTO.Shelly2DevConfigCover;
+import org.openhab.binding.shelly.internal.api2.dto.ShellyDebugLogJsonDTO.Shelly2ConfigParmsDebug;
 import org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.Shelly2DevConfigPresence;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
@@ -50,6 +51,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_METHOD_GETCONFIG = "GetConfig"; // sys + components
     public static final String SHELLYRPC_METHOD_GETSYSSTATUS = "GetSysStatus"; // only sys
     public static final String SHELLYRPC_METHOD_GETSTATUS = "GetStatus"; // sys + components
+    public static final String SHELLYRPC_METHOD_SYS_SETCONFIG = "Sys.SetConfig";
     public static final String SHELLYRPC_METHOD_REBOOT = "Shelly.Reboot";
     public static final String SHELLYRPC_METHOD_RESET = "Shelly.FactoryReset";
     public static final String SHELLYRPC_METHOD_CHECKUPD = "Shelly.CheckForUpdate";
@@ -1206,6 +1208,9 @@ public class Shelly2ApiJsonDTO {
         public @Nullable String alarmMode;
         @SerializedName("report_holdoff")
         public @Nullable Integer reportHoldoff;
+
+        // Sys.SetConfig
+        public Shelly2ConfigParmsDebug debug;
     }
 
     public static class Shelly2RpcRequest {

@@ -31,6 +31,14 @@ public class ShellyDebugLogJsonDTO {
     public static final int SHELLY2_DEBUGLOG_LEVEL_DEBUG = 3;
     public static final int SHELLY2_DEBUGLOG_LEVEL_VERBOSE = 4;
 
+    public static class Shelly2ConfigParmsDebug {
+        public static class Shelly2ConfigParmsDebugWebSocket {
+            public Boolean enable;
+        }
+
+        public Shelly2ConfigParmsDebugWebSocket websocket;
+    }
+
     /**
      * One log line as sent by the device over the {@code /debug/log} WebSocket.
      */

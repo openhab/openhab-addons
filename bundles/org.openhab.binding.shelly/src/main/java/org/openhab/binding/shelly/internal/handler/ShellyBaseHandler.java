@@ -497,6 +497,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Set POWER LED disabled to {}", thingName, command);
                     api.setLedStatus(SHELLY_LED_POWER_DISABLE, command == OnOffType.ON);
                     break;
+                case CHANNEL_DEVST_DEBUG:
+                    logger.debug("{}: Set Debug Log streaming to {}", thingName, command);
+                    api.setDebugLogEnabled(command == OnOffType.ON);
+                    break;
 
                 case CHANNEL_SENSOR_SLEEPTIME:
                     logger.debug("{}: Set sensor sleep time to {}", thingName, command);
@@ -956,6 +960,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // Update uptime and WiFi, internal temp
         ShellyComponents.updateDeviceStatus(this, status);
+        if (getProfile().capDebugLog) {
+            updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_DEBUG, OnOffType.from(api.isDebugLogEnabled()));
+        }
         stats.wifiRssi.set(status.wifiSta != null && status.wifiSta.rssi != null ? status.wifiSta.rssi : 0);
 
         if (api.isInitialized()) {
