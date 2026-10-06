@@ -143,6 +143,9 @@ public class ShellyDevices {
     public static final String SHELLYDT_PRO1PM_3 = "SPSW-201PE16EU";
     public static final String SHELLYDT_PRO1PMUL = "SPSW-201PE15UL";
     public static final String SHELLYDT_PRO1CB = "SPCB-01VENEU";
+    public static final String SHELLYDT_PRO2CB = "SPCB-02VENEU";
+    public static final String SHELLYDT_PRO3CB = "SPCB-03VENEU";
+    public static final String SHELLYDT_PRO4CB = "SPCB-04VENEU";
     public static final String SHELLYDT_PRO2 = "SPSW-002XE16EU";
     public static final String SHELLYDT_PRO2_2 = "SPSW-102XE16EU";
     public static final String SHELLYDT_PRO2_3 = "SPSW-202XE16EU";
@@ -307,6 +310,7 @@ public class ShellyDevices {
     public static final ThingTypeUID THING_TYPE_SHELLYPRO1 = new ThingTypeUID(BINDING_ID, "shellypro1");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO1PM = new ThingTypeUID(BINDING_ID, "shellypro1pm");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO1CB = new ThingTypeUID(BINDING_ID, "shellypro1cb");
+    public static final ThingTypeUID THING_TYPE_SHELLYPROCB = new ThingTypeUID(BINDING_ID, "shellyprocb");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO2 = new ThingTypeUID(BINDING_ID, "shellypro2");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO2PM_RELAY = new ThingTypeUID(BINDING_ID, "shellypro2pm-relay");
     public static final ThingTypeUID THING_TYPE_SHELLYPRO2PM_ROLLER = new ThingTypeUID(BINDING_ID,
@@ -547,7 +551,10 @@ public class ShellyDevices {
             Map.entry(SHELLYDT_PRO1PM_2, THING_TYPE_SHELLYPRO1PM),
             Map.entry(SHELLYDT_PRO1PM_3, THING_TYPE_SHELLYPRO1PM), //
             Map.entry(SHELLYDT_PRO1PMUL, THING_TYPE_SHELLYPRO1PM), //
-            Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPRO1CB), //
+            Map.entry(SHELLYDT_PRO1CB, THING_TYPE_SHELLYPROCB), //
+            Map.entry(SHELLYDT_PRO2CB, THING_TYPE_SHELLYPROCB), //
+            Map.entry(SHELLYDT_PRO3CB, THING_TYPE_SHELLYPROCB), //
+            Map.entry(SHELLYDT_PRO4CB, THING_TYPE_SHELLYPROCB), //
             Map.entry(SHELLYDT_PRO2, THING_TYPE_SHELLYPRO2), //
             Map.entry(SHELLYDT_PRO2_2, THING_TYPE_SHELLYPRO2), //
             Map.entry(SHELLYDT_PRO2_3, THING_TYPE_SHELLYPRO2), //
@@ -646,7 +653,7 @@ public class ShellyDevices {
         SUPPORTED_THING_TYPES.addAll(ROLLER_THING_TYPE_BY_DEVICE_TYPE.values());
         SUPPORTED_THING_TYPES.addAll(GROUP_RGBW2_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(Set.of(//
-                THING_TYPE_SHELLYUNKNOWN, THING_TYPE_SHELLYPROTECTED));
+                THING_TYPE_SHELLYUNKNOWN, THING_TYPE_SHELLYPROTECTED, THING_TYPE_SHELLYPRO1CB));
     }
 
     /*
@@ -762,7 +769,11 @@ public class ShellyDevices {
             // Shelly Pro Series
             Map.entry("shellypro1", THING_TYPE_SHELLYPRO1), //
             Map.entry("shellypro1pm", THING_TYPE_SHELLYPRO1PM), //
-            Map.entry("shellypro1cb", THING_TYPE_SHELLYPRO1CB), //
+            Map.entry("shellyprocb", THING_TYPE_SHELLYPROCB), //
+            Map.entry("shellypro1cb", THING_TYPE_SHELLYPROCB), //
+            Map.entry("shellypro2cb", THING_TYPE_SHELLYPROCB), //
+            Map.entry("shellypro3cb", THING_TYPE_SHELLYPROCB), //
+            Map.entry("shellypro4cb", THING_TYPE_SHELLYPROCB), //
             Map.entry("shellypro2pm-relay", THING_TYPE_SHELLYPRO2PM_RELAY),
             Map.entry("shellypro2pm-roller", THING_TYPE_SHELLYPRO2PM_ROLLER),
             Map.entry("shellypro2", THING_TYPE_SHELLYPRO2), //

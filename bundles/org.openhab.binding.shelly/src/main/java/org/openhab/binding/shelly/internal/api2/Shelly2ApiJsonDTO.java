@@ -394,6 +394,11 @@ public class Shelly2ApiJsonDTO {
             public Double reactionDelay;
         }
 
+        public static class Shelly2DevConfigVoltmeter {
+            public Integer id;
+            public String name;
+        }
+
         public static class Shelly2DevConfigEm {
             public Integer id;
             public String name;
@@ -552,12 +557,12 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("cb:0")
             ShellyDeviceConfigCB cb0;
-            @SerializedName("cb:1")
-            ShellyDeviceConfigCB cb1;
-            @SerializedName("cb:2")
-            ShellyDeviceConfigCB cb2;
-            @SerializedName("cb:3")
-            ShellyDeviceConfigCB cb3;
+            @SerializedName("voltmeter:0")
+            Shelly2DevConfigVoltmeter voltmeter0;
+            @SerializedName("voltmeter:1")
+            Shelly2DevConfigVoltmeter voltmeter1;
+            @SerializedName("voltmeter:2")
+            Shelly2DevConfigVoltmeter voltmeter2;
 
             @SerializedName("em:0")
             public Shelly2DevConfigEm em0; // 3-phase config or Gen3 per-phase channel 0
@@ -950,12 +955,6 @@ public class Shelly2ApiJsonDTO {
 
             @SerializedName("cb:0")
             Shelly2CBStatus cb0;
-            @SerializedName("cb:1")
-            Shelly2CBStatus cb1;
-            @SerializedName("cb:2")
-            Shelly2CBStatus cb2;
-            @SerializedName("cb:3")
-            Shelly2CBStatus cb3;
 
             @SerializedName("pm1:0")
             public Shelly2RelayStatus pm10;
@@ -1037,8 +1036,6 @@ public class Shelly2ApiJsonDTO {
             public @Nullable Shelly2DeviceStatusVoltage voltmeter1;
             @SerializedName("voltmeter:2")
             public @Nullable Shelly2DeviceStatusVoltage voltmeter2;
-            @SerializedName("voltmeter:3")
-            public @Nullable Shelly2DeviceStatusVoltage voltmeter3;
             @SerializedName("voltmeter:100")
             public @Nullable Shelly2DeviceStatusVoltage voltmeter100;
 

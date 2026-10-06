@@ -188,6 +188,15 @@ public class Shelly2GetDeviceProfileTest {
         return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"cb:0\":{\"id\":0}}");
     }
 
+    private static Shelly2GetConfigResult withCb0AndVoltmeters(Gson gson, int numVoltmeters) {
+        StringBuilder json = new StringBuilder(
+                "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},\"cb:0\":{\"id\":0}");
+        for (int i = 0; i < numVoltmeters; i++) {
+            json.append(",\"voltmeter:").append(i).append("\":{\"id\":").append(i).append("}");
+        }
+        return parseConfig(gson, json.append("}").toString());
+    }
+
     /** GetConfig with rgbw:0 present (Plus RGBW PM, color-mode "rgbw" profile) */
     private static Shelly2GetConfigResult withRgbw0(Gson gson) {
         return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"rgbw:0\":{\"id\":0}}");
@@ -545,6 +554,26 @@ public class Shelly2GetDeviceProfileTest {
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
         assertThat(profile.isCB, is(true));
         assertThat(profile.numRelays, is(1));
+    }
+
+    @Test
+    void discoveryCBWithThreeVoltmetersHasOneBreakerAndThreeMeters() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withCb0AndVoltmeters(gson, 3));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.numRelays, is(1));
+        assertThat(profile.numMeters, is(3));
+        assertThat(profile.getMeterGroup(0), is("meter1"));
+        assertThat(profile.getMeterGroup(2), is("meter3"));
+    }
+
+    @Test
+    void discoveryCBWithOneVoltmeterUsesUnnumberedMeterGroup() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withCb0AndVoltmeters(gson, 1));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.numMeters, is(1));
+        assertThat(profile.getMeterGroup(0), is("meter"));
     }
 
     @Test
