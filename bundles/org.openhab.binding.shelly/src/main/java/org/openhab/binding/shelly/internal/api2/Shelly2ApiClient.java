@@ -273,7 +273,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         }
 
         profile.isRoller = dc.cover0 != null;
-        profile.isCB = dc.cb0 != null || dc.cb1 != null || dc.cb2 != null || dc.cb3 != null;
+        profile.isCB = dc.cb0 != null;
         profile.settings.relays = !profile.isCB ? fillRelaySettings(profile, dc) : fillBreakerSettings(profile, dc);
         profile.settings.inputs = fillInputSettings(profile, dc);
         profile.settings.rollers = fillRollerSettings(profile, dc);
@@ -377,6 +377,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             fromDeviceConfig = 2; // em1:0 + em1:1 → 2 clamps (Pro EM-50)
         } else if (dc.em10 != null) {
             fromDeviceConfig = 1; // em1:0 alone → single clamp (EM Mini)
+        } else if (profile.isCB) {
+            // Pro CB: one breaker, up to 3 independent voltmeters depending on the model
+            int numVoltmeters = (dc.voltmeter0 != null ? 1 : 0) + (dc.voltmeter1 != null ? 1 : 0)
+                    + (dc.voltmeter2 != null ? 1 : 0);
+            fromDeviceConfig = numVoltmeters > 0 ? numVoltmeters : -1;
         } else if (profile.isRGBW2) {
             // No dedicated PM/EM component: every settings.lights entry (color, CCT or Light) is its own
             // metered component. Applies to both Pro RGBWW PM and Plus RGBW PM.
@@ -595,9 +600,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             Shelly2GetConfigResult dc) {
         ArrayList<@Nullable ShellySettingsRelay> relays = new ArrayList<>();
         addBreakerSettings(relays, dc.cb0);
-        addBreakerSettings(relays, dc.cb1);
-        addBreakerSettings(relays, dc.cb2);
-        addBreakerSettings(relays, dc.cb3);
         return !relays.isEmpty() ? relays : null;
     }
 
@@ -640,10 +642,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         updated |= updateRelayStatus(3, status, result.switch3, channelUpdate);
         updated |= updateRelayStatus(100, status, result.switch100, channelUpdate);
         updated |= updateRelayStatus(10, status, result.pm10, channelUpdate);
-        updated |= updateBreakerStatus(0, status, result.cb0, result.voltmeter0, channelUpdate);
-        updated |= updateBreakerStatus(1, status, result.cb1, result.voltmeter1, channelUpdate);
-        updated |= updateBreakerStatus(2, status, result.cb2, result.voltmeter2, channelUpdate);
-        updated |= updateBreakerStatus(3, status, result.cb3, result.voltmeter3, channelUpdate);
+        updated |= updateBreakerStatus(0, status, result.cb0, channelUpdate);
+        updateVoltmeterStatus(0, status, result.voltmeter0, channelUpdate);
+        updateVoltmeterStatus(1, status, result.voltmeter1, channelUpdate);
+        updateVoltmeterStatus(2, status, result.voltmeter2, channelUpdate);
         updated |= updateEmStatus(0, status, result.em0, result.emdata0, channelUpdate);
         // Apply accumulated energy from em1data:x (single-phase clamp devices: Plus EM, Pro EM-50, EM Mini).
         // Each em1data:N belongs to exactly one clamp (em1:N); the EMData/EM1Data key difference is
@@ -796,7 +798,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     private boolean updateBreakerStatus(int id, ShellySettingsStatus status, @Nullable Shelly2CBStatus bs,
-            @Nullable Shelly2DeviceStatusVoltage vm, boolean channelUpdate) throws ShellyApiException {
+            boolean channelUpdate) throws ShellyApiException {
         if (bs == null) {
             return false;
         }
@@ -842,25 +844,35 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             }
         }
 
-        // Pro CB never has em1:x clamp components — hasEM1Clamps is always false for
-        // breaker devices, so rIdx maps directly to the emeter slot without any offset.
-        ShellySettingsEMeter emeter = (status.emeters != null && rIdx >= 0 && rIdx < status.emeters.size())
-                ? status.emeters.get(rIdx)
-                : new ShellySettingsEMeter();
-        if (vm != null && vm.voltage != null) {
-            emeter.voltage = vm.voltage;
-        }
-
         if (profile.hasRelays) {
             // Update internal structures
             status.relays.set(rIdx, rstatus);
             relayStatus.relays.set(rIdx, sr);
         }
 
-        updateMeter(status, rIdx, emeter, channelUpdate);
         return channelUpdate && profile.hasRelays
                 ? ShellyComponents.updateRelay((ShellyBaseHandler) getThing(), status, rIdx)
                 : false;
+    }
+
+    /**
+     * Pro CB voltmeters are independent of the breaker: voltmeter:N maps to meter slot N.
+     */
+    private void updateVoltmeterStatus(int id, ShellySettingsStatus status, @Nullable Shelly2DeviceStatusVoltage vm,
+            boolean channelUpdate) throws ShellyApiException {
+        if (vm == null || !getProfile().isCB || status.emeters == null || id >= status.emeters.size()) {
+            return;
+        }
+        if (hasReadError(vm.errors)) {
+            logger.debug("{}: voltmeter:{} read error, skipping update", thingName, id);
+            return;
+        }
+        Double voltage = vm.voltage;
+        if (voltage != null) {
+            ShellySettingsEMeter emeter = status.emeters.get(id);
+            emeter.voltage = voltage;
+            updateMeter(status, id, emeter, channelUpdate);
+        }
     }
 
     private int getRelayIdx(ShellyDeviceProfile profile, @Nullable Integer id) {

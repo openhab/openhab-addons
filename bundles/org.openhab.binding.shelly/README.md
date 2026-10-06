@@ -146,7 +146,7 @@ See section [Discovery](#discovery) for details.
 | ------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------- |
 | shellypro1          | Shelly Pro 1 with 1x relay                                                       | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU           |
 | shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter                                      | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU           |
-| shellyprocb         | Shelly Pro 1CB/2CB/3CB/4CB Circuit Breaker with 1-4x relay + volt meter          | SPCB-01VENEU, SPCB-02VENEU, SPCB-03VENEU, SPCB-04VENEU   |
+| shellyprocb         | Shelly Pro 1CB/2CB/3CB/4CB Circuit Breaker with 1x breaker + 1-3x volt meter    | SPCB-01VENEU, SPCB-02VENEU, SPCB-03VENEU, SPCB-04VENEU   |
 | shellypro1cb        | Shelly Pro 1 Circuit Breaker (legacy thing type, use shellyprocb for new things) | SPCB-01VENEU                                             |
 | shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                                           | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU           |
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode                          | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU           |
@@ -2274,8 +2274,8 @@ totalEnergy might reset on restart depending on device type and firmware version
 |       | outputName | String | yes       | Logical name of this relay output as configured in the Shelly App |
 | meter | voltage    | Number | yes       | RMS voltage, Volts                                                |
 
-The Pro 1CB uses the groups `relay` and `meter`.
-The Pro 2CB, 3CB and 4CB have one group per circuit breaker: `relay1`..`relay4` and `meter1`..`meter4`.
+All models have a single circuit breaker in group `relay`.
+A model with one voltmeter reports the voltage in group `meter`, a model with several voltmeters uses `meter1`..`meter3`.
 New things are created as `shellyprocb`, existing `shellypro1cb` things keep working.
 
 ### Shelly Pro 2 (thing-type: shellypro2-relay)
