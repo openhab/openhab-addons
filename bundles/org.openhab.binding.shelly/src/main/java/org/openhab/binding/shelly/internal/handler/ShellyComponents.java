@@ -102,6 +102,27 @@ public class ShellyComponents {
             thingHandler.updateThingChannels(Map.of(),
                     ShellyChannelDefinitions.createLoraChannels(thingHandler.getThing(), profile));
             reconcileLoraChannels(thingHandler, profile);
+
+            if (status.ramTotal != null) {
+                thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_TOTALMEM,
+                        toQuantityType(status.ramTotal.doubleValue(), Units.BYTE));
+            }
+            if (status.ramFree != null) {
+                thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_FREEMEM,
+                        toQuantityType(status.ramFree.doubleValue(), Units.BYTE));
+            }
+            if (status.fsSize != null) {
+                thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_TOTALFS,
+                        toQuantityType(status.fsSize.doubleValue(), Units.BYTE));
+            }
+            if (status.fsFree != null) {
+                thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_FREEFS,
+                        toQuantityType(status.fsFree.doubleValue(), Units.BYTE));
+            }
+            if (status.restartRequired != null) {
+                thingHandler.updateChannel(CHANNEL_GROUP_DIAG, CHANNEL_DIAG_RESTARTREQ,
+                        getOnOff(status.restartRequired));
+            }
         }
 
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));

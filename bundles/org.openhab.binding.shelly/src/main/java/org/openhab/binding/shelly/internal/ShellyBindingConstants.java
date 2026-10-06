@@ -277,6 +277,14 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_CALIBRATED = "calibrated";
     public static final String CHANNEL_DEVST_FIRMWARE = "firmware";
 
+    // Diagnostics (Gen2+ only)
+    public static final String CHANNEL_GROUP_DIAG = "diagnostics";
+    public static final String CHANNEL_DIAG_TOTALMEM = "totalMem";
+    public static final String CHANNEL_DIAG_FREEMEM = "freeMem";
+    public static final String CHANNEL_DIAG_TOTALFS = "totalFS";
+    public static final String CHANNEL_DIAG_FREEFS = "freeFS";
+    public static final String CHANNEL_DIAG_RESTARTREQ = "restartReq";
+
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
     // Button/xi3

@@ -853,6 +853,8 @@ public class Shelly1ApiJsonDTO {
         @SerializedName("fs_free")
         public Long fsFree;
         public Long uptime;
+        @SerializedName("restart_required") // Gen2+ only
+        public Boolean restartRequired;
 
         @SerializedName("sleep_time") // Shelly Motion
         public Integer sleepTime;

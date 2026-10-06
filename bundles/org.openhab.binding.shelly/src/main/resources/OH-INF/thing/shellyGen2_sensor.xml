@@ -14,6 +14,7 @@
 			<channel-group id="control" typeId="control"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -29,6 +30,7 @@
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -45,6 +47,7 @@
 			<channel-group id="control" typeId="control"/>
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -60,6 +63,7 @@
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
@@ -75,6 +79,7 @@
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="control" typeId="control"/>
 			<channel-group id="device" typeId="deviceStatus"/>
+			<channel-group id="diagnostics" typeId="diagnostics"/>
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>

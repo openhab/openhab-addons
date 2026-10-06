@@ -178,4 +178,63 @@
 			<tag>Power</tag>
 		</tags>
 	</channel-type>
+
+	<channel-group-type id="diagnostics">
+		<label>Diagnostics</label>
+		<description>Device diagnostics (Gen2+ only)</description>
+	</channel-group-type>
+
+	<channel-type id="totalMem" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Total Memory</label>
+		<description>Total RAM available on the device</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="freeMem" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Free Memory</label>
+		<description>Currently free RAM on the device</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="totalFS" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Total Filesystem Size</label>
+		<description>Total size of the device's internal filesystem</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="freeFS" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Free Filesystem Space</label>
+		<description>Currently free space on the device's internal filesystem</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true">
+		</state>
+	</channel-type>
+
+	<channel-type id="restartReq" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Restart Required</label>
+		<description>ON: The device configuration changed and requires a restart to take effect</description>
+		<category>Status</category>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>

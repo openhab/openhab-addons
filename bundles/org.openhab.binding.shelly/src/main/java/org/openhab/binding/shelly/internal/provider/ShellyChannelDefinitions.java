@@ -111,6 +111,7 @@ public class ShellyChannelDefinitions {
     private static final String CHGR_COLOR = CHANNEL_GROUP_COLOR_CONTROL;
     private static final String CHGR_WHITE = CHANNEL_GROUP_WHITE_CONTROL;
     private static final String CHGR_LORA = CHANNEL_GROUP_LORA;
+    private static final String CHGR_DIAG = CHANNEL_GROUP_DIAG;
 
     public static final String PREFIX_GROUP = "group-type." + BINDING_ID + ".";
     public static final String PREFIX_CHANNEL = "channel-type." + BINDING_ID + ".";
@@ -209,6 +210,13 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED, "calibrated", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE, "deviceFirmware", ITEMT_STRING))
+
+                // Diagnostics (Gen2+ only)
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_TOTALMEM, "totalMem", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_FREEMEM, "freeMem", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_TOTALFS, "totalFS", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_FREEFS, "freeFS", ITEMT_DATA))
+                .add(new ShellyChannel(m, CHGR_DIAG, CHANNEL_DIAG_RESTARTREQ, "restartReq", ITEMT_SWITCH))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -517,6 +525,28 @@ public class ShellyChannelDefinitions {
         if (!profile.isBlu) { // currently not supported for BLU devices
             addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
         }
+        add.putAll(createDiagnosticsChannels(thing, profile, status));
+        return add;
+    }
+
+    /**
+     * Auto-create device utilization/diagnostics channels (Gen2+ only) for the fields the device reports.
+     *
+     * @return channels to be added to the thing, keyed by channel id
+     */
+    public static Map<String, Channel> createDiagnosticsChannels(final Thing thing, final ShellyDeviceProfile profile,
+            final ShellySettingsStatus status) {
+        Map<String, Channel> add = new LinkedHashMap<>();
+        if (!profile.isGen2 || profile.isBlu) {
+            return add;
+        }
+
+        addChannel(thing, add, status.ramTotal != null, CHGR_DIAG, CHANNEL_DIAG_TOTALMEM);
+        addChannel(thing, add, status.ramFree != null, CHGR_DIAG, CHANNEL_DIAG_FREEMEM);
+        addChannel(thing, add, status.fsSize != null, CHGR_DIAG, CHANNEL_DIAG_TOTALFS);
+        addChannel(thing, add, status.fsFree != null, CHGR_DIAG, CHANNEL_DIAG_FREEFS);
+        addChannel(thing, add, status.restartRequired != null, CHGR_DIAG, CHANNEL_DIAG_RESTARTREQ);
+
         return add;
     }
 

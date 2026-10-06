@@ -759,6 +759,20 @@ The add-on firmware version is shown in the Thing property `addonFirmware`; the 
 |         | snr          | Number:Dimensionless | yes    | SNR (signal-to-noise ratio in dB) of the last received packet.                    |
 |         | airtime      | Number:Time       | yes       | Transmission air time of the LoRa Add-On during the last 60 minutes.              |
 
+### Diagnostics (Channel Group: diagnostics)
+
+Gen2+ devices (Plus, Pro, Gen3, Gen4; not BLU) expose a `diagnostics` channel group.
+It provides device utilization data read from the device.
+All channels are `advanced` and read-only.
+
+| Group       | Channel         | Type               | read-only | Description                                                                          |
+| ----------- | --------------- | ------------------ | --------- | ------------------------------------------------------------------------------------ |
+| diagnostics | totalMem        | Number:DataAmount  | yes       | Total RAM on the device.                                                             |
+|             | freeMem         | Number:DataAmount  | yes       | Currently free RAM.                                                                  |
+|             | totalFS         | Number:DataAmount  | yes       | Total size of the device's internal filesystem.                                      |
+|             | freeFS          | Number:DataAmount  | yes       | Currently free filesystem space.                                                     |
+|             | restartReq      | Switch             | yes       | ON: a configuration change needs a device restart to take effect.                    |
+
 ### Shelly 1 (thing-type: shelly1)
 
 | Group   | Channel      | Type     | read-only | Description                                                                       |
