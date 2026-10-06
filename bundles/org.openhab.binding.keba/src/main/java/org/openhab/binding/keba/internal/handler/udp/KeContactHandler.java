@@ -92,7 +92,6 @@ public class KeContactHandler extends KeContactProtocolHandler {
     private long failsafeTimeout;
     private boolean hasFailsafeCurrent;
     private boolean hasFailsafeTimeout;
-    private String sessionRfidTag = "";
     private @Nullable KebaType type;
     private @Nullable KebaSeries series;
     private int lastState = -1; // trigger a report100 at startup
@@ -627,7 +626,6 @@ public class KeContactHandler extends KeContactProtocolHandler {
                     }
                     case "RFID tag": {
                         String state = Objects.requireNonNull(entry.getValue().getAsString().trim());
-                        sessionRfidTag = state;
                         State newState = new StringType(state);
                         updateState(CHANNEL_SESSION_RFID_TAG, newState);
                         break;
@@ -728,12 +726,11 @@ public class KeContactHandler extends KeContactProtocolHandler {
                     }
                     break;
                 }
-                case "stop": {
-                    sessionRfidTag = "";
-                    if (command == OnOffType.ON && readReport(100) && isUsableRfidTag(sessionRfidTag)) {
-                        ByteBuffer response = transceiver.send("stop " + sessionRfidTag, this);
-                        if (isCommandAcknowledged(response)) {
-                            updateState("stop", OnOffType.OFF);
+                case CHANNEL_UDP_STOP: {
+                    if (command instanceof StringType stringCommand) {
+                        String rfidTag = stringCommand.toString().trim();
+                        if (isUsableRfidTag(rfidTag)) {
+                            transceiver.send("stop " + rfidTag, this);
                         }
                     }
                     break;

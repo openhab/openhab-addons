@@ -135,11 +135,11 @@
 			<update-channel id="authenticate">
 				<type>keba:authenticate</type>
 			</update-channel>
-			<add-channel id="cablestate">
-				<type>keba:cable-state</type>
-			</add-channel>
 			<add-channel id="unlockplug">
 				<type>keba:unlock-plug</type>
+			</add-channel>
+			<add-channel id="udpstop">
+				<type>keba:udp-stop</type>
 			</add-channel>
 			<add-channel id="errorcode">
 				<type>keba:error-code</type>
@@ -191,9 +191,6 @@
 			<add-channel id="permanentlylocked">
 				<type>keba:permanent-lock</type>
 			</add-channel>
-			<add-channel id="unlock">
-				<type>keba:command</type>
-			</add-channel>
 			<add-channel id="maxphases">
 				<type>keba:numeric-value</type>
 			</add-channel>
@@ -224,9 +221,9 @@
 			<update-channel id="failsafetimeout">
 				<type>keba:failsafe-timeout-setting</type>
 			</update-channel>
-			<add-channel id="restinput">
+			<add-channel id="restoutput">
 				<type>keba:status</type>
-				<label>REST X2 Active</label>
+				<label>REST X2 Output Active</label>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

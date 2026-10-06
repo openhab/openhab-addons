@@ -15,10 +15,6 @@
 				<description>Enable or disable charging. Commands use Modbus; availability readback comes from REST or UDP when
 					available.</description>
 			</channel>
-			<channel id="cablestate" typeId="cable-state">
-				<description>Raw charging-cable state from Modbus register 1004. The wallbox, vehicle and locked switches are
-					derived from this value.</description>
-			</channel>
 			<channel id="wallbox" typeId="plug-wallbox">
 				<description>Whether the cable is plugged into the wallbox, derived from cable state when Modbus is available.</description>
 			</channel>
@@ -29,7 +25,7 @@
 				<description>Whether the charging plug is locked, derived from cable state when Modbus is available.</description>
 			</channel>
 			<channel id="unlockplug" typeId="unlock-plug">
-				<description>Send ON to unlock the charging plug through Modbus or UDP. Charging must be stopped before
+				<description>Send ON to unlock the charging plug through Modbus, UDP, or REST. Charging must be stopped before
 					unlocking.</description>
 			</channel>
 			<channel id="errorcode" typeId="error-code">
@@ -157,6 +153,11 @@
 				<description>Authenticate and start a charging session using an RFID tag and RFID class already accepted by the
 					wallbox.</description>
 			</channel>
+			<channel id="udpstop" typeId="udp-stop">
+				<description>Send a stop command over UDP using the explicitly supplied 16-digit session RFID tag. No RFID report
+					is
+					read to construct this command.</description>
+			</channel>
 			<channel id="sessionid" typeId="session-id">
 				<description>Identifier of the last charging session from UDP report 100.</description>
 			</channel>
@@ -221,10 +222,11 @@
 				<label>Reserved</label>
 				<description>Whether the wallbox has an active reservation, reported by the REST reserved field.</description>
 			</channel>
-			<channel id="restinput" typeId="status">
-				<label>REST X2 Active</label>
-				<description>Raw x2active flag reported by the REST API. This is not assumed to be the UDP X1 enable-input signal;
-					use input for that physical input.</description>
+			<channel id="restoutput" typeId="status">
+				<label>REST X2 Output Active</label>
+				<description>Whether the X2 output is active, reported by the REST x2active flag. This is separate from the UDP
+					X1
+					input and the UDP output command channel.</description>
 			</channel>
 			<channel id="temperature" typeId="temperature">
 				<description>Internal wallbox temperature from the REST meter data, in degrees Celsius.</description>
@@ -262,10 +264,6 @@
 			<channel id="permanentlylocked" typeId="permanent-lock">
 				<description>Enable or disable permanent plug locking through REST. This is a locking policy, not the current
 					physical plug-lock state.</description>
-			</channel>
-			<channel id="unlock" typeId="command">
-				<label>Unlock</label>
-				<description>Send ON to request plug unlocking through the REST API.</description>
 			</channel>
 			<channel id="maxphases" typeId="numeric-value">
 				<label>Maximum Phases</label>
@@ -702,6 +700,15 @@
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
+	<channel-type id="udp-stop">
+		<item-type>String</item-type>
+		<label>Stop Session (UDP)</label>
+		<description>Stop an authorized UDP charging session using the supplied session RFID tag.</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
 	<channel-type id="backend" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Backend Communication Present</label>
@@ -746,23 +753,6 @@
 			<tag>Status</tag>
 		</tags>
 		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="cable-state" advanced="true">
-		<item-type>Number</item-type>
-		<label>Cable State</label>
-		<description>State of the charging cable</description>
-		<tags>
-			<tag>Status</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="0">No cable plugged</option>
-				<option value="1">Plugged into wallbox</option>
-				<option value="3">Plugged into wallbox and locked</option>
-				<option value="5">Plugged into wallbox and vehicle, not locked</option>
-				<option value="7">Plugged into wallbox and vehicle, locked</option>
-			</options>
-		</state>
 	</channel-type>
 	<channel-type id="error-code" advanced="true">
 		<item-type>Number</item-type>

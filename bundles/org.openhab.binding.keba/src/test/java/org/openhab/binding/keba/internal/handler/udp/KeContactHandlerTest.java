@@ -33,6 +33,7 @@ import org.openhab.binding.keba.internal.handler.KeContactProtocolHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -87,23 +88,21 @@ class KeContactHandlerTest {
     }
 
     @Test
-    void stopUsesTheCurrentSessionRfidTagAndFailsClosedWithoutOne() {
+    void udpStopUsesTheSuppliedRfidTagAndDoesNotReadReport100() {
         Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:stop"))
                 .build();
         KeContactTransceiver transceiver = Objects.requireNonNull(mock(KeContactTransceiver.class));
         KeContactProtocolHandler.Listener listener = Objects
                 .requireNonNull(mock(KeContactProtocolHandler.Listener.class));
         KeContactHandler handler = new KeContactHandler(thing, transceiver, null, listener);
-        when(transceiver.send(eq("report 100"), eq(handler))).thenReturn(
-                response("{\"ID\":100,\"RFID tag\":\"f287506300000000\"}"), response("{\"ID\":100,\"State\":0}"));
         when(transceiver.send(eq("stop f287506300000000"), eq(handler))).thenReturn(response("TCH-OK: done"));
 
-        handler.handleCommand(new ChannelUID(thing.getUID(), "stop"), OnOffType.ON);
-        handler.handleCommand(new ChannelUID(thing.getUID(), "stop"), OnOffType.ON);
+        handler.handleCommand(new ChannelUID(thing.getUID(), "udpstop"), new StringType(" f287506300000000 "));
+        handler.handleCommand(new ChannelUID(thing.getUID(), "udpstop"), new StringType("0000000000000000"));
+        handler.handleCommand(new ChannelUID(thing.getUID(), "udpstop"), new StringType("not-an-rfid-tag"));
         verify(transceiver).send("stop f287506300000000", handler);
-        verify(transceiver, times(2)).send("report 100", handler);
         verify(transceiver, times(1)).send(eq("stop f287506300000000"), eq(handler));
-        verify(listener).stateUpdated("stop", OnOffType.OFF);
+        verify(transceiver, never()).send(eq("report 100"), eq(handler));
     }
 
     @Test

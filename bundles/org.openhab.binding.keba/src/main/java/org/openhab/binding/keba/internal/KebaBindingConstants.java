@@ -75,6 +75,7 @@ public class KebaBindingConstants {
     public static final String CHANNEL_SESSION_SESSION_ID = "sessionid";
     public static final String CHANNEL_SETENERGY = "setenergylimit";
     public static final String CHANNEL_AUTHENTICATE = "authenticate";
+    public static final String CHANNEL_UDP_STOP = "udpstop";
     public static final String CHANNEL_BACKEND = "backend";
     public static final String CHANNEL_TIME_QUALITY = "timequality";
     public static final String CHANNEL_BOOT_FLAG = "bootflag";

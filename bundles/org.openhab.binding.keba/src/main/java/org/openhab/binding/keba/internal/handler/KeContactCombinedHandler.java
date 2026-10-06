@@ -82,32 +82,31 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             "currtimertimeout", "output", "input", "uptime", "authreq", "authon"));
     private static final Set<String> UDP_REPORT_100 = Objects.requireNonNull(Set.of("sessionrfidclass", "sessionid"));
     private static final Set<String> REST_ONLY = Objects.requireNonNull(Set.of("reststate", "session", "error",
-            "reserved", "temperature", "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases",
+            "reserved", "temperature", "restoutput", "sessionstart", "sessionduration", "externalmeter", "maxphases",
             "phaseconfiguration", "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop",
-            "reboot", "unlock", "togglephaseswitch"));
-    private static final Set<String> UDP_COMMANDS = Objects
-            .requireNonNull(Set.of("display", "output", "authenticate", "maxpresetcurrent", "maxpresetcurrentrange"));
+            "reboot", "unlockplug", "togglephaseswitch"));
+    private static final Set<String> UDP_COMMANDS = Objects.requireNonNull(
+            Set.of("display", "output", "authenticate", CHANNEL_UDP_STOP, "maxpresetcurrent", "maxpresetcurrentrange"));
     private static final Set<String> REST_SHARED = Objects.requireNonNull(Set.of("state", "I1", "I2", "I3", "U1", "U2",
             "U3", "power", "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent",
             "maxsystemcurrent", "phaseswitchstate", "phaseswitchsource"));
-    private static final Set<String> MODBUS_CHANNELS = Objects
-            .requireNonNull(Set.of("state", "cablestate", "wallbox", "vehicle", "locked", "errorcode", "I1", "I2", "I3",
-                    "power", "totalconsumption", "U1", "U2", "U3", "powerfactor", "maxpilotcurrent", "maxsystemcurrent",
-                    "fastchargingstatus", "sessionrfidtag", "sessionconsumption", "phaseswitchsource",
-                    "phaseswitchstate", "failsafecurrent", "failsafetimeout", "maxpresetcurrent", "setenergylimit",
-                    "unlockplug", "enableduser", "failsafepersist", "activatefastcharging"));
+    private static final Set<String> MODBUS_CHANNELS = Objects.requireNonNull(Set.of("state", "wallbox", "vehicle",
+            "locked", "errorcode", "I1", "I2", "I3", "power", "totalconsumption", "U1", "U2", "U3", "powerfactor",
+            "maxpilotcurrent", "maxsystemcurrent", "fastchargingstatus", "sessionrfidtag", "sessionconsumption",
+            "phaseswitchsource", "phaseswitchstate", "failsafecurrent", "failsafetimeout", "maxpresetcurrent",
+            "setenergylimit", "unlockplug", "enableduser", "failsafepersist", "activatefastcharging"));
     private static final Set<String> UDP_CHANNELS = Objects.requireNonNull(Set.of("backend", "timequality", "bootflag",
             "dipswitch1", "dipswitch2", "enabledsystem", "enableduser", "maxpresetcurrent", "maxpresetcurrentrange",
             "error1", "error2", "state", "wallbox", "vehicle", "locked", "maxpilotcurrent", "maxpilotcurrentdutycyle",
             "maxsystemcurrent", "failsafecurrent", "failsafetimeout", "currtimer", "currtimertimeout", "output",
             "input", "uptime", "authreq", "authon", "I1", "I2", "I3", "U1", "U2", "U3", "power", "powerfactor",
             "totalconsumption", "sessionconsumption", "sessionrfidtag", "sessionrfidclass", "sessionid", "display",
-            "authenticate", "setenergylimit", "phaseswitchsource", "phaseswitchstate", "unlockplug", "stop",
+            "authenticate", CHANNEL_UDP_STOP, "setenergylimit", "phaseswitchsource", "phaseswitchstate", "unlockplug",
             "failsafepersist"));
     private static final Set<String> REST_CHANNELS = Objects.requireNonNull(Set.of("reststate", "session", "error",
-            "reserved", "temperature", "restinput", "sessionstart", "sessionduration", "externalmeter", "maxphases",
+            "reserved", "temperature", "restoutput", "sessionstart", "sessionduration", "externalmeter", "maxphases",
             "phaseconfiguration", "dipswitchsettings", "dipswitchinterpretation", "permanentlylocked", "start", "stop",
-            "reboot", "unlock", "authon", "enableduser", "vehicle", "state", "I1", "I2", "I3", "U1", "U2", "U3",
+            "reboot", "unlockplug", "authon", "enableduser", "vehicle", "state", "I1", "I2", "I3", "U1", "U2", "U3",
             "power", "powerfactor", "totalconsumption", "sessionconsumption", "maxpilotcurrent", "maxsystemcurrent",
             "phaseswitchstate", "phaseswitchsource", "togglephaseswitch"));
 
@@ -535,6 +534,9 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         if ("stop".equals(channel)) {
             return restOnline ? Protocol.REST : Protocol.UDP;
         }
+        if (CHANNEL_UNLOCK_PLUG.equals(channel)) {
+            return modbusOnline ? Protocol.MODBUS : restOnline ? Protocol.REST : Protocol.UDP;
+        }
         if (REST_ONLY.contains(channel)) {
             return Protocol.REST;
         }
@@ -607,7 +609,7 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                 case "energy" -> CHANNEL_TOTAL_CONSUMPTION;
                 case "current" -> CHANNEL_PILOT_CURRENT;
                 case "maxsupportedcurrent" -> CHANNEL_MAX_SYSTEM_CURRENT;
-                case "input" -> "restinput";
+                case "input" -> "restoutput";
                 default -> originalChannel;
             };
             case MODBUS -> switch (originalChannel) {
@@ -860,9 +862,8 @@ public class KeContactCombinedHandler extends BaseThingHandler {
                     || "phaseswitchsource".equals(channel)) && localSession.restOnline && rest != null) {
                 rest.handleCommand(new ChannelUID(getThing().getUID(), channel), command);
             } else if (udp != null && !localSession.config.udpDisplayOnly
-                    && (UDP_COMMANDS.contains(channel) || Set
-                            .of("setenergylimit", "enableduser", "phaseswitchsource", "phaseswitchstate", "unlockplug",
-                                    "stop", "failsafecurrent", "failsafetimeout", "failsafepersist")
+                    && (UDP_COMMANDS.contains(channel) || Set.of("setenergylimit", "enableduser", "phaseswitchsource",
+                            "phaseswitchstate", "unlockplug", "failsafecurrent", "failsafetimeout", "failsafepersist")
                             .contains(channel))) {
                 synchronized (localSession.udpLock) {
                     if (current(localSession) && ensureUdpCommands(localSession, udp)) {

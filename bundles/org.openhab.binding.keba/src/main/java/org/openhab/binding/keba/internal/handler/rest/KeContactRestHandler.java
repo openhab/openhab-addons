@@ -301,7 +301,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
         updateOptionalState("session", wallbox, "sessionActive", value -> OnOffType.from(Boolean.parseBoolean(value)));
         updateOptionalState("error", wallbox, "errorCode", StringType::new);
         updateOptionalState("reserved", wallbox, "reserved", value -> OnOffType.from(Boolean.parseBoolean(value)));
-        updateOptionalState("input", wallbox, "x2active", value -> OnOffType.from(Boolean.parseBoolean(value)));
+        updateOptionalState("restoutput", wallbox, "x2active", value -> OnOffType.from(Boolean.parseBoolean(value)));
         updateOptionalState("authon", wallbox, "authorizationEnabled",
                 value -> OnOffType.from(Boolean.parseBoolean(value)));
         updateOptionalState("externalmeter", wallbox, "hasExternalMeter",
@@ -402,7 +402,7 @@ public class KeContactRestHandler extends KeContactProtocolHandler {
             updateState(channel, command);
         } else if (command == OnOffType.ON) {
             String operation = switch (channel) {
-                case "unlock" -> wallboxPath + "/unlock";
+                case "unlockplug" -> wallboxPath + "/unlock";
                 case "start" -> wallboxPath + "/start-charging";
                 case "stop" -> wallboxPath + "/stop-charging";
                 case "togglephaseswitch" -> wallboxPath + "/phase-toggle";
