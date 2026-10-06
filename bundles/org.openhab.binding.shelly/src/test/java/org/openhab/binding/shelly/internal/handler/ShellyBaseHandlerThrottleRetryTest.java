@@ -17,16 +17,20 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_SHELLYPLUS1PM;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -37,25 +41,42 @@ import org.slf4j.LoggerFactory;
 class ShellyBaseHandlerThrottleRetryTest {
 
     @ParameterizedTest
-    @CsvSource({ "0, 2", "1, 1" })
-    void throttledResponseSchedulesOnlyOneRetry(int pendingUpdates, int expectedUpdates) throws Exception {
-        ShellyBaseHandler handler = buildHandler();
+    @ValueSource(ints = { 0, 1 })
+    void throttledPollLeavesRetryScheduled(int pendingUpdates) throws Exception {
+        ShellyBaseHandler handler = buildThrottledHandler();
         handler.scheduledUpdates = pendingUpdates;
 
-        assertTrue(invokeHandleApiException(handler, throttled()));
-        assertEquals(expectedUpdates, handler.scheduledUpdates);
+        handler.refreshStatus();
+
+        assertEquals(1, handler.scheduledUpdates);
         verify(handler, never()).setThingOfflineAndDisconnect(any(), any(), any());
     }
 
-    private ShellyBaseHandler buildHandler() throws Exception {
+    @Test
+    void throttledRetrySchedulesNoFurtherRetry() throws Exception {
+        ShellyBaseHandler handler = buildThrottledHandler();
+
+        handler.refreshStatus();
+        handler.refreshStatus();
+
+        assertEquals(0, handler.scheduledUpdates);
+    }
+
+    private ShellyBaseHandler buildThrottledHandler() throws Exception {
         ShellyBaseHandler handler = mock(ShellyBaseHandler.class, CALLS_REAL_METHODS);
         ShellyApiInterface api = mock(ShellyApiInterface.class);
+        when(api.getStatus()).thenThrow(throttled());
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
         profile.initialized = true;
         profile.alwaysOn = false;
+        Thing thing = mock(Thing.class);
+        when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
+        when(thing.getStatusInfo()).thenReturn(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
 
         setField(handler, "api", api);
         setField(handler, "logger", LoggerFactory.getLogger(ShellyBaseHandler.class));
+        setField(handler, "skipCount", 1);
+        setField(handler, "thing", thing);
         handler.profile = profile;
         return handler;
     }
@@ -65,15 +86,17 @@ class ShellyBaseHandlerThrottleRetryTest {
         return new ShellyApiException(result);
     }
 
-    private static boolean invokeHandleApiException(ShellyBaseHandler handler, ShellyApiException e) throws Exception {
-        Method m = ShellyBaseHandler.class.getDeclaredMethod("handleApiException", ShellyApiException.class);
-        m.setAccessible(true);
-        return (boolean) m.invoke(handler, e);
-    }
-
     private static void setField(Object target, String fieldName, Object value) throws Exception {
-        Field f = target.getClass().getSuperclass().getDeclaredField(fieldName);
-        f.setAccessible(true);
-        f.set(target, value);
+        for (Class<?> c = target.getClass(); c != null; c = c.getSuperclass()) {
+            try {
+                Field f = c.getDeclaredField(fieldName);
+                f.setAccessible(true);
+                f.set(target, value);
+                return;
+            } catch (NoSuchFieldException e) {
+                continue;
+            }
+        }
+        throw new NoSuchFieldException(fieldName);
     }
 }

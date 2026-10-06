@@ -134,6 +134,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     // Scheduler
     private volatile double watchdog = now();
     protected volatile int scheduledUpdates = 0;
+    private volatile boolean throttleRetryPending = false;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
     private volatile boolean refreshSettings;
@@ -257,11 +258,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         } else if (res.isNotCalibrated()) {
             calibrationError = true; // device needs calibration; don't go offline, keep retrying
         } else if (res.isHttpTooManyRequests()) {
-            // retry once after the device's ~2s throttle window, a pending update means this already is the retry
-            if (scheduledUpdates == 0) {
+            // retry once after the device's ~2s throttle window; if the retry is throttled too, wait for the next poll
+            if (!throttleRetryPending) {
+                throttleRetryPending = true;
                 logger.debug("{}: Device is throttling requests (429), retrying in {}s", thingName,
                         UPDATE_STATUS_INTERVAL_SECONDS);
-                requestUpdates(2, false); // refreshStatus() consumes one in its finally block
+                scheduleThrottleRetry();
             }
             return true;
         } else if (res.httpCode >= 400) {
@@ -679,6 +681,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     initializeThing(); // may fire an exception if initialization failed
                 }
                 ShellySettingsStatus status = api.getStatus();
+                throttleRetryPending = false;
                 boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
@@ -1362,6 +1365,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: Update status job started, interval={}*{}={}sec.", thingName, skipCount,
                     UPDATE_STATUS_INTERVAL_SECONDS, skipCount * UPDATE_STATUS_INTERVAL_SECONDS);
         }
+    }
+
+    // refreshStatus() consumes one pending update in its finally block, at least one has to remain for the retry
+    private synchronized void scheduleThrottleRetry() {
+        scheduledUpdates = Math.max(scheduledUpdates, 2);
     }
 
     // Command threads request updates while the status job consumes them
