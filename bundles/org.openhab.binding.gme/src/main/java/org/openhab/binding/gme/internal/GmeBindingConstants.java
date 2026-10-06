@@ -35,23 +35,23 @@ public class GmeBindingConstants {
 
     public static final String CHANNEL_CURRENT_PRICE = "current-price";
     public static final String CHANNEL_NEXT_PRICE = "next-price";
-    public static final String CHANNEL_TODAY_PRICES = "today-prices";
-    public static final String CHANNEL_TOMORROW_PRICES = "tomorrow-prices";
+    public static final String CHANNEL_TODAY_PRICES = "today#prices";
+    public static final String CHANNEL_TOMORROW_PRICES = "tomorrow#prices";
 
-    public static final String CHANNEL_TODAY_ZONAL_PRICES = "today-zonal-prices";
-    public static final String CHANNEL_TOMORROW_ZONAL_PRICES = "tomorrow-zonal-prices";
+    public static final String CHANNEL_TODAY_ZONAL_PRICES = "today#zonal-prices";
+    public static final String CHANNEL_TOMORROW_ZONAL_PRICES = "tomorrow#zonal-prices";
 
-    public static final String CHANNEL_TODAY_AVERAGE = "today-average";
-    public static final String CHANNEL_TODAY_MIN = "today-min";
-    public static final String CHANNEL_TODAY_MAX = "today-max";
-    public static final String CHANNEL_TODAY_MIN_TIME = "today-min-time";
-    public static final String CHANNEL_TODAY_MAX_TIME = "today-max-time";
+    public static final String CHANNEL_TODAY_AVERAGE = "today#average";
+    public static final String CHANNEL_TODAY_MIN = "today#min";
+    public static final String CHANNEL_TODAY_MAX = "today#max";
+    public static final String CHANNEL_TODAY_MIN_TIME = "today#min-time";
+    public static final String CHANNEL_TODAY_MAX_TIME = "today#max-time";
 
-    public static final String CHANNEL_TOMORROW_AVERAGE = "tomorrow-average";
-    public static final String CHANNEL_TOMORROW_MIN = "tomorrow-min";
-    public static final String CHANNEL_TOMORROW_MAX = "tomorrow-max";
-    public static final String CHANNEL_TOMORROW_MIN_TIME = "tomorrow-min-time";
-    public static final String CHANNEL_TOMORROW_MAX_TIME = "tomorrow-max-time";
+    public static final String CHANNEL_TOMORROW_AVERAGE = "tomorrow#average";
+    public static final String CHANNEL_TOMORROW_MIN = "tomorrow#min";
+    public static final String CHANNEL_TOMORROW_MAX = "tomorrow#max";
+    public static final String CHANNEL_TOMORROW_MIN_TIME = "tomorrow#min-time";
+    public static final String CHANNEL_TOMORROW_MAX_TIME = "tomorrow#max-time";
 
     public static final String CHANNEL_TOMORROW_AVAILABLE = "tomorrow-available";
     public static final String CHANNEL_LAST_UPDATE = "last-update";
