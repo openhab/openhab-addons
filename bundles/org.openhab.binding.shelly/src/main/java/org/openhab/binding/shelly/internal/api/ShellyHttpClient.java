@@ -239,6 +239,11 @@ public class ShellyHttpClient {
 
     protected @Nullable Shelly2AuthRsp buildAuthResponse(String uri, @Nullable Shelly2AuthChallenge challenge,
             String user, String password) throws ShellyApiException {
+        return buildAuthResponse(HttpMethod.POST, uri, challenge, user, password);
+    }
+
+    protected @Nullable Shelly2AuthRsp buildAuthResponse(HttpMethod method, String uri,
+            @Nullable Shelly2AuthChallenge challenge, String user, String password) throws ShellyApiException {
         if (challenge == null) {
             return null; // not required
         }
@@ -257,7 +262,7 @@ public class ShellyHttpClient {
         response.authType = challenge.authType;
         response.algorithm = challenge.algorithm;
         String ha1 = sha256(response.username + ":" + response.realm + ":" + password);
-        String ha2 = sha256(HttpMethod.POST + ":" + uri);// SHELLY2_AUTH_NOISE;
+        String ha2 = sha256(method + ":" + uri);
         response.response = sha256(
                 ha1 + ":" + response.nonce + ":" + response.nc + ":" + response.cnonce + ":" + "auth" + ":" + ha2);
         return response;
