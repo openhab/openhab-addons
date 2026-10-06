@@ -14,8 +14,8 @@ package org.openhab.binding.shelly.internal.api2;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_API_INVTEMP;
 
 import java.util.Map;
@@ -33,6 +33,7 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.Gson;
 
@@ -43,10 +44,11 @@ import com.google.gson.Gson;
 public class Shelly2ApiClientDeviceTemperatureTest {
     private final ShellyDeviceProfile profile = new ShellyDeviceProfile(new ThingTypeUID("shelly", "shellypro4pm"));
     private @NonNullByDefault({}) Shelly2ApiClient client;
+    private @NonNullByDefault({}) ShellyThingInterface thing;
 
     @BeforeEach
     void setUp() {
-        ShellyThingInterface thing = mock(ShellyThingInterface.class);
+        thing = mock(ShellyThingInterface.class);
         when(thing.getProfile()).thenReturn(profile);
         ShellyBindingConfiguration raw = ShellyBindingConfiguration
                 .fromProperties(Map.of(ShellyBindingConfiguration.CONFIG_LOCAL_IP, "192.168.1.50"));
@@ -103,6 +105,23 @@ public class Shelly2ApiClientDeviceTemperatureTest {
 
         assertThat(profile.status.temperature, is(SHELLY_API_INVTEMP));
         assertThat(profile.status.tmp.isValid, is(false));
+    }
+
+    @Test
+    void allReadingsNullSetsDeviceTempChannelUndefOnce() throws ShellyApiException {
+        fill(35.0, 52.0);
+        fill(null, null);
+        fill(null, null);
+
+        verify(thing, times(1)).updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP, UnDefType.UNDEF);
+    }
+
+    @Test
+    void singleNullReadingKeepsDeviceTempChannel() throws ShellyApiException {
+        fill(35.0, 52.0);
+        fill(35.0, null);
+
+        verify(thing, never()).updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP, UnDefType.UNDEF);
     }
 
     @Test

@@ -111,6 +111,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1570,6 +1571,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
      * hottest of their latest readings. Keeping one reading per component lets a NotifyStatus carrying a single
      * component still report the hottest one, and lets the value drop again when the device cools down.
      * A missing temperature object keeps the cached reading, an explicit tC=null (out of range) discards it.
+     * When the last valid reading is discarded the channel is set to UNDEF, the status update paths skip invalid
+     * readings and would otherwise keep showing the previous temperature.
      */
     private void updateDeviceInnerTemp(ShellySettingsStatus status, String component,
             @Nullable Shelly2DeviceStatusTemp temperature) {
@@ -1577,10 +1580,11 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             return;
         }
         Double tC = temperature.tC;
+        boolean lastReadingDropped = false;
         if (tC != null) {
             componentTemperatures.put(component, tC);
         } else {
-            componentTemperatures.remove(component);
+            lastReadingDropped = componentTemperatures.remove(component) != null && componentTemperatures.isEmpty();
         }
         ShellySensorTmp tmp = status.tmp;
         if (tmp == null) {
@@ -1592,6 +1596,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             tmp.isValid = false;
             tmp.tC = SHELLY_API_INVTEMP;
             status.temperature = SHELLY_API_INVTEMP;
+            ShellyThingInterface thing = this.thing;
+            if (lastReadingDropped && thing != null) {
+                thing.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP, UnDefType.UNDEF);
+            }
             return;
         }
         tmp.isValid = true;
