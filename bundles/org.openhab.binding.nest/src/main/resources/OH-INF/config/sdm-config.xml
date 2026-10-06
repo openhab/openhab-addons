@@ -43,7 +43,7 @@
 		<parameter name="pubsubTopicName" type="text" groupName="pubsub">
 			<label>Topic Name</label>
 			<description>The full name of the Pub/Sub topic to subscribe to, e.g. projects/my-gcp-project/topics/nest-sdm-events.
-				Leave empty to use the Google-hosted SDM topic</description>
+				Leave empty to use the Google-hosted SDM topic derived from the Project ID</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="pubsubClientId" type="text" groupName="pubsub">
