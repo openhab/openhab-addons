@@ -112,14 +112,16 @@ public class GmePunHandler extends BaseThingHandler {
             scheduleApiRefresh();
             refreshPrices(false);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/status.gme.bridge-offline");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "@text/status.gme.bridge-offline");
         }
     }
 
     private boolean linkBridge() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "@text/status.gme.bridge-missing");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "@text/status.gme.bridge-missing");
             return false;
         }
 
