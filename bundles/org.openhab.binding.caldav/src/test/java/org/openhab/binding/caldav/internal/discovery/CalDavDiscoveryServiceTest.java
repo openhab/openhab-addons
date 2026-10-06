@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -34,8 +35,11 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 import org.openhab.binding.caldav.internal.client.CalendarCollection;
 import org.openhab.binding.caldav.internal.handler.AccountHandler;
+import org.openhab.core.config.core.ConfigUtil;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -44,7 +48,10 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.internal.BridgeImpl;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -52,10 +59,21 @@ import com.sun.net.httpserver.HttpServer;
  * Tests automatic and manual discovery across the bridge and service lifecycles.
  *
  * @author Andreas Vilippus - Initial contribution
+ * @author Andreas Vilippus - Discovery identity migration regression tests
  */
 @NonNullByDefault
 @Timeout(30)
 class CalDavDiscoveryServiceTest {
+    private static final class TestConfigUtil extends ConfigUtil {
+        static void useProperties(Set<String> keys) {
+            setEnvProvider(name -> keys.contains(name) ? System.getProperty(name) : System.getenv(name));
+        }
+
+        static void restoreEnvironment() {
+            setEnvProvider(System::getenv);
+        }
+    }
+
     private static final class Service extends CalDavDiscoveryService {
         final LinkedBlockingQueue<DiscoveryResult> results = new LinkedBlockingQueue<>();
         final AtomicInteger scans = new AtomicInteger();
@@ -197,6 +215,213 @@ class CalDavDiscoveryServiceTest {
         } finally {
             anonymousService.dispose();
             authenticatedService.dispose();
+        }
+    }
+
+    @Test
+    void collidingLegacyHashesProduceIndependentStableThings() {
+        URI first = URI.create("https://example.org/calendar/Aa/");
+        URI second = URI.create("https://example.org/calendar/BB/");
+        assertEquals(first.toString().hashCode(), second.toString().hashCode());
+        Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "collision")
+                .withConfiguration(new Configuration(Map.of("url", "https://example.org/"))).build();
+        LinkedBlockingQueue<Consumer<List<CalendarCollection>>> callbacks = new LinkedBlockingQueue<>();
+        Service service = new Service();
+        service.setThingHandler(callbackHandler(bridge, callbacks));
+        try {
+            service.startScan();
+            Objects.requireNonNull(callbacks.poll())
+                    .accept(List.of(new CalendarCollection(first, "A"), new CalendarCollection(second, "B")));
+            DiscoveryResult a = Objects.requireNonNull(service.results.poll());
+            DiscoveryResult b = Objects.requireNonNull(service.results.poll());
+            assertNotEquals(a.getThingUID(), b.getThingUID());
+            service.startScan();
+            Objects.requireNonNull(callbacks.poll()).accept(List.of(new CalendarCollection(second, "B")));
+            assertEquals(b.getThingUID(), Objects.requireNonNull(service.results.poll()).getThingUID());
+            service.startScan();
+            Objects.requireNonNull(callbacks.poll())
+                    .accept(List.of(new CalendarCollection(second, "B"), new CalendarCollection(first, "A")));
+            assertEquals(b.getThingUID(), Objects.requireNonNull(service.results.poll()).getThingUID());
+            assertEquals(a.getThingUID(), Objects.requireNonNull(service.results.poll()).getThingUID());
+        } finally {
+            service.dispose();
+        }
+    }
+
+    @Test
+    void equivalentCollectionUriSpellingsKeepSameThingAcrossScans() {
+        Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "aliases")
+                .withConfiguration(new Configuration(Map.of("url", "https://example.org/"))).build();
+        LinkedBlockingQueue<Consumer<List<CalendarCollection>>> callbacks = new LinkedBlockingQueue<>();
+        Service service = new Service();
+        service.setThingHandler(callbackHandler(bridge, callbacks));
+        try {
+            service.startScan();
+            Objects.requireNonNull(callbacks.poll()).accept(
+                    List.of(new CalendarCollection(URI.create("https://EXAMPLE.org/calendar/%4a/"), "Calendar")));
+            ThingUID expected = Objects.requireNonNull(service.results.poll()).getThingUID();
+            for (String spelling : List.of("https://example.org/calendar/%4A/", "https://example.org:443/calendar/%4A/",
+                    "https://example.org/calendar/J/", "https://example.org/calendar/../calendar/J/")) {
+                service.startScan();
+                Objects.requireNonNull(callbacks.poll())
+                        .accept(List.of(new CalendarCollection(URI.create(spelling), "Calendar")));
+                assertEquals(expected, Objects.requireNonNull(service.results.poll()).getThingUID(), spelling);
+                assertTrue(service.results.isEmpty());
+            }
+        } finally {
+            service.dispose();
+        }
+    }
+
+    @Test
+    void canonicalIdentityPreservesReservedEscapesPathCaseQueryAndTrailingSlash() {
+        Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "distinct")
+                .withConfiguration(new Configuration(Map.of("url", "https://example.org/"))).build();
+        LinkedBlockingQueue<Consumer<List<CalendarCollection>>> callbacks = new LinkedBlockingQueue<>();
+        Service service = new Service();
+        service.setThingHandler(callbackHandler(bridge, callbacks));
+        List<String> paths = List.of("a%2Fb/", "a/b/", "a%2Fb", "A%2Fb/", "a%2Fb/?key=Value", "a%2Fb/?key=value",
+                "a//b/");
+        try {
+            service.startScan();
+            Objects.requireNonNull(callbacks.poll())
+                    .accept(paths.stream()
+                            .map(path -> new CalendarCollection(URI.create("https://example.org/" + path), "Calendar"))
+                            .toList());
+            var ids = new java.util.HashSet<ThingUID>();
+            for (int i = 0; i < paths.size(); i++) {
+                ids.add(Objects.requireNonNull(service.results.poll()).getThingUID());
+            }
+            assertEquals(paths.size(), ids.size());
+            assertTrue(service.results.isEmpty());
+        } finally {
+            service.dispose();
+        }
+    }
+
+    @Test
+    void preservesLegacyThingWhenDiscoveredCollectionUriSpellingChanges() {
+        URI original = URI.create("https://EXAMPLE.org:443/calendar/%4a/");
+        Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "legacy-alias")
+                .withConfiguration(new Configuration(Map.of("url", "https://example.org/"))).build();
+        ThingUID legacy = new ThingUID(new ThingTypeUID("caldav", "calendar"), bridge.getUID(),
+                "calendar-" + Integer.toUnsignedString(original.toString().hashCode(), 36));
+        ((BridgeImpl) bridge).addThing(
+                ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), legacy).withBridge(bridge.getUID())
+                        .withConfiguration(new Configuration(Map.of("path", original.toString()))).build());
+        LinkedBlockingQueue<Consumer<List<CalendarCollection>>> callbacks = new LinkedBlockingQueue<>();
+        Service service = new Service();
+        service.setThingHandler(callbackHandler(bridge, callbacks));
+        try {
+            for (String spelling : List.of("https://example.org/calendar/%4A/", "https://example.org/calendar/J/")) {
+                service.startScan();
+                Objects.requireNonNull(callbacks.poll())
+                        .accept(List.of(new CalendarCollection(URI.create(spelling), "Calendar")));
+                assertEquals(legacy, Objects.requireNonNull(service.results.poll()).getThingUID(), spelling);
+                assertTrue(service.results.isEmpty());
+            }
+        } finally {
+            service.dispose();
+        }
+    }
+
+    @Test
+    void preservesExistingLegacyThingAndDoesNotReuseItsIdForCollidingCollection() {
+        URI first = URI.create("https://example.org/calendar/Aa/");
+        URI second = URI.create("https://example.org/calendar/BB/");
+        Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "legacy")
+                .withConfiguration(new Configuration(Map.of("url", "https://example.org/"))).build();
+        ThingUID legacy = new ThingUID(new ThingTypeUID("caldav", "calendar"), bridge.getUID(),
+                "calendar-" + Integer.toUnsignedString(first.toString().hashCode(), 36));
+        ((BridgeImpl) bridge).addThing(
+                ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), legacy).withBridge(bridge.getUID())
+                        .withConfiguration(new Configuration(Map.of("path", "/calendar/Aa/"))).build());
+        LinkedBlockingQueue<Consumer<List<CalendarCollection>>> callbacks = new LinkedBlockingQueue<>();
+        Service service = new Service();
+        service.setThingHandler(callbackHandler(bridge, callbacks));
+        try {
+            service.startScan();
+            Objects.requireNonNull(callbacks.poll())
+                    .accept(List.of(new CalendarCollection(second, "B"), new CalendarCollection(first, "A")));
+            assertNotEquals(legacy, Objects.requireNonNull(service.results.poll()).getThingUID());
+            assertEquals(legacy, Objects.requireNonNull(service.results.poll()).getThingUID());
+        } finally {
+            service.dispose();
+        }
+    }
+
+    @Test
+    @ResourceLock(Resources.SYSTEM_PROPERTIES)
+    void preservesLegacyThingWhenAccountUrlAndCalendarPathUseEnvironmentVariables() {
+        String urlKey = "openhab.caldav.audit.legacy.url";
+        String pathKey = "openhab.caldav.audit.legacy.path";
+        @Nullable
+        String previousUrl = System.getProperty(urlKey);
+        @Nullable
+        String previousPath = System.getProperty(pathKey);
+        Service service = new Service();
+        try {
+            System.setProperty(urlKey, "https://example.org/dav/");
+            System.setProperty(pathKey, "/calendar/Aa/");
+            // Core supports ${ENV:name}; its test hook avoids changing the process environment.
+            TestConfigUtil.useProperties(Set.of(urlKey, pathKey));
+            URI uri = URI.create("https://example.org/calendar/Aa/");
+            Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "variables")
+                    .withConfiguration(new Configuration(Map.of("url", "${ENV:" + urlKey + "}"))).build();
+            ThingUID legacy = new ThingUID(new ThingTypeUID("caldav", "calendar"), bridge.getUID(),
+                    "calendar-" + Integer.toUnsignedString(uri.toString().hashCode(), 36));
+            ((BridgeImpl) bridge).addThing(
+                    ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), legacy).withBridge(bridge.getUID())
+                            .withConfiguration(new Configuration(Map.of("path", "${ENV:" + pathKey + "}"))).build());
+            LinkedBlockingQueue<Consumer<List<CalendarCollection>>> callbacks = new LinkedBlockingQueue<>();
+            AccountHandler handler = callbackHandler(bridge, callbacks);
+            assertEquals("https://example.org/dav/", handler.configuration().url);
+            service.setThingHandler(handler);
+            service.startScan();
+            Objects.requireNonNull(callbacks.poll()).accept(List.of(new CalendarCollection(uri, "Calendar")));
+            DiscoveryResult result = Objects.requireNonNull(service.results.poll());
+            assertEquals(legacy, result.getThingUID());
+            assertEquals(Map.of("path", uri.toString()), result.getProperties());
+            assertEquals("${ENV:" + urlKey + "}", bridge.getConfiguration().get("url"));
+        } finally {
+            try {
+                service.dispose();
+            } finally {
+                TestConfigUtil.restoreEnvironment();
+                restoreProperty(urlKey, previousUrl);
+                restoreProperty(pathKey, previousPath);
+            }
+        }
+    }
+
+    private static void restoreProperty(String key, @Nullable String value) {
+        if (value == null) {
+            System.clearProperty(key);
+        } else {
+            System.setProperty(key, value);
+        }
+    }
+
+    @Test
+    void manuallyNamedThingDoesNotCreateGlobalPathMatching() {
+        URI uri = URI.create("https://example.org/calendar/");
+        Bridge bridge = BridgeBuilder.create(new ThingTypeUID("caldav", "account"), "manual")
+                .withConfiguration(new Configuration(Map.of("url", "https://example.org/"))).build();
+        ThingUID manual = new ThingUID(new ThingTypeUID("caldav", "calendar"), bridge.getUID(), "my-calendar");
+        ((BridgeImpl) bridge).addThing(
+                ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), manual).withBridge(bridge.getUID())
+                        .withConfiguration(new Configuration(Map.of("path", uri.toString()))).build());
+        LinkedBlockingQueue<Consumer<List<CalendarCollection>>> callbacks = new LinkedBlockingQueue<>();
+        Service service = new Service();
+        service.setThingHandler(callbackHandler(bridge, callbacks));
+        try {
+            service.startScan();
+            Objects.requireNonNull(callbacks.poll()).accept(List.of(new CalendarCollection(uri, "Calendar")));
+            DiscoveryResult result = Objects.requireNonNull(service.results.poll());
+            assertNotEquals(manual, result.getThingUID());
+            assertNull(result.getRepresentationProperty());
+        } finally {
+            service.dispose();
         }
     }
 

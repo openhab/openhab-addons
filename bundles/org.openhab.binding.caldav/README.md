@@ -74,6 +74,7 @@ A Calendar Thing's output range must fit completely within that horizon.
 The `syncMode` Account parameter selects the synchronization strategy:
 
 - `SYNC_TOKEN` uses the server's change tracking to download updates and detect deleted events.
+  Limited responses are continued before the update is published; a synchronization attempt is limited to 100 pages and 5000 resource changes.
 - `ETAG` compares server-provided resource versions and downloads only new or changed calendar data.
 - `FULL` downloads all calendar data overlapping the synchronization horizon on every update.
 - `AUTO` tries `SYNC_TOKEN`, then `ETAG`, then `FULL` when the server does not support a mode.
@@ -142,7 +143,8 @@ The `next` group exposes the same event fields as `current`, except that it has 
 `next` shows the next upcoming event in that range; past and running events are excluded.
 
 These channels update as events start or end and as the configured time range moves, without waiting for the next server synchronization.
-Unavailable event fields are `UNDEF`.
+When no event is selected, its event fields are `UNDEF`.
+For a selected event, missing optional text fields are empty strings.
 When there is no current event, `current#active` is `OFF`.
 
 ### `sync`
@@ -200,7 +202,7 @@ Widget installation and presentation are independent of the binding configuratio
 | `username`          | Optional | Username used for authentication. Configure both `username` and `password`, or leave both empty for anonymous access.                         |
 | `password`          | Optional | Password or application password used for authentication. Configure both `username` and `password`, or leave both empty for anonymous access. |
 | `requestTimeout`    | `30`     | Request timeout in seconds, 1–300                                                                                                             |
-| `refreshInterval`   | `300`    | Polling delay in seconds; minimum 30                                                                                                          |
+| `refreshInterval`   | `300`    | Polling delay in seconds; 30–2147483647                                                                                                       |
 | `discoveryMode`     | `AUTO`   | Defines what `url` represents: `AUTO` starts with principal discovery; `DIRECT` enumerates Calendar Collections directly at `url`             |
 | `authType`          | `AUTO`   | `BASIC`, `DIGEST`, or `AUTO` to accept either authentication challenge. Used when username and password are configured.                       |
 | `verifyCertificate` | `true`   | Validates TLS certificates; `false` disables verification                                                                                     |
@@ -211,14 +213,14 @@ Widget installation and presentation are independent of the binding configuratio
 
 ### Calendar Parameters
 
-| Parameter          | Default  | Current behavior                                              |
-|--------------------|----------|---------------------------------------------------------------|
-| `path`             | Required | Calendar Collection URL or path relative to the account URL   |
-| `rangeAnchor`      | `TODAY`  | `TODAY` (local midnight) or `NOW`                             |
-| `rangeStartOffset` | `0`      | Inclusive start offset in days                                |
-| `rangeEndOffset`   | `6`      | Inclusive final-day offset; exclusive end adds one day        |
-| `maxEvents`        | `500`    | Maximum published instances, 1–50000                          |
-| `includeCancelled` | `false`  | Includes cancelled instances when `true`                      |
+| Parameter          | Default  | Current behavior                                                               |
+|--------------------|----------|--------------------------------------------------------------------------------|
+| `path`             | Required | Calendar Collection URL or path relative to the account URL                    |
+| `rangeAnchor`      | `TODAY`  | `TODAY` (local midnight) or `NOW`                                              |
+| `rangeStartOffset` | `0`      | Inclusive start offset in days; -2147483648–2147483647                         |
+| `rangeEndOffset`   | `6`      | Inclusive final-day offset; exclusive end adds one day; -2147483648–2147483647 |
+| `maxEvents`        | `500`    | Maximum published instances, 1–50000                                           |
+| `includeCancelled` | `false`  | Includes cancelled instances when `true`                                       |
 
 The following examples configure an account bridge and one calendar.
 Replace the server URL and credentials with values for the CalDAV service.
@@ -338,6 +340,7 @@ Known `TZID` values such as `Europe/Bratislava` are resolved using the Java runt
 Embedded `VTIMEZONE` definitions are respected for calendar-defined time zones.
 An unknown `TZID` without a usable definition causes synchronization to report `PARTIAL` for the affected calendar.
 The per-collection CalDAV `calendar-timezone` property is currently not used.
+Calendar queries send the openHAB time zone in `CALDAV:timezone` so the server applies the same time zone to date-only and floating values.
 `TODAY` uses local midnight; `NOW` uses the current time.
 Both apply offsets in calendar days.
 The end offset must be at least the start offset.

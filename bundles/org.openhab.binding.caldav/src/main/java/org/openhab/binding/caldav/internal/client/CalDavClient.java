@@ -12,13 +12,19 @@
  */
 package org.openhab.binding.caldav.internal.client;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.xml.XMLConstants;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,6 +44,7 @@ import org.openhab.binding.caldav.internal.config.AccountConfiguration;
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Account transport and security limits
  * @author Andreas Vilippus - Preemptive BASIC authentication
+ * @author Andreas Vilippus - XML response encoding
  */
 @NonNullByDefault
 public final class CalDavClient implements DavTransport {
@@ -86,12 +93,23 @@ public final class CalDavClient implements DavTransport {
         request.send(new BufferingResponseListener(MAX_RESPONSE_BYTES) {
             @Override
             public void onComplete(Result response) {
+                var received = response.getResponse();
+                int status = received == null ? 0 : received.getStatus();
                 if (response.isFailed()) {
-                    result.completeExceptionally(new IOException("CalDAV transport failed"));
+                    result.completeExceptionally(status >= 300 ? new CalDavHttpException(method, status, false, false)
+                            : new IOException("CalDAV transport failed"));
                     return;
                 }
-                int status = response.getResponse().getStatus();
-                String content = java.util.Objects.requireNonNullElse(getContentAsString(StandardCharsets.UTF_8), "");
+                String content;
+                try {
+                    content = decodeContent(this);
+                } catch (IOException e) {
+                    if (status >= 200 && status < 300) {
+                        result.completeExceptionally(e);
+                        return;
+                    }
+                    content = "";
+                }
                 if (status < 200 || status >= 300) {
                     boolean invalidToken = false;
                     boolean unsupportedReport = false;
@@ -127,6 +145,49 @@ public final class CalDavClient implements DavTransport {
                 throw failure;
             }
             throw new IOException("CalDAV transport failed", e.getCause());
+        }
+    }
+
+    private static String decodeContent(BufferingResponseListener response) throws IOException {
+        byte[] bytes = response.getContent();
+        if (bytes.length == 0) {
+            return "";
+        }
+        String encoding = response.getEncoding();
+        // RFC 7303: a byte-order mark takes precedence over the HTTP charset.
+        if (bytes.length >= 4 && bytes[0] == 0 && bytes[1] == 0 && bytes[2] == (byte) 0xFE && bytes[3] == (byte) 0xFF) {
+            encoding = "UTF-32BE";
+        } else if (bytes.length >= 4 && bytes[0] == (byte) 0xFF && bytes[1] == (byte) 0xFE && bytes[2] == 0
+                && bytes[3] == 0) {
+            encoding = "UTF-32LE";
+        } else if (bytes.length >= 2 && bytes[0] == (byte) 0xFE && bytes[1] == (byte) 0xFF) {
+            encoding = "UTF-16BE";
+        } else if (bytes.length >= 2 && bytes[0] == (byte) 0xFF && bytes[1] == (byte) 0xFE) {
+            encoding = "UTF-16LE";
+        } else if (bytes.length >= 3 && bytes[0] == (byte) 0xEF && bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF) {
+            encoding = "UTF-8";
+        }
+        if (encoding == null) {
+            XMLInputFactory factory = XMLInputFactory.newDefaultFactory();
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            try {
+                var reader = factory.createXMLStreamReader(new ByteArrayInputStream(bytes));
+                try {
+                    encoding = reader.getEncoding();
+                } finally {
+                    reader.close();
+                }
+            } catch (XMLStreamException e) {
+                // Calendar GETs and non-XML error bodies default to UTF-8.
+            }
+        }
+        try {
+            String content = new String(bytes, encoding == null ? StandardCharsets.UTF_8 : Charset.forName(encoding));
+            return content.startsWith("\uFEFF") ? content.substring(1) : content;
+        } catch (IllegalArgumentException e) {
+            throw new IOException("Unsupported CalDAV response encoding", e);
         }
     }
 }

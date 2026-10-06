@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.caldav.internal.config;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -20,21 +21,48 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caldav.internal.client.CalDavUris;
 import org.openhab.binding.caldav.internal.logic.CalendarWindow;
+import org.openhab.core.config.core.Configuration;
 
 /**
  * Shared validation keeps text and UI configuration behavior identical.
  * 
  * @author Andreas Vilippus - Initial contribution
+ * @author Andreas Vilippus - Exact integer configuration validation
  */
 @NonNullByDefault
 public final class CalDavConfiguration {
     private CalDavConfiguration() {
     }
 
+    /**
+     * Validates supplied integer values before Core narrows numbers when constructing a configuration DTO.
+     * Missing values retain DTO defaults; string values must use a form accepted by Core's integer conversion.
+     */
+    public static void validateIntegerValues(Configuration configuration, String... names) {
+        for (String name : names) {
+            Object value = configuration.get(name);
+            try {
+                switch (value) {
+                    case null -> {
+                    }
+                    case Number number -> new BigDecimal(number.toString()).intValueExact();
+                    case String text -> Integer.parseInt(text);
+                    default -> throw new IllegalArgumentException("Invalid integer configuration: " + name);
+                }
+            } catch (ArithmeticException | NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid integer configuration: " + name, e);
+            }
+        }
+    }
+
     public static void validate(AccountConfiguration c) {
         CalDavUris.validate(URI.create(c.url));
         if (c.username.isBlank() != c.password.isBlank()) {
             throw new IllegalArgumentException("Username and password must both be provided or both be empty");
+        }
+        if (!"DIGEST".equals(c.authType)
+                && (c.username.indexOf(':') >= 0 || containsControl(c.username) || containsControl(c.password))) {
+            throw new IllegalArgumentException("Invalid Basic authentication credentials");
         }
         if (c.requestTimeout < 1 || c.requestTimeout > 300 || c.refreshInterval < 30 || c.maxPastDays < 0
                 || c.maxFutureDays < 1 || c.maxPastDays > 36500 || c.maxFutureDays > 36500
@@ -43,6 +71,10 @@ public final class CalDavConfiguration {
                 || !Set.of("AUTO", "FULL", "ETAG", "SYNC_TOKEN").contains(c.syncMode) || !c.readOnly) {
             throw new IllegalArgumentException("Invalid account settings; calendar writes are not supported");
         }
+    }
+
+    private static boolean containsControl(String value) {
+        return value.chars().anyMatch(character -> character < 32 || character == 127);
     }
 
     public static URI validate(CalendarConfiguration c, AccountConfiguration a) {

@@ -25,9 +25,10 @@ import org.w3c.dom.Node;
  * Structured DAV responses; unsuccessful propstats never become successful data.
  * 
  * @author Andreas Vilippus - Initial contribution
+ * @author Andreas Vilippus - Collection synchronization truncation
  */
 @NonNullByDefault
-public record DavResponse(List<Resource> resources, String token) {
+public record DavResponse(List<Resource> resources, String token, boolean truncated) {
 
     public static final int MAX_RESOURCES = 5000;
     public record Resource(String href, int status, String etag, String data) {
@@ -39,16 +40,19 @@ public record DavResponse(List<Resource> resources, String token) {
             throw new IOException("Expected DAV multistatus");
         }
         List<Resource> resources = new ArrayList<>();
+        boolean truncated = false;
         for (Element response : children(root, "DAV:", "response")) {
-            if (resources.size() >= MAX_RESOURCES) {
-                throw new IOException("Too many calendar resources");
-            }
             String href = text(response, "DAV:", "href");
             if (href.isBlank()) {
                 throw new IOException("DAV response has no resource identifier");
             }
             URI target = CalDavUris.resolve(collection, href);
             int status = status(text(response, "DAV:", "status"));
+            if (target.equals(collection) && status == 507) {
+                // RFC 6578 section 3.6 identifies truncation by the collection status; DAV:error is optional.
+                truncated = true;
+                continue;
+            }
             String etag = "", data = "";
             boolean success = false;
             for (Element propstat : children(response, "DAV:", "propstat")) {
@@ -75,9 +79,12 @@ public record DavResponse(List<Resource> resources, String token) {
             if (target.equals(collection) && status == 200 && etag.isEmpty() && data.isEmpty()) {
                 continue;
             }
+            if (resources.size() >= MAX_RESOURCES) {
+                throw new IOException("Too many calendar resources");
+            }
             resources.add(new Resource(target.toString(), status, etag, data));
         }
-        return new DavResponse(List.copyOf(resources), text(root, "DAV:", "sync-token"));
+        return new DavResponse(List.copyOf(resources), text(root, "DAV:", "sync-token"), truncated);
     }
 
     static int status(String value) throws IOException {

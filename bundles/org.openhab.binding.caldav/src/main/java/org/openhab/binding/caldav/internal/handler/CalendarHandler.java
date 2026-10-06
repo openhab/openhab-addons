@@ -16,6 +16,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -24,6 +25,7 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -41,6 +43,7 @@ import org.openhab.binding.caldav.internal.logic.CalendarWindow;
 import org.openhab.binding.caldav.internal.logic.EventJson;
 import org.openhab.binding.caldav.internal.model.CalendarEvent;
 import org.openhab.binding.caldav.internal.sync.CalendarSynchronizer;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -66,11 +69,14 @@ import com.google.gson.Gson;
  * 
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Cache, lifecycle and local event transitions
+ * @author Andreas Vilippus - Time-zone generation and exact configuration validation
  */
 @NonNullByDefault
 public class CalendarHandler extends BaseThingHandler {
     private final TimeZoneProvider timeZoneProvider;
     private final Storage<String> storage;
+    private final Clock clock;
+    private final ScheduledExecutorService clockScheduler;
     private final Object lifecycle = new Object();
     private final Map<String, State> states = new HashMap<>();
     private @Nullable ScheduledFuture<?> clockJob;
@@ -89,9 +95,16 @@ public class CalendarHandler extends BaseThingHandler {
     private String cacheIdentity = "";
 
     public CalendarHandler(Thing thing, TimeZoneProvider timeZoneProvider, Storage<String> storage) {
+        this(thing, timeZoneProvider, storage, Clock.systemUTC(), null);
+    }
+
+    CalendarHandler(Thing thing, TimeZoneProvider timeZoneProvider, Storage<String> storage, Clock clock,
+            @Nullable ScheduledExecutorService clockScheduler) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
         this.storage = storage;
+        this.clock = clock;
+        this.clockScheduler = clockScheduler == null ? scheduler : clockScheduler;
     }
 
     @Override
@@ -99,11 +112,19 @@ public class CalendarHandler extends BaseThingHandler {
         dispose();
         synchronized (lifecycle) {
             generation++;
-            active = true;
-            CalendarConfiguration initial = getConfigAs(CalendarConfiguration.class);
-            configuration = initial;
             clearEvents();
             cacheIdentity = "";
+            Configuration captured = new Configuration(getConfig().getProperties());
+            try {
+                CalDavConfiguration.validateIntegerValues(captured, "rangeStartOffset", "rangeEndOffset", "maxEvents");
+                configuration = captured.as(CalendarConfiguration.class);
+            } catch (IllegalArgumentException e) {
+                set("sync#status", new StringType("ERROR"));
+                set("sync#error", new StringType("Invalid calendar settings"));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                return;
+            }
+            active = true;
             set("sync#status", new StringType("SYNCING"));
             set("sync#error", new StringType(""));
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for initial calendar synchronization");
@@ -114,7 +135,7 @@ public class CalendarHandler extends BaseThingHandler {
             synchronized (lifecycle) {
                 current = generation;
             }
-            scheduler.execute(() -> restoreAtStartup(account.configuration(), current));
+            clockScheduler.execute(() -> restoreAtStartup(account.configuration(), current));
             account.requestSync();
         }
     }
@@ -169,7 +190,7 @@ public class CalendarHandler extends BaseThingHandler {
         }
         try {
             ZoneId zone = timeZoneProvider.getTimeZone();
-            ZonedDateTime now = ZonedDateTime.now(zone);
+            ZonedDateTime now = ZonedDateTime.ofInstant(clock.instant(), zone);
             URI uri = CalDavConfiguration.validate(config, account);
             CalendarWindow horizon = CalDavConfiguration.horizon(account, zone, now);
             CalDavConfiguration.validate(CalendarWindow.from(config, zone, now), horizon);
@@ -182,6 +203,10 @@ public class CalendarHandler extends BaseThingHandler {
             CalendarSynchronizer worker;
             synchronized (lifecycle) {
                 if (!valid(current, accountValid)) {
+                    return;
+                }
+                if (!zone.equals(timeZoneProvider.getTimeZone())) {
+                    zoneChanged();
                     return;
                 }
                 if (!identity.equals(cacheIdentity)) {
@@ -208,18 +233,22 @@ public class CalendarHandler extends BaseThingHandler {
                 if (!valid(current, accountValid)) {
                     return;
                 }
+                if (!zone.equals(timeZoneProvider.getTimeZone())) {
+                    zoneChanged();
+                    return;
+                }
                 events = result.events();
                 loaded = true;
                 synchronizedOnce = true;
                 cachedHorizon = horizon;
                 cachedZone = zone;
-                publish(config, zone, ZonedDateTime.now(zone));
+                publish(config, zone, ZonedDateTime.ofInstant(clock.instant(), zone));
                 boolean partial = result.failedResources() > 0;
                 set("sync#status", new StringType(partial ? "PARTIAL" : "OK"));
                 set("sync#error", new StringType(
                         partial ? result.failedResources() + " calendar resources could not be processed" : ""));
                 if (!partial) {
-                    set("sync#last", new DateTimeType(ZonedDateTime.now(zone)));
+                    set("sync#last", new DateTimeType(ZonedDateTime.ofInstant(clock.instant(), zone)));
                 }
                 updateStatus(ThingStatus.ONLINE);
                 save(result.snapshot());
@@ -303,7 +332,7 @@ public class CalendarHandler extends BaseThingHandler {
             previous.cancel(false);
         }
         ZoneId zone = timeZoneProvider.getTimeZone();
-        Instant now = Instant.now();
+        Instant now = clock.instant();
         Instant next = now.plusSeconds(60);
         for (CalendarEvent event : events) {
             Instant start = CalendarEventSelection.start(event, zone), end = CalendarEventSelection.end(event, zone);
@@ -319,7 +348,7 @@ public class CalendarHandler extends BaseThingHandler {
             next = midnight;
         }
         long delay = Math.max(1, java.time.Duration.between(now, next).toMillis());
-        clockJob = scheduler.schedule(() -> tick(current), delay, TimeUnit.MILLISECONDS);
+        clockJob = clockScheduler.schedule(() -> tick(current), delay, TimeUnit.MILLISECONDS);
     }
 
     private void tick(long current) {
@@ -331,13 +360,10 @@ public class CalendarHandler extends BaseThingHandler {
             ZoneId zone = timeZoneProvider.getTimeZone();
             ZoneId previousZone = cachedZone;
             CalendarWindow horizon = cachedHorizon;
-            ZonedDateTime now = ZonedDateTime.now(zone);
+            ZonedDateTime now = ZonedDateTime.ofInstant(clock.instant(), zone);
             CalendarWindow window = CalendarWindow.from(config, zone, now);
             if (previousZone != null && !previousZone.equals(zone)) {
-                clearEvents();
-                cacheIdentity = "";
-                set("sync#status", new StringType("ERROR"));
-                set("sync#error", new StringType("Time zone changed; waiting for synchronization"));
+                zoneChanged();
                 return;
             }
             if (horizon != null && (window.start().isBefore(horizon.start()) || window.end().isAfter(horizon.end()))) {
@@ -348,6 +374,19 @@ public class CalendarHandler extends BaseThingHandler {
             publish(config, zone, now);
             scheduleClock(current);
         }
+    }
+
+    private void zoneChanged() {
+        clearEvents();
+        cacheIdentity = "";
+        synchronizer = null;
+        ScheduledFuture<?> previous = clockJob;
+        if (previous != null) {
+            previous.cancel(false);
+            clockJob = null;
+        }
+        set("sync#status", new StringType("ERROR"));
+        set("sync#error", new StringType("Time zone changed; waiting for synchronization"));
     }
 
     private static String identity(AccountConfiguration account, URI uri, ZoneId zone) {
@@ -373,12 +412,17 @@ public class CalendarHandler extends BaseThingHandler {
             CalDavConfiguration.validate(account);
             ZoneId zone = timeZoneProvider.getTimeZone();
             URI uri = CalDavConfiguration.validate(config, account);
-            CalendarWindow horizon = CalDavConfiguration.horizon(account, zone, ZonedDateTime.now(zone));
-            CalDavConfiguration.validate(CalendarWindow.from(config, zone, ZonedDateTime.now(zone)), horizon);
+            ZonedDateTime now = ZonedDateTime.ofInstant(clock.instant(), zone);
+            CalendarWindow horizon = CalDavConfiguration.horizon(account, zone, now);
+            CalDavConfiguration.validate(CalendarWindow.from(config, zone, now), horizon);
             String identity = identity(account, uri, zone);
             Restored restored = readCache(identity, horizon, zone, config);
             synchronized (lifecycle) {
                 if (!active || current != generation || synchronizedOnce) {
+                    return;
+                }
+                if (!zone.equals(timeZoneProvider.getTimeZone())) {
+                    zoneChanged();
                     return;
                 }
                 cacheIdentity = identity;
@@ -452,7 +496,7 @@ public class CalendarHandler extends BaseThingHandler {
         cachedHorizon = restored.horizon();
         cachedZone = zone;
         set("sync#last", restored.lastSync());
-        publish(config, zone, ZonedDateTime.now(zone));
+        publish(config, zone, ZonedDateTime.ofInstant(clock.instant(), zone));
         scheduleClock(generation);
     }
 

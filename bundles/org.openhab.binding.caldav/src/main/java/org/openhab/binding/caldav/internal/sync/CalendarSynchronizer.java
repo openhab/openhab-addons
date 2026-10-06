@@ -18,8 +18,10 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
@@ -36,9 +38,11 @@ import org.openhab.binding.caldav.internal.model.CalendarEvent;
  * Transactional resource synchronization, confined to the account worker.
  * 
  * @author Andreas Vilippus - Initial contribution
+ * @author Andreas Vilippus - Bounded transactional sync paging
  */
 @NonNullByDefault
 public final class CalendarSynchronizer {
+    private static final int MAX_SYNC_PAGES = 100;
     private final DavTransport transport;
     private final URI collection;
     private Snapshot snapshot = new Snapshot("", "", Map.of());
@@ -104,6 +108,9 @@ public final class CalendarSynchronizer {
         DavResponse response = DavResponse.parse(
                 transport.request("REPORT", collection, CalendarReport.query(horizon.start(), horizon.end()), "1"),
                 collection);
+        if (response.truncated()) {
+            throw new IOException("Incomplete calendar resource listing");
+        }
         Map<String, CachedResource> resources = new HashMap<>();
         for (var resource : response.resources()) {
             requireSuccess(resource);
@@ -118,6 +125,9 @@ public final class CalendarSynchronizer {
     private Snapshot etag(CalendarWindow horizon, String key, Map<String, CachedResource> previous) throws Exception {
         String query = CalendarReport.query(horizon.start(), horizon.end()).replace("<c:calendar-data/>", "");
         DavResponse response = DavResponse.parse(transport.request("REPORT", collection, query, "1"), collection);
+        if (response.truncated()) {
+            throw new IOException("Incomplete calendar resource listing");
+        }
         Map<String, CachedResource> resources = new HashMap<>();
         for (var resource : response.resources()) {
             requireSuccess(resource);
@@ -130,23 +140,43 @@ public final class CalendarSynchronizer {
     }
 
     private Snapshot token(String key, Snapshot previous) throws Exception {
-        String body = "<d:sync-collection xmlns:d=\"DAV:\"><d:sync-token>" + escape(previous.token())
-                + "</d:sync-token><d:sync-level>1</d:sync-level><d:prop><d:getetag/></d:prop></d:sync-collection>";
-        DavResponse response = DavResponse.parse(transport.request("REPORT", collection, body, "1"), collection);
-        if (response.token().isEmpty()) {
-            throw new IOException("Sync response has no token");
-        }
         Map<String, CachedResource> resources = new HashMap<>(previous.resources());
-        for (var resource : response.resources()) {
-            if (resource.status() == HttpStatus.NOT_FOUND_404) {
-                resources.remove(resource.href());
-                continue;
+        Set<String> tokens = new HashSet<>();
+        String token = previous.token();
+        tokens.add(token);
+        int members = 0;
+        for (int page = 0; page < MAX_SYNC_PAGES; page++) {
+            if (Thread.currentThread().isInterrupted()) {
+                throw new InterruptedException();
             }
-            requireSuccess(resource);
-            String data = download(resource.href());
-            put(resources, resource.href(), new CachedResource(resource.etag(), data));
+            String body = "<d:sync-collection xmlns:d=\"DAV:\"><d:sync-token>" + escape(token)
+                    + "</d:sync-token><d:sync-level>1</d:sync-level><d:prop><d:getetag/></d:prop></d:sync-collection>";
+            DavResponse response = DavResponse.parse(transport.request("REPORT", collection, body, "0"), collection);
+            if (response.token().isEmpty()) {
+                throw new IOException("Sync response has no token");
+            }
+            if (response.truncated() && !tokens.add(response.token())) {
+                throw new IOException("Sync paging did not advance");
+            }
+            members += response.resources().size();
+            if (members > DavResponse.MAX_RESOURCES) {
+                throw new IOException("Too many calendar changes");
+            }
+            for (var resource : response.resources()) {
+                if (resource.status() == HttpStatus.NOT_FOUND_404) {
+                    resources.remove(resource.href());
+                    continue;
+                }
+                requireSuccess(resource);
+                String data = download(resource.href());
+                put(resources, resource.href(), new CachedResource(resource.etag(), data));
+            }
+            token = response.token();
+            if (!response.truncated()) {
+                return new Snapshot(key, token, Map.copyOf(resources));
+            }
         }
-        return new Snapshot(key, response.token(), Map.copyOf(resources));
+        throw new IOException("Too many sync pages");
     }
 
     private String download(String href) throws IOException, InterruptedException {
@@ -155,6 +185,10 @@ public final class CalendarSynchronizer {
         } catch (CalDavHttpException e) {
             if (e.statusCode() == HttpStatus.NOT_FOUND_404) {
                 throw new IOException("Calendar resource changed during synchronization", e);
+            }
+            // Only REPORT failures can select another synchronization strategy.
+            if (e.unsupportedReport()) {
+                throw new IOException("Calendar resource download failed", e);
             }
             throw e;
         }

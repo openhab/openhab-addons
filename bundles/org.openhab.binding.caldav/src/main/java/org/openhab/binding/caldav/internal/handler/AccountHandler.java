@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -33,6 +34,7 @@ import org.openhab.binding.caldav.internal.client.CalendarDiscoveryParser;
 import org.openhab.binding.caldav.internal.config.AccountConfiguration;
 import org.openhab.binding.caldav.internal.config.CalDavConfiguration;
 import org.openhab.binding.caldav.internal.discovery.CalDavDiscoveryService;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -51,6 +53,7 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Coordinated lifecycle and recovery
  * @author Andreas Vilippus - On-demand collection discovery
+ * @author Andreas Vilippus - Configured polling and retry scheduling
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler {
@@ -59,6 +62,7 @@ public class AccountHandler extends BaseBridgeHandler {
     private static final String COLLECTIONS = "<d:propfind xmlns:d=\"DAV:\"><d:prop><d:displayname/><d:resourcetype/></d:prop></d:propfind>";
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final HttpClientFactory httpFactory;
+    private final ScheduledExecutorService accountScheduler;
     private final Object lifecycle = new Object();
     private @Nullable Session session;
     private @Nullable CalDavDiscoveryService discoveryService;
@@ -85,13 +89,20 @@ public class AccountHandler extends BaseBridgeHandler {
     public AccountHandler(Bridge bridge, HttpClientFactory httpFactory) {
         super(bridge);
         this.httpFactory = httpFactory;
+        this.accountScheduler = scheduler;
+    }
+
+    AccountHandler(Bridge bridge, HttpClientFactory httpFactory, ScheduledExecutorService accountScheduler) {
+        super(bridge);
+        this.httpFactory = httpFactory;
+        this.accountScheduler = accountScheduler;
     }
 
     @Override
     public void initialize() {
         dispose();
-        AccountConfiguration configuration = getConfigAs(AccountConfiguration.class);
         try {
+            AccountConfiguration configuration = configuration();
             CalDavConfiguration.validate(configuration);
             HttpClient http = httpFactory.createHttpClient("caldav",
                     new SslContextFactory.Client(!configuration.verifyCertificate));
@@ -104,7 +115,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 if (service != null) {
                     service.startScan();
                 } else {
-                    job = scheduler.schedule(() -> poll(next), 0, TimeUnit.SECONDS);
+                    job = accountScheduler.schedule(() -> poll(next), 0, TimeUnit.SECONDS);
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -113,7 +124,11 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     public AccountConfiguration configuration() {
-        return getConfigAs(AccountConfiguration.class);
+        Configuration captured = new Configuration(getConfig().getProperties());
+        CalDavConfiguration.validateIntegerValues(captured, "refreshInterval", "requestTimeout", "maxPastDays",
+                "maxFutureDays");
+        AccountConfiguration configuration = captured.as(AccountConfiguration.class);
+        return configuration;
     }
 
     @Override
@@ -142,7 +157,7 @@ public class AccountHandler extends BaseBridgeHandler {
             if (previous != null) {
                 previous.cancel(false);
             }
-            job = scheduler.schedule(() -> poll(current), 0, TimeUnit.SECONDS);
+            job = accountScheduler.schedule(() -> poll(current), 0, TimeUnit.SECONDS);
         }
     }
 
@@ -231,10 +246,11 @@ public class AccountHandler extends BaseBridgeHandler {
             synchronized (lifecycle) {
                 current.running = false;
                 if (current.equals(session) && current.valid) {
+                    long interval = current.configuration.refreshInterval;
                     long delay = current.requested && current.failures == 0 ? 0
-                            : Math.min(3600L, current.configuration.refreshInterval * (1L << current.failures));
+                            : Math.min(Math.max(3600L, interval), interval * (1L << current.failures));
                     current.requested = false;
-                    job = scheduler.schedule(() -> poll(current), delay, TimeUnit.SECONDS);
+                    job = accountScheduler.schedule(() -> poll(current), delay, TimeUnit.SECONDS);
                 }
             }
             if (!current.valid) {
@@ -323,7 +339,7 @@ public class AccountHandler extends BaseBridgeHandler {
             current.stopping = true;
         }
         // Disposal may interrupt the account worker; close Jetty on an un-interrupted scheduler task.
-        scheduler.execute(() -> stop(current.http));
+        accountScheduler.execute(() -> stop(current.http));
     }
 
     private void stop(HttpClient http) {

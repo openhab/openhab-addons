@@ -13,15 +13,78 @@
 package org.openhab.binding.caldav.internal.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.net.URI;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
+/**
+ * Structured DAV response and collection truncation tests.
+ *
+ * @author Andreas Vilippus - Initial contribution
+ * @author Andreas Vilippus - Collection synchronization truncation tests
+ */
 @NonNullByDefault
+@Timeout(30)
 class DavResponseTest {
+    @Test
+    void collectionTruncationMarkerIsNotAMemberResource() throws Exception {
+        String response = "<d:multistatus xmlns:d=\"DAV:\"><d:response><d:href>/calendar/</d:href>"
+                + "<d:status>HTTP/1.1 507 Insufficient Storage</d:status>"
+                + "<d:error><d:number-of-matches-within-limits/></d:error></d:response>"
+                + "<d:sync-token>middle</d:sync-token></d:multistatus>";
+        var parsed = DavResponse.parse(response, URI.create("https://example.org/calendar/"));
+        assertEquals(0, parsed.resources().size());
+        assertEquals("middle", parsed.token());
+        assertTrue(parsed.truncated());
+    }
+
+    @Test
+    void collectionTruncationDoesNotRequireOptionalErrorElement() throws Exception {
+        String response = "<d:multistatus xmlns:d=\"DAV:\"><d:response><d:href>/calendar/</d:href>"
+                + "<d:status>HTTP/1.1 507 Insufficient Storage</d:status></d:response>"
+                + "<d:sync-token>middle</d:sync-token></d:multistatus>";
+        var parsed = DavResponse.parse(response, URI.create("https://example.org/calendar/"));
+        assertEquals(0, parsed.resources().size());
+        assertTrue(parsed.truncated());
+    }
+
+    @Test
+    void failedMemberIsNotMistakenForCollectionTruncation() throws Exception {
+        String response = "<d:multistatus xmlns:d=\"DAV:\"><d:response><d:href>/calendar/one.ics</d:href>"
+                + "<d:status>HTTP/1.1 507 Insufficient Storage</d:status>"
+                + "<d:error><d:number-of-matches-within-limits/></d:error></d:response></d:multistatus>";
+        var parsed = DavResponse.parse(response, URI.create("https://example.org/calendar/"));
+        assertEquals(1, parsed.resources().size());
+        assertEquals(507, parsed.resources().getFirst().status());
+        assertFalse(parsed.truncated());
+    }
+
+    @Test
+    void resourceLimitExcludesCollectionTruncationMarker() throws Exception {
+        StringBuilder response = new StringBuilder("<d:multistatus xmlns:d=\"DAV:\">");
+        for (int member = 0; member < DavResponse.MAX_RESOURCES; member++) {
+            response.append("<d:response><d:href>/calendar/").append(member)
+                    .append(".ics</d:href><d:status>HTTP/1.1 404 Not Found</d:status></d:response>");
+        }
+        String marker = "<d:response><d:href>/calendar/</d:href>"
+                + "<d:status>HTTP/1.1 507 Insufficient Storage</d:status></d:response>";
+        var parsed = DavResponse.parse(response + marker + "</d:multistatus>",
+                URI.create("https://example.org/calendar/"));
+        assertEquals(DavResponse.MAX_RESOURCES, parsed.resources().size());
+        assertTrue(parsed.truncated());
+        response.append("<d:response><d:href>/calendar/extra.ics</d:href>"
+                + "<d:status>HTTP/1.1 404 Not Found</d:status></d:response>");
+        assertThrows(IOException.class,
+                () -> DavResponse.parse(response + "</d:multistatus>", URI.create("https://example.org/calendar/")));
+    }
+
     @Test
     void extractsEventsFromNamespacedMultistatusResponse() throws Exception {
         String xml = "<?xml version=\"1.0\"?><d:multistatus xmlns:d=\"DAV:\" "

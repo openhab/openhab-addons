@@ -73,7 +73,8 @@
 				</options>
 			</parameter>
 
-			<parameter name="refreshInterval" type="integer" min="30" required="true" groupName="synchronization">
+			<parameter name="refreshInterval" type="integer" min="30" max="2147483647" required="true"
+				groupName="synchronization">
 				<label>@text/config.account.refreshInterval.label</label>
 				<description>@text/config.account.refreshInterval.description</description>
 				<default>300</default>
@@ -157,12 +158,14 @@
 					<option value="NOW">@text/config.calendar.rangeAnchor.option.NOW</option>
 				</options>
 			</parameter>
-			<parameter name="rangeStartOffset" type="integer" required="true" groupName="range">
+			<parameter name="rangeStartOffset" type="integer" min="-2147483648" max="2147483647" required="true"
+				groupName="range">
 				<label>@text/config.calendar.rangeStartOffset.label</label>
 				<description>@text/config.calendar.rangeStartOffset.description</description>
 				<default>0</default>
 			</parameter>
-			<parameter name="rangeEndOffset" type="integer" required="true" groupName="range">
+			<parameter name="rangeEndOffset" type="integer" min="-2147483648" max="2147483647" required="true"
+				groupName="range">
 				<label>@text/config.calendar.rangeEndOffset.label</label>
 				<description>@text/config.calendar.rangeEndOffset.description</description>
 				<default>6</default>
