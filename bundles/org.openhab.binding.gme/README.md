@@ -1,6 +1,6 @@
 # GME Binding
 
-The GME binding integrates openHAB with the electricity market data services provided by the Italian Gestore dei Mercati Energetici (GME).
+The GME binding integrates the electricity market data services provided by the Italian Gestore dei Mercati Energetici (GME) into openHAB.
 
 It provides access to Italian day-ahead electricity market prices, including national PUN prices and zonal prices.
 
@@ -12,16 +12,16 @@ It can be used for energy monitoring and automation scenarios such as load shift
 
 The binding supports the following Thing types:
 
-| Thing Type UID | Type | Description |
-|----------------|------|-------------|
-| `gme:api` | Bridge | Connection to a GME API account and common API configuration |
-| `gme:pun` | Thing | PUN and zonal electricity market prices |
+| Thing Type UID | Type   | Description                                                      |
+|----------------|--------|------------------------------------------------------------------|
+| `api`          | Bridge | Connection to a GME API account and common API configuration     |
+| `pun`          | Thing  | PUN and zonal electricity market prices                          |
 
-The `gme:pun` Thing must be associated with a `gme:api` Bridge.
+The `pun` Thing must be associated with a `gme:api` Bridge.
 
 ## Thing Configuration
 
-### `gme:api` Bridge Configuration
+### `api` Bridge Configuration
 
 The API Bridge manages authentication with GME and configuration shared by the price Things.
 
@@ -57,9 +57,7 @@ The `granularity` setting controls the market time unit requested from GME. `PT6
 GME API passwords have a limited validity period.
 
 The Bridge tracks the age of the configured password and exposes its estimated expiry through dedicated channels.
-
 The password itself is never copied into the binding storage for this purpose.
-
 Instead, the binding stores a SHA-256 fingerprint of the credentials and uses it to detect a credential change after a successful GME authentication.
 
 When the binding is configured for the first time, `initialPasswordChangedAt` can optionally be used to provide the actual change date of an already existing GME password.
@@ -73,20 +71,19 @@ For example:
 If this parameter is omitted during the first successful authentication, the current date and time are used as the initial password change time.
 
 After tracking has been initialised, changing the GME password does not require updating `initialPasswordChangedAt`.
-
 A successfully authenticated password change is detected automatically and starts a new password validity period.
 
 An authentication failure does not change the stored password change date.
 
-### `gme:pun` Thing Configuration
+### `pun` Thing Configuration
 
 The PUN Thing does not require additional configuration.
 
-It obtains authentication, refresh interval, market zone and market granularity information from its parent `gme:api` Bridge.
+It obtains authentication, refresh interval, market zone and market granularity information from its parent `api` Bridge.
 
 ## Channels
 
-### `gme:api` Bridge Channels
+### `api` Bridge Channels
 
 | Channel | Type | Read/Write | Description |
 |---------|------|------------|-------------|
@@ -99,7 +96,7 @@ The password status becomes `CHANGE_SOON` after five months.
 
 The estimated password expiry is six months after the tracked password change date.
 
-### `gme:pun` Price Channels
+### `pun` Price Channels
 
 | Channel | Type | Read/Write | Description |
 |---------|------|------------|-------------|
@@ -133,7 +130,6 @@ The binding handles Italian daylight-saving-time transitions for every supported
 The binding authenticates against the GME API using the username and password configured on the Bridge.
 
 The authentication token is cached and reused for subsequent API requests.
-
 If GME rejects a request because the token is no longer valid, the binding invalidates the cached token, authenticates again and retries the request once.
 
 ## Full Example
@@ -158,57 +154,19 @@ The `initialPasswordChangedAt` parameter can be omitted once password tracking h
 ### Item Configuration
 
 ```java
-Number:EnergyPrice GME_CurrentPrice "Current PUN [%.6f %unit%]" {
-    channel="gme:pun:account:pun:current-price"
-}
-
-Number:EnergyPrice GME_NextPrice "Next PUN [%.6f %unit%]" {
-    channel="gme:pun:account:pun:next-price"
-}
-
-Number:EnergyPrice GME_TodayAverage "Today's Average [%.6f %unit%]" {
-    channel="gme:pun:account:pun:today-average"
-}
-
-Number:EnergyPrice GME_TodayMinimum "Today's Minimum [%.6f %unit%]" {
-    channel="gme:pun:account:pun:today-min"
-}
-
-Number:EnergyPrice GME_TodayMaximum "Today's Maximum [%.6f %unit%]" {
-    channel="gme:pun:account:pun:today-max"
-}
-
-DateTime GME_TodayMinimumTime "Today's Minimum Time [%1$tH:%1$tM]" {
-    channel="gme:pun:account:pun:today-min-time"
-}
-
-DateTime GME_TodayMaximumTime "Today's Maximum Time [%1$tH:%1$tM]" {
-    channel="gme:pun:account:pun:today-max-time"
-}
-
-Switch GME_TomorrowAvailable "Tomorrow Available" {
-    channel="gme:pun:account:pun:tomorrow-available"
-}
-
-DateTime GME_LastUpdate "Last Update [%1$td/%1$tm/%1$tY %1$tH:%1$tM]" {
-    channel="gme:pun:account:pun:last-update"
-}
-
-DateTime GME_PasswordLastChanged "GME Password Last Changed [%1$td/%1$tm/%1$tY]" {
-    channel="gme:api:account:password-last-changed"
-}
-
-DateTime GME_PasswordExpiry "GME Password Expiry [%1$td/%1$tm/%1$tY]" {
-    channel="gme:api:account:password-expiry"
-}
-
-Number GME_PasswordDaysRemaining "GME Password Days Remaining [%d]" {
-    channel="gme:api:account:password-days-remaining"
-}
-
-String GME_PasswordStatus "GME Password Status [%s]" {
-    channel="gme:api:account:password-status"
-}
+Number:EnergyPrice GME_CurrentPrice "Current PUN [%.6f %unit%]" { channel="gme:pun:account:pun:current-price" }
+Number:EnergyPrice GME_NextPrice "Next PUN [%.6f %unit%]" { channel="gme:pun:account:pun:next-price" }
+Number:EnergyPrice GME_TodayAverage "Today's Average [%.6f %unit%]" { channel="gme:pun:account:pun:today-average" }
+Number:EnergyPrice GME_TodayMinimum "Today's Minimum [%.6f %unit%]" { channel="gme:pun:account:pun:today-min" }
+Number:EnergyPrice GME_TodayMaximum "Today's Maximum [%.6f %unit%]" { channel="gme:pun:account:pun:today-max" }
+DateTime GME_TodayMinimumTime "Today's Minimum Time [%1$tH:%1$tM]" { channel="gme:pun:account:pun:today-min-time" }
+DateTime GME_TodayMaximumTime "Today's Maximum Time [%1$tH:%1$tM]" { channel="gme:pun:account:pun:today-max-time" }
+Switch GME_TomorrowAvailable "Tomorrow Available" { channel="gme:pun:account:pun:tomorrow-available" }
+DateTime GME_LastUpdate "Last Update [%1$td/%1$tm/%1$tY %1$tH:%1$tM]" { channel="gme:pun:account:pun:last-update" }
+DateTime GME_PasswordLastChanged "GME Password Last Changed [%1$td/%1$tm/%1$tY]" { channel="gme:api:account:password-last-changed" }
+DateTime GME_PasswordExpiry "GME Password Expiry [%1$td/%1$tm/%1$tY]" { channel="gme:api:account:password-expiry" }
+Number GME_PasswordDaysRemaining "GME Password Days Remaining [%d]" { channel="gme:api:account:password-days-remaining" }
+String GME_PasswordStatus "GME Password Status [%s]" { channel="gme:api:account:password-status" }
 ```
 
 ## Automation Examples
@@ -223,53 +181,3 @@ Typical use cases include:
 - selecting favourable battery charging periods
 - delaying discretionary loads when the current price is high
 - notifying the user before the GME API password expires
-
-## Technical Details
-
-The binding uses a Bridge-based architecture.
-
-```text
-GME API Account Bridge
-          |
-          +--- PUN Price Thing
-```
-
-The Bridge is responsible for:
-
-- API authentication
-- authentication token lifecycle
-- credential change tracking
-- common configuration
-
-The PUN Thing is responsible for:
-
-- market data retrieval
-- PUN price processing
-- zonal price processing
-- daily statistics
-- market-granularity time series generation
-- market data caching
-
-Market data are interpreted using the `Europe/Rome` time zone.
-
-## Testing
-
-The binding includes automated tests for:
-
-- API authentication
-- token invalidation and authentication retry
-- GME market data parsing
-- price cache behaviour
-- PUN time series generation
-- 15, 30 and 60-minute market granularity
-- daylight-saving-time transitions
-- password age calculation
-- credential fingerprint tracking
-- credential change detection
-- initial password date handling
-
-The binding tests can be executed with:
-
-```shell
-./mvnw -pl :org.openhab.binding.gme -am test
-```
