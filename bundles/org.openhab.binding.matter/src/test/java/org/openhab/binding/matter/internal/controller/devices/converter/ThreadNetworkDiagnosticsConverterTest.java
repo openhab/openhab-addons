@@ -310,7 +310,34 @@ class ThreadNetworkDiagnosticsConverterTest extends BaseMatterConverterTest {
     }
 
     @Test
-    void testPollClusterReadsOptionalAttributesOnlyWhenReported() {
+    void testPollClusterReadsOptionalAttributesInAttributeListWhileNull() {
+        mockCluster.attributeList = List.of(0L, 1L, 63L, 64L);
+        mockCluster.rloc16 = null;
+        mockCluster.extAddress = null;
+        replyWith(CompletableFuture.completedFuture(new ThreadNetworkDiagnosticsCluster(BigInteger.ONE, 1)));
+        converter.pollCluster();
+        ArgumentCaptor<List<String>> names = ArgumentCaptor.captor();
+        verify(mockHandler).readAttributes(any(), anyInt(), anyString(), names.capture());
+        assertTrue(names.getValue().contains(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16));
+        assertTrue(names.getValue().contains(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS));
+    }
+
+    @Test
+    void testPollClusterSkipsOptionalAttributesMissingFromAttributeList() {
+        mockCluster.attributeList = List.of(0L, 1L);
+        mockCluster.rloc16 = 0x7400;
+        mockCluster.extAddress = BigInteger.TEN;
+        replyWith(CompletableFuture.completedFuture(new ThreadNetworkDiagnosticsCluster(BigInteger.ONE, 1)));
+        converter.pollCluster();
+        ArgumentCaptor<List<String>> names = ArgumentCaptor.captor();
+        verify(mockHandler).readAttributes(any(), anyInt(), anyString(), names.capture());
+        assertFalse(names.getValue().contains(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16));
+        assertFalse(names.getValue().contains(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS));
+    }
+
+    @Test
+    void testPollClusterWithoutAttributeListReadsOptionalAttributesOnlyWhenReported() {
+        mockCluster.attributeList = null;
         mockCluster.rloc16 = null;
         mockCluster.extAddress = null;
         replyWith(CompletableFuture.completedFuture(new ThreadNetworkDiagnosticsCluster(BigInteger.ONE, 1)));

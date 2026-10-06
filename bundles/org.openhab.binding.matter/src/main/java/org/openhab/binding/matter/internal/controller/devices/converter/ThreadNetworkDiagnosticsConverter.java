@@ -62,9 +62,11 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
                     ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE, c -> c.routeTable,
                     ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, c -> c.rloc16,
                     ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS, c -> c.extAddress);
-    // Only read when the device reported them initially, they are new in Matter 1.4
+    // Only read when the device supports them, they are new in Matter 1.4
     private static final Set<String> OPTIONAL_ATTRIBUTES = Set.of(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16,
             ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS);
+    private static final Long ATTRIBUTE_ID_EXT_ADDRESS = 63L;
+    private static final Long ATTRIBUTE_ID_RLOC16 = 64L;
 
     private final AtomicBoolean pollInProgress = new AtomicBoolean();
     private volatile @Nullable RoutingRoleEnum routingRole;
@@ -115,7 +117,7 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
             return;
         }
         List<String> attributeNames = POLLED_ATTRIBUTES.keySet().stream()
-                .filter(name -> !OPTIONAL_ATTRIBUTES.contains(name) || wasReported(name)).toList();
+                .filter(name -> !OPTIONAL_ATTRIBUTES.contains(name) || isSupported(name)).toList();
         handler.readAttributes(ThreadNetworkDiagnosticsCluster.class, endpointNumber,
                 ThreadNetworkDiagnosticsCluster.CLUSTER_NAME, attributeNames).thenAccept(cluster -> {
                     // The read can finish after the thing went offline or was disposed
@@ -135,10 +137,19 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
                 }).whenComplete((result, e) -> pollInProgress.set(false));
     }
 
-    private boolean wasReported(String attributeName) {
+    /**
+     * Both attributes are null while the Thread interface is not up, so support is taken from the attribute list. Only
+     * devices that do not report one fall back to the initial value.
+     */
+    private boolean isSupported(String attributeName) {
+        List<Long> attributeList = initializingCluster.attributeList;
         return switch (attributeName) {
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16 -> initializingCluster.rloc16 != null;
-            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS -> initializingCluster.extAddress != null;
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16 ->
+                attributeList != null ? attributeList.contains(ATTRIBUTE_ID_RLOC16)
+                        : initializingCluster.rloc16 != null;
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS ->
+                attributeList != null ? attributeList.contains(ATTRIBUTE_ID_EXT_ADDRESS)
+                        : initializingCluster.extAddress != null;
             default -> true;
         };
     }
