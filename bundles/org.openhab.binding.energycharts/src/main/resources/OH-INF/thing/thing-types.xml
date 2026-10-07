@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="energycharts"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="prices">
+		<label>Energy-Charts Prices</label>
+		<description>Day-ahead electricity prices of one bidding zone from Energy-Charts</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="market-net" typeId="price">
+				<label>Net Market Price</label>
+				<description>Day-ahead market price without VAT and base price</description>
+			</channel>
+			<channel id="market-gross" typeId="price">
+				<label>Gross Market Price</label>
+				<description>Day-ahead market price with VAT but without base price</description>
+			</channel>
+			<channel id="total-net" typeId="price">
+				<label>Net Total Price</label>
+				<description>Market price with base price and service fee but without VAT</description>
+			</channel>
+			<channel id="total-gross" typeId="price">
+				<label>Gross Total Price</label>
+				<description>Market price with base price, service fee and VAT</description>
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="biddingZone" type="text" required="true">
+				<label>Bidding Zone</label>
+				<description>The bidding zone to get prices for.</description>
+				<options>
+					<option value="AT">Austria</option>
+					<option value="BE">Belgium</option>
+					<option value="CH">Switzerland</option>
+					<option value="CZ">Czech Republic</option>
+					<option value="DE-LU">Germany, Luxembourg</option>
+					<option value="DK1">Denmark 1 (West)</option>
+					<option value="DK2">Denmark 2 (East)</option>
+					<option value="FR">France</option>
+					<option value="HU">Hungary</option>
+					<option value="IT-North">Italy North</option>
+					<option value="NL">Netherlands</option>
+					<option value="NO2">Norway 2 (South)</option>
+					<option value="PL">Poland</option>
+					<option value="SE4">Sweden 4 (South)</option>
+					<option value="SI">Slovenia</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="vatPercent" type="decimal" min="0">
+				<label>VAT Percent</label>
+				<description>Value added tax in percent, used for the gross prices.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="basePrice" type="decimal" step="0.001">
+				<label>Base Price</label>
+				<description>Net price in ct/kWh added to the market price, e.g. network charges and levies.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="serviceFee" type="decimal" min="0" max="100">
+				<label>Service Fee</label>
+				<description>Fee in percent of the absolute net total price, added before VAT.</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Price</label>
+		<category>Price</category>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Price</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>
