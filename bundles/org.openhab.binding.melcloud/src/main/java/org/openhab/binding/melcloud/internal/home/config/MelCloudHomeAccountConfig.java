@@ -15,13 +15,8 @@ package org.openhab.binding.melcloud.internal.home.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Config class for the {@code home-account} bridge.
- *
- * <p>
- * The {@link #username}/{@link #password} pair is used to run the real MELCloud Home login: the full
- * OAuth 2.0 Authorization Code + PKCE flow, including the Pushed Authorization Request step and the AWS
- * Cognito-federated credential submission, runs entirely server-side — no interactive browser step is required.
- * This supersedes the developer-only {@code accessToken} stopgap used during early development.
+ * Config class for the {@code home-account} bridge. The {@link #username}/{@link #password} pair is used to run
+ * the headless MELCloud Home login.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -32,9 +27,8 @@ public class MelCloudHomeAccountConfig {
     public String password = "";
 
     /**
-     * Whether to connect to the MELCloud Home realtime push channel (ADR-007) to narrow the state-staleness window
-     * between the fixed {@code /context} polls. Best-effort: any failure falls back to plain polling and never
-     * affects bridge status. Defaults to {@code true}; set to {@code false} to run this bridge on polling alone.
+     * Whether to connect to the realtime push channel to narrow the staleness between {@code /context} polls.
+     * Best-effort: failures fall back to plain polling. Defaults to {@code true}.
      */
     public boolean enableRealtimeUpdates = true;
 

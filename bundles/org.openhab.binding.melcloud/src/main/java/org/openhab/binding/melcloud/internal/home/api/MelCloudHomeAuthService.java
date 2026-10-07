@@ -13,6 +13,7 @@
 package org.openhab.binding.melcloud.internal.home.api;
 
 import java.io.IOException;
+import java.net.CookieManager;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -43,29 +44,11 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * Implements the real MELCloud Home login: OAuth 2.0 Authorization Code + PKCE, fronted by a Pushed Authorization
- * Request (PAR, RFC 9126) and federated to an AWS Cognito Hosted UI for credential entry.
+ * Request (PAR) and federated to an AWS Cognito Hosted UI for credential entry. The whole flow runs headlessly and
+ * can also exchange a stored refresh token for a new token pair.
  *
  * <p>
- * This class runs the entire flow headlessly, with no interactive browser step:
- * <ol>
- * <li>{@code POST connect/par} with the PKCE challenge, obtaining an opaque {@code request_uri}.
- * <li>{@code GET connect/authorize?client_id=...&request_uri=...}, following redirects manually. If
- * {@code auth.melcloudhome.com} already has a live session, this redirects straight to the {@code melcloudhome://}
- * callback with an authorization code; otherwise it redirects to a Cognito Hosted UI login page.
- * <li>If a Cognito login page was reached: scrape the page's CSRF token and {@code POST} the username/password to
- * it directly (matching the reference implementation confirmed in {@code reversed.md}), then follow the resulting
- * redirect chain the same way.
- * <li>Capture the authorization {@code code} from the final redirect to the {@code melcloudhome://} custom scheme —
- * intercepted by inspecting the {@code Location} header manually, since the injected {@link HttpClient} does not
- * follow redirects automatically.
- * <li>{@code POST connect/token} to exchange the code (or, for {@link #refreshToken(String)}, a stored refresh
- * token) for an access/refresh token pair.
- * </ol>
- *
- * <p>
- * The injected {@link HttpClient} <b>must</b> be configured with {@link HttpClient.Redirect#NEVER} and a
- * {@link java.net.CookieHandler} (so the session cookie set by {@code auth.melcloudhome.com}/Cognito survives
- * across requests); see {@code MelCloudHandlerFactory} for how it is constructed.
+ * The injected {@link HttpClient} must use {@link HttpClient.Redirect#NEVER} and a {@link java.net.CookieHandler}.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -137,6 +120,14 @@ public class MelCloudHomeAuthService {
             throw new IllegalArgumentException("password is null");
         }
 
+        // A session cookie left over from an earlier login would make the flow authorize the previous user instead of
+        // the credentials passed here, for example after the account configuration was changed.
+        httpClient.cookieHandler().ifPresent(cookieHandler -> {
+            if (cookieHandler instanceof CookieManager cookieManager) {
+                cookieManager.getCookieStore().removeAll();
+            }
+        });
+
         logger.debug("Starting MELCloud Home login flow");
         String codeVerifier = generateCodeVerifier();
         String codeChallenge = generateCodeChallenge(codeVerifier);
@@ -179,7 +170,7 @@ public class MelCloudHomeAuthService {
 
         HttpResponse<String> response = sendFormPost(TOKEN_URL, formParams, Map.of());
         if (response.statusCode() != 200) {
-            throw new MelCloudHomeAuthException("Refresh token rejected: HTTP " + response.statusCode());
+            throw failure("Refresh token rejected", response.statusCode());
         }
         return toTokenResponse(bodyOf(response));
     }
@@ -197,7 +188,7 @@ public class MelCloudHomeAuthService {
 
         HttpResponse<String> response = sendFormPost(PAR_URL, formParams, Map.of());
         if (response.statusCode() != 201) {
-            throw new MelCloudHomeAuthException("Pushed authorization request failed: HTTP " + response.statusCode());
+            throw failure("Pushed authorization request failed", response.statusCode());
         }
 
         MelCloudHomeParResponse parResponse = parseJson(bodyOf(response), MelCloudHomeParResponse.class,
@@ -259,7 +250,7 @@ public class MelCloudHomeAuthService {
             };
         }
 
-        throw new MelCloudHomeAuthException("Unexpected HTTP status while submitting Cognito credentials: " + status);
+        throw failure("Unexpected HTTP status while submitting Cognito credentials", status);
     }
 
     private MelCloudHomeTokenResponse exchangeCodeForTokens(String code, String codeVerifier)
@@ -274,7 +265,7 @@ public class MelCloudHomeAuthService {
 
         HttpResponse<String> response = sendFormPost(TOKEN_URL, formParams, Map.of());
         if (response.statusCode() != 200) {
-            throw new MelCloudHomeAuthException("Token exchange failed: HTTP " + response.statusCode());
+            throw failure("Token exchange failed", response.statusCode());
         }
         return toTokenResponse(bodyOf(response));
     }
@@ -332,20 +323,37 @@ public class MelCloudHomeAuthService {
                 if (matcher.find()) {
                     return new AuthorizationCode(matcher.group(1));
                 }
-                throw new MelCloudHomeAuthException("Unexpected HTTP 200 response while authorizing: " + currentUrl);
+                throw new MelCloudHomeAuthException(
+                        "Unexpected HTTP 200 response while authorizing: " + describe(currentUrl));
             }
 
-            throw new MelCloudHomeAuthException(
-                    "Unexpected HTTP status " + status + " while authorizing: " + currentUrl);
+            throw failure("Unexpected HTTP status while authorizing", status);
         }
         throw new MelCloudHomeAuthException("Exceeded " + MAX_REDIRECT_HOPS + " redirect hops while authorizing");
+    }
+
+    /**
+     * Classifies an unexpected HTTP status of an auth endpoint. A request timeout, rate limiting or a server error says
+     * nothing about the credentials and can succeed on a later attempt, so it is reported as a plain
+     * {@link MelCloudCommException} for the caller to retry. Any other status is reported as
+     * {@link MelCloudHomeAuthException}.
+     *
+     * @param message what failed, without sensitive data
+     * @param status the HTTP status code received
+     */
+    private static MelCloudCommException failure(String message, int status) {
+        String text = message + ": HTTP " + status;
+        if (status == 408 || status == 429 || status >= 500) {
+            return new MelCloudCommException(text);
+        }
+        return new MelCloudHomeAuthException(text);
     }
 
     private String resolveLocation(String currentUrl, String location) throws MelCloudHomeAuthException {
         try {
             return URI.create(currentUrl).resolve(location).toString();
         } catch (IllegalArgumentException e) {
-            throw new MelCloudHomeAuthException("Malformed redirect Location header: " + location, e);
+            throw new MelCloudHomeAuthException("Malformed redirect Location header", e);
         }
     }
 
@@ -385,8 +393,7 @@ public class MelCloudHomeAuthService {
         if (matcher.find()) {
             return matcher.group(1);
         }
-        throw new MelCloudHomeAuthException(
-                "Redirect to " + REDIRECT_URI + " did not contain a 'code' parameter: " + url);
+        throw new MelCloudHomeAuthException("Redirect to " + REDIRECT_URI + " did not contain a 'code' parameter");
     }
 
     private <T> T parseJson(String body, Class<T> type, String context) throws MelCloudHomeAuthException {
@@ -403,12 +410,8 @@ public class MelCloudHomeAuthService {
     }
 
     /**
-     * Reads {@link HttpResponse#body()}. {@link HttpResponse} is not designed with null type annotations in mind
-     * (unlike this class, which is {@code @NonNullByDefault}), so the compiler can only produce an "unsafe
-     * interpretation" advisory here rather than a genuine null-safety guarantee. Centralizing the call in this one
-     * helper — instead of adding a redundant, always-false null check at every call site, which the compiler flags
-     * as dead code once it has made that same "unsafe interpretation" — keeps the advisory confined to a single,
-     * documented spot.
+     * Reads {@link HttpResponse#body()}. Centralized here so the compiler advisory for the unannotated
+     * {@link HttpResponse} API stays in one place.
      *
      * @param response the HTTP response to read the body from
      * @return the response body
@@ -436,10 +439,12 @@ public class MelCloudHomeAuthService {
         try {
             return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new MelCloudCommException("Network error while communicating with " + request.uri(), e);
+            throw new MelCloudCommException(
+                    "Network error while communicating with " + describe(request.uri().toString()), e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new MelCloudCommException("Interrupted while communicating with " + request.uri(), e);
+            throw new MelCloudCommException(
+                    "Interrupted while communicating with " + describe(request.uri().toString()), e);
         }
     }
 
@@ -452,6 +457,19 @@ public class MelCloudHomeAuthService {
             builder.append(urlEncode(entry.getKey())).append('=').append(urlEncode(entry.getValue()));
         }
         return builder.toString();
+    }
+
+    /**
+     * Describes a URL by host and path only: the query string can carry authorization codes and request references,
+     * which must not end up in exception messages, logs, or the Thing status.
+     */
+    private static String describe(String url) {
+        try {
+            URI uri = URI.create(url);
+            return uri.getHost() + uri.getPath();
+        } catch (IllegalArgumentException e) {
+            return "<invalid URL>";
+        }
     }
 
     private static String urlEncode(String value) {

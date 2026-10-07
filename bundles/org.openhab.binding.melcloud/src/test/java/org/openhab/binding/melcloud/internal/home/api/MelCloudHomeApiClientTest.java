@@ -177,7 +177,7 @@ class MelCloudHomeApiClientTest {
     @Test
     void whenCreateOrUpdateAtwScheduleIsCalledThenPostIsSentToTheScheduleUrl()
             throws MelCloudCommException, IOException {
-        // Arrange: provisional endpoint/shape, see ADR-012 — this only verifies the client sends what it's told to,
+        // Arrange: provisional endpoint/shape — this only verifies the client sends what it's told to,
         // not that the server actually accepts it.
         ArgumentCaptor<String> urlCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<InputStream> bodyCaptor = ArgumentCaptor.forClass(InputStream.class);

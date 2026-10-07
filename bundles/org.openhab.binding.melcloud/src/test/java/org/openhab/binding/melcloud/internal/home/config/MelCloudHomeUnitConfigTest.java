@@ -19,8 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for {@link MelCloudHomeUnitConfig#toString()}: {@code unitId} must never appear unmasked (see
- * ADR-010).
+ * Unit tests for {@link MelCloudHomeUnitConfig#toString()}: {@code unitId} must never appear unmasked.
  *
  * @author Bernd Weymann - Initial contribution
  */

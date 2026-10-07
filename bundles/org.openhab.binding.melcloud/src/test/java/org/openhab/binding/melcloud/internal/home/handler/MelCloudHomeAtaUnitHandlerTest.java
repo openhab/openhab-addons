@@ -15,8 +15,11 @@ package org.openhab.binding.melcloud.internal.home.handler;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ERROR_CODE;
@@ -51,6 +54,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeApiClient;
 import org.openhab.binding.melcloud.internal.home.api.MelCloudHomeRequestPacer;
 import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtaCapabilities;
@@ -415,7 +419,60 @@ class MelCloudHomeAtaUnitHandlerTest {
         verify(apiClient).controlAtaUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), any());
     }
 
-    // ADR-009: a value absent from the settings array (or a null top-level field) must be pushed as UnDefType.UNDEF,
+    @Test
+    void whenCommandIsRevertedBeforeNextPollThenBothCommandsAreSent() throws Exception {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        handler.onAtaUnitUpdated(unitWithSettings("Power", "False"));
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_POWER);
+
+        // Act
+        handler.handleCommand(channelUID, OnOffType.ON);
+        handler.handleCommand(channelUID, OnOffType.OFF);
+
+        // Assert: the polled state still says OFF, but the binding itself switched the unit ON in between
+        ArgumentCaptor<MelCloudHomeAtaControlRequest> captor = ArgumentCaptor
+                .forClass(MelCloudHomeAtaControlRequest.class);
+        verify(apiClient, timeout(3000).times(2)).controlAtaUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), captor.capture());
+        assertEquals(Boolean.TRUE, captor.getAllValues().get(0).power);
+        assertEquals(Boolean.FALSE, captor.getAllValues().get(1).power);
+    }
+
+    @Test
+    void whenSameCommandIsRepeatedBeforeNextPollThenOnlyTheFirstIsSent() throws Exception {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        handler.onAtaUnitUpdated(unitWithSettings("Power", "False"));
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_POWER);
+
+        // Act
+        handler.handleCommand(channelUID, OnOffType.ON);
+        handler.handleCommand(channelUID, OnOffType.ON);
+
+        // Assert
+        verify(apiClient, times(1)).controlAtaUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), any());
+    }
+
+    @Test
+    void whenControlCallFailedThenSameCommandIsSentAgain() throws Exception {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        handler.onAtaUnitUpdated(unitWithSettings("Power", "False"));
+        ChannelUID channelUID = new ChannelUID(handler.getThing().getUID(), CHANNEL_POWER);
+        doThrow(new MelCloudCommException("boom")).doNothing().when(apiClient).controlAtaUnit(any(), any(), any());
+
+        // Act
+        handler.handleCommand(channelUID, OnOffType.ON);
+        handler.handleCommand(channelUID, OnOffType.ON);
+
+        // Assert
+        verify(apiClient, timeout(3000).times(2)).controlAtaUnit(eq(ACCESS_TOKEN), eq(UNIT_ID), any());
+    }
+
+    // A value absent from the settings array (or a null top-level field) must be pushed as UnDefType.UNDEF,
     // not silently skipped.
 
     @Test
@@ -462,7 +519,7 @@ class MelCloudHomeAtaUnitHandlerTest {
 
     @Test
     void whenFanSpeedWordIsUnrecognizedThenChannelIsNotUpdatedAtAll() {
-        // Arrange: present-but-unrecognized is a different failure mode than missing (see ADR-009) and keeps the
+        // Arrange: present-but-unrecognized is a different failure mode than missing and keeps the
         // existing "log and leave untouched" behavior rather than becoming UNDEF. onAtaUnitUpdated runs
         // synchronously, so the state map can be asserted directly without callback.getState()'s blocking wait
         // (which is designed for values that DO eventually arrive, not for asserting a permanent absence).
@@ -560,7 +617,7 @@ class MelCloudHomeAtaUnitHandlerTest {
 
     @Test
     void whenSecondUnitUpdateArrivesWithDifferentCapabilitiesThenPropertiesAreNotOverwritten() {
-        // Arrange: capabilities are static for a unit's lifetime (ADR-009-adjacent assumption), so the handler
+        // Arrange: capabilities are static for a unit's lifetime, so the handler
         // writes them once and ignores any later change rather than re-writing on every /context poll.
         MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
         handler.initialize();

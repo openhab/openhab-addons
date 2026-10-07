@@ -26,15 +26,9 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
- * {@link ThingActions} exposing cloud schedule management for an {@code atw-unit}, per ADR-011 (schedule management
- * is exposed via {@code ThingActions}, not Channels/Items) and ADR-012 (field/parameter shapes).
- *
- * <p>
- * <b>Provisional (ADR-012).</b> The endpoint paths, day/mode integer encodings, and even whether the underlying
- * {@code POST} endpoint genuinely serves both create and update are not independently confirmed against real ATW
- * traffic — see {@code docs/changes/add-melcloud-home-schedule-management/proposal.md}'s Open Questions. Every
- * method here delegates to {@link MelCloudHomeAtwUnitHandler}, which does the actual (also provisional) request
- * building.
+ * {@link ThingActions} exposing cloud schedule management for an {@code atw-unit}. Provisional: the endpoint paths and
+ * integer encodings are not confirmed against real ATW traffic. Every method delegates to
+ * {@link MelCloudHomeAtwUnitHandler}.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -98,7 +92,7 @@ public class MelCloudHomeAtwScheduleActions implements ThingActions {
                 setTemperatureZone2, setTankWaterTemperature, forcedHotWaterMode);
     }
 
-    @RuleAction(label = "Update Schedule", description = "Updates an existing cloud schedule entry by id; null fields are meant to be left unchanged")
+    @RuleAction(label = "Update Schedule", description = "Updates an existing cloud schedule entry by id; null fields keep the entry's current value")
     public boolean updateSchedule(@ActionInput(name = "id", label = "Id") String id,
             @ActionInput(name = "days", label = "Days") @Nullable String days,
             @ActionInput(name = "time", label = "Time") @Nullable String time,

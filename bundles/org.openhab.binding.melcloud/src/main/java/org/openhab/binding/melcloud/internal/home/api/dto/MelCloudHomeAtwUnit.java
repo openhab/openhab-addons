@@ -40,10 +40,8 @@ public class MelCloudHomeAtwUnit {
     public @Nullable MelCloudHomeToggleState holidayMode;
     public @Nullable MelCloudHomeToggleState frostProtection;
     /**
-     * The unit's cloud schedule entries. <b>Provisional (ADR-012):</b> assumed to arrive embedded here, matching
-     * where a forum user's own capture showed a {@code schedule} array nested in what appeared to be unit state —
-     * no {@code melcloudhome} documentation confirms this placement, nor rules out a separate list endpoint instead.
-     * Defaults to an empty list if the field is absent from a response, same as every other collection here.
+     * The unit's cloud schedule entries. Provisional: assumed to arrive embedded here; defaults to an empty list if
+     * absent.
      */
     public List<MelCloudHomeAtwScheduleEntry> schedule = List.of();
 

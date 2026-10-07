@@ -219,6 +219,64 @@ class MelCloudHomeAuthServiceTest {
     }
 
     @Test
+    void whenRefreshEndpointAnswersWithServerErrorThenRefreshTokenThrowsCommExceptionNotAuthException()
+            throws Exception {
+        // Arrange
+        HttpResponse<String> unavailable = fakeResponse(503, "", Map.of());
+        when(httpClient.send(any(HttpRequest.class), anyBodyHandler())).thenReturn(unavailable);
+        MelCloudHomeAuthService authService = new MelCloudHomeAuthService(httpClient);
+
+        // Act & Assert
+        MelCloudCommException exception = assertThrows(MelCloudCommException.class,
+                () -> authService.refreshToken("refresh-token"));
+        assertFalse(exception instanceof MelCloudHomeAuthException);
+    }
+
+    @Test
+    void whenRefreshEndpointRateLimitsThenRefreshTokenThrowsCommExceptionNotAuthException() throws Exception {
+        // Arrange
+        HttpResponse<String> rateLimited = fakeResponse(429, "", Map.of());
+        when(httpClient.send(any(HttpRequest.class), anyBodyHandler())).thenReturn(rateLimited);
+        MelCloudHomeAuthService authService = new MelCloudHomeAuthService(httpClient);
+
+        // Act & Assert
+        MelCloudCommException exception = assertThrows(MelCloudCommException.class,
+                () -> authService.refreshToken("refresh-token"));
+        assertFalse(exception instanceof MelCloudHomeAuthException);
+    }
+
+    @Test
+    void whenParEndpointAnswersWithServerErrorThenLoginThrowsCommExceptionNotAuthException() throws Exception {
+        // Arrange
+        HttpResponse<String> unavailable = fakeResponse(502, "", Map.of());
+        when(httpClient.send(any(HttpRequest.class), anyBodyHandler())).thenReturn(unavailable);
+        MelCloudHomeAuthService authService = new MelCloudHomeAuthService(httpClient);
+
+        // Act & Assert
+        MelCloudCommException exception = assertThrows(MelCloudCommException.class,
+                () -> authService.login("user@example.com", "secret"));
+        assertFalse(exception instanceof MelCloudHomeAuthException);
+    }
+
+    @Test
+    void whenTokenEndpointAnswersWithServerErrorAfterLoginThenLoginThrowsCommExceptionNotAuthException()
+            throws Exception {
+        // Arrange
+        HttpResponse<String> parResponse = fakeResponse(201, "{\"request_uri\":\"urn:par:abc\"}", Map.of());
+        HttpResponse<String> authorizeResponse = fakeResponse(302, "",
+                Map.of("Location", List.of("melcloudhome://callback?code=EXISTING123&state=xyz")));
+        HttpResponse<String> tokenUnavailable = fakeResponse(500, "", Map.of());
+        when(httpClient.send(any(HttpRequest.class), anyBodyHandler())).thenReturn(parResponse, authorizeResponse,
+                tokenUnavailable);
+        MelCloudHomeAuthService authService = new MelCloudHomeAuthService(httpClient);
+
+        // Act & Assert
+        MelCloudCommException exception = assertThrows(MelCloudCommException.class,
+                () -> authService.login("user@example.com", "secret"));
+        assertFalse(exception instanceof MelCloudHomeAuthException);
+    }
+
+    @Test
     void whenRefreshTokenIsBlankThenRefreshTokenThrowsIllegalArgumentException() {
         // Arrange
         MelCloudHomeAuthService authService = new MelCloudHomeAuthService(httpClient);

@@ -40,14 +40,8 @@ public class MelCloudHomeTrendSummaryReport {
      * {@value #OUTDOOR_TEMPERATURE_LABEL_MARKER}, if present.
      *
      * <p>
-     * With {@code period=Hourly}, the response mixes genuine unit readings with synthetic chart points the server
-     * appends: bucket-aligned repeats of the last value, and a final point stamped with the query's own {@code to}
-     * parameter echoed back verbatim. Both land exactly on a whole-minute ("HH:mm:00") boundary, whereas a genuine
-     * reading carries the unit's actual upload time with arbitrary seconds. Points landing on ":00" seconds are
-     * therefore treated as synthetic and skipped, walking backwards from the newest datapoint until a genuine one is
-     * found. This mirrors the fix already applied to the reference Home Assistant MELCloud Home integration (issues
-     * #152/#111 in {@code andrew-blake/melcloudhome}), which hit the same synthetic-point problem when it moved off
-     * the less precise {@code Daily} period.
+     * With {@code period=Hourly} the server appends synthetic chart points that land exactly on a whole-minute
+     * boundary; those are skipped, walking back from the newest datapoint until a genuine reading is found.
      *
      * @return the latest genuine reading's value, if any was found
      */

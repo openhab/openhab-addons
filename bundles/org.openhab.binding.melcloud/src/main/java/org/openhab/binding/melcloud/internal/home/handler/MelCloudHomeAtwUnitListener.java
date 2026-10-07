@@ -25,4 +25,10 @@ import org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit;
 public interface MelCloudHomeAtwUnitListener {
 
     void onAtwUnitUpdated(MelCloudHomeAtwUnit unit);
+
+    /**
+     * Called when a poll succeeded but its response does not contain this unit, for example because it was removed
+     * from the account.
+     */
+    void onAtwUnitMissing();
 }

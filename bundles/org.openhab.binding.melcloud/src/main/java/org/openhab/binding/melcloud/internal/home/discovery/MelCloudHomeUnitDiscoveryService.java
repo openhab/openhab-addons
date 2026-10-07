@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,15 +38,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MelCloudHomeUnitDiscoveryService} discovers ATA/ATW units under a {@code home-account} bridge, via its
- * own one-off {@code /context} fetch.
- *
- * <p>
- * openHAB core calls {@code initialize()} on this service — which triggers {@link #startBackgroundDiscovery()} —
- * synchronously while registering the bridge handler, before that handler's own asynchronous
- * {@code initialize()}/login has necessarily run. Background discovery therefore defers itself with a short retry
- * until the bridge actually reaches {@link ThingStatus#ONLINE}, rather than failing immediately with an
- * "unauthenticated" error on every startup.
+ * The {@link MelCloudHomeUnitDiscoveryService} discovers ATA/ATW units under a {@code home-account} bridge via its own
+ * one-off {@code /context} fetch. Background discovery waits with a short retry until the bridge is
+ * {@link ThingStatus#ONLINE}.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -61,7 +56,8 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
     private final Logger logger = LoggerFactory.getLogger(MelCloudHomeUnitDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> scanTask;
-    private int bridgeNotOnlineAttempts;
+    private volatile @Nullable ScheduledFuture<?> backgroundTask;
+    private final AtomicInteger bridgeNotOnlineAttempts = new AtomicInteger();
 
     /**
      * Creates a MelCloudHomeUnitDiscoveryService with enabled autostart.
@@ -73,7 +69,18 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
 
     @Override
     protected void startBackgroundDiscovery() {
-        discoverUnits();
+        // Return promptly: discovery performs a blocking network request.
+        backgroundTask = scheduler.schedule(this::discoverUnits, 0, TimeUnit.SECONDS);
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        ScheduledFuture<?> task = backgroundTask;
+        if (task != null) {
+            task.cancel(true);
+            backgroundTask = null;
+        }
+        super.stopBackgroundDiscovery();
     }
 
     @Override
@@ -98,17 +105,19 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
 
     private void discoverUnits() {
         if (thingHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            if (bridgeNotOnlineAttempts++ < BRIDGE_NOT_ONLINE_MAX_ATTEMPTS) {
+            int attempt = bridgeNotOnlineAttempts.incrementAndGet();
+            if (attempt <= BRIDGE_NOT_ONLINE_MAX_ATTEMPTS) {
                 logger.debug("MELCloud Home bridge is not online yet, deferring unit discovery by {}s (attempt {}/{})",
-                        BRIDGE_NOT_ONLINE_RETRY_DELAY_SECONDS, bridgeNotOnlineAttempts, BRIDGE_NOT_ONLINE_MAX_ATTEMPTS);
-                scheduler.schedule(this::discoverUnits, BRIDGE_NOT_ONLINE_RETRY_DELAY_SECONDS, TimeUnit.SECONDS);
+                        BRIDGE_NOT_ONLINE_RETRY_DELAY_SECONDS, attempt, BRIDGE_NOT_ONLINE_MAX_ATTEMPTS);
+                backgroundTask = scheduler.schedule(this::discoverUnits, BRIDGE_NOT_ONLINE_RETRY_DELAY_SECONDS,
+                        TimeUnit.SECONDS);
             } else {
                 logger.debug("MELCloud Home bridge is still not online after {} attempts, giving up on automatic "
                         + "unit discovery for now; a manual scan will retry", BRIDGE_NOT_ONLINE_MAX_ATTEMPTS);
             }
             return;
         }
-        bridgeNotOnlineAttempts = 0;
+        bridgeNotOnlineAttempts.set(0);
 
         logger.debug("Discover MELCloud Home units");
         try {

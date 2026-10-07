@@ -60,8 +60,7 @@ public class MelCloudHomeApiClient {
     private static final String CONTEXT_URL = BFF_BASE_URL + "/context";
     private static final String ATA_CONTROL_URL_TEMPLATE = BFF_BASE_URL + "/monitor/ataunit/%s";
     private static final String ATW_CONTROL_URL_TEMPLATE = BFF_BASE_URL + "/monitor/atwunit/%s";
-    // Provisional (ADR-012): path and single-endpoint-serves-create-and-update shape are not independently
-    // confirmed against real ATW traffic — see docs/changes/add-melcloud-home-schedule-management/proposal.md.
+    // Provisional: path and single-endpoint create/update shape are not confirmed against real ATW traffic.
     private static final String ATW_SCHEDULE_URL_TEMPLATE = BFF_BASE_URL + "/monitor/atwcloudschedule/%s";
     private static final String ATW_SCHEDULE_ENABLED_URL_TEMPLATE = BFF_BASE_URL
             + "/monitor/atwcloudschedule/%s/enabled";
@@ -69,9 +68,8 @@ public class MelCloudHomeApiClient {
     private static final String TELEMETRY_ENERGY_URL_TEMPLATE = BFF_BASE_URL + "/telemetry/telemetry/energy/%s";
     private static final String TRENDSUMMARY_URL = BFF_BASE_URL + "/report/v1/trendsummary";
 
-    // The WebSocket credential ("hash") is issued by a fixed AWS Lambda Function URL, not the mobile BFF itself,
-    // authenticated with the same mobile-BFF Bearer access token. Confirmed against the working reference
-    // implementation (andrew-blake/melcloudhome); see ADR-007.
+    // The WebSocket credential ("hash") is issued by a fixed AWS Lambda Function URL, not the mobile BFF itself, and
+    // is authenticated with the BFF Bearer access token.
     private static final String WEBSOCKET_HASH_URL = "https://6x2dgdulg7omjsxalnhmo4ynba0dcgwk.lambda-url.eu-west-1.on.aws/";
     private static final String WEBSOCKET_HOST = "wss://ws.melcloudhome.com";
 
@@ -129,12 +127,8 @@ public class MelCloudHomeApiClient {
     }
 
     /**
-     * Creates a new ATW cloud schedule entry, or updates an existing one if {@code request.id} matches one already
-     * on the unit — the community {@code melcloudhome} reference documents a single shared endpoint for both.
-     *
-     * <p>
-     * <b>Provisional (ADR-012):</b> this endpoint's path, and the create-and-update-share-one-endpoint shape, are
-     * not independently confirmed for ATW; see this class's {@code ATW_SCHEDULE_URL_TEMPLATE} and ADR-012.
+     * Creates a new ATW cloud schedule entry, or updates an existing one if {@code request.id} matches. Provisional:
+     * the endpoint's path and the shared create/update shape are not confirmed for ATW.
      *
      * @throws MelCloudCommException if the request fails
      */
@@ -184,16 +178,11 @@ public class MelCloudHomeApiClient {
 
     /**
      * Fetches the most recent outdoor temperature datapoint for an ATA unit over the given time window. ATW units
-     * report outdoor temperature directly in their {@code settings} instead — see
-     * {@link org.openhab.binding.melcloud.internal.home.api.dto.MelCloudHomeAtwUnit#getOutdoorTemperature()}.
+     * report outdoor temperature directly in their {@code settings} instead.
      *
      * <p>
-     * Queries with {@code period=Hourly}, not {@code Daily}: {@code Daily} labels are 30-minute bucket aggregates
-     * whose timestamps are not real reading times and can diverge from the actual latest reading, whereas
-     * {@code Hourly} datapoints carry the unit's genuine upload timestamp. This mirrors the fix already applied to
-     * the reference Home Assistant MELCloud Home integration (issues #152/#111 in {@code andrew-blake/melcloudhome});
-     * see {@code MelCloudHomeTrendSummaryReport#getLatestOutdoorTemperature()} for the synthetic-datapoint filtering
-     * that {@code Hourly} then requires.
+     * Queries with {@code period=Hourly}, whose datapoints carry the unit's genuine upload timestamp, unlike
+     * {@code Daily} bucket aggregates.
      *
      * @return the latest outdoor temperature in Celsius, if any data was available
      * @throws MelCloudCommException if the request fails or the response cannot be parsed
@@ -216,7 +205,7 @@ public class MelCloudHomeApiClient {
 
     /**
      * Fetches a short-lived WebSocket credential ("hash") for this account, exchanging the mobile-BFF Bearer access
-     * token at the fixed Lambda token endpoint, mirroring what the official app does (ADR-007).
+     * token at the fixed Lambda token endpoint.
      *
      * @return the {@code hash} used to open {@link #buildWebSocketUri(String)}
      * @throws MelCloudCommException if the request fails, is rejected, or the response is missing {@code hash}
@@ -237,7 +226,7 @@ public class MelCloudHomeApiClient {
      * @return the URI to open the MELCloud Home realtime push connection at
      */
     public URI buildWebSocketUri(String hash) {
-        return URI.create(WEBSOCKET_HOST + "/?hash=" + hash);
+        return URI.create(WEBSOCKET_HOST + "/?hash=" + urlEncode(hash));
     }
 
     private String get(String url, String accessToken) throws MelCloudCommException {
@@ -245,11 +234,14 @@ public class MelCloudHomeApiClient {
         headers.put("Authorization", "Bearer " + accessToken);
         try {
             String response = HttpUtil.executeUrl("GET", url, headers, null, null, TIMEOUT_MILLISECONDS);
-            logger.trace("MELCloud Home BFF GET {} -> {}", SensitiveDataMasker.maskGuidsInUrl(url),
-                    response == null ? "" : SensitiveDataMasker.maskJson(response));
+            if (logger.isTraceEnabled()) {
+                logger.trace("MELCloud Home BFF GET {} -> {}", SensitiveDataMasker.maskGuidsInUrl(url),
+                        response == null ? "" : SensitiveDataMasker.maskJson(response));
+            }
             return response == null ? "" : response;
         } catch (IOException e) {
-            throw new MelCloudCommException("Error occurred while calling " + url, e);
+            throw new MelCloudCommException("Error occurred while calling " + SensitiveDataMasker.maskGuidsInUrl(url),
+                    e);
         }
     }
 
@@ -257,11 +249,14 @@ public class MelCloudHomeApiClient {
         Properties headers = new Properties();
         headers.put("Authorization", "Bearer " + accessToken);
         try (InputStream content = new ByteArrayInputStream(jsonBody.getBytes(StandardCharsets.UTF_8))) {
-            logger.trace("MELCloud Home BFF PUT {} body={}", SensitiveDataMasker.maskGuidsInUrl(url),
-                    SensitiveDataMasker.maskJson(jsonBody));
+            if (logger.isTraceEnabled()) {
+                logger.trace("MELCloud Home BFF PUT {} body={}", SensitiveDataMasker.maskGuidsInUrl(url),
+                        SensitiveDataMasker.maskJson(jsonBody));
+            }
             HttpUtil.executeUrl("PUT", url, headers, content, "application/json", TIMEOUT_MILLISECONDS);
         } catch (IOException e) {
-            throw new MelCloudCommException("Error occurred while calling " + url, e);
+            throw new MelCloudCommException("Error occurred while calling " + SensitiveDataMasker.maskGuidsInUrl(url),
+                    e);
         }
     }
 
@@ -269,11 +264,14 @@ public class MelCloudHomeApiClient {
         Properties headers = new Properties();
         headers.put("Authorization", "Bearer " + accessToken);
         try (InputStream content = new ByteArrayInputStream(jsonBody.getBytes(StandardCharsets.UTF_8))) {
-            logger.trace("MELCloud Home BFF POST {} body={}", SensitiveDataMasker.maskGuidsInUrl(url),
-                    SensitiveDataMasker.maskJson(jsonBody));
+            if (logger.isTraceEnabled()) {
+                logger.trace("MELCloud Home BFF POST {} body={}", SensitiveDataMasker.maskGuidsInUrl(url),
+                        SensitiveDataMasker.maskJson(jsonBody));
+            }
             HttpUtil.executeUrl("POST", url, headers, content, "application/json", TIMEOUT_MILLISECONDS);
         } catch (IOException e) {
-            throw new MelCloudCommException("Error occurred while calling " + url, e);
+            throw new MelCloudCommException("Error occurred while calling " + SensitiveDataMasker.maskGuidsInUrl(url),
+                    e);
         }
     }
 
@@ -281,10 +279,13 @@ public class MelCloudHomeApiClient {
         Properties headers = new Properties();
         headers.put("Authorization", "Bearer " + accessToken);
         try {
-            logger.trace("MELCloud Home BFF DELETE {}", SensitiveDataMasker.maskGuidsInUrl(url));
+            if (logger.isTraceEnabled()) {
+                logger.trace("MELCloud Home BFF DELETE {}", SensitiveDataMasker.maskGuidsInUrl(url));
+            }
             HttpUtil.executeUrl("DELETE", url, headers, null, null, TIMEOUT_MILLISECONDS);
         } catch (IOException e) {
-            throw new MelCloudCommException("Error occurred while calling " + url, e);
+            throw new MelCloudCommException("Error occurred while calling " + SensitiveDataMasker.maskGuidsInUrl(url),
+                    e);
         }
     }
 

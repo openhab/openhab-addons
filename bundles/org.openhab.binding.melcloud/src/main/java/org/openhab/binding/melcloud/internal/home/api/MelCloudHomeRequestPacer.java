@@ -18,24 +18,19 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 
 /**
  * Enforces a minimum interval between the start of consecutive MELCloud Home API calls issued for one bridge, since
- * the platform's rate limit is account-wide, not per-unit (see ADR-008).
+ * the platform's rate limit is account-wide, not per-unit.
  *
  * <p>
- * {@link #schedule(Runnable)} never blocks the calling thread. When no wait is needed (the common case: no other
- * call happened recently), the task runs synchronously on the caller's thread, exactly as an unpaced call would.
- * Only when spacing is actually required does the task get handed to the provided {@link ScheduledExecutorService}
- * — per the project's coding rules, this class never creates a thread of its own and never calls
- * {@code Thread.sleep(...)}.
- *
- * <p>
- * One instance is owned per bridge ({@code MelCloudHomeAccountHandler}) and shared by every unit Thing under it, so
- * the spacing applies across the bridge's {@code /context} poll and every unit's control calls together.
+ * {@link #schedule(Runnable)} never blocks the calling thread: it runs the task immediately when no wait is needed
+ * and otherwise hands it to the provided {@link ScheduledExecutorService}. One instance is owned per bridge and is
+ * shared by every unit Thing under it.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -43,12 +38,13 @@ import org.openhab.binding.melcloud.internal.exceptions.MelCloudCommException;
 public class MelCloudHomeRequestPacer {
 
     /**
-     * Minimum spacing between calls, in milliseconds. Matches the value the {@code andrew-blake/melcloudhome} Home
-     * Assistant project settled on (its {@code RequestPacer}, {@code DEFAULT_MIN_REQUEST_INTERVAL = 0.5}) as a
-     * starting point; revisit once this binding's own rate-limit behavior is observed (see
-     * {@code docs/changes/add-melcloud-home-request-resilience/proposal.md}).
+     * Minimum spacing between calls, in milliseconds; a starting point to be revisited once the platform's rate-limit
+     * behavior is observed.
      */
     static final long DEFAULT_MIN_REQUEST_INTERVAL_MILLIS = 500;
+
+    /** Upper bound for {@link #scheduleBlocking(PacedCall)}, so a lost task cannot block its caller forever. */
+    private static final long BLOCKING_TIMEOUT_SECONDS = 60;
 
     private final ScheduledExecutorService scheduler;
     private final long minRequestIntervalMillis;
@@ -92,31 +88,29 @@ public class MelCloudHomeRequestPacer {
     }
 
     /**
-     * Like {@link #schedule(Runnable)}, but blocks the calling thread until {@code apiCall} has actually run and
-     * returns its result (or propagates its exception).
-     *
-     * <p>
-     * {@code ThingActions} methods (see {@code MelCloudHomeAtwScheduleActions}) are invoked synchronously by
-     * openHAB's rule engine/scripting layer and are expected to return a real result or throw, unlike
-     * {@link #handleCommand}'s existing fire-and-forget use of {@link #schedule(Runnable)}. This method still goes
-     * through the same pacing/serialization as every other call.
+     * Like {@link #schedule(Runnable)}, but blocks the calling thread until {@code apiCall} has run and returns its
+     * result (or propagates its exception), for synchronous {@code ThingActions} callers.
      *
      * @param <T> the call's result type
      * @param apiCall the call to pace and run
      * @return {@code apiCall}'s result
-     * @throws MelCloudCommException if {@code apiCall} throws it, or if waiting for it is interrupted
+     * @throws MelCloudCommException if {@code apiCall} throws it, or if waiting for it is interrupted or times out
      */
     public <T> T scheduleBlocking(PacedCall<T> apiCall) throws MelCloudCommException {
         CompletableFuture<T> future = new CompletableFuture<>();
         schedule(() -> {
             try {
                 future.complete(apiCall.call());
-            } catch (MelCloudCommException e) {
+            } catch (MelCloudCommException | RuntimeException e) {
+                // An unchecked failure must complete the future too, or the caller would wait for it forever.
                 future.completeExceptionally(e);
             }
         });
         try {
-            return future.get();
+            return future.get(BLOCKING_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            throw new MelCloudCommException("Timed out waiting for a paced call to complete", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new MelCloudCommException("Interrupted while waiting for a paced call to complete", e);

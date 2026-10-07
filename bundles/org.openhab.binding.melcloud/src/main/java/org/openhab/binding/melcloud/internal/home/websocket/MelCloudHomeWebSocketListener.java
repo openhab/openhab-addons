@@ -32,22 +32,12 @@ import com.google.gson.JsonSyntaxException;
  * Thin session handler for the MELCloud Home realtime push channel.
  *
  * <p>
- * Reads only enough of an incoming {@code unitStateChanged} frame to extract the affected unit ID, then hands it to
- * {@code onUnitDelta}. It never applies the frame's payload as state — per ADR-007, {@code GET /context} remains the
- * only source of truth; this class exists purely to trigger an out-of-cycle refresh sooner than the next scheduled
- * poll.
+ * Reads only the affected unit ID from an incoming {@code unitStateChanged} frame and hands it to {@code onUnitDelta}.
+ * The frame's payload is never applied as state; {@code GET /context} remains the only source of truth.
  *
  * <p>
- * Implements the classic Jetty {@link WebSocketListener} contract (as bundled by openHAB core's
- * {@code WebSocketFactory}) rather than the newer {@code Session.Listener} annotated style, which is not available
- * in that bundled version.
- *
- * <p>
- * {@link WebSocketListener}'s parameters carry no null annotations of their own (it is a plain, unannotated Jetty
- * interface), so under this class's {@code @NonNullByDefault} the Eclipse compiler rejects narrowing them to
- * {@code @NonNull} on override ("illegal redefinition"). Every overridden parameter is therefore marked
- * {@code @Nullable} to match the supertype's unconstrained contract, with an explicit null guard where the Jetty
- * contract guarantees non-null values are the only realistic case (e.g. {@code onWebSocketConnect}'s session).
+ * Parameters of the overridden Jetty methods are marked {@code @Nullable} because that interface carries no null
+ * annotations.
  *
  * @author Bernd Weymann - Initial contribution
  */

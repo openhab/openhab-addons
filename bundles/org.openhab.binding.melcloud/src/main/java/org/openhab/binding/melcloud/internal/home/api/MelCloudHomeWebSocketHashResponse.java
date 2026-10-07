@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Gson deserialization target for the JSON body returned by the MELCloud Home WebSocket token endpoint (a fixed AWS
  * Lambda Function URL, authenticated with the mobile-BFF Bearer access token): {@code {"hash": "...", "userId":
  * "..."}}. The {@code hash} is the short-lived credential appended as a query parameter when opening the
- * {@code wss://ws.melcloudhome.com} connection (ADR-007).
+ * {@code wss://ws.melcloudhome.com} connection.
  *
  * @author Bernd Weymann - Initial contribution
  */

@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link MelCloudHomeWebSocketListener}, focused on {@link MelCloudHomeWebSocketListener#extractUnitIds}
- * and callback dispatch — the parsing logic is the most bug-prone part of the realtime accelerator (ADR-007), since
+ * and callback dispatch — the parsing logic is the most bug-prone part of the realtime accelerator, since
  * the exact wire format of a MELCloud Home push frame is confirmed against a reference implementation, not a formal
  * spec.
  *

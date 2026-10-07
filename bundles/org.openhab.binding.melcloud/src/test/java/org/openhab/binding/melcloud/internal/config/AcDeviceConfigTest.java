@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link AcDeviceConfig#toString()}: {@code deviceID}/{@code buildingID} must never appear
- * unmasked, since this config is logged directly on handler {@code initialize()} (see ADR-010).
+ * unmasked, since this config is logged directly on handler {@code initialize()}.
  *
  * @author Bernd Weymann - Initial contribution
  */

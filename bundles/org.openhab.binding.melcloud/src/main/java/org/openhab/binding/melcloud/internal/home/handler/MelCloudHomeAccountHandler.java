@@ -23,6 +23,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,6 +48,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -53,23 +56,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link MelCloudHomeAccountHandler} logs in to the MELCloud Home platform, keeps the resulting access token
- * refreshed, and centrally polls {@code GET /context} for every ATA/ATW unit under the account, fanning the result
- * out to registered unit Thing handlers.
- *
- * <p>
- * Implements the login/refresh strategy plus the unit polling/fan-out strategy: one {@code /context} call every
- * {@link #CONTEXT_POLL_INTERVAL_SECONDS} serves every registered unit, rather than each unit Thing polling
- * independently, given the platform's known rate-limit sensitivity.
- *
- * <p>
- * Also owns the single {@link MelCloudHomeRequestPacer} shared by this bridge's {@code /context} poll and every
- * registered unit's control calls, since the MELCloud Home rate limit is account-wide (see ADR-008).
- *
- * <p>
- * Optionally owns a WebSocket connection to the MELCloud Home realtime push channel (see ADR-007). It only ever
- * triggers an out-of-cycle {@code /context} poll — never a state source in its own right — and any failure falls
- * back to the fixed-interval poll without affecting bridge status.
+ * {@link MelCloudHomeAccountHandler} logs in to the MELCloud Home platform, keeps the access token refreshed, and
+ * centrally polls {@code GET /context} for every unit, fanning the result out to the registered unit handlers.
+ * It also owns the shared {@link MelCloudHomeRequestPacer} and an optional WebSocket connection that only triggers
+ * out-of-cycle polls; failures there fall back to plain polling.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -86,6 +76,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     private static final long REALTIME_RECONNECT_INITIAL_SECONDS = 5;
     private static final long REALTIME_RECONNECT_MAX_SECONDS = 300;
     private static final long REALTIME_CONNECT_TIMEOUT_SECONDS = 10;
+    private static final int POLL_FAILURES_BEFORE_OFFLINE = 3;
 
     private final Logger logger = LoggerFactory.getLogger(MelCloudHomeAccountHandler.class);
 
@@ -110,6 +101,9 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     private volatile @Nullable ScheduledFuture<?> realtimeDebounceFuture;
     private volatile @Nullable ScheduledFuture<?> realtimeReconnectFuture;
     private volatile long realtimeReconnectDelaySeconds = REALTIME_RECONNECT_INITIAL_SECONDS;
+    /** Identifies the current connection attempt, so callbacks of a superseded or abandoned session are ignored. */
+    private final AtomicLong realtimeGeneration = new AtomicLong();
+    private final AtomicInteger consecutivePollFailures = new AtomicInteger();
 
     public MelCloudHomeAccountHandler(Bridge bridge, MelCloudHomeAuthService authService,
             MelCloudHomeApiClient apiClient, StorageService storageService, WebSocketFactory webSocketFactory) {
@@ -196,7 +190,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
 
     /**
      * @return the pacer shared by this bridge's poll and every registered unit's control calls, so unit handlers can
-     *         route their outbound API calls through the same account-wide spacing (ADR-008)
+     *         route their outbound API calls through the same account-wide spacing
      */
     public MelCloudHomeRequestPacer getRequestPacer() {
         return requestPacer;
@@ -229,6 +223,9 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     }
 
     private void authenticate() {
+        if (disposed) {
+            return;
+        }
         Storage<MelCloudHomeAuthState> currentStorage = storage;
         MelCloudHomeAuthState state = currentStorage == null ? null : currentStorage.get(thing.getUID().toString());
         String storedRefreshToken = state == null ? null : state.refreshToken();
@@ -238,8 +235,14 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
             try {
                 onLoginSuccess(authService.refreshToken(storedRefreshToken));
                 return;
-            } catch (MelCloudCommException e) {
+            } catch (MelCloudHomeAuthException e) {
                 logger.debug("Stored refresh token was rejected, falling back to full login: {}", e.getMessage());
+            } catch (MelCloudCommException e) {
+                // A transient failure says nothing about the refresh token; do not spend a full login on it.
+                logger.debug("MELCloud Home token refresh failed, will retry: {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                scheduleRetry();
+                return;
             }
         }
 
@@ -247,6 +250,8 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
             onLoginSuccess(authService.login(config.username, config.password));
         } catch (MelCloudHomeAuthException e) {
             logger.warn("MELCloud Home login rejected: {}", e.getMessage());
+            accessToken = null;
+            cancelContextPoll();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (MelCloudCommException e) {
             logger.warn("MELCloud Home login failed: {}", e.getMessage());
@@ -256,6 +261,10 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     }
 
     private void onLoginSuccess(MelCloudHomeTokenResponse tokenResponse) {
+        if (disposed) {
+            // dispose() ran while the login was in flight; do not publish state or reschedule anything.
+            return;
+        }
         accessToken = tokenResponse.accessToken;
         String newRefreshToken = tokenResponse.refreshToken;
         if (newRefreshToken != null) {
@@ -292,16 +301,49 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     }
 
     private void doPollContext() {
+        if (disposed) {
+            return;
+        }
         try {
             MelCloudHomeUserContext context = fetchUserContext();
+            onPollSucceeded();
             ataUnitListeners.forEach((unitId, listener) -> context.findAtaUnit(unitId)
-                    .ifPresentOrElse(listener::onAtaUnitUpdated, () -> logger
-                            .debug("ATA unit {} not found in /context response", SensitiveDataMasker.maskId(unitId))));
+                    .ifPresentOrElse(listener::onAtaUnitUpdated, () -> {
+                        logger.debug("ATA unit {} not found in /context response", SensitiveDataMasker.maskId(unitId));
+                        listener.onAtaUnitMissing();
+                    }));
             atwUnitListeners.forEach((unitId, listener) -> context.findAtwUnit(unitId)
-                    .ifPresentOrElse(listener::onAtwUnitUpdated, () -> logger
-                            .debug("ATW unit {} not found in /context response", SensitiveDataMasker.maskId(unitId))));
+                    .ifPresentOrElse(listener::onAtwUnitUpdated, () -> {
+                        logger.debug("ATW unit {} not found in /context response", SensitiveDataMasker.maskId(unitId));
+                        listener.onAtwUnitMissing();
+                    }));
         } catch (MelCloudCommException e) {
-            logger.debug("MELCloud Home /context poll failed, will retry next cycle: {}", e.getMessage());
+            onPollFailed(e);
+        }
+    }
+
+    private void onPollSucceeded() {
+        consecutivePollFailures.set(0);
+        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        if (statusInfo.getStatus() == ThingStatus.OFFLINE
+                && statusInfo.getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
+
+    /**
+     * Counts consecutive poll failures. Once {@link #POLL_FAILURES_BEFORE_OFFLINE} are reached the bridge (and with
+     * it every unit Thing) goes offline, and the access token is renewed right away, since a revoked token would
+     * otherwise keep failing until its scheduled expiry.
+     */
+    private void onPollFailed(MelCloudCommException e) {
+        int failures = consecutivePollFailures.incrementAndGet();
+        logger.debug("MELCloud Home /context poll failed ({} in a row), will retry next cycle: {}", failures,
+                e.getMessage());
+        if (failures == POLL_FAILURES_BEFORE_OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "MELCloud Home could not be reached");
+            scheduler.execute(this::authenticate);
         }
     }
 
@@ -311,7 +353,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
      */
     private void startRealtimeUpdatesIfNeeded() {
         WebSocketClient client = webSocketClient;
-        if (client == null || realtimeConnected) {
+        if (client == null || realtimeConnected || realtimeReconnectFuture != null) {
             return;
         }
         if (!client.isStarted()) {
@@ -327,23 +369,28 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Fetches a fresh hash and opens the connection, blocking this call's own thread (always the bridge's own
-     * {@code scheduler}, never a caller outside this class — see {@link #startRealtimeUpdatesIfNeeded()} and
-     * {@link #reconnectRealtimeUpdates()}) up to {@link #REALTIME_CONNECT_TIMEOUT_SECONDS} while the handshake
-     * completes. {@link WebSocketClient#connect(Object, URI)} returns a plain {@link Future}, not a
-     * {@code CompletableFuture} — there is no non-blocking way to observe its outcome, so this mirrors every other
-     * blocking network call already made from a scheduler task in this class (e.g. {@link #authenticate()}).
+     * Fetches a fresh hash and opens the connection, blocking the bridge's scheduler thread for up to
+     * {@link #REALTIME_CONNECT_TIMEOUT_SECONDS} while the handshake completes.
      */
     private void connectRealtimeUpdates(WebSocketClient client) {
+        long generation = realtimeGeneration.incrementAndGet();
         try {
             String hash = apiClient.fetchWebSocketHash(getAccessToken());
             URI uri = apiClient.buildWebSocketUri(hash);
             MelCloudHomeWebSocketListener listener = new MelCloudHomeWebSocketListener(this::onRealtimeDeltaReceived,
-                    this::onRealtimeConnected, this::onRealtimeDisconnected);
+                    () -> onRealtimeConnected(generation), () -> onRealtimeDisconnected(generation));
             Future<Session> sessionFuture = client.connect(listener, uri);
-            sessionFuture.get(REALTIME_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            try {
+                sessionFuture.get(REALTIME_CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                // Abandon the handshake, so it cannot complete later next to the retried connection.
+                sessionFuture.cancel(true);
+                realtimeGeneration.incrementAndGet();
+                throw e;
+            }
             // Success: onRealtimeConnected() already ran via the listener's onWebSocketConnect callback.
-        } catch (MelCloudCommException | IOException | ExecutionException | TimeoutException e) {
+        } catch (MelCloudCommException | IOException | ExecutionException | TimeoutException
+                | IllegalArgumentException e) {
             logger.debug("MELCloud Home WebSocket connect failed, will retry: {}", e.getMessage());
             scheduleRealtimeReconnect();
         } catch (InterruptedException e) {
@@ -351,12 +398,18 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private void onRealtimeConnected() {
+    private void onRealtimeConnected(long generation) {
+        if (generation != realtimeGeneration.get()) {
+            return;
+        }
         realtimeConnected = true;
         realtimeReconnectDelaySeconds = REALTIME_RECONNECT_INITIAL_SECONDS;
     }
 
-    private void onRealtimeDisconnected() {
+    private void onRealtimeDisconnected(long generation) {
+        if (generation != realtimeGeneration.get()) {
+            return;
+        }
         realtimeConnected = false;
         if (!disposed) {
             logger.info("MELCloud Home realtime connection lost; reconnecting (polling continues meanwhile)");
@@ -385,7 +438,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     /**
      * Called by {@link MelCloudHomeWebSocketListener} for every unit ID mentioned in a {@code unitStateChanged}
      * frame. Never applies the frame's own content as state; only triggers a debounced, out-of-cycle
-     * {@link #pollContext()} for units this bridge actually has a registered listener for (ADR-007).
+     * {@link #pollContext()} for units this bridge actually has a registered listener for.
      */
     private void onRealtimeDeltaReceived(String unitId) {
         if (!ataUnitListeners.containsKey(unitId) && !atwUnitListeners.containsKey(unitId)) {
@@ -408,6 +461,9 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
 
     private void scheduleRefresh(long expiresInSeconds) {
         cancelScheduledRefresh();
+        if (disposed) {
+            return;
+        }
         long delaySeconds = Math.max(0, expiresInSeconds - REFRESH_SAFETY_MARGIN_SECONDS);
         logger.debug("Scheduling the next MELCloud Home token refresh in {}s", delaySeconds);
         refreshFuture = scheduler.schedule(this::authenticate, delaySeconds, TimeUnit.SECONDS);
@@ -415,6 +471,9 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
 
     private void scheduleRetry() {
         cancelScheduledRefresh();
+        if (disposed) {
+            return;
+        }
         logger.debug("Scheduling a MELCloud Home login retry in {}s", RETRY_DELAY_SECONDS);
         refreshFuture = scheduler.schedule(this::authenticate, RETRY_DELAY_SECONDS, TimeUnit.SECONDS);
     }
@@ -455,6 +514,7 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         WebSocketClient client = webSocketClient;
         webSocketClient = null;
         realtimeConnected = false;
+        realtimeGeneration.incrementAndGet();
         if (client != null) {
             try {
                 client.stop();

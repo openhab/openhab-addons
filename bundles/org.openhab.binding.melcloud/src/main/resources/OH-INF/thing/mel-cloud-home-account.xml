@@ -6,15 +6,7 @@
 
 	<bridge-type id="home-account">
 		<label>MELCloud Home Account</label>
-		<description>Account bridge for the newer MELCloud Home cloud platform (auth.melcloudhome.com). Logs in
-			with your
-			MELCloud Home email and password, running the full OAuth 2.0 Authorization Code + PKCE
-			flow (including the
-			AWS
-			Cognito-federated credential submission) entirely in the background, and keeps
-			the resulting access token
-			refreshed for
-			use by ATA/ATW unit Things.</description>
+		<description>Account bridge for the MELCloud Home cloud platform.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
@@ -29,12 +21,8 @@
 			</parameter>
 			<parameter name="enableRealtimeUpdates" type="boolean" required="false">
 				<label>Enable Realtime Updates</label>
-				<description>Connect to the MELCloud Home push channel to narrow the delay between an out-of-band
-					change (the
-					MELCloud app, a physical remote) and openHAB noticing it. Best-effort: any failure
-					falls back to plain polling and
-					never affects this bridge's status. Disable to run on polling
-					alone.</description>
+				<description>Use the push channel for faster updates after changes made outside openHAB. Falls back to polling on
+					failure.</description>
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>

@@ -126,4 +126,21 @@ class MelCloudHomeRequestPacerTest {
         assertEquals("delayed-ok", result);
         assertTrue(elapsedMillis >= intervalMillis / 2, "scheduleBlocking should have waited for its paced slot");
     }
+
+    @Test
+    void whenScheduleBlockingCallThrowsRuntimeExceptionThenItIsWrappedInsteadOfBlockingForever() {
+        // Arrange: the first call reserves the slot so the second one runs on the scheduler thread
+        long intervalMillis = 50;
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        MelCloudHomeRequestPacer pacer = new MelCloudHomeRequestPacer(scheduler, intervalMillis);
+        pacer.schedule(() -> {
+            // First call: reserves the next slot, nothing to assert.
+        });
+
+        // Act & Assert
+        MelCloudCommException thrown = assertThrows(MelCloudCommException.class, () -> pacer.scheduleBlocking(() -> {
+            throw new IllegalStateException("unexpected");
+        }));
+        assertTrue(thrown.getCause() instanceof IllegalStateException);
+    }
 }

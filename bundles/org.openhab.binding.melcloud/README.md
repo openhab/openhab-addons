@@ -112,6 +112,10 @@ ATA unit and ATW unit configuration:
 |--------|-----------|----------------------------------------------------------------------|
 | unitId | x         | The unit's identifier, as returned by the MELCloud Home API.        |
 
+MELCloud Home has no public API.
+The binding signs in with your account credentials the same way the MELCloud Home mobile app does and relies on interfaces that Mitsubishi Electric may change or rate-limit without notice.
+A change on their side can break the MELCloud Home Things until the binding is adapted.
+
 Unlike MELCloud Things, MELCloud Home Things have no `pollingInterval` config parameter.
 The `home-account` bridge centrally polls every registered unit's state every 60 seconds; each unit additionally polls its own energy/outdoor-temperature telemetry (`energy-consumed`/`energy-produced`/`outdoor-temperature` channels) every 30 minutes, since that data changes slowly.
 
@@ -166,7 +170,7 @@ openHAB's uninitialized state. This applies in particular to `outdoor-temperatur
 whose `settings` array frequently does not include an `OutdoorTemperature` entry at all, depending on the unit/
 firmware. It does not apply to a value that is present but not recognized by this binding (an unknown fan speed,
 vane position, or operation mode word); such cases are logged at debug level and leave the channel untouched instead,
-since that indicates a binding gap rather than genuinely missing data. See ADR-009 for the full rationale.
+since that indicates a binding gap rather than genuinely missing data.
 
 #### Air-to-Air (ATA) heat pump
 
@@ -188,7 +192,7 @@ since that indicates a binding gap rather than genuinely missing data. See ADR-0
 
 `operation-mode`'s codes `1` (Heat) and `3` (Cool) are confirmed against the MELCloud Home API's own integer
 encoding (observed on its Schedule/Scene write endpoints); `2` (Dry), `7` (Fan), and `8` (Automatic) are an invented
-convention chosen to match the legacy MELCloud binding's numbering and are not independently confirmed. See ADR-006.
+convention chosen to match the legacy MELCloud binding's numbering and are not independently confirmed.
 
 #### Air-to-Water (ATW)
 
@@ -220,14 +224,13 @@ convention chosen to match the legacy MELCloud binding's numbering and are not i
 
 ### MELCloud Home Air-to-Water (ATW) Schedule Management
 
-`atw-unit` Things expose cloud schedule management as `ThingActions` rather than Channels/Items (ADR-011): a
+`atw-unit` Things expose cloud schedule management as `ThingActions` rather than Channels/Items: a
 schedule is a variable-length list of multi-field entries, which doesn't fit the single-value Channel/Item model the
 rest of this binding uses.
 
 **This feature is provisional.** The endpoint paths, the day-of-week/operation-mode integer encodings, and even
 whether one write call genuinely serves both create and update are not independently confirmed against real ATW
-traffic — see ADR-012 and `docs/changes/add-melcloud-home-schedule-management/proposal.md` for the full evidence
-trail. Treat it as a starting point that may need adjustment once verified, not a guaranteed-working feature.
+traffic. Treat it as a starting point that may need adjustment once verified, not a guaranteed-working feature.
 
 ```java
 import org.openhab.core.model.script.actions.Things;
@@ -244,7 +247,8 @@ if (actions instanceof MelCloudHomeAtwScheduleActions scheduleActions) {
     String newId = scheduleActions.createSchedule("monday,wednesday,friday", "06:00:00", true,
             "heatRoomTemperature", 21.0, null, null, null);
 
-    // Update an existing entry by id; null fields are meant to be left unchanged (unconfirmed, see ADR-012).
+    // Update an existing entry by id; null fields keep the entry's current value. The full entry is sent, so the
+    // id must be one returned by listSchedules() (unconfirmed against real traffic).
     scheduleActions.updateSchedule(newId, null, null, null, null, 19.0, null, null, null);
 
     // Delete an entry, or suspend/resume every schedule on the unit at once.

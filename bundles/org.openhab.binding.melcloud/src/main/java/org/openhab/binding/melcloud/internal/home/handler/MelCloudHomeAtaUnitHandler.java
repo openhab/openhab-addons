@@ -17,6 +17,7 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.*;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -52,14 +53,9 @@ import org.slf4j.LoggerFactory;
  * The {@link MelCloudHomeAtaUnitHandler} handles a single MELCloud Home Air-to-Air unit.
  *
  * <p>
- * Its main state (power, mode, temperatures, fan/vane, error/standby state, rssi) comes from the bridge's
- * centralized {@code /context} poll via {@link MelCloudHomeAtaUnitListener#onAtaUnitUpdated(MelCloudHomeAtaUnit)}.
- * Energy and outdoor-temperature telemetry are polled directly by this handler at a much longer interval, since
- * those endpoints are inherently per-unit.
- *
- * <p>
- * Outbound control commands are deduplicated against the last known unit state (skipping a call whose single target
- * field already matches) and routed through the bridge's shared {@code MelCloudHomeRequestPacer}, per ADR-008.
+ * State comes from the bridge's centralized {@code /context} poll; energy and outdoor temperature are polled
+ * directly at a longer interval. Outbound commands are deduplicated and routed through the bridge's shared
+ * {@code MelCloudHomeRequestPacer}.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -70,17 +66,9 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
     private static final String ENERGY_CONSUMED_MEASURE = "cumulative_energy_consumed_since_last_upload";
 
     /**
-     * Maps the MELCloud Home API's word-based operation mode onto the same numeric codes the legacy binding's
-     * {@code operationMode-channel} already uses for the A.C. Device (1 = Heat, 2 = Dry, 3 = Cool, 7 = Fan,
-     * 8 = Auto/Automatic), so both Thing families expose the same Number channel contract.
-     *
-     * <p>
-     * Only {@code 1} (Heat) and {@code 3} (Cool) are independently confirmed against a real wire-format integer the
-     * MELCloud Home API itself sends/accepts (the Schedule and Scene write endpoints, per the community
-     * {@code andrew-blake/melcloudhome} project's API reference) — {@code 2}/{@code 7}/{@code 8} remain an invented,
-     * legacy-mirroring convention with no such confirmation. This class never sends a raw integer to the API either
-     * way (control commands always go out as the word value), so the distinction is evidence bookkeeping only, not a
-     * behavioral concern. See ADR-006's 2026-08-17 update for the full trace.
+     * Maps the API's word-based operation mode onto the legacy binding's numeric codes (1 = Heat, 2 = Dry, 3 = Cool,
+     * 7 = Fan, 8 = Auto). Only {@code 1} and {@code 3} are confirmed API values; control commands always send the
+     * word value.
      */
     private static final Map<String, Integer> OPERATION_MODE_WORD_TO_CODE = Map.of("Heat", 1, "Dry", 2, "Cool", 3,
             "Fan", 7, "Automatic", 8);
@@ -121,6 +109,8 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
     private @Nullable ScheduledFuture<?> telemetryFuture;
     private volatile @Nullable MelCloudHomeAtaUnit lastKnownUnit;
     private volatile boolean capabilitiesPropertiesSet;
+    /** Last value sent per channel since the last poll; see {@link #isRedundant(String, Object, boolean)}. */
+    private final Map<String, Object> sentCommands = new ConcurrentHashMap<>();
 
     public MelCloudHomeAtaUnitHandler(Thing thing) {
         super(thing);
@@ -153,6 +143,7 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
             handler.unregisterAtaUnitListener(config.unitId);
         }
         cancelTelemetryPoll();
+        sentCommands.clear();
         bridgeHandler = null;
     }
 
@@ -181,26 +172,32 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
         logger.debug("Received command '{}' to channel {}", command, channelUID);
 
         if (command instanceof RefreshType) {
-            logger.debug("Refresh command not supported");
+            MelCloudHomeAtaUnit knownUnit = lastKnownUnit;
+            if (knownUnit != null) {
+                publishState(knownUnit);
+            }
             return;
         }
 
         MelCloudHomeAccountHandler handler = bridgeHandler;
         if (handler == null) {
-            logger.warn("No connection to MELCloud Home available, ignoring command");
+            logger.debug("No connection to MELCloud Home available, ignoring command");
             return;
         }
 
         MelCloudHomeAtaUnit lastUnit = lastKnownUnit;
         MelCloudHomeAtaControlRequest request = new MelCloudHomeAtaControlRequest();
-        switch (channelUID.getId()) {
+        String channelId = channelUID.getId();
+        Object requested;
+        switch (channelId) {
             case CHANNEL_POWER:
                 boolean powerValue = command == OnOffType.ON;
-                if (lastUnit != null && lastUnit.isPower() == powerValue) {
+                if (isRedundant(channelId, powerValue, lastUnit != null && lastUnit.isPower() == powerValue)) {
                     logger.debug("Skipping power command, unit already reports power={}", powerValue);
                     return;
                 }
                 request.power = powerValue;
+                requested = powerValue;
                 break;
             case CHANNEL_HOME_OPERATION_MODE:
                 Integer operationModeCode = toInt(command);
@@ -210,22 +207,26 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     logger.debug("Unknown operation mode code '{}', ignoring command", command);
                     return;
                 }
-                if (lastUnit != null && operationModeWord.equals(lastUnit.getOperationMode())) {
+                if (isRedundant(channelId, operationModeWord,
+                        lastUnit != null && operationModeWord.equals(lastUnit.getOperationMode()))) {
                     logger.debug("Skipping operation mode command, unit already reports mode={}", operationModeWord);
                     return;
                 }
                 request.operationMode = operationModeWord;
+                requested = operationModeWord;
                 break;
             case CHANNEL_HOME_SET_TEMPERATURE:
                 Double temperature = toCelsius(command);
                 if (temperature == null) {
                     return;
                 }
-                if (lastUnit != null && lastUnit.getSetTemperature().filter(temperature::equals).isPresent()) {
+                if (isRedundant(channelId, temperature,
+                        lastUnit != null && lastUnit.getSetTemperature().filter(temperature::equals).isPresent())) {
                     logger.debug("Skipping set temperature command, unit already reports {}", temperature);
                     return;
                 }
                 request.setTemperature = temperature;
+                requested = temperature;
                 break;
             case CHANNEL_HOME_FAN_SPEED:
                 Integer fanSpeedCode = toInt(command);
@@ -234,11 +235,13 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     logger.debug("Unknown fan speed code '{}', ignoring command", command);
                     return;
                 }
-                if (lastUnit != null && lastUnit.getFanSpeed().filter(fanSpeedWord::equals).isPresent()) {
+                if (isRedundant(channelId, fanSpeedWord,
+                        lastUnit != null && lastUnit.getFanSpeed().filter(fanSpeedWord::equals).isPresent())) {
                     logger.debug("Skipping fan speed command, unit already reports {}", fanSpeedWord);
                     return;
                 }
                 request.setFanSpeed = fanSpeedWord;
+                requested = fanSpeedWord;
                 break;
             case CHANNEL_HOME_VANE_HORIZONTAL:
                 Integer vaneHorizontalCode = toInt(command);
@@ -248,12 +251,13 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     logger.debug("Unknown vane horizontal code '{}', ignoring command", command);
                     return;
                 }
-                if (lastUnit != null
-                        && lastUnit.getVaneHorizontalDirection().filter(vaneHorizontalWord::equals).isPresent()) {
+                if (isRedundant(channelId, vaneHorizontalWord, lastUnit != null
+                        && lastUnit.getVaneHorizontalDirection().filter(vaneHorizontalWord::equals).isPresent())) {
                     logger.debug("Skipping vane horizontal command, unit already reports {}", vaneHorizontalWord);
                     return;
                 }
                 request.vaneHorizontalDirection = vaneHorizontalWord;
+                requested = vaneHorizontalWord;
                 break;
             case CHANNEL_HOME_VANE_VERTICAL:
                 Integer vaneVerticalCode = toInt(command);
@@ -263,30 +267,59 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                     logger.debug("Unknown vane vertical code '{}', ignoring command", command);
                     return;
                 }
-                if (lastUnit != null
-                        && lastUnit.getVaneVerticalDirection().filter(vaneVerticalWord::equals).isPresent()) {
+                if (isRedundant(channelId, vaneVerticalWord, lastUnit != null
+                        && lastUnit.getVaneVerticalDirection().filter(vaneVerticalWord::equals).isPresent())) {
                     logger.debug("Skipping vane vertical command, unit already reports {}", vaneVerticalWord);
                     return;
                 }
                 request.vaneVerticalDirection = vaneVerticalWord;
+                requested = vaneVerticalWord;
                 break;
             default:
                 logger.debug("Read-only or unknown channel {}, skipping command", channelUID);
                 return;
         }
 
+        Object sentValue = requested;
+        sentCommands.put(channelId, sentValue);
         handler.getRequestPacer().schedule(() -> {
             try {
                 handler.getApiClient().controlAtaUnit(handler.getAccessToken(), config.unitId, request);
             } catch (MelCloudCommException e) {
-                logger.warn("Command '{}' to channel '{}' failed, reason {}. ", command, channelUID, e.getMessage());
+                sentCommands.remove(channelId, sentValue);
+                logger.debug("Command '{}' to channel '{}' failed, reason {}. ", command, channelUID, e.getMessage());
             }
         });
+    }
+
+    /**
+     * Whether a command is redundant. The value the binding itself sent for the channel since the last poll takes
+     * precedence over the polled unit state, which is up to one poll interval old and does not yet reflect it.
+     *
+     * @param channelId the channel the command targets
+     * @param requested the value the command asks for
+     * @param matchesPolledState whether the last polled unit state already has that value
+     */
+    private boolean isRedundant(String channelId, Object requested, boolean matchesPolledState) {
+        Object sent = sentCommands.get(channelId);
+        return sent != null ? sent.equals(requested) : matchesPolledState;
+    }
+
+    @Override
+    public void onAtaUnitMissing() {
+        lastKnownUnit = null;
+        sentCommands.clear();
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Unit not found in the MELCloud Home account");
     }
 
     @Override
     public void onAtaUnitUpdated(MelCloudHomeAtaUnit unit) {
         lastKnownUnit = unit;
+        sentCommands.clear();
+        publishState(unit);
+    }
+
+    private void publishState(MelCloudHomeAtaUnit unit) {
         updateCapabilityProperties(unit.capabilities);
         updateStatus(ThingStatus.ONLINE);
         updateState(CHANNEL_POWER, OnOffType.from(unit.isPower()));

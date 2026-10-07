@@ -24,7 +24,7 @@ import org.openhab.binding.melcloud.internal.mock.FileReader;
 
 /**
  * Unit tests for {@link SensitiveDataMasker}, including regression tests against the real MELCloud Home API
- * captures {@code src/test/resources/ata.json} and {@code src/test/resources/atw-ftc7.json} (see ADR-010) to
+ * captures {@code src/test/resources/ata.json} and {@code src/test/resources/atw-ftc7.json} to
  * confirm that personal data and hardware identifiers no longer survive masking.
  *
  * @author Bernd Weymann - Initial contribution

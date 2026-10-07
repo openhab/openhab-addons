@@ -28,4 +28,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 record MelCloudHomeAuthState(String refreshToken) {
+
+    @Override
+    public String toString() {
+        return "MelCloudHomeAuthState[refreshToken=<redacted>]";
+    }
 }
