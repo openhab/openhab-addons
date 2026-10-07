@@ -92,6 +92,9 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
+			<channel-group id="market" typeId="market-summary">
+				<label>Market</label>
+			</channel-group>
 			<channel-group id="today" typeId="daily-prices">
 				<label>Today</label>
 			</channel-group>
@@ -100,6 +103,10 @@
 			</channel-group>
 		</channel-groups>
 
+	</thing-type>
+
+	<channel-group-type id="market-summary">
+		<label>Market Summary</label>
 		<channels>
 			<channel id="current-price" typeId="energy-price">
 				<label>Current Price</label>
@@ -114,7 +121,7 @@
 				<label>Last Update</label>
 			</channel>
 		</channels>
-	</thing-type>
+	</channel-group-type>
 
 	<channel-group-type id="daily-prices">
 		<label>Daily Prices</label>
