@@ -85,7 +85,6 @@ import org.slf4j.LoggerFactory;
  * @author Paul Frank - Initial contribution of first handler implementation
  * @author Thomas Burri - Extended the thing handler for a WPM compatible heat pump with more channels.
  * @author Gerd Zanker - Fixed 'hotwater-*-temperature' handleCommands, improved comments and a nullable check.
- * @author Gerd Zanker - Fixed 'operating-mode' handleCommand, improved debug logging for commands.
  */
 @NonNullByDefault
 public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
@@ -346,7 +345,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             try {
                 if (GROUP_SYSTEM_PARAMETER_ALLWPM.equals(channelUID.getGroupId())) {
                     switch (channelUID.getIdWithoutGroup()) {
-                        case CHANNEL_OPERATION_MODE:
+                        case CHANNEL_OPERATING_MODE:
                             writeInt16(1500, getInt16Value(command));
                             break;
                         case CHANNEL_HC1_COMFORT_TEMPERATURE:
