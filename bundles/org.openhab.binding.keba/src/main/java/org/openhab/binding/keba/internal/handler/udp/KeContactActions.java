@@ -81,4 +81,45 @@ public class KeContactActions implements ThingActions {
     public static void setDisplay(ThingActions actions, @Nullable String text) {
         ((KeContactActions) actions).setDisplay(text);
     }
+
+    @RuleAction(label = "@text/actionSetChargingCurrentLabel", description = "@text/actionSetChargingCurrentDesc")
+    public void setChargingCurrent(
+            @ActionInput(name = "current", label = "@text/actionInputCurrentMilliAmpsLabel", description = "@text/actionInputCurrentMilliAmpsDesc") int currentMilliAmps,
+            @ActionInput(name = "delaySeconds", label = "@text/actionInputDelaySecondsLabel", description = "@text/actionInputDelaySecondsDesc") int delaySeconds) {
+        ThingHandler localHandler = handler;
+        if (localHandler == null) {
+            logger.warn("KeContact Action service ThingHandler is null!");
+            return;
+        }
+        if (localHandler instanceof KeContactHandler udpHandler) {
+            udpHandler.setChargingCurrent(currentMilliAmps, delaySeconds);
+        } else if (localHandler instanceof KeContactCombinedHandler combinedHandler) {
+            combinedHandler.setChargingCurrent(currentMilliAmps, delaySeconds);
+        }
+    }
+
+    public static void setChargingCurrent(ThingActions actions, int currentMilliAmps, int delaySeconds) {
+        ((KeContactActions) actions).setChargingCurrent(currentMilliAmps, delaySeconds);
+    }
+
+    @RuleAction(label = "@text/actionSetFailsafeLabel", description = "@text/actionSetFailsafeDesc")
+    public void setFailsafe(
+            @ActionInput(name = "current", label = "@text/actionInputCurrentMilliAmpsLabel", description = "@text/actionInputCurrentMilliAmpsDesc") int currentMilliAmps,
+            @ActionInput(name = "timeoutSeconds", label = "@text/actionInputFailsafeTimeoutLabel", description = "@text/actionInputFailsafeTimeoutDesc") int timeoutSeconds,
+            @ActionInput(name = "persist", label = "@text/actionInputFailsafePersistLabel", description = "@text/actionInputFailsafePersistDesc") boolean persist) {
+        ThingHandler localHandler = handler;
+        if (localHandler == null) {
+            logger.warn("KeContact Action service ThingHandler is null!");
+            return;
+        }
+        if (localHandler instanceof KeContactHandler udpHandler) {
+            udpHandler.setFailsafe(currentMilliAmps, timeoutSeconds, persist);
+        } else if (localHandler instanceof KeContactCombinedHandler combinedHandler) {
+            combinedHandler.setFailsafe(currentMilliAmps, timeoutSeconds, persist);
+        }
+    }
+
+    public static void setFailsafe(ThingActions actions, int currentMilliAmps, int timeoutSeconds, boolean persist) {
+        ((KeContactActions) actions).setFailsafe(currentMilliAmps, timeoutSeconds, persist);
+    }
 }

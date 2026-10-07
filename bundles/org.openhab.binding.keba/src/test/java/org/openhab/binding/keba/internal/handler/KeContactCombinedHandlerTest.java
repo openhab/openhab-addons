@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.binding.keba.internal.handler.KeContactCombinedHandler.Protocol;
 import org.openhab.binding.keba.internal.handler.rest.KeContactRestHandler;
+import org.openhab.binding.keba.internal.handler.udp.KeContactActions;
 import org.openhab.binding.keba.internal.handler.udp.KeContactHandler;
 import org.openhab.binding.keba.internal.handler.udp.KeContactTransceiver;
 import org.openhab.core.config.core.Configuration;
@@ -956,6 +957,19 @@ class KeContactCombinedHandlerTest {
         } finally {
             handler.dispose();
         }
+    }
+
+    @Test
+    void udpActionsForwardThroughCombinedThingHandler() {
+        KeContactCombinedHandler handler = Objects.requireNonNull(mock(KeContactCombinedHandler.class));
+        KeContactActions actions = new KeContactActions();
+        actions.setThingHandler(handler);
+
+        actions.setChargingCurrent(16000, 12);
+        actions.setFailsafe(12000, 30, true);
+
+        verify(handler).setChargingCurrent(16000, 12);
+        verify(handler).setFailsafe(12000, 30, true);
     }
 
     @Test

@@ -88,6 +88,30 @@ class KeContactHandlerTest {
     }
 
     @Test
+    void udpRuleActionsSendExplicitCurrentDelayAndCompleteFailsafeTuple() {
+        Thing thing = ThingBuilder
+                .create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:udp-actions")).build();
+        KeContactTransceiver transceiver = Objects.requireNonNull(mock(KeContactTransceiver.class));
+        KeContactHandler handler = new KeContactHandler(thing, transceiver);
+        when(transceiver.send(any(), eq(handler))).thenReturn(response("TCH-OK: done"));
+        KeContactActions actions = new KeContactActions();
+        actions.setThingHandler(handler);
+
+        actions.setChargingCurrent(16000, 12);
+        verify(transceiver).send("currtime 16000 12", handler);
+        actions.setChargingCurrent(64000, 12);
+        verify(transceiver, never()).send("currtime 64000 12", handler);
+
+        actions.setFailsafe(12000, 30, true);
+        verify(transceiver).send("failsafe 30 12000 1", handler);
+        verify(transceiver, never()).send(eq("report 2"), eq(handler));
+        actions.setFailsafe(4000, 30, true);
+        actions.setFailsafe(12000, 4, true);
+        verify(transceiver, never()).send("failsafe 30 4000 1", handler);
+        verify(transceiver, never()).send("failsafe 4 12000 1", handler);
+    }
+
+    @Test
     void udpStopUsesTheSuppliedRfidTagAndDoesNotReadReport100() {
         Thing thing = ThingBuilder.create(new ThingTypeUID("keba", "kecontact"), new ThingUID("keba:kecontact:stop"))
                 .build();

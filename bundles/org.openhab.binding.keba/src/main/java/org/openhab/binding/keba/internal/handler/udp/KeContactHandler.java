@@ -665,9 +665,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
                 case CHANNEL_MAX_PRESET_CURRENT: {
                     if (command instanceof QuantityType<?> quantityCommand) {
                         QuantityType<?> value = Objects.requireNonNull(quantityCommand.toUnit("mA"));
-                        transceiver.send(
-                                "currtime " + Math.min(Math.max(6000, value.intValue()), maxSystemCurrent) + " 1",
-                                this);
+                        setChargingCurrent(Math.min(Math.max(6000, value.intValue()), maxSystemCurrent), 1);
                     }
                     break;
                 }
@@ -689,7 +687,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
                         } else {
                             return;
                         }
-                        transceiver.send("currtime " + newValue + " 1", this);
+                        setChargingCurrent((int) newValue, 1);
                     }
                     break;
                 }
@@ -831,18 +829,41 @@ public class KeContactHandler extends KeContactProtocolHandler {
         return seconds == 0 || seconds >= 5 && seconds <= 600 ? seconds : null;
     }
 
+    public void setChargingCurrent(int currentMilliAmps, int delaySeconds) {
+        if (delaySeconds >= 0 && (currentMilliAmps == 0
+                || currentMilliAmps >= 6000 && currentMilliAmps <= Math.min(maxSystemCurrent, 63000))) {
+            transceiver.send("currtime " + currentMilliAmps + " " + delaySeconds, this);
+        }
+    }
+
+    public void setFailsafe(int currentMilliAmps, int timeoutSeconds, boolean persist) {
+        if (isValidFailsafeCurrent(currentMilliAmps) && isValidFailsafeTimeout(timeoutSeconds)) {
+            sendFailsafe((long) timeoutSeconds, currentMilliAmps, persist ? 1 : 0);
+        }
+    }
+
+    private static boolean isValidFailsafeCurrent(int milliAmperes) {
+        return milliAmperes == 0 || milliAmperes >= 6000 && milliAmperes <= 63000;
+    }
+
+    private static boolean isValidFailsafeTimeout(long seconds) {
+        return seconds == 0 || seconds >= 5 && seconds <= 600;
+    }
+
     private void sendFailsafe(@Nullable Long timeoutOverride, @Nullable Integer currentOverride, int saved) {
-        if (!hasFailsafeCurrent || !hasFailsafeTimeout) {
+        if ((timeoutOverride == null && !hasFailsafeTimeout) || (currentOverride == null && !hasFailsafeCurrent)) {
             readReport(2);
         }
         long timeout = timeoutOverride != null ? timeoutOverride : failsafeTimeout;
         int current = currentOverride != null ? currentOverride : failsafeCurrent;
-        if (hasFailsafeCurrent && hasFailsafeTimeout && (timeout == 0 || timeout >= 5 && timeout <= 600)
-                && (current == 0 || current >= 6000 && current <= 63000)) {
+        if ((hasFailsafeCurrent || currentOverride != null) && (hasFailsafeTimeout || timeoutOverride != null)
+                && isValidFailsafeTimeout(timeout) && isValidFailsafeCurrent(current)) {
             ByteBuffer response = transceiver.send("failsafe " + timeout + " " + current + " " + saved, this);
             if (isCommandAcknowledged(response)) {
                 failsafeTimeout = timeout;
                 failsafeCurrent = current;
+                hasFailsafeTimeout = true;
+                hasFailsafeCurrent = true;
                 if (saved == 1) {
                     updateState(CHANNEL_FAILSAFE_PERSIST, OnOffType.OFF);
                 }

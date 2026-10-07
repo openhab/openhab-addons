@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -913,9 +914,20 @@ public class KeContactCombinedHandler extends BaseThingHandler {
         return current(localSession) && localSession.udpCommands;
     }
 
-    public void setDisplay(@Nullable String text, int durationMin, int durationMax) {
+    public void setChargingCurrent(int currentMilliAmps, int delaySeconds) {
+        executeUdpAction(udp -> udp.setChargingCurrent(currentMilliAmps, delaySeconds), false);
+    }
+
+    public void setFailsafe(int currentMilliAmps, int timeoutSeconds, boolean persist) {
+        executeUdpAction(udp -> udp.setFailsafe(currentMilliAmps, timeoutSeconds, persist), false);
+    }
+
+    private void executeUdpAction(Consumer<KeContactHandler> action, boolean allowedInDisplayOnly) {
         Session localSession = session;
         if (localSession == null) {
+            return;
+        }
+        if (localSession.config.udpDisplayOnly && !allowedInDisplayOnly) {
             return;
         }
         scheduler.execute(() -> {
@@ -923,11 +935,15 @@ public class KeContactCombinedHandler extends BaseThingHandler {
             if (udp != null && current(localSession)) {
                 synchronized (localSession.udpLock) {
                     if (current(localSession) && ensureUdpCommands(localSession, udp)) {
-                        udp.setDisplay(text, durationMin, durationMax);
+                        action.accept(udp);
                     }
                 }
             }
         });
+    }
+
+    public void setDisplay(@Nullable String text, int durationMin, int durationMax) {
+        executeUdpAction(udp -> udp.setDisplay(text, durationMin, durationMax), true);
     }
 
     @Override
