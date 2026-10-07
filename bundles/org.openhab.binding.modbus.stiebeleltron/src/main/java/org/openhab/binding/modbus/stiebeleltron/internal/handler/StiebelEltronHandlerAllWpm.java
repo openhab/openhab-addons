@@ -85,6 +85,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Frank - Initial contribution of first handler implementation
  * @author Thomas Burri - Extended the thing handler for a WPM compatible heat pump with more channels.
  * @author Gerd Zanker - Fixed 'hotwater-*-temperature' handleCommands, improved comments and a nullable check.
+ * @author Gerd Zanker - Fixed 'operating-mode' handleCommand, improved debug logging for commands.
  */
 @NonNullByDefault
 public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
@@ -248,6 +249,8 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
         ModbusCommunicationInterface mycomms = StiebelEltronHandlerAllWpm.this.comms;
 
+        logger.trace("Modbus writing to address {}, Int16 value = {}", address, shortValue);
+
         if (myconfig == null || mycomms == null) {
             throw new IllegalStateException("writeInt16 called without proper configuration");
         }
@@ -307,6 +310,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      */
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("handleCommand({}, {})", channelUID, command);
         if (RefreshType.REFRESH == command) {
             String groupId = channelUID.getGroupId();
             if (groupId != null) {
@@ -435,6 +439,10 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                                 logger.warn("Command 'Service Key' ignored!");
                             }
                             break;
+                        default:
+                            logger.debug("Incomplete implementation - Unhandled channel: {}",
+                                    channelUID.getIdWithoutGroup());
+                            break;
                     }
                 } else if (GROUP_SG_READY_ENERGY_MANAGEMENT_SETTINGS.equals(channelUID.getGroupId())) {
                     switch (channelUID.getIdWithoutGroup()) {
@@ -458,6 +466,8 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                             writeInt16(4002, input2);
                             break;
                     }
+                } else {
+                    logger.debug("Incomplete implementation - Unsupported channel UID {}", channelUID);
                 }
 
             } catch (StiebelEltronException error) {
