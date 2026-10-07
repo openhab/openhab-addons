@@ -2681,7 +2681,8 @@ end
 The `media` channel group is only available on devices reporting a Media RPC
 component (e.g. Wall Display when a speaker/radio is configured). Media
 library and radio favorite ids must be looked up via the Shelly app or API;
-there is no channel to browse them.
+there is no channel to browse them. `title`, `artist`, `album` and `mediaType`
+are UNDEF while the device doesn't report them, e.g. when playback is stopped.
 
 The `control` group is labeled `Thermostat Control` on the Wall Display.
 Its `thermostatEnable`/`targetTemp` channels are only

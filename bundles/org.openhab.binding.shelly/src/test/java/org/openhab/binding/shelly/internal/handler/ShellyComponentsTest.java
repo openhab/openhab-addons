@@ -442,6 +442,26 @@ public class ShellyComponentsTest {
     }
 
     @Test
+    void updateDeviceStatusMediaPlaybackWithoutMetaPublishesUndef() throws Exception {
+        Shelly2DeviceStatusMedia media = new Shelly2DeviceStatusMedia();
+        media.playback = new Shelly2DeviceStatusMediaPlayback();
+        media.playback.enable = false;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.media = media;
+
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSWALLDISPLAY);
+        ShellyThingInterface handler = mockHandler(profile);
+
+        ShellyComponents.updateDeviceStatus(handler, status);
+
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_TYPE, UnDefType.UNDEF);
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_TITLE, UnDefType.UNDEF);
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ARTIST, UnDefType.UNDEF);
+        verify(handler).updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ALBUM, UnDefType.UNDEF);
+    }
+
+    @Test
     void updateDeviceStatusMediaWithoutPlaybackRemovesMediaChannels() throws Exception {
         ShellySettingsStatus status = new ShellySettingsStatus();
         status.media = new Shelly2DeviceStatusMedia();

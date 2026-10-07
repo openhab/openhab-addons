@@ -170,24 +170,15 @@ public class ShellyComponents {
                 thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_VOLUME,
                         new PercentType(mediaVolumeToPercent(volume)));
             }
-            if (playback.mediaType != null) {
-                thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_TYPE, getStringType(playback.mediaType));
-            }
+            // Only called with a full status, so missing metadata means nothing is playing (anymore)
             Shelly2DeviceStatusMediaMeta mediaMeta = playback.mediaMeta;
-            if (mediaMeta != null) {
-                if (mediaMeta.title != null) {
-                    thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_TITLE,
-                            getStringType(mediaMeta.title));
-                }
-                if (mediaMeta.artist != null) {
-                    thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ARTIST,
-                            getStringType(mediaMeta.artist));
-                }
-                if (mediaMeta.album != null) {
-                    thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ALBUM,
-                            getStringType(mediaMeta.album));
-                }
-            }
+            thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_TYPE, toStringOrUndef(playback.mediaType));
+            thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_TITLE,
+                    toStringOrUndef(mediaMeta != null ? mediaMeta.title : null));
+            thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ARTIST,
+                    toStringOrUndef(mediaMeta != null ? mediaMeta.artist : null));
+            thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ALBUM,
+                    toStringOrUndef(mediaMeta != null ? mediaMeta.album : null));
         }
 
         // current_C/output are already covered by sensors#temperature / relay#output
@@ -653,7 +644,6 @@ public class ShellyComponents {
             if (!thingHandler.areChannelsCreated()) {
                 thingHandler.updateChannelDefinitions(
                         ShellyChannelDefinitions.createSensorChannels(thingHandler.getThing(), profile, sdata));
-            thingHandler.removeChannels(ShellyChannelDefinitions.getObsoleteExtBatteryChannelIds(sdata));
             }
 
             // An attached sensor's battery (e.g. Wall Display devicepower:1) can be paired after the Thing
@@ -663,6 +653,7 @@ public class ShellyComponents {
             if (!extBattery.isEmpty()) {
                 thingHandler.updateThingChannels(Map.of(), extBattery);
             }
+            thingHandler.removeChannels(ShellyChannelDefinitions.getObsoleteExtBatteryChannelIds(sdata));
 
             updated |= thingHandler.updateWakeupReason(sdata.actReasons);
 
