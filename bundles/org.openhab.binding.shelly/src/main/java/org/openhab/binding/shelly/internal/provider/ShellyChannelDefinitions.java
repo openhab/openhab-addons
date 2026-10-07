@@ -605,6 +605,14 @@ public class ShellyChannelDefinitions {
     }
 
     /**
+     * @return "group#channel" ids of the attached sensor's battery channels, stale once the device no longer
+     *         reports a battery on devicepower:1 (sensor unpaired) and to be removed.
+     */
+    public static Set<String> getObsoleteExtBatteryChannelIds(final ShellyStatusSensor sdata) {
+        return sdata.bat1 != null ? Set.of() : EXT_BATTERY_CHANNELS;
+    }
+
+    /**
      * Auto-create the Wall Display Media Player channels once the device reports a populated media:0/playback
      * component. Gating on {@code playback != null} (not just the presence of the media component itself) keeps
      * this in sync with {@code ShellyComponents#updateDeviceStatus}, which only ever populates these channels
@@ -637,6 +645,9 @@ public class ShellyChannelDefinitions {
         addChannel(thing, add, hasThermostat, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP);
         return add;
     }
+
+    private static final Set<String> EXT_BATTERY_CHANNELS = Set.of(CHGR_SENSOR + "#" + CHANNEL_SENSOR_BAT_LEVEL,
+            CHGR_SENSOR + "#" + CHANNEL_SENSOR_BAT_LOW);
 
     private static final Set<String> MEDIA_CHANNELS = Set.of(CHGR_MEDIA + "#" + CHANNEL_MEDIA_CONTROL,
             CHGR_MEDIA + "#" + CHANNEL_MEDIA_VOLUME, CHGR_MEDIA + "#" + CHANNEL_MEDIA_TITLE,

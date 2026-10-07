@@ -518,7 +518,7 @@ The binding detects them automatically.
 
 Mains-powered devices with an attached battery-operated sensor (e.g. the Wall Display with an external H&T sensor) report that sensor's battery as Gen2 `devicepower:1`.
 In this case the binding adds the channels `batteryLevel` (Number, battery level in percent) and `lowBattery` (Switch, ON when the battery is low) to the `sensors` group.
-Those channels only appear when the device actually reports a battery for the attached sensor.
+Those channels only appear while the device actually reports a battery for the attached sensor.
 
 ## Events
 
@@ -2699,7 +2699,8 @@ The `sensors` group's `batteryLevel`/`lowBattery` channels are only available
 when a battery-operated sensor is attached to the Wall Display. Like the
 `media`/`control` channels above, they are added as soon as the attached
 sensor's battery is reported, so pairing a sensor after the Thing was
-already created is picked up on the next status update.
+already created is picked up on the next status update. They are removed
+again once the device no longer reports the sensor's battery (sensor unpaired).
 
 ## Full Example
 

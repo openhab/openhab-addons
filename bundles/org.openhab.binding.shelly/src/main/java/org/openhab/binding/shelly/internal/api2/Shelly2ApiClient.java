@@ -691,7 +691,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             updateFloodStatus(sensorData, flood0);
         }
         updateBatteryStatus(0, sensorData, result.devicepower0);
-        updateBatteryStatus(1, sensorData, result.devicepower1);
+        updateExtBatteryStatus(sensorData, result.devicepower1, !channelUpdate);
         applyWallDisplayStatus(status, result, !channelUpdate);
         updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
@@ -1833,6 +1833,19 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (fullStatus || result.thermostat0 != null) {
             status.thermostat = result.thermostat0;
         }
+    }
+
+    /**
+     * Only a full GetStatus may clear the attached sensor's battery (e.g. the sensor was unpaired), a NotifyStatus
+     * just doesn't report devicepower:1.
+     */
+    static void updateExtBatteryStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusPower value,
+            boolean fullStatus) {
+        if (fullStatus && (value == null || value.battery == null)) {
+            sdata.bat1 = null;
+            return;
+        }
+        updateBatteryStatus(1, sdata, value);
     }
 
     protected static void updateBatteryStatus(int index, ShellyStatusSensor sdata,

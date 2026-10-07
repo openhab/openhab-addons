@@ -653,6 +653,7 @@ public class ShellyComponents {
             if (!thingHandler.areChannelsCreated()) {
                 thingHandler.updateChannelDefinitions(
                         ShellyChannelDefinitions.createSensorChannels(thingHandler.getThing(), profile, sdata));
+            thingHandler.removeChannels(ShellyChannelDefinitions.getObsoleteExtBatteryChannelIds(sdata));
             }
 
             // An attached sensor's battery (e.g. Wall Display devicepower:1) can be paired after the Thing

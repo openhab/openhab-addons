@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -348,6 +349,18 @@ public class ShellyComponentsTest {
                         CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_BAT_LEVEL)
                         && channels.containsKey(
                                 CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_BAT_LOW)));
+    }
+
+    @Test
+    void updateSensorsSecondBatteryGoneRemovesBatteryChannels() throws Exception {
+        ShellyThingInterface handler = sensorHandlerFor(THING_TYPE_SHELLYPLUSSMOKE, new ShellyStatusSensor());
+        when(handler.getThingConfig()).thenReturn(new ShellyThingConfiguration());
+
+        ShellyComponents.updateSensors(handler, new ShellySettingsStatus());
+
+        verify(handler).removeChannels(
+                Set.of(CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_BAT_LEVEL,
+                        CHANNEL_GROUP_SENSOR + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SENSOR_BAT_LOW));
     }
 
     @Test

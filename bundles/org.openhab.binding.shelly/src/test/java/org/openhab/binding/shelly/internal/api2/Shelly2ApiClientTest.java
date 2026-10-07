@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorBat;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
@@ -143,6 +144,26 @@ public class Shelly2ApiClientTest {
 
         assertNull(sdata.bat1);
         assertNull(sdata.charger);
+    }
+
+    @Test
+    void fullStatusWithoutSecondDevicePowerClearsAttachedSensorBattery() {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.bat1 = new ShellySensorBat();
+
+        Shelly2ApiClient.updateExtBatteryStatus(sdata, null, true);
+
+        assertNull(sdata.bat1);
+    }
+
+    @Test
+    void partialStatusWithoutSecondDevicePowerKeepsAttachedSensorBattery() {
+        ShellyStatusSensor sdata = new ShellyStatusSensor();
+        sdata.bat1 = new ShellySensorBat();
+
+        Shelly2ApiClient.updateExtBatteryStatus(sdata, null, false);
+
+        assertNotNull(sdata.bat1);
     }
 
     @Test
