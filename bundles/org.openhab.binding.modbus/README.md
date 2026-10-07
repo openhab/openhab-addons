@@ -98,7 +98,15 @@ channels:
 
 For a regular register channel, `address` and `valueType` are required. The address is zero-based and must fit within the poller's `start`/`length` range. `valueType` supports the same Modbus value types described in [Value Types On Read And Write](#value-types-on-read-and-write). Use `errorPolicy: keepLast` to retain the last state after a read failure; the default `undef` publishes `UNDEF`.
 
-For coil or discrete-input pollers, channels use `address` and `valueType: bit`. For a raw register channel, use `valueType: raw` with `address` and a positive integer `length`. A channel can write only when its poller type is `holding` or `coil`: set `writeStart`; holding-register writes also require `writeValueType`, while coil writes use the bit value type. Optional `readTransform`, `writeTransform`, and `writeMultipleEvenWithSingleRegisterOrCoil` follow the existing transformation and write behavior described later in this document.
+For a coil or discrete-input pollers, channels use `address` and `valueType: bit`. For a raw register channel, use `valueType: raw` with `address` and a positive integer `length`. A channel can write only when its poller type is `holding` or `coil`: set `writeStart`; holding-register writes also require `writeValueType`, while coil writes use the bit value type. Optional `readTransform`, `writeTransform`, and `writeMultipleEvenWithSingleRegisterOrCoil` follow the existing transformation and write behavior described later in this document.
+
+### `poller2` coexistence and timing boundaries
+
+Multiple `poller2` bridges can be children of the same `tcp` or `serial` bridge, including when their read ranges overlap. They use that endpoint bridge's communication interface; a completed read is delivered only to the poller that submitted it. A read failure changes the failing poller's status and a later successful response recovers that poller without changing a sibling poller's status.
+
+`poller2` can also remain alongside the legacy `poller` + `data` topology while migrating. Configure the endpoint's timing and connection settings for the combined transaction load: `timeBetweenTransactionsMillis` is the minimum delay between consecutive Modbus transactions, `connectMaxTries` controls connection attempts, and each poller's `maxTries` controls attempts for its own read request. The endpoint does not promise a fixed ordering or schedule when several pollers are due at the same time. For serial endpoints, automatic reconnect is disabled; account for the device's serial timing and `receiveTimeoutMillis`.
+
+These compatibility statements cover pollers managed by this binding under one endpoint bridge. They do not establish coordination with another client or integration that talks to the same device, and they do not establish safe concurrent writes to overlapping device addresses. Keep write ownership and device-specific write rules explicit.
 
 ### Legacy `poller` + `data` topology
 
