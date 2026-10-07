@@ -467,7 +467,7 @@
 
 	<channel-type id="cop-channel">
 		<item-type>Number</item-type>
-		<label>Coefficient Of Performance</label>
+		<label>COP</label>
 		<description>Ratio of energy produced to energy consumed over the polling window</description>
 		<tags>
 			<tag>Measurement</tag>

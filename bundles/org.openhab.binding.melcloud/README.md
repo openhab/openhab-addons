@@ -47,7 +47,8 @@ Both families also support manual Thing configuration by Thing files, as an alte
 ### MELCloud Things
 
 In order to manually create a Thing file and not use the discovery routine you will need to know device MELCloud device ID.
-This is a bit difficult to get. The easiest way of getting this is enable debug level logging of the binding or discovery devices by the binding (discovered device can be removed afterwards).
+This is a bit difficult to get.
+The easiest way of getting this is enable debug level logging of the binding or discovery devices by the binding (discovered device can be removed afterwards).
 
 MELCloud account configuration:
 
@@ -105,6 +106,7 @@ MELCloud Home account configuration:
 |----------|-----------|----------------------------------------------------------|
 | username | x         | Email address used to sign in to the MELCloud Home app. |
 | password | x         | Password used to sign in to the MELCloud Home app.      |
+| enableRealtimeUpdates |   | Use the realtime push channel for faster updates after changes made outside openHAB. Falls back to polling on failure. Default: `true` (advanced). |
 
 ATA unit and ATW unit configuration:
 
@@ -166,9 +168,11 @@ The `home-account` bridge centrally polls every registered unit's state every 60
 For MELCloud Home Things, a channel whose value is not present in the underlying MELCloud Home API response
 (missing from the unit's `settings` array, no telemetry/trend-summary reading available for the polled window, or a
 `null` top-level field such as `rssi`) is updated to `UNDEF`, rather than being left at its previous value or at
-openHAB's uninitialized state. This applies in particular to `outdoor-temperature` on Air-to-Water (ATW) units,
+openHAB's uninitialized state.
+This applies in particular to `outdoor-temperature` on Air-to-Water (ATW) units,
 whose `settings` array frequently does not include an `OutdoorTemperature` entry at all, depending on the unit/
-firmware. It does not apply to a value that is present but not recognized by this binding (an unknown fan speed,
+firmware.
+It does not apply to a value that is present but not recognized by this binding (an unknown fan speed,
 vane position, or operation mode word); such cases are logged at debug level and leave the channel untouched instead,
 since that indicates a binding gap rather than genuinely missing data.
 
@@ -228,9 +232,11 @@ convention chosen to match the legacy MELCloud binding's numbering and are not i
 schedule is a variable-length list of multi-field entries, which doesn't fit the single-value Channel/Item model the
 rest of this binding uses.
 
-**This feature is provisional.** The endpoint paths, the day-of-week/operation-mode integer encodings, and even
+**This feature is provisional.**
+The endpoint paths, the day-of-week/operation-mode integer encodings, and even
 whether one write call genuinely serves both create and update are not independently confirmed against real ATW
-traffic. Treat it as a starting point that may need adjustment once verified, not a guaranteed-working feature.
+traffic.
+Treat it as a starting point that may need adjustment once verified, not a guaranteed-working feature.
 
 ```java
 import org.openhab.core.model.script.actions.Things;
@@ -261,7 +267,7 @@ Rules DSL scripts use the static delegate methods instead (e.g.
 `MelCloudHomeAtwScheduleActions.listSchedules(actions)`), following the same convention as other openHAB binding
 actions.
 
-## Full Example for items configuration
+## Full Example for Items Configuration
 
 ### MELCloud Things
 

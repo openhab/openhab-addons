@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="home-account"/>
 		</supported-bridge-type-refs>
-		<label>MELCloud Home Air-to-Water Unit</label>
+		<label>Home Air-to-Water Unit</label>
 		<description>An Air-to-Water (heat pump) unit on the MELCloud Home cloud platform.</description>
 		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 		<channels>

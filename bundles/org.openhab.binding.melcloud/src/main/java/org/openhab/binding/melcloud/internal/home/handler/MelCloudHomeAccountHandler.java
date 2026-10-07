@@ -249,12 +249,12 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         try {
             onLoginSuccess(authService.login(config.username, config.password));
         } catch (MelCloudHomeAuthException e) {
-            logger.warn("MELCloud Home login rejected: {}", e.getMessage());
+            logger.debug("MELCloud Home login rejected: {}", e.getMessage());
             accessToken = null;
             cancelContextPoll();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (MelCloudCommException e) {
-            logger.warn("MELCloud Home login failed: {}", e.getMessage());
+            logger.debug("MELCloud Home login failed: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduleRetry();
         }

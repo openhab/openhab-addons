@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="home-account"/>
 		</supported-bridge-type-refs>
-		<label>MELCloud Home Air-to-Air Unit</label>
+		<label>Home Air-to-Air Unit</label>
 		<description>An Air-to-Air (A.C.) unit on the MELCloud Home cloud platform.</description>
 		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channels>
