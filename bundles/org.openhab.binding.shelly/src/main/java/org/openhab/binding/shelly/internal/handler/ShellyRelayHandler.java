@@ -151,6 +151,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     State current = getChannelValue(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_CONTROL);
                     if (!command.equals(current)) {
                         api.mediaPlayOrPause();
+                        // the cached state is the toggle reference until the next poll confirms it
+                        updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_CONTROL, (PlayPauseType) command);
                     }
                 } else if (command == NextPreviousType.NEXT) {
                     api.mediaNext();
@@ -173,7 +175,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
                 if (volume >= 0) {
                     logger.debug("{}: Set media volume to {}", thingName, volume);
-                    api.mediaSetVolume(percentToMediaVolume(volume));
+                    int deviceVolume = percentToMediaVolume(volume);
+                    api.mediaSetVolume(deviceVolume);
+                    updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_VOLUME,
+                            new PercentType(mediaVolumeToPercent(deviceVolume)));
                 }
                 break;
             case CHANNEL_MEDIA_PLAY_MEDIA_ID:
