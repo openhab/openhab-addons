@@ -49,15 +49,15 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
  *
  * @author Sami Salonen - Initial contribution
  */
-@NonNullByDefault({})
+@NonNullByDefault
 public class ModbusPoller2YamlOSGiTest extends JavaOSGiTest {
     private static final ThingUID ENDPOINT_UID = new ThingUID("modbus:tcp:yaml-endpoint");
     private static final ThingUID POLLER_UID = new ThingUID("modbus:poller2:yaml-endpoint:holding");
 
-    private ManagedThingProvider thingProvider;
-    private ThingRegistry thingRegistry;
-    private YamlModelRepositoryImpl yamlRepository;
-    private Path yamlFile;
+    private @NonNullByDefault({}) ManagedThingProvider thingProvider;
+    private @NonNullByDefault({}) ThingRegistry thingRegistry;
+    private @NonNullByDefault({}) YamlModelRepositoryImpl yamlRepository;
+    private @NonNullByDefault({}) Path yamlFile;
 
     @BeforeEach
     public void setUp() throws IOException {
