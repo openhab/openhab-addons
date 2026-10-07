@@ -33,8 +33,8 @@ public class GmeBindingConstants {
     public static final String CHANNEL_PASSWORD_DAYS_REMAINING = "password-days-remaining";
     public static final String CHANNEL_PASSWORD_STATUS = "password-status";
 
-    public static final String CHANNEL_CURRENT_PRICE = "current-price";
-    public static final String CHANNEL_NEXT_PRICE = "next-price";
+    public static final String CHANNEL_CURRENT_PRICE = "market#current-price";
+    public static final String CHANNEL_NEXT_PRICE = "market#next-price";
     public static final String CHANNEL_TODAY_PRICES = "today#prices";
     public static final String CHANNEL_TOMORROW_PRICES = "tomorrow#prices";
 
@@ -53,8 +53,8 @@ public class GmeBindingConstants {
     public static final String CHANNEL_TOMORROW_MIN_TIME = "tomorrow#min-time";
     public static final String CHANNEL_TOMORROW_MAX_TIME = "tomorrow#max-time";
 
-    public static final String CHANNEL_TOMORROW_AVAILABLE = "tomorrow-available";
-    public static final String CHANNEL_LAST_UPDATE = "last-update";
+    public static final String CHANNEL_TOMORROW_AVAILABLE = "market#tomorrow-available";
+    public static final String CHANNEL_LAST_UPDATE = "market#last-update";
 
     private GmeBindingConstants() {
     }
