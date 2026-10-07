@@ -90,7 +90,6 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusVoltage;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusSys;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2InputStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusTemp;
@@ -109,6 +108,9 @@ import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentBattery;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentMedia;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentThermostat;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -690,9 +692,10 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         if (flood0 != null) {
             updateFloodStatus(sensorData, flood0);
         }
-        updateBatteryStatus(0, sensorData, result.devicepower0);
-        updateExtBatteryStatus(sensorData, result.devicepower1, !channelUpdate);
-        applyWallDisplayStatus(status, result, !channelUpdate);
+        updateBatteryStatus(sensorData, result.devicepower0);
+        ShellyComponentBattery.fillExtStatus(sensorData, result.devicepower1, !channelUpdate);
+        ShellyComponentThermostat.fillStatus(status, result, !channelUpdate);
+        ShellyComponentMedia.fillStatus(status, result, !channelUpdate);
         updateAddonStatus(status, result);
         updated |= ShellyComponents.updateSensors(getThing(), status);
         return updated;
@@ -1812,70 +1815,19 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         profile.reportHoldoff = reportHoldoff;
     }
 
-    /**
-     * A NotifyStatus only carries the components it reports, so only a full GetStatus may clear a component that
-     * disappeared (e.g. the thermostat was disabled), which in turn removes its channels.
-     */
-    static void applyWallDisplayStatus(ShellySettingsStatus status, Shelly2DeviceStatusResult result,
-            boolean fullStatus) {
-        Shelly2DeviceStatusSys sys = result.sys;
-        if (sys != null) {
-            if (fullStatus || sys.relayInThermostat != null) {
-                status.relayInThermostat = sys.relayInThermostat;
-            }
-            if (fullStatus || sys.sensorInThermostat != null) {
-                status.sensorInThermostat = sys.sensorInThermostat;
-            }
-        }
-        if (fullStatus || result.media != null) {
-            status.media = result.media;
-        }
-        if (fullStatus || result.thermostat0 != null) {
-            status.thermostat = result.thermostat0;
-        }
-    }
-
-    /**
-     * Only a full GetStatus may clear the attached sensor's battery (e.g. the sensor was unpaired), a NotifyStatus
-     * just doesn't report devicepower:1.
-     */
-    static void updateExtBatteryStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusPower value,
-            boolean fullStatus) {
-        if (fullStatus && (value == null || value.battery == null)) {
-            sdata.bat1 = null;
-            return;
-        }
-        updateBatteryStatus(1, sdata, value);
-    }
-
-    protected static void updateBatteryStatus(int index, ShellyStatusSensor sdata,
-            @Nullable Shelly2DeviceStatusPower value) {
+    protected void updateBatteryStatus(ShellyStatusSensor sdata, @Nullable Shelly2DeviceStatusPower value) {
         if (value == null) {
             return;
         }
-        ShellySensorBat bat;
-        if (index == 0) {
-            if (sdata.bat == null) {
-                sdata.bat = new ShellySensorBat();
-            }
-            bat = sdata.bat;
-        } else {
-            if (value.battery == null) {
-                // bat1 drives the channel creation for the attached sensor, so don't create it for a
-                // devicepower:1 that reports something other than a battery
-                return;
-            }
-            if (sdata.bat1 == null) {
-                sdata.bat1 = new ShellySensorBat();
-            }
-            bat = sdata.bat1;
+        if (sdata.bat == null) {
+            sdata.bat = new ShellySensorBat();
         }
 
         if (value.battery != null) {
-            bat.voltage = getDouble(value.battery.volt);
-            bat.value = getDouble(value.battery.percent);
+            sdata.bat.voltage = getDouble(value.battery.volt);
+            sdata.bat.value = getDouble(value.battery.percent);
         }
-        if (index == 0 && value.external != null && value.external.present != null) {
+        if (value.external != null && value.external.present != null) {
             sdata.charger = value.external.present;
         }
     }

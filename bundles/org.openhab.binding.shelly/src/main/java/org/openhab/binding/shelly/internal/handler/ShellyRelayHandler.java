@@ -26,23 +26,22 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentMedia;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentThermostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
-import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,6 +89,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         } else if (groupName.startsWith(CHANNEL_GROUP_ROL_CONTROL)
                 && groupName.length() > CHANNEL_GROUP_ROL_CONTROL.length()) {
             rIndex = Integer.parseInt(substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_ROL_CONTROL)) - 1;
+        }
+
+        if (CHANNEL_GROUP_MEDIA.equals(groupName)) {
+            ShellyComponentMedia.handleCommand(this, channelUID.getIdWithoutGroup(), command);
+            return true;
         }
 
         switch (channelUID.getIdWithoutGroup()) {
@@ -143,60 +147,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 api.setAutoTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command).doubleValue());
                 break;
 
-            case CHANNEL_MEDIA_CONTROL:
-                logger.debug("{}: Media control command {}", thingName, command);
-                if (command == PlayPauseType.PLAY || command == PlayPauseType.PAUSE) {
-                    // the device only exposes a PlayOrPause toggle, no distinct Play/Pause command;
-                    // only toggle when the requested state differs from the last known playback state
-                    State current = getChannelValue(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_CONTROL);
-                    if (!command.equals(current)) {
-                        api.mediaPlayOrPause();
-                        // the cached state is the toggle reference until the next poll confirms it
-                        updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_CONTROL, (PlayPauseType) command);
-                    }
-                } else if (command == NextPreviousType.NEXT) {
-                    api.mediaNext();
-                } else if (command == NextPreviousType.PREVIOUS) {
-                    api.mediaPrevious();
-                }
-                break;
-            case CHANNEL_MEDIA_VOLUME:
-                int volume = -1;
-                if (command instanceof PercentType percentCommand) {
-                    volume = percentCommand.intValue();
-                } else if (command instanceof OnOffType onOffCommand) {
-                    volume = onOffCommand == OnOffType.ON ? 100 : 0;
-                } else if (command instanceof IncreaseDecreaseType) {
-                    State current = getChannelValue(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_VOLUME);
-                    int currentVolume = current instanceof PercentType currentPercent ? currentPercent.intValue() : 0;
-                    volume = command == IncreaseDecreaseType.INCREASE
-                            ? Math.min(currentVolume + MEDIA_VOLUME_STEPSIZE, 100)
-                            : Math.max(currentVolume - MEDIA_VOLUME_STEPSIZE, 0);
-                }
-                if (volume >= 0) {
-                    logger.debug("{}: Set media volume to {}", thingName, volume);
-                    int deviceVolume = percentToMediaVolume(volume);
-                    api.mediaSetVolume(deviceVolume);
-                    updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_VOLUME,
-                            new PercentType(mediaVolumeToPercent(deviceVolume)));
-                }
-                break;
-            case CHANNEL_MEDIA_PLAY_MEDIA_ID:
-                if (command instanceof Number numberCommand) {
-                    logger.debug("{}: Play media id {}", thingName, command);
-                    api.mediaPlayMedia(numberCommand.intValue());
-                }
-                break;
-            case CHANNEL_MEDIA_PLAY_RADIO_FAV_ID:
-                if (command instanceof Number numberCommand) {
-                    logger.debug("{}: Play radio favorite id {}", thingName, command);
-                    api.mediaPlayRadioFavourite(numberCommand.intValue());
-                }
-                break;
-
             case CHANNEL_THERMOSTAT_ENABLE:
-                logger.debug("{}: Set thermostat enable to {}", thingName, command);
-                api.setThermostatEnable(0, command == OnOffType.ON);
+                ShellyComponentThermostat.handleCommand(this, CHANNEL_THERMOSTAT_ENABLE, command);
                 break;
 
         }

@@ -57,21 +57,17 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBCCTStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatusLora;
-import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
-import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback;
-import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia.Shelly2DeviceStatusMediaPlayback.Shelly2DeviceStatusMediaMeta;
-import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 import org.openhab.binding.shelly.internal.handler.LightModelAccessor.LightModels;
 import org.openhab.binding.shelly.internal.handler.ShellyLightModel.Mode;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentBattery;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentMedia;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentThermostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -111,17 +107,6 @@ public class ShellyComponents {
             reconcileLoraChannels(thingHandler, profile);
         }
 
-        // Media and Thermostat can be enabled/disabled at any time, so create/remove those channels as soon as
-        // the component (dis)appears in the status, not only on the first update cycle
-        Map<String, Channel> dynChannels = ShellyChannelDefinitions.createMediaChannels(thingHandler.getThing(),
-                status);
-        dynChannels.putAll(ShellyChannelDefinitions.createThermostatChannels(thingHandler.getThing(), status));
-        if (!dynChannels.isEmpty()) {
-            thingHandler.updateThingChannels(Map.of(), dynChannels);
-        }
-        reconcileMediaChannels(thingHandler, status);
-        reconcileThermostatChannels(thingHandler, profile, status);
-
         thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_FIRMWARE, getStringType(profile.fwVersion));
         if (!profile.gateway.isEmpty()) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_GATEWAY, getStringType(profile.gateway));
@@ -151,48 +136,8 @@ public class ShellyComponents {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CALIBRATED,
                     getOnOff(profile.settings.calibrated));
         }
-        if (status.relayInThermostat != null) {
-            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RELAY_IN_THERMOSTAT,
-                    getOnOff(status.relayInThermostat));
-        }
-        if (status.sensorInThermostat != null) {
-            thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SENSOR_IN_THERMOSTAT,
-                    getOnOff(status.sensorInThermostat));
-        }
-
-        Shelly2DeviceStatusMedia media = status.media;
-        Shelly2DeviceStatusMediaPlayback playback = media != null ? media.playback : null;
-        if (playback != null) {
-            thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_CONTROL,
-                    getBool(playback.enable) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
-            Integer volume = playback.volume;
-            if (volume != null) {
-                thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_VOLUME,
-                        new PercentType(mediaVolumeToPercent(volume)));
-            }
-            // Only called with a full status, so missing metadata means nothing is playing (anymore)
-            Shelly2DeviceStatusMediaMeta mediaMeta = playback.mediaMeta;
-            thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_TYPE, toStringOrUndef(playback.mediaType));
-            thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_TITLE,
-                    toStringOrUndef(mediaMeta != null ? mediaMeta.title : null));
-            thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ARTIST,
-                    toStringOrUndef(mediaMeta != null ? mediaMeta.artist : null));
-            thingHandler.updateChannel(CHANNEL_GROUP_MEDIA, CHANNEL_MEDIA_ALBUM,
-                    toStringOrUndef(mediaMeta != null ? mediaMeta.album : null));
-        }
-
-        // current_C/output are already covered by sensors#temperature / relay#output
-        Shelly2DeviceStatusThermostat thermostat = status.thermostat;
-        if (thermostat != null) {
-            if (thermostat.enable != null) {
-                thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_THERMOSTAT_ENABLE,
-                        getOnOff(thermostat.enable));
-            }
-            if (thermostat.targetC != null) {
-                thingHandler.updateChannel(CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
-                        toQuantityType(thermostat.targetC, DIGITS_TEMP, SIUnits.CELSIUS));
-            }
-        }
+        ShellyComponentThermostat.updateChannels(thingHandler, status);
+        ShellyComponentMedia.updateChannels(thingHandler, status);
 
         return false; // device status never triggers update
     }
@@ -646,15 +591,6 @@ public class ShellyComponents {
                         ShellyChannelDefinitions.createSensorChannels(thingHandler.getThing(), profile, sdata));
             }
 
-            // An attached sensor's battery (e.g. Wall Display devicepower:1) can be paired after the Thing
-            // already exists, so (re-)check for it on every cycle instead of only at Thing creation
-            Map<String, Channel> extBattery = ShellyChannelDefinitions.createExtBatteryChannels(thingHandler.getThing(),
-                    sdata);
-            if (!extBattery.isEmpty()) {
-                thingHandler.updateThingChannels(Map.of(), extBattery);
-            }
-            thingHandler.removeChannels(ShellyChannelDefinitions.getObsoleteExtBatteryChannelIds(sdata));
-
             updated |= thingHandler.updateWakeupReason(sdata.actReasons);
 
             if ((sdata.sensor != null) && sdata.sensor.isValid) {
@@ -879,40 +815,11 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_CAPACITOR_VOLTAGE,
                         toQuantityType(getDouble(sdata.capacitorVoltage), DIGITS_VOLT_PRECISE, Units.VOLT));
             }
-            if (sdata.bat != null) { // no update for Sense
-                if (sdata.bat.value != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
-                            toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
-                }
-
-                int lowBattery = thingHandler.getThingConfig().getLowBattery();
-                Boolean batteryLowFlag = sdata.bat.batteryLow;
-                boolean isLow = batteryLowFlag != null ? batteryLowFlag.booleanValue()
-                        : (sdata.bat.value != null && !charger && getDouble(sdata.bat.value) < lowBattery);
-                boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
-                        getOnOff(isLow));
-                updated |= changed;
-                if (changed && isLow) {
-                    thingHandler.postEvent(ALARM_TYPE_LOW_BATTERY, false);
-                }
+            ShellyStatusSensor.ShellySensorBat bat = sdata.bat;
+            if (bat != null) { // no update for Sense
+                updated |= ShellyComponentBattery.updateChannels(thingHandler, CHANNEL_GROUP_BATTERY, bat, charger);
             }
-            if (sdata.bat1 != null) {
-                if (sdata.bat1.value != null) {
-                    updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LEVEL,
-                            toQuantityType(getDouble(sdata.bat1.value), 0, Units.PERCENT));
-                }
-
-                int lowBattery = thingHandler.getThingConfig().getLowBattery();
-                Boolean batteryLowFlag = sdata.bat1.batteryLow;
-                boolean isLow = batteryLowFlag != null ? batteryLowFlag.booleanValue()
-                        : (sdata.bat1.value != null && getDouble(sdata.bat1.value) < lowBattery);
-                boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LOW,
-                        getOnOff(isLow));
-                updated |= changed;
-                if (changed && isLow) {
-                    thingHandler.postEvent(ALARM_TYPE_LOW_BATTERY, false);
-                }
-            }
+            updated |= ShellyComponentBattery.updateExtChannels(thingHandler, sdata);
 
             if (sdata.motion != null) { // Shelly Sense
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION,
@@ -1254,21 +1161,6 @@ public class ShellyComponents {
 
     private static void reconcileMeterChannels(ShellyThingInterface thingHandler, ShellyDeviceProfile profile) {
         Set<String> obsolete = ShellyChannelDefinitions.getObsoleteMeterChannelIds(profile);
-        if (!obsolete.isEmpty()) {
-            thingHandler.removeChannels(obsolete);
-        }
-    }
-
-    private static void reconcileMediaChannels(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
-        Set<String> obsolete = ShellyChannelDefinitions.getObsoleteMediaChannelIds(status);
-        if (!obsolete.isEmpty()) {
-            thingHandler.removeChannels(obsolete);
-        }
-    }
-
-    private static void reconcileThermostatChannels(ShellyThingInterface thingHandler, ShellyDeviceProfile profile,
-            ShellySettingsStatus status) {
-        Set<String> obsolete = ShellyChannelDefinitions.getObsoleteThermostatChannelIds(profile, status);
         if (!obsolete.isEmpty()) {
             thingHandler.removeChannels(obsolete);
         }

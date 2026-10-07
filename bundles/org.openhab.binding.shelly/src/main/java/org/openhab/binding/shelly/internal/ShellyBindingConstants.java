@@ -224,9 +224,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_MEDIA_TYPE = "mediaType";
     public static final String CHANNEL_MEDIA_PLAY_MEDIA_ID = "playMediaId";
     public static final String CHANNEL_MEDIA_PLAY_RADIO_FAV_ID = "playRadioFavId";
-    public static final int MEDIA_VOLUME_DEVICE_MAX = 10;
-    // A smaller step would map back to the same device volume, making INCREASE/DECREASE a no-op
-    public static final int MEDIA_VOLUME_STEPSIZE = 100 / MEDIA_VOLUME_DEVICE_MAX;
 
     // Wall Display Thermostat reuses the "control" group and CHANNEL_CONTROL_SETTEMP ("targetTemp") from the TRV
     // channel set; current_C/output are covered by the existing sensors#temperature / relay#output channels.

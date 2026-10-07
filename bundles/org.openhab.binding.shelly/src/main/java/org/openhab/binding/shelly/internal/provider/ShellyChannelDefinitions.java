@@ -46,7 +46,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
-import org.openhab.binding.shelly.internal.api2.dto.ShellyMediaJsonDTO.Shelly2DeviceStatusMedia;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.thing.Channel;
@@ -592,101 +591,6 @@ public class ShellyChannelDefinitions {
     }
 
     /**
-     * Auto-create the battery channels for a sensor attached to the device (e.g. an H&amp;T paired with a Wall
-     * Display, reported as devicepower:1) as soon as it shows up in the status, since it can be paired after the
-     * Thing already exists.
-     */
-    public static Map<String, Channel> createExtBatteryChannels(final Thing thing, final ShellyStatusSensor sdata) {
-        Map<String, Channel> add = new LinkedHashMap<>();
-        boolean hasExtBattery = sdata.bat1 != null;
-        addChannel(thing, add, hasExtBattery, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LEVEL);
-        addChannel(thing, add, hasExtBattery, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_BAT_LOW);
-        return add;
-    }
-
-    /**
-     * @return "group#channel" ids of the attached sensor's battery channels, stale once the device no longer
-     *         reports a battery on devicepower:1 (sensor unpaired) and to be removed.
-     */
-    public static Set<String> getObsoleteExtBatteryChannelIds(final ShellyStatusSensor sdata) {
-        return sdata.bat1 != null ? Set.of() : EXT_BATTERY_CHANNELS;
-    }
-
-    /**
-     * Auto-create the Wall Display Media Player channels once the device reports a populated media:0/playback
-     * component. Gating on {@code playback != null} (not just the presence of the media component itself) keeps
-     * this in sync with {@code ShellyComponents#updateDeviceStatus}, which only ever populates these channels
-     * when a playback object is present - a bare {@code media:{"rev":0}} component would otherwise create
-     * channels that are never written to.
-     */
-    public static Map<String, Channel> createMediaChannels(final Thing thing, final ShellySettingsStatus status) {
-        Map<String, Channel> add = new LinkedHashMap<>();
-        boolean hasMedia = hasMediaPlayback(status);
-        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_CONTROL);
-        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_VOLUME);
-        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_TITLE);
-        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_ARTIST);
-        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_ALBUM);
-        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_TYPE);
-        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_PLAY_MEDIA_ID);
-        addChannel(thing, add, hasMedia, CHGR_MEDIA, CHANNEL_MEDIA_PLAY_RADIO_FAV_ID);
-        return add;
-    }
-
-    /**
-     * Auto-create the Wall Display Thermostat channels when the device reports a thermostat:0 component.
-     * Reuses the "control" group and the existing TRV targetTemp channel; current_C/output are already
-     * covered by the sensors#temperature / relay#output channels.
-     */
-    public static Map<String, Channel> createThermostatChannels(final Thing thing, final ShellySettingsStatus status) {
-        Map<String, Channel> add = new LinkedHashMap<>();
-        boolean hasThermostat = status.thermostat != null;
-        addChannel(thing, add, hasThermostat, CHGR_CONTROL, CHANNEL_THERMOSTAT_ENABLE);
-        addChannel(thing, add, hasThermostat, CHGR_CONTROL, CHANNEL_CONTROL_SETTEMP);
-        return add;
-    }
-
-    private static final Set<String> EXT_BATTERY_CHANNELS = Set.of(CHGR_SENSOR + "#" + CHANNEL_SENSOR_BAT_LEVEL,
-            CHGR_SENSOR + "#" + CHANNEL_SENSOR_BAT_LOW);
-
-    private static final Set<String> MEDIA_CHANNELS = Set.of(CHGR_MEDIA + "#" + CHANNEL_MEDIA_CONTROL,
-            CHGR_MEDIA + "#" + CHANNEL_MEDIA_VOLUME, CHGR_MEDIA + "#" + CHANNEL_MEDIA_TITLE,
-            CHGR_MEDIA + "#" + CHANNEL_MEDIA_ARTIST, CHGR_MEDIA + "#" + CHANNEL_MEDIA_ALBUM,
-            CHGR_MEDIA + "#" + CHANNEL_MEDIA_TYPE, CHGR_MEDIA + "#" + CHANNEL_MEDIA_PLAY_MEDIA_ID,
-            CHGR_MEDIA + "#" + CHANNEL_MEDIA_PLAY_RADIO_FAV_ID);
-
-    /**
-     * @return "group#channel" ids of the Media Player channels, stale once the device no longer reports a
-     *         populated media:0/playback component and to be removed. Note: as of fw 2.7.4 the Shelly App/Cloud
-     *         "Media Player" enable toggle isn't observable via the API - {@code sys.media_player_enabled} in
-     *         GetConfig doesn't change when the toggle is flipped, and GetStatus keeps reporting media:0 with a
-     *         populated playback object even while the toggle is off - so this only reacts to the media
-     *         component (dis)appearing entirely, which happens across device/app variants, not per-toggle.
-     */
-    public static Set<String> getObsoleteMediaChannelIds(final ShellySettingsStatus status) {
-        return hasMediaPlayback(status) ? Set.of() : MEDIA_CHANNELS;
-    }
-
-    private static boolean hasMediaPlayback(final ShellySettingsStatus status) {
-        Shelly2DeviceStatusMedia media = status.media;
-        return media != null && media.playback != null;
-    }
-
-    /**
-     * @return "group#channel" ids of the Thermostat channels, stale once the device no longer reports a
-     *         thermostat:0 component (thermostat disabled in the Shelly app) and to be removed. targetTemp
-     *         (CHANNEL_CONTROL_SETTEMP) is shared with TRV devices and is never removed for those.
-     */
-    public static Set<String> getObsoleteThermostatChannelIds(final ShellyDeviceProfile profile,
-            final ShellySettingsStatus status) {
-        if (status.thermostat != null) {
-            return Set.of();
-        }
-        return profile.isTRV ? Set.of(CHGR_CONTROL + "#" + CHANNEL_THERMOSTAT_ENABLE)
-                : Set.of(CHGR_CONTROL + "#" + CHANNEL_THERMOSTAT_ENABLE, CHGR_CONTROL + "#" + CHANNEL_CONTROL_SETTEMP);
-    }
-
-    /**
      * Auto-create relay channels depending on relay type/mode
      *
      * @return {@code ArrayList<Channel>} of channels to be added to the thing
@@ -1140,8 +1044,6 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, ws90 || hasBatteryValue, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
         addChannel(thing, newChannels, ws90 || sdata.capacitorVoltage != null, CHANNEL_GROUP_BATTERY,
                 CHANNEL_SENSOR_CAPACITOR_VOLTAGE);
-        // Battery of an attached external sensor (e.g. Wall Display devicepower:1) is created separately via
-        // createExtBatteryChannels(), because the sensor can be paired after the Thing already exists
 
         addChannel(thing, newChannels, sdata.sensorError != null || (profile.isFlood && profile.isGen2),
                 CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);
@@ -1214,7 +1116,7 @@ public class ShellyChannelDefinitions {
         return createChannel(thing, channelId, group, channelName);
     }
 
-    private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
+    public static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
             String channelName) throws IllegalArgumentException {
         addChannel(thing, newChannels, supported, group, channelName, null);
     }

@@ -22,14 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorBat;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusEmData;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower.Shelly2DeviceStatusBattery;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DeviceStatusPower.Shelly2DeviceStatusCharger;
-import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shelly2DeviceStatusThermostat;
 
 /**
  * Covers em1data:N (single-phase clamp) total/returned-energy mapping, i.e. #18166 (Pro EM-50 / EM Mini lifetime
@@ -115,87 +108,6 @@ public class Shelly2ApiClientTest {
         emData.totalActiveEnergy = 10.0;
 
         assertDoesNotThrow(() -> Shelly2ApiClient.applyEm1Data(status, 5, emData));
-    }
-
-    @Test
-    void secondDevicePowerWithBatteryFillsAttachedSensorBattery() {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        Shelly2DeviceStatusPower power = new Shelly2DeviceStatusPower();
-        power.battery = new Shelly2DeviceStatusBattery();
-        power.battery.percent = 74.0;
-        power.battery.volt = 2.9;
-
-        Shelly2ApiClient.updateBatteryStatus(1, sdata, power);
-
-        assertNotNull(sdata.bat1);
-        assertEquals(74.0, sdata.bat1.value, 0.0001);
-        assertEquals(2.9, sdata.bat1.voltage, 0.0001);
-        assertNull(sdata.bat);
-    }
-
-    @Test
-    void secondDevicePowerWithoutBatteryDoesNotCreateAttachedSensorBattery() {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        Shelly2DeviceStatusPower power = new Shelly2DeviceStatusPower();
-        power.external = new Shelly2DeviceStatusCharger();
-        power.external.present = true;
-
-        Shelly2ApiClient.updateBatteryStatus(1, sdata, power);
-
-        assertNull(sdata.bat1);
-        assertNull(sdata.charger);
-    }
-
-    @Test
-    void fullStatusWithoutSecondDevicePowerClearsAttachedSensorBattery() {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.bat1 = new ShellySensorBat();
-
-        Shelly2ApiClient.updateExtBatteryStatus(sdata, null, true);
-
-        assertNull(sdata.bat1);
-    }
-
-    @Test
-    void partialStatusWithoutSecondDevicePowerKeepsAttachedSensorBattery() {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        sdata.bat1 = new ShellySensorBat();
-
-        Shelly2ApiClient.updateExtBatteryStatus(sdata, null, false);
-
-        assertNotNull(sdata.bat1);
-    }
-
-    @Test
-    void firstDevicePowerWithoutBatteryStillReportsExternalPower() {
-        ShellyStatusSensor sdata = new ShellyStatusSensor();
-        Shelly2DeviceStatusPower power = new Shelly2DeviceStatusPower();
-        power.external = new Shelly2DeviceStatusCharger();
-        power.external.present = true;
-
-        Shelly2ApiClient.updateBatteryStatus(0, sdata, power);
-
-        assertEquals(Boolean.TRUE, sdata.charger);
-    }
-
-    @Test
-    void fullStatusWithoutThermostatClearsThermostat() {
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        status.thermostat = new Shelly2DeviceStatusThermostat();
-
-        Shelly2ApiClient.applyWallDisplayStatus(status, new Shelly2DeviceStatusResult(), true);
-
-        assertNull(status.thermostat);
-    }
-
-    @Test
-    void notifyStatusWithoutThermostatKeepsThermostat() {
-        ShellySettingsStatus status = new ShellySettingsStatus();
-        status.thermostat = new Shelly2DeviceStatusThermostat();
-
-        Shelly2ApiClient.applyWallDisplayStatus(status, new Shelly2DeviceStatusResult(), false);
-
-        assertNotNull(status.thermostat);
     }
 
     @Test

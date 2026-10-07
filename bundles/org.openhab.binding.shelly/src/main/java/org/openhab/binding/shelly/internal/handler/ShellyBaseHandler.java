@@ -59,6 +59,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
+import org.openhab.binding.shelly.internal.handler.component.ShellyComponentThermostat;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -547,7 +548,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     if (profile.isTRV) {
                         api.setValveTemperature(0, getNumber(command).doubleValue());
                     } else {
-                        api.setThermostatTargetTemp(0, getNumber(command).doubleValue());
+                        ShellyComponentThermostat.handleCommand(this, CHANNEL_CONTROL_SETTEMP, command);
                     }
                     break;
                 case CHANNEL_CONTROL_POSITION:
