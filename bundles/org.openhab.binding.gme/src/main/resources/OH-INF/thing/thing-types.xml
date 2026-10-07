@@ -91,6 +91,15 @@
 		<description>Italian PUN electricity market prices from the GME MGP market.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
+		<channel-groups>
+			<channel-group id="today" typeId="daily-prices">
+				<label>Today</label>
+			</channel-group>
+			<channel-group id="tomorrow" typeId="daily-prices">
+				<label>Tomorrow</label>
+			</channel-group>
+		</channel-groups>
+
 		<channels>
 			<channel id="current-price" typeId="energy-price">
 				<label>Current Price</label>
@@ -105,15 +114,6 @@
 				<label>Last Update</label>
 			</channel>
 		</channels>
-
-		<channel-groups>
-			<channel-group id="today" typeId="daily-prices">
-				<label>Today</label>
-			</channel-group>
-			<channel-group id="tomorrow" typeId="daily-prices">
-				<label>Tomorrow</label>
-			</channel-group>
-		</channel-groups>
 	</thing-type>
 
 	<channel-group-type id="daily-prices">
