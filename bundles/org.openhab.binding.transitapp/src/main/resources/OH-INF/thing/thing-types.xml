@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="transitapp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge Configuration -->
+	<bridge-type id="bridge">
+		<label>TransitApp Bridge</label>
+		<description>Bridge to connect to Transit API</description>
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<context>password</context>
+				<label>API Key</label>
+				<description>Your personal Transit API key (required)</description>
+			</parameter>
+			<parameter name="cacheTimeMs" type="integer" min="5000" max="300000" unit="ms">
+				<label>Cache Time</label>
+				<description>How long to cache API responses in milliseconds (5000–300000)</description>
+				<default>30000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="retryAfterSeconds" type="integer" min="1" max="600" unit="s">
+				<label>Retry After</label>
+				<description>Default retry-after value when API rate limit is hit (1–600 seconds)</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxDepartures" type="integer" min="1" max="10">
+				<label>Max Departures</label>
+				<description>Maximum number of departures to display per stop (1–10)</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- Stop Thing -->
+	<thing-type id="stop">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Stop</label>
+		<description>Represents a transit stop for monitoring upcoming departures</description>
+		<channel-groups>
+			<channel-group id="depart1" typeId="departure-group"/>
+			<channel-group id="depart2" typeId="departure-group"/>
+			<channel-group id="depart3" typeId="departure-group"/>
+			<channel-group id="depart4" typeId="departure-group"/>
+			<channel-group id="depart5" typeId="departure-group"/>
+			<channel-group id="depart6" typeId="departure-group"/>
+			<channel-group id="depart7" typeId="departure-group"/>
+			<channel-group id="depart8" typeId="departure-group"/>
+			<channel-group id="depart9" typeId="departure-group"/>
+			<channel-group id="depart10" typeId="departure-group"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="globalStopId" type="text" required="true">
+				<label>Global Stop ID</label>
+				<description>The global stop ID from Transit API</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="30" unit="s">
+				<label>Refresh Interval</label>
+				<description>Time in seconds between updates</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Route Details Thing -->
+	<thing-type id="routedetails">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Route Details</label>
+		<description>Detailed information about a specific transit route</description>
+		<channel-groups>
+			<channel-group id="route" typeId="route-group"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="routeId" type="text" required="true">
+				<label>Route ID</label>
+				<description>The global route ID from Transit API</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="30" unit="s">
+				<label>Refresh Interval</label>
+				<description>Time in seconds between updates</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Trip Details Thing -->
+	<thing-type id="tripdetails">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Trip Details</label>
+		<description>Detailed stop-by-stop schedule for a specific trip</description>
+		<channel-groups>
+			<channel-group id="trip" typeId="trip-group"/>
+			<channel-group id="stop1" typeId="stop-group"/>
+			<channel-group id="stop2" typeId="stop-group"/>
+			<channel-group id="stop3" typeId="stop-group"/>
+			<channel-group id="stop4" typeId="stop-group"/>
+			<channel-group id="stop5" typeId="stop-group"/>
+			<channel-group id="stop6" typeId="stop-group"/>
+			<channel-group id="stop7" typeId="stop-group"/>
+			<channel-group id="stop8" typeId="stop-group"/>
+			<channel-group id="stop9" typeId="stop-group"/>
+			<channel-group id="stop10" typeId="stop-group"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="tripSearchKey" type="text" required="true">
+				<label>Trip Search Key</label>
+				<description>The trip search key from Transit API (changes as feeds are updated)</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="30" unit="s">
+				<label>Refresh Interval</label>
+				<description>Time in seconds between updates</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="targetStopId" type="text" required="false">
+				<label>Target Stop ID</label>
+				<description>Destination stop ID to calculate the time-to-target countdown (optional)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Group Types -->
+	<channel-group-type id="departure-group">
+		<label>Departure</label>
+		<description>Information about an upcoming departure</description>
+		<channels>
+			<channel id="route-long-name" typeId="route-long-name"/>
+			<channel id="route-short-name" typeId="route-short-name"/>
+			<channel id="departure-time" typeId="departure-time"/>
+			<channel id="is-cancelled" typeId="is-cancelled"/>
+			<channel id="minutes-until-departure" typeId="minutes-until-departure"/>
+			<channel id="delay-minutes" typeId="delay-minutes"/>
+			<channel id="wheelchair-accessible" typeId="wheelchair-accessible"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="route-group">
+		<label>Route</label>
+		<description>Route information and alerts</description>
+		<channels>
+			<channel id="route-long-name" typeId="route-long-name"/>
+			<channel id="route-short-name" typeId="route-short-name"/>
+			<channel id="route-color" typeId="route-color"/>
+			<channel id="active-alerts-count" typeId="active-alerts-count"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="trip-group">
+		<label>Trip</label>
+		<description>Trip information and stops</description>
+		<channels>
+			<channel id="route-short-name" typeId="route-short-name"/>
+			<channel id="time-to-target" typeId="time-to-target"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="stop-group">
+		<label>Stop</label>
+		<description>Stop information in trip</description>
+		<channels>
+			<channel id="stop-name" typeId="stop-name"/>
+			<channel id="minutes-until-departure" typeId="minutes-until-departure"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel Types -->
+	<channel-type id="route-long-name">
+		<item-type>String</item-type>
+		<label>Route Long Name</label>
+		<description>Full name of the route</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="route-short-name">
+		<item-type>String</item-type>
+		<label>Route Short Name</label>
+		<description>Short name of the route (e.g., "247", "U6")</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="departure-time">
+		<item-type>DateTime</item-type>
+		<label>Departure Time</label>
+		<description>Departure time (real-time if available)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is-cancelled">
+		<item-type>Switch</item-type>
+		<label>Cancelled</label>
+		<description>Whether the departure has been cancelled</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="route-color">
+		<item-type>String</item-type>
+		<label>Route Color</label>
+		<description>Route color as defined in GTFS</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="stop-name">
+		<item-type>String</item-type>
+		<label>Stop Name</label>
+		<description>Name of the transit stop</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="minutes-until-departure">
+		<item-type>Number:Time</item-type>
+		<label>Minutes Until Departure</label>
+		<description>Time remaining until departure in minutes</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="delay-minutes">
+		<item-type>Number:Time</item-type>
+		<label>Delay</label>
+		<description>Delay in minutes (if any)</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="active-alerts-count">
+		<item-type>Number</item-type>
+		<label>Active Alerts</label>
+		<description>Number of active service alerts for this route</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="time-to-target">
+		<item-type>Number:Time</item-type>
+		<label>Time To Target</label>
+		<description>Time remaining until arrival at target stop</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="wheelchair-accessible">
+		<item-type>Switch</item-type>
+		<label>Wheelchair Accessible</label>
+		<description>Wheelchair accessibility status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
