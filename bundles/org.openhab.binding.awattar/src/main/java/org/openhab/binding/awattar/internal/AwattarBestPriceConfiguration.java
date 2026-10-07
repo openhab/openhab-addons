@@ -26,9 +26,11 @@ public class AwattarBestPriceConfiguration {
     public int length = 1;
     public boolean consecutive = true;
     public boolean inverted = false;
+    public boolean preferCheapStart = false;
 
     @Override
     public String toString() {
-        return String.format("{ s: %d, d: %d, l: %d, c: %b )", rangeStart, rangeDuration, length, consecutive);
+        return String.format("{ s: %d, d: %d, l: %d, c: %b, p: %b )", rangeStart, rangeDuration, length, consecutive,
+                preferCheapStart);
     }
 }

@@ -87,6 +87,21 @@ public class AwattarBestPriceTest {
     }
 
     @Test
+    void awattarConsecutiveBestPriceResultPreferCheapStart() {
+        int length = 4;
+
+        List<AwattarPrice> range = new ArrayList<>(getPrices());
+
+        // without weighting, 00-03 has the lowest sum, but starts with the most expensive hour
+        AwattarConsecutiveBestPriceResult result = new AwattarConsecutiveBestPriceResult(range, length, false, zoneId);
+        assertEquals("00,01,02,03", result.getHours());
+
+        // with weighting, the range starting with the cheaper hours is preferred
+        result = new AwattarConsecutiveBestPriceResult(range, length, true, zoneId);
+        assertEquals("01,02,03,04", result.getHours());
+    }
+
+    @Test
     void awattarNonConsecutiveBestPriceResultNonInverted() {
         int length = 6;
         boolean inverted = false;
