@@ -854,4 +854,14 @@ public class ShellyLightModel extends LightModel {
         // @formatter:on
         ;
     }
+
+    /**
+     * Returns true if this is the main light model, i.e. the one that owns the channels in the
+     * 'control' channel group. Secondary light models only own their own indexed channel group.
+     *
+     * @return true if this model is the main light model.
+     */
+    public boolean isMainLight() {
+        return channelGroupSuffix == 0;
+    }
 }
