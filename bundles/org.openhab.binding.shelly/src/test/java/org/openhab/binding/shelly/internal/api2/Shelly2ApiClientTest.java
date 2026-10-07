@@ -33,7 +33,7 @@ import org.openhab.binding.shelly.internal.api2.dto.ShellyThermostatJsonDTO.Shel
 
 /**
  * Covers em1data:N (single-phase clamp) total/returned-energy mapping, i.e. #18166 (Pro EM-50 / EM Mini lifetime
- * totals via EM1Data.GetStatus), the shared returned-energy path (#20959) and the devicepower:N mapping.
+ * totals via EM1Data.GetStatus) and the shared returned-energy path (#20959).
  *
  * @author Markus Michels - Initial contribution
  */
