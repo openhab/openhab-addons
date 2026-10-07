@@ -205,7 +205,7 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * This attribute is writeable, in order to allow setting to an appropriate value after maintenance.
      * Valid range is 0 kWh to 4,294,967,294 kWh. Null if the value is unknown.
      */
-    public Integer lifetimeEnergyConsumed; // 23 uint32 RW VM
+    public Long lifetimeEnergyConsumed; // 23 uint32 RW VM
     /**
      * This attribute specifies the operation mode of the pump as defined in OperationModeEnum.
      * The actual operating mode of the pump is a result of the setting of the attributes OperationMode, ControlMode and

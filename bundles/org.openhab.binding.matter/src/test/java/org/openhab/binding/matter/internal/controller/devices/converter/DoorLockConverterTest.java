@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.openhab.binding.matter.internal.MatterBindingConstants;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluster.CredentialTypeEnum;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluster.UserStatusEnum;
@@ -176,6 +177,17 @@ class DoorLockConverterTest extends BaseMatterConverterTest {
         message.value = Integer.valueOf(30);
         converter.onEvent(message);
         verify(mockHandler, times(1)).updateConfiguration(anyMap());
+    }
+
+    @Test
+    void testOnEventWithAutoRelockTimeAboveIntegerRange() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = "autoRelockTime";
+        message.value = 3_000_000_000L;
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateConfiguration(
+                eq(Map.of(MatterBindingConstants.CONFIG_DOORLOCK_AUTO_RELOCK_TIME, 3_000_000_000L)));
     }
 
     @Test

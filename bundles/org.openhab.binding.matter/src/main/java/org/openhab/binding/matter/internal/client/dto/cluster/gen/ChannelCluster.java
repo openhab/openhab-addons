@@ -161,12 +161,12 @@ public class ChannelCluster extends BaseCluster {
          * This field shall indicate an epoch time in seconds indicating the start time of a program, as a UTC time.
          * This field can represent a past or future value.
          */
-        public Integer startTime; // epoch-s
+        public Long startTime; // epoch-s
         /**
          * This field shall indicate an epoch time in seconds indicating the end time of a program, as a UTC time. This
          * field can represent a past or future value but shall be greater than the StartTime.
          */
-        public Integer endTime; // epoch-s
+        public Long endTime; // epoch-s
         /**
          * This field shall indicate the title or name for the specific program. For example, “MCIS: Los Angeles”.
          */
@@ -246,8 +246,8 @@ public class ChannelCluster extends BaseCluster {
          */
         public List<ContentLauncherCluster.AdditionalInfoStruct> externalIdList; // list
 
-        public ProgramStruct(String identifier, ChannelInfoStruct channel, Integer startTime, Integer endTime,
-                String title, String subtitle, String description, List<String> audioLanguages, List<String> ratings,
+        public ProgramStruct(String identifier, ChannelInfoStruct channel, Long startTime, Long endTime, String title,
+                String subtitle, String description, List<String> audioLanguages, List<String> ratings,
                 String thumbnailUrl, String posterArtUrl, String dvbiUrl, String releaseDate,
                 String parentalGuidanceText, RecordingFlagBitmap recordingFlag, SeriesInfoStruct seriesInfo,
                 List<ProgramCategoryStruct> categoryList, List<ProgramCastStruct> castList,
@@ -560,8 +560,8 @@ public class ChannelCluster extends BaseCluster {
      * error codes shall be used when arguments provided are not valid. For example, if StartTime is greater than
      * EndTime, the status code INVALID_ACTION shall be returned.
      */
-    public static ClusterCommand getProgramGuide(Integer startTime, Integer endTime,
-            List<ChannelInfoStruct> channelList, PageTokenStruct pageToken, RecordingFlagBitmap recordingFlag,
+    public static ClusterCommand getProgramGuide(Long startTime, Long endTime, List<ChannelInfoStruct> channelList,
+            PageTokenStruct pageToken, RecordingFlagBitmap recordingFlag,
             List<ContentLauncherCluster.AdditionalInfoStruct> externalIdList, OctetString data) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (startTime != null) {

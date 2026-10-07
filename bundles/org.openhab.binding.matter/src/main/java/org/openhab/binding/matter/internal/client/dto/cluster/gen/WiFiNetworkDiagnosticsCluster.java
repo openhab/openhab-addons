@@ -69,29 +69,29 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
      * Indicates the count of the number of missed beacons the Node has detected. If the Node does not have an ability
      * to count beacons expected and not received, this value may remain set to zero.
      */
-    public Integer beaconLostCount; // 5 uint32 R V
+    public Long beaconLostCount; // 5 uint32 R V
     /**
      * Indicates the count of the number of received beacons. The total number of expected beacons that could have been
      * received during the interval since association SHOULD match the sum of BeaconRxCount and BeaconLostCount. If the
      * Node does not have an ability to report count of beacons received, this value may remain set to zero.
      */
-    public Integer beaconRxCount; // 6 uint32 R V
+    public Long beaconRxCount; // 6 uint32 R V
     /**
      * Indicates the number of multicast packets received by the Node.
      */
-    public Integer packetMulticastRxCount; // 7 uint32 R V
+    public Long packetMulticastRxCount; // 7 uint32 R V
     /**
      * Indicates the number of multicast packets transmitted by the Node.
      */
-    public Integer packetMulticastTxCount; // 8 uint32 R V
+    public Long packetMulticastTxCount; // 8 uint32 R V
     /**
      * Indicates the number of unicast packets received by the Node.
      */
-    public Integer packetUnicastRxCount; // 9 uint32 R V
+    public Long packetUnicastRxCount; // 9 uint32 R V
     /**
      * Indicates the number of unicast packets transmitted by the Node.
      */
-    public Integer packetUnicastTxCount; // 10 uint32 R V
+    public Long packetUnicastTxCount; // 10 uint32 R V
     /**
      * Indicates the current maximum PHY rate of transfer of data in bits-per-second.
      */

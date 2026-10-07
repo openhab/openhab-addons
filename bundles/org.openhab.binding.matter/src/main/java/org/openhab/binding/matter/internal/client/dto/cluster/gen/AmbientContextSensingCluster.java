@@ -256,11 +256,11 @@ public class AmbientContextSensingCluster extends BaseCluster {
         /**
          * This field shall indicate the predicted start time for the predicted activity.
          */
-        public Integer startTimestamp; // epoch-s
+        public Long startTimestamp; // epoch-s
         /**
          * This field shall indicate the predicted end time for the predicted activity.
          */
-        public Integer endTimestamp; // epoch-s
+        public Long endTimestamp; // epoch-s
         /**
          * This field shall indicate the predicted state of the AmbientContextType attribute for the specified time
          * period.
@@ -282,7 +282,7 @@ public class AmbientContextSensingCluster extends BaseCluster {
          */
         public Integer confidence; // percent
 
-        public PredictedActivityStruct(Integer startTimestamp, Integer endTimestamp,
+        public PredictedActivityStruct(Long startTimestamp, Long endTimestamp,
                 List<ModeSelectCluster.SemanticTagStruct> ambientContextType, Boolean crowdDetected, Integer crowdCount,
                 Integer confidence) {
             this.startTimestamp = startTimestamp;

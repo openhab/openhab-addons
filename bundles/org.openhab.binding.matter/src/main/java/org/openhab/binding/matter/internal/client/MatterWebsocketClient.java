@@ -280,8 +280,14 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                 switch (event.type) {
                     case "attributeChanged":
                         logger.debug("attributeChanged message {}", event.data);
-                        AttributeChangedMessage changedMessage = gson.fromJson(event.data,
-                                AttributeChangedMessage.class);
+                        AttributeChangedMessage changedMessage;
+                        try {
+                            changedMessage = gson.fromJson(event.data, AttributeChangedMessage.class);
+                        } catch (JsonParseException e) {
+                            // otherwise lost silently, as nothing reads the result of the submitted task
+                            logger.debug("Could not deserialize AttributeChangedMessage {}", event.data, e);
+                            return;
+                        }
                         if (changedMessage == null) {
                             logger.debug("invalid AttributeChangedMessage");
                             return;
@@ -592,7 +598,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                     // Use reflection to find the field type
                     Field field = getField(clusterClass, path.attributeName);
                     if (field != null) {
-                        value = context.deserialize(valueElement, field.getType());
+                        value = context.deserialize(valueElement, field.getGenericType());
                     }
                 } catch (NoSuchFieldException e) {
                     logger.debug("Field not found for attribute: {}", path.attributeName, e);

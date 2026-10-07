@@ -43,7 +43,7 @@ public class CommodityMeteringCluster extends BaseCluster {
      * The timestamp in UTC for when the value of the MeteredQuantity attribute was last updated. A null value indicates
      * that metering data is currently unavailable.
      */
-    public Integer meteredQuantityTimestamp; // 1 epoch-s R V
+    public Long meteredQuantityTimestamp; // 1 epoch-s R V
     /**
      * Indicates the unit for the Quantity field on all MeteredQuantityStructs in the MeteredQuantity attribute. A null
      * value indicates that metering data is currently unavailable.
@@ -63,13 +63,13 @@ public class CommodityMeteringCluster extends BaseCluster {
         /**
          * Indicates the specific TariffComponentStructs associated with the metered commodity.
          */
-        public List<Integer> tariffComponentIDs; // list
+        public List<Long> tariffComponentIDs; // list
         /**
          * This field indicates the amount of a commodity metered during the associated TariffComponentStructs.
          */
         public BigInteger quantity; // int64
 
-        public MeteredQuantityStruct(List<Integer> tariffComponentIDs, BigInteger quantity) {
+        public MeteredQuantityStruct(List<Long> tariffComponentIDs, BigInteger quantity) {
             this.tariffComponentIDs = tariffComponentIDs;
             this.quantity = quantity;
         }
