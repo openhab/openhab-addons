@@ -40,7 +40,7 @@ import com.google.gson.Gson;
  * The {@link OndiloApiClient} for accessing the Ondilo API using OAuth2 authentication.
  * handlers.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class OndiloApiClient {

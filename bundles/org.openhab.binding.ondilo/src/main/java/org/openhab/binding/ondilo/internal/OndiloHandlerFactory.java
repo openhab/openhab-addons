@@ -14,10 +14,10 @@ package org.openhab.binding.ondilo.internal;
 
 import static org.openhab.binding.ondilo.internal.OndiloBindingConstants.*;
 
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * The {@link OndiloHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.ondilo", service = ThingHandlerFactory.class)
@@ -53,7 +53,7 @@ public class OndiloHandlerFactory extends BaseThingHandlerFactory {
     private final OAuthFactory oAuthFactory;
     private final LocaleProvider localeProvider;
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_ONDILO);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new ConcurrentHashMap<>();
 
     @Activate
     public OndiloHandlerFactory(ComponentContext componentContext, @Reference OAuthFactory oAuthFactory,

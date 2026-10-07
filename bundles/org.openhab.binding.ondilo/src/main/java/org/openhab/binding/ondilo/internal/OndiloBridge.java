@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link OndiloBridge} handles OAuth2 authentication for Ondilo API.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class OndiloBridge {

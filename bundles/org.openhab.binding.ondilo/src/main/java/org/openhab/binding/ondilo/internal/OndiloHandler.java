@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -46,6 +47,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * The {@link OndiloHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class OndiloHandler extends BaseThingHandler {
@@ -68,7 +70,7 @@ public class OndiloHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
 
-    private @Nullable LastMeasure[] lastMeasures = new LastMeasure[0];
+    private final Map<String, State> lastMeasureStates = new ConcurrentHashMap<>();
     private @Nullable Recommendation lastRecommendation = null;
 
     // Store last value and valueTime for trend calculation
@@ -94,10 +96,10 @@ public class OndiloHandler extends BaseThingHandler {
             if (groupId == null) {
                 logger.warn("Received refresh command for unknown channel: {}", channelUID.getId());
             } else if (GROUP_MEASURES.startsWith(groupId)) {
-                if (lastMeasures.length == 0) {
+                if (lastMeasureStates.isEmpty()) {
                     clearLastMeasuresChannels();
                 } else {
-                    updateLastMeasuresChannels(lastMeasures);
+                    lastMeasureStates.forEach(this::updateState);
                 }
             } else if (GROUP_RECOMMENDATIONS.startsWith(groupId)) {
                 Recommendation lastRecommendation = this.lastRecommendation;
@@ -140,8 +142,7 @@ public class OndiloHandler extends BaseThingHandler {
     public void initialize() {
         OndiloBridge ondiloBridge = getOndiloBridge();
         if (ondiloBridge != null) {
-            // Initialize to empty array, as no measure / recommendation has been processed yet
-            this.lastMeasures = new LastMeasure[0];
+            this.lastMeasureStates.clear();
             this.lastRecommendation = null;
 
             if (configPoolId == 0) {
@@ -185,8 +186,7 @@ public class OndiloHandler extends BaseThingHandler {
             ondiloId.set(NO_ID);
         }
 
-        // Initialize to empty array, as no measure / recommendation has been processed yet
-        this.lastMeasures = new LastMeasure[0];
+        this.lastMeasureStates.clear();
         this.lastRecommendation = null;
     }
 
@@ -199,7 +199,7 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_TDS, UnDefType.UNDEF);
         updateState(CHANNEL_BATTERY, UnDefType.UNDEF);
         updateState(CHANNEL_RSSI, UnDefType.UNDEF);
-        this.lastMeasures = new LastMeasure[0];
+        this.lastMeasureStates.clear();
     }
 
     public void clearRecommendationChannels() {
@@ -221,9 +221,9 @@ public class OndiloHandler extends BaseThingHandler {
             if (!valueTime.equals(lastMeasureTime)) {
                 double delta = value - lastMeasureState.value;
                 if (unitOrType instanceof Unit<?> unit) {
-                    updateState(trendChannel, new QuantityType<>(delta, (Unit<?>) unit));
+                    updateMeasureState(trendChannel, new QuantityType<>(delta, (Unit<?>) unit));
                 } else { // DecimalType
-                    updateState(trendChannel, new DecimalType(delta));
+                    updateMeasureState(trendChannel, new DecimalType(delta));
                 }
                 logger.trace(
                         "channel: {}, trendChannel: {}, value: {}, valueTime: {}, lastValue: {}, lastValueTime: {},  unitOrType: {} ==> delta: {}",
@@ -231,17 +231,22 @@ public class OndiloHandler extends BaseThingHandler {
                         lastMeasureTime.toString(), unitOrType.toString(), delta);
             } // else: keep current value
         } else {
-            updateState(trendChannel, UnDefType.UNDEF);
+            updateMeasureState(trendChannel, UnDefType.UNDEF);
         }
         // Update the current value channel
         if (unitOrType instanceof Unit<?> unit) {
-            updateState(channel, new QuantityType<>(value, (Unit<?>) unit));
+            updateMeasureState(channel, new QuantityType<>(value, (Unit<?>) unit));
         } else { // DecimalType
-            updateState(channel, new DecimalType(value));
+            updateMeasureState(channel, new DecimalType(value));
         }
 
         lastMeasureState.value = value;
         lastMeasureState.time = valueTime;
+    }
+
+    private void updateMeasureState(String channel, State state) {
+        lastMeasureStates.put(channel, state);
+        updateState(channel, state);
     }
 
     public @Nullable Instant updateLastMeasuresChannels(LastMeasure[] measures) {
@@ -279,10 +284,10 @@ public class OndiloHandler extends BaseThingHandler {
                             Units.PARTS_PER_MILLION);
                     break;
                 case "battery":
-                    updateState(CHANNEL_BATTERY, new QuantityType<>(measure.value, Units.PERCENT));
+                    updateMeasureState(CHANNEL_BATTERY, new QuantityType<>(measure.value, Units.PERCENT));
                     break;
                 case "rssi":
-                    updateState(CHANNEL_RSSI, new DecimalType(measure.value));
+                    updateMeasureState(CHANNEL_RSSI, new DecimalType(measure.value));
                     break;
                 default:
                     logger.warn("Unknown data type: {}", measure.dataType);
@@ -291,10 +296,9 @@ public class OndiloHandler extends BaseThingHandler {
 
         if (earliestValueTime != null) {
             // Update value time channel (expect that it is the same for all measures)
-            updateState(CHANNEL_VALUE_TIME, new DateTimeType(earliestValueTime));
+            updateMeasureState(CHANNEL_VALUE_TIME, new DateTimeType(earliestValueTime));
         }
 
-        this.lastMeasures = measures;
         return earliestValueTime;
     }
 
