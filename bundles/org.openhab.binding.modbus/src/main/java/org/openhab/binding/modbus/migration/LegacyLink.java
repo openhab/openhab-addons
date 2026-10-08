@@ -12,9 +12,18 @@
  */
 package org.openhab.binding.modbus.migration;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/** One Item-to-channel link that is to be recreated on a poller-owned channel. */
+/** One Item-to-channel link and its current profile configuration. */
 @NonNullByDefault
-public record LegacyLink(String itemName, String channelUid, String itemType) {
+public record LegacyLink(String itemName, String channelUid, String itemType, Map<String, Object> configuration) {
+    public LegacyLink {
+        configuration = Map.copyOf(configuration);
+    }
+
+    public LegacyLink(String itemName, String channelUid, String itemType) {
+        this(itemName, channelUid, itemType, Map.of());
+    }
 }

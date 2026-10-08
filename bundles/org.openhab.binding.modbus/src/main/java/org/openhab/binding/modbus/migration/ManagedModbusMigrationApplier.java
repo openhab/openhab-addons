@@ -58,7 +58,7 @@ public final class ManagedModbusMigrationApplier implements MigrationApplier {
                 createdThings.add(targetUid);
                 for (MigrationLink link : group.links()) {
                     ItemChannelLink targetLink = new ItemChannelLink(link.itemName(),
-                            new ChannelUID(link.targetChannelUid()));
+                            new ChannelUID(link.targetChannelUid()), new Configuration(link.configuration()));
                     linkRegistry.add(targetLink);
                     createdLinks.add(targetLink);
                 }

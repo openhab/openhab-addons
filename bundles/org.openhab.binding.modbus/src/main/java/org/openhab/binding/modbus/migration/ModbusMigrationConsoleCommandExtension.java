@@ -65,6 +65,7 @@ public final class ModbusMigrationConsoleCommandExtension extends AbstractConsol
         MigrationPreview preview = workflow.preview(snapshot.pollers(), snapshot.data());
         console.println("Preview identity: " + preview.identity());
         console.println(preview.yaml());
+        console.println(preview.impactReport());
         snapshot.manualWork().forEach(work -> console.println("MANUAL: " + work.sourceUid() + " — " + work.reason()));
         preview.manualWork().forEach(work -> console.println("MANUAL: " + work.sourceUid() + " — " + work.reason()));
     }

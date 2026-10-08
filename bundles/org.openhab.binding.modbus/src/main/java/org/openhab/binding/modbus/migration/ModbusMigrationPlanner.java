@@ -33,6 +33,7 @@ public final class ModbusMigrationPlanner {
         List<LegacyPoller> sortedPollers = pollers.stream().sorted(Comparator.comparing(LegacyPoller::uid)).toList();
         List<ManualMigrationWork> manualWork = new ArrayList<>();
         List<MigrationGroup> groups = new ArrayList<>();
+        List<MigrationImpact> impacts = new ArrayList<>();
         for (LegacyPoller poller : sortedPollers) {
             List<LegacyData> children = dataThings.stream().filter(data -> poller.uid().equals(data.pollerUid()))
                     .sorted(Comparator.comparing(LegacyData::uid)).toList();
@@ -51,8 +52,20 @@ public final class ModbusMigrationPlanner {
                 Map<String, Object> channelConfiguration = Map.of("address", readStart, "valueType", readValueType);
                 channels.add(new MigrationChannel(data.uid(), channelId, channelConfiguration, itemType));
                 String targetChannelUid = targetPollerUid(poller.uid()) + ":" + channelId;
-                data.links().stream().sorted(Comparator.comparing(LegacyLink::channelUid)).forEach(
-                        link -> links.add(new MigrationLink(link.itemName(), link.channelUid(), targetChannelUid)));
+                data.links().stream()
+                        .sorted(Comparator.comparing(LegacyLink::channelUid).thenComparing(LegacyLink::itemName))
+                        .forEach(link -> {
+                            boolean compatible = compatibleProfileConfiguration(link.configuration());
+                            impacts.add(new MigrationImpact(link.itemName(), link.channelUid(), targetChannelUid,
+                                    link.configuration(), compatible));
+                            if (compatible) {
+                                links.add(new MigrationLink(link.itemName(), link.channelUid(), targetChannelUid,
+                                        link.configuration()));
+                            } else {
+                                manualWork.add(new ManualMigrationWork(link.channelUid(),
+                                        "Item link profile configuration is not proven compatible; target link was not planned"));
+                            }
+                        });
             }
             if (!channels.isEmpty()) {
                 groups.add(new MigrationGroup(poller.uid(), targetPollerUid(poller.uid()), poller.bridgeUid(),
@@ -60,9 +73,11 @@ public final class ModbusMigrationPlanner {
             }
         }
         manualWork.sort(Comparator.comparing(ManualMigrationWork::sourceUid));
+        impacts.sort(Comparator.comparing(MigrationImpact::sourceChannelUid).thenComparing(MigrationImpact::itemName));
         String yaml = yaml(groups, manualWork);
-        String manifestJson = manifest(groups, manualWork);
-        return new MigrationPreview(identity(manifestJson), groups, manualWork, yaml, manifestJson);
+        String manifestJson = manifest(groups, manualWork, impacts);
+        return new MigrationPreview(identity(manifestJson), groups, manualWork, impacts, yaml, manifestJson,
+                impactReport(impacts));
     }
 
     private static Optional<String> unsupportedReason(Map<String, Object> configuration) {
@@ -82,6 +97,10 @@ public final class ModbusMigrationPlanner {
             return Optional.of("readStart and readValueType are required for migration");
         }
         return Optional.empty();
+    }
+
+    private static boolean compatibleProfileConfiguration(Map<String, Object> configuration) {
+        return configuration.isEmpty() || Map.of("profile", "system:default").equals(configuration);
     }
 
     private static String targetPollerUid(String sourceUid) {
@@ -113,7 +132,29 @@ public final class ModbusMigrationPlanner {
         return result.toString();
     }
 
-    private static String manifest(List<MigrationGroup> groups, List<ManualMigrationWork> manualWork) {
+    private static String impactReport(List<MigrationImpact> impacts) {
+        StringBuilder result = new StringBuilder(
+                "IMPACT ASSESSMENT (review only; no rules, scripts, widgets, or profiles are rewritten)\n");
+        for (MigrationImpact impact : impacts) {
+            result.append("- Item: ").append(impact.itemName()).append("\n  Source channel: ")
+                    .append(impact.sourceChannelUid()).append("\n  Target channel: ").append(impact.targetChannelUid())
+                    .append("\n  Profile configuration: ").append(jsonObject(impact.profileConfiguration()))
+                    .append("\n  Target link action: ").append(impact.targetLinkPlanned() ? "CREATE" : "MANUAL")
+                    .append("\n  Developer Sidebar search queries (literal terms):\n    - ").append(impact.itemName())
+                    .append("\n    - ").append(thingUid(impact.sourceChannelUid())).append("\n    - ")
+                    .append(thingUid(impact.targetChannelUid())).append('\n');
+        }
+        return result.append(
+                "NOTE: Developer Sidebar search is a user review aid, not authoritative dependency detection. Review dynamic, group, tag, external references, and scripts, widgets, and profiles manually.\n")
+                .toString();
+    }
+
+    private static String thingUid(String channelUid) {
+        return channelUid.substring(0, channelUid.lastIndexOf(':'));
+    }
+
+    private static String manifest(List<MigrationGroup> groups, List<ManualMigrationWork> manualWork,
+            List<MigrationImpact> impacts) {
         List<String> mappings = new ArrayList<>();
         for (MigrationGroup group : groups) {
             for (MigrationChannel channel : group.channels()) {
@@ -122,15 +163,21 @@ public final class ModbusMigrationPlanner {
                         + json(group.targetPollerUid() + ":" + channel.id()) + "\"}");
             }
             for (MigrationLink link : group.links()) {
-                mappings.add(
-                        "{\"item\":\"" + json(link.itemName()) + "\",\"sourceLink\":\"" + json(link.sourceChannelUid())
-                                + "\",\"targetLink\":\"" + json(link.targetChannelUid()) + "\"}");
+                mappings.add("{\"item\":\"" + json(link.itemName()) + "\",\"sourceLink\":\""
+                        + json(link.sourceChannelUid()) + "\",\"targetLink\":\"" + json(link.targetChannelUid())
+                        + "\",\"profileConfiguration\":" + jsonObject(link.configuration()) + "}");
             }
         }
         List<String> manual = manualWork.stream().map(work -> "{\"sourceThing\":\"" + json(work.sourceUid())
                 + "\",\"reason\":\"" + json(work.reason()) + "\"}").toList();
+        List<String> impactMappings = impacts.stream()
+                .map(impact -> "{\"item\":\"" + json(impact.itemName()) + "\",\"sourceChannel\":\""
+                        + json(impact.sourceChannelUid()) + "\",\"targetChannel\":\"" + json(impact.targetChannelUid())
+                        + "\",\"profileConfiguration\":" + jsonObject(impact.profileConfiguration())
+                        + ",\"targetLinkPlanned\":" + impact.targetLinkPlanned() + "}")
+                .toList();
         return "{\"version\":1,\"mappings\":[" + String.join(",", mappings) + "],\"manualWork\":["
-                + String.join(",", manual) + "]}";
+                + String.join(",", manual) + "],\"impacts\":[" + String.join(",", impactMappings) + "]}";
     }
 
     private static String yamlValue(Object value) {
@@ -140,6 +187,12 @@ public final class ModbusMigrationPlanner {
 
     private static String json(String value) {
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private static String jsonObject(Map<String, Object> values) {
+        return values.entrySet().stream().sorted(Map.Entry.comparingByKey())
+                .map(entry -> "\"" + json(entry.getKey()) + "\":\"" + json(entry.getValue().toString()) + "\"")
+                .collect(java.util.stream.Collectors.joining(",", "{", "}"));
     }
 
     private static String identity(String manifest) {

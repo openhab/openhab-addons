@@ -63,7 +63,7 @@ public final class ManagedModbusMigrationAdapter {
                 } else if (thing.getBridgeUID() == null) {
                     manual.add(new ManualMigrationWork(thing.getUID().toString(), "legacy data Thing has no poller"));
                 } else {
-                    List<LegacyLink> links = links(thing, manual);
+                    List<LegacyLink> links = links(thing);
                     data.add(new LegacyData(thing.getUID().toString(), thing.getBridgeUID().toString(),
                             thing.getConfiguration().getProperties(), links));
                 }
@@ -81,16 +81,12 @@ public final class ManagedModbusMigrationAdapter {
         return thingRegistry.get(new ThingUID(target)) != null;
     }
 
-    private List<LegacyLink> links(Thing thing, List<ManualMigrationWork> manual) {
+    private List<LegacyLink> links(Thing thing) {
         List<LegacyLink> result = new ArrayList<>();
         for (ItemChannelLink link : linkRegistry.getAll()) {
             if (thing.getUID().equals(link.getLinkedUID().getThingUID())) {
-                if (!link.getConfiguration().getProperties().isEmpty()) {
-                    manual.add(new ManualMigrationWork(thing.getUID().toString(),
-                            "configured/profile Item link requires manual migration"));
-                } else {
-                    result.add(new LegacyLink(link.getItemName(), link.getLinkedUID().toString(), "Number"));
-                }
+                result.add(new LegacyLink(link.getItemName(), link.getLinkedUID().toString(), "Number",
+                        link.getConfiguration().getProperties()));
             }
         }
         return result;

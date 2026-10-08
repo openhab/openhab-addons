@@ -12,9 +12,15 @@
  */
 package org.openhab.binding.modbus.migration;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-/** Source Item-channel link and the replacement link that can be created during apply. */
+/** Source Item-channel link and the compatible replacement link that can be created during apply. */
 @NonNullByDefault
-public record MigrationLink(String itemName, String sourceChannelUid, String targetChannelUid) {
+public record MigrationLink(String itemName, String sourceChannelUid, String targetChannelUid,
+        Map<String, Object> configuration) {
+    public MigrationLink {
+        configuration = Map.copyOf(configuration);
+    }
 }

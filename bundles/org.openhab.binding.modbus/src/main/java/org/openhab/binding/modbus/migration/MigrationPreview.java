@@ -19,9 +19,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /** Immutable, non-mutating migration plan that must be reviewed before it is applied. */
 @NonNullByDefault
 public record MigrationPreview(String identity, List<MigrationGroup> groups, List<ManualMigrationWork> manualWork,
-        String yaml, String manifestJson) {
+        List<MigrationImpact> impacts, String yaml, String manifestJson, String impactReport) {
     public MigrationPreview {
         groups = List.copyOf(groups);
         manualWork = List.copyOf(manualWork);
+        impacts = List.copyOf(impacts);
     }
 }

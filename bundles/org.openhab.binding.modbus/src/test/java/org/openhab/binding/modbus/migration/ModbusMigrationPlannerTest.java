@@ -46,6 +46,58 @@ class ModbusMigrationPlannerTest {
     }
 
     @Test
+    void previewEmitsLiteralDeveloperSidebarReviewTermsForEachMigratedItem() {
+        LegacyPoller poller = new LegacyPoller("modbus:poller:tcp:plant", "modbus:tcp:plant",
+                Map.of("start", 100, "length", 2, "type", "holding"));
+        LegacyData data = new LegacyData("modbus:data:tcp:plant:temperature", poller.uid(),
+                Map.of("readStart", "100", "readValueType", "int16"),
+                List.of(new LegacyLink("Temperature", "modbus:data:tcp:plant:temperature:number", "Number")));
+
+        MigrationPreview preview = planner.preview(List.of(poller), List.of(data));
+
+        assertEquals(
+                """
+                        IMPACT ASSESSMENT (review only; no rules, scripts, widgets, or profiles are rewritten)
+                        - Item: Temperature
+                          Source channel: modbus:data:tcp:plant:temperature:number
+                          Target channel: modbus:poller2:tcp:plant:temperature
+                          Profile configuration: {}
+                          Target link action: CREATE
+                          Developer Sidebar search queries (literal terms):
+                            - Temperature
+                            - modbus:data:tcp:plant:temperature
+                            - modbus:poller2:tcp:plant
+                        NOTE: Developer Sidebar search is a user review aid, not authoritative dependency detection. Review dynamic, group, tag, external references, and scripts, widgets, and profiles manually.
+                        """,
+                preview.impactReport());
+    }
+
+    @Test
+    void previewPreservesTheProvenSystemDefaultProfileAndRefusesUnknownProfileConfiguration() {
+        LegacyPoller poller = new LegacyPoller("modbus:poller:tcp:plant", "modbus:tcp:plant",
+                Map.of("start", 100, "length", 2, "type", "holding"));
+        LegacyData data = new LegacyData("modbus:data:tcp:plant:temperature", poller.uid(),
+                Map.of("readStart", "100", "readValueType", "int16"),
+                List.of(new LegacyLink("Temperature", "modbus:data:tcp:plant:temperature:number", "Number",
+                        Map.of("profile", "system:default")),
+                        new LegacyLink("AdjustedTemperature", "modbus:data:tcp:plant:temperature:number", "Number",
+                                Map.of("profile", "modbus:gain-offset", "gain", "2"))));
+
+        MigrationPreview preview = planner.preview(List.of(poller), List.of(data));
+
+        assertEquals(Map.of("profile", "system:default"),
+                preview.groups().getFirst().links().getFirst().configuration());
+        assertEquals(1, preview.groups().getFirst().links().size());
+        assertEquals(
+                List.of(new ManualMigrationWork("modbus:data:tcp:plant:temperature:number",
+                        "Item link profile configuration is not proven compatible; target link was not planned")),
+                preview.manualWork());
+        assertTrue(preview.impactReport()
+                .contains("Profile configuration: {\"gain\":\"2\",\"profile\":\"modbus:gain-offset\"}"));
+        assertTrue(preview.impactReport().contains("Target link action: MANUAL"));
+    }
+
+    @Test
     void previewReportsCustomTransformsAndJsonWritesAsManualWork() {
         LegacyPoller poller = new LegacyPoller("modbus:poller:tcp:plant", "modbus:tcp:plant",
                 Map.of("start", 100, "length", 2, "type", "holding"));
