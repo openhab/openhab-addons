@@ -611,6 +611,7 @@
 				<option value="2">High</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="doorlock-alarm">
