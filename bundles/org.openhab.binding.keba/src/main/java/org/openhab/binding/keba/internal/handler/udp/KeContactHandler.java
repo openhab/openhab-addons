@@ -726,6 +726,7 @@ public class KeContactHandler extends KeContactProtocolHandler {
                 }
                 case CHANNEL_UDP_STOP: {
                     if (command instanceof StringType stringCommand) {
+                        // Use the active session's RFID supplied by the caller.
                         String rfidTag = stringCommand.toString().trim();
                         if (isUsableRfidTag(rfidTag)) {
                             transceiver.send("stop " + rfidTag, this);
