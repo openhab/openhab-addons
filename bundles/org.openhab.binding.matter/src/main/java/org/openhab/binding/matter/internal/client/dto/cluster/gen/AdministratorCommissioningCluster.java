@@ -161,7 +161,7 @@ public class AdministratorCommissioningCluster extends BaseCluster {
      * In case of any other parameter error, this command shall fail with a status code of COMMAND_INVALID.
      */
     public static ClusterCommand openCommissioningWindow(Integer commissioningTimeout, OctetString pakePasscodeVerifier,
-            Integer discriminator, Integer iterations, OctetString salt) {
+            Integer discriminator, Long iterations, OctetString salt) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (commissioningTimeout != null) {
             map.put("commissioningTimeout", commissioningTimeout);

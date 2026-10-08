@@ -59,18 +59,19 @@ public class PackageProcessor {
      *
      * @param yamlMap the root YAML map to merge packages into
      * @param packagesObj the raw 'packages' section value to process and merge, or null if not present
+     * @param parentContext the current evaluation context
      */
-    public void mergePackages(Map<?, ?> yamlMap, @Nullable Object packagesObj) {
+    public void mergePackages(Map<?, ?> yamlMap, @Nullable Object packagesObj, EvaluationContext parentContext) {
         if (packagesObj == null) {
             return;
         }
 
         // Expand root structural directives (!for, !if) while deferring !include and !insert
-        EvaluationContext pkgContext = new EvaluationContext(scope, ProcessingPhase.DIRECTIVES_WITH_SUBSTITUTIONS);
+        EvaluationContext pkgContext = parentContext.withProcessingPhase(ProcessingPhase.DIRECTIVES_WITH_SUBSTITUTIONS);
         Object expandedPackages = recursiveTransformer.transform(packagesObj, pkgContext);
 
         if (expandedPackages instanceof Map<?, ?> packagesMap) {
-            mergePackages(yamlMap, packagesMap);
+            mergePackages(yamlMap, packagesMap, parentContext);
             logger.debug("Merged packages into data in {}: {}", absolutePath, yamlMap);
         } else if (expandedPackages != null) {
             var position = sourceLocator.findPosition(PACKAGES_KEY);
@@ -81,9 +82,9 @@ public class PackageProcessor {
     /**
      * Deep merge packages map into the main data map
      */
-    private void mergePackages(Map<?, ?> mainData, Map<?, ?> packages) {
+    private void mergePackages(Map<?, ?> mainData, Map<?, ?> packages, EvaluationContext parentContext) {
         packages.forEach((pkgKey, pkg) -> {
-            EvaluationContext keyContext = new EvaluationContext(scope, ProcessingPhase.STANDARD);
+            EvaluationContext keyContext = parentContext.withProcessingPhase(ProcessingPhase.STANDARD);
             Object pkgKeyObj = recursiveTransformer.transform(pkgKey, keyContext);
             if (pkgKeyObj == null) {
                 var position = sourceLocator.findPosition(PACKAGES_KEY);
@@ -96,7 +97,8 @@ public class PackageProcessor {
             // !include and !insert within the package definition
             Scope packageScope = scope.createChild();
             packageScope.put(PACKAGE_ID_VAR, packageId);
-            EvaluationContext pkgContext = new EvaluationContext(packageScope, ProcessingPhase.STANDARD);
+            EvaluationContext pkgContext = parentContext.withScope(packageScope)
+                    .withProcessingPhase(ProcessingPhase.STANDARD);
             Object resolvedPkg = recursiveTransformer.transform(pkg, pkgContext);
 
             if (!(resolvedPkg instanceof Map<?, ?> packageMap)) {

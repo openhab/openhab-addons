@@ -17,43 +17,54 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.evcc.internal.handler.routing.GridStateTransformer;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.State;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
- * The {@link EvccSiteHandlerTest} is responsible for testing the EvccSiteHandler implementation
+ * Tests for {@link EvccSiteHandler}, focused on verifying that updates dispatched by the message
+ * router (top-level primitives and the embedded "grid" object) are mapped to the correct,
+ * properly-linked site channels.
  *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
-public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteHandler> {
+public class EvccSiteHandlerTest {
 
-    private final JsonObject gridConfigured = new JsonObject();
-    private final JsonObject modifiedVerifyObject = verifyObject.deepCopy();
+    private final Thing thing = mock(Thing.class);
+    private final ChannelTypeRegistry channelTypeRegistry = mock(ChannelTypeRegistry.class);
 
-    @Override
-    protected EvccSiteHandler createHandler() {
+    private EvccSiteHandler handler = createHandler();
+    private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
+    private boolean updateStateCalled = false;
+    private final Set<String> linkedChannelIdsChecked = new HashSet<>();
+    private final List<String> requestedUrls = new ArrayList<>();
+
+    private EvccSiteHandler createHandler() {
         return new EvccSiteHandler(thing, channelTypeRegistry) {
 
             @Override
             protected void updateStatus(ThingStatus status, ThingStatusDetail detail) {
                 lastThingStatus = status;
-                lastThingStatusDetail = detail;
             }
 
             @Override
@@ -77,6 +88,18 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
             @Override
             protected void updateState(ChannelUID channelUID, State state) {
+                updateStateCalled = true;
+            }
+
+            @Override
+            protected boolean isLinked(ChannelUID channelUID) {
+                linkedChannelIdsChecked.add(channelUID.getId());
+                return true;
+            }
+
+            @Override
+            protected void performApiRequest(String url, String method, JsonElement payload) {
+                requestedUrls.add(url);
             }
         };
     }
@@ -87,79 +110,58 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "pv"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         handler = spy(createHandler());
-
-        modifiedVerifyObject.addProperty("gridPower", 2000);
-        modifiedVerifyObject.addProperty("gridEnergy", 10000);
-        modifiedVerifyObject.addProperty("gridCurrentL1", 6);
-        modifiedVerifyObject.addProperty("gridCurrentL2", 7);
-        modifiedVerifyObject.addProperty("gridCurrentL3", 8);
-        modifiedVerifyObject.addProperty("gridVoltageL1", 230.0);
-        modifiedVerifyObject.addProperty("gridVoltageL2", 231.0);
-        modifiedVerifyObject.addProperty("gridVoltageL3", 229.0);
-        modifiedVerifyObject.remove("gridConfigured");
-        modifiedVerifyObject.remove("grid");
-
-        gridConfigured.addProperty("power", 2000);
-        gridConfigured.addProperty("energy", 10000);
-        JsonArray currents = new JsonArray();
-        currents.add(6);
-        currents.add(7);
-        currents.add(8);
-        gridConfigured.add("currents", currents);
-        JsonArray voltages = new JsonArray();
-        voltages.add(230.0);
-        voltages.add(231.0);
-        voltages.add(229.0);
-        gridConfigured.add("voltages", voltages);
+        lastThingStatus = ThingStatus.UNKNOWN;
+        updateStateCalled = false;
+        linkedChannelIdsChecked.clear();
+        requestedUrls.clear();
     }
 
-    @SuppressWarnings("null")
     @Test
-    public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
-        handler.bridgeHandler = bridgeHandler;
-        when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
-
-        handler.initialize();
+    public void topLevelPvPowerShouldUpdateThroughSiteHandler() {
+        handler.handleUpdate("pvPower", new JsonPrimitive(8476.122));
         assertSame(ThingStatus.ONLINE, lastThingStatus);
+        assertSame(true, updateStateCalled);
     }
 
-    @SuppressWarnings("null")
-    @Nested
-    public class TestPrepareApiResponseForChannelStateUpdate {
-
-        @Test
-        public void handlerIsInitialized() {
-            handler.bridgeHandler = mock(EvccBridgeHandler.class);
-            handler.isInitialized = true;
-
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
-            assertSame(ThingStatus.ONLINE, lastThingStatus);
-        }
-
-        @Test
-        public void handlerIsNotInitialized() {
-            handler.bridgeHandler = mock(EvccBridgeHandler.class);
-
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
-            assertSame(ThingStatus.UNKNOWN, lastThingStatus);
-        }
-
-        @Test
-        public void stateContainsGridConfigured() {
-            handler.bridgeHandler = mock(EvccBridgeHandler.class);
-
-            exampleResponse.addProperty("gridConfigured", true);
-            exampleResponse.add("grid", gridConfigured);
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
-            assertEquals(modifiedVerifyObject, exampleResponse);
-        }
-    }
-
-    @SuppressWarnings("null")
     @Test
-    public void testGetStateFromCachedState() {
-        JsonObject result = handler.getStateFromCachedState(exampleResponse);
-        assertSame(exampleResponse, result);
+    public void topLevelTariffGridShouldUpdateThroughSiteHandler() {
+        handler.handleUpdate("tariffGrid", new JsonPrimitive(0.236));
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
+        assertSame(true, updateStateCalled);
+    }
+
+    @Test
+    public void arbitraryTopLevelPrimitiveShouldUpdateThroughSiteHandler() {
+        handler.handleUpdate("someNewField", new JsonPrimitive(42));
+        assertSame(ThingStatus.ONLINE, lastThingStatus);
+        assertSame(true, updateStateCalled);
+    }
+
+    @Test
+    public void gridObjectUpdateShouldCheckLinkedStateOnMappedChannelIds() {
+        JsonObject gridUpdate = new JsonObject();
+        gridUpdate.addProperty("power", 2000);
+        gridUpdate.addProperty("energy", 10000);
+
+        // The router applies the grid transformer before dispatching the normalized update to the handler.
+        handler.applyNormalizedUpdate(new GridStateTransformer().transform(gridUpdate));
+
+        assertSame(true, linkedChannelIdsChecked.contains("site-grid-power"));
+        assertSame(true, linkedChannelIdsChecked.contains("site-grid-energy"));
+        assertSame(false, linkedChannelIdsChecked.contains("gridPower"));
+        assertSame(false, linkedChannelIdsChecked.contains("gridEnergy"));
+    }
+
+    @Test
+    public void commandsUseSiteApiPaths() {
+        handler.endpoint = "http://evcc/api";
+
+        handler.handleCommand(new ChannelUID("test:thing:uid:site-battery-priority"),
+                org.openhab.core.library.types.OnOffType.ON);
+        handler.handleCommand(new ChannelUID("test:thing:uid:site-battery-soc-limit"),
+                new org.openhab.core.library.types.DecimalType(80));
+
+        assertEquals(List.of("http://evcc/api/batterypriority/true", "http://evcc/api/batterysoclimit/80"),
+                requestedUrls);
     }
 }

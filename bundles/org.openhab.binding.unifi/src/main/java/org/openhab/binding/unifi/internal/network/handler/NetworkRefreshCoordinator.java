@@ -14,6 +14,7 @@ package org.openhab.binding.unifi.internal.network.handler;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -25,6 +26,7 @@ import org.openhab.binding.unifi.internal.api.UniFiSession;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerBridgeHandler;
 import org.openhab.binding.unifi.internal.network.api.UniFiController;
 import org.openhab.binding.unifi.internal.network.api.UniFiException;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -39,8 +41,13 @@ import org.slf4j.LoggerFactory;
  * The coordinator is keyed by the parent controller bridge's {@link ThingUID} so multiple UniFi consoles each
  * get their own refresh loop. All consoles share the same {@link UniFiSession} plumbing, rate limiter, and HTTP
  * client published by the shared parent binding, so adding Network things does not trigger additional logins.
+ * <p>
+ * A coordinator is bound to one bridge handler instance and rebuilds its {@link UniFiController} whenever that
+ * handler publishes a new session, because the bridge replaces its HTTP client and session each time it is
+ * (re-)initialized.
  *
  * @author Dan Cunningham - Initial contribution
+ * @author Mikhail Obodnikov - Follow bridge handler replacement and re-initialization
  */
 @NonNullByDefault
 public class NetworkRefreshCoordinator {
@@ -53,54 +60,66 @@ public class NetworkRefreshCoordinator {
     private final Logger logger = LoggerFactory.getLogger(NetworkRefreshCoordinator.class);
 
     private final UniFiControllerBridgeHandler bridgeHandler;
+    private final ThingUID bridgeUID;
     private final Set<UniFiBaseThingHandler<?, ?>> subscribers = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Object refreshLock = new Object();
     private final int refreshSeconds;
-    private final int timeoutSeconds;
-    private final boolean unifios;
 
     private volatile @Nullable UniFiController controller;
+    private @Nullable UniFiSession controllerSession;
     private volatile @Nullable Throwable lastError;
     private @Nullable ScheduledFuture<?> refreshJob;
 
     private NetworkRefreshCoordinator(UniFiControllerBridgeHandler bridgeHandler) {
         this.bridgeHandler = bridgeHandler;
         Thing bridgeThing = bridgeHandler.getThing();
-        Object unifiosObj = bridgeThing.getConfiguration().get("unifios");
-        this.unifios = unifiosObj instanceof Boolean b ? b : true;
-        Object timeoutObj = bridgeThing.getConfiguration().get("timeoutSeconds");
-        this.timeoutSeconds = timeoutObj instanceof Number n ? n.intValue() : DEFAULT_TIMEOUT_SECONDS;
+        this.bridgeUID = bridgeThing.getUID();
         Object refreshObj = bridgeThing.getConfiguration().get("refresh");
         this.refreshSeconds = refreshObj instanceof Number n ? n.intValue() : DEFAULT_REFRESH_SECONDS;
     }
 
     /**
      * Attach the given subscriber to the coordinator for its bridge, creating one if this is the first subscriber
-     * for that bridge.
+     * for that bridge or if the existing coordinator is bound to a previous instance of the bridge handler.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public static NetworkRefreshCoordinator attach(UniFiControllerBridgeHandler bridgeHandler,
             UniFiBaseThingHandler<?, ?> subscriber) {
-        NetworkRefreshCoordinator coordinator = INSTANCES.computeIfAbsent(bridgeHandler.getThing().getUID(),
-                uid -> new NetworkRefreshCoordinator(bridgeHandler));
-        coordinator.subscribers.add(subscriber);
-        coordinator.ensureStarted();
-        return coordinator;
+        // compute() serializes attach and detach for the same bridge, so a subscriber cannot be added to a
+        // coordinator that a concurrent detach is disposing.
+        return Objects.requireNonNull(INSTANCES.compute(bridgeHandler.getThing().getUID(), (uid, existing) -> {
+            NetworkRefreshCoordinator coordinator = existing;
+            if (coordinator == null || coordinator.bridgeHandler != bridgeHandler) {
+                if (coordinator != null) {
+                    // The bridge handler was replaced (e.g. the bridge Thing was removed and added again). The old
+                    // handler is disposed and will never provide a session again, so its refresh job must go.
+                    coordinator.logger.debug(
+                            "Replacing Network refresh coordinator bound to a previous handler of bridge {}", uid);
+                    coordinator.dispose();
+                }
+                coordinator = new NetworkRefreshCoordinator(bridgeHandler);
+            }
+            coordinator.subscribers.add(subscriber);
+            coordinator.ensureStarted();
+            return coordinator;
+        }));
     }
 
     /**
      * Detach the given subscriber. When no subscribers remain, the coordinator cancels its refresh job and
      * removes itself from the registry.
      */
-    public static void detach(ThingUID bridgeUid, UniFiBaseThingHandler<?, ?> subscriber) {
-        NetworkRefreshCoordinator coordinator = INSTANCES.get(bridgeUid);
-        if (coordinator == null) {
-            return;
-        }
-        coordinator.subscribers.remove(subscriber);
-        if (coordinator.subscribers.isEmpty()) {
-            coordinator.dispose();
-            INSTANCES.remove(bridgeUid, coordinator);
-        }
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    void detach(UniFiBaseThingHandler<?, ?> subscriber) {
+        INSTANCES.compute(bridgeUID, (uid, current) -> {
+            subscribers.remove(subscriber);
+            if (!subscribers.isEmpty()) {
+                return current;
+            }
+            dispose();
+            // The registry may already hold a coordinator for a newer bridge handler; keep that one.
+            return current == this ? null : current;
+        });
     }
 
     public @Nullable UniFiController getController() {
@@ -127,17 +146,9 @@ public class NetworkRefreshCoordinator {
             return;
         }
 
-        UniFiController ctrl;
-        synchronized (refreshLock) {
-            UniFiController existing = controller;
-            if (existing == null) {
-                existing = new UniFiController(bridgeHandler.getHttpClient(), session, unifios, timeoutSeconds);
-                controller = existing;
-            }
-            ctrl = existing;
-        }
-
         try {
+            // Obtained inside the try: an exception escaping this task would cancel all later runs of the schedule.
+            UniFiController ctrl = getOrCreateController(session);
             logger.trace("Refreshing UniFi Network cache for bridge {}", bridgeHandler.getThing().getUID());
             ctrl.refresh();
             lastError = null;
@@ -146,6 +157,29 @@ public class NetworkRefreshCoordinator {
             logger.debug("Unhandled error during Network refresh for bridge {}", bridgeHandler.getThing().getUID(), e);
             lastError = e;
             notifySubscribers();
+        }
+    }
+
+    /**
+     * Returns the controller for the given bridge session, building a new one when the session changed. The bridge
+     * creates a new HTTP client and session each time it is (re-)initialized, e.g. after a configuration change;
+     * a controller built on the previous ones would keep using a stopped HTTP client.
+     */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    private UniFiController getOrCreateController(UniFiSession session) {
+        synchronized (refreshLock) {
+            UniFiController existing = controller;
+            if (existing == null || controllerSession != session) {
+                Configuration config = bridgeHandler.getThing().getConfiguration();
+                Object unifiosObj = config.get("unifios");
+                boolean unifios = unifiosObj instanceof Boolean b ? b : true;
+                Object timeoutObj = config.get("timeoutSeconds");
+                int timeoutSeconds = timeoutObj instanceof Number n ? n.intValue() : DEFAULT_TIMEOUT_SECONDS;
+                existing = new UniFiController(bridgeHandler.getHttpClient(), session, unifios, timeoutSeconds);
+                controller = existing;
+                controllerSession = session;
+            }
+            return existing;
         }
     }
 
@@ -167,6 +201,7 @@ public class NetworkRefreshCoordinator {
                 refreshJob = null;
             }
             controller = null;
+            controllerSession = null;
         }
     }
 }

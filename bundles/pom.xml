@@ -66,9 +66,11 @@
     <module>org.openhab.binding.argoclima</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.asuswrt</module>
+    <module>org.openhab.binding.atagone</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.atmofrance</module>
     <module>org.openhab.binding.autelis</module>
+    <module>org.openhab.binding.autoblind</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
     <module>org.openhab.binding.awattar</module>
@@ -244,6 +246,7 @@
     <module>org.openhab.binding.lcn</module>
     <module>org.openhab.binding.leapmotion</module>
     <module>org.openhab.binding.lghombot</module>
+    <module>org.openhab.binding.lghorizon</module>
     <module>org.openhab.binding.lgtvserial</module>
     <module>org.openhab.binding.lgthinq</module>
     <module>org.openhab.binding.lgwebos</module>
@@ -361,6 +364,7 @@
     <module>org.openhab.binding.playstation</module>
     <module>org.openhab.binding.plclogo</module>
     <module>org.openhab.binding.plex</module>
+    <module>org.openhab.binding.plivo</module>
     <module>org.openhab.binding.plugwise</module>
     <module>org.openhab.binding.plugwiseha</module>
     <module>org.openhab.binding.powermax</module>
@@ -373,6 +377,7 @@
     <module>org.openhab.binding.pushsafer</module>
     <module>org.openhab.binding.qbus</module>
     <module>org.openhab.binding.qolsysiq</module>
+    <module>org.openhab.binding.rachio</module>
     <module>org.openhab.binding.radiobrowser</module>
     <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>

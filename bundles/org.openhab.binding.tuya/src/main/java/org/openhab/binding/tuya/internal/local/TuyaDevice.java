@@ -183,6 +183,7 @@ public class TuyaDevice implements ChannelFutureListener {
         private final MessageWrapper<?> probe;
         private @Nullable Future<?> responseTimeout = null;
         private boolean awaitingCommandAck = false;
+        private boolean probeOutstanding = false;
         private @Nullable ChannelHandlerContext context = null;
         private TimeoutTask timeoutTask = new TimeoutTask();
 
@@ -238,16 +239,28 @@ public class TuyaDevice implements ChannelFutureListener {
                         && m.commandType != DP_REFRESH //
                         && m.commandType != DP_QUERY && m.commandType != DP_QUERY_NEW //
                 ) {
+                    // The acknowledgement is all a device sends in reply to a command that changes nothing it
+                    // reports, such as an infrared code. The status query still needs a real response, see
+                    // channelRead.
+                    boolean command = (m.commandType == CONTROL || m.commandType == CONTROL_NEW)
+                            && !statusQuery.equals(m);
+
+                    if (probeOutstanding && !probe.equals(m)) {
+                        // The device has already missed a deadline and is being checked. What we send in the
+                        // meantime must not buy it time: a device that answers nothing would otherwise keep its
+                        // connection for as long as anything is sent to it. Its acknowledgement still counts.
+                        awaitingCommandAck = awaitingCommandAck || command;
+                        return;
+                    }
+
                     var future = responseTimeout;
                     if (future != null) {
                         future.cancel(false);
                     }
 
-                    // The acknowledgement is all a device sends in reply to a command that changes nothing it
-                    // reports, such as an infrared code. The status query still needs a real response, see
-                    // channelRead.
-                    awaitingCommandAck = (m.commandType == CONTROL || m.commandType == CONTROL_NEW)
-                            && !statusQuery.equals(m);
+                    awaitingCommandAck = command;
+                    // A probe is the last chance a connection gets, see TimeoutTask
+                    probeOutstanding = probe.equals(m);
 
                     responseTimeout = ctx.executor().schedule(timeoutTask, //
                             probe.equals(m) ? TCP_CONNECTION_PROBE_RESPONSE : TCP_CONNECTION_MESSAGE_RESPONSE, //
@@ -276,6 +289,7 @@ public class TuyaDevice implements ChannelFutureListener {
                             responseTimeout = null;
                         }
                         awaitingCommandAck = false;
+                        probeOutstanding = false;
                     }
                 }
 
@@ -287,10 +301,23 @@ public class TuyaDevice implements ChannelFutureListener {
             @Override
             public void run() {
                 var ctx = context;
-                if (ctx != null && ctx.channel().isOpen()) {
-                    logger.debug("{}/{}: Connection seems to be dead.", deviceId, address);
-                    ctx.close();
+                if (ctx == null || !ctx.channel().isOpen()) {
+                    return;
                 }
+
+                if (!probeOutstanding) {
+                    // Devices answer most messages in well under the response timeout, but a device busy with
+                    // something else, or one reached over a congested network, occasionally needs longer. Ask
+                    // whether it is still there before dropping a connection that may be perfectly alive. The
+                    // write starts the longer probe timeout, see write.
+                    logger.debug("{}/{}: No response, checking the connection is alive.", deviceId, address);
+                    probeOutstanding = true;
+                    ctx.channel().writeAndFlush(probe);
+                    return;
+                }
+
+                logger.debug("{}/{}: Connection seems to be dead.", deviceId, address);
+                ctx.close();
             }
         }
     }

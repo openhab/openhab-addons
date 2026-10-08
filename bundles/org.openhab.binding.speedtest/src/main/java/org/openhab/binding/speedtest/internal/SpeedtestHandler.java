@@ -16,12 +16,18 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link SpeedtestHandler} is responsible for handling commands, which are
@@ -61,13 +68,16 @@ public class SpeedtestHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SpeedtestHandler.class);
     private SpeedtestConfiguration config = new SpeedtestConfiguration();
     private Gson gson = new Gson();
-    private static Runtime rt = Runtime.getRuntime();
     private long pollingInterval = 60;
     private String serverID = "";
     private final TimeZoneProvider timeZoneProvider;
 
     private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> initializationJob;
     public volatile boolean isRunning = false;
+    private volatile int initId = 0;
+    private @Nullable Integer speedTestRunningInitId;
+    private final Object lifecycleLock = new Object();
 
     public static final String[] SHELL_WINDOWS = new String[] { "cmd" };
     public static final String[] SHELL_NIX = new String[] { "sh", "bash", "zsh", "csh" };
@@ -114,16 +124,28 @@ public class SpeedtestHandler extends BaseThingHandler {
         logger.debug("handleCommand channel: {} command: {}", channelUID, command);
         String ch = channelUID.getId();
         if (command instanceof RefreshType) {
-            if (!server.isBlank()) {
-                updateChannels();
+            int currentInitId = initId;
+            synchronized (lifecycleLock) {
+                if (currentInitId != initId) {
+                    return;
+                }
+                ResultSnapshot snapshot = snapshotCurrentResult();
+                if (!snapshot.server.isBlank()) {
+                    updateChannels(snapshot);
+                }
             }
             return;
         }
         if (ch.equals(SpeedtestBindingConstants.TRIGGER_TEST)) {
             if (command instanceof OnOffType) {
                 if (command == OnOffType.ON) {
-                    getSpeed();
-                    updateState(channelUID, OnOffType.OFF);
+                    int currentInitId = initId;
+                    getSpeed(currentInitId);
+                    synchronized (lifecycleLock) {
+                        if (currentInitId == initId) {
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+                    }
                 }
             }
         }
@@ -131,6 +153,7 @@ public class SpeedtestHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        int currentInitId = initId;
         config = getConfigAs(SpeedtestConfiguration.class);
         pollingInterval = config.refreshInterval;
         serverID = config.serverID;
@@ -156,13 +179,30 @@ public class SpeedtestHandler extends BaseThingHandler {
         if (!checkConfig(speedTestCommand)) { // check the config
             return;
         }
-        if (!getSpeedTestVersion()) {
-            return;
+        initializationJob = scheduler.schedule(() -> initializeAsync(currentInitId), 0, TimeUnit.MILLISECONDS);
+    }
+
+    private void initializeAsync(int currentInitId) {
+        try {
+            if (!getSpeedTestVersion(currentInitId) || !isCurrentInitId(currentInitId)) {
+                return;
+            }
+            getServerList(currentInitId);
+            synchronized (lifecycleLock) {
+                if (currentInitId != initId) {
+                    return;
+                }
+                updateStatus(ThingStatus.ONLINE);
+                if (currentInitId != initId) {
+                    return;
+                }
+                isRunning = true;
+                onUpdate();
+            }
+        } catch (RuntimeException e) {
+            logger.warn("An exception occurred while initializing Speedtest: '{}'", e.getMessage());
+            updateStatusIfCurrent(currentInitId, ThingStatus.OFFLINE);
         }
-        getServerList();
-        updateStatus(ThingStatus.ONLINE);
-        isRunning = true;
-        onUpdate(); // Setup the scheduler
     }
 
     /**
@@ -182,11 +222,23 @@ public class SpeedtestHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing Speedtest Handler Thing");
-        isRunning = false;
-        ScheduledFuture<?> pollingJob = this.pollingJob;
+        @Nullable
+        ScheduledFuture<?> initializationJob;
+        @Nullable
+        ScheduledFuture<?> pollingJob;
+        synchronized (lifecycleLock) {
+            ++initId;
+            isRunning = false;
+            initializationJob = this.initializationJob;
+            this.initializationJob = null;
+            pollingJob = this.pollingJob;
+            this.pollingJob = null;
+        }
+        if (initializationJob != null) {
+            initializationJob.cancel(true);
+        }
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            this.pollingJob = null;
         }
     }
 
@@ -204,18 +256,23 @@ public class SpeedtestHandler extends BaseThingHandler {
      * Polling event used to get speed data from speedtest
      */
     private Runnable pollingRunnable = () -> {
+        runSpeedTest();
+    };
+
+    void runSpeedTest() {
+        int currentInitId = initId;
         try {
-            getSpeed();
-        } catch (Exception e) {
+            getSpeed(currentInitId);
+        } catch (RuntimeException e) {
             logger.warn("An exception occurred while running Speedtest: '{}'", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatusIfCurrent(currentInitId, ThingStatus.OFFLINE);
         }
     };
 
     /**
      * Gets the version information from speedtest, this is really for debug in the event they change things
      */
-    private boolean getSpeedTestVersion() {
+    private boolean getSpeedTestVersion(int currentInitId) {
         String versionString = doExecuteRequest(" -V", String.class);
         if ((versionString != null) && !versionString.isEmpty()) {
             int newLI = versionString.indexOf(System.lineSeparator());
@@ -224,7 +281,7 @@ public class SpeedtestHandler extends BaseThingHandler {
                 logger.debug("Speedtest Version: {}", versionLine);
                 return true;
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatusIfCurrent(currentInitId, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.configuration-error.type");
                 return false;
             }
@@ -236,49 +293,26 @@ public class SpeedtestHandler extends BaseThingHandler {
      * Get the server list from the speedtest command. Update the properties of the thing so the user
      * can see the list of servers closest to them.
      */
-    private boolean getServerList() {
-        String serverListTxt = "";
+    private boolean getServerList(int currentInitId) {
         ResultsContainerServerList tmpCont = doExecuteRequest(" -f json -L", ResultsContainerServerList.class);
         if (tmpCont != null) {
             int id = 1;
             Map<String, String> properties = editProperties();
             for (ResultsContainerServerList.Server server : tmpCont.servers) {
-                serverListTxt = "ID: " + server.id.toString() + ", " + server.host + " (" + server.location + ")";
-                switch (id) {
-                    case 1:
-                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST1, serverListTxt);
-                        break;
-                    case 2:
-                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST2, serverListTxt);
-                        break;
-                    case 3:
-                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST3, serverListTxt);
-                        break;
-                    case 4:
-                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST4, serverListTxt);
-                        break;
-                    case 5:
-                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST5, serverListTxt);
-                        break;
-                    case 6:
-                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST6, serverListTxt);
-                        break;
-                    case 7:
-                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST7, serverListTxt);
-                        break;
-                    case 8:
-                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST8, serverListTxt);
-                        break;
-                    case 9:
-                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST9, serverListTxt);
-                        break;
-                    case 10:
-                        properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST10, serverListTxt);
-                        break;
+                if (id > SpeedtestBindingConstants.SERVER_LIST_PROPERTY_COUNT) {
+                    break;
                 }
+                String serverListTxt = "ID: " + server.id.toString() + ", " + server.host + " (" + server.location
+                        + ")";
+                properties.replace(SpeedtestBindingConstants.PROPERTY_SERVER_LIST_PREFIX + id, serverListTxt);
                 id++;
             }
-            updateProperties(properties);
+            synchronized (lifecycleLock) {
+                if (currentInitId != initId) {
+                    return false;
+                }
+                updateProperties(properties);
+            }
         }
         return false;
     }
@@ -286,7 +320,30 @@ public class SpeedtestHandler extends BaseThingHandler {
     /**
      * Get the speedtest data and convert it from JSON and send it to update the channels.
      */
-    private void getSpeed() {
+    void getSpeed(int currentInitId) {
+        synchronized (lifecycleLock) {
+            if (currentInitId != initId) {
+                return;
+            }
+            if (speedTestRunningInitId != null && speedTestRunningInitId == currentInitId) {
+                logger.debug("Speed measurement already running");
+                return;
+            }
+            speedTestRunningInitId = currentInitId;
+        }
+
+        try {
+            getSpeedResult(currentInitId);
+        } finally {
+            synchronized (lifecycleLock) {
+                if (speedTestRunningInitId != null && speedTestRunningInitId == currentInitId) {
+                    speedTestRunningInitId = null;
+                }
+            }
+        }
+    }
+
+    private void getSpeedResult(int currentInitId) {
         logger.debug("Getting Speed Measurement");
         String postCommand = "";
         if (!serverID.isBlank()) {
@@ -294,175 +351,257 @@ public class SpeedtestHandler extends BaseThingHandler {
         }
         ResultContainer tmpCont = doExecuteRequest(" -f json --accept-license --accept-gdpr" + postCommand,
                 ResultContainer.class);
-        if (tmpCont != null) {
-            if ("result".equals(tmpCont.getType())) {
-                try {
-                    // timestamp format: "2023-07-20T19:34:54Z"
-                    ZonedDateTime zonedDateTime = ZonedDateTime.parse(tmpCont.getTimestamp())
-                            .withZoneSameInstant(timeZoneProvider.getTimeZone());
-                    timestamp = new DateTimeType(zonedDateTime);
-                } catch (DateTimeParseException e) {
-                    timestamp = UnDefType.NULL;
-                    logger.debug("Exception: {}", e.getMessage());
-                }
-                try {
-                    pingJitter = new QuantityType<>(Double.parseDouble(tmpCont.getPing().getJitter()) / 1000.0,
-                            Units.SECOND);
-                } catch (NumberFormatException e) {
-                    pingJitter = UnDefType.NULL;
-                    logger.debug("Exception: {}", e.getMessage());
-                }
-                try {
-                    pingLatency = new QuantityType<>(Double.parseDouble(tmpCont.getPing().getLatency()) / 1000.0,
-                            Units.SECOND);
-                } catch (NumberFormatException e) {
-                    pingLatency = UnDefType.NULL;
-                    logger.debug("Exception: {}", e.getMessage());
-                }
-                try {
-                    downloadBandwidth = new QuantityType<>(
-                            Double.parseDouble(tmpCont.getDownload().getBandwidth()) / 125000.0,
-                            Units.MEGABIT_PER_SECOND);
-                } catch (NumberFormatException e) {
-                    downloadBandwidth = UnDefType.NULL;
-                    logger.debug("Exception: {}", e.getMessage());
-                }
-                try {
-                    downloadBytes = new QuantityType<>(Double.parseDouble(tmpCont.getDownload().getBytes()),
-                            Units.BYTE);
-                } catch (NumberFormatException e) {
-                    downloadBytes = UnDefType.NULL;
-                    logger.debug("Exception: {}", e.getMessage());
-                }
-                try {
-                    downloadElapsed = new QuantityType<>(
-                            Double.parseDouble(tmpCont.getDownload().getElapsed()) / 1000.0, Units.SECOND);
-                } catch (NumberFormatException e) {
-                    downloadElapsed = UnDefType.NULL;
-                    logger.debug("Exception: {}", e.getMessage());
-                }
-                try {
-                    uploadBandwidth = new QuantityType<>(
-                            Double.parseDouble(tmpCont.getUpload().getBandwidth()) / 125000.0,
-                            Units.MEGABIT_PER_SECOND);
-                } catch (NumberFormatException e) {
-                    uploadBandwidth = UnDefType.NULL;
-                    logger.debug("Exception: {}", e.getMessage());
-                }
-                try {
-                    uploadBytes = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getBytes()), Units.BYTE);
-                } catch (NumberFormatException e) {
-                    uploadBytes = UnDefType.NULL;
-                    logger.debug("Exception: {}", e.getMessage());
-                }
-                try {
-                    uploadElapsed = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getElapsed()) / 1000.0,
-                            Units.SECOND);
-                } catch (NumberFormatException e) {
-                    uploadElapsed = UnDefType.NULL;
-                    logger.debug("Exception: {}", e.getMessage());
-                }
-                isp = tmpCont.getIsp();
-                interfaceInternalIp = tmpCont.getInterface().getInternalIp();
-                interfaceExternalIp = tmpCont.getInterface().getExternalIp();
-                if (tmpCont.getResult().isPersisted()) {
-                    resultUrl = tmpCont.getResult().getUrl();
-                    String url = String.valueOf(resultUrl) + ".png";
-                    logger.debug("Downloading result image from: {}", url);
-                    RawType image = HttpUtil.downloadImage(url);
-                    if (image != null) {
-                        resultImage = image;
-                    } else {
-                        resultImage = UnDefType.NULL;
-                    }
-                } else {
-                    logger.debug("Result image not persisted");
-                    resultUrl = "";
-                    resultImage = UnDefType.NULL;
-                }
-
-                server = tmpCont.getServer().getName() + " (" + tmpCont.getServer().getId().toString() + ") "
-                        + tmpCont.getServer().getLocation();
-                updateChannels();
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+        if (tmpCont == null) {
+            updateStatusIfCurrent(currentInitId, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.results");
+            return;
+        }
+
+        if ("result".equals(tmpCont.getType())) {
+            ResultSnapshot snapshot = parseResult(tmpCont);
+            synchronized (lifecycleLock) {
+                if (currentInitId != initId) {
+                    return;
+                }
+                applyResult(snapshot);
+                updateChannels(snapshotCurrentResult());
+            }
+            if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatusIfCurrent(currentInitId, ThingStatus.ONLINE);
+            }
         }
     }
 
-    private @Nullable <T> T doExecuteRequest(String arguments, Class<T> type) {
-        try {
-            String dataOut = executeCmd(speedTestCommand + arguments);
-            if (type != String.class) {
-                @Nullable
-                T obj = gson.fromJson(dataOut, type);
-                return obj;
-            } else {
-                @SuppressWarnings("unchecked")
-                T obj = (T) dataOut;
-                return obj;
+    private void updateStatusIfCurrent(int currentInitId, ThingStatus status) {
+        synchronized (lifecycleLock) {
+            if (currentInitId == initId) {
+                updateStatus(status);
             }
-        } catch (Exception e) {
+        }
+    }
+
+    private void updateStatusIfCurrent(int currentInitId, ThingStatus status, ThingStatusDetail statusDetail,
+            String description) {
+        synchronized (lifecycleLock) {
+            if (currentInitId == initId) {
+                updateStatus(status, statusDetail, description);
+            }
+        }
+    }
+
+    private boolean isCurrentInitId(int currentInitId) {
+        synchronized (lifecycleLock) {
+            return currentInitId == initId;
+        }
+    }
+
+    private ResultSnapshot parseResult(ResultContainer tmpCont) {
+        State newTimestamp;
+        State newPingJitter;
+        State newPingLatency;
+        State newDownloadBandwidth;
+        State newDownloadBytes;
+        State newDownloadElapsed;
+        State newUploadBandwidth;
+        State newUploadBytes;
+        State newUploadElapsed;
+
+        try {
+            // timestamp format: "2023-07-20T19:34:54Z"
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(tmpCont.getTimestamp())
+                    .withZoneSameInstant(timeZoneProvider.getTimeZone());
+            newTimestamp = new DateTimeType(zonedDateTime);
+        } catch (DateTimeParseException e) {
+            newTimestamp = UnDefType.NULL;
             logger.debug("Exception: {}", e.getMessage());
         }
-        return null;
+        try {
+            newPingJitter = new QuantityType<>(Double.parseDouble(tmpCont.getPing().getJitter()) / 1000.0,
+                    Units.SECOND);
+        } catch (NumberFormatException e) {
+            newPingJitter = UnDefType.NULL;
+            logger.debug("Exception: {}", e.getMessage());
+        }
+        try {
+            newPingLatency = new QuantityType<>(Double.parseDouble(tmpCont.getPing().getLatency()) / 1000.0,
+                    Units.SECOND);
+        } catch (NumberFormatException e) {
+            newPingLatency = UnDefType.NULL;
+            logger.debug("Exception: {}", e.getMessage());
+        }
+        try {
+            newDownloadBandwidth = new QuantityType<>(
+                    Double.parseDouble(tmpCont.getDownload().getBandwidth()) / 125000.0, Units.MEGABIT_PER_SECOND);
+        } catch (NumberFormatException e) {
+            newDownloadBandwidth = UnDefType.NULL;
+            logger.debug("Exception: {}", e.getMessage());
+        }
+        try {
+            newDownloadBytes = new QuantityType<>(Double.parseDouble(tmpCont.getDownload().getBytes()), Units.BYTE);
+        } catch (NumberFormatException e) {
+            newDownloadBytes = UnDefType.NULL;
+            logger.debug("Exception: {}", e.getMessage());
+        }
+        try {
+            newDownloadElapsed = new QuantityType<>(Double.parseDouble(tmpCont.getDownload().getElapsed()) / 1000.0,
+                    Units.SECOND);
+        } catch (NumberFormatException e) {
+            newDownloadElapsed = UnDefType.NULL;
+            logger.debug("Exception: {}", e.getMessage());
+        }
+        try {
+            newUploadBandwidth = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getBandwidth()) / 125000.0,
+                    Units.MEGABIT_PER_SECOND);
+        } catch (NumberFormatException e) {
+            newUploadBandwidth = UnDefType.NULL;
+            logger.debug("Exception: {}", e.getMessage());
+        }
+        try {
+            newUploadBytes = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getBytes()), Units.BYTE);
+        } catch (NumberFormatException e) {
+            newUploadBytes = UnDefType.NULL;
+            logger.debug("Exception: {}", e.getMessage());
+        }
+        try {
+            newUploadElapsed = new QuantityType<>(Double.parseDouble(tmpCont.getUpload().getElapsed()) / 1000.0,
+                    Units.SECOND);
+        } catch (NumberFormatException e) {
+            newUploadElapsed = UnDefType.NULL;
+            logger.debug("Exception: {}", e.getMessage());
+        }
+        String newResultUrl;
+        State newResultImage;
+        if (tmpCont.getResult().isPersisted()) {
+            newResultUrl = tmpCont.getResult().getUrl();
+            String url = newResultUrl + ".png";
+            logger.debug("Downloading result image from: {}", url);
+            RawType image = HttpUtil.downloadImage(url);
+            if (image != null) {
+                newResultImage = image;
+            } else {
+                newResultImage = UnDefType.NULL;
+            }
+        } else {
+            logger.debug("Result image not persisted");
+            newResultUrl = "";
+            newResultImage = UnDefType.NULL;
+        }
+
+        String newServer = tmpCont.getServer().getName() + " (" + tmpCont.getServer().getId().toString() + ") "
+                + tmpCont.getServer().getLocation();
+        return new ResultSnapshot(newPingJitter, newPingLatency, newDownloadBandwidth, newDownloadBytes,
+                newDownloadElapsed, newUploadBandwidth, newUploadBytes, newUploadElapsed, tmpCont.getIsp(),
+                tmpCont.getInterface().getInternalIp(), tmpCont.getInterface().getExternalIp(), newResultUrl,
+                newResultImage, newServer, newTimestamp);
+    }
+
+    private void applyResult(ResultSnapshot snapshot) {
+        pingJitter = snapshot.pingJitter;
+        pingLatency = snapshot.pingLatency;
+        downloadBandwidth = snapshot.downloadBandwidth;
+        downloadBytes = snapshot.downloadBytes;
+        downloadElapsed = snapshot.downloadElapsed;
+        uploadBandwidth = snapshot.uploadBandwidth;
+        uploadBytes = snapshot.uploadBytes;
+        uploadElapsed = snapshot.uploadElapsed;
+        isp = snapshot.isp;
+        interfaceInternalIp = snapshot.interfaceInternalIp;
+        interfaceExternalIp = snapshot.interfaceExternalIp;
+        resultUrl = snapshot.resultUrl;
+        resultImage = snapshot.resultImage;
+        server = snapshot.server;
+        timestamp = snapshot.timestamp;
+    }
+
+    private record ResultSnapshot(State pingJitter, State pingLatency, State downloadBandwidth, State downloadBytes,
+            State downloadElapsed, State uploadBandwidth, State uploadBytes, State uploadElapsed, String isp,
+            String interfaceInternalIp, String interfaceExternalIp, String resultUrl, State resultImage, String server,
+            State timestamp) {
+    }
+
+    protected @Nullable <T> T doExecuteRequest(String arguments, Class<T> type) {
+        String dataOut = executeCmd(speedTestCommand + arguments);
+        if (type == String.class) {
+            @SuppressWarnings("unchecked")
+            T obj = (T) dataOut;
+            return obj;
+        }
+
+        try {
+            @Nullable
+            T obj = gson.fromJson(dataOut, type);
+            return obj;
+        } catch (JsonParseException e) {
+            logger.debug("Exception: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
      * Update the channels
      */
-    private void updateChannels() {
+    private ResultSnapshot snapshotCurrentResult() {
+        return new ResultSnapshot(pingJitter, pingLatency, downloadBandwidth, downloadBytes, downloadElapsed,
+                uploadBandwidth, uploadBytes, uploadElapsed, isp, interfaceInternalIp, interfaceExternalIp, resultUrl,
+                resultImage, server, timestamp);
+    }
+
+    private void updateChannels(ResultSnapshot snapshot) {
         logger.debug("Updating channels");
 
-        logger.debug("timestamp: {}", timestamp);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.TIMESTAMP), timestamp);
+        logger.debug("timestamp: {}", snapshot.timestamp);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.TIMESTAMP), snapshot.timestamp);
 
-        logger.debug("pingJitter: {}", pingJitter);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_JITTER), pingJitter);
+        logger.debug("pingJitter: {}", snapshot.pingJitter);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_JITTER), snapshot.pingJitter);
 
-        logger.debug("pingLatency: {}", pingLatency);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_LATENCY), pingLatency);
+        logger.debug("pingLatency: {}", snapshot.pingLatency);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.PING_LATENCY), snapshot.pingLatency);
 
-        logger.debug("downloadBandwidth: {}", downloadBandwidth);
+        logger.debug("downloadBandwidth: {}", snapshot.downloadBandwidth);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BANDWIDTH),
-                downloadBandwidth);
+                snapshot.downloadBandwidth);
 
-        logger.debug("downloadBytes: {}", downloadBytes);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BYTES), downloadBytes);
+        logger.debug("downloadBytes: {}", snapshot.downloadBytes);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_BYTES),
+                snapshot.downloadBytes);
 
-        logger.debug("downloadElapsed: {}", downloadElapsed);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_ELAPSED), downloadElapsed);
+        logger.debug("downloadElapsed: {}", snapshot.downloadElapsed);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.DOWNLOAD_ELAPSED),
+                snapshot.downloadElapsed);
 
-        logger.debug("uploadBandwidth: {}", uploadBandwidth);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BANDWIDTH), uploadBandwidth);
+        logger.debug("uploadBandwidth: {}", snapshot.uploadBandwidth);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BANDWIDTH),
+                snapshot.uploadBandwidth);
 
-        logger.debug("uploadBytes: {}", uploadBytes);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BYTES), uploadBytes);
+        logger.debug("uploadBytes: {}", snapshot.uploadBytes);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_BYTES), snapshot.uploadBytes);
 
-        logger.debug("uploadElapsed: {}", uploadElapsed);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_ELAPSED), uploadElapsed);
+        logger.debug("uploadElapsed: {}", snapshot.uploadElapsed);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.UPLOAD_ELAPSED),
+                snapshot.uploadElapsed);
 
-        logger.debug("interfaceExternalIp: {}", interfaceExternalIp);
+        logger.debug("interfaceExternalIp: {}", snapshot.interfaceExternalIp);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_EXTERNALIP),
-                new StringType(interfaceExternalIp));
+                new StringType(snapshot.interfaceExternalIp));
 
-        logger.debug("interfaceInternalIp: {}", interfaceInternalIp);
+        logger.debug("interfaceInternalIp: {}", snapshot.interfaceInternalIp);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.INTERFACE_INTERNALIP),
-                new StringType(interfaceInternalIp));
+                new StringType(snapshot.interfaceInternalIp));
 
-        logger.debug("isp: {}", isp);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.ISP), new StringType(isp));
+        logger.debug("isp: {}", snapshot.isp);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.ISP), new StringType(snapshot.isp));
 
-        logger.debug("resultUrl: {}", resultUrl);
+        logger.debug("resultUrl: {}", snapshot.resultUrl);
         updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_URL),
-                new StringType(resultUrl));
+                new StringType(snapshot.resultUrl));
 
         logger.debug("resultImage: <RawType>");
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_IMAGE), resultImage);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.RESULT_IMAGE), snapshot.resultImage);
 
-        logger.debug("server: {}", server);
-        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.SERVER), new StringType(server));
+        logger.debug("server: {}", snapshot.server);
+        updateState(new ChannelUID(getThing().getUID(), SpeedtestBindingConstants.SERVER),
+                new StringType(snapshot.server));
     }
 
     /**
@@ -488,7 +627,10 @@ public class SpeedtestHandler extends BaseThingHandler {
      * Executes a given command and returns back the String data of stdout.
      */
     private String executeCmd(String commandLine) {
-        int timeOut = 60000;
+        return executeCmd(commandLine, 60000);
+    }
+
+    String executeCmd(String commandLine, long timeoutMillis) {
         String[] cmdArray;
         String[] shell;
         logger.debug("Passing to shell for parsing command.");
@@ -505,6 +647,9 @@ public class SpeedtestHandler extends BaseThingHandler {
                 shell = SHELL_NIX;
                 logger.debug("OS: *NIX ({})", getOperatingSystemName());
                 cmdArray = createCmdArray(shell, "-c", commandLine);
+                if (cmdArray.length >= 3 && "-c".equals(cmdArray[1])) {
+                    cmdArray[2] = "trap 'wait' 0\n" + cmdArray[2];
+                }
                 break;
             default:
                 logger.debug("OS: Unknown ({})", getOperatingSystemName());
@@ -518,39 +663,90 @@ public class SpeedtestHandler extends BaseThingHandler {
 
         logger.debug("The command to be executed will be '{}'", Arrays.asList(cmdArray));
 
-        Process proc;
+        Process process;
         try {
-            proc = rt.exec(cmdArray);
-        } catch (Exception e) {
+            process = new ProcessBuilder(cmdArray).redirectErrorStream(true).start();
+        } catch (IOException | SecurityException e) {
             logger.debug("An exception occurred while executing '{}': '{}'", Arrays.asList(cmdArray), e.getMessage());
             return "";
         }
 
+        CompletableFuture<String> output = CompletableFuture.supplyAsync(() -> readOutput(process, commandLine));
+        long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+        try {
+            if (!process.waitFor(timeoutMillis, TimeUnit.MILLISECONDS)) {
+                logger.debug("Forcibly terminating the process ('{}') after a timeout of {} ms", commandLine,
+                        timeoutMillis);
+                terminateProcess(process);
+                output.cancel(true);
+                return "";
+            }
+            long remainingNanos = deadline - System.nanoTime();
+            if (remainingNanos <= 0) {
+                terminateProcess(process);
+                output.cancel(true);
+                return "";
+            }
+            return output.get(remainingNanos, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            terminateProcess(process);
+            output.cancel(true);
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while waiting for the process ('{}') to finish", commandLine);
+            return "";
+        } catch (TimeoutException e) {
+            logger.debug("Timed out while collecting process output for '{}'", commandLine);
+            terminateProcess(process);
+            output.cancel(true);
+            return "";
+        } catch (ExecutionException e) {
+            logger.debug("Exception while collecting process output for '{}': {}", commandLine,
+                    e.getCause() == null ? e.getMessage() : e.getCause().getMessage());
+            terminateProcess(process);
+            return "";
+        }
+    }
+
+    private void terminateProcess(Process process) {
+        process.toHandle().descendants().forEach(ProcessHandle::destroyForcibly);
+        try {
+            if (!process.waitFor(100, TimeUnit.MILLISECONDS)) {
+                process.destroyForcibly();
+            }
+        } catch (InterruptedException e) {
+            process.destroyForcibly();
+            Thread.currentThread().interrupt();
+        }
+        try {
+            process.getInputStream().close();
+        } catch (InterruptedIOException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while closing process output stream");
+        } catch (IOException e) {
+            logger.debug("Exception while closing process output stream: {}", e.getMessage());
+        }
+    }
+
+    String readOutput(Process process, String commandLine) {
         StringBuilder outputBuilder = new StringBuilder();
-        try (InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+        try (InputStreamReader isr = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8);
                 BufferedReader br = new BufferedReader(isr)) {
             String line;
             while ((line = br.readLine()) != null) {
                 outputBuilder.append(line).append(System.lineSeparator());
                 logger.debug("Exec [{}]: '{}'", "OUTPUT", line);
             }
+        } catch (InterruptedIOException e) {
+            terminateProcess(process);
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while reading process output for '{}': {}", commandLine, e.getMessage());
+            return "";
         } catch (IOException e) {
             logger.warn("An exception occurred while reading the stdout when executing '{}': '{}'", commandLine,
                     e.getMessage());
+            return "";
         }
 
-        boolean exitVal = false;
-        try {
-            exitVal = proc.waitFor(timeOut, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            logger.debug("An exception occurred while waiting for the process ('{}') to finish: '{}'", commandLine,
-                    e.getMessage());
-        }
-
-        if (!exitVal) {
-            logger.debug("Forcibly termininating the process ('{}') after a timeout of {} ms", commandLine, timeOut);
-            proc.destroyForcibly();
-        }
         return outputBuilder.toString();
     }
 
@@ -593,7 +789,7 @@ public class SpeedtestHandler extends BaseThingHandler {
                 if (operSys == null) {
                     os = OS.UNKNOWN;
                 } else {
-                    operSys = operSys.toLowerCase();
+                    operSys = operSys.toLowerCase(Locale.ROOT);
 
                     if (operSys.contains("win")) {
                         os = OS.WINDOWS;

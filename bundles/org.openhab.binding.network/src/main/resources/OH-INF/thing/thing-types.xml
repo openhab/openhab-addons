@@ -156,6 +156,60 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="httpdevice">
+		<label>Network Device with HTTP Service</label>
+		<description>A device which reachable state is detected by requesting a URL and evaluating the returned HTTP status
+			code.</description>
+
+		<channels>
+			<channel id="online" typeId="online"/>
+			<channel id="httpStatus" typeId="httpStatus"/>
+			<channel id="latency" typeId="latency"/>
+			<channel id="lastseen" typeId="lastseen"/>
+		</channels>
+
+		<config-description>
+			<parameter name="url" type="text" required="true">
+				<label>URL</label>
+				<context>url</context>
+				<description>The http:// or https:// URL which is requested. Redirects are not followed.</description>
+			</parameter>
+
+			<parameter name="treatRedirectAsError" type="boolean" required="true">
+				<label>Treat Redirection as Error</label>
+				<description>Set to true if a redirection status code (3xx) shall be treated as an error. As redirects are not
+					followed, the status code of the first response is evaluated.</description>
+				<default>false</default>
+			</parameter>
+
+			<parameter name="treatClientErrorAsError" type="boolean" required="true">
+				<label>Treat Client Error as Error</label>
+				<description>Set to true if a client error status code (4xx) shall be treated as an error. Server error status
+					codes
+					(5xx) are always treated as an error.</description>
+				<default>true</default>
+			</parameter>
+
+			<parameter name="retry" type="integer">
+				<label>Retry</label>
+				<description>Defines how many times a request shall occur before the device is stated as offline.</description>
+				<default>1</default>
+			</parameter>
+
+			<parameter name="timeout" type="integer" unit="ms">
+				<label>Timeout</label>
+				<description>States how long to wait for a response (in ms) before a device is stated as offline.</description>
+				<default>5000</default>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer">
+				<label>Refresh Interval</label>
+				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
+				<default>60000</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<thing-type id="speedtest">
 		<label>SpeedTest</label>
 		<description>Provides information about bandwidth speed.</description>
@@ -255,6 +309,16 @@
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="httpStatus">
+		<item-type>Number</item-type>
+		<label>HTTP Status Code</label>
+		<description>States the HTTP status code which was returned by the last request.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
 	<channel-type id="latency">

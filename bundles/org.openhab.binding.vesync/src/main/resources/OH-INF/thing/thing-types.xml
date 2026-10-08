@@ -354,10 +354,10 @@
 		<label>Fan Speed</label>
 		<description>Indicator of the current fan speed</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Control</tag>
 			<tag>Speed</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f"/>
+		<state pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="deviceErrorCodeType">

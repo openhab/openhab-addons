@@ -44,11 +44,11 @@ public class BaseCluster {
     public static final String ATTRIBUTE_GENERATED_COMMAND_LIST = "generatedCommandList";
 
     // Global cluster attributes (present in all clusters per Matter spec)
-    public List<Integer> acceptedCommandList; // 65529 list
-    public List<Integer> attributeList; // 65531 list
+    public List<Long> acceptedCommandList; // 65529 list
+    public List<Long> attributeList; // 65531 list
     public Integer clusterRevision; // 65533 uint16
     public List<Integer> eventList; // 65530
-    public List<Integer> generatedCommandList; // 65528 list
+    public List<Long> generatedCommandList; // 65528 list
 
     public interface MatterEnum {
         Integer getValue();
@@ -116,10 +116,10 @@ public class BaseCluster {
 
     // Structs
     public static class AtomicAttributeStatusStruct {
-        public Integer attributeId; // attrib-id
+        public Long attributeId; // attrib-id
         public Status statusCode; // status
 
-        public AtomicAttributeStatusStruct(Integer attributeId, Status statusCode) {
+        public AtomicAttributeStatusStruct(Long attributeId, Status statusCode) {
             this.attributeId = attributeId;
             this.statusCode = statusCode;
         }
@@ -250,6 +250,30 @@ public class BaseCluster {
         public final String label;
 
         private AtomicRequestTypeEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum CertificationTypeEnum implements MatterEnum {
+        DEVICE_ATTESTATION_PKI(0, "DeviceAttestationPki"),
+        OPERATIONAL_PKI(1, "OperationalPki"),
+        VID_SIGNER_PKI(2, "VidSignerPki");
+
+        public final Integer value;
+        public final String label;
+
+        private CertificationTypeEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -477,7 +501,10 @@ public class BaseCluster {
         CLOSURE_PANEL(69, "ClosurePanel"),
         CLOSURE_COVERING(70, "ClosureCovering"),
         CLOSURE_WINDOW(71, "ClosureWindow"),
-        CLOSURE_CABINET(72, "ClosureCabinet");
+        CLOSURE_CABINET(72, "ClosureCabinet"),
+        IDENTIFIED_OBJECT(73, "IdentifiedObject"),
+        IDENTIFIED_SOUND(74, "IdentifiedSound"),
+        IDENTIFIED_HUMAN_ACTIVITY(75, "IdentifiedHumanActivity");
 
         public final Integer value;
         public final String label;

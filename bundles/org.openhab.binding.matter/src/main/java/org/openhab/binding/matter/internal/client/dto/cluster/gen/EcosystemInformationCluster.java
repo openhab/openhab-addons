@@ -56,13 +56,13 @@ public class EcosystemInformationCluster extends BaseCluster {
         /**
          * This shall indicate the device type definition.
          */
-        public Integer deviceType; // devtype-id
+        public Long deviceType; // devtype-id
         /**
          * This is the implemented revision of the device type definition.
          */
         public Integer revision; // uint16
 
-        public DeviceTypeStruct(Integer deviceType, Integer revision) {
+        public DeviceTypeStruct(Long deviceType, Integer revision) {
             this.deviceType = deviceType;
             this.revision = revision;
         }

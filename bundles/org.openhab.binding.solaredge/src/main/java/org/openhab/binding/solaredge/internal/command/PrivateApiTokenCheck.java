@@ -50,7 +50,7 @@ public class PrivateApiTokenCheck extends AbstractCommand implements SolarEdgeCo
     }
 
     @Override
-    public void onComplete(@Nullable Result result) {
+    protected void handleResponse(@Nullable Result result) {
         updateListenerStatus();
     }
 }

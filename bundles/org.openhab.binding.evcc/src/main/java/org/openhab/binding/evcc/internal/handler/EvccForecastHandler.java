@@ -16,18 +16,25 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.evcc.internal.handler.routing.HandlerRoute;
+import org.openhab.binding.evcc.internal.handler.routing.JsonPathExtraction;
+import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.UnDefType;
@@ -60,75 +67,97 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            if (!SUPPORTED_FORECAST_TYPES.contains(subType)) {
-                logger.warn("Unsupported forecast type: {}", subType);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unsupported forecast type: " + subType);
-                return;
-            }
-            JsonObject stateOpt = handler.getCachedEvccState();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-            if (stateOpt.has(JSON_KEY_FORECAST) && stateOpt.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
-                JsonObject state = new JsonObject();
-                if (JSON_KEY_SOLAR.equals(subType)) {
-                    state = stateOpt.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType).deepCopy();
-                    modifyJSON(state);
-                    state.addProperty("scaled", 0);
-                }
-                state.addProperty(subType, 0);
-                commonInitialize(state);
-                isInitialized = true;
-                handler.register(this);
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                logger.warn("Forecast data for type {} is not available in the evcc state.", subType);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Unavailable forecast type: " + subType);
-            }
+            endpoint = handler.getBaseURL();
+            handler.register(this);
+            MessageRouter router = handler.getMessageRouter();
+            router.registerRoute(new HandlerRoute(JSON_KEY_FORECAST, new JsonPathExtraction("$." + subType), this,
+                    JSON_KEY_FORECAST));
         });
     }
 
+    /**
+     * The "forecast-&lt;subType&gt;" and "forecast-scaled" channels are populated from the forecast
+     * {@link TimeSeries} via {@link #propagate}, not from a matching top-level key in the JSON object
+     * passed to {@link #createChannelsAndSetStatesFromApiResponse}. Excluding them here prevents
+     * {@link EvccBaseThingHandler#updateChannelStates} from resetting them to UNDEF on every update.
+     */
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        if (!isInitialized || state.isJsonNull() || state.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+    protected Set<String> getChannelIdsExcludedFromReset() {
+        return Set.of(getThingKey(subType), getThingKey("scaled"));
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        logger.trace("Forecast handler {} initializing from state", subType);
+        if (state.isJsonNull() || state.isEmpty() || !state.has(JSON_KEY_FORECAST)) {
+            logger.debug("No forecast state available for type {}", subType);
+            return;
+        }
+        if (!SUPPORTED_FORECAST_TYPES.contains(subType)) {
+            logger.warn("Unsupported forecast type: {}", subType);
             return;
         }
         JsonArray forecastArray = new JsonArray();
         switch (subType) {
-            case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID -> forecastArray = extractCorrespondingForecast(state);
+            case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID -> {
+                forecastArray = extractCorrespondingForecast(state);
+                createForecastChannel(getThingKey(subType));
+            }
             case JSON_KEY_SOLAR -> {
                 forecastArray = extractCorrespondingForecast(state);
                 JsonObject solar = state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType);
                 modifyJSON(solar);
-                updateStatesFromApiResponse(solar);
+                createChannelsAndSetStatesFromApiResponse(solar);
+                createForecastChannel(getThingKey(subType));
                 float scale = solar.get(JSON_KEY_SCALE).getAsFloat();
                 propagate(forecastArray, getThingKey("scaled"),
-                        obj -> parseScaledForecast(obj, getThingKey(subType), scale));
+                        obj -> parseScaledForecast(obj, getThingKey(subType), scale), scale);
             }
             default -> {
                 logger.warn("Unknown forecast type: {}", subType);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                return;
             }
         }
         propagate(forecastArray, getThingKey(subType), obj -> parseForecast(obj, getThingKey(subType)));
+        logger.trace("Forecast handler {} initialized successfully", subType);
         updateStatus(ThingStatus.ONLINE);
     }
 
+    private void createForecastChannel(String thingKey) {
+        ChannelUID channelUID = new ChannelUID(thing.getUID(), thingKey);
+        if (thing.getChannel(channelUID) == null) {
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, thingKey);
+            String acceptedItemType = getAcceptedItemType(thingKey);
+            String label = getChannelLabel(thingKey);
+            Channel channel = ChannelBuilder.create(channelUID).withLabel(label).withType(channelTypeUID)
+                    .withAcceptedItemType(acceptedItemType).build();
+            List<Channel> channels = new ArrayList<>(thing.getChannels());
+            channels.add(channel);
+            updateThing(editThing().withChannels(channels).build());
+        }
+    }
+
+    private String getAcceptedItemType(String thingKey) {
+        return switch (thingKey) {
+            case "forecast-solar", "forecast-scaled", "forecast-today", "forecast-tomorrow",
+                    "forecast-day-after-tomorrow" ->
+                "Number:Energy";
+            case "forecast-co2" -> "Number:EmissionIntensity";
+            case "forecast-feedin", "forecast-grid" -> "Number:EnergyPrice";
+            case "forecast-scale" -> "Number";
+            default -> "Number";
+        };
+    }
+
     private JsonArray extractCorrespondingForecast(JsonObject state) {
-        if (state.has(JSON_KEY_FORECAST) && state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
-            if (JSON_KEY_SOLAR.equals(subType)) {
-                JsonObject solarObject = state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType);
-                return solarObject.has("timeseries") ? solarObject.getAsJsonArray("timeseries") : new JsonArray();
-            } else {
-                return state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonArray(subType);
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        if (!state.has(JSON_KEY_FORECAST) || !state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
             return new JsonArray();
+        }
+        if (JSON_KEY_SOLAR.equals(subType)) {
+            JsonObject solarObject = state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType);
+            return solarObject.has("timeseries") ? solarObject.getAsJsonArray("timeseries") : new JsonArray();
+        } else {
+            return state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonArray(subType);
         }
     }
 
@@ -146,32 +175,111 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     }
 
     private void propagate(JsonArray array, String key, Function<JsonObject, @Nullable ForecastData> parser) {
+        propagate(array, key, parser, 1f);
+    }
+
+    private void propagate(JsonArray array, String key, Function<JsonObject, @Nullable ForecastData> parser,
+            float scale) {
         ChannelUID uid = new ChannelUID(thing.getUID(), key);
         if (!isLinked(uid)) {
+            logger.trace("Channel {} not linked, skipping TimeSeries update", key);
             return;
         }
-        TimeSeries ts = getTimeSeries(array, parser);
+        TimeSeries ts = getTimeSeries(array, parser, scale);
+        logger.trace("Sending TimeSeries for channel {} with {} entries", key, ts.size());
         setForecastChannelState(ts, uid);
         sendTimeSeries(uid, ts);
     }
 
-    private TimeSeries getTimeSeries(JsonArray forecastArray, Function<JsonObject, @Nullable ForecastData> parser) {
+    @Override
+    public void handleUpdate(String key, JsonElement value) {
+        logger.trace("Forecast handler {} received update for key '{}'", subType, key);
+        JsonArray forecastArray;
+        if ("solar".equals(subType) && value instanceof JsonObject solar) {
+            forecastArray = solar.has("timeseries") ? solar.getAsJsonArray("timeseries") : new JsonArray();
+            modifyJSON(solar);
+            // Republish the scalar/aggregate channels (scale, today, tomorrow, dayAfterTomorrow) so
+            // that partial updates keep them in sync, not just the initial full-state snapshot.
+            createChannelsAndSetStatesFromApiResponse(solar);
+            float scale = solar.get(JSON_KEY_SCALE).getAsFloat();
+            propagate(forecastArray, getThingKey("scaled"),
+                    obj -> parseScaledForecast(obj, getThingKey(subType), scale), scale);
+        } else if (value instanceof JsonArray forecast) {
+            forecastArray = forecast;
+        } else {
+            logger.warn("Forecast handler {} received unexpected value type: {}", subType,
+                    value.getClass().getSimpleName());
+            return;
+        }
+        propagate(forecastArray, getThingKey(subType), obj -> parseForecast(obj, getThingKey(subType)));
+        logger.trace("Forecast handler {} updated successfully", subType);
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    private TimeSeries getTimeSeries(JsonArray forecastArray, Function<JsonObject, @Nullable ForecastData> parser,
+            float scale) {
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
+        logger.trace("Processing forecast array with {} entries", forecastArray.size());
 
         for (JsonElement data : forecastArray) {
+            ForecastData parsed = null;
             if (data instanceof JsonObject obj) {
-                ForecastData parsed = parser.apply(obj);
-                if (parsed != null) {
+                // Old format: objects with "start", "end", "value" fields
+                parsed = parser.apply(obj);
+            } else if (data instanceof JsonArray arr) {
+                // New array formats
+                try {
+                    if (arr.size() == 2) {
+                        // Solar format: [timestamp, value]
+                        long timestamp = arr.get(0).getAsLong();
+                        String timestampStr = Instant.ofEpochSecond(timestamp).toString();
+                        double value = arr.get(1).getAsNumber().doubleValue() * scale;
+
+                        StateResolver resolver = StateResolver.getInstance();
+                        State state = resolver.resolveState(getThingKey(subType), new JsonPrimitive(value));
+                        if (state != null) {
+                            parsed = new ForecastData(state, timestampStr);
+                        }
+                    } else if (arr.size() >= 3) {
+                        // Other forecast format: [start_timestamp, end_timestamp, value]
+                        long startTimestamp = arr.get(0).getAsLong();
+                        String timestampStr = Instant.ofEpochSecond(startTimestamp).toString();
+                        double value = arr.get(2).getAsNumber().doubleValue() * scale;
+
+                        StateResolver resolver = StateResolver.getInstance();
+                        State state = resolver.resolveState(getThingKey(subType), new JsonPrimitive(value));
+                        if (state != null) {
+                            parsed = new ForecastData(state, timestampStr);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.debug("Failed to parse array forecast entry: {}", arr, e);
+                }
+            }
+
+            if (parsed != null) {
+                try {
                     Instant time = OffsetDateTime.parse(parsed.timestamp()).toInstant();
                     timeSeries.add(time, parsed.value());
+                } catch (Exception e) {
+                    // Fallback for direct timestamp format
+                    try {
+                        Instant time = Instant.parse(parsed.timestamp());
+                        timeSeries.add(time, parsed.value());
+                    } catch (Exception ex) {
+                        logger.debug("Failed to parse timestamp: {}", parsed.timestamp(), ex);
+                    }
                 }
             }
         }
+        logger.trace("Created TimeSeries with {} entries from {} forecast array entries", timeSeries.size(),
+                forecastArray.size());
         return timeSeries;
     }
 
     private void setForecastChannelState(TimeSeries timeSeries, ChannelUID channelUID) {
         if (timeSeries.size() == 0) {
+            logger.debug("No TimeSeries entries for channel {}, skipping state update", channelUID.getId());
             return;
         }
         Instant now = Instant.now();
@@ -181,6 +289,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                         .orElse(new TimeSeries.Entry(now, UnDefType.UNDEF)));
 
         if (current != null && current.state() != UnDefType.UNDEF) {
+            logger.trace("Setting forecast channel {} to state {}", channelUID.getId(), current.state());
             updateState(channelUID, current.state());
         }
     }
@@ -224,11 +333,27 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return JSON_KEY_SOLAR.equals(subType) && state.has(JSON_KEY_FORECAST)
-                ? state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)
-                        ? state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType)
-                        : new JsonObject()
-                : new JsonObject();
+        if (!state.has(JSON_KEY_FORECAST)) {
+            return new JsonObject();
+        }
+        JsonObject forecasts = state.getAsJsonObject(JSON_KEY_FORECAST);
+        if (!forecasts.has(subType)) {
+            return new JsonObject();
+        }
+
+        JsonObject forecastState = new JsonObject();
+        JsonElement value = forecasts.get(subType);
+        if (value.isJsonObject()) {
+            forecastState = value.getAsJsonObject();
+        } else {
+            forecastState.add(subType, value);
+        }
+        return forecastState;
+    }
+
+    @Override
+    public Object getIdentifier() {
+        return subType;
     }
 
     private record FieldMapping(String valueField, String timestampField) {

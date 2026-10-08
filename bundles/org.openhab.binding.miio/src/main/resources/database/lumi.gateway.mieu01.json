@@ -221,6 +221,94 @@
 					}
 				],
 				"category": "settings"
+			},
+			{
+				"property": "",
+				"friendlyName": "FM Radio Power",
+				"channel": "fm_power",
+				"type": "Switch",
+				"refresh": false,
+				"actions": [
+					{
+						"command": "play_fm",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch",
+					"Power"
+				],
+				"readmeComment": "Starts or stops the FM (internet) radio. Experimental, please provide feedback on the community forum."
+			},
+			{
+				"property": "current_volume",
+				"friendlyName": "FM Radio Volume",
+				"channel": "fm_volume",
+				"type": "Dimmer",
+				"refresh": true,
+				"customRefreshCommand": "get_prop_fm[]",
+				"transformation": "getJsonElement-current_volume",
+				"actions": [
+					{
+						"command": "set_fm_volume",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "soundvolume",
+				"tags": [
+					"Control",
+					"SoundVolume"
+				],
+				"readmeComment": "Experimental, please provide feedback on the community forum."
+			},
+			{
+				"property": "current_status",
+				"friendlyName": "FM Radio Status",
+				"channel": "fm_status",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "run",
+							"label": "Playing"
+						},
+						{
+							"value": "pause",
+							"label": "Paused"
+						}
+					]
+				},
+				"refresh": true,
+				"customRefreshCommand": "get_prop_fm",
+				"transformation": "getJsonElement-current_status",
+				"actions": [],
+				"category": "player",
+				"tags": [
+					"Status",
+					"MediaControl"
+				],
+				"readmeComment": "Experimental, please provide feedback on the community forum."
+			},
+			{
+				"property": "current_program",
+				"friendlyName": "FM Radio Program",
+				"channel": "fm_program",
+				"type": "Number",
+				"stateDescription": {
+					"pattern": "%d",
+					"readOnly": true
+				},
+				"refresh": true,
+				"customRefreshCommand": "get_prop_fm []",
+				"transformation": "getJsonElement-current_program",
+				"actions": [],
+				"tags": [
+					"Status",
+					"Channel"
+				],
+				"readmeComment": "Id of the current radio program. Experimental, please provide feedback on the community forum."
 			}
 		],
 		"readmeComment": "Used to control the gateway itself. Experimental support for controlling lumi subdevices",

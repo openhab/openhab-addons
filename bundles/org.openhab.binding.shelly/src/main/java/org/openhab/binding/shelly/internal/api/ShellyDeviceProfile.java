@@ -16,8 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_PRESENCE_DEFAULT_ZONE_ID;
-import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.SHELLY2_PRESENCE_ZONE_PREFIX;
+import static org.openhab.binding.shelly.internal.api2.dto.ShellyPresenceJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
@@ -102,6 +102,7 @@ public class ShellyDeviceProfile {
     public boolean isRGBW2; // true only if it a RGBW2
     public boolean isProRgbwwPm; // true only for a Shelly Pro RGBWW PM (device.profile alone can't tell it apart
                                  // from a Plus RGBW PM running the same rgb/rgbw/light profile)
+    public boolean isPlusRgbwPm; // true only for a Shelly Plus RGBW PM
     public boolean isRGBCCT; // true for Gen3 Multicolor Bulb with rgbcct:0 component (RGB + CCT mode switching)
     public boolean inColor; // true if bulb/rgbw2 is in color mode
     public boolean hasLegacyLightChannels; // true if Thing already has deprecated Gen1 RGBW2 channel1..n groups
@@ -133,6 +134,9 @@ public class ShellyDeviceProfile {
     public int minTemp = 0; // Bulb/Duo: Min Light Temp
     public int maxTemp = 0; // Bulb/Duo: Max Light Temp
 
+    public static final int MAX_WAKEUP_PERIOD_SECONDS = 24 * 3600; // longest configurable sleep period of a device
+    public int learnedWakeupPeriod = 0; // longest wakeup period observed to exceed the configured one, in seconds
+    private int reportedWakeupPeriod = 0; // last wakeup period reported in a status update, in minutes
     public int updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
 
     public String coiotEndpoint = "";
@@ -227,6 +231,7 @@ public class ShellyDeviceProfile {
         isRGBCCT = THING_TYPE_SHELLYPLUSCOLORBULB.equals(thingTypeUID);
         isRGBW2 = GROUP_RGBW2_THING_TYPES.contains(thingTypeUID);
         isProRgbwwPm = THING_TYPE_SHELLYPRORGBWWPM.equals(thingTypeUID);
+        isPlusRgbwPm = THING_TYPE_SHELLYPLUSRGBWPM.equals(thingTypeUID);
         isLight = GROUP_LIGHT_THING_TYPES.contains(thingTypeUID);
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
@@ -324,6 +329,73 @@ public class ShellyDeviceProfile {
         }
     }
 
+    /**
+     * Derive the watchdog timeout ({@link #updatePeriod}) from the wakeup period in the device settings. The wakeup
+     * period of a sleeping device can't be read on demand and Gen1 doesn't report it in status updates, so if unknown
+     * the longest period a device can be configured to is assumed.
+     */
+    public void updateWatchdogPeriod() {
+        if (settings.sleepMode != null && !isTRV) {
+            // Sensor, usually 12h, H&T in USB mode 10min
+            applyWakeupPeriod("m".equalsIgnoreCase(getString(settings.sleepMode.unit)) //
+                    ? settings.sleepMode.period * 60 // minutes
+                    : settings.sleepMode.period * 3600); // hours
+        } else if (!alwaysOn && !isTRV) {
+            // Sleeping device with unknown wakeup period
+            applyWakeupPeriod(MAX_WAKEUP_PERIOD_SECONDS);
+        } else if (settings.coiot != null && settings.coiot.updatePeriod != null) {
+            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
+            updatePeriod = 2 * Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, getInteger(settings.coiot.updatePeriod)) + 10;
+        } else {
+            updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
+        }
+    }
+
+    private void applyWakeupPeriod(int wakeupPeriod) {
+        // Proportional margin absorbs wakeup jitter that grows with the sleep interval, plus a fixed
+        // margin for the report round-trip itself
+        updatePeriod = (int) Math.round(Math.max(wakeupPeriod, learnedWakeupPeriod) * 1.1) + 60;
+        if (isSmoke) {
+            // Smoke sensors wake up far less predictably than other sensors, grant an extra 30min
+            updatePeriod += 1800;
+        }
+    }
+
+    /**
+     * A sleeping device reported after a longer silence than the watchdog allows, so its real wakeup period is longer
+     * than assumed (e.g. changed on the device after the thing was initialized). Extend the watchdog accordingly.
+     *
+     * @param silenceSeconds time since the previous report of the device
+     * @return true if the watchdog period was extended
+     */
+    public boolean learnWakeupInterval(double silenceSeconds) {
+        if (alwaysOn || isTRV || silenceSeconds <= updatePeriod || silenceSeconds > MAX_WAKEUP_PERIOD_SECONDS) {
+            return false;
+        }
+        learnedWakeupPeriod = (int) Math.ceil(silenceSeconds);
+        updateWatchdogPeriod();
+        return true;
+    }
+
+    /**
+     * Apply the wakeup period a device reported in a status update. A learned period is only discarded when the
+     * reported period changed, a settings refresh or a report of the same period keeps it.
+     *
+     * @param periodMinutes wakeup period reported by the device
+     */
+    public void updateWakeupPeriod(int periodMinutes) {
+        ShellySensorSleepMode sleepMode = settings.sleepMode;
+        if (sleepMode == null) {
+            return;
+        }
+        if (periodMinutes != reportedWakeupPeriod) {
+            reportedWakeupPeriod = periodMinutes;
+            learnedWakeupPeriod = 0;
+        }
+        sleepMode.period = periodMinutes;
+        updateWatchdogPeriod();
+    }
+
     public String getControlGroup(int i) {
         if (i < 0) {
             logger.debug("{}: Invalid index {} for getControlGroup()", thingName, i);
@@ -366,6 +438,14 @@ public class ShellyDeviceProfile {
     }
 
     /**
+     * Inverse of {@link #getMeterGroup(int)}: "meter" is index 0, "meterN" is index N-1.
+     */
+    public static int getMeterIndex(String group) {
+        String suffix = group.startsWith(CHANNEL_GROUP_METER) ? group.substring(CHANNEL_GROUP_METER.length()) : "";
+        return !suffix.isEmpty() && suffix.chars().allMatch(Character::isDigit) ? Integer.parseInt(suffix) - 1 : 0;
+    }
+
+    /**
      * Number of leading color-component slots in settings.lights (0 or 1 - no profile has more than one).
      * Used to convert a device-local component id (as reported by the device, 0-based per component type,
      * e.g. CCT:0/CCT:1 or Light:0/Light:1) into its index in the flat settings.lights list, where slot 0 is
@@ -383,6 +463,18 @@ public class ShellyDeviceProfile {
     public boolean hasColorTag(int idx) {
         ShellyLightApiComponent tag = tagAt(settings.lights, idx);
         return tag == ShellyLightApiComponent.NONE ? inColor : ShellyApiLightUtil.isColorComponent(tag);
+    }
+
+    /**
+     * Meter reset is only offered where the meter's component has a ResetCounters RPC: the Gen3 bulbs' CCT/RGBCCT
+     * and the RGB/RGBW/CCT components of the Plus/Pro RGBW PM have none, only the plain Light component does.
+     * On Gen2 RGBW2 devices each settings.lights entry is its own meter, so meterIdx is that list index.
+     */
+    public boolean supportsMeterReset(int meterIdx) {
+        if (isDuo) {
+            return false;
+        }
+        return !isGen2 || !isRGBW2 || tagAt(settings.lights, meterIdx) == ShellyLightApiComponent.LIGHT;
     }
 
     /**
@@ -638,6 +730,15 @@ public class ShellyDeviceProfile {
                 || thingTypeID.startsWith(THING_TYPE_SHELLYPRO_PREFIX) || GROUP_MINI_THING_TYPES.contains(thingTypeUID)
                 || GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID) || isBluSeries(thingTypeUID)
                 || THING_TYPE_SHELLYPLUSBLUGW.equals(thingTypeUID);
+    }
+
+    /**
+     * Buttons and remotes only report on button events and don't wake up periodically, so the watchdog can't police a
+     * "missed wakeup" for them. The BLU Distance sensor is excluded, it broadcasts periodically.
+     */
+    public static boolean isEventDriven(ThingTypeUID thingTypeUID) {
+        return (GROUP_BUTTON_THING_TYPES.contains(thingTypeUID) || GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID))
+                && !THING_TYPE_SHELLYBLUDISTANCE.equals(thingTypeUID);
     }
 
     public static boolean isBluSeries(ThingTypeUID thingTypeUID) {

@@ -54,6 +54,7 @@ public class SonosBindingConstants {
     public static final ThingTypeUID MOVE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Move");
     public static final ThingTypeUID MOVE2_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Move2");
     public static final ThingTypeUID ROAM_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Roam");
+    public static final ThingTypeUID ROAM2_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Roam2");
     public static final ThingTypeUID ROAM_SL_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "RoamSL");
     public static final ThingTypeUID ERA_100_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Era100");
     public static final ThingTypeUID ERA_300_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Era300");
@@ -74,8 +75,8 @@ public class SonosBindingConstants {
             FIVE_THING_TYPE_UID, PLAYBAR_THING_TYPE_UID, PLAYBASE_THING_TYPE_UID, BEAM_THING_TYPE_UID,
             CONNECT_THING_TYPE_UID, CONNECTAMP_THING_TYPE_UID, PORT_THING_TYPE_UID, AMP_THING_TYPE_UID,
             SYMFONISK_THING_TYPE_UID, ARC_THING_TYPE_UID, ARC_SL_THING_TYPE_UID, ARC_ULTRA_THING_TYPE_UID,
-            MOVE_THING_TYPE_UID, MOVE2_THING_TYPE_UID, ROAM_THING_TYPE_UID, ROAM_SL_THING_TYPE_UID,
-            ERA_100_THING_TYPE_UID, ERA_300_THING_TYPE_UID);
+            MOVE_THING_TYPE_UID, MOVE2_THING_TYPE_UID, ROAM_THING_TYPE_UID, ROAM2_THING_TYPE_UID,
+            ROAM_SL_THING_TYPE_UID, ERA_100_THING_TYPE_UID, ERA_300_THING_TYPE_UID);
 
     public static final Set<String> UNSUPPORTED_KNOWN_IDS = Set.of("boost", "sub", "submini", "sub2", "sub3", "sub4");
 

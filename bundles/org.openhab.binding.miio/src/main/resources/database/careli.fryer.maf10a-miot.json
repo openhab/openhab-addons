@@ -1,0 +1,632 @@
+{
+	"deviceMapping": {
+		"id": [
+			"careli.fryer.maf10a"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "air-fryer-start-cook",
+							"label": "Start Cooking"
+						},
+						{
+							"value": "air-fryer-cancel-cooking",
+							"label": "Cancel Cooking"
+						},
+						{
+							"value": "air-fryer-pause",
+							"label": "Pause"
+						},
+						{
+							"value": "air-fryer-resume-cook",
+							"label": "Resume Cooking"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-start-cook"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-cancel-cooking"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-pause"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 4,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "air-fryer-resume-cook"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"air-fryer-start-cook\"\u003d\"Start Cooking\",\"air-fryer-cancel-cooking\"\u003d\"Cancel Cooking\",\"air-fryer-pause\"\u003d\"Pause\",\"air-fryer-resume-cook\"\u003d\"Resume Cooking\"]`"
+			},
+			{
+				"property": "status",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Air Fryer - Status",
+				"channel": "status",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Off"
+						},
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Paused"
+						},
+						{
+							"value": "3",
+							"label": "Scheduled"
+						},
+						{
+							"value": "4",
+							"label": "Cooking"
+						},
+						{
+							"value": "5",
+							"label": "Preheat"
+						},
+						{
+							"value": "6",
+							"label": "Cooking Completed"
+						},
+						{
+							"value": "7",
+							"label": "Preheat Completed"
+						},
+						{
+							"value": "8",
+							"label": "Preheat Paused"
+						},
+						{
+							"value": "9",
+							"label": "Paused To Turn Over Food"
+						},
+						{
+							"value": "10",
+							"label": "Keep Warm"
+						},
+						{
+							"value": "11",
+							"label": "Keep Warm Paused"
+						},
+						{
+							"value": "12",
+							"label": "Keep Warm Completed"
+						},
+						{
+							"value": "13",
+							"label": "Crispy Roast"
+						},
+						{
+							"value": "14",
+							"label": "Degrease"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Scheduled\",\"4\"\u003d\"Cooking\",\"5\"\u003d\"Preheat\",\"6\"\u003d\"Cooking Completed\",\"7\"\u003d\"Preheat Completed\",\"8\"\u003d\"Preheat Paused\",\"9\"\u003d\"Paused To Turn Over Food\",\"10\"\u003d\"Keep Warm\",\"11\"\u003d\"Keep Warm Paused\",\"12\"\u003d\"Keep Warm Completed\",\"13\"\u003d\"Crispy Roast\",\"14\"\u003d\"Degrease\"]`"
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Air Fryer - Device Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Faults"
+						},
+						{
+							"value": "1",
+							"label": "E1"
+						},
+						{
+							"value": "2",
+							"label": "E2"
+						},
+						{
+							"value": "3",
+							"label": "E3"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "error",
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Faults\",\"1\"\u003d\"E1\",\"2\"\u003d\"E2\",\"3\"\u003d\"E3\"]`"
+			},
+			{
+				"property": "target-time",
+				"siid": 2,
+				"piid": 3,
+				"friendlyName": "Air Fryer - Target Time",
+				"channel": "target_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "target-temperature",
+				"siid": 2,
+				"piid": 4,
+				"friendlyName": "Air Fryer - Target Temperature",
+				"channel": "target_temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": 40,
+					"maximum": 230,
+					"step": 5,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "temperature",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			},
+			{
+				"property": "left-time",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Air Fryer - Left Time",
+				"channel": "left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1440,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "auto-keep-warm",
+				"siid": 2,
+				"piid": 6,
+				"friendlyName": "Air Fryer - Auto Keep Warm",
+				"channel": "auto_keep_warm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "current-keep-warm",
+				"siid": 2,
+				"piid": 7,
+				"friendlyName": "Air Fryer - Keep Warm",
+				"channel": "current_keep_warm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 8,
+				"friendlyName": "Air Fryer - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "French Fries"
+						},
+						{
+							"value": "2",
+							"label": "Chicken Wing"
+						},
+						{
+							"value": "3",
+							"label": "Steak"
+						},
+						{
+							"value": "4",
+							"label": "Lamb Chops"
+						},
+						{
+							"value": "5",
+							"label": "Fish"
+						},
+						{
+							"value": "6",
+							"label": "Shrimp"
+						},
+						{
+							"value": "7",
+							"label": "Vegetables"
+						},
+						{
+							"value": "8",
+							"label": "Cake"
+						},
+						{
+							"value": "9",
+							"label": "Pizza"
+						},
+						{
+							"value": "10",
+							"label": "Defrost"
+						},
+						{
+							"value": "11",
+							"label": "Dried Fruit"
+						},
+						{
+							"value": "12",
+							"label": "Yogurt"
+						},
+						{
+							"value": "0",
+							"label": "Manual"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"French Fries\",\"2\"\u003d\"Chicken Wing\",\"3\"\u003d\"Steak\",\"4\"\u003d\"Lamb Chops\",\"5\"\u003d\"Fish\",\"6\"\u003d\"Shrimp\",\"7\"\u003d\"Vegetables\",\"8\"\u003d\"Cake\",\"9\"\u003d\"Pizza\",\"10\"\u003d\"Defrost\",\"11\"\u003d\"Dried Fruit\",\"12\"\u003d\"Yogurt\",\"0\"\u003d\"Manual\"]`"
+			},
+			{
+				"property": "preheat",
+				"siid": 2,
+				"piid": 9,
+				"friendlyName": "Air Fryer - Preheat",
+				"channel": "preheat",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "recipe-id",
+				"siid": 2,
+				"piid": 10,
+				"friendlyName": "Air Fryer - Recipe Id",
+				"channel": "recipe_id",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "recipe-name",
+				"siid": 2,
+				"piid": 11,
+				"friendlyName": "Air Fryer - Recipe Name",
+				"channel": "recipe_name",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "target-cooking-measure",
+				"siid": 2,
+				"piid": 13,
+				"friendlyName": "Air Fryer - Food Quantity",
+				"channel": "target_cooking_measure",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "One Layer"
+						},
+						{
+							"value": "2",
+							"label": "Double Layer"
+						},
+						{
+							"value": "3",
+							"label": "Half Pot"
+						},
+						{
+							"value": "4",
+							"label": "Full Pot"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"One Layer\",\"2\"\u003d\"Double Layer\",\"3\"\u003d\"Half Pot\",\"4\"\u003d\"Full Pot\"]`"
+			},
+			{
+				"property": "turn-pot",
+				"siid": 2,
+				"piid": 14,
+				"friendlyName": "Air Fryer - Turn Over Food",
+				"channel": "turn_pot",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "No Need To Turn Over"
+						},
+						{
+							"value": "2",
+							"label": "Turn Over Food"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"tags": [
+					"Status"
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"No Need To Turn Over\",\"2\"\u003d\"Turn Over Food\"]`"
+			},
+			{
+				"property": "turn-pot-config",
+				"siid": 2,
+				"piid": 15,
+				"friendlyName": "Air Fryer - Turn Over Reminder",
+				"channel": "turn_pot_config",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				],
+				"tags": [
+					"Switch",
+					"Enabled"
+				]
+			},
+			{
+				"property": "texture",
+				"siid": 2,
+				"piid": 16,
+				"friendlyName": "Air Fryer - Texture",
+				"channel": "texture",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "None"
+						},
+						{
+							"value": "1",
+							"label": "Crispy Roast"
+						},
+						{
+							"value": "2",
+							"label": "Tender Roast"
+						},
+						{
+							"value": "3",
+							"label": "Degrease"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"None\",\"1\"\u003d\"Crispy Roast\",\"2\"\u003d\"Tender Roast\",\"3\"\u003d\"Degrease\"]`"
+			},
+			{
+				"property": "reservation-left-time",
+				"siid": 2,
+				"piid": 17,
+				"friendlyName": "Air Fryer - Scheduled Start Left Time",
+				"channel": "reservation_left_time",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2880,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				]
+			},
+			{
+				"property": "cooking-weight",
+				"siid": 2,
+				"piid": 18,
+				"friendlyName": "Air Fryer - Cooking Weight",
+				"channel": "cooking_weight",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 100,
+					"maximum": 1800,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"tags": [
+					"Setpoint"
+				]
+			}
+		],
+		"experimental": true
+	}
+}

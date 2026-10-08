@@ -17,8 +17,13 @@ import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.solaredge.internal.connector.PublicApiV2RequestCounter;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeGenericHandler;
+import org.openhab.binding.solaredge.internal.oauth.SolarEdgeOAuthClient;
+import org.openhab.binding.solaredge.internal.oauth.SolarEdgeOAuthServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -46,10 +51,15 @@ public class SolarEdgeHandlerFactory extends BaseThingHandlerFactory {
      * the shared http client
      */
     private final HttpClient httpClient;
+    private final StorageService storageService;
+    private final SolarEdgeOAuthServlet oAuthServlet;
 
     @Activate
-    public SolarEdgeHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public SolarEdgeHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference StorageService storageService, @Reference SolarEdgeOAuthServlet oAuthServlet) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.storageService = storageService;
+        this.oAuthServlet = oAuthServlet;
     }
 
     @Override
@@ -62,11 +72,21 @@ public class SolarEdgeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_GENERIC)) {
-            return new SolarEdgeGenericHandler(thing, httpClient);
+            Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
+                    String.class.getClassLoader());
+            return new SolarEdgeGenericHandler(thing, httpClient, new SolarEdgeOAuthClient(httpClient, storage),
+                    new PublicApiV2RequestCounter(storage), oAuthServlet);
         } else {
             logger.warn("Unsupported Thing-Type: {}", thingTypeUID.getAsString());
         }
 
         return null;
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof SolarEdgeGenericHandler solarEdgeHandler) {
+            oAuthServlet.unregister(solarEdgeHandler);
+        }
     }
 }

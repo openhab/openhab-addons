@@ -97,7 +97,7 @@
           <additionalClasspathElements>
             <additionalClasspathElement>${project.build.directory}/unsigned</additionalClasspathElement>
           </additionalClasspathElements>
-          <argLine>-noverify</argLine>
+          <argLine>-noverify -javaagent:"${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar" -Xshare:off</argLine>
         </configuration>
       </plugin>
       <plugin>

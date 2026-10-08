@@ -43,6 +43,10 @@ public class SourceLocator {
         public static FilePosition empty() {
             return new FilePosition(-1, -1);
         }
+
+        public boolean isEmpty() {
+            return FilePosition.empty().equals(this);
+        }
     }
 
     /**

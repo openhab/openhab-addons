@@ -130,9 +130,10 @@ public class NetworkCommissioningCluster extends BaseCluster {
     /**
      * Indicates all of the Thread features supported by the Thread interface configured by the cluster instance.
      * This attribute is primarily used to determine the most important general capabilities of the Thread interface
-     * associated with the cluster instance, as opposed to the current runtime dynamic configuration. Note that most
-     * run-time details of the actual Thread interface are found in the Thread Network Diagnostics cluster, if
-     * supported.
+     * associated with the cluster instance, as opposed to the current runtime dynamic configuration.
+     * > [!NOTE]
+     * > NOTE: Most run-time details of the actual Thread interface are found in the Thread Network Diagnostics cluster,
+     * if supported.
      */
     public ThreadCapabilitiesBitmap supportedThreadFeatures; // 9 ThreadCapabilitiesBitmap R V
     /**
@@ -430,9 +431,9 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * If this command is received without an armed fail-safe context (see Section 11.10.7.2, "ArmFailSafe"), then this
      * command shall fail with a FAILSAFE_REQUIRED status code sent back to the initiator.
      * The Credentials associated with the network are not readable after execution of this command, as they do not
-     * appear in the Section 11.9.6.2, "Networks" attribute, for security reasons.
-     * If this command contains a ClientIdentifier, and the Section 11.9.6.2, "Networks" list does not contain an entry
-     * with a matching ClientIdentifier, then this command shall fail with a status of NOT_FOUND.
+     * appear in the Networks attribute, for security reasons.
+     * If this command contains a ClientIdentifier, and the Networks list does not contain an entry with a matching
+     * ClientIdentifier, then this command shall fail with a status of NOT_FOUND.
      * See Section 11.9.7.5, "Common processing of AddOrUpdateWiFiNetwork and AddOrUpdateThreadNetwork" for behavior of
      * addition/update.
      */

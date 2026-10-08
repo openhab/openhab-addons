@@ -124,6 +124,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
+    public void close() {
+        connected = false; // the next advertisement has to bring the thing back online
+        super.close();
+    }
+
+    @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         ShellySettingsDevice info = new ShellySettingsDevice();
         info.hostname = config.getRealm();
@@ -373,6 +379,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                         }
                         if (blu.precipitation != null) {
                             sensorData.precipitation = blu.precipitation;
+                        }
+                        if (blu.capacitorVoltage != null) {
+                            sensorData.capacitorVoltage = blu.capacitorVoltage;
                         }
                         if (profile.isWS90) {
                             ShellySensorTmp tmp = sensorData.tmp;

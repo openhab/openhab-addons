@@ -69,7 +69,7 @@ public class CommodityTariffCluster extends BaseCluster {
      * of 0x00000000 shall indicate that the calendar should become active immediately.
      * If the tariff is unavailable, this attribute shall be null.
      */
-    public Integer startDate; // 2 epoch-s R V
+    public Long startDate; // 2 epoch-s R V
     /**
      * Indicates the list of DayEntryStructs included in this calendar.
      * The maximum constraint of this attribute is intended to allow representation of seven days of tariff information
@@ -120,7 +120,7 @@ public class CommodityTariffCluster extends BaseCluster {
      * updated.
      * If the tariff is not active or day entry information is not available, this attribute shall be null.
      */
-    public Integer currentDayEntryDate; // 10 epoch-s R V
+    public Long currentDayEntryDate; // 10 epoch-s R V
     /**
      * Indicates the predicted next active DayEntryStruct.
      * If the tariff is not active or is not available, this attribute shall be null.
@@ -131,7 +131,7 @@ public class CommodityTariffCluster extends BaseCluster {
      * will update to the values in the NextDay, NextDayEntry, and NextTariffComponents attributes, respectively.
      * If the tariff is not active or is not available, this attribute shall be null.
      */
-    public Integer nextDayEntryDate; // 12 epoch-s R V
+    public Long nextDayEntryDate; // 12 epoch-s R V
     /**
      * Indicates a list of TariffComponentStructs for the tariff.
      * If the tariff is unavailable, this attribute shall be empty.
@@ -198,7 +198,7 @@ public class CommodityTariffCluster extends BaseCluster {
          * This field shall indicate the timestamp in UTC when the calendar period becomes active.
          * A null value shall indicate the calendar period becomes active immediately. See CalendarPeriods attribute.
          */
-        public Integer startDate; // epoch-s
+        public Long startDate; // epoch-s
         /**
          * This field shall indicate a list of DayPatternIDs for the DayPatternStructs in use during this calendar
          * period.
@@ -213,9 +213,9 @@ public class CommodityTariffCluster extends BaseCluster {
          * Meeting these constraints ensures that every day of the week during this week has specified day entries, and
          * no day of the week has more than one set of day entries.
          */
-        public List<Integer> dayPatternIDs; // list
+        public List<Long> dayPatternIDs; // list
 
-        public CalendarPeriodStruct(Integer startDate, List<Integer> dayPatternIDs) {
+        public CalendarPeriodStruct(Long startDate, List<Long> dayPatternIDs) {
             this.startDate = startDate;
             this.dayPatternIDs = dayPatternIDs;
         }
@@ -241,7 +241,7 @@ public class CommodityTariffCluster extends BaseCluster {
          * Once an identifier has been used for a given combination above, it shall never be used for any other
          * combination of these values.
          */
-        public Integer dayEntryId; // uint32
+        public Long dayEntryId; // uint32
         /**
          * This field shall indicate the start time of the DayEntryStruct, expressed as the number of minutes that have
          * elapsed since midnight on the associated days.
@@ -295,7 +295,7 @@ public class CommodityTariffCluster extends BaseCluster {
          */
         public DayEntryRandomizationTypeEnum randomizationType; // DayEntryRandomizationTypeEnum
 
-        public DayEntryStruct(Integer dayEntryId, Integer startTime, Integer duration, Integer randomizationOffset,
+        public DayEntryStruct(Long dayEntryId, Integer startTime, Integer duration, Integer randomizationOffset,
                 DayEntryRandomizationTypeEnum randomizationType) {
             this.dayEntryId = dayEntryId;
             this.startTime = startTime;
@@ -312,7 +312,7 @@ public class CommodityTariffCluster extends BaseCluster {
         /**
          * This field shall indicate the date the associated set of DayEntryStructs applies to.
          */
-        public Integer date; // epoch-s
+        public Long date; // epoch-s
         /**
          * This field shall indicate the type of day represented by the struct.
          */
@@ -335,9 +335,9 @@ public class CommodityTariffCluster extends BaseCluster {
          * referenced by this list. In other words, day entries with a set duration can not overlap any other day
          * entries.
          */
-        public List<Integer> dayEntryIDs; // list
+        public List<Long> dayEntryIDs; // list
 
-        public DayStruct(Integer date, DayTypeEnum dayType, List<Integer> dayEntryIDs) {
+        public DayStruct(Long date, DayTypeEnum dayType, List<Long> dayEntryIDs) {
             this.date = date;
             this.dayType = dayType;
             this.dayEntryIDs = dayEntryIDs;
@@ -354,7 +354,7 @@ public class CommodityTariffCluster extends BaseCluster {
          * Once an identifier has been used for this combination, it shall NOT be used to represent any other
          * combination of these values.
          */
-        public Integer dayPatternId; // uint32
+        public Long dayPatternId; // uint32
         /**
          * This field shall indicate which days of the week the associated set of DayEntryStructs applies to. If no bits
          * are set, then this shall be a rotating day. See DayPatternIDs.
@@ -366,9 +366,9 @@ public class CommodityTariffCluster extends BaseCluster {
          * This list shall NOT contain two DayEntryIDs for the DayEntryStructs with the same value of the StartTime
          * field.
          */
-        public List<Integer> dayEntryIDs; // list
+        public List<Long> dayEntryIDs; // list
 
-        public DayPatternStruct(Integer dayPatternId, DayPatternDayOfWeekBitmap daysOfWeek, List<Integer> dayEntryIDs) {
+        public DayPatternStruct(Long dayPatternId, DayPatternDayOfWeekBitmap daysOfWeek, List<Long> dayEntryIDs) {
             this.dayPatternId = dayPatternId;
             this.daysOfWeek = daysOfWeek;
             this.dayEntryIDs = dayEntryIDs;
@@ -460,7 +460,7 @@ public class CommodityTariffCluster extends BaseCluster {
          * Once an identifier has been used for this combination, it shall NOT be used to represent any other
          * combination of these values.
          */
-        public Integer tariffComponentId; // uint32
+        public Long tariffComponentId; // uint32
         /**
          * This field shall indicate the price when the tariff component is active.
          * When the Predicted field is set to TRUE, a null value shall indicate that the price and/or price level is not
@@ -511,7 +511,7 @@ public class CommodityTariffCluster extends BaseCluster {
          */
         public Boolean predicted; // bool
 
-        public TariffComponentStruct(Integer tariffComponentId, TariffPriceStruct price, Boolean friendlyCredit,
+        public TariffComponentStruct(Long tariffComponentId, TariffPriceStruct price, Boolean friendlyCredit,
                 AuxiliaryLoadSwitchSettingsStruct auxiliaryLoad, PeakPeriodStruct peakPeriod,
                 PowerThresholdStruct powerThreshold, BigInteger threshold, String label, Boolean predicted) {
             this.tariffComponentId = tariffComponentId;
@@ -540,14 +540,14 @@ public class CommodityTariffCluster extends BaseCluster {
          * Each DayEntryID shall be included in at most one DayEntryIDs field. In other words, there shall be only one
          * TariffPeriodStruct for each DayEntryID.
          */
-        public List<Integer> dayEntryIDs; // list
+        public List<Long> dayEntryIDs; // list
         /**
          * This field shall indicate a list of TariffComponentIDs for the TariffComponentStructs active during the
          * specified day entries.
          */
-        public List<Integer> tariffComponentIDs; // list
+        public List<Long> tariffComponentIDs; // list
 
-        public TariffPeriodStruct(String label, List<Integer> dayEntryIDs, List<Integer> tariffComponentIDs) {
+        public TariffPeriodStruct(String label, List<Long> dayEntryIDs, List<Long> tariffComponentIDs) {
             this.label = label;
             this.dayEntryIDs = dayEntryIDs;
             this.tariffComponentIDs = tariffComponentIDs;
@@ -760,7 +760,7 @@ public class CommodityTariffCluster extends BaseCluster {
      * The GetTariffComponent command allows a client to request information for a tariff component identifier that may
      * no longer be available in the TariffPeriods attributes.
      */
-    public static ClusterCommand getTariffComponent(Integer tariffComponentId) {
+    public static ClusterCommand getTariffComponent(Long tariffComponentId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (tariffComponentId != null) {
             map.put("tariffComponentId", tariffComponentId);
@@ -772,7 +772,7 @@ public class CommodityTariffCluster extends BaseCluster {
      * The GetDayEntry command allows a client to request information for a calendar day entry identifier that may no
      * longer be available in the CalendarPeriods or IndividualDays attributes.
      */
-    public static ClusterCommand getDayEntry(Integer dayEntryId) {
+    public static ClusterCommand getDayEntry(Long dayEntryId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (dayEntryId != null) {
             map.put("dayEntryId", dayEntryId);

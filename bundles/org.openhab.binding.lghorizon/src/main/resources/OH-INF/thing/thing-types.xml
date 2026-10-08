@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lghorizon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>LG Horizon Account</label>
+		<description>
+			An LG Horizon powered TV platform account (Telenet, Ziggo, Virgin Media, UPC, Sunrise, BASE TV).
+			Discovers the set-top boxes registered on the account and provides the connection used to control them.
+		</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="provider" type="text">
+				<label>Provider</label>
+				<description>
+					Your TV provider. Leave empty / choose "Custom" to configure an unlisted or test backend manually via
+					the advanced Country, API URL and Use Refresh Token fields.</description>
+			</parameter>
+			<parameter name="country" type="text">
+				<label>Country</label>
+				<description>
+					Two-letter locale code used in the service-discovery URL path (e.g. "be", "nl", "ch") - not necessarily
+					the same region implied by the provider's name. Known automatically when Provider is set; required if Provider is
+					left empty.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="apiUrl" type="text">
+				<label>API URL</label>
+				<description>
+					Base URL of the provider's "spark" REST API, e.g. https://spark-prod-be.gnp.cloud.telenet.tv. Known
+					automatically when Provider is set; required if Provider is left empty.
+				</description>
+				<context>url</context>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="useRefreshToken" type="boolean">
+				<label>Use Refresh Token</label>
+				<description>
+					Whether the provider requires refresh-token authentication instead of username/password. Known
+					automatically when Provider is set; only consulted if Provider is left empty.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>Username</label>
+				<description>Account username/email. Only required for password-based providers</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Account password. Only required for password-based providers.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="refreshToken" type="text">
+				<label>Refresh Token</label>
+				<description>
+					Only required for token-based providers. Sign in to your provider's web player (e.g. telenet.tv) in a
+					browser, open developer tools, and copy the "refresh_token" value out of Local Storage.
+				</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="box">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>LG Horizon Set-Top Box</label>
+		<description>A single LG Horizon set-top box (e.g. a Telenet or Ziggo TV box).</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="source-type" typeId="source-type"/>
+			<channel id="channel-name" typeId="channel-name"/>
+			<channel id="channel-number" typeId="channel-number"/>
+			<channel id="favorite-channel-number" typeId="favorite-channel-number"/>
+			<channel id="program-title" typeId="system.media-title"/>
+			<channel id="series-title" typeId="series-title"/>
+			<channel id="episode-title" typeId="episode-title"/>
+			<channel id="season" typeId="season"/>
+			<channel id="episode" typeId="episode"/>
+			<channel id="media-image" typeId="media-image"/>
+			<channel id="player" typeId="system.media-control"/>
+			<channel id="stop" typeId="stop"/>
+			<channel id="record" typeId="record"/>
+			<channel id="channel-up" typeId="channel-up"/>
+			<channel id="channel-down" typeId="channel-down"/>
+			<channel id="arrow-up" typeId="arrow-up"/>
+			<channel id="arrow-down" typeId="arrow-down"/>
+			<channel id="arrow-left" typeId="arrow-left"/>
+			<channel id="arrow-right" typeId="arrow-right"/>
+			<channel id="top-menu" typeId="top-menu"/>
+			<channel id="info" typeId="info"/>
+			<channel id="context-menu" typeId="context-menu"/>
+			<channel id="tv" typeId="tv"/>
+			<channel id="enter" typeId="enter"/>
+			<channel id="escape" typeId="escape"/>
+			<channel id="key-code" typeId="key-code"/>
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>The LG Horizon device identifier for this box.</description>
+			</parameter>
+			<parameter name="profileId" type="text">
+				<label>Profile ID</label>
+				<description>
+					Which household profile's favourite channels and language to use. Defaults to the default box profile
+					or the first profile by account.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="source-type">
+		<item-type>String</item-type>
+		<label>Source Type</label>
+		<description>What kind of content is currently active: linear, replay, nDVR, localDVR, reviewBuffer, VOD or app.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="channel-name">
+		<item-type>String</item-type>
+		<label>Channel Name</label>
+		<description>Name of the channel currently being watched.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="channel-number">
+		<item-type>Number</item-type>
+		<label>Channel Number</label>
+		<description>The logical channel number. Send a number to this channel to change the channel.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="favorite-channel-number">
+		<item-type>Number</item-type>
+		<label>Favorite Channel Number</label>
+		<description>The logical favorite channel number. Send a number to this channel to change the channel.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="series-title">
+		<item-type>String</item-type>
+		<label>Series Title</label>
+		<description>
+			Name of the TV series/show currently playing, only set for genuinely episodic content (a movie or
+			standalone broadcast leaves this undefined). See Program Title for the always-populated title.
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="episode-title">
+		<item-type>String</item-type>
+		<label>Episode Title</label>
+		<description>
+			Title of the current episode. Falls back to "Episode N" using the episode number if no episode
+			title text
+			is available.
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="season">
+		<item-type>Number</item-type>
+		<label>Season</label>
+		<description>Season number of the current episode, when known.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="episode">
+		<item-type>Number</item-type>
+		<label>Episode</label>
+		<description>Episode number of the current episode, when known.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="media-image">
+		<item-type>Image</item-type>
+		<label>Media Image</label>
+		<description>Poster/background image for the current channel, program, VOD title, or recording.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="stop">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stops the current playback and returns to live TV.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="record">
+		<item-type>Switch</item-type>
+		<label>Record</label>
+		<description>Record selected TV program.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="channel-up">
+		<item-type>Switch</item-type>
+		<label>Channel Up</label>
+		<description>Moves to the next channel.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Channel</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="channel-down">
+		<item-type>Switch</item-type>
+		<label>Channel Down</label>
+		<description>Moves to the previous channel.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Channel</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="arrow-up">
+		<item-type>Switch</item-type>
+		<label>Arrow Up</label>
+		<description>Navigates up in the on-screen menu.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="arrow-down">
+		<item-type>Switch</item-type>
+		<label>Arrow Down</label>
+		<description>Navigates down in the on-screen menu.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="arrow-left">
+		<item-type>Switch</item-type>
+		<label>Arrow Left</label>
+		<description>Navigates left in the on-screen menu.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="arrow-right">
+		<item-type>Switch</item-type>
+		<label>Arrow Right</label>
+		<description>Navigates right in the on-screen menu.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="top-menu">
+		<item-type>Switch</item-type>
+		<label>Home</label>
+		<description>Opens the main menu, or jumps back to the top of the screen from anywhere.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="info">
+		<item-type>Switch</item-type>
+		<label>Info</label>
+		<description>Shows information about the current program.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="context-menu">
+		<item-type>Switch</item-type>
+		<label>Context Menu</label>
+		<description>
+			Opens the context menu for extra actions (e.g. quickly enabling subtitles, adding the
+			current
+			channel/program to favorites or the watchlist).
+		</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="tv">
+		<item-type>Switch</item-type>
+		<label>TV</label>
+		<description> Switch to live TV.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="enter">
+		<item-type>Switch</item-type>
+		<label>Enter / OK</label>
+		<description>Confirms the current selection, or opens the channel zap bar during live TV.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="escape">
+		<item-type>Switch</item-type>
+		<label>Back / Escape</label>
+		<description>Goes back to the previous menu, or stops playback and returns to live TV.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="key-code" advanced="true">
+		<item-type>String</item-type>
+		<label>Send Key</label>
+		<description>
+			Send any remote-control key (W3C key name, e.g. "ArrowUp", "Guide", "Red", "MediaRecord") to the box.
+		</description>
+	</channel-type>
+
+</thing:thing-descriptions>

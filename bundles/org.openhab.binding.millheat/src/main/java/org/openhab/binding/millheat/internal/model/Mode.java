@@ -12,33 +12,22 @@
  */
 package org.openhab.binding.millheat.internal.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link Mode} represents a mode with start and end time
+ * A mode together with the period it applies to. The cloud API supplies the period only for
+ * overrides and vacations, so both instants may be absent.
  *
  * @author Arne Seime - Initial contribution
+ * @author Petter L. H. Eide - Use instants from the cloud API
  */
-public class Mode {
-    private final ModeType mode;
-    private final LocalDateTime start;
-    private final LocalDateTime end;
+@NonNullByDefault
+public record Mode(ModeType mode, @Nullable Instant start, @Nullable Instant end) {
 
-    public Mode(final ModeType mode, final LocalDateTime start, final LocalDateTime end) {
-        this.mode = mode;
-        this.start = start;
-        this.end = end;
-    }
-
-    public ModeType getMode() {
-        return mode;
-    }
-
-    public LocalDateTime getStart() {
-        return start;
-    }
-
-    public LocalDateTime getEnd() {
-        return end;
+    public static Mode of(final ModeType mode) {
+        return new Mode(mode, null, null);
     }
 }

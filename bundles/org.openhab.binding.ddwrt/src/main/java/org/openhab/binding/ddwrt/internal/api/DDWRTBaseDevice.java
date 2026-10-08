@@ -32,6 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
@@ -210,7 +211,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     // Updater callback (set by handler)
-    protected volatile @Nullable DDWRTThingUpdater updater;
+    protected final AtomicReference<@Nullable DDWRTThingUpdater> updater = new AtomicReference<>();
 
     // Network cache reference (set during createDevice)
     protected @Nullable DDWRTNetworkCache networkCache;
@@ -637,7 +638,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
      * Start periodic refresh and optional syslog monitoring.
      */
     public void start(DDWRTThingUpdater updater) {
-        this.updater = updater;
+        setUpdater(updater);
         startRefresh(config.refreshInterval);
     }
 
@@ -745,7 +746,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                     // from killing the refresh thread. Log and continue so the device can
                     // recover on the next refresh cycle via ensureSession().
                     online = false;
-                    DDWRTThingUpdater u = updater;
+                    DDWRTThingUpdater u = updater.get();
                     if (u != null) {
                         u.updateChannel("online", OnOffType.OFF);
                     }
@@ -901,7 +902,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         lastWirelessEvent = event.message;
         logger.debug("Wireless event: {}", event.message);
 
-        DDWRTThingUpdater u = updater;
+        DDWRTThingUpdater u = updater.get();
         if (u != null) {
             u.updateChannel("last-wireless-event", new StringType(event.message));
             u.fireTrigger("wireless-event", event.message);
@@ -974,7 +975,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         warningEventCount++;
         lastWarningEvent = event.message;
 
-        DDWRTThingUpdater u = updater;
+        DDWRTThingUpdater u = updater.get();
         if (u != null) {
             u.updateChannel("warning-events", new DecimalType(warningEventCount));
             u.updateChannel("last-warning-event", new StringType(event.message));
@@ -987,7 +988,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         errorEventCount++;
         lastErrorEvent = event.message;
 
-        DDWRTThingUpdater u = updater;
+        DDWRTThingUpdater u = updater.get();
         if (u != null) {
             u.updateChannel("error-events", new DecimalType(errorEventCount));
             u.updateChannel("last-error-event", new StringType(event.message));
@@ -1089,7 +1090,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         SshAuthSession s = ensureSession();
         if (s == null) {
             online = false;
-            DDWRTThingUpdater u = updater;
+            DDWRTThingUpdater u = updater.get();
             if (u != null) {
                 u.updateChannel("online", OnOffType.OFF);
                 u.reportOffline("@text/offline.ssh-session-unavailable");
@@ -1133,7 +1134,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         logger.debug("Refresh complete for {} in {}.{} s", hostname, elapsedMs / 1000,
                 String.format("%03d", elapsedMs % 1000));
 
-        DDWRTThingUpdater u = updater;
+        DDWRTThingUpdater u = updater.get();
         if (u != null) {
             u.reportOnline();
             pushChannels(u);
@@ -2563,8 +2564,12 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         this.config = config;
     }
 
-    public void setUpdater(@Nullable DDWRTThingUpdater updater) {
-        this.updater = updater;
+    public void setUpdater(DDWRTThingUpdater updater) {
+        this.updater.set(updater);
+    }
+
+    public void clearUpdater(DDWRTThingUpdater updater) {
+        this.updater.compareAndSet(updater, null);
     }
 
     public @Nullable SshAuthSession getAuthSession() {

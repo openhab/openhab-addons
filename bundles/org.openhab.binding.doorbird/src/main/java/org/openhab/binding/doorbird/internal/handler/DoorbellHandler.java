@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -71,6 +72,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Mark Hilbush - Initial contribution
+ * @author Florian Hotze - Add IP whitelist for webhooks
  */
 @NonNullByDefault
 public class DoorbellHandler extends BaseThingHandler {
@@ -171,6 +173,10 @@ public class DoorbellHandler extends BaseThingHandler {
     // Callback used by listener to get Doorbird password
     public @Nullable String getUserPassword() {
         return config.userPassword;
+    }
+
+    public List<String> getWebhookIpWhitelist() {
+        return config.webhookIpWhitelist.stream().map(String::trim).toList();
     }
 
     // Callback used by listener to update doorbell channel

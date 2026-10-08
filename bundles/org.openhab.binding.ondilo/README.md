@@ -40,6 +40,8 @@ Example using default interval:
 - `account` Thing performs 2 requests per cycle - 8 requests per hour per Ondilo Account
 - `ondilo` Thing performs 4 requests per cycle - 16 requests per hour per Ondilo ICO
 
+With the default 15-minute refresh interval, one pool uses 24 requests per hour, within Ondilo's limit of 30 requests per hour per user.
+
 ## Channels
 
 ### `account` Channels
@@ -60,8 +62,8 @@ Example using default interval:
 | orp-trend                 | Number:ElectricPotential | true     | R      | Change in ORP since last measure                       |
 | salt                      | Number:Density           | false    | R      | Salt concentration in the pool (salt pools only)       |
 | salt-trend                | Number:Density           | true     | R      | Change in salt concentration since last measure        |
-| tds                       | Number:Density           | false    | R      | Total dissolved solids in the pool (chlor pools only)  |
-| tds-trend                 | Number:Density           | true     | R      | Change in TDS since last measure                       |
+| tds                       | Number:Dimensionless     | false    | R      | Total dissolved solids in the pool (chlor pools only)  |
+| tds-trend                 | Number:Dimensionless     | true     | R      | Change in TDS since last measure                       |
 | battery                   | Number:Dimensionless     | false    | R      | Battery level of the device                            |
 | rssi                      | Number                   | false    | R      | Signal strength (RSSI)                                 |
 | value-time                | DateTime                 | true     | R      | Timestamp of the set of measures                       |
@@ -73,29 +75,29 @@ Example using default interval:
 | recommendation-id         | Number                  | true     | R      | Unique ID of the current recommendation                |
 | recommendation-title      | String                  | false    | R      | Title of the current recommendation                    |
 | recommendation-message    | String                  | false    | R      | Message of the current recommendation                  |
-| recommendation-created-at | String                  | true     | R      | Creation time of the current recommendation            |
-| recommendation-updated-at | String                  | true     | R      | Last update time of the current recommendation         |
+| recommendation-created-at | DateTime                | true     | R      | Creation time of the current recommendation            |
+| recommendation-updated-at | DateTime                | true     | R      | Last update time of the current recommendation         |
 | recommendation-status     | String                  | false    | R/W    | Status of the current recommendation (`waiting`/`ok`)<br/>`sendCommand("ok")` to validate current `waiting` recommendation |
-| recommendation-deadline   | String                  | true     | R      | Deadline of the current recommendation                 |
+| recommendation-deadline   | DateTime                | true     | R      | Deadline of the current recommendation                 |
 
 ### Configuration Channels
 
-| Channel ID                | Type           | Advanced | Access | Description                                   |
-|---------------------------|----------------|----------|--------|-----------------------------------------------|
-| temperature-low           | Number         | true     | R      | Minimum water temperature                     |
-| temperature-high          | Number         | true     | R      | Maximum water temperature                     |
-| ph-low                    | Number         | true     | R      | Minimum pH value                              |
-| ph-high                   | Number         | true     | R      | Maximum pH value                              |
-| orp-low                   | Number         | true     | R      | Minimum ORP value                             |
-| orp-high                  | Number         | true     | R      | Maximum ORP value                             |
-| salt-low                  | Number         | true     | R      | Minimum salt concentration (salt pools only)  |
-| salt-high                 | Number         | true     | R      | Maximum salt concentration (salt pools only)  |
-| tds-low                   | Number         | true     | R      | Minimum TDS value (chlor pools only)          |
-| tds-high                  | Number         | true     | R      | Maximum TDS value (chlor pools only)          |
+| Channel ID       | Type                     | Advanced | Access | Description                                   |
+|------------------|--------------------------|----------|--------|-----------------------------------------------|
+| temperature-low  | Number:Temperature       | true     | R      | Minimum water temperature                     |
+| temperature-high | Number:Temperature       | true     | R      | Maximum water temperature                     |
+| ph-low           | Number                   | true     | R      | Minimum pH value                              |
+| ph-high          | Number                   | true     | R      | Maximum pH value                              |
+| orp-low          | Number:ElectricPotential | true     | R      | Minimum ORP value                             |
+| orp-high         | Number:ElectricPotential | true     | R      | Maximum ORP value                             |
+| salt-low         | Number:Density           | true     | R      | Minimum salt concentration (salt pools only)  |
+| salt-high        | Number:Density           | true     | R      | Maximum salt concentration (salt pools only)  |
+| tds-low          | Number:Dimensionless     | true     | R      | Minimum TDS value (chlor pools only)          |
+| tds-high         | Number:Dimensionless     | true     | R      | Maximum TDS value (chlor pools only)          |
 
 ## Full Example
 
-### Thing Configuration
+### Thing Demo
 
 ```Java
 Bridge ondilo:account:ondiloAccount [ url="http://localhost:8080", refreshInterval=900 ] {
@@ -103,7 +105,7 @@ Bridge ondilo:account:ondiloAccount [ url="http://localhost:8080", refreshInterv
 }
 ```
 
-### Item Configuration
+### Item Demo
 
 ```java
 Number:Temperature        Ondilo_Temperature  "Pool Temperature [%.1f %unit%]"  { channel="ondilo:ondilo:ondiloAccount:12345:measure#temperature" }
@@ -118,7 +120,7 @@ String                    Ondilo_RecMessage   "Recommendation Message [%s]"     
 String                    Ondilo_RecStatus    "Recommendation Status [%s]"      { channel="ondilo:ondilo:ondiloAccount:12345:recommendation#status" }
 ```
 
-### Sitemap Configuration
+### Sitemap Demo
 
 ```perl
 sitemap demo label="Ondilo ICO" {

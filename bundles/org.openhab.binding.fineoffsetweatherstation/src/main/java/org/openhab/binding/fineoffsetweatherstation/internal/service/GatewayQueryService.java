@@ -60,7 +60,10 @@ public abstract class GatewayQueryService implements AutoCloseable {
     @Nullable
     public abstract SystemInfo fetchSystemInfo();
 
-    public abstract Collection<MeasuredValue> getMeasuredValues();
+    /**
+     * @return the measured values, or {@code null} if the poll failed; an empty collection is a valid response
+     */
+    public abstract @Nullable Collection<MeasuredValue> getMeasuredValues();
 
     protected void updateThingStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         @Nullable

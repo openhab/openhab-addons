@@ -41,19 +41,32 @@ import org.openhab.core.thing.ThingUID;
 class AmazonEchoDiscoveryTest {
 
     @Test
-    void testMacAddressLookupSkipsUnsupportedDevices() {
+    void testMacAddressLookupSkipsUnsupportedAndSonosDevices() {
         DeviceTO supportedDevice = new DeviceTO();
         supportedDevice.deviceFamily = "ECHO";
         DeviceTO unsupportedDevice = new DeviceTO();
-        unsupportedDevice.deviceFamily = "THIRD_PARTY_AVS_MEDIA_DISPLAY";
+        unsupportedDevice.deviceFamily = "THIRD_PARTY_AVS_VIDEO_FIRST";
+        DeviceTO sonosVoiceEntry = new DeviceTO();
+        sonosVoiceEntry.deviceFamily = "THIRD_PARTY_AVS_SONOS_BOOTLEG";
+        DeviceTO sonosMediaEntry = new DeviceTO();
+        sonosMediaEntry.deviceFamily = "THIRD_PARTY_AVS_MEDIA_DISPLAY";
         Connection connection = mock(Connection.class);
         when(connection.getDeviceMacAddress(supportedDevice)).thenReturn("40:B4:CD:10:B2:95");
 
-        AmazonEchoDiscovery.addMacAddresses(List.of(supportedDevice, unsupportedDevice), connection);
+        AmazonEchoDiscovery.addMacAddresses(
+                List.of(supportedDevice, unsupportedDevice, sonosVoiceEntry, sonosMediaEntry), connection);
 
         assertEquals("40:B4:CD:10:B2:95", supportedDevice.macAddress);
         verify(connection).getDeviceMacAddress(supportedDevice);
         verify(connection, never()).getDeviceMacAddress(unsupportedDevice);
+        verify(connection, never()).getDeviceMacAddress(sonosVoiceEntry);
+        verify(connection, never()).getDeviceMacAddress(sonosMediaEntry);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "THIRD_PARTY_AVS_SONOS_BOOTLEG", "THIRD_PARTY_AVS_MEDIA_DISPLAY" })
+    void testBothSonosEntriesAreDiscoveredAsEcho(String deviceFamily) {
+        assertEquals(THING_TYPE_ECHO, AmazonEchoDiscovery.getThingTypeId(deviceFamily));
     }
 
     @ParameterizedTest

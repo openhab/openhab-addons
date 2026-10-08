@@ -14,6 +14,7 @@ package org.openhab.binding.gemini.internal.api;
 
 import static org.openhab.binding.gemini.internal.GeminiBindingConstants.DEFAULT_REQUEST_TIMEOUT;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +25,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -46,10 +49,13 @@ import org.openhab.binding.gemini.internal.api.dto.request.GeminiFunctionRespons
 import org.openhab.binding.gemini.internal.api.dto.request.GeminiGenerationConfig;
 import org.openhab.binding.gemini.internal.api.dto.request.GeminiRequest;
 import org.openhab.binding.gemini.internal.api.dto.request.GeminiSchema;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingConfig;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingLevel;
 import org.openhab.binding.gemini.internal.api.dto.request.GeminiTool;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiModel;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiModelsResponse;
 import org.openhab.binding.gemini.internal.api.dto.response.GeminiResponse;
+import org.openhab.binding.gemini.internal.api.dto.response.GeminiUsageMetadata;
 import org.openhab.core.voice.text.conversation.Conversation;
 import org.openhab.core.voice.text.interpreter.llm.LLMTool;
 import org.openhab.core.voice.text.interpreter.llm.LLMToolParam;
@@ -77,6 +83,7 @@ public class GeminiApiClient {
     private final HttpClient httpClient;
     private final String apiKey;
     private final ObjectMapper objectMapper;
+    private final Set<String> modelsNotSupportingThinkingLevel = ConcurrentHashMap.newKeySet();
 
     public GeminiApiClient(HttpClient httpClient, String apiKey) {
         this.httpClient = httpClient;
@@ -95,13 +102,14 @@ public class GeminiApiClient {
      * @param temperature the temperature config parameter
      * @param topP the topP config parameter
      * @param maxOutputTokens the maxOutputTokens config parameter
+     * @param thinkingLevel the thinking level config parameter
      * @param timeoutSeconds request timeout in seconds
      * @return the deserialized GeminiResponse
      * @throws GeminiApiException if a communication error, timeout, or parsing error occurs
      */
     public GeminiResponse sendPrompt(String model, String prompt, @Nullable String systemMessage,
             @Nullable Double temperature, @Nullable Double topP, @Nullable Integer maxOutputTokens,
-            @Nullable Integer timeoutSeconds) throws GeminiApiException {
+            @Nullable GeminiThinkingLevel thinkingLevel, @Nullable Integer timeoutSeconds) throws GeminiApiException {
         GeminiContent systemInstruction = createSystemInstruction(systemMessage);
 
         // Contents
@@ -109,7 +117,8 @@ public class GeminiApiClient {
         GeminiContent userContent = new GeminiContent(ROLE_USER, List.of(userPart));
 
         // Config
-        GeminiGenerationConfig genConfig = new GeminiGenerationConfig(maxOutputTokens, temperature, topP, null);
+        GeminiGenerationConfig genConfig = new GeminiGenerationConfig(maxOutputTokens, temperature, topP,
+                createThinkingConfig(thinkingLevel, model));
 
         GeminiRequest request = new GeminiRequest(List.of(userContent), systemInstruction, genConfig, null);
 
@@ -126,13 +135,15 @@ public class GeminiApiClient {
      * @param temperature the temperature config parameter
      * @param topP the topP config parameter
      * @param maxOutputTokens the maxOutputTokens config parameter
+     * @param thinkingLevel the thinking level config parameter
      * @param timeoutSeconds request timeout in seconds
      * @return the deserialized GeminiResponse
      * @throws GeminiApiException if a communication error, timeout, or parsing error occurs
      */
     public GeminiResponse sendPrompt(String model, List<Conversation.Message> history, Collection<LLMTool> tools,
             @Nullable String systemMessage, @Nullable Double temperature, @Nullable Double topP,
-            @Nullable Integer maxOutputTokens, @Nullable Integer timeoutSeconds) throws GeminiApiException {
+            @Nullable Integer maxOutputTokens, @Nullable GeminiThinkingLevel thinkingLevel,
+            @Nullable Integer timeoutSeconds) throws GeminiApiException {
         GeminiContent systemInstruction = createSystemInstruction(systemMessage);
 
         List<GeminiContent> contents = new ArrayList<>();
@@ -176,7 +187,7 @@ public class GeminiApiClient {
                 case TOOL_RETURN: {
                     GeminiFunctionCall call = pendingToolCalls.poll();
                     if (call == null) {
-                        logger.trace("skipping orphaned TOOL_RETURN");
+                        logger.trace("Skipping orphaned TOOL_RETURN");
                         break; // TOOL_RETURN without preceding TOOL_CALL - ignore
                     }
                     GeminiFunctionResponse fr = new GeminiFunctionResponse(call.name(), Map.of("result", msg.content()),
@@ -212,7 +223,7 @@ public class GeminiApiClient {
             if (isValidFirst) {
                 break;
             }
-            logger.trace("removing leading invalid content entry with role '{}'", first.role());
+            logger.trace("Removing leading invalid content entry with role '{}'", first.role());
             contents.removeFirst();
         }
 
@@ -247,11 +258,20 @@ public class GeminiApiClient {
             geminiTools = List.of(new GeminiTool(functions));
         }
 
-        GeminiGenerationConfig genConfig = new GeminiGenerationConfig(maxOutputTokens, temperature, topP, null);
+        GeminiGenerationConfig genConfig = new GeminiGenerationConfig(maxOutputTokens, temperature, topP,
+                createThinkingConfig(thinkingLevel, model));
 
         GeminiRequest request = new GeminiRequest(contents, systemInstruction, genConfig, geminiTools);
 
         return executeGenerateContentRequest(model, request, timeoutSeconds);
+    }
+
+    private @Nullable GeminiThinkingConfig createThinkingConfig(@Nullable GeminiThinkingLevel thinkingLevel,
+            String model) {
+        if (thinkingLevel == null || modelsNotSupportingThinkingLevel.contains(model)) {
+            return null;
+        }
+        return new GeminiThinkingConfig(null, null, thinkingLevel);
     }
 
     /**
@@ -301,6 +321,18 @@ public class GeminiApiClient {
             throw new GeminiApiException("Failed to serialize Gemini request: " + e.getMessage(), e);
         }
 
+        logger.debug("Request to {} (POST): payload size = {} bytes", url,
+                queryJson.getBytes(StandardCharsets.UTF_8).length);
+        if (logger.isTraceEnabled()) {
+            try {
+                String prettyRequest = objectMapper.writerWithDefaultPrettyPrinter()
+                        .writeValueAsString(objectMapper.readTree(queryJson));
+                logger.trace("Request payload to {} (POST):\n{}", url, prettyRequest);
+            } catch (IOException e) {
+                logger.trace("Request payload to {} (POST): {}", url, queryJson);
+            }
+        }
+
         int attemptCount = 1;
         while (true) {
             Request request = httpClient.newRequest(url).method(HttpMethod.POST)
@@ -308,48 +340,97 @@ public class GeminiApiClient {
                     .header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
                     .header(HEADER_API_KEY, apiKey)
                     .content(new StringContentProvider(queryJson, StandardCharsets.UTF_8));
-            if (logger.isDebugEnabled()) {
-                try {
-                    String prettyJson = objectMapper.writerWithDefaultPrettyPrinter()
-                            .writeValueAsString(requestPayload);
-                    logger.debug("Request to {} (attempt {}): \n{}", url, attemptCount, prettyJson);
-                } catch (JsonProcessingException e) {
-                    logger.debug("Request to {} (attempt {}): {}", url, attemptCount, queryJson);
-                }
-            }
 
             try {
-                ContentResponse response = request.send();
-                if (response.getStatus() == HttpStatus.OK_200) {
-                    String responseBody = response.getContentAsString();
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Response from {}: {}", url, responseBody);
-                    }
+                final ContentResponse response = request.send();
+                final int status = response.getStatus();
+                final String body = response.getContentAsString();
+
+                if (status == HttpStatus.OK_200) {
                     try {
                         @Nullable
-                        GeminiResponse geminiResponse = readNullableValue(responseBody, GeminiResponse.class);
+                        GeminiResponse geminiResponse = readNullableValue(body, GeminiResponse.class);
                         if (geminiResponse == null) {
                             throw new GeminiApiException("Failed to parse Gemini response: response was null");
+                        }
+                        GeminiUsageMetadata usage = geminiResponse.usageMetadata();
+                        if (usage != null) {
+                            logger.debug(
+                                    "Response from {} (POST): payload size = {} bytes, prompt tokens = {}, completion tokens = {}, total tokens = {}",
+                                    url, body.getBytes(StandardCharsets.UTF_8).length, usage.promptTokenCount(),
+                                    usage.candidatesTokenCount(), usage.totalTokenCount());
+                        } else {
+                            logger.debug("Response from {} (POST): payload size = {} bytes", url,
+                                    body.getBytes(StandardCharsets.UTF_8).length);
+                        }
+                        if (logger.isTraceEnabled()) {
+                            try {
+                                String prettyResponse = objectMapper.writerWithDefaultPrettyPrinter()
+                                        .writeValueAsString(objectMapper.readTree(body));
+                                logger.trace("Response payload from {} (POST):\n{}", url, prettyResponse);
+                            } catch (IOException e) {
+                                logger.trace("Response payload from {} (POST):\n{}", url, body);
+                            }
                         }
                         return geminiResponse;
                     } catch (JsonProcessingException e) {
                         throw new GeminiApiException("Failed to parse Gemini response: " + e.getMessage(), e);
                     }
-                } else if (response.getStatus() == HttpStatus.SERVICE_UNAVAILABLE_503 && attemptCount <= 3) {
-                    logger.debug("Gemini request failed with 503 Service Unavailable on attempt #{}/3", attemptCount);
-                    try {
-                        Thread.sleep(1000 * attemptCount);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        throw new GeminiApiException(
-                                "Interrupted while waiting to retry Gemini API request: " + e.getMessage(), e);
-                    }
-                    attemptCount++;
                 } else {
-                    logger.debug("Gemini request failed on the final attempt with HTTP {} {}: {}", response.getStatus(),
-                            response.getReason(), response.getContentAsString());
-                    throw new GeminiApiException("Gemini generateContent request resulted failed with  HTTP "
-                            + response.getStatus() + " " + response.getReason());
+                    final String errorBody = response.getContentAsString();
+                    logger.debug("Error response from {} (POST) on attempt {}: HTTP {} {}, payload size = {} bytes",
+                            url, attemptCount, status, response.getReason(),
+                            errorBody.getBytes(StandardCharsets.UTF_8).length);
+                    if (logger.isTraceEnabled()) {
+                        try {
+                            String prettyError = objectMapper.writerWithDefaultPrettyPrinter()
+                                    .writeValueAsString(objectMapper.readTree(errorBody));
+                            logger.trace("Error response payload from {} (POST):\n{}", url, prettyError);
+                        } catch (IOException e) {
+                            logger.trace("Error response payload from {} (POST):\n{}", url, errorBody);
+                        }
+                    }
+
+                    if (status == HttpStatus.SERVICE_UNAVAILABLE_503 && attemptCount <= 3) {
+                        logger.debug("Gemini request failed with 503 Service Unavailable on attempt #{}/3",
+                                attemptCount);
+                        try {
+                            Thread.sleep(1000 * attemptCount);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            throw new GeminiApiException(
+                                    "Interrupted while waiting to retry Gemini API request: " + e.getMessage(), e);
+                        }
+                        attemptCount++;
+                    } else if (status == HttpStatus.BAD_REQUEST_400
+                            && body.toLowerCase().contains("thinking level is not supported for this model.")) {
+                        logger.debug("Model {} doesn't support thinking level; caching and retrying without it", model);
+                        modelsNotSupportingThinkingLevel.add(model);
+                        GeminiGenerationConfig genConfig = requestPayload.generationConfig();
+                        if (genConfig != null && genConfig.thinkingConfig() != null) {
+                            GeminiGenerationConfig newGenConfig = new GeminiGenerationConfig(
+                                    genConfig.maxOutputTokens(), genConfig.temperature(), genConfig.topP(), null);
+                            GeminiRequest retryRequestPayload = new GeminiRequest(requestPayload.contents(),
+                                    requestPayload.systemInstruction(), newGenConfig, requestPayload.tools());
+                            return executeGenerateContentRequest(model, retryRequestPayload, timeoutSeconds);
+                        }
+                    } else if (status == HttpStatus.BAD_REQUEST_400
+                            && body.toLowerCase().contains("please retry with other thinking level")) {
+                        GeminiGenerationConfig genConfig = requestPayload.generationConfig();
+                        if (genConfig != null && genConfig.thinkingConfig() != null
+                                && genConfig.thinkingConfig().thinkingLevel() != null) {
+                            String thinkingLevel = genConfig.thinkingConfig().thinkingLevel().name().toLowerCase();
+                            logger.warn("Gemini request failed: Model {} doesn't support thinking level {}", model,
+                                    thinkingLevel);
+                            throw new GeminiApiException(
+                                    "Model " + model + " doesn't support thinking level " + thinkingLevel);
+                        }
+                    } else {
+                        logger.debug("Gemini request failed on the final attempt with HTTP {} {}: {}", status,
+                                response.getReason(), body);
+                        throw new GeminiApiException("Gemini generateContent request resulted failed with  HTTP "
+                                + status + " " + response.getReason());
+                    }
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -372,18 +453,20 @@ public class GeminiApiClient {
         Request request = httpClient.newRequest(modelsUrl)
                 .timeout(Objects.requireNonNullElse(timeoutSeconds, DEFAULT_REQUEST_TIMEOUT), TimeUnit.SECONDS)
                 .method(HttpMethod.GET).header(HEADER_API_KEY, apiKey);
-        logger.debug("Request to {}: (GET)", modelsUrl);
+        logger.debug("Request to {} (GET)", modelsUrl);
 
         try {
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.OK_200) {
-                String responseBody = response.getContentAsString();
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Response from {}: {}", modelsUrl, responseBody);
+                String body = response.getContentAsString();
+                logger.debug("Response from {} (GET): payload size = {} bytes", modelsUrl,
+                        body.getBytes(StandardCharsets.UTF_8).length);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Response payload from {} (GET):\n{}", modelsUrl, body);
                 }
                 try {
                     @Nullable
-                    GeminiModelsResponse modelsResponse = readNullableValue(responseBody, GeminiModelsResponse.class);
+                    GeminiModelsResponse modelsResponse = readNullableValue(body, GeminiModelsResponse.class);
                     if (modelsResponse == null) {
                         throw new GeminiApiException("Failed to parse models response DTO: response was null");
                     }
@@ -395,8 +478,20 @@ public class GeminiApiClient {
                     throw new GeminiApiException("Failed to parse models response DTO: " + e.getMessage(), e);
                 }
             } else {
+                String errorBody = response.getContentAsString();
+                logger.debug("Error response from {} (GET): HTTP {} {}, payload size = {} bytes", modelsUrl,
+                        response.getStatus(), response.getReason(), errorBody.getBytes(StandardCharsets.UTF_8).length);
+                if (logger.isTraceEnabled()) {
+                    try {
+                        String prettyError = objectMapper.writerWithDefaultPrettyPrinter()
+                                .writeValueAsString(objectMapper.readTree(errorBody));
+                        logger.trace("Error response payload from {} (GET):\n{}", modelsUrl, prettyError);
+                    } catch (IOException e) {
+                        logger.trace("Error response payload from {} (GET):\n{}", modelsUrl, errorBody);
+                    }
+                }
                 throw new GeminiApiException(
-                        "Gemini request for models resulted in HTTP status " + response.getStatus());
+                        "Fetching models failed with HTTP " + response.getStatus() + " " + response.getReason());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

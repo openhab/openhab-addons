@@ -74,6 +74,107 @@ Each channel of type `chat` takes the following configuration parameters:
 
 Channel configuration inherits from the [Thing configuration](#thing-configuration), except for `systemMessage`, which defaults to _You are a helpful assistant_.
 
+## Thing Actions
+
+The binding provides actions to interact with the OpenAI API-compatible service directly from rules.
+The first parameter when retrieving actions must always be `chatgpt` and the second must be the full Thing UID of the ChatGPT account.
+
+You can retrieve the actions as follows:
+
+:::: tabs
+
+::: tab DSL
+
+```java
+val chatgptActions = getActions("chatgpt", "chatgpt:account:1")
+```
+
+:::
+
+::: tab JS
+
+```javascript
+var chatgptActions = actions.thingActions("chatgpt", "chatgpt:account:1");
+```
+
+:::
+
+::::
+
+### Available Actions
+
+The `account` Thing provides the following actions:
+
+| Action Signature                                                                                                                                                     | Return Type | Description                                                                                                                                                                                    |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `sendMessage(String prompt)`                                                                                                                                         | `String`    | Sends a prompt to ChatGPT using the Thing's configured model and parameters, and returns the response text, or `null` if the request failed.                                                   |
+| `sendMessage(String prompt, String model)`                                                                                                                           | `String`    | Sends a prompt to ChatGPT using the specified model, falling back to default parameters, and returns the response text, or `null` if the request failed.                                       |
+| `sendMessage(String prompt, String model, String systemMessage, Double temperature, Double topP, Integer maxTokens, String reasoningEffort, Integer requestTimeout)` | `String`    | Sends a prompt with detailed generation settings (where null values fall back to [Thing configuration](#thing-configuration)), and returns the response text, or `null` if the request failed. |
+
+### Examples
+
+:::: tabs
+
+::: tab DSL
+
+```java
+val chatgptActions = getActions("chatgpt", "chatgpt:account:1")
+
+// 1. Simple sendMessage
+val response1 = chatgptActions.sendMessage("What is the capital of France?")
+logInfo("ChatGPT", "Response 1: " + response1)
+
+// 2. sendMessage with model override
+val response2 = chatgptActions.sendMessage("Write a poem about openHAB.", "gpt-4o-mini")
+logInfo("ChatGPT", "Response 2: " + response2)
+
+// 3. sendMessage with custom parameters (use null for default values)
+val response3 = chatgptActions.sendMessage(
+    "How does electricity work?",
+    "gpt-4o-mini",
+    "Explain it to a 5-year-old.", // system message
+    0.7,   // temperature
+    null,  // topP (default)
+    500,   // maxTokens
+    "low", // reasoningEffort
+    60     // requestTimeout
+)
+logInfo("ChatGPT", "Response 3: " + response3)
+```
+
+:::
+
+::: tab JS
+
+```javascript
+const chatgptActions = actions.thingActions("chatgpt", "chatgpt:account:1");
+
+// 1. Simple sendMessage
+const response1 = chatgptActions.sendMessage("What is the capital of France?");
+console.info("ChatGPT Response 1: " + response1);
+
+// 2. sendMessage with model override
+const response2 = chatgptActions.sendMessage("Write a poem about openHAB.", "gpt-4o-mini");
+console.info("ChatGPT Response 2: " + response2);
+
+// 3. sendMessage with custom parameters (use null for default values)
+const response3 = chatgptActions.sendMessage(
+    "How does electricity work?",
+    "gpt-4o-mini",
+    "Explain it to a 5-year-old.", // system message
+    0.7,   // temperature
+    null,  // topP (default)
+    500,   // maxTokens
+    "low", // reasoningEffort
+    60     // requestTimeout
+);
+console.info("ChatGPT Response 3: " + response3);
+```
+
+:::
+
+::::
+
 ## Human Language Interpreter
 
 An `account` Thing automatically registers a human language interpreter implementation with the ID `chatgpt:<thing-id>`, where `<thing-id>` is the ID of the Thing.

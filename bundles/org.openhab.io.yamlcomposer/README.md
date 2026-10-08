@@ -2,6 +2,7 @@
 children:
   - ["doc/basics", "YAML Basics"]
   - ["doc/variables", "Variables"]
+  - ["doc/dynamic-sources", "Dynamic Sources"]
   - ["doc/conditionals", "Conditionals"]
   - ["doc/loops", "Loops"]
   - ["doc/include", "Include"]
@@ -28,6 +29,7 @@ Each feature addresses a different kind of reuse, composition, or abstraction to
 | Feature                                    | Purpose                                                   | Typical Use                                                                                                    |
 |--------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
 | **Variables and Substitution (`${..}`)**   | Insert dynamic values or evaluate expressions             | Build labels, topics, IDs, or computed values                                                                  |
+| **Dynamic Sources**                        | Query live openHAB Things & Items                         | Auto-generate items from registered Things; react to enable/disable state changes                              |
 | **Conditionals (`!if`)**                   | Conditionally include or exclude YAML blocks              | Enable or disable features when using packages or template flags                                               |
 | **Loops (`!for`)**                         | Generate repeated YAML blocks from a list or map          | Create multiple items, channels, or thing definitions from structured data                                     |
 | **Include (`!include`)**                   | Insert the contents of another file                       | Reuse YAML across files; parameterize reusable blocks                                                          |
@@ -40,6 +42,7 @@ Each feature addresses a different kind of reuse, composition, or abstraction to
 Each feature has a dedicated documentation page:
 
 - [Variables and Substitution](doc/variables.md)
+- [Dynamic Sources](doc/dynamic-sources.md)
 - [Conditionals](doc/conditionals.md)
 - [Loops](doc/loops.md)
 - [Include](doc/include.md)
@@ -306,6 +309,16 @@ The resulting YAML contains:
 - all hidden keys removed
 
 This final compiled YAML is written to `OPENHAB_CONF/yaml/composed/`, where openHAB loads it as Things, Items, Metadata, and other configuration elements as defined by the Core YAML Configuration structure.
+
+## Output Formatting Options
+
+YAML Composer can be configured in openHAB settings (`io:yamlcomposer`) to customize the output structure of generated YAML files:
+
+| Configuration Option                              | Type              | Default | Description                                                                                                      |
+|---------------------------------------------------|-------------------|---------|------------------------------------------------------------------------------------------------------------------|
+| **Maximum Line Width** (`maxLineWidth`)           | Integer (min: 20) | `80`    | Maximum line length before text wrapping occurs in the output document.                                          |
+| **Split Long Lines** (`splitLines`)               | Boolean           | `true`  | When enabled, long string scalar lines exceeding the maximum line width are split across multiple lines.         |
+| **Section and Entity Spacing** (`sectionSpacing`) | Integer (min: 0)  | `1`     | Number of blank lines injected before top-level section keys and individual entities (`0` disables blank lines). |
 
 ## Hidden Keys
 

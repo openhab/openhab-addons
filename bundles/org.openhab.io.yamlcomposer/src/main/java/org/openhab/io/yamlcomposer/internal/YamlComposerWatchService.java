@@ -18,17 +18,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.service.WatchService;
 import org.openhab.core.service.WatchService.Kind;
+import org.openhab.io.yamlcomposer.internal.dynamic.DynamicSourceRegistry;
+import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +44,9 @@ import org.slf4j.LoggerFactory;
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true, service = YamlComposerWatchService.class)
+@Component(immediate = true, service = YamlComposerWatchService.class, configurationPid = "org.openhab.io.yamlcomposer", property = Constants.SERVICE_PID
+        + "=org.openhab.io.yamlcomposer")
+@ConfigurableService(category = "io", label = "YAML Composer", description_uri = "io:yamlcomposer")
 public class YamlComposerWatchService implements WatchService.WatchEventListener {
     private static final Path WATCHED_SOURCE_PATH = ComposerConfig.SOURCE_ROOT_DIRECTORY;
 
@@ -53,9 +60,20 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
     private final IncludeRegistry includeRegistry = new IncludeRegistry();
     private final WatchService watchService;
 
+    private volatile YamlComposerSettings settings = YamlComposerSettings.defaultConfig();
+    private final DynamicSourceRegistry dynamicSourceRegistry;
+
     @Activate
-    public YamlComposerWatchService(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
+    public YamlComposerWatchService( //
+            @Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService,
+            @Reference DynamicSourceRegistry dynamicSourceRegistry, //
+            Map<String, Object> config) {
         this.watchService = watchService;
+        this.dynamicSourceRegistry = dynamicSourceRegistry;
+        this.dynamicSourceRegistry.setOnFileRecompileListener(path -> processWatchEvent(Kind.MODIFY, path));
+        this.settings = YamlComposerSettings.fromMap(config);
+
+        logger.debug("YamlComposer settings: {}, config map: {}", this.settings, config);
 
         try {
             Path outputRoot = ComposerConfig.outputRoot();
@@ -67,7 +85,7 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
             if (brandNew) {
                 Files.writeString(outputRoot.resolve("readme.txt"), OUTPUT_ROOT_README);
             }
-            processDirectory(ComposerConfig.sourceRoot());
+            processDirectory(ComposerConfig.sourceRoot(), false);
         } catch (IOException e) {
             logger.warn("Cannot prepare yaml composer directories: {}", e.getMessage());
         }
@@ -79,10 +97,23 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
     public void deactivate() {
         watchService.unregisterListener(this);
         includeRegistry.clear();
+        dynamicSourceRegistry.clear();
+    }
+
+    @Modified
+    public void modified(Map<String, Object> config) {
+        this.settings = YamlComposerSettings.fromMap(config);
+        logger.info("YAML Composer settings updated, recompiling source files");
+        logger.debug("YamlComposer settings: {}, config map: {}", this.settings, config);
+        processDirectory(ComposerConfig.sourceRoot(), true);
     }
 
     @Override
-    public synchronized void processWatchEvent(Kind kind, Path fullPath) {
+    public void processWatchEvent(Kind kind, Path fullPath) {
+        processWatchEventInternal(kind, fullPath, false);
+    }
+
+    private synchronized void processWatchEventInternal(Kind kind, Path fullPath, boolean force) {
         Path sourcePath = fullPath;
         if (kind != Kind.DELETE && (Files.isDirectory(sourcePath) || !Files.isReadable(sourcePath))) {
             return;
@@ -103,6 +134,7 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
         }
 
         includeRegistry.removeMain(sourcePath);
+        dynamicSourceRegistry.unregisterFileSources(sourcePath);
 
         Path outputPath = ComposerConfig.resolveOutputPath(sourcePath);
         Path relativeSourcePath = ComposerConfig.configRoot().relativize(sourcePath);
@@ -120,19 +152,28 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
 
         try {
             Set<String> trackedEnvVars = new HashSet<>();
+            Path absSourcePath = sourcePath.toAbsolutePath().normalize();
+            Map<String, Map<String, Map<String, @Nullable Object>>> sourceMapCache = new HashMap<>();
 
-            Object yamlObject = YamlComposer.load(sourcePath,
-                    includePath -> includeRegistry.registerInclude(sourcePath, includePath), trackedEnvVars::add);
+            Object yamlObject = YamlComposer.load( //
+                    sourcePath, //
+                    includePath -> includeRegistry.registerInclude(sourcePath, includePath), //
+                    trackedEnvVars::add, //
+                    sourceName -> {
+                        if (dynamicSourceRegistry.supportsSource(sourceName)) {
+                            dynamicSourceRegistry.registerDependency(absSourcePath, sourceName);
+                            return sourceMapCache.computeIfAbsent(sourceName, dynamicSourceRegistry::getSourceMap);
+                        }
+                        return null;
+                    });
 
             if (yamlObject == null) {
                 logger.warn("YAML Composer produced no output when processing '{}'", relativeSourcePath);
                 return;
             }
 
-            Set<Path> includePaths = includeRegistry.getIncludesForMain(sourcePath);
-            if (isSourceModified(sourcePath, includePaths, outputPath)
-                    || ComposerUtils.isEnvironmentChanged(outputPath)) {
-                ComposerUtils.writeCompiledOutput(yamlObject, sourcePath, outputPath, trackedEnvVars);
+            if (ComposerUtils.writeCompiledOutput(yamlObject, sourcePath, outputPath, trackedEnvVars,
+                    settings.output())) {
                 logger.info("YAML Composer: {} -> {}", relativeSourcePath, relativeOutputPath);
             }
         } catch (IOException e) {
@@ -140,33 +181,7 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
         }
     }
 
-    private boolean isSourceModified(Path sourcePath, Set<Path> includePaths, Path outputPath) {
-        if (!Files.exists(outputPath)) {
-            return true;
-        }
-
-        try {
-            FileTime outputMtime = Files.getLastModifiedTime(outputPath);
-            FileTime sourceMtime = Files.getLastModifiedTime(sourcePath);
-            if (outputMtime.compareTo(sourceMtime) <= 0) {
-                return true;
-            }
-
-            for (Path includePath : includePaths) {
-                FileTime includeMtime = Files.getLastModifiedTime(includePath);
-                if (outputMtime.compareTo(includeMtime) <= 0) {
-                    return true;
-                }
-            }
-
-            return false;
-        } catch (IOException e) {
-            logger.debug("Failed to compare mtime for '{}' and '{}': {}", outputPath, sourcePath, e.getMessage());
-            return true;
-        }
-    }
-
-    private void processDirectory(Path sourceDirectory) {
+    private void processDirectory(Path sourceDirectory, boolean force) {
         try {
             Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<>() {
                 @Override
@@ -180,7 +195,7 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
                     String fileName = sourcePath.getFileName().toString();
 
                     if (YamlComposer.isYamlFile(fileName) && !YamlComposer.isIncludeFile(fileName)) {
-                        processWatchEvent(Kind.CREATE, sourcePath);
+                        processWatchEventInternal(Kind.CREATE, sourcePath, force);
                     }
 
                     return FileVisitResult.CONTINUE;

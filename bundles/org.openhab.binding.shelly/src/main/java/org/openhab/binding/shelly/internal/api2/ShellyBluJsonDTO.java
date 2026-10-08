@@ -127,6 +127,8 @@ public class ShellyBluJsonDTO {
         public @Nullable Double pressure;
         @SerializedName("Dewpoint") // WS90
         public @Nullable Double dewPoint;
+        @SerializedName("Voltage") // WS90 capacitor voltage (BTHome 0x0C)
+        public @Nullable Double capacitorVoltage;
         @SerializedName("Precipitation") // WS90
         public @Nullable Double precipitation;
         @JsonAdapter(DoubleArrayAdapter.class)

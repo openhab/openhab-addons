@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link OndiloBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class OndiloBindingConstants {

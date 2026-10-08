@@ -61,4 +61,6 @@ Export-Package:
 	--add-opens=java.base/java.util=ALL-UNNAMED,\
 	--add-opens=java.desktop/java.awt.font=ALL-UNNAMED,\
 	--add-opens=java.naming/javax.naming.spi=ALL-UNNAMED,\
-	--add-opens=java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED
+	--add-opens=java.rmi/sun.rmi.transport.tcp=ALL-UNNAMED,\
+	-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar,\
+	-Xshare:off

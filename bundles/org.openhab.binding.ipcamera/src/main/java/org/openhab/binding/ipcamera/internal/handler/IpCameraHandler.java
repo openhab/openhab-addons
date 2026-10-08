@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -61,6 +62,8 @@ import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegForm
 import org.openhab.binding.ipcamera.internal.IpCameraDynamicStateDescriptionProvider;
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.ReolinkHandler;
+import org.openhab.binding.ipcamera.internal.ReolinkPtz;
+import org.openhab.binding.ipcamera.internal.ReolinkStatus;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
 import org.openhab.binding.ipcamera.internal.servlet.CameraServlet;
 import org.openhab.core.OpenHAB;
@@ -75,8 +78,10 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -186,6 +191,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public String rtspUri = "";
     public boolean audioAlarmUpdateSnapshot = false;
     private boolean motionAlarmUpdateSnapshot = false;
+    private volatile long lastReolinkRelogin = 0;
     private AtomicBoolean isOnline = new AtomicBoolean(); // Used so only 1 error is logged when a network issue occurs.
     private boolean firstAudioAlarm = false;
     private boolean firstMotionAlarm = false;
@@ -197,6 +203,8 @@ public class IpCameraHandler extends BaseThingHandler {
     public boolean ffmpegSnapshotGeneration = false;
     public boolean snapshotPolling = false;
     public OnvifConnection onvifCamera = new OnvifConnection(this, "", "", "");
+    public final ReolinkPtz reolinkPtz = new ReolinkPtz(this);
+    public final ReolinkStatus reolinkStatus = new ReolinkStatus(this);
 
     // These methods handle the response from all camera brands, nothing specific to 1 brand.
     private class CommonCameraHandler extends ChannelDuplexHandler {
@@ -1074,6 +1082,35 @@ public class IpCameraHandler extends BaseThingHandler {
                         + cameraConfig.getUser() + "\", \"password\":\"" + cameraConfig.getPassword() + "\"}}}]");
     }
 
+    /**
+     * Releases a Reolink token that is no longer used, so that the camera or NVR does not run out of sessions.
+     *
+     * @param auth the "&token=..." part of the URL that was used with this token
+     */
+    public void logoutReolinkToken(String auth) {
+        if (auth.startsWith("&token=") && auth.length() > 7 && !"&token=null".equals(auth)) {
+            logger.debug("Logging out the previous Reolink token.");
+            sendHttpPOST("/api.cgi?cmd=Logout" + auth, "[{\"cmd\":\"Logout\",\"param\":{}}]");
+        }
+    }
+
+    /**
+     * Called when the camera answers a request made with the current token with "please login first". Requests a new
+     * token after a short delay instead of waiting for the next regular renewal, at most once per minute.
+     */
+    public void reolinkTokenRejected() {
+        if (!cameraConfig.useToken) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        if (now - lastReolinkRelogin < 60000) {
+            return;
+        }
+        lastReolinkRelogin = now;
+        logger.debug("The Reolink camera did not accept the token, requesting a new one.");
+        scheduleTask(this::getReolinkToken, 5000);
+    }
+
     public String returnValueFromString(String rawString, String searchedString) {
         String result = "";
         int index = rawString.indexOf(searchedString);
@@ -1112,6 +1149,66 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Re-adds channels of this thing type that were removed earlier, e.g. by a capability check.
+     */
+    public void addMissingChannels(List<String> channelIds) {
+        ThingHandlerCallback callback = getCallback();
+        if (callback == null) {
+            return;
+        }
+        ThingBuilder thingBuilder = editThing();
+        boolean changed = false;
+        for (String channelId : channelIds) {
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
+            if (getThing().getChannel(channelUID) == null) {
+                thingBuilder.withChannel(
+                        callback.createChannelBuilder(channelUID, new ChannelTypeUID(BINDING_ID, channelId)).build());
+                changed = true;
+            }
+        }
+        if (changed) {
+            updateThing(thingBuilder.build());
+        }
+    }
+
+    /**
+     * Adds a channel of the given type if the thing does not have it yet, e.g. for things created before the channel
+     * was introduced.
+     */
+    public void addMissingChannel(String channelId, ChannelTypeUID channelTypeUID) {
+        ThingHandlerCallback callback = getCallback();
+        ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
+        if (callback == null || getThing().getChannel(channelUID) != null) {
+            return;
+        }
+        updateThing(editThing().withChannel(callback.createChannelBuilder(channelUID, channelTypeUID).build()).build());
+    }
+
+    public boolean isChannelLinked(String channelId) {
+        return isLinked(channelId);
+    }
+
+    public void setThingProperty(String name, String value) {
+        updateProperty(name, value);
+    }
+
+    public @Nullable ScheduledFuture<?> scheduleTask(Runnable task, long delayMs) {
+        try {
+            return threadPool.schedule(task, delayMs, TimeUnit.MILLISECONDS);
+        } catch (RejectedExecutionException e) {
+            // the handler is being disposed
+            return null;
+        }
+    }
+
+    private boolean useReolinkApiPtz(String channelId) {
+        // NVRs and hubs may advertise an ONVIF PTZ service that does not work for the connected cameras,
+        // so the Reolink API is preferred whenever GetAbility reports PTZ for this channel.
+        return REOLINK_THING.equals(thing.getThingTypeUID().getId()) && ReolinkPtz.isPtzChannel(channelId)
+                && reolinkPtz.isSupported();
+    }
+
     public void removeChannels(List<org.openhab.core.thing.Channel> removeChannels) {
         if (!removeChannels.isEmpty()) {
             ThingBuilder thingBuilder = editThing();
@@ -1122,6 +1219,15 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (useReolinkApiPtz(channelUID.getId())) {
+            reolinkPtz.handleCommand(channelUID, command);
+            return;
+        }
+        if (REOLINK_THING.equals(thing.getThingTypeUID().getId())
+                && ReolinkStatus.isStatusChannel(channelUID.getId())) {
+            reolinkStatus.handleCommand(channelUID.getId(), command);
+            return;
+        }
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_PAN:
@@ -1618,6 +1724,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 } else {
                     onvifCamera.checkAndRenewEventSubscription();
                 }
+                reolinkStatus.onPollCycle();
                 break;
             case DAHUA_THING:
                 // Check for alarms, channel for NVRs appears not to work at filtering.
@@ -1883,6 +1990,14 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        // first, a movement is stopped with the token that is released below
+        reolinkPtz.dispose();
+        if (REOLINK_THING.equals(thing.getThingTypeUID().getId()) && cameraConfig.useToken) {
+            // best effort, the request is sent before the event loop shuts down gracefully
+            logoutReolinkToken(reolinkAuth);
+            reolinkAuth = "&token=null";
+        }
+        reolinkStatus.dispose();
         offline();
         CameraServlet localServlet = servlet;
         if (localServlet != null) {

@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.DescriptorClus
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OccupancySensingCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ThreadNetworkDiagnosticsCluster.NeighborTableStruct;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Message;
@@ -118,6 +120,50 @@ class MatterWebsocketClientTest {
         assertEquals("testAttribute", message.path.attributeName);
         assertEquals(1, message.version);
         assertEquals("testValue", message.value);
+    }
+
+    @Test
+    void testDeserializeListAttributeChangedMessageUsesElementType() {
+        String json = """
+                {
+                    "path": {
+                        "clusterId": 53,
+                        "attributeName": "neighborTable"
+                    },
+                    "version": 1,
+                    "value": [
+                        {
+                            "extAddress": "13706561541729176713",
+                            "rloc16": 29696,
+                            "lqi": 3,
+                            "isChild": false
+                        }
+                    ]
+                }
+                """;
+        AttributeChangedMessage message = client.getGson().fromJson(json, AttributeChangedMessage.class);
+        assertNotNull(message);
+        List<?> table = assertInstanceOf(List.class, message.value);
+        NeighborTableStruct neighbor = assertInstanceOf(NeighborTableStruct.class, table.get(0));
+        assertEquals(new BigInteger("13706561541729176713"), neighbor.extAddress);
+        assertEquals(29696, neighbor.rloc16);
+    }
+
+    @Test
+    void testDeserializeUint32AboveIntegerRange() {
+        String json = """
+                {
+                    "path": {
+                        "clusterId": 53,
+                        "attributeName": "partitionId"
+                    },
+                    "version": 1,
+                    "value": 3000000000
+                }
+                """;
+        AttributeChangedMessage message = client.getGson().fromJson(json, AttributeChangedMessage.class);
+        assertNotNull(message);
+        assertEquals(3_000_000_000L, message.value);
     }
 
     @Test

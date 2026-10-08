@@ -25,6 +25,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_TOGGLE;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_GETCONFIG;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLYRPC_METHOD_PM1_RESETCOUNTERS;
 
 import java.util.List;
 import java.util.Map;
@@ -185,6 +186,15 @@ public class Shelly2GetDeviceProfileTest {
     /** GetConfig with cb:0 present (Pro CB) */
     private static Shelly2GetConfigResult withCb0(Gson gson) {
         return parseConfig(gson, "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{}," + "\"cb:0\":{\"id\":0}}");
+    }
+
+    private static Shelly2GetConfigResult withCb0AndVoltmeters(Gson gson, int numVoltmeters) {
+        StringBuilder json = new StringBuilder(
+                "{\"sys\":{\"device\":{},\"location\":{}},\"wifi\":{},\"cb:0\":{\"id\":0}");
+        for (int i = 0; i < numVoltmeters; i++) {
+            json.append(",\"voltmeter:").append(i).append("\":{\"id\":").append(i).append("}");
+        }
+        return parseConfig(gson, json.append("}").toString());
     }
 
     /** GetConfig with rgbw:0 present (Plus RGBW PM, color-mode "rgbw" profile) */
@@ -357,6 +367,17 @@ public class Shelly2GetDeviceProfileTest {
         StubApiClient client = new StubApiClient(discoveryConfig(), withPm10(gson));
         ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
         assertThat(profile.numMeters, is(1));
+    }
+
+    @Test
+    void pm1OnlyDeviceHasMeterWithoutRelay() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withPm10(gson));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYPLUSPLUGPM, deviceInfo());
+        assertThat(profile.hasRelays, is(false));
+        assertThat(profile.numRelays, is(0));
+        assertThat(profile.numMeters, is(1));
+        assertThat(Shelly2ApiRpc.resetCountersMethod(profile), is(SHELLYRPC_METHOD_PM1_RESETCOUNTERS));
     }
 
     @Test
@@ -536,6 +557,26 @@ public class Shelly2GetDeviceProfileTest {
     }
 
     @Test
+    void discoveryCBWithThreeVoltmetersHasOneBreakerAndThreeMeters() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withCb0AndVoltmeters(gson, 3));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.numRelays, is(1));
+        assertThat(profile.numMeters, is(3));
+        assertThat(profile.getMeterGroup(0), is("meter1"));
+        assertThat(profile.getMeterGroup(2), is("meter3"));
+    }
+
+    @Test
+    void discoveryCBWithOneVoltmeterUsesUnnumberedMeterGroup() throws ShellyApiException {
+        Gson gson = new Gson();
+        StubApiClient client = new StubApiClient(discoveryConfig(), withCb0AndVoltmeters(gson, 1));
+        ShellyDeviceProfile profile = client.getDeviceProfile(THING_TYPE_SHELLYUNKNOWN, deviceInfo());
+        assertThat(profile.numMeters, is(1));
+        assertThat(profile.getMeterGroup(0), is("meter"));
+    }
+
+    @Test
     void discoveryDevInfoArgumentPopulatesProfileDevice() throws ShellyApiException {
         Gson gson = new Gson();
         StubApiClient client = new StubApiClient(discoveryConfig(), minimalConfig(gson));
@@ -657,6 +698,8 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(true));
         assertThat(Objects.requireNonNull(profile.settings.lights).size(), is(1));
+        assertThat(profile.numMeters, is(1));
+        assertThat(profile.getMeterGroup(0), is(CHANNEL_GROUP_METER));
     }
 
     @Test
@@ -667,6 +710,7 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(true));
         assertThat(Objects.requireNonNull(profile.settings.lights).size(), is(1));
+        assertThat(profile.numMeters, is(1));
     }
 
     @Test
@@ -677,6 +721,9 @@ public class Shelly2GetDeviceProfileTest {
         assertThat(profile.isRGBW2, is(true));
         assertThat(profile.inColor, is(false));
         assertThat(Objects.requireNonNull(profile.settings.lights).size(), is(4));
+        assertThat(profile.numMeters, is(4));
+        assertThat(profile.getMeterGroup(0), is(CHANNEL_GROUP_METER + "1"));
+        assertThat(profile.getMeterGroup(3), is(CHANNEL_GROUP_METER + "4"));
     }
 
     @Test

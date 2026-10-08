@@ -204,6 +204,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_COLOR_BRIGHTNESS = "brightness";
     public static final String SHELLY_COLOR_TEMP = "temp";
     public static final String SHELLY_COLOR_EFFECT = "effect";
+    public static final String SHELLY_COLOR_UNDEFINED = "undefined";
 
     public static final int SHELLY_MIN_ROLLER_POS = 0;
     public static final int SHELLY_MAX_ROLLER_POS = 100;
@@ -1254,6 +1255,7 @@ public class Shelly1ApiJsonDTO {
         public @Nullable String windDirectionStr;
         public @Nullable Double apparentTemp;
         public @Nullable Double seaLevelPressure;
+        public @Nullable Double capacitorVoltage;
     }
 
     public static class ShellySettingsSmoke {
@@ -1343,6 +1345,8 @@ public class Shelly1ApiJsonDTO {
         public Integer brightness; // brightness, 0..100, applies in mode="white"
         public Integer effect; // Currently applied effect, description: 0: Off, 1: Meteor Shower, 2: Gradual
                                // Change, 3: Breath,
+
+        public String mode;
     }
 
     public static class ShellyStatusLight {

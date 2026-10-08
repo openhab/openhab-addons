@@ -21,6 +21,7 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.chatgpt.internal.action.ChatGPTActions;
 import org.openhab.binding.chatgpt.internal.api.ChatGPTApiClient;
 import org.openhab.binding.chatgpt.internal.api.ChatGPTApiException;
 import org.openhab.binding.chatgpt.internal.api.dto.ChatMessage;
@@ -176,7 +177,7 @@ public class ChatGPTHandler extends BaseThingHandler {
         if (channel != null) {
             ChatGPTChannelConfiguration channelConfig = channel.getConfiguration()
                     .as(ChatGPTChannelConfiguration.class);
-            if (channelConfig.requestTimeout != null) {
+            if (channelConfig.requestTimeout != null && isValidTimeout(channelConfig.requestTimeout)) {
                 return channelConfig.requestTimeout;
             }
         }
@@ -268,10 +269,10 @@ public class ChatGPTHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(ChatGPTModelOptionProvider.class, ChatGPTHLIService.class);
+        return List.of(ChatGPTModelOptionProvider.class, ChatGPTActions.class, ChatGPTHLIService.class);
     }
 
-    boolean isValidTimeout(@Nullable Integer timeout) {
+    public static boolean isValidTimeout(@Nullable Integer timeout) {
         return timeout == null || timeout > 0;
     }
 }

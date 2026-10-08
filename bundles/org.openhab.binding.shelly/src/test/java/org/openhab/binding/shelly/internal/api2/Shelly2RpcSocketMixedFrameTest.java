@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,6 @@ import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@NonNullByDefault({})
 class Shelly2RpcSocketMixedFrameTest {
 
     private @Mock ShellyThingTable thingTable;

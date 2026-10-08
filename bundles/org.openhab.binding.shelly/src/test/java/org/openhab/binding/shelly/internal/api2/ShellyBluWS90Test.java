@@ -42,6 +42,7 @@ public class ShellyBluWS90Test {
               "Pressure": 1013.25,
               "Dewpoint": 12.5,
               "Precipitation": 2.1,
+              "Voltage": 3.284,
               "Battery": 90,
               "Temperature": [21.5],
               "Humidity": 65.0,
@@ -68,6 +69,7 @@ public class ShellyBluWS90Test {
         assertThat("pressure", data.pressure, is(equalTo(1013.25)));
         assertThat("dewPoint", data.dewPoint, is(equalTo(12.5)));
         assertThat("precipitation", data.precipitation, is(equalTo(2.1)));
+        assertThat("capacitorVoltage", data.capacitorVoltage, is(equalTo(3.284)));
         assertThat("battery", data.battery, is(equalTo(90)));
         assertThat("humidity", data.humidity, is(equalTo(65.0)));
         assertThat("addr", data.addr, is(equalTo("aa:bb:cc:dd:ee:ff")));
@@ -114,6 +116,16 @@ public class ShellyBluWS90Test {
         assertThat("temperatures should be null for wind-only packet", data.temperatures, is(nullValue()));
         assertThat("humidity should be null for wind-only packet", data.humidity, is(nullValue()));
         assertThat("pressure should be null for wind-only packet", data.pressure, is(nullValue()));
+    }
+
+    @Test
+    void ws90PacketWithoutVoltageDeserializesCapacitorVoltageAsNull() {
+        String json = """
+                {"Temperature": [18.0], "addr": "aa:bb:cc:dd:ee:ff"}
+                """;
+        Shelly2NotifyBluEventData data = Objects.requireNonNull(GSON.fromJson(json, Shelly2NotifyBluEventData.class));
+
+        assertThat("capacitorVoltage should be null when Voltage key absent", data.capacitorVoltage, is(nullValue()));
     }
 
     @Test

@@ -17,13 +17,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.toQuantityType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,15 +48,17 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceS
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DaliScanStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2DaliStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2Energy;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingRuntimeConfig;
+import org.openhab.binding.shelly.internal.handler.ShellyTestLightHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.unit.Units;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.net.NetworkAddressChangeListener;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Thing;
@@ -171,6 +173,29 @@ public class Shelly2ApiClientLightStatusTest {
         profile.isRGBW2 = true;
         profile.inColor = SHELLY2_PROFILE_RGB.equals(rawProfile) || SHELLY2_PROFILE_RGBW.equals(rawProfile)
                 || SHELLY2_PROFILE_RGBCCT.equals(rawProfile) || SHELLY2_PROFILE_RGBX2LIGHT.equals(rawProfile);
+        profile.device.profile = rawProfile;
+        profile.numMeters = numMeters;
+        ShellySettingsStatus status = profile.status;
+        ArrayList<ShellySettingsLight> lights = new ArrayList<>();
+        ArrayList<ShellySettingsRgbwLight> settingsLights = new ArrayList<>();
+        for (int i = 0; i < numLights; i++) {
+            lights.add(new ShellySettingsLight());
+            settingsLights.add(new ShellySettingsRgbwLight());
+        }
+        status.lights = lights;
+        profile.settings.lights = settingsLights;
+        ArrayList<ShellySettingsEMeter> emeters = new ArrayList<>();
+        for (int i = 0; i < numMeters; i++) {
+            emeters.add(new ShellySettingsEMeter());
+        }
+        status.emeters = emeters;
+        return profile;
+    }
+
+    private ShellyDeviceProfile plusRgbwPmProfile(String rawProfile, int numLights, int numMeters) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(new ThingTypeUID("shelly", "shellyplusrgbwpm"));
+        profile.isRGBW2 = true;
+        profile.inColor = SHELLY2_PROFILE_RGB.equals(rawProfile) || SHELLY2_PROFILE_RGBW.equals(rawProfile);
         profile.device.profile = rawProfile;
         profile.numMeters = numMeters;
         ShellySettingsStatus status = profile.status;
@@ -343,10 +368,15 @@ public class Shelly2ApiClientLightStatusTest {
 
     @Test
     void lightModeStatusPushesChannelUpdatesWhenRequested() throws ShellyApiException {
-        ShellyDeviceProfile profile = lightModeProfile(2);
-        Shelly2ApiClient client = newClient(profile);
-        when(thing.areChannelsCreated()).thenReturn(true);
-        when(thing.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(true);
+        ThingTypeUID thingTypeUID = new ThingTypeUID("shelly", "shellyplusrgbwpm");
+        ShellyDeviceProfile profile = proRgbwwPmProfile(SHELLY2_PROFILE_LIGHT, 2, 1);
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(thingTypeUID);
+        profile.device.profile = SHELLY2_PROFILE_LIGHT;
+        handler.setProfile(profile);
+        handler.addLightModel(1, thingTypeUID, profile, 10.0);
+        handler.addLightModel(2, thingTypeUID, profile, 10.0);
+
+        Shelly2ApiClient client = new Shelly2ApiClient("test", discoveryConfig(), handler);
 
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.light0 = lightStatus(0, true, 55.0);
@@ -354,26 +384,32 @@ public class Shelly2ApiClientLightStatusTest {
         boolean updated = client.fillDeviceStatus(profile.status, result, true);
 
         assertThat(updated, is(true));
-        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_BRIGHTNESS + "$Value",
-                toQuantityType(55.0, DIGITS_NONE, Units.PERCENT));
-        verify(thing, never()).updateChannel(CHANNEL_GROUP_LIGHT_INDEX + "1", CHANNEL_LIGHT_POWER, OnOffType.ON);
+        assertThat(handler.getChannelUpdates().get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_BRIGHTNESS),
+                is(new PercentType(55)));
+        assertThat(handler.getChannelUpdates().get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_LIGHT_POWER),
+                is(nullValue()));
     }
 
     @Test
     void lightModeStatusSignalsWatchdogEvenWhenNoChannelChanged() throws ShellyApiException {
-        ShellyDeviceProfile profile = lightModeProfile(1);
-        Shelly2ApiClient client = newClient(profile);
-        when(thing.areChannelsCreated()).thenReturn(true);
-        when(thing.updateChannel(anyString(), anyString(), any(State.class))).thenReturn(false);
+        ThingTypeUID thingTypeUID = new ThingTypeUID("shelly", "shellyplusrgbwpm");
+        ShellyDeviceProfile profile = proRgbwwPmProfile(SHELLY2_PROFILE_LIGHT, 1, 1);
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(thingTypeUID);
+        handler.setProfile(profile);
+        handler.addLightModel(1, thingTypeUID, profile, 10.0);
+
+        Shelly2ApiClient client = new Shelly2ApiClient("test", discoveryConfig(), handler);
 
         Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
         result.light0 = lightStatus(0, true, 55.0);
 
         boolean updated = client.fillDeviceStatus(profile.status, result, true);
 
+        // updateLightModeStatus always signals "processed" for watchdog purposes, independent of
+        // whether the channel push itself (verified below) reports a changed value.
         assertThat(updated, is(true));
-        verify(thing).updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS + "$Value",
-                toQuantityType(55.0, DIGITS_NONE, Units.PERCENT));
+        assertThat(handler.getChannelUpdates().get(CHANNEL_GROUP_LIGHT_INDEX + "1#" + CHANNEL_BRIGHTNESS),
+                is(new PercentType(55)));
     }
 
     @Test
@@ -505,6 +541,42 @@ public class Shelly2ApiClientLightStatusTest {
         List<ShellySettingsEMeter> emeters = profile.status.emeters;
         assertThat(emeters.get(0).power, is(20.0));
         assertThat(emeters.get(0).total, is(200.0));
+    }
+
+    @Test
+    void plusRgbwPmColorModePopulatesMeterSlotForRgbwComponent() throws ShellyApiException {
+        ShellyDeviceProfile profile = plusRgbwPmProfile(SHELLY2_PROFILE_RGBW, 1, 1);
+        Shelly2ApiClient client = newClient(profile);
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.rgbw0 = rgbwStatusWithMeter(18.0, 180.0, 230.0, 0.09);
+
+        client.fillDeviceStatus(profile.status, result, false);
+
+        List<ShellySettingsEMeter> emeters = profile.status.emeters;
+        assertThat(emeters.get(0).power, is(18.0));
+        assertThat(emeters.get(0).total, is(180.0));
+    }
+
+    @Test
+    void plusRgbwPmLightProfilePopulatesMeterSlotForEachChannel() throws ShellyApiException {
+        ShellyDeviceProfile profile = plusRgbwPmProfile(SHELLY2_PROFILE_LIGHT, 4, 4);
+        Shelly2ApiClient client = newClient(profile);
+
+        Shelly2DeviceStatusResult result = new Shelly2DeviceStatusResult();
+        result.light0 = lightStatusWithMeter(0, 3.0, 30.0, 228.0, 0.01);
+        result.light1 = lightStatusWithMeter(1, 4.0, 40.0, 228.0, 0.02);
+        result.light2 = lightStatusWithMeter(2, 5.0, 50.0, 228.0, 0.03);
+        result.light3 = lightStatusWithMeter(3, 6.0, 60.0, 228.0, 0.04);
+
+        client.fillDeviceStatus(profile.status, result, false);
+
+        List<ShellySettingsEMeter> emeters = profile.status.emeters;
+        assertThat(emeters.get(0).power, is(3.0));
+        assertThat(emeters.get(1).power, is(4.0));
+        assertThat(emeters.get(2).power, is(5.0));
+        assertThat(emeters.get(3).power, is(6.0));
+        assertThat(emeters.get(3).total, is(60.0));
     }
 
     @Test

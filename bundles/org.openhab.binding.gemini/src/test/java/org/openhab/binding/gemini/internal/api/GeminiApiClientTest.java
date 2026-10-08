@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,6 +41,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.openhab.binding.gemini.internal.api.dto.request.GeminiThinkingLevel;
 import org.openhab.core.voice.text.conversation.Conversation;
 import org.openhab.core.voice.text.conversation.ConversationRole;
 
@@ -64,6 +66,10 @@ public class GeminiApiClientTest {
     private static final String PROMPT = "Which lamps in the living room are on?";
     private static final String RESPONSE_JSON = """
             {"candidates":[{"content":{"role":"model","parts":[{"text":"Lamp1 is on."}]}}]}""";
+    private static final String THINKING_LEVEL_NOT_SUPPORTED_ERROR_JSON = """
+            {"error":{"code":400,"message":"Thinking level is not supported for this model.","status":"INVALID_ARGUMENT"}}""";
+    private static final String INVALID_THINKING_LEVEL_ERROR_JSON = """
+            {"error": {"code": 400,"message": "Thinking level MINIMAL is not supported for this model. Please retry with other thinking level.","status": "INVALID_ARGUMENT"}}""";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -110,7 +116,7 @@ public class GeminiApiClientTest {
                 new Conversation.Message(4, ConversationRole.TOOL_CALL, call2.toJson()),
                 new Conversation.Message(5, ConversationRole.TOOL_RETURN, "Lamp2 is OFF"));
 
-        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null);
+        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null, null);
 
         JsonNode contents = captureRequestBody().get("contents");
         // one user turn, one model turn with both calls, one user turn with both responses - a split
@@ -169,7 +175,7 @@ public class GeminiApiClientTest {
                 new Conversation.Message(2, ConversationRole.TOOL_CALL, call.toJson()),
                 new Conversation.Message(3, ConversationRole.TOOL_RETURN, "Lamp1 is ON"));
 
-        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null);
+        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null, null);
 
         JsonNode contents = captureRequestBody().get("contents");
         assertEquals(3, contents.size());
@@ -207,7 +213,7 @@ public class GeminiApiClientTest {
                 new Conversation.Message(4, ConversationRole.TOOL_CALL, call2.toJson()),
                 new Conversation.Message(5, ConversationRole.TOOL_RETURN, "Lamp2 is OFF"));
 
-        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null);
+        apiClient.sendPrompt(MODEL, history, List.of(), null, null, null, null, null, null);
 
         JsonNode contents = captureRequestBody().get("contents");
         assertEquals(5, contents.size());
@@ -228,6 +234,60 @@ public class GeminiApiClientTest {
         assertEquals(1, contents.get(4).get("parts").size());
         assertEquals("Lamp2 is OFF",
                 contents.get(4).get("parts").get(0).get("functionResponse").get("response").get("result").asText());
+    }
+
+    @Test
+    public void thinkingLevelNotSupportedRetriesWithoutThinkingConfigAndCaches() throws Exception {
+        ContentResponse errorResponse = typedMock(ContentResponse.class);
+        when(errorResponse.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
+        when(errorResponse.getContentAsString()).thenReturn(THINKING_LEVEL_NOT_SUPPORTED_ERROR_JSON);
+
+        ContentResponse successResponse = typedMock(ContentResponse.class);
+        when(successResponse.getStatus()).thenReturn(HttpStatus.OK_200);
+        when(successResponse.getContentAsString()).thenReturn(RESPONSE_JSON);
+
+        // Request with thinking level but model doesn't support it => error response
+        // expected to retry without thinking level => success response
+        when(request.send()).thenReturn(errorResponse).thenReturn(successResponse);
+        apiClient.sendPrompt(MODEL, PROMPT, null, null, null, null, GeminiThinkingLevel.LOW, null);
+
+        // Request with thinking level => API client removes thinking level => success response
+        when(request.send()).thenReturn(successResponse);
+        apiClient.sendPrompt(MODEL, PROMPT, null, null, null, null, GeminiThinkingLevel.LOW, null);
+
+        // Request for different model => success response
+        when(request.send()).thenReturn(successResponse);
+        apiClient.sendPrompt(MODEL + "-v2", PROMPT, null, null, null, null, GeminiThinkingLevel.MEDIUM, null);
+
+        ArgumentCaptor<ContentProvider> captor = ArgumentCaptor.forClass(ContentProvider.class);
+        verify(request, times(4)).content(captor.capture());
+
+        List<ContentProvider> providers = captor.getAllValues();
+        assertEquals(4, providers.size());
+
+        // First request payload should have thinkingConfig
+        JsonNode firstRoot = parseContentProvider(providers.get(0));
+        assertTrue(firstRoot.get("generationConfig").has("thinkingConfig"));
+
+        // Second (retry) request payload should NOT have thinkingConfig
+        JsonNode secondRoot = parseContentProvider(providers.get(1));
+        assertFalse(secondRoot.get("generationConfig").has("thinkingConfig"));
+
+        // Third request payload (subsequent call for cached model) should NOT have thinkingConfig
+        JsonNode thirdRoot = parseContentProvider(providers.get(2));
+        assertFalse(thirdRoot.get("generationConfig").has("thinkingConfig"));
+
+        // Fourth request payload for same model, but different thinking level should have thinkingConfig
+        JsonNode fourthRoot = parseContentProvider(providers.get(3));
+        assertTrue(fourthRoot.get("generationConfig").has("thinkingConfig"));
+    }
+
+    private JsonNode parseContentProvider(ContentProvider provider) throws Exception {
+        StringBuilder body = new StringBuilder();
+        for (ByteBuffer buffer : Objects.requireNonNull(provider)) {
+            body.append(StandardCharsets.UTF_8.decode(buffer));
+        }
+        return objectMapper.readTree(body.toString());
     }
 
     private JsonNode captureRequestBody() throws Exception {

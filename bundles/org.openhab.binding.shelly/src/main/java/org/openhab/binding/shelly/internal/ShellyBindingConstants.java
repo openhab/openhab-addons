@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link ShellyBindingConstants} class defines common constants, which are
@@ -211,6 +212,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_GROUP_BATTERY = "battery";
     public static final String CHANNEL_SENSOR_BAT_LEVEL = "batteryLevel";
     public static final String CHANNEL_SENSOR_BAT_LOW = "lowBattery";
+    public static final String CHANNEL_SENSOR_CAPACITOR_VOLTAGE = "capacitorVoltage"; // BLU Weather
 
     public static final String CHANNEL_GROUP_LIGHT_CONTROL = "control";
     public static final String CHANNEL_LIGHT_COLOR_MODE = "mode";
@@ -232,7 +234,18 @@ public class ShellyBindingConstants {
 
     // Bulb/RGBW2/Dup in White Mode
     public static final String CHANNEL_GROUP_WHITE_CONTROL = "white";
+    public static final String CHANNEL_COLOR_TEMP_PCT = "temperature-pct";
     public static final String CHANNEL_COLOR_TEMP = "temperature";
+
+    // full channel names
+    public static final String CHAN_FULL_CONTROL_POWER = CHANNEL_GROUP_LIGHT_CONTROL + "#" + CHANNEL_LIGHT_POWER;
+    public static final String CHAN_FULL_CONTROL_BRIGHT = CHANNEL_GROUP_LIGHT_CONTROL + "#" + CHANNEL_BRIGHTNESS;
+    public static final String CHAN_FULL_PRIMARY_COLOR = CHANNEL_GROUP_COLOR_CONTROL + "#" + CHANNEL_COLOR_PICKER;
+    public static final String CHAN_FULL_WHITE_BRIGHT = CHANNEL_GROUP_WHITE_CONTROL + "#" + CHANNEL_BRIGHTNESS;
+
+    // advanced channel types
+    public static final ChannelTypeUID TYPE_UID_ADV_POWER = new ChannelTypeUID(BINDING_ID, "powerAdvanced");
+    public static final ChannelTypeUID TYPE_UID_ADV_BRIGHT = new ChannelTypeUID(BINDING_ID, "brightnessAdvanced");
 
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";
@@ -339,6 +352,7 @@ public class ShellyBindingConstants {
     public static final int DIGITS_VAR = 2;
     public static final int DIGITS_KWH = 3;
     public static final int DIGITS_VOLT = 2;
+    public static final int DIGITS_VOLT_PRECISE = 3;
     public static final int DIGITS_AMPERE = 3;
     public static final int DIGITS_FREQUENCY = 2;
     public static final int DIGITS_TEMP = 1;

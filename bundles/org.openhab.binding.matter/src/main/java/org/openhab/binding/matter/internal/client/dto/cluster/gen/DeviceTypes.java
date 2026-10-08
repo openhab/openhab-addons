@@ -480,7 +480,7 @@ public class DeviceTypes {
      * 15.3.6, "Other Requirements" and within the clusters mandated by this device type.
      * A Network Infrastructure Manager device may be managed by a service associated with the device vendor, for
      * example, an Internet Service Provider. Sometimes this managing service will have policies that require the use of
-     * the Managed Device feature of the Access Control Cluster (see Section 15.3.5.1, "ManagedAclAllowed Condition").
+     * the Managed Device feature of the Access Control Cluster (see Section 15.3.4.1, "ManagedAclAllowed Condition").
      * Consequently, Commissioners of this device type should be aware of this feature and its use.
      **/
     public static final Integer NETWORK_INFRASTRUCTURE_MANAGER = 144;

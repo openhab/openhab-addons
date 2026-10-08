@@ -269,9 +269,14 @@ public class OccupancySensingCluster extends BaseCluster {
          * Supports sensing based on analyzing images
          */
         public boolean vision;
+        /**
+         * 
+         * Supports generating OccupancyChanged events
+         */
+        public boolean occupancyEvent;
 
         public FeatureMap(boolean other, boolean passiveInfrared, boolean ultrasonic, boolean physicalContact,
-                boolean activeInfrared, boolean radar, boolean rfSensing, boolean vision) {
+                boolean activeInfrared, boolean radar, boolean rfSensing, boolean vision, boolean occupancyEvent) {
             this.other = other;
             this.passiveInfrared = passiveInfrared;
             this.ultrasonic = ultrasonic;
@@ -280,6 +285,7 @@ public class OccupancySensingCluster extends BaseCluster {
             this.radar = radar;
             this.rfSensing = rfSensing;
             this.vision = vision;
+            this.occupancyEvent = occupancyEvent;
         }
     }
 

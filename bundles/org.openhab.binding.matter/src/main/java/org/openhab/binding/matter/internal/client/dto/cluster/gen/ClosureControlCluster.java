@@ -58,7 +58,7 @@ public class ClosureControlCluster extends BaseCluster {
      * As this attribute is not being reported during a regular countdown, clients SHOULD NOT rely on the reporting of
      * this attribute in order to keep track of the remaining duration.
      */
-    public Integer countdownTime; // 0 elapsed-s R V
+    public Long countdownTime; // 0 elapsed-s R V
     /**
      * Indicates the current operational state of the closure associated with the server.
      * > [!NOTE]

@@ -139,7 +139,7 @@ public class ShellyChannelMigrationTest {
         ShellySettingsEMeter emeter = new ShellySettingsEMeter();
         emeter.energyByMinute = new Double[] { 50.0, 75.0, 100.0 };
 
-        Map<String, Channel> created = ShellyChannelDefinitions.createEMeterChannels(thing, profile, emeter,
+        Map<String, Channel> created = ShellyChannelDefinitions.createEMeterChannels(thing, profile, emeter, 0,
                 CHANNEL_GROUP_METER);
 
         assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_LASTMIN1)));
@@ -175,7 +175,7 @@ public class ShellyChannelMigrationTest {
         emeter.totalReturned = 5.0;
         emeter.reactive = 1.0;
 
-        Map<String, Channel> created = ShellyChannelDefinitions.createEMeterChannels(thing, profile, emeter,
+        Map<String, Channel> created = ShellyChannelDefinitions.createEMeterChannels(thing, profile, emeter, 0,
                 CHANNEL_GROUP_METER);
 
         assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTWATTS)));
@@ -186,6 +186,23 @@ public class ShellyChannelMigrationTest {
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_TOTALENERGY)));
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_RETURNEDENERGY)));
         assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_REACTPOWER)));
+    }
+
+    @Test
+    void createEMeterChannelsOmitsResetTotalForDuoBulbG3() {
+        // Duo/Multicolor Bulb G3 meter on CCT/RGBCCT components, which have no ResetCounters RPC
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID("shelly", "shellyplusduobulb", "test"));
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUSDUOBULB);
+        ShellySettingsEMeter emeter = new ShellySettingsEMeter();
+        emeter.power = 5.5;
+        emeter.total = 60.0;
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createEMeterChannels(thing, profile, emeter, 0,
+                CHANNEL_GROUP_METER);
+
+        assertTrue(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_METER_CURRENTPOWER)));
+        assertFalse(created.containsKey(mkChannelId(CHANNEL_GROUP_METER, CHANNEL_EMETER_RESETTOTAL)));
     }
 
     @Test
