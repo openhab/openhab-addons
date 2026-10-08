@@ -23,7 +23,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 
 /**
@@ -49,8 +48,6 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
     void setLedStatus(String ledName, boolean value) throws ShellyApiException;
 
     void setSleepTime(int value) throws ShellyApiException;
-
-    ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException;
 
     void setRelayTurn(int id, String turnMode) throws ShellyApiException;
 

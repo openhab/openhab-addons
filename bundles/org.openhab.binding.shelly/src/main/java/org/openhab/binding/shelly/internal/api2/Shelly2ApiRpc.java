@@ -59,7 +59,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLightStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
@@ -630,15 +629,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 case SHELLY2_EVENT_LPUSH:
                 case SHELLY2_EVENT_SLPUSH:
                 case SHELLY2_EVENT_LSPUSH:
-                    List<ShellyInputState> inputs = relayStatus.inputs;
-                    if (id < profile.numInputs && id < inputs.size()) {
-                        ShellyInputState input = inputs.get(id);
+                    List<@Nullable ShellyInputState> inputs = profile.status.inputs;
+                    ShellyInputState input = inputs != null && id < profile.numInputs && id < inputs.size()
+                            ? inputs.get(id)
+                            : null;
+                    if (input != null) {
                         input.event = getString(MAP_INPUT_EVENT_TYPE.get(event));
                         input.eventCount = getInteger(input.eventCount) + 1;
-                        List<@Nullable ShellyInputState> statusInputs = profile.status.inputs;
-                        if (statusInputs != null && id < statusInputs.size()) {
-                            statusInputs.set(id, input);
-                        }
 
                         String group = getProfile().getInputGroup(id);
                         updateChannel(group, CHANNEL_STATUS_EVENTTYPE + profile.getInputSuffix(id),
@@ -889,15 +886,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void setSleepTime(int value) throws ShellyApiException {
-    }
-
-    @Override
-    public ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException {
-        if (getProfile().status.wifiSta.ssid == null) {
-            // Update status when not yet initialized
-            getStatus();
-        }
-        return relayStatus;
     }
 
     @Override
