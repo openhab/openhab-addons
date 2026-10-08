@@ -5,6 +5,15 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="bridge-type:awattar:bridge">
+		<parameter name="provider" type="text" pattern="awattar|energy-charts">
+			<label>Price API</label>
+			<description>API to use for market prices. Energy-Charts provides 15-minute data where available.</description>
+			<default>awattar</default>
+			<options>
+				<option value="awattar">aWATTar</option>
+				<option value="energy-charts">Energy-Charts</option>
+			</options>
+		</parameter>
 		<parameter name="country" type="text" pattern="DE|AT">
 			<label>Country</label>
 			<default>DE</default>
@@ -42,9 +51,9 @@
 			<description>Duration of bestprice candidate range</description>
 			<default>24</default>
 		</parameter>
-		<parameter name="length" type="integer" min="1" max="23">
+		<parameter name="length" type="integer" min="1">
 			<label>Length</label>
-			<description>The number of hours the bestprice period should last</description>
+			<description>Number of API price intervals in the bestprice period</description>
 			<default>1</default>
 		</parameter>
 		<parameter name="consecutive" type="boolean">

@@ -10,20 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.awattar.internal;
+package org.openhab.binding.awattar.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Stores the bridge configuration
+ * Common checked exception for market price API failures.
  *
- * @author Wolfgang Klimt - initial contribution
+ * @author Thomas Leber - Initial contribution
  */
 @NonNullByDefault
-public class AwattarBridgeConfiguration {
-    public String provider = "awattar";
-    public double basePrice;
-    public double vatPercent;
-    public double serviceFee;
-    public String country = "";
+public class MarketPriceApiException extends Exception {
+    private static final long serialVersionUID = 1L;
+
+    public MarketPriceApiException(String message) {
+        super(message);
+    }
 }

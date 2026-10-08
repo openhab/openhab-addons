@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>aWATTar Binding</name>
-	<description>Hourly Electricity Prices for Germany and Austria.</description>
+	<description>Electricity prices for Germany and Austria from aWATTar or Energy-Charts.</description>
 	<connection>cloud</connection>
 	<countries>at,de</countries>
 

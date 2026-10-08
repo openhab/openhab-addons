@@ -13,7 +13,7 @@
 package org.openhab.binding.awattar.internal;
 
 import static org.openhab.binding.awattar.internal.AwattarUtil.formatDate;
-import static org.openhab.binding.awattar.internal.AwattarUtil.getHourFrom;
+import static org.openhab.binding.awattar.internal.AwattarUtil.formatPriceInterval;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -68,7 +68,7 @@ public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
             if (i > 0) {
                 locHours.append(",");
             }
-            locHours.append(getHourFrom(prices.get(minIndex + i).timerange().start(), zoneId));
+            locHours.append(formatPriceInterval(prices.get(minIndex + i), zoneId));
         }
 
         this.hours = locHours.toString();
