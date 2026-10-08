@@ -1,6 +1,6 @@
-# Windhagerbiowin Binding
+# Windhager Binding
 
-The Windhagerbiowin binding reads numeric datapoints from the BioWin webserver of a Windhager heating system.
+The Windhager binding reads numeric datapoints from the BioWin 2 webserver of a Windhager heating system.
 
 Communication uses the BioWin HTTP API and HTTP Digest authentication.
 
@@ -8,7 +8,7 @@ Communication uses the BioWin HTTP API and HTTP Digest authentication.
 
 | Thing Type ID | Description |
 |---------------|-------------|
-| `biowin` | BioWin webserver connection for a Windhager heating system. |
+| `biowin2` | BioWin 2 webserver connection for a Windhager heating system. |
 
 ## Discovery
 
@@ -47,7 +47,7 @@ Replace the hostname, username, and password with the values for your installati
 ### Thing Configuration
 
 ```java
-Thing windhagerbiowin:biowin:myheater [
+Thing windhager:biowin2:myheater [
 hostname="192.0.2.10",
 port=8888,
 username="your-user",
@@ -68,6 +68,6 @@ refreshInterval=60
 ### Item Configuration
 
 ```java
-Number BioWin_Pellets "Pellets Total [%.1f]" { channel="windhagerbiowin:biowin:myheater:PelletTotal" }
-Number BioWin_Temp "Temp [%.1f]" { channel="windhagerbiowin:biowin:myheater:UnknownTemp" }
+Number BioWin_Pellets "Pellets Total [%.1f]" { channel="windhager:biowin2:myheater:PelletTotal" }
+Number BioWin_Temp "Temp [%.1f]" { channel="windhager:biowin2:myheater:UnknownTemp" }
 ```

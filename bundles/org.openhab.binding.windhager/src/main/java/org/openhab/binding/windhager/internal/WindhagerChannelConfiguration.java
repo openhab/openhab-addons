@@ -10,22 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.windhagerbiowin.internal;
+package org.openhab.binding.windhager.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link WindhagerbiowinBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * Configuration for a single BioWin channel.
  *
  * @author BenjiU - Initial contribution
  */
 @NonNullByDefault
-public class WindhagerbiowinBindingConstants {
+public class WindhagerChannelConfiguration {
 
-    private static final String BINDING_ID = "windhagerbiowin";
+    /**
+     * BioWin OID such as 1/60/0/23/103/0.
+     */
+    public String oid = "";
 
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BIOWIN = new ThingTypeUID(BINDING_ID, "biowin");
+    /**
+     * Refresh interval for this channel in seconds.
+     */
+    public int refreshInterval = 60;
 }
