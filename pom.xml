@@ -694,22 +694,6 @@ Import-Package: \
 
   <profiles>
     <profile>
-      <id>javac</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <compilerId>javac</compilerId>
-              <compilerArgs combine.self="override"/>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
       <id>eclipse-m2e</id>
       <activation>
         <property>
