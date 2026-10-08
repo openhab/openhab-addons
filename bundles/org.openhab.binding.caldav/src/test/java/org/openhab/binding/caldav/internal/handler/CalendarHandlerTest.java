@@ -17,7 +17,10 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -30,14 +33,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.net.ssl.SSLHandshakeException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,11 +62,14 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+
+import com.google.gson.JsonParser;
 
 /**
  * Observable publication, cache recovery and disposal regression tests.
@@ -67,6 +77,8 @@ import org.openhab.core.types.UnDefType;
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Initial synchronization status tests
  * @author Andreas Vilippus - Lifecycle, cache and publication regression coverage
+ * @author Andreas Vilippus - Versioned compact snapshots and canonical cache identity tests
+ * @author Andreas Vilippus - Structured failure and retained data regression tests
  */
 @NonNullByDefault
 @Timeout(15)
@@ -191,6 +203,11 @@ class CalendarHandlerTest {
         }
 
         Fixture(Map<String, Object> configuration, MemoryStorage storage, @Nullable Bridge bridge) {
+            this(configuration, storage, bridge, "Calendar", Map.of());
+        }
+
+        Fixture(Map<String, Object> configuration, MemoryStorage storage, @Nullable Bridge bridge, String label,
+                Map<String, String> properties) {
             this.storage = storage;
             ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
             doAnswer(invocation -> {
@@ -206,7 +223,7 @@ class CalendarHandlerTest {
                     Map.of("path", "https://example.org/calendar/", "rangeStartOffset", -1, "rangeEndOffset", 1));
             values.putAll(configuration);
             Thing thing = ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), "test")
-                    .withConfiguration(new Configuration(values)).build();
+                    .withConfiguration(new Configuration(values)).withLabel(label).withProperties(properties).build();
             handler = new Handler(thing, storage, bridge, () -> Objects.requireNonNull(zone.get()), clock, scheduler);
             handler.initialize();
         }
@@ -914,6 +931,309 @@ class CalendarHandlerTest {
             h.synchronize((m, u, b, d) -> multistatus(), account, () -> true);
             assertEquals("OK", Objects.requireNonNull(h.published.get("sync#status")).toString());
             assertEquals("", Objects.requireNonNull(h.published.get("sync#error")).toString());
+        }
+    }
+
+    private static Bridge bridge(AccountConfiguration account) {
+        Bridge bridge = Objects.requireNonNull(mock(Bridge.class));
+        AccountHandler handler = Objects.requireNonNull(mock(AccountHandler.class));
+        when(bridge.getHandler()).thenReturn(handler);
+        when(handler.configuration()).thenReturn(account);
+        return bridge;
+    }
+
+    private static String savedIdentity(AccountConfiguration account, String path, ZoneId zone) throws Exception {
+        try (Fixture fixture = new Fixture(Map.of("path", path))) {
+            fixture.zone.set(zone);
+            fixture.handler.synchronize((m, u, b, d) -> multistatus(), account, () -> true);
+            String raw = Objects.requireNonNull(fixture.storage.get(fixture.handler.getThing().getUID().toString()));
+            return JsonParser.parseString(raw).getAsJsonObject().get("identity").getAsString();
+        }
+    }
+
+    @Test
+    void cacheIdentityUsesCanonicalAccountAndCollectionUris() throws Exception {
+        String identity = savedIdentity(account(), "https://example.org/calendar/", ZoneOffset.UTC);
+        for (String path : List.of("/calendar/", "https://EXAMPLE.org:443/calendar/", "/cal%65ndar/", "/calendar/./",
+                "/other/../calendar/")) {
+            assertEquals(identity, savedIdentity(account(), path, ZoneOffset.UTC), path);
+        }
+        AccountConfiguration alias = account();
+        alias.url = "https://EXAMPLE.org:443/./";
+        assertEquals(identity, savedIdentity(alias, "/calendar/", ZoneOffset.UTC));
+        assertNotEquals(identity, savedIdentity(account(), "/other/", ZoneOffset.UTC));
+        assertNotEquals(identity, savedIdentity(account(), "/Calendar/", ZoneOffset.UTC));
+        assertNotEquals(identity, savedIdentity(account(), "/calendar/?view=2", ZoneOffset.UTC));
+    }
+
+    @Test
+    void cacheIdentityRetainsUserEndpointAndZoneContextButExcludesPassword() throws Exception {
+        AccountConfiguration original = account();
+        String identity = savedIdentity(original, "/calendar/", ZoneOffset.UTC);
+        AccountConfiguration password = account();
+        password.password = "replacement-password";
+        assertEquals(identity, savedIdentity(password, "/calendar/", ZoneOffset.UTC));
+        AccountConfiguration user = account();
+        user.username = "another-user";
+        assertNotEquals(identity, savedIdentity(user, "/calendar/", ZoneOffset.UTC));
+        AccountConfiguration endpoint = account();
+        endpoint.url = "https://example.org/caldav/";
+        assertNotEquals(identity, savedIdentity(endpoint, "/calendar/", ZoneOffset.UTC));
+        assertNotEquals(identity, savedIdentity(original, "/calendar/", ZoneId.of("Europe/Berlin")));
+    }
+
+    @Test
+    void versionedCompactSnapshotRestoresAcrossEquivalentManualPaths() throws Exception {
+        MemoryStorage storage = new MemoryStorage();
+        Map<String, State> published;
+        String uid;
+        try (Fixture first = new Fixture(Map.of(), storage, null)) {
+            first.handler
+                    .synchronize(
+                            (m, u, b, d) -> multistatus(calendar("one", "DTSTART:20260918T080000Z\nDURATION:PT2H\n"),
+                                    calendar("two", "DTSTART:20260919T080000Z\nDURATION:PT2H\n")),
+                            account(), () -> true);
+            published = Map.copyOf(first.handler.published);
+            uid = first.handler.getThing().getUID().toString();
+        }
+        String raw = Objects.requireNonNull(storage.get(uid));
+        var json = JsonParser.parseString(raw).getAsJsonObject();
+        assertEquals(1, json.get("version").getAsInt());
+        assertEquals(Set.of("0.ics", "1.ics"), json.getAsJsonObject("snapshot").getAsJsonObject("resources").keySet());
+        assertFalse(raw.contains("https://"));
+        for (String path : List.of("/calendar/", "https://EXAMPLE.org:443/cal%65ndar/")) {
+            try (Fixture restored = new Fixture(Map.of("path", path), storage, bridge(account()))) {
+                assertEquals(ThingStatus.UNKNOWN, restored.handler.status);
+                for (String channel : List.of("events#json", "events#count", "current#uid", "next#uid", "sync#last")) {
+                    assertEquals(published.get(channel), restored.handler.published.get(channel), channel);
+                }
+            }
+        }
+    }
+
+    @Test
+    void incompatibleAndPartlyCorruptSnapshotsAreDiscardedInFullThenRebuilt() throws Exception {
+        MemoryStorage storage = new MemoryStorage();
+        String uid;
+        String raw;
+        try (Fixture first = new Fixture(Map.of(), storage, null)) {
+            first.handler
+                    .synchronize(
+                            (m, u, b, d) -> multistatus(calendar("valid", "DTSTART:20260918T080000Z\nDURATION:PT2H\n"),
+                                    calendar("corrupt", "DTSTART:20260919T080000Z\nDURATION:PT2H\n")),
+                            account(), () -> true);
+            uid = first.handler.getThing().getUID().toString();
+            raw = Objects.requireNonNull(storage.get(uid));
+        }
+        List<String> invalid = new ArrayList<>();
+        var unversioned = JsonParser.parseString(raw).getAsJsonObject();
+        unversioned.remove("version");
+        invalid.add(unversioned.toString());
+        for (int version : new int[] { 0, 2 }) {
+            var json = JsonParser.parseString(raw).getAsJsonObject();
+            json.addProperty("version", version);
+            invalid.add(json.toString());
+        }
+        for (String reference : List.of("https://other.org/1.ics", "https://example.org:444/1.ics",
+                "http://example.org/1.ics", "https://user@example.org/1.ics", "1.ics#fragment", "bad%2.ics",
+                "bad%zz.ics", "https://example.org/calendar/1.ics", "/calendar/1.ics", "./1.ics", "../1.ics",
+                "%2E/../1.ics", "%31.ics", "")) {
+            var json = JsonParser.parseString(raw).getAsJsonObject();
+            var resources = json.getAsJsonObject("snapshot").getAsJsonObject("resources");
+            resources.add(reference, resources.remove("1.ics"));
+            invalid.add(json.toString());
+        }
+        for (String candidate : invalid) {
+            storage.put(uid, candidate);
+            try (Fixture restored = new Fixture(Map.of(), storage, bridge(account()))) {
+                Handler h = restored.handler;
+                assertEquals(ThingStatus.UNKNOWN, h.status);
+                assertEquals(UnDefType.UNDEF, h.published.get("events#json"));
+                assertEquals(UnDefType.UNDEF, h.published.get("sync#last"));
+                assertTrue(restored.jobs.isEmpty());
+                AtomicInteger calls = new AtomicInteger();
+                h.synchronize((method, uri, body, depth) -> {
+                    assertEquals("REPORT", method);
+                    assertEquals(URI.create("https://example.org/calendar/"), uri);
+                    calls.incrementAndGet();
+                    return multistatus(calendar("fresh", "DTSTART:20260918T080000Z\nDURATION:PT2H\n"));
+                }, account(), () -> true);
+                assertEquals(1, calls.get());
+                assertEquals(ThingStatus.ONLINE, h.status);
+                assertEquals("OK", Objects.requireNonNull(h.published.get("sync#status")).toString());
+                assertTrue(Objects.requireNonNull(h.published.get("events#json")).toString().contains("fresh"));
+                assertFalse(Objects.requireNonNull(h.published.get("events#json")).toString().contains("valid"));
+                assertEquals(Set.of("0.ics"), JsonParser.parseString(Objects.requireNonNull(storage.get(uid)))
+                        .getAsJsonObject().getAsJsonObject("snapshot").getAsJsonObject("resources").keySet());
+            }
+        }
+    }
+
+    @Test
+    void cacheRestoreIgnoresLabelsAndOptionalDiscoveryMetadata() throws Exception {
+        MemoryStorage storage = new MemoryStorage();
+        State json;
+        try (Fixture first = new Fixture(Map.of(), storage, null)) {
+            first.handler.synchronize(
+                    (m, u, b, d) -> multistatus(calendar("cached", "DTSTART:20260918T080000Z\nDURATION:PT2H\n")),
+                    account(), () -> true);
+            json = Objects.requireNonNull(first.handler.published.get("events#json"));
+        }
+        try (Fixture restored = new Fixture(Map.of("path", "/calendar/"), storage, bridge(account()),
+                "Changed calendar label", Map.of("calendarDescription", "Changed description", "calendarColor",
+                        "#112233", "calendarPrivileges", "read,write"))) {
+            assertEquals(json, restored.handler.published.get("events#json"));
+            assertEquals(ThingStatus.UNKNOWN, restored.handler.status);
+        }
+    }
+
+    @Test
+    void unknownBridgeDoesNotInventACommunicationFailure() {
+        try (Fixture fixture = new Fixture(Map.of())) {
+            fixture.handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                    "Waiting for CalDAV server communication"));
+            assertEquals(ThingStatus.UNKNOWN, fixture.handler.status);
+            assertEquals(ThingStatusDetail.NONE, fixture.handler.detail);
+            assertEquals("SYNCING", Objects.requireNonNull(fixture.handler.published.get("sync#status")).toString());
+            assertEquals("", Objects.requireNonNull(fixture.handler.published.get("sync#error")).toString());
+        }
+    }
+
+    @Test
+    void http401ExplainsAuthenticationFailureAndPreservesLastUsableData() throws Exception {
+        checkFailure(new CalDavHttpException("REPORT", 401), ThingStatusDetail.CONFIGURATION_ERROR,
+                "Authentication failed (HTTP 401)", true);
+    }
+
+    @Test
+    void http403ExplainsForbiddenCalendarAccess() throws Exception {
+        checkFailure(new CalDavHttpException("REPORT", 403), ThingStatusDetail.CONFIGURATION_ERROR,
+                "Calendar access forbidden (HTTP 403)", true);
+    }
+
+    @Test
+    void http404BeforeFirstSuccessReportsConfigurationError() throws Exception {
+        checkFailure(new CalDavHttpException("REPORT", 404), ThingStatusDetail.CONFIGURATION_ERROR,
+                "Calendar collection was not found (HTTP 404)", false);
+    }
+
+    @Test
+    void http404AfterLiveSuccessReportsGoneAndPreservesLastUsableData() throws Exception {
+        checkFailure(new CalDavHttpException("REPORT", 404), ThingStatusDetail.GONE,
+                "Calendar collection is no longer available (HTTP 404)", true);
+    }
+
+    @Test
+    void http500ExplainsServerFailureAndPreservesLastUsableData() throws Exception {
+        checkFailure(new CalDavHttpException("REPORT", 500), ThingStatusDetail.COMMUNICATION_ERROR,
+                "Server returned HTTP 500", true);
+    }
+
+    @Test
+    void rejectedReportPreservesHttpStatus() throws Exception {
+        checkFailure(new CalDavHttpException("REPORT", 405), ThingStatusDetail.COMMUNICATION_ERROR,
+                "Server returned HTTP 405", true);
+    }
+
+    @Test
+    void structuredNetworkFailuresExplainCauseWithoutExposingExceptionText() throws Exception {
+        for (Exception timeout : List.of(new TimeoutException("private-host password"),
+                new SocketTimeoutException("private-host password"))) {
+            checkFailure(new IOException("private calendar-data", timeout), ThingStatusDetail.COMMUNICATION_ERROR,
+                    "CalDAV request timed out", true);
+        }
+        checkFailure(new IOException("private calendar-data", new UnknownHostException("private-host password")),
+                ThingStatusDetail.COMMUNICATION_ERROR, "CalDAV server name could not be resolved", true);
+        checkFailure(new IOException("private calendar-data", new ConnectException("private-host password")),
+                ThingStatusDetail.COMMUNICATION_ERROR, "Unable to connect to the CalDAV server", true);
+        checkFailure(
+                new IOException("private calendar-data", new SSLHandshakeException("private-certificate password")),
+                ThingStatusDetail.COMMUNICATION_ERROR, "TLS connection to the CalDAV server failed", true);
+    }
+
+    private void checkFailure(IOException failure, ThingStatusDetail detail, String description,
+            boolean synchronizedBefore) throws Exception {
+        try (Fixture fixture = new Fixture(Map.of())) {
+            Handler handler = fixture.handler;
+            if (synchronizedBefore) {
+                handler.synchronize(
+                        (method, uri, body,
+                                depth) -> multistatus(calendar("one",
+                                        "DTSTART:20260918T080000Z\nDURATION:PT2H\nSUMMARY:Last usable event\n")),
+                        account(), () -> true);
+                assertEquals(ThingStatus.ONLINE, handler.status);
+            }
+            State events = Objects.requireNonNull(handler.published.get("events#json"));
+            State lastSync = Objects.requireNonNull(handler.published.get("sync#last"));
+            Map<String, String> saved = new HashMap<>();
+            fixture.storage.getKeys().forEach(key -> saved.put(key, Objects.requireNonNull(fixture.storage.get(key))));
+            handler.synchronize((method, uri, body, depth) -> {
+                throw failure;
+            }, account(), () -> true);
+            assertEquals(ThingStatus.OFFLINE, handler.status);
+            assertEquals(detail, handler.detail);
+            assertEquals(description, handler.description);
+            assertEquals(description, Objects.requireNonNull(handler.published.get("sync#error")).toString());
+            assertEquals("ERROR", Objects.requireNonNull(handler.published.get("sync#status")).toString());
+            assertEquals(events, handler.published.get("events#json"));
+            assertEquals(lastSync, handler.published.get("sync#last"));
+            assertEquals(saved.keySet(), Set.copyOf(fixture.storage.getKeys()));
+            saved.forEach((key, value) -> assertEquals(value, fixture.storage.get(key)));
+            handler.synchronize((method, uri, body, depth) -> multistatus(), account(), () -> true);
+            assertEquals(ThingStatus.ONLINE, handler.status);
+            assertEquals("", Objects.requireNonNull(handler.published.get("sync#error")).toString());
+        }
+    }
+
+    @Test
+    void eventGet404RemainsCommunicationErrorAfterLiveSuccess() throws Exception {
+        try (Fixture fixture = new Fixture(Map.of())) {
+            Handler handler = fixture.handler;
+            AccountConfiguration config = account();
+            handler.synchronize(
+                    (method, uri, body,
+                            depth) -> multistatus(calendar("one", "DTSTART:20260918T080000Z\nDURATION:PT2H\n")),
+                    config, () -> true);
+            State events = Objects.requireNonNull(handler.published.get("events#json"));
+            State lastSync = Objects.requireNonNull(handler.published.get("sync#last"));
+            config.syncMode = "ETAG";
+            handler.synchronize((method, uri, body, depth) -> {
+                if ("GET".equals(method)) {
+                    throw new CalDavHttpException("GET", 404);
+                }
+                return "<d:multistatus xmlns:d=\"DAV:\"><d:response><d:href>/calendar/missing.ics</d:href>"
+                        + "<d:propstat><d:prop><d:getetag>new</d:getetag></d:prop>"
+                        + "<d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response></d:multistatus>";
+            }, config, () -> true);
+            assertEquals(ThingStatus.OFFLINE, handler.status);
+            assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, handler.detail);
+            assertEquals("Calendar resource changed during synchronization (HTTP 404)", handler.description);
+            assertEquals(handler.description, Objects.requireNonNull(handler.published.get("sync#error")).toString());
+            assertEquals(events, handler.published.get("events#json"));
+            assertEquals(lastSync, handler.published.get("sync#last"));
+        }
+    }
+
+    @Test
+    void bridgeOfflineDoesNotOverwriteOwnGoneDiagnosisAndRecoveryClearsIt() throws Exception {
+        try (Fixture fixture = new Fixture(Map.of())) {
+            Handler handler = fixture.handler;
+            handler.synchronize((method, uri, body, depth) -> multistatus(), account(), () -> true);
+            handler.synchronize((method, uri, body, depth) -> {
+                throw new CalDavHttpException("REPORT", 404);
+            }, account(), () -> true);
+            handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "CalDAV account communication failed"));
+            assertEquals(ThingStatusDetail.GONE, handler.detail);
+            assertEquals("Calendar collection is no longer available (HTTP 404)", handler.description);
+            assertEquals(handler.description, Objects.requireNonNull(handler.published.get("sync#error")).toString());
+            handler.synchronize((method, uri, body, depth) -> multistatus(), account(), () -> true);
+            assertEquals(ThingStatus.ONLINE, handler.status);
+            assertEquals("", Objects.requireNonNull(handler.published.get("sync#error")).toString());
+            handler.bridgeConnectionFailed();
+            assertEquals(ThingStatusDetail.BRIDGE_OFFLINE, handler.detail);
+            assertEquals("Account bridge is offline", handler.description);
+            assertEquals(handler.description, Objects.requireNonNull(handler.published.get("sync#error")).toString());
         }
     }
 }

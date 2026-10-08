@@ -50,6 +50,7 @@ import org.w3c.dom.Element;
  *
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Configuration boundaries and synchronization horizon
+ * @author Andreas Vilippus - Absolute and origin-relative calendar path validation
  */
 @NonNullByDefault
 class CalDavConfigurationTest {
@@ -68,11 +69,24 @@ class CalDavConfigurationTest {
     void acceptsPathOnlyCalendarConfiguration() {
         AccountConfiguration account = new AccountConfiguration();
         account.url = "https://caldav.example.test/caldav/";
-        for (String path : List.of("family/", "https://caldav.example.test/caldav/family/")) {
+        for (String path : List.of("family/", "/caldav/family/", "https://caldav.example.test/caldav/family/")) {
             CalendarConfiguration calendar = new CalendarConfiguration();
             calendar.path = path;
             assertEquals(URI.create("https://caldav.example.test/caldav/family/"),
                     CalDavConfiguration.validate(calendar, account));
+        }
+    }
+
+    @Test
+    void absoluteAndOriginRelativePathsOutsideAccountPathResolveToSameCollection() {
+        AccountConfiguration account = new AccountConfiguration();
+        account.url = "https://caldav.example.test/caldav/";
+        for (String path : List.of("https://caldav.example.test/calendars/family/", "/calendars/family/")) {
+            CalendarConfiguration calendar = new CalendarConfiguration();
+            calendar.path = path;
+            assertEquals(URI.create("https://caldav.example.test/calendars/family/"),
+                    CalDavConfiguration.validate(calendar, account));
+            assertEquals(path, calendar.path);
         }
     }
 

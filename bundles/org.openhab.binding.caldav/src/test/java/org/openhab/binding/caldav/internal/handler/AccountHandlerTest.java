@@ -17,8 +17,12 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
 import java.net.URI;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.util.ArrayDeque;
@@ -28,29 +32,42 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
+
+import javax.net.ssl.SSLHandshakeException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.api.Result;
+import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.binding.caldav.internal.client.CalDavXml;
 import org.openhab.binding.caldav.internal.client.CalendarCollection;
+import org.openhab.binding.caldav.internal.config.AccountConfiguration;
+import org.openhab.binding.caldav.internal.discovery.CalDavDiscoveryService;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -64,6 +81,8 @@ import com.sun.net.httpserver.HttpServer;
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - On-demand discovery regression tests
  * @author Andreas Vilippus - Configuration and deterministic account scheduling tests
+ * @author Andreas Vilippus - Remote-confirmed recovery and pending discovery regression tests
+ * @author Andreas Vilippus - Discovery callback disposal regressions
  */
 @NonNullByDefault
 @Timeout(30)
@@ -73,7 +92,11 @@ class AccountHandlerTest {
         final CountDownLatch offline = new CountDownLatch(1);
         final AtomicInteger publications = new AtomicInteger();
         final LinkedBlockingQueue<ThingStatus> statuses = new LinkedBlockingQueue<>();
+        volatile ThingStatus status = ThingStatus.UNKNOWN;
+        volatile @Nullable String description;
         ThingStatusDetail detail = ThingStatusDetail.NONE;
+        volatile Runnable beforeConfiguration = () -> {
+        };
 
         Handler(Bridge bridge, HttpClientFactory factory) {
             super(bridge, factory);
@@ -84,7 +107,15 @@ class AccountHandlerTest {
         }
 
         @Override
+        public AccountConfiguration configuration() {
+            beforeConfiguration.run();
+            return super.configuration();
+        }
+
+        @Override
         protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
+            this.status = status;
+            this.description = description;
             this.detail = detail;
             publications.incrementAndGet();
             statuses.add(status);
@@ -122,7 +153,36 @@ class AccountHandlerTest {
         }
     }
 
-    private static final class RecoveringClient extends HttpClient {
+    private static class ScriptedClient extends HttpClient {
+        @Nullable
+        Throwable failure;
+        int requests;
+
+        @Override
+        public Request newRequest(@Nullable URI uri) {
+            Request request = Objects.requireNonNull(mock(Request.class, RETURNS_SELF));
+            Response response = Objects.requireNonNull(mock(Response.class));
+            when(response.getStatus()).thenReturn(failure == null ? 207 : 0);
+            doAnswer(invocation -> {
+                requests++;
+                BufferingResponseListener listener = invocation.getArgument(0);
+                Throwable cause = failure;
+                if (cause == null) {
+                    String xml = "<d:multistatus xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">"
+                            + discoveryProperty(
+                                    "<d:current-user-principal><d:href>/</d:href></d:current-user-principal>"
+                                            + "<c:calendar-home-set><d:href>/</d:href></c:calendar-home-set>")
+                            + "</d:multistatus>";
+                    listener.onContent(response, ByteBuffer.wrap(xml.getBytes(StandardCharsets.UTF_8)));
+                }
+                listener.onComplete(new Result(request, response, cause));
+                return null;
+            }).when(request).send(any(Response.CompleteListener.class));
+            return request;
+        }
+    }
+
+    private static final class RecoveringClient extends ScriptedClient {
         boolean fail;
         Runnable onStart = () -> {
         };
@@ -140,11 +200,17 @@ class AccountHandlerTest {
     private static final class Calendar extends CalendarHandler {
         final Map<String, State> states = new ConcurrentHashMap<>();
         volatile ThingStatus status = ThingStatus.UNKNOWN;
+        ThingStatusDetail detail = ThingStatusDetail.NONE;
 
         Calendar(String id, String path) {
             super(ThingBuilder.create(new ThingTypeUID("caldav", "calendar"), id)
                     .withConfiguration(new Configuration(Map.of("path", path))).build(), () -> ZoneOffset.UTC,
                     Objects.requireNonNull(mock()));
+        }
+
+        @Override
+        protected @Nullable Bridge getBridge() {
+            return null;
         }
 
         @Override
@@ -155,6 +221,7 @@ class AccountHandlerTest {
         @Override
         protected void updateStatus(ThingStatus status, ThingStatusDetail detail, @Nullable String description) {
             this.status = status;
+            this.detail = detail;
         }
     }
 
@@ -162,8 +229,9 @@ class AccountHandlerTest {
     void successfulPollPreservesConfiguredInterval() {
         for (int interval : new int[] { 30, 300, 3600, 7200, Integer.MAX_VALUE }) {
             ControlledScheduler scheduler = new ControlledScheduler();
-            Handler handler = scheduledHandler(interval, new HttpClient(), scheduler);
+            Handler handler = scheduledHandler(interval, new ScriptedClient(), scheduler);
             handler.initialize();
+            queueDiscovery(handler, scheduler);
             try {
                 scheduler.next(0).action().run();
                 assertEquals(ThingStatus.ONLINE, handler.statuses.poll());
@@ -190,6 +258,7 @@ class AccountHandlerTest {
             http.fail = true;
             Handler handler = scheduledHandler(interval, http, scheduler);
             handler.initialize();
+            queueDiscovery(handler, scheduler);
             try {
                 scheduler.next(0).action().run();
                 assertEquals(ThingStatus.OFFLINE, handler.statuses.poll());
@@ -215,6 +284,7 @@ class AccountHandlerTest {
         http.fail = true;
         Handler handler = scheduledHandler(300, http, scheduler);
         handler.initialize();
+        queueDiscovery(handler, scheduler);
         try {
             scheduler.next(0).action().run();
             assertEquals(ThingStatus.OFFLINE, handler.statuses.poll());
@@ -245,6 +315,7 @@ class AccountHandlerTest {
             handler.requestSync();
         };
         handler.initialize();
+        queueDiscovery(handler, scheduler);
         try {
             scheduler.next(0).action().run();
             assertEquals(ThingStatus.OFFLINE, handler.statuses.poll());
@@ -272,12 +343,14 @@ class AccountHandlerTest {
             handler.requestSync();
         };
         handler.initialize();
+        queueDiscovery(handler, scheduler);
         try {
             scheduler.next(0).action().run();
             assertEquals(ThingStatus.ONLINE, handler.statuses.poll());
             assertEquals(1, scheduler.polls.size());
             scheduler.next(0).action().run();
-            assertEquals(ThingStatus.ONLINE, handler.statuses.poll());
+            assertEquals(ThingStatus.ONLINE, handler.status);
+            assertTrue(handler.statuses.isEmpty());
             scheduler.next(300);
             assertTrue(scheduler.polls.isEmpty());
         } finally {
@@ -289,7 +362,7 @@ class AccountHandlerTest {
     void invalidAccountDoesNotCreateClientAndValidReplacementRecovers() {
         ControlledScheduler scheduler = new ControlledScheduler();
         HttpClientFactory factory = Objects.requireNonNull(mock(HttpClientFactory.class));
-        HttpClient http = new HttpClient();
+        HttpClient http = new ScriptedClient();
         when(factory.createHttpClient(anyString(), any(SslContextFactory.Client.class))).thenReturn(http);
         Bridge invalid = configuredBridge(Map.of("url", "https://example.org/", "readOnly", false));
         Handler handler = new Handler(invalid, factory, scheduler.executor);
@@ -300,6 +373,7 @@ class AccountHandlerTest {
             verifyNoInteractions(factory);
             assertTrue(scheduler.polls.isEmpty());
             handler.thingUpdated(configuredBridge(Map.of("url", "https://example.org/")));
+            queueDiscovery(handler, scheduler);
             scheduler.next(0).action().run();
             assertEquals(ThingStatus.ONLINE, handler.statuses.poll());
             verify(factory).createHttpClient(eq("caldav"), any(SslContextFactory.Client.class));
@@ -318,7 +392,7 @@ class AccountHandlerTest {
                     BigDecimal.valueOf(4294967296L + parameter.getValue()), parameter.getValue() + ".5")) {
                 ControlledScheduler scheduler = new ControlledScheduler();
                 HttpClientFactory factory = Objects.requireNonNull(mock(HttpClientFactory.class));
-                HttpClient http = new HttpClient();
+                HttpClient http = new ScriptedClient();
                 when(factory.createHttpClient(anyString(), any(SslContextFactory.Client.class))).thenReturn(http);
                 Handler handler = new Handler(
                         configuredBridge(Map.of("url", "https://example.org/", parameter.getKey(), raw)), factory,
@@ -331,6 +405,7 @@ class AccountHandlerTest {
                     assertTrue(scheduler.polls.isEmpty());
                     handler.thingUpdated(configuredBridge(
                             Map.of("url", "https://example.org/", parameter.getKey(), parameter.getValue())));
+                    queueDiscovery(handler, scheduler);
                     scheduler.next(0).action().run();
                     assertEquals(ThingStatus.ONLINE, handler.statuses.poll());
                     scheduler.next(300);
@@ -346,13 +421,14 @@ class AccountHandlerTest {
         for (String interval : List.of("7200", "+7200", "07200")) {
             ControlledScheduler scheduler = new ControlledScheduler();
             HttpClientFactory factory = Objects.requireNonNull(mock(HttpClientFactory.class));
-            HttpClient http = new HttpClient();
+            HttpClient http = new ScriptedClient();
             when(factory.createHttpClient(anyString(), any(SslContextFactory.Client.class))).thenReturn(http);
             Handler handler = new Handler(
                     configuredBridge(Map.of("url", "https://example.org/", "refreshInterval", interval)), factory,
                     scheduler.executor);
             try {
                 handler.initialize();
+                queueDiscovery(handler, scheduler);
                 scheduler.next(0).action().run();
                 assertEquals(ThingStatus.ONLINE, handler.statuses.poll());
                 assertEquals(7200, handler.configuration().refreshInterval);
@@ -371,7 +447,7 @@ class AccountHandlerTest {
         AtomicInteger reads = new AtomicInteger();
         ControlledScheduler scheduler = new ControlledScheduler();
         HttpClientFactory factory = Objects.requireNonNull(mock(HttpClientFactory.class));
-        HttpClient http = new HttpClient();
+        HttpClient http = new ScriptedClient();
         when(factory.createHttpClient(anyString(), any(SslContextFactory.Client.class))).thenReturn(http);
         Handler handler = new Handler(configuredBridge(Map.of("url", "https://example.org/")), factory,
                 scheduler.executor) {
@@ -382,6 +458,7 @@ class AccountHandlerTest {
         };
         try {
             handler.initialize();
+            queueDiscovery(handler, scheduler);
             scheduler.next(0).action().run();
             assertEquals(ThingStatus.ONLINE, handler.statuses.poll());
             scheduler.next(7200);
@@ -428,7 +505,7 @@ class AccountHandlerTest {
             handler.initialize();
             try {
                 scheduler.next(0).action().run();
-                assertEquals(ThingStatus.ONLINE, handler.statuses.poll());
+                assertEquals(ThingStatus.UNKNOWN, handler.statuses.poll());
                 scheduler.next(300);
                 handler.discover(results::add);
                 scheduler.next(0).action().run();
@@ -445,6 +522,8 @@ class AccountHandlerTest {
                 assertEquals(ThingStatus.ONLINE, handler.statuses.poll());
                 assertEquals(List.of("/", "/principal/", "/home/"), List.copyOf(requests));
                 assertEquals(List.of(), results.poll());
+                assertEquals(List.of(), results.poll());
+                assertTrue(results.isEmpty());
                 scheduler.next(300);
             } finally {
                 handler.dispose();
@@ -489,6 +568,7 @@ class AccountHandlerTest {
         failed.initialize();
         healthy.initialize();
         handler.initialize();
+        assertEquals(ThingStatus.UNKNOWN, handler.statuses.poll());
         try {
             scheduler.next(0).action().run();
             assertEquals(ThingStatus.ONLINE, handler.statuses.poll());
@@ -506,6 +586,13 @@ class AccountHandlerTest {
             http.stop();
             server.stop(0);
         }
+    }
+
+    private static void queueDiscovery(Handler handler, ControlledScheduler scheduler) {
+        assertEquals(ThingStatus.UNKNOWN, handler.statuses.poll());
+        handler.discover(collections -> {
+        });
+        scheduler.next(0); // Remove the initialization job cancelled by discover().
     }
 
     private static Handler scheduledHandler(int interval, HttpClient http, ControlledScheduler scheduler) {
@@ -575,14 +662,19 @@ class AccountHandlerTest {
                 .withConfiguration(new Configuration(
                         Map.of("url", url, "username", "user", "password", "secret", "discoveryMode", "AUTO")))
                 .build();
-        Handler handler = new Handler(bridge, factory);
+        ControlledScheduler controlled = new ControlledScheduler();
+        Handler handler = new Handler(bridge, factory, controlled.executor);
         LinkedBlockingQueue<List<CalendarCollection>> results = new LinkedBlockingQueue<>();
         try {
             handler.initialize();
-            assertTrue(handler.online.await(10, TimeUnit.SECONDS));
+            controlled.next(0).action().run();
+            assertEquals(ThingStatus.UNKNOWN, handler.status);
+            controlled.next(300);
+            handler.statuses.clear();
             requests.clear();
             fail.set(failSecondHome);
             handler.discover(results::add);
+            controlled.next(0).action().run();
             if (failSecondHome) {
                 assertTrue(handler.offline.await(10, TimeUnit.SECONDS));
                 assertTrue(results.isEmpty());
@@ -598,8 +690,11 @@ class AccountHandlerTest {
             if (syncAfterDiscovery) {
                 requests.clear();
                 handler.statuses.clear();
+                controlled.next(300);
                 handler.requestSync();
-                assertEquals(ThingStatus.ONLINE, handler.statuses.poll(10, TimeUnit.SECONDS));
+                controlled.next(0).action().run();
+                assertEquals(ThingStatus.ONLINE, handler.status);
+                assertTrue(handler.statuses.isEmpty());
                 assertTrue(requests.isEmpty());
             }
         } finally {
@@ -668,7 +763,7 @@ class AccountHandlerTest {
         LinkedBlockingQueue<List<CalendarCollection>> results = new LinkedBlockingQueue<>();
         try {
             handler.initialize();
-            assertTrue(handler.online.await(10, TimeUnit.SECONDS));
+            assertEquals(ThingStatus.UNKNOWN, handler.status);
             assertEquals(0, calls.get());
             handler.discover(results::add);
             assertEquals(List.of(), results.poll(10, TimeUnit.SECONDS));
@@ -736,9 +831,563 @@ class AccountHandlerTest {
             release.countDown();
             assertEquals(List.of(), results.poll(10, TimeUnit.SECONDS));
             assertEquals(List.of("PROPFIND /home/"), List.copyOf(requests));
+            assertTrue(handler.online.await(10, TimeUnit.SECONDS));
             assertEquals(2, handler.publications.get());
         } finally {
             release.countDown();
+            handler.dispose();
+            http.stop();
+            server.stop(0);
+        }
+    }
+
+    private static final class RecoveryFixture implements AutoCloseable {
+        final HttpServer server;
+        final AtomicInteger status = new AtomicInteger(401);
+        final AtomicInteger requests = new AtomicInteger();
+        final ControlledScheduler scheduler = new ControlledScheduler();
+        final Handler handler;
+        final AtomicInteger callbacks = new AtomicInteger();
+        volatile Runnable onRequest = () -> {
+        };
+        volatile String responseBody = "<d:multistatus xmlns:d=\"DAV:\"/>";
+
+        RecoveryFixture() throws IOException {
+            this(300, () -> true);
+        }
+
+        RecoveryFixture(int interval, BooleanSupplier active) throws IOException {
+            this(interval, active, "BASIC");
+        }
+
+        RecoveryFixture(int interval, BooleanSupplier active, String authType) throws IOException {
+            server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+            server.createContext("/", exchange -> {
+                try (exchange) {
+                    requests.incrementAndGet();
+                    onRequest.run();
+                    byte[] body = responseBody.getBytes(StandardCharsets.UTF_8);
+                    exchange.sendResponseHeaders(status.get(), body.length);
+                    exchange.getResponseBody().write(body);
+                }
+            });
+            server.start();
+            HttpClientFactory factory = Objects.requireNonNull(mock(HttpClientFactory.class));
+            when(factory.createHttpClient(anyString(), any(SslContextFactory.Client.class)))
+                    .thenAnswer(invocation -> new HttpClient());
+            String url = "http://127.0.0.1:" + server.getAddress().getPort() + "/";
+            handler = new Handler(
+                    configuredBridge(Map.of("url", url, "discoveryMode", "DIRECT", "username",
+                            authType.isEmpty() ? "" : "user", "password", authType.isEmpty() ? "" : "wrong-password",
+                            "authType", authType.isEmpty() ? "AUTO" : authType, "refreshInterval", interval)),
+                    factory, scheduler.executor);
+            handler.initialize();
+            scheduler.next(0);
+            handler.discover(result -> callbacks.incrementAndGet(), active);
+        }
+
+        @Override
+        public void close() {
+            handler.dispose();
+            server.stop(0);
+        }
+    }
+
+    @Test
+    void wrongPasswordStaysOfflineAcrossRetries() throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture()) {
+            fixture.scheduler.next(0).action().run();
+            assertEquals(ThingStatus.OFFLINE, fixture.handler.status);
+            assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, fixture.handler.detail);
+            assertEquals(1, fixture.requests.get());
+            fixture.scheduler.next(600).action().run();
+            assertEquals(ThingStatus.OFFLINE, fixture.handler.status,
+                    "A retry without a successful remote request must not restore ONLINE");
+            assertEquals(2, fixture.requests.get(), "Failed discovery must be requested again");
+            assertEquals(0, fixture.callbacks.get());
+            assertFalse(fixture.handler.statuses.contains(ThingStatus.ONLINE));
+            fixture.scheduler.next(1200);
+        }
+    }
+
+    @Test
+    void initializationAndNoOpPollLeaveConnectionUnconfirmed() {
+        ControlledScheduler scheduler = new ControlledScheduler();
+        ScriptedClient client = new ScriptedClient();
+        Handler handler = scheduledHandler(300, client, scheduler);
+        try {
+            handler.initialize();
+            assertEquals(ThingStatus.UNKNOWN, handler.status);
+            int publications = handler.publications.get();
+            scheduler.next(0).action().run();
+            assertEquals(ThingStatus.UNKNOWN, handler.status);
+            assertEquals(publications, handler.publications.get());
+            assertEquals(0, client.requests);
+            scheduler.next(300);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void failedDiscoveryRemainsPendingForRetry() throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture()) {
+            fixture.status.set(500);
+            fixture.scheduler.next(0).action().run();
+            assertEquals(0, fixture.callbacks.get());
+            fixture.status.set(207);
+            fixture.scheduler.next(600).action().run();
+            assertEquals(2, fixture.requests.get());
+            assertEquals(1, fixture.callbacks.get());
+            int publications = fixture.handler.publications.get();
+            fixture.scheduler.next(300).action().run();
+            assertEquals(2, fixture.requests.get());
+            assertEquals(1, fixture.callbacks.get());
+            assertEquals(publications, fixture.handler.publications.get());
+        }
+    }
+
+    @Test
+    void successfulRetryRestoresOnline() throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture()) {
+            fixture.scheduler.next(0).action().run();
+            fixture.scheduler.next(600).action().run();
+            assertEquals(ThingStatus.OFFLINE, fixture.handler.status);
+            fixture.status.set(207);
+            fixture.scheduler.next(1200).action().run();
+            assertEquals(3, fixture.requests.get());
+            assertEquals(ThingStatus.ONLINE, fixture.handler.status);
+            Poll regular = fixture.scheduler.next(300);
+            fixture.status.set(401);
+            fixture.handler.discover(result -> fail("An authentication failure must not complete discovery"));
+            Objects.requireNonNull(verify(regular.future())).cancel(false);
+            fixture.scheduler.next(0).action().run();
+            assertEquals(ThingStatus.OFFLINE, fixture.handler.status);
+            fixture.scheduler.next(600);
+        }
+    }
+
+    @Test
+    void noOpPollDoesNotSetOfflineAccountOnline() throws Exception {
+        AtomicBoolean active = new AtomicBoolean(true);
+        try (RecoveryFixture fixture = new RecoveryFixture(300, active::get)) {
+            fixture.scheduler.next(0).action().run();
+            active.set(false);
+            int publications = fixture.handler.publications.get();
+            fixture.scheduler.next(600).action().run();
+            assertEquals(1, fixture.requests.get());
+            assertEquals(0, fixture.callbacks.get());
+            assertEquals(ThingStatus.OFFLINE, fixture.handler.status);
+            assertEquals(publications, fixture.handler.publications.get());
+            assertFalse(fixture.handler.statuses.contains(ThingStatus.ONLINE));
+        }
+    }
+
+    @Test
+    void noOpPollDoesNotResetFailureBackoff() throws Exception {
+        AtomicBoolean active = new AtomicBoolean(true);
+        try (RecoveryFixture fixture = new RecoveryFixture(300, active::get)) {
+            fixture.scheduler.next(0).action().run();
+            active.set(false);
+            fixture.scheduler.next(600).action().run();
+            Poll delayed = fixture.scheduler.next(600);
+            fixture.handler.discover(result -> fail("Expected another authentication failure"));
+            Objects.requireNonNull(verify(delayed.future())).cancel(false);
+            fixture.scheduler.next(0).action().run();
+            assertEquals(2, fixture.requests.get());
+            fixture.scheduler.next(1200);
+        }
+    }
+
+    @Test
+    void repeatedAuthenticationFailuresHaveBoundedBackoffInEveryAuthMode() throws Exception {
+        for (String authType : List.of("", "BASIC", "DIGEST", "AUTO")) {
+            try (RecoveryFixture fixture = new RecoveryFixture(300, () -> true, authType)) {
+                for (long delay : new long[] { 0, 600, 1200, 2400, 3600, 3600, 3600, 3600 }) {
+                    fixture.scheduler.next(delay).action().run();
+                    assertEquals(ThingStatus.OFFLINE, fixture.handler.status);
+                    assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, fixture.handler.detail);
+                    assertFalse(fixture.handler.statuses.contains(ThingStatus.ONLINE));
+                }
+                assertEquals(8, fixture.requests.get());
+                assertEquals(0, fixture.callbacks.get());
+            }
+        }
+    }
+
+    @Test
+    void callbackFailureKeepsDiscoveryPendingUntilCallbackCompletes() throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture()) {
+            fixture.status.set(207);
+            AtomicInteger calls = new AtomicInteger();
+            fixture.handler.discover(result -> {
+                if (calls.incrementAndGet() == 1) {
+                    throw new IllegalStateException("Test callback failure");
+                }
+            });
+            fixture.scheduler.next(0); // Replaced by the second discovery request.
+            fixture.scheduler.next(0).action().run();
+            assertEquals(1, fixture.callbacks.get());
+            assertEquals(1, calls.get());
+            fixture.scheduler.next(300).action().run();
+            assertEquals(1, fixture.callbacks.get());
+            assertEquals(2, calls.get());
+            fixture.scheduler.next(300).action().run();
+            assertEquals(2, calls.get());
+            assertEquals(2, fixture.requests.get());
+        }
+    }
+
+    @Test
+    void canceledDiscoveryDoesNotMakeAnyRequest() throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture(300, () -> false)) {
+            fixture.scheduler.next(0).action().run();
+            assertEquals(0, fixture.requests.get());
+            assertEquals(0, fixture.callbacks.get());
+            assertEquals(ThingStatus.UNKNOWN, fixture.handler.status);
+        }
+    }
+
+    @Test
+    void reinitializeInvalidatesOldRetryAndCallbacks() throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture()) {
+            fixture.scheduler.next(0).action().run();
+            Poll old = fixture.scheduler.next(600);
+            fixture.handler.initialize();
+            Objects.requireNonNull(verify(old.future())).cancel(true);
+            int publications = fixture.handler.publications.get();
+            old.action().run();
+            assertEquals(publications, fixture.handler.publications.get());
+            assertEquals(1, fixture.requests.get());
+            fixture.status.set(207);
+            AtomicInteger freshCallbacks = new AtomicInteger();
+            fixture.scheduler.next(0);
+            fixture.handler.discover(result -> freshCallbacks.incrementAndGet());
+            fixture.scheduler.next(0).action().run();
+            assertEquals(1, freshCallbacks.get());
+            assertEquals(0, fixture.callbacks.get());
+            assertEquals(ThingStatus.ONLINE, fixture.handler.status);
+        }
+    }
+
+    @Test
+    void disposeInvalidatesPendingRetry() throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture()) {
+            fixture.scheduler.next(0).action().run();
+            Poll old = fixture.scheduler.next(600);
+            fixture.handler.dispose();
+            Objects.requireNonNull(verify(old.future())).cancel(true);
+            int publications = fixture.handler.publications.get();
+            old.action().run();
+            assertEquals(publications, fixture.handler.publications.get());
+            assertEquals(1, fixture.requests.get());
+            assertEquals(0, fixture.callbacks.get());
+            assertTrue(fixture.scheduler.polls.isEmpty());
+        }
+    }
+
+    @Test
+    void reinitializationDuringRequestRejectsOldSuccessAndCallback() throws Exception {
+        checkInFlightInvalidation(true);
+    }
+
+    @Test
+    void disposalDuringRequestRejectsOldSuccessAndCallback() throws Exception {
+        checkInFlightInvalidation(false);
+    }
+
+    @Test
+    void accountDisposalDuringDiscoveryPreparationRejectsLateResults() throws Exception {
+        checkDiscoveryPreparationInvalidation(true, false);
+    }
+
+    @Test
+    void accountDisposalDuringManualDiscoveryPreparationRejectsLateResults() throws Exception {
+        checkDiscoveryPreparationInvalidation(false, false);
+    }
+
+    @Test
+    void accountReinitializationDuringManualDiscoveryPreparationRejectsLateResults() throws Exception {
+        checkDiscoveryPreparationInvalidation(false, true);
+    }
+
+    private void checkDiscoveryPreparationInvalidation(boolean background, boolean reinitialize) throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture()) {
+            fixture.status.set(207);
+            fixture.responseBody = "<d:multistatus xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\">"
+                    + calendarResponse("/calendar/", "Calendar") + "</d:multistatus>";
+            AtomicInteger results = new AtomicInteger();
+            CalDavDiscoveryService service = new CalDavDiscoveryService() {
+                @Override
+                protected void thingDiscovered(DiscoveryResult result) {
+                    results.incrementAndGet();
+                }
+            };
+            service.setThingHandler(fixture.handler);
+            fixture.scheduler.next(0);
+            if (background) {
+                service.initialize();
+            } else {
+                service.startScan();
+            }
+            CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+            fixture.handler.beforeConfiguration = () -> awaitRequestRelease(entered, release);
+            var executor = Executors.newSingleThreadExecutor(Thread.ofPlatform().daemon(true).factory());
+            try {
+                var running = executor.submit(fixture.scheduler.next(0).action());
+                assertTrue(entered.await(10, TimeUnit.SECONDS));
+                fixture.handler.beforeConfiguration = () -> {
+                };
+                if (reinitialize) {
+                    fixture.handler.initialize();
+                } else {
+                    fixture.handler.dispose();
+                }
+                int publications = fixture.handler.publications.get();
+                release.countDown();
+                running.get(10, TimeUnit.SECONDS);
+                assertEquals(0, results.get(), "An old account session must not publish discovery results");
+                assertEquals(publications, fixture.handler.publications.get());
+                if (reinitialize) {
+                    fixture.scheduler.next(0);
+                    service.startScan();
+                    fixture.scheduler.next(0).action().run();
+                    assertEquals(1, results.get());
+                    assertEquals(ThingStatus.ONLINE, fixture.handler.status);
+                } else {
+                    assertTrue(fixture.scheduler.polls.isEmpty());
+                }
+            } finally {
+                release.countDown();
+                executor.shutdownNow();
+                assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
+                service.dispose();
+            }
+        }
+    }
+
+    private void checkInFlightInvalidation(boolean reinitialize) throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture()) {
+            fixture.status.set(207);
+            CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+            fixture.onRequest = () -> awaitRequestRelease(entered, release);
+            var executor = Executors.newSingleThreadExecutor(Thread.ofPlatform().daemon(true).factory());
+            try {
+                var running = executor.submit(fixture.scheduler.next(0).action());
+                assertTrue(entered.await(10, TimeUnit.SECONDS));
+                if (reinitialize) {
+                    fixture.handler.initialize();
+                } else {
+                    fixture.handler.dispose();
+                }
+                int publications = fixture.handler.publications.get();
+                release.countDown();
+                running.get(10, TimeUnit.SECONDS);
+                assertEquals(publications, fixture.handler.publications.get());
+                assertEquals(0, fixture.callbacks.get());
+                assertFalse(fixture.handler.statuses.contains(ThingStatus.ONLINE));
+                if (reinitialize) {
+                    fixture.scheduler.next(0).action().run();
+                    assertEquals(ThingStatus.UNKNOWN, fixture.handler.status);
+                    fixture.scheduler.next(300);
+                    fixture.handler.discover(result -> fixture.callbacks.incrementAndGet());
+                    fixture.scheduler.next(0).action().run();
+                    assertEquals(ThingStatus.ONLINE, fixture.handler.status);
+                    assertEquals(1, fixture.callbacks.get());
+                    assertEquals(2, fixture.requests.get());
+                } else {
+                    assertTrue(fixture.scheduler.polls.isEmpty());
+                }
+            } finally {
+                release.countDown();
+                executor.shutdownNow();
+                assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
+            }
+        }
+    }
+
+    @Test
+    void overlappingPollsDoNotDuplicateDiscovery() throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture()) {
+            fixture.status.set(207);
+            CountDownLatch entered = new CountDownLatch(1), release = new CountDownLatch(1);
+            fixture.onRequest = () -> awaitRequestRelease(entered, release);
+            var executor = Executors.newSingleThreadExecutor(Thread.ofPlatform().daemon(true).factory());
+            try {
+                Poll poll = fixture.scheduler.next(0);
+                var running = executor.submit(poll.action());
+                assertTrue(entered.await(10, TimeUnit.SECONDS));
+                poll.action().run();
+                assertEquals(1, fixture.requests.get());
+                release.countDown();
+                running.get(10, TimeUnit.SECONDS);
+                assertEquals(1, fixture.callbacks.get());
+                assertEquals(1, fixture.requests.get());
+                fixture.scheduler.next(300);
+                assertTrue(fixture.scheduler.polls.isEmpty());
+            } finally {
+                release.countDown();
+                executor.shutdownNow();
+                assertTrue(executor.awaitTermination(10, TimeUnit.SECONDS));
+            }
+        }
+    }
+
+    private static void awaitRequestRelease(CountDownLatch entered, CountDownLatch release) {
+        entered.countDown();
+        try {
+            assertTrue(release.await(10, TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Test
+    void http401ProducesAuthenticationDetail() throws Exception {
+        checkHttpFailure(401, ThingStatusDetail.CONFIGURATION_ERROR, "CalDAV authentication failed (HTTP 401)");
+    }
+
+    @Test
+    void http403ProducesForbiddenDetail() throws Exception {
+        checkHttpFailure(403, ThingStatusDetail.CONFIGURATION_ERROR, "CalDAV access was forbidden (HTTP 403)");
+    }
+
+    @Test
+    void http404ProducesEndpointConfigurationDetail() throws Exception {
+        checkHttpFailure(404, ThingStatusDetail.CONFIGURATION_ERROR, "CalDAV endpoint was not found (HTTP 404)");
+    }
+
+    @Test
+    void rejectedPropfindPreservesHttpStatus() throws Exception {
+        checkHttpFailure(405, ThingStatusDetail.COMMUNICATION_ERROR, "CalDAV request failed (HTTP 405)");
+    }
+
+    @Test
+    void http500ProducesCommunicationError() throws Exception {
+        checkHttpFailure(500, ThingStatusDetail.COMMUNICATION_ERROR, "CalDAV request failed (HTTP 500)");
+    }
+
+    private void checkHttpFailure(int status, ThingStatusDetail detail, String description) throws Exception {
+        try (RecoveryFixture fixture = new RecoveryFixture()) {
+            fixture.status.set(status);
+            fixture.responseBody = "<html>private-calendar-data wrong-password Authorization secret-cookie</html>";
+            fixture.scheduler.next(0).action().run();
+            assertEquals(ThingStatus.OFFLINE, fixture.handler.status);
+            assertEquals(detail, fixture.handler.detail);
+            assertEquals(description, fixture.handler.description);
+            assertEquals(1, fixture.requests.get());
+            assertEquals(0, fixture.callbacks.get());
+            assertFalse(fixture.handler.statuses.contains(ThingStatus.ONLINE));
+        }
+    }
+
+    @Test
+    void connectionFailureProducesCommunicationError() {
+        checkTransportFailure(new ConnectException("private-url password"), "Unable to connect to the CalDAV server");
+    }
+
+    @Test
+    void timeoutProducesTimeoutDetail() {
+        checkTransportFailure(new TimeoutException("private-url password"), "CalDAV request timed out");
+        checkTransportFailure(new SocketTimeoutException("private-url password"), "CalDAV request timed out");
+    }
+
+    @Test
+    void dnsFailureProducesNameResolutionDetail() {
+        checkTransportFailure(new UnknownHostException("private-host password"),
+                "CalDAV server name could not be resolved");
+    }
+
+    @Test
+    void tlsFailureProducesSecureConnectionDetail() {
+        checkTransportFailure(new SSLHandshakeException("private-certificate password"),
+                "TLS connection to the CalDAV server failed");
+    }
+
+    private void checkTransportFailure(Throwable failure, String description) {
+        ControlledScheduler scheduler = new ControlledScheduler();
+        ScriptedClient client = new ScriptedClient();
+        client.failure = failure;
+        Handler handler = scheduledHandler(300, client, scheduler);
+        try {
+            handler.initialize();
+            queueDiscovery(handler, scheduler);
+            scheduler.next(0).action().run();
+            assertEquals(ThingStatus.OFFLINE, handler.status);
+            assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, handler.detail);
+            assertEquals(description, handler.description);
+            assertEquals(1, client.requests);
+            assertFalse(handler.statuses.contains(ThingStatus.ONLINE));
+            client.failure = null;
+            scheduler.next(600).action().run();
+            assertEquals(ThingStatus.ONLINE, handler.status);
+            assertTrue(client.requests > 1);
+            scheduler.next(300);
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    void connectivityTrackingPreservesIncrementalCalendarWorkerAcrossPolls() throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicInteger downloads = new AtomicInteger(), reports = new AtomicInteger();
+        AtomicInteger remoteStatus = new AtomicInteger(207);
+        server.createContext("/", exchange -> {
+            try (exchange) {
+                String response;
+                if ("GET".equals(exchange.getRequestMethod())) {
+                    downloads.incrementAndGet();
+                    response = "BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nUID:one\n"
+                            + "DTSTART:20261007T080000Z\nDURATION:PT1H\nEND:VEVENT\nEND:VCALENDAR";
+                } else {
+                    reports.incrementAndGet();
+                    response = "<d:multistatus xmlns:d=\"DAV:\"><d:response><d:href>/calendar/one.ics</d:href>"
+                            + "<d:propstat><d:prop><d:getetag>unchanged</d:getetag></d:prop>"
+                            + "<d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response></d:multistatus>";
+                }
+                byte[] body = response.getBytes(StandardCharsets.UTF_8);
+                exchange.sendResponseHeaders(remoteStatus.get(), body.length);
+                exchange.getResponseBody().write(body);
+            }
+        });
+        server.start();
+        ControlledScheduler scheduler = new ControlledScheduler();
+        HttpClient http = new HttpClient();
+        HttpClientFactory factory = Objects.requireNonNull(mock(HttpClientFactory.class));
+        when(factory.createHttpClient(anyString(), any(SslContextFactory.Client.class))).thenReturn(http);
+        Calendar calendar = new Calendar("incremental", "/calendar/");
+        Thing child = Objects.requireNonNull(mock(Thing.class));
+        when(child.getHandler()).thenReturn(calendar);
+        String url = "http://127.0.0.1:" + server.getAddress().getPort() + "/";
+        Bridge bridge = Objects.requireNonNull(spy(configuredBridge(Map.of("url", url, "syncMode", "ETAG"))));
+        when(bridge.getThings()).thenReturn(List.of(child));
+        Handler handler = new Handler(bridge, factory, scheduler.executor);
+        try {
+            calendar.initialize();
+            handler.initialize();
+            assertEquals(ThingStatus.UNKNOWN, handler.statuses.poll());
+            scheduler.next(0).action().run();
+            assertEquals(ThingStatus.ONLINE, handler.status);
+            assertEquals(ThingStatus.ONLINE, calendar.status);
+            assertEquals(1, downloads.get());
+            remoteStatus.set(503);
+            scheduler.next(300).action().run();
+            assertEquals(ThingStatus.OFFLINE, handler.status);
+            assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, handler.detail);
+            calendar.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.OFFLINE, handler.detail, handler.description));
+            assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, calendar.detail);
+            assertEquals("Server returned HTTP 503",
+                    Objects.requireNonNull(calendar.states.get("sync#error")).toString());
+            remoteStatus.set(207);
+            scheduler.next(600).action().run();
+            assertEquals(ThingStatus.ONLINE, handler.status);
+            assertEquals(3, reports.get());
+            assertEquals(1, downloads.get(), "An unchanged ETag must reuse the preceding poll's resource");
+            assertEquals(ThingStatus.ONLINE, calendar.status);
+        } finally {
+            calendar.dispose();
             handler.dispose();
             http.stop();
             server.stop(0);

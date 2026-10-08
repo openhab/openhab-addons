@@ -15,17 +15,20 @@ package org.openhab.binding.caldav.internal.client;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * HTTP failure without sensitive response bodies or URLs.
  * 
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Structured synchronization failures
+ * @author Andreas Vilippus - Safe operation diagnostics and transport causes
  */
 @NonNullByDefault
 public class CalDavHttpException extends IOException {
     private static final long serialVersionUID = 1L;
     private final int statusCode;
+    private final String operation;
     private final boolean invalidSyncToken;
     private final boolean unsupportedReport;
 
@@ -38,14 +41,24 @@ public class CalDavHttpException extends IOException {
     }
 
     public CalDavHttpException(String operation, int statusCode, boolean invalidSyncToken, boolean unsupportedReport) {
-        super("CalDAV " + operation + " failed with HTTP status " + statusCode);
+        this(operation, statusCode, invalidSyncToken, unsupportedReport, null);
+    }
+
+    CalDavHttpException(String operation, int statusCode, boolean invalidSyncToken, boolean unsupportedReport,
+            @Nullable Throwable cause) {
+        super("CalDAV " + operation + " failed with HTTP status " + statusCode, cause);
         this.statusCode = statusCode;
+        this.operation = operation;
         this.invalidSyncToken = invalidSyncToken;
         this.unsupportedReport = unsupportedReport;
     }
 
     public int statusCode() {
         return statusCode;
+    }
+
+    public String operation() {
+        return operation;
     }
 
     public boolean invalidSyncToken() {

@@ -12,25 +12,29 @@
  */
 package org.openhab.binding.caldav.internal.client;
 
-import java.net.URI;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A discovered CalDAV calendar collection.
+ * Known DAV privileges reported by the server; aggregate privileges are not expanded into inferred rights.
  *
  * @author Andreas Vilippus - Initial contribution
- * @author Andreas Vilippus - Optional collection metadata
  */
 @NonNullByDefault
-public record CalendarCollection(URI uri, String displayName, String description, String color,
-        Set<DavPrivilege> privileges) {
-    public CalendarCollection {
-        privileges = Set.copyOf(privileges);
+public enum DavPrivilege {
+    READ("read"),
+    WRITE("write"),
+    WRITE_CONTENT("write-content"),
+    WRITE_PROPERTIES("write-properties"),
+    BIND("bind"),
+    UNBIND("unbind");
+
+    private final String externalName;
+
+    DavPrivilege(String externalName) {
+        this.externalName = externalName;
     }
 
-    public CalendarCollection(URI uri, String displayName) {
-        this(uri, displayName, "", "", Set.of());
+    public String externalName() {
+        return externalName;
     }
 }

@@ -17,15 +17,18 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.caldav.internal.client.CalDavHttpException;
+import org.openhab.binding.caldav.internal.client.CalDavUris;
 import org.openhab.binding.caldav.internal.client.CalendarReport;
 import org.openhab.binding.caldav.internal.client.DavResponse;
 import org.openhab.binding.caldav.internal.client.DavTransport;
@@ -39,6 +42,7 @@ import org.openhab.binding.caldav.internal.model.CalendarEvent;
  * 
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Bounded transactional sync paging
+ * @author Andreas Vilippus - Compact resource references and snapshot validation
  */
 @NonNullByDefault
 public final class CalendarSynchronizer {
@@ -49,13 +53,16 @@ public final class CalendarSynchronizer {
 
     public CalendarSynchronizer(DavTransport transport, URI collection) {
         this.transport = transport;
-        this.collection = collection;
+        this.collection = CalDavUris.canonicalize(collection);
     }
 
     public record CachedResource(String etag, String data) {
     }
 
     public record Snapshot(String horizon, String token, Map<String, CachedResource> resources) {
+        public Snapshot {
+            resources = Collections.unmodifiableMap(new TreeMap<>(resources));
+        }
     }
 
     public record Result(List<CalendarEvent> events, int failedResources, Snapshot snapshot) {
@@ -117,9 +124,9 @@ public final class CalendarSynchronizer {
             if (resource.data().isEmpty()) {
                 throw new IOException("Calendar data missing from full response");
             }
-            put(resources, resource.href(), new CachedResource(resource.etag(), resource.data()));
+            put(resources, reference(resource.href()), new CachedResource(resource.etag(), resource.data()));
         }
-        return new Snapshot(key, "", Map.copyOf(resources));
+        return new Snapshot(key, "", resources);
     }
 
     private Snapshot etag(CalendarWindow horizon, String key, Map<String, CachedResource> previous) throws Exception {
@@ -131,12 +138,13 @@ public final class CalendarSynchronizer {
         Map<String, CachedResource> resources = new HashMap<>();
         for (var resource : response.resources()) {
             requireSuccess(resource);
-            CachedResource old = previous.get(resource.href());
+            String reference = reference(resource.href());
+            CachedResource old = previous.get(reference);
             CachedResource value = old != null && !resource.etag().isEmpty() && resource.etag().equals(old.etag()) ? old
-                    : new CachedResource(resource.etag(), download(resource.href()));
-            put(resources, resource.href(), value);
+                    : new CachedResource(resource.etag(), download(reference));
+            put(resources, reference, value);
         }
-        return new Snapshot(key, "", Map.copyOf(resources));
+        return new Snapshot(key, "", resources);
     }
 
     private Snapshot token(String key, Snapshot previous) throws Exception {
@@ -163,25 +171,32 @@ public final class CalendarSynchronizer {
                 throw new IOException("Too many calendar changes");
             }
             for (var resource : response.resources()) {
+                String reference = reference(resource.href());
+                // A continuation token establishes a later state (RFC 6578 section 3.6); later pages supersede earlier
+                // ones.
                 if (resource.status() == HttpStatus.NOT_FOUND_404) {
-                    resources.remove(resource.href());
+                    resources.remove(reference);
                     continue;
                 }
                 requireSuccess(resource);
-                String data = download(resource.href());
-                put(resources, resource.href(), new CachedResource(resource.etag(), data));
+                String data = download(reference);
+                put(resources, reference, new CachedResource(resource.etag(), data));
             }
             token = response.token();
             if (!response.truncated()) {
-                return new Snapshot(key, token, Map.copyOf(resources));
+                return new Snapshot(key, token, resources);
             }
         }
         throw new IOException("Too many sync pages");
     }
 
-    private String download(String href) throws IOException, InterruptedException {
+    private String reference(String href) {
+        return CalDavUris.compact(collection, CalDavUris.canonicalize(CalDavUris.resolve(collection, href)));
+    }
+
+    private String download(String reference) throws IOException, InterruptedException {
         try {
-            return transport.request("GET", URI.create(href), "", "0");
+            return transport.request("GET", CalDavUris.reconstruct(collection, reference), "", "0");
         } catch (CalDavHttpException e) {
             if (e.statusCode() == HttpStatus.NOT_FOUND_404) {
                 throw new IOException("Calendar resource changed during synchronization", e);
@@ -191,6 +206,20 @@ public final class CalendarSynchronizer {
                 throw new IOException("Calendar resource download failed", e);
             }
             throw e;
+        }
+    }
+
+    /**
+     * Rejects a persisted snapshot unless every key is the exact compact, lossless representation for this collection.
+     */
+    public static void validateSnapshot(Snapshot snapshot, URI collection) {
+        validateCache(snapshot);
+        for (String reference : snapshot.resources().keySet()) {
+            URI target = CalDavUris.reconstruct(collection, reference);
+            if (!CalDavUris.isRoundTrip(collection, target, reference)
+                    || !CalDavUris.compact(collection, target).equals(reference)) {
+                throw new IllegalArgumentException("Invalid cached calendar resource reference");
+            }
         }
     }
 
@@ -213,12 +242,12 @@ public final class CalendarSynchronizer {
         return new Result(List.copyOf(events), failures, snapshot);
     }
 
-    private static void put(Map<String, CachedResource> resources, String href, CachedResource resource)
+    private static void put(Map<String, CachedResource> resources, String reference, CachedResource resource)
             throws IOException {
         if (resource.data().getBytes(StandardCharsets.UTF_8).length > ICalendarParser.MAX_RESOURCE_SIZE) {
             throw new IOException("Calendar resource exceeds limit");
         }
-        resources.put(href, resource);
+        resources.put(reference, resource);
         long bytes = resources.values().stream().mapToLong(value -> value.data().length()).sum();
         if (resources.size() > DavResponse.MAX_RESOURCES || bytes > 8 * 1024 * 1024) {
             throw new IOException("Calendar cache exceeds limit");

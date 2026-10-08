@@ -24,6 +24,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,11 +35,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.openhab.binding.caldav.internal.client.CalDavClient;
 import org.openhab.binding.caldav.internal.client.CalDavHttpException;
+import org.openhab.binding.caldav.internal.client.CalDavUris;
 import org.openhab.binding.caldav.internal.client.CalDavXml;
 import org.openhab.binding.caldav.internal.client.DavTransport;
 import org.openhab.binding.caldav.internal.config.AccountConfiguration;
 import org.openhab.binding.caldav.internal.logic.CalendarWindow;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpServer;
 
 /**
@@ -44,6 +50,7 @@ import com.sun.net.httpserver.HttpServer;
  * 
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Bounded transactional sync paging
+ * @author Andreas Vilippus - Compact resource synchronization and restore regressions
  */
 @NonNullByDefault
 @Timeout(30)
@@ -64,7 +71,11 @@ class CalendarSynchronizerTest {
     }
 
     private static String member(String name, String etag, String data) {
-        return "<d:response><d:href>/calendar/" + name + ".ics</d:href><d:propstat><d:prop><d:getetag>" + etag
+        return hrefMember("/calendar/" + name + ".ics", etag, data);
+    }
+
+    private static String hrefMember(String href, String etag, String data) {
+        return "<d:response><d:href>" + href.replace("&", "&amp;") + "</d:href><d:propstat><d:prop><d:getetag>" + etag
                 + "</d:getetag>" + (data.isEmpty() ? "" : "<c:calendar-data>" + data + "</c:calendar-data>")
                 + "</d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response>";
     }
@@ -174,7 +185,7 @@ class CalendarSynchronizerTest {
         var result = sync.synchronize(WINDOW, ZoneOffset.UTC, "SYNC_TOKEN", false);
         assertEquals(2, result.events().size());
         assertEquals("final", sync.snapshot().token());
-        assertEquals(2, sync.snapshot().resources().size());
+        assertEquals(Set.of("one.ics", "two.ics"), sync.snapshot().resources().keySet());
         var nextRequest = CalDavXml.parse(server.requests.get(2).body());
         assertEquals("middle", nextRequest.getElementsByTagNameNS("DAV:", "sync-token").item(0).getTextContent());
         assertEquals("0", server.requests.get(2).depth());
@@ -194,7 +205,7 @@ class CalendarSynchronizerTest {
         var result = sync.synchronize(WINDOW, ZoneOffset.UTC, "SYNC_TOKEN", false);
         assertEquals(List.of("two"), result.events().stream().map(event -> event.uid()).toList());
         assertEquals("final", result.snapshot().token());
-        assertFalse(result.snapshot().resources().containsKey(URI_CALENDAR.resolve("one.ics").toString()));
+        assertEquals(Set.of("two.ics"), result.snapshot().resources().keySet());
     }
 
     @Test
@@ -406,8 +417,7 @@ class CalendarSynchronizerTest {
         server.replies.add(ICS.replace("UID:one", "UID:changed"));
         var result = sync.synchronize(WINDOW, ZoneOffset.UTC, "ETAG", false);
         assertEquals("changed", result.events().getFirst().uid());
-        assertEquals("new", java.util.Objects
-                .requireNonNull(result.snapshot().resources().get(URI_CALENDAR.resolve("one.ics").toString())).etag());
+        assertEquals("new", java.util.Objects.requireNonNull(result.snapshot().resources().get("one.ics")).etag());
         assertEquals(4, server.calls);
     }
 
@@ -520,5 +530,263 @@ class CalendarSynchronizerTest {
                 () -> sync.synchronize(WINDOW, ZoneOffset.UTC, "SYNC_TOKEN", false));
         assertEquals(IOException.class, failure.getClass());
         assertEquals("", sync.snapshot().token());
+    }
+
+    @Test
+    void resourceReferencesRoundTripThroughFullEtagAndAbsoluteGet() throws Exception {
+        for (var entry : Map.ofEntries(Map.entry("event.ics", "event.ics"), Map.entry("sub/event.ics", "sub/event.ics"),
+                Map.entry("event%20one.ics", "event%20one.ics"), Map.entry("sub%2fevent.ics", "sub%2Fevent.ics"),
+                Map.entry("event%3f.ics", "event%3F.ics"), Map.entry("sub//event.ics", "sub//event.ics"),
+                Map.entry(".//event.ics", ".//event.ics"), Map.entry("Event.ics", "Event.ics"),
+                Map.entry("event.ics?x=1&y=%2f", "event.ics?x=1&y=%2F"), Map.entry("event.ics?", "event.ics?"),
+                Map.entry("./event:one.ics", "./event:one.ics"), Map.entry("sub/", "sub/"), Map.entry("sub", "sub"),
+                Map.entry("/other/event.ics", "/other/event.ics"),
+                Map.entry("https://example.org//other/event.ics", "/.//other/event.ics")).entrySet()) {
+            Server server = new Server();
+            server.replies.add(response("", hrefMember(entry.getKey(), "a", ICS)));
+            var sync = new CalendarSynchronizer(server, URI_CALENDAR);
+            var full = sync.synchronize(WINDOW, ZoneOffset.UTC, "FULL", false);
+            assertEquals(Set.of(entry.getValue()), full.snapshot().resources().keySet(), entry.getKey());
+            assertEquals(1, full.events().size());
+            CalendarSynchronizer.validateSnapshot(full.snapshot(), URI_CALENDAR);
+            URI absolute = CalDavUris.canonicalize(CalDavUris.resolve(URI_CALENDAR, entry.getKey()));
+            assertEquals(absolute, CalDavUris.reconstruct(URI_CALENDAR, entry.getValue()));
+            assertEquals(absolute, CalDavUris.canonicalize(CalDavUris.resolve(URI_CALENDAR, entry.getValue())));
+            server.replies.add(response("", hrefMember(entry.getKey(), "b", "")));
+            server.replies.add(ICS);
+            sync.synchronize(WINDOW, ZoneOffset.UTC, "ETAG", false);
+            Request get = server.requests.getLast();
+            assertEquals("GET", get.method());
+            assertTrue(get.uri().isAbsolute());
+            assertEquals(absolute, get.uri(), entry.getKey());
+            assertEquals(Set.of(entry.getValue()), sync.snapshot().resources().keySet());
+        }
+    }
+
+    @Test
+    void similarCollectionPrefixUsesOriginRelativeFallback() throws Exception {
+        Server server = new Server();
+        server.replies.add(response("", hrefMember("/cal/abc/event.ics", "a", ICS)));
+        var sync = new CalendarSynchronizer(server, URI.create("https://example.org/cal/a/"));
+        var result = sync.synchronize(WINDOW, ZoneOffset.UTC, "FULL", false);
+        assertEquals(Set.of("/cal/abc/event.ics"), result.snapshot().resources().keySet());
+    }
+
+    @Test
+    void distinctPathsEscapesAndQueriesNeverShareAResourceKey() throws Exception {
+        List<String> hrefs = List.of("event.ics", "Event.ics", "event.ics?", "event.ics?x=1", "event.ics?x=2",
+                "sub/event.ics", "sub%2Fevent.ics", "sub//event.ics", "sub", "sub/");
+        Server server = new Server();
+        StringBuilder members = new StringBuilder();
+        for (int i = 0; i < hrefs.size(); i++) {
+            members.append(hrefMember(hrefs.get(i), "a", ICS.replace("UID:one", "UID:event-" + i)));
+        }
+        server.replies.add(response("", members.toString()));
+        var result = new CalendarSynchronizer(server, URI_CALENDAR).synchronize(WINDOW, ZoneOffset.UTC, "FULL", false);
+        assertEquals(Set.copyOf(hrefs), result.snapshot().resources().keySet());
+        assertEquals(hrefs.size(), result.events().size());
+    }
+
+    @Test
+    void fullReconcilesUpdatesAndDeletesWithAliasedHrefs() throws Exception {
+        Server server = new Server();
+        server.replies.add(response("", member("a", ICS) + member("two", "b", ICS.replace("UID:one", "UID:two"))));
+        var sync = new CalendarSynchronizer(server, URI_CALENDAR);
+        assertEquals(Set.of("one.ics", "two.ics"),
+                sync.synchronize(WINDOW, ZoneOffset.UTC, "FULL", false).snapshot().resources().keySet());
+        server.replies.add(response("",
+                hrefMember("https://EXAMPLE.org:443/calendar/./one.ics", "c", ICS.replace("UID:one", "UID:updated"))));
+        var updated = sync.synchronize(WINDOW, ZoneOffset.UTC, "FULL", false);
+        assertEquals(Set.of("one.ics"), updated.snapshot().resources().keySet());
+        assertEquals("updated", updated.events().getFirst().uid());
+        server.replies.add(response("", ""));
+        assertTrue(sync.synchronize(WINDOW, ZoneOffset.UTC, "FULL", false).snapshot().resources().isEmpty());
+    }
+
+    @Test
+    void etagAliasesReuseUnchangedDataThenUpdateAndRemoveResources() throws Exception {
+        Server server = new Server();
+        server.replies.add(response("", hrefMember("one.ics", "a", "")));
+        server.replies.add(ICS);
+        var sync = new CalendarSynchronizer(server, URI_CALENDAR);
+        sync.synchronize(WINDOW, ZoneOffset.UTC, "ETAG", false);
+        server.replies.add(response("",
+                hrefMember("./one.ics", "a", "") + hrefMember("https://EXAMPLE.org:443/calendar/%6Fne.ics", "a", "")));
+        assertEquals(Set.of("one.ics"),
+                sync.synchronize(WINDOW, ZoneOffset.UTC, "ETAG", false).snapshot().resources().keySet());
+        assertEquals(3, server.calls);
+        server.replies.add(response("", hrefMember("https://EXAMPLE.org:443/calendar/one.ics", "b", "")));
+        server.replies.add(ICS.replace("UID:one", "UID:updated"));
+        assertEquals("updated", sync.synchronize(WINDOW, ZoneOffset.UTC, "ETAG", false).events().getFirst().uid());
+        assertEquals(URI_CALENDAR.resolve("one.ics"), server.requests.getLast().uri());
+        server.replies.add(response("", ""));
+        assertTrue(sync.synchronize(WINDOW, ZoneOffset.UTC, "ETAG", false).snapshot().resources().isEmpty());
+        assertEquals(6, server.calls);
+    }
+
+    @Test
+    void fullDeduplicatesIdenticalAliasesWithoutDuplicatingEvents() throws Exception {
+        Server server = new Server();
+        server.replies.add(response("", hrefMember("one.ics", "a", ICS) + hrefMember("./one.ics", "a", ICS)
+                + hrefMember("https://EXAMPLE.org:443/calendar/one.ics", "a", ICS)));
+        var result = new CalendarSynchronizer(server, URI_CALENDAR).synchronize(WINDOW, ZoneOffset.UTC, "FULL", false);
+        assertEquals(Set.of("one.ics"), result.snapshot().resources().keySet());
+        assertEquals(1, result.events().size());
+    }
+
+    @Test
+    void conflictingAliasesRejectWholeResponseBeforeAnyDownload() throws Exception {
+        for (String mode : List.of("FULL", "ETAG", "SYNC_TOKEN", "AUTO")) {
+            for (String conflict : List.of(hrefMember("./one.ics", "b", ICS),
+                    hrefMember("./one.ics", "a", ICS.replace("UID:one", "UID:other")), deletion("./one.ics"))) {
+                Server server = new Server();
+                server.replies.add(response("old", hrefMember("one.ics", "a", ICS)));
+                if (!"FULL".equals(mode)) {
+                    server.replies.add(ICS);
+                }
+                var sync = new CalendarSynchronizer(server, URI_CALENDAR);
+                sync.synchronize(WINDOW, ZoneOffset.UTC, mode, false);
+                var before = sync.snapshot();
+                int calls = server.calls;
+                server.replies.add(response("new", hrefMember("one.ics", "a", ICS) + conflict));
+                assertThrows(IOException.class, () -> sync.synchronize(WINDOW, ZoneOffset.UTC, mode, false));
+                assertSame(before, sync.snapshot());
+                assertEquals(calls + 1, server.calls);
+            }
+        }
+    }
+
+    private static String deletion(String href) {
+        return "<d:response><d:href>" + href + "</d:href><d:status>HTTP/1.1 404 Not Found</d:status></d:response>";
+    }
+
+    @Test
+    void syncTokenHandlesResourcesOutsideCollectionWithAbsoluteGetsAndAliasDeletion() throws Exception {
+        checkSyncResourceReferences("SYNC_TOKEN");
+    }
+
+    @Test
+    void autoHandlesResourcesOutsideCollectionWithAbsoluteGetsAndAliasDeletion() throws Exception {
+        checkSyncResourceReferences("AUTO");
+    }
+
+    private void checkSyncResourceReferences(String mode) throws Exception {
+        for (var entry : Map.of("/other/Event%2f.ics?x=1",
+                List.of("/other/Event%2F.ics?x=1", "https://example.org/other/Event%2F.ics?x=1"),
+                "https://EXAMPLE.org:443//other/event.ics",
+                List.of("/.//other/event.ics", "https://example.org//other/event.ics"), "/calendar-other/event.ics",
+                List.of("/calendar-other/event.ics", "https://example.org/calendar-other/event.ics"), "./event:one.ics",
+                List.of("./event:one.ics", "https://example.org/calendar/event:one.ics")).entrySet()) {
+            Server server = new Server();
+            server.replies.add(response("one", hrefMember(entry.getKey(), "a", "")));
+            server.replies.add(ICS);
+            var sync = new CalendarSynchronizer(server, URI_CALENDAR);
+            var result = sync.synchronize(WINDOW, ZoneOffset.UTC, mode, false);
+            assertEquals(Set.of(entry.getValue().getFirst()), result.snapshot().resources().keySet());
+            assertEquals("one", result.events().getFirst().uid());
+            assertEquals("one", result.snapshot().token());
+            Request get = server.requests.getLast();
+            assertEquals("GET", get.method());
+            assertEquals(URI.create(entry.getValue().get(1)), get.uri());
+            server.replies.add(response("two", deletion(entry.getValue().get(1).replace("&", "&amp;"))));
+            var deleted = sync.synchronize(WINDOW, ZoneOffset.UTC, mode, false);
+            assertTrue(deleted.snapshot().resources().isEmpty());
+            assertTrue(deleted.events().isEmpty());
+            assertEquals("two", deleted.snapshot().token());
+            assertEquals(3, server.calls);
+        }
+    }
+
+    @Test
+    void syncTokenAliasesAddUpdateAndDeleteTheSameCompactKey() throws Exception {
+        Server server = new Server();
+        server.replies.add(response("one", hrefMember("one.ics", "a", "")));
+        server.replies.add(ICS);
+        var sync = new CalendarSynchronizer(server, URI_CALENDAR);
+        sync.synchronize(WINDOW, ZoneOffset.UTC, "SYNC_TOKEN", false);
+        server.replies.add(response("two", hrefMember("https://EXAMPLE.org:443/calendar/%6fne.ics", "b", "")));
+        server.replies.add(ICS.replace("UID:one", "UID:updated"));
+        var updated = sync.synchronize(WINDOW, ZoneOffset.UTC, "SYNC_TOKEN", false);
+        assertEquals(Set.of("one.ics"), updated.snapshot().resources().keySet());
+        assertEquals("updated", updated.events().getFirst().uid());
+        assertEquals(URI_CALENDAR.resolve("one.ics"), server.requests.getLast().uri());
+        server.replies.add(response("three", deletion("./one.ics")));
+        assertTrue(sync.synchronize(WINDOW, ZoneOffset.UTC, "SYNC_TOKEN", false).snapshot().resources().isEmpty());
+        assertEquals("three", sync.snapshot().token());
+    }
+
+    @Test
+    void continuationPagesApplyLaterResourceStateWithStableKeys() throws Exception {
+        Server server = new Server();
+        server.replies.add(truncated("middle", hrefMember("one.ics", "a", "")));
+        server.replies.add(ICS);
+        server.replies.add(response("final",
+                hrefMember("https://EXAMPLE.org:443/calendar/one.ics", "b", "") + hrefMember("sub/two.ics", "c", "")));
+        server.replies.add(ICS.replace("UID:one", "UID:updated"));
+        server.replies.add(ICS.replace("UID:one", "UID:two"));
+        var sync = new CalendarSynchronizer(server, URI_CALENDAR);
+        var result = sync.synchronize(WINDOW, ZoneOffset.UTC, "SYNC_TOKEN", false);
+        assertEquals(Set.of("one.ics", "sub/two.ics"), result.snapshot().resources().keySet());
+        assertEquals(Set.of("updated", "two"),
+                result.events().stream().map(e -> e.uid()).collect(java.util.stream.Collectors.toSet()));
+        assertEquals("final", result.snapshot().token());
+        server.replies.add(truncated("deleting", deletion("https://EXAMPLE.org:443/calendar/one.ics")));
+        server.replies.add(response("deleted", deletion("./sub/two.ics")));
+        assertTrue(sync.synchronize(WINDOW, ZoneOffset.UTC, "SYNC_TOKEN", false).snapshot().resources().isEmpty());
+        assertEquals("deleted", sync.snapshot().token());
+    }
+
+    @Test
+    void unsafeOrAmbiguousServerReferencesNeverAlterThePreviousSnapshot() throws Exception {
+        for (String href : List.of("https://other.org/calendar/one.ics", "https://example.org:444/calendar/one.ics",
+                "http://example.org/calendar/one.ics", "https://user@example.org/calendar/one.ics", "one.ics#fragment",
+                "bad%2.ics", "bad%zz.ics", "%2E/../one.ics")) {
+            for (String mode : List.of("FULL", "ETAG", "SYNC_TOKEN", "AUTO")) {
+                Server server = new Server();
+                server.replies.add(response("old", hrefMember("one.ics", "a", ICS)));
+                if (!"FULL".equals(mode)) {
+                    server.replies.add(ICS);
+                }
+                var sync = new CalendarSynchronizer(server, URI_CALENDAR);
+                sync.synchronize(WINDOW, ZoneOffset.UTC, mode, false);
+                var before = sync.snapshot();
+                int calls = server.calls;
+                server.replies.add(response("new", hrefMember(href, "b", ICS)));
+                assertThrows(IOException.class, () -> sync.synchronize(WINDOW, ZoneOffset.UTC, mode, false), href);
+                assertSame(before, sync.snapshot());
+                assertEquals(calls + 1, server.calls);
+            }
+        }
+    }
+
+    @Test
+    void snapshotJsonHasSortedCompactKeysAndRestoresTheSameEvents() throws Exception {
+        Server server = new Server();
+        server.replies.add(response("",
+                hrefMember("b.ics", "b", ICS.replace("UID:one", "UID:two")) + hrefMember("a.ics", "a", ICS)));
+        var result = new CalendarSynchronizer(server, URI_CALENDAR).synchronize(WINDOW, ZoneOffset.UTC, "FULL", false);
+        Gson gson = new Gson();
+        String json = gson.toJson(result.snapshot());
+        assertFalse(json.contains("https://"));
+        assertEquals(List.of("a.ics", "b.ics"),
+                new ArrayList<>(JsonParser.parseString(json).getAsJsonObject().getAsJsonObject("resources").keySet()));
+        var restored = Objects.requireNonNull(gson.fromJson(json, CalendarSynchronizer.Snapshot.class));
+        CalendarSynchronizer.validateSnapshot(restored, URI_CALENDAR);
+        assertEquals(result.events(), CalendarSynchronizer.expand(restored, WINDOW, ZoneOffset.UTC, false).events());
+        assertEquals(json, gson.toJson(restored));
+    }
+
+    @Test
+    void snapshotRejectsInvalidAbsoluteAliasedAndAmbiguousKeys() {
+        for (String reference : List.of("https://other.org/one.ics", "https://example.org:444/one.ics",
+                "http://example.org/one.ics", "https://user@example.org/one.ics", "one.ics#fragment", "bad%2.ics",
+                "bad%zz.ics", "https://example.org/calendar/one.ics", "./one.ics", "../other.ics", "%6fne.ics",
+                "/calendar/one.ics", "%2E/../one.ics", "")) {
+            var snapshot = new CalendarSynchronizer.Snapshot("", "",
+                    Map.of("valid.ics", new CalendarSynchronizer.CachedResource("a", ICS), reference,
+                            new CalendarSynchronizer.CachedResource("b", ICS)));
+            assertThrows(IllegalArgumentException.class,
+                    () -> CalendarSynchronizer.validateSnapshot(snapshot, URI_CALENDAR), reference);
+        }
     }
 }

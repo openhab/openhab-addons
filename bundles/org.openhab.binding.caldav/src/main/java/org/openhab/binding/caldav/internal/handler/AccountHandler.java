@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.caldav.internal.handler;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -21,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,6 +33,7 @@ import org.openhab.binding.caldav.internal.client.CalDavClient;
 import org.openhab.binding.caldav.internal.client.CalDavHttpException;
 import org.openhab.binding.caldav.internal.client.CalendarCollection;
 import org.openhab.binding.caldav.internal.client.CalendarDiscoveryParser;
+import org.openhab.binding.caldav.internal.client.DavTransport;
 import org.openhab.binding.caldav.internal.config.AccountConfiguration;
 import org.openhab.binding.caldav.internal.config.CalDavConfiguration;
 import org.openhab.binding.caldav.internal.discovery.CalDavDiscoveryService;
@@ -54,12 +57,19 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Vilippus - Coordinated lifecycle and recovery
  * @author Andreas Vilippus - On-demand collection discovery
  * @author Andreas Vilippus - Configured polling and retry scheduling
+ * @author Andreas Vilippus - Remote-confirmed recovery and retained discovery work
+ * @author Andreas Vilippus - Session-bound discovery cancellation
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler {
     private static final String PRINCIPAL = "<d:propfind xmlns:d=\"DAV:\"><d:prop><d:current-user-principal/></d:prop></d:propfind>";
     private static final String HOME = "<d:propfind xmlns:d=\"DAV:\" xmlns:c=\"urn:ietf:params:xml:ns:caldav\"><d:prop><c:calendar-home-set/></d:prop></d:propfind>";
-    private static final String COLLECTIONS = "<d:propfind xmlns:d=\"DAV:\"><d:prop><d:displayname/><d:resourcetype/></d:prop></d:propfind>";
+    private static final String COLLECTIONS = """
+            <d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:i="http://apple.com/ns/ical/">
+              <d:prop><d:displayname/><d:resourcetype/><c:calendar-description/>
+                <d:current-user-privilege-set/><i:calendar-color/></d:prop>
+            </d:propfind>
+            """;
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     private final HttpClientFactory httpFactory;
     private final ScheduledExecutorService accountScheduler;
@@ -67,22 +77,41 @@ public class AccountHandler extends BaseBridgeHandler {
     private @Nullable Session session;
     private @Nullable CalDavDiscoveryService discoveryService;
     private @Nullable ScheduledFuture<?> job;
-    private final List<Consumer<List<CalendarCollection>>> discovery = new ArrayList<>();
+    private final List<PendingDiscovery> discovery = new ArrayList<>();
+
+    private record PendingDiscovery(Consumer<List<CalendarCollection>> callback, BooleanSupplier valid,
+            Runnable cancel) {
+    }
 
     private static final class Session {
         final AccountConfiguration configuration;
         final HttpClient http;
         final CalDavClient client;
+        final DavTransport transport;
         volatile boolean valid = true;
         boolean running;
         boolean stopping;
         boolean requested;
         int failures;
+        boolean remoteSucceeded;
+        @Nullable
+        IOException remoteFailure;
 
         Session(AccountConfiguration configuration, HttpClient http) {
             this.configuration = configuration;
             this.http = http;
             client = new CalDavClient(http, configuration);
+            // Keep this transport stable across polls so CalendarHandler retains its incremental synchronizer.
+            transport = (method, uri, body, depth) -> {
+                try {
+                    String response = client.request(method, uri, body, depth);
+                    remoteSucceeded = true;
+                    return response;
+                } catch (IOException e) {
+                    remoteFailure = e;
+                    throw e;
+                }
+            };
         }
     }
 
@@ -111,6 +140,7 @@ public class AccountHandler extends BaseBridgeHandler {
             Session next = new Session(configuration, http);
             synchronized (lifecycle) {
                 session = next;
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for CalDAV server communication");
                 CalDavDiscoveryService service = discoveryService;
                 if (service != null) {
                     service.startScan();
@@ -119,7 +149,8 @@ public class AccountHandler extends BaseBridgeHandler {
                 }
             }
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid account configuration");
+            var failure = CalDavErrors.account(e);
+            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.description());
         }
     }
 
@@ -180,27 +211,58 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     public void discover(Consumer<List<CalendarCollection>> callback) {
+        discover(callback, () -> true);
+    }
+
+    /**
+     * Queues discovery until its callback succeeds. The nonblocking validity predicate identifies a live scan.
+     */
+    public void discover(Consumer<List<CalendarCollection>> callback, BooleanSupplier valid) {
+        discover(callback, valid, () -> {
+        });
+    }
+
+    /**
+     * Cancels the associated scan when the account session ends, including callbacks already preparing results.
+     * The cancellation hook must target only this scan and must not throw.
+     */
+    public void discover(Consumer<List<CalendarCollection>> callback, BooleanSupplier valid, Runnable cancel) {
         synchronized (lifecycle) {
             if (session == null) {
                 return;
             }
-            discovery.add(callback);
+            discovery.add(new PendingDiscovery(callback, valid, cancel));
         }
         requestSync();
     }
 
     private void poll(Session current) {
-        List<Consumer<List<CalendarCollection>>> callbacks;
+        List<PendingDiscovery> callbacks;
         synchronized (lifecycle) {
             if (!current.equals(session) || !current.valid || current.running) {
                 return;
             }
             current.running = true;
+            current.remoteSucceeded = false;
+            current.remoteFailure = null;
             // Requests arriving during this poll stay queued for the next run.
-            callbacks = List.copyOf(discovery);
-            discovery.clear();
+            callbacks = new ArrayList<>(discovery);
         }
         try {
+            for (var iterator = callbacks.iterator(); iterator.hasNext();) {
+                PendingDiscovery request = iterator.next();
+                if (!request.valid().getAsBoolean()) {
+                    iterator.remove();
+                    synchronized (lifecycle) {
+                        if (current.equals(session)) {
+                            discovery.remove(request);
+                        }
+                    }
+                }
+            }
+            if (!current.valid) {
+                return;
+            }
             if (!current.http.isStarted()) {
                 current.http.start();
             }
@@ -208,19 +270,19 @@ public class AccountHandler extends BaseBridgeHandler {
             if (!current.valid) {
                 return;
             }
-            synchronized (lifecycle) {
-                if (!current.equals(session)) {
-                    return;
-                }
-                updateStatus(ThingStatus.ONLINE);
-                current.failures = 0;
-            }
-            for (var callback : callbacks) {
+            for (var request : callbacks) {
                 if (!current.valid) {
                     return;
                 }
                 try {
-                    callback.accept(collections);
+                    if (request.valid().getAsBoolean()) {
+                        request.callback().accept(collections);
+                    }
+                    synchronized (lifecycle) {
+                        if (current.equals(session)) {
+                            discovery.remove(request);
+                        }
+                    }
                 } catch (RuntimeException e) {
                     logger.debug("CalDAV discovery callback failed ({})", e.getClass().getSimpleName());
                 }
@@ -230,18 +292,24 @@ public class AccountHandler extends BaseBridgeHandler {
                     return;
                 }
                 if (thing.getHandler() instanceof CalendarHandler calendar) {
-                    calendar.synchronize(current.client, current.configuration, () -> current.valid);
+                    calendar.synchronize(current.transport, current.configuration, () -> current.valid);
                 }
+            }
+            synchronized (lifecycle) {
+                if (current.equals(session) && current.valid && current.remoteSucceeded) {
+                    updateStatus(ThingStatus.ONLINE);
+                    current.failures = 0;
+                }
+            }
+            IOException remoteFailure = current.remoteFailure;
+            if (!current.remoteSucceeded && remoteFailure != null) {
+                // CalendarHandler already published its own failure; retain its specific detail and cached data.
+                failed(current, remoteFailure, false);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        } catch (IllegalArgumentException e) {
-            failed(current, ThingStatusDetail.CONFIGURATION_ERROR, e);
-        } catch (CalDavHttpException e) {
-            failed(current, e.statusCode() == 401 || e.statusCode() == 403 ? ThingStatusDetail.CONFIGURATION_ERROR
-                    : ThingStatusDetail.COMMUNICATION_ERROR, e);
         } catch (Exception e) {
-            failed(current, ThingStatusDetail.COMMUNICATION_ERROR, e);
+            failed(current, e, true);
         } finally {
             synchronized (lifecycle) {
                 current.running = false;
@@ -262,49 +330,57 @@ public class AccountHandler extends BaseBridgeHandler {
     private List<CalendarCollection> discoverCollections(Session current) throws Exception {
         URI base = URI.create(current.configuration.url);
         if ("DIRECT".equals(current.configuration.discoveryMode)) {
-            return CalendarDiscoveryParser.collections(current.client.request("PROPFIND", base, COLLECTIONS, "1"),
+            return CalendarDiscoveryParser.collections(current.transport.request("PROPFIND", base, COLLECTIONS, "1"),
                     base);
         }
         URI principal = CalendarDiscoveryParser
-                .currentUserPrincipal(current.client.request("PROPFIND", base, PRINCIPAL, "0"), base);
+                .currentUserPrincipal(current.transport.request("PROPFIND", base, PRINCIPAL, "0"), base);
         List<URI> homes = CalendarDiscoveryParser
-                .calendarHomes(current.client.request("PROPFIND", principal, HOME, "0"), principal);
+                .calendarHomes(current.transport.request("PROPFIND", principal, HOME, "0"), principal);
         Map<URI, CalendarCollection> discovered = new LinkedHashMap<>();
         for (URI home : homes) {
             if (!current.valid || Thread.currentThread().isInterrupted()) {
                 throw new InterruptedException();
             }
             for (CalendarCollection collection : CalendarDiscoveryParser
-                    .collections(current.client.request("PROPFIND", home, COLLECTIONS, "1"), home)) {
+                    .collections(current.transport.request("PROPFIND", home, COLLECTIONS, "1"), home)) {
                 discovered.putIfAbsent(collection.uri(), collection);
             }
         }
         return List.copyOf(discovered.values());
     }
 
-    private void failed(Session current, ThingStatusDetail detail, Exception error) {
+    private void failed(Session current, Exception error, boolean notifyCalendars) {
+        var failure = CalDavErrors.account(error);
         synchronized (lifecycle) {
             if (!current.equals(session) || !current.valid) {
                 return;
             }
             current.failures = Math.min(6, current.failures + 1);
-            updateStatus(ThingStatus.OFFLINE, detail, "CalDAV account connection failed");
+            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.description());
         }
-        for (var thing : getThing().getThings()) {
-            if (!current.valid) {
-                return;
-            }
-            if (thing.getHandler() instanceof CalendarHandler calendar) {
-                calendar.bridgeConnectionFailed(() -> current.valid);
+        if (notifyCalendars) {
+            for (var thing : getThing().getThings()) {
+                if (!current.valid) {
+                    return;
+                }
+                if (thing.getHandler() instanceof CalendarHandler calendar) {
+                    calendar.bridgeConnectionFailed(() -> current.valid);
+                }
             }
         }
-        logger.debug("CalDAV account synchronization failed ({})", error.getClass().getSimpleName());
+        if (error instanceof CalDavHttpException http) {
+            logger.debug("CalDAV {} failed with HTTP {}", http.operation(), http.statusCode());
+        } else {
+            logger.debug("CalDAV account synchronization failed: {}", failure.description());
+        }
     }
 
     @Override
     public void dispose() {
         Session previous;
         boolean stopIdle;
+        List<PendingDiscovery> pending;
         synchronized (lifecycle) {
             previous = session;
             stopIdle = previous != null && !previous.running;
@@ -317,8 +393,11 @@ public class AccountHandler extends BaseBridgeHandler {
                 previousJob.cancel(true);
                 job = null;
             }
+            pending = List.copyOf(discovery);
             discovery.clear();
         }
+        // Scan cancellation waits for publication; do not hold the account lifecycle lock here.
+        pending.forEach(request -> request.cancel().run());
         if (previous != null) {
             for (var thing : getThing().getThings()) {
                 if (thing.getHandler() instanceof CalendarHandler calendar) {

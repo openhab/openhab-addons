@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Timeout;
  *
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Collection synchronization truncation tests
+ * @author Andreas Vilippus - Canonical collection marker regressions
  */
 @NonNullByDefault
 @Timeout(30)
@@ -106,5 +107,17 @@ class DavResponseTest {
                 + "<d:response><c:calendar-data>&xxe;</c:calendar-data></d:response></d:multistatus>";
 
         assertThrows(Exception.class, () -> DavResponse.parse(xml, URI.create("https://example.org/calendar/")));
+    }
+
+    @Test
+    void collectionAliasesAreRecognizedAsTruncationAndEmptyCollectionEntries() throws Exception {
+        for (String status : new String[] { "200 OK", "507 Insufficient Storage" }) {
+            String xml = "<d:multistatus xmlns:d=\"DAV:\"><d:response>"
+                    + "<d:href>https://EXAMPLE.org:443/cal%65ndar/./</d:href>" + "<d:status>HTTP/1.1 " + status
+                    + "</d:status></d:response>" + "<d:sync-token>middle</d:sync-token></d:multistatus>";
+            var parsed = DavResponse.parse(xml, URI.create("https://example.org/calendar/"));
+            assertTrue(parsed.resources().isEmpty());
+            assertEquals(status.startsWith("507"), parsed.truncated());
+        }
     }
 }

@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -31,12 +32,14 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -524,6 +527,7 @@ class CalDavClientTest {
             IOException failure = assertThrows(IOException.class,
                     () -> client.request("GET", URI.create(config.url + "timeout"), "", "0"));
             assertEquals(0, entered.getCount());
+            assertTrue(hasCause(failure, TimeoutException.class) || hasCause(failure, SocketTimeoutException.class));
             assertFalse(failure.toString().contains(config.password));
             assertFalse(failure.toString().contains("Authorization"));
             assertEquals("", client.request("GET", URI.create(config.url + "ok"), "", "0"));
@@ -578,8 +582,9 @@ class CalDavClientTest {
             insecure.start();
             AccountConfiguration config = new AccountConfiguration();
             config.url = "https://127.0.0.1:" + server.getAddress().getPort() + "/";
-            assertThrows(IOException.class,
+            IOException untrustedFailure = assertThrows(IOException.class,
                     () -> new CalDavClient(untrusted, config).request("GET", URI.create(config.url), "", "0"));
+            assertTrue(hasCause(untrustedFailure, SSLException.class));
             assertEquals("", new CalDavClient(trusted, config).request("GET", URI.create(config.url), "", "0"));
             config.url = "https://localhost:" + server.getAddress().getPort() + "/";
             assertThrows(IOException.class,
@@ -644,5 +649,14 @@ class CalDavClientTest {
         } catch (java.security.NoSuchAlgorithmException e) {
             throw new IOException(e);
         }
+    }
+
+    private static boolean hasCause(@Nullable Throwable error, Class<? extends Throwable> type) {
+        for (int depth = 0; error != null && depth < 20; depth++, error = error.getCause()) {
+            if (type.isInstance(error)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

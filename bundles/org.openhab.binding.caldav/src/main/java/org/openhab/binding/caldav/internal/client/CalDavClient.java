@@ -45,6 +45,7 @@ import org.openhab.binding.caldav.internal.config.AccountConfiguration;
  * @author Andreas Vilippus - Account transport and security limits
  * @author Andreas Vilippus - Preemptive BASIC authentication
  * @author Andreas Vilippus - XML response encoding
+ * @author Andreas Vilippus - Preserve structured transport failure causes
  */
 @NonNullByDefault
 public final class CalDavClient implements DavTransport {
@@ -96,8 +97,9 @@ public final class CalDavClient implements DavTransport {
                 var received = response.getResponse();
                 int status = received == null ? 0 : received.getStatus();
                 if (response.isFailed()) {
-                    result.completeExceptionally(status >= 300 ? new CalDavHttpException(method, status, false, false)
-                            : new IOException("CalDAV transport failed"));
+                    result.completeExceptionally(
+                            status >= 300 ? new CalDavHttpException(method, status, false, false, response.getFailure())
+                                    : new IOException("CalDAV transport failed", response.getFailure()));
                     return;
                 }
                 String content;

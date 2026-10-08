@@ -13,10 +13,18 @@
 package org.openhab.binding.caldav.internal.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+import java.net.ConnectException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Structured transport diagnostics retain the operation and cause without copying sensitive text.
+ *
+ * @author Andreas Vilippus - Initial contribution
+ */
 @NonNullByDefault
 class CalDavHttpExceptionTest {
     @Test
@@ -24,6 +32,17 @@ class CalDavHttpExceptionTest {
         CalDavHttpException exception = new CalDavHttpException("PROPFIND", 403);
 
         assertEquals(403, exception.statusCode());
+        assertEquals("PROPFIND", exception.operation());
         assertEquals("CalDAV PROPFIND failed with HTTP status 403", exception.getMessage());
+    }
+
+    @Test
+    void preservesStructuredCauseWithoutIncludingItsSensitiveText() {
+        ConnectException cause = new ConnectException("private-host password");
+        CalDavHttpException exception = new CalDavHttpException("REPORT", 500, false, false, cause);
+        assertEquals(500, exception.statusCode());
+        assertEquals("REPORT", exception.operation());
+        assertSame(cause, exception.getCause());
+        assertEquals("CalDAV REPORT failed with HTTP status 500", exception.getMessage());
     }
 }

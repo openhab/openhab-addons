@@ -15,7 +15,9 @@ package org.openhab.binding.caldav.internal.client;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.w3c.dom.Element;
@@ -26,6 +28,7 @@ import org.w3c.dom.Node;
  * 
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Collection synchronization truncation
+ * @author Andreas Vilippus - Canonical resource identities and alias consistency
  */
 @NonNullByDefault
 public record DavResponse(List<Resource> resources, String token, boolean truncated) {
@@ -40,15 +43,26 @@ public record DavResponse(List<Resource> resources, String token, boolean trunca
             throw new IOException("Expected DAV multistatus");
         }
         List<Resource> resources = new ArrayList<>();
+        Map<String, Resource> identities = new HashMap<>();
+        URI canonicalCollection = CalDavUris.canonicalize(collection);
+        int members = 0;
         boolean truncated = false;
         for (Element response : children(root, "DAV:", "response")) {
             String href = text(response, "DAV:", "href");
             if (href.isBlank()) {
                 throw new IOException("DAV response has no resource identifier");
             }
-            URI target = CalDavUris.resolve(collection, href);
+            URI target;
+            try {
+                target = CalDavUris.canonicalize(CalDavUris.resolve(collection, href));
+                if (!CalDavUris.isRoundTrip(collection, target, href)) {
+                    throw new IllegalArgumentException("Ambiguous DAV resource reference");
+                }
+            } catch (IllegalArgumentException e) {
+                throw new IOException("Invalid DAV resource reference", e);
+            }
             int status = status(text(response, "DAV:", "status"));
-            if (target.equals(collection) && status == 507) {
+            if (target.equals(canonicalCollection) && status == 507) {
                 // RFC 6578 section 3.6 identifies truncation by the collection status; DAV:error is optional.
                 truncated = true;
                 continue;
@@ -76,13 +90,19 @@ public record DavResponse(List<Resource> resources, String token, boolean trunca
             if (status == 0) {
                 status = success ? 200 : 500;
             }
-            if (target.equals(collection) && status == 200 && etag.isEmpty() && data.isEmpty()) {
+            if (target.equals(canonicalCollection) && status == 200 && etag.isEmpty() && data.isEmpty()) {
                 continue;
             }
-            if (resources.size() >= MAX_RESOURCES) {
+            if (++members > MAX_RESOURCES) {
                 throw new IOException("Too many calendar resources");
             }
-            resources.add(new Resource(target.toString(), status, etag, data));
+            Resource resource = new Resource(target.toString(), status, etag, data);
+            Resource previous = identities.putIfAbsent(resource.href(), resource);
+            if (previous == null) {
+                resources.add(resource);
+            } else if (!previous.equals(resource)) {
+                throw new IOException("Conflicting DAV resource entries");
+            }
         }
         return new DavResponse(List.copyOf(resources), text(root, "DAV:", "sync-token"), truncated);
     }

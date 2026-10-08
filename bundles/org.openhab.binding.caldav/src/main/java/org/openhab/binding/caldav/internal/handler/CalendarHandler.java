@@ -33,12 +33,12 @@ import java.util.function.BooleanSupplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.caldav.internal.client.CalDavHttpException;
+import org.openhab.binding.caldav.internal.client.CalDavUris;
 import org.openhab.binding.caldav.internal.client.DavTransport;
 import org.openhab.binding.caldav.internal.config.AccountConfiguration;
 import org.openhab.binding.caldav.internal.config.CalDavConfiguration;
 import org.openhab.binding.caldav.internal.config.CalendarConfiguration;
 import org.openhab.binding.caldav.internal.logic.CalendarEventSelection;
-import org.openhab.binding.caldav.internal.logic.CalendarLimitException;
 import org.openhab.binding.caldav.internal.logic.CalendarWindow;
 import org.openhab.binding.caldav.internal.logic.EventJson;
 import org.openhab.binding.caldav.internal.model.CalendarEvent;
@@ -61,6 +61,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -70,9 +72,13 @@ import com.google.gson.Gson;
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Cache, lifecycle and local event transitions
  * @author Andreas Vilippus - Time-zone generation and exact configuration validation
+ * @author Andreas Vilippus - Canonical cache identity and versioned resource snapshots
+ * @author Andreas Vilippus - Structured synchronization error details
  */
 @NonNullByDefault
 public class CalendarHandler extends BaseThingHandler {
+    private static final int CACHE_VERSION = 1;
+    private final Logger logger = LoggerFactory.getLogger(CalendarHandler.class);
     private final TimeZoneProvider timeZoneProvider;
     private final Storage<String> storage;
     private final Clock clock;
@@ -84,6 +90,7 @@ public class CalendarHandler extends BaseThingHandler {
     private boolean active;
     private boolean loaded;
     private boolean synchronizedOnce;
+    private CalDavErrors.@Nullable Failure synchronizationFailure;
     private List<CalendarEvent> events = List.of();
     private @Nullable CalendarSynchronizer synchronizer;
     private @Nullable DavTransport transport;
@@ -119,9 +126,10 @@ public class CalendarHandler extends BaseThingHandler {
                 CalDavConfiguration.validateIntegerValues(captured, "rangeStartOffset", "rangeEndOffset", "maxEvents");
                 configuration = captured.as(CalendarConfiguration.class);
             } catch (IllegalArgumentException e) {
+                var failure = CalDavErrors.calendar(e, false);
                 set("sync#status", new StringType("ERROR"));
-                set("sync#error", new StringType("Invalid calendar settings"));
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                set("sync#error", new StringType(failure.description()));
+                updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.description());
                 return;
             }
             active = true;
@@ -142,7 +150,7 @@ public class CalendarHandler extends BaseThingHandler {
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo info) {
-        if (info.getStatus() != ThingStatus.ONLINE) {
+        if (info.getStatus() != ThingStatus.ONLINE && info.getStatus() != ThingStatus.UNKNOWN) {
             bridgeConnectionFailed();
         }
     }
@@ -158,8 +166,15 @@ public class CalendarHandler extends BaseThingHandler {
                 return;
             }
             set("sync#status", new StringType("ERROR"));
-            set("sync#error", new StringType("Account bridge is offline"));
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            // A bridge failure must not hide the calendar's own diagnosis, including GONE.
+            var failure = synchronizationFailure;
+            if (failure == null) {
+                set("sync#error", new StringType("Account bridge is offline"));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Account bridge is offline");
+            } else {
+                set("sync#error", new StringType(failure.description()));
+                updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.description());
+            }
         }
     }
 
@@ -191,7 +206,7 @@ public class CalendarHandler extends BaseThingHandler {
         try {
             ZoneId zone = timeZoneProvider.getTimeZone();
             ZonedDateTime now = ZonedDateTime.ofInstant(clock.instant(), zone);
-            URI uri = CalDavConfiguration.validate(config, account);
+            URI uri = CalDavUris.canonicalize(CalDavConfiguration.validate(config, account));
             CalendarWindow horizon = CalDavConfiguration.horizon(account, zone, now);
             CalDavConfiguration.validate(CalendarWindow.from(config, zone, now), horizon);
             String identity = identity(account, uri, zone);
@@ -199,7 +214,7 @@ public class CalendarHandler extends BaseThingHandler {
             synchronized (lifecycle) {
                 restoreNeeded = !identity.equals(cacheIdentity);
             }
-            Restored restored = restoreNeeded ? readCache(identity, horizon, zone, config) : null;
+            Restored restored = restoreNeeded ? readCache(identity, uri, horizon, zone, config) : null;
             CalendarSynchronizer worker;
             synchronized (lifecycle) {
                 if (!valid(current, accountValid)) {
@@ -240,6 +255,7 @@ public class CalendarHandler extends BaseThingHandler {
                 events = result.events();
                 loaded = true;
                 synchronizedOnce = true;
+                synchronizationFailure = null;
                 cachedHorizon = horizon;
                 cachedZone = zone;
                 publish(config, zone, ZonedDateTime.ofInstant(clock.instant(), zone));
@@ -257,33 +273,24 @@ public class CalendarHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw e;
-        } catch (CalendarLimitException e) {
-            failed(current, accountValid, ThingStatusDetail.COMMUNICATION_ERROR, e);
-        } catch (IllegalArgumentException e) {
-            failed(current, accountValid, ThingStatusDetail.CONFIGURATION_ERROR, e);
-        } catch (CalDavHttpException e) {
-            synchronized (lifecycle) {
-                ThingStatusDetail detail = switch (e.statusCode()) {
-                    case 401, 403 -> ThingStatusDetail.CONFIGURATION_ERROR;
-                    case 404 -> synchronizedOnce ? ThingStatusDetail.GONE : ThingStatusDetail.CONFIGURATION_ERROR;
-                    default -> ThingStatusDetail.COMMUNICATION_ERROR;
-                };
-                failed(current, accountValid, detail, e);
-            }
         } catch (Exception e) {
-            failed(current, accountValid, ThingStatusDetail.COMMUNICATION_ERROR, e);
+            failed(current, accountValid, e);
         }
     }
 
-    private void failed(long current, BooleanSupplier accountValid, ThingStatusDetail detail, Exception error) {
+    private void failed(long current, BooleanSupplier accountValid, Exception error) {
         synchronized (lifecycle) {
             if (!valid(current, accountValid)) {
                 return;
             }
+            var failure = CalDavErrors.calendar(error, synchronizedOnce);
+            synchronizationFailure = failure;
             set("sync#status", new StringType("ERROR"));
-            set("sync#error",
-                    new StringType("Calendar synchronization failed (" + error.getClass().getSimpleName() + ")"));
-            updateStatus(ThingStatus.OFFLINE, detail);
+            set("sync#error", new StringType(failure.description()));
+            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.description());
+        }
+        if (error instanceof CalDavHttpException http) {
+            logger.debug("CalDAV {} failed with HTTP {}", http.operation(), http.statusCode());
         }
     }
 
@@ -391,7 +398,8 @@ public class CalendarHandler extends BaseThingHandler {
 
     private static String identity(AccountConfiguration account, URI uri, ZoneId zone) {
         try {
-            String value = account.url + "\n" + account.username + "\n" + uri + "\n" + zone;
+            String value = CalDavUris.canonicalize(URI.create(account.url)) + "\n" + account.username + "\n"
+                    + CalDavUris.canonicalize(uri) + "\n" + zone;
             return HexFormat.of()
                     .formatHex(MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
@@ -411,12 +419,12 @@ public class CalendarHandler extends BaseThingHandler {
         try {
             CalDavConfiguration.validate(account);
             ZoneId zone = timeZoneProvider.getTimeZone();
-            URI uri = CalDavConfiguration.validate(config, account);
+            URI uri = CalDavUris.canonicalize(CalDavConfiguration.validate(config, account));
             ZonedDateTime now = ZonedDateTime.ofInstant(clock.instant(), zone);
             CalendarWindow horizon = CalDavConfiguration.horizon(account, zone, now);
             CalDavConfiguration.validate(CalendarWindow.from(config, zone, now), horizon);
             String identity = identity(account, uri, zone);
-            Restored restored = readCache(identity, horizon, zone, config);
+            Restored restored = readCache(identity, uri, horizon, zone, config);
             synchronized (lifecycle) {
                 if (!active || current != generation || synchronizedOnce) {
                     return;
@@ -429,7 +437,7 @@ public class CalendarHandler extends BaseThingHandler {
                 applyCache(restored, zone, config);
             }
         } catch (IllegalArgumentException e) {
-            failed(current, () -> true, ThingStatusDetail.CONFIGURATION_ERROR, e);
+            failed(current, () -> true, e);
         }
     }
 
@@ -442,6 +450,7 @@ public class CalendarHandler extends BaseThingHandler {
         events = List.of();
         loaded = false;
         synchronizedOnce = false;
+        synchronizationFailure = null;
         for (String field : List.of("json", "count", "truncated", "range-start", "range-end")) {
             set("events#" + field, UnDefType.UNDEF);
         }
@@ -451,18 +460,19 @@ public class CalendarHandler extends BaseThingHandler {
         publishEvent("next", null, timeZoneProvider.getTimeZone());
     }
 
-    private record Persisted(String identity, CalendarSynchronizer.Snapshot snapshot, String lastSync) {
+    private record Persisted(int version, String identity, CalendarSynchronizer.Snapshot snapshot, String lastSync) {
     }
 
     private void save(CalendarSynchronizer.Snapshot snapshot) {
         String last = states.getOrDefault("sync#last", UnDefType.UNDEF).toString();
-        storage.put(getThing().getUID().toString(), gson.toJson(new Persisted(cacheIdentity, snapshot, last)));
+        storage.put(getThing().getUID().toString(),
+                gson.toJson(new Persisted(CACHE_VERSION, cacheIdentity, snapshot, last)));
     }
 
     private record Restored(List<CalendarEvent> events, CalendarWindow horizon, State lastSync) {
     }
 
-    private @Nullable Restored readCache(String identity, CalendarWindow horizon, ZoneId zone,
+    private @Nullable Restored readCache(String identity, URI collection, CalendarWindow horizon, ZoneId zone,
             CalendarConfiguration config) {
         try {
             String raw = storage.get(getThing().getUID().toString());
@@ -470,9 +480,10 @@ public class CalendarHandler extends BaseThingHandler {
                 return null;
             }
             Persisted persisted = Objects.requireNonNull(gson.fromJson(raw, Persisted.class));
-            if (!identity.equals(persisted.identity())) {
+            if (persisted.version() != CACHE_VERSION || !identity.equals(persisted.identity())) {
                 return null;
             }
+            CalendarSynchronizer.validateSnapshot(persisted.snapshot(), collection);
             var parsed = CalendarSynchronizer.expand(persisted.snapshot(), horizon, zone, config.includeCancelled);
             String[] boundaries = persisted.snapshot().horizon().split("/", 3);
             CalendarWindow storedHorizon = new CalendarWindow(Instant.parse(boundaries[0]).atZone(zone),
