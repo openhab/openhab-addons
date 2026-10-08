@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="windhagerbiowin"
+<thing:thing-descriptions bindingId="windhager"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- BioWin Thing Type -->
-	<thing-type id="biowin">
-		<label>Windhagerbiowin Binding Thing</label>
-		<description>BioWin thing for Windhagerbiowin Binding</description>
+	<!-- BioWin 2 Thing Type -->
+	<thing-type id="biowin2">
+		<label>BioWin 2</label>
+		<description>Windhager BioWin 2 heating system</description>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">

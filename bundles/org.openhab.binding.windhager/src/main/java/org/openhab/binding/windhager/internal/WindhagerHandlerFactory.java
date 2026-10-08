@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.windhagerbiowin.internal;
+package org.openhab.binding.windhager.internal;
 
-import static org.openhab.binding.windhagerbiowin.internal.WindhagerbiowinBindingConstants.*;
+import static org.openhab.binding.windhager.internal.WindhagerBindingConstants.*;
 
 import java.util.Set;
 
@@ -26,16 +26,16 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link WindhagerbiowinHandlerFactory} is responsible for creating things and thing
+ * The {@link WindhagerHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author BenjiU - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.windhagerbiowin", service = ThingHandlerFactory.class)
-public class WindhagerbiowinHandlerFactory extends BaseThingHandlerFactory {
+@Component(configurationPid = "binding.windhager", service = ThingHandlerFactory.class)
+public class WindhagerHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BIOWIN);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BIOWIN2);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +46,8 @@ public class WindhagerbiowinHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_BIOWIN.equals(thingTypeUID)) {
-            return new WindhagerbiowinHandler(thing);
+        if (THING_TYPE_BIOWIN2.equals(thingTypeUID)) {
+            return new WindhagerHandler(thing);
         }
 
         return null;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.windhagerbiowin.internal;
+package org.openhab.binding.windhager.internal;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -42,13 +42,13 @@ import com.google.gson.JsonParser;
  * @author BenjiU - Initial contribution
  */
 @NonNullByDefault
-public class WindhagerbiowinConnector {
+public class WindhagerConnector {
 
     private static final String API_DOCS_PATH = "api-docs/";
     private static final String DATAPOINT_API_PATH = "api/1.0/datapoint/";
     private static final Pattern DIGEST_PARAMETER_PATTERN = Pattern.compile("(\\w+)=((?:\"[^\"]*\")|(?:[^,\\s]+))");
 
-    private final Logger logger = LoggerFactory.getLogger(WindhagerbiowinConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(WindhagerConnector.class);
 
     private final String hostname;
     private final int port;
@@ -56,7 +56,7 @@ public class WindhagerbiowinConnector {
     private final String password;
     private final HttpClient httpClient;
 
-    public WindhagerbiowinConnector(String hostname, int port, String username, String password) {
+    public WindhagerConnector(String hostname, int port, String username, String password) {
         this.hostname = hostname;
         this.port = port;
         this.username = username;

@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.windhagerbiowin.internal;
+package org.openhab.binding.windhager.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link WindhagerbiowinConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link WindhagerConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author BenjiU - Initial contribution
  */
 @NonNullByDefault
-public class WindhagerbiowinConfiguration {
+public class WindhagerConfiguration {
 
     /**
      * Hostname or IP address of the BioWin webserver.

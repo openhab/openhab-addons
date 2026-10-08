@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.windhagerbiowin.internal;
+package org.openhab.binding.windhager.internal;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,21 +35,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link WindhagerbiowinHandler} is responsible for handling commands, which are
+ * The {@link WindhagerHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author BenjiU - Initial contribution
  */
 @NonNullByDefault
-public class WindhagerbiowinHandler extends BaseThingHandler {
+public class WindhagerHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(WindhagerbiowinHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(WindhagerHandler.class);
 
-    private @Nullable WindhagerbiowinConfiguration config;
-    private @Nullable WindhagerbiowinConnector connector;
+    private @Nullable WindhagerConfiguration config;
+    private @Nullable WindhagerConnector connector;
     private final Map<Integer, ScheduledFuture<?>> refreshJobs = new HashMap<>();
 
-    public WindhagerbiowinHandler(Thing thing) {
+    public WindhagerHandler(Thing thing) {
         super(thing);
     }
 
@@ -62,7 +62,7 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(WindhagerbiowinConfiguration.class);
+        config = getConfigAs(WindhagerConfiguration.class);
 
         if (config.hostname.isBlank() || config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -70,7 +70,7 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
             return;
         }
 
-        connector = new WindhagerbiowinConnector(config.hostname, config.port, config.username, config.password);
+        connector = new WindhagerConnector(config.hostname, config.port, config.username, config.password);
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -87,7 +87,7 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
     }
 
     private void scheduleChannelRefresh() {
-        WindhagerbiowinConnector localConnector = connector;
+        WindhagerConnector localConnector = connector;
         if (localConnector == null) {
             return;
         }
@@ -95,8 +95,8 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
         Map<Integer, List<Channel>> channelsByRefreshInterval = new HashMap<>();
         boolean hasUsableChannel = false;
         for (Channel channel : getThing().getChannels()) {
-            WindhagerbiowinChannelConfiguration channelConfig = channel.getConfiguration()
-                    .as(WindhagerbiowinChannelConfiguration.class);
+            WindhagerChannelConfiguration channelConfig = channel.getConfiguration()
+                    .as(WindhagerChannelConfiguration.class);
             if (channelConfig.oid.isBlank()) {
                 logger.debug("Skipping channel {} without a configured oid.", channel.getUID());
                 continue;
@@ -137,14 +137,14 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
     }
 
     private void refreshChannel(ChannelUID channelUID) {
-        WindhagerbiowinConnector localConnector = connector;
+        WindhagerConnector localConnector = connector;
         Channel channel = getThing().getChannel(channelUID.getId());
         if (localConnector == null || channel == null) {
             return;
         }
 
-        WindhagerbiowinChannelConfiguration channelConfig = channel.getConfiguration()
-                .as(WindhagerbiowinChannelConfiguration.class);
+        WindhagerChannelConfiguration channelConfig = channel.getConfiguration()
+                .as(WindhagerChannelConfiguration.class);
 
         BigDecimal value = localConnector.readValue(channelConfig.oid);
         if (value != null) {

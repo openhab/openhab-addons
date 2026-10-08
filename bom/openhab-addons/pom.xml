@@ -2293,7 +2293,7 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.windhagerbiowin</artifactId>
+      <artifactId>org.openhab.binding.windhager</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
