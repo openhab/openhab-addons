@@ -1,8 +1,8 @@
 {
-	"id": "***",
-	"firstname": "***",
-	"lastname": "***",
-	"email": "***",
+	"id": "11111111-2222-3333-4444-555566667777",
+	"firstname": "SyntheticFirst",
+	"lastname": "SyntheticLast",
+	"email": "synthetic.owner@example.invalid",
 	"language": "nl",
 	"country": "NL",
 	"numberOfDevicesAllowed": 10,
@@ -11,13 +11,13 @@
 	"numberOfGuestDevicesAllowed": 10,
 	"buildings": [
 		{
-			"id": "***",
+			"id": "aaaaaaaa-bbbb-cccc-dddd-eeeeffff0000",
 			"name": "Home",
 			"timezone": "Europe/Amsterdam",
 			"airToAirUnits": [],
 			"airToWaterUnits": [
 				{
-					"macAddress": "***",
+					"macAddress": "001122aabbcc",
 					"ftcModel": "ftC7",
 					"schedule": [],
 					"scheduleEnabled": false,
@@ -54,8 +54,8 @@
 						"hasBoiler": false,
 						"systemMaxFlowTemperature": null
 					},
-					"id": "***",
-					"givenDisplayName": "***",
+					"id": "0f0e0d0c-0b0a-0908-0706-050403020100",
+					"givenDisplayName": "SyntheticHeatPump",
 					"displayIcon": "Loft",
 					"settings": [
 						{

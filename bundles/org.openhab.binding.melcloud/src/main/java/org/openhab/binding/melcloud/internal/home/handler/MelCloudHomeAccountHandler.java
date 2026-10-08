@@ -103,6 +103,11 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     private volatile long realtimeReconnectDelaySeconds = REALTIME_RECONNECT_INITIAL_SECONDS;
     /** Identifies the current connection attempt, so callbacks of a superseded or abandoned session are ignored. */
     private final AtomicLong realtimeGeneration = new AtomicLong();
+    /**
+     * Identifies the current {@link #initialize()} round, so an authentication response of a superseded round cannot
+     * publish state or start tasks for the configuration it was started with.
+     */
+    private final AtomicLong initGeneration = new AtomicLong();
     private final AtomicInteger consecutivePollFailures = new AtomicInteger();
 
     public MelCloudHomeAccountHandler(Bridge bridge, MelCloudHomeAuthService authService,
@@ -118,6 +123,8 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing MELCloud Home account handler");
         disposed = false;
+        // Invalidate the authentication work of any earlier initialize() round, which may still be in flight.
+        initGeneration.incrementAndGet();
         config = getConfigAs(MelCloudHomeAccountConfig.class);
         storage = storageService.getStorage(thing.getUID().toString(), MelCloudHomeAuthState.class.getClassLoader());
 
@@ -206,6 +213,19 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         return apiClient.fetchUserContext(getAccessToken());
     }
 
+    /**
+     * Like {@link #fetchUserContext()}, but routed through the shared {@link MelCloudHomeRequestPacer} so a call that
+     * does not belong to the regular poll loop (e.g. a discovery scan) cannot collide with a poll or a control call.
+     * The poll loop paces the whole poll in {@link #pollContext()} instead, so it uses the unpaced variant.
+     *
+     * @return the account's current {@code /context}
+     * @throws MelCloudCommException if not authenticated, or if the request fails or times out while waiting for its
+     *             paced slot
+     */
+    public MelCloudHomeUserContext fetchUserContextPaced() throws MelCloudCommException {
+        return requestPacer.scheduleBlocking(this::fetchUserContext);
+    }
+
     public void registerAtaUnitListener(String unitId, MelCloudHomeAtaUnitListener listener) {
         ataUnitListeners.put(unitId, listener);
     }
@@ -222,7 +242,16 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         atwUnitListeners.remove(unitId);
     }
 
+    /**
+     * @return whether {@code generation} is still the current {@link #initialize()} round and the handler is live; a
+     *         response that arrives after a re-initialization or a disposal must not publish state or start tasks
+     */
+    private boolean isCurrentInit(long generation) {
+        return !disposed && generation == initGeneration.get();
+    }
+
     private void authenticate() {
+        long generation = initGeneration.get();
         if (disposed) {
             return;
         }
@@ -233,11 +262,17 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         if (storedRefreshToken != null) {
             logger.debug("Attempting to resume the MELCloud Home session with a stored refresh token");
             try {
-                onLoginSuccess(authService.refreshToken(storedRefreshToken));
+                onLoginSuccess(authService.refreshToken(storedRefreshToken), generation);
                 return;
             } catch (MelCloudHomeAuthException e) {
+                if (!isCurrentInit(generation)) {
+                    return;
+                }
                 logger.debug("Stored refresh token was rejected, falling back to full login: {}", e.getMessage());
             } catch (MelCloudCommException e) {
+                if (!isCurrentInit(generation)) {
+                    return;
+                }
                 // A transient failure says nothing about the refresh token; do not spend a full login on it.
                 logger.debug("MELCloud Home token refresh failed, will retry: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -247,22 +282,28 @@ public class MelCloudHomeAccountHandler extends BaseBridgeHandler {
         }
 
         try {
-            onLoginSuccess(authService.login(config.username, config.password));
+            onLoginSuccess(authService.login(config.username, config.password), generation);
         } catch (MelCloudHomeAuthException e) {
+            if (!isCurrentInit(generation)) {
+                return;
+            }
             logger.debug("MELCloud Home login rejected: {}", e.getMessage());
             accessToken = null;
             cancelContextPoll();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (MelCloudCommException e) {
+            if (!isCurrentInit(generation)) {
+                return;
+            }
             logger.debug("MELCloud Home login failed: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduleRetry();
         }
     }
 
-    private void onLoginSuccess(MelCloudHomeTokenResponse tokenResponse) {
-        if (disposed) {
-            // dispose() ran while the login was in flight; do not publish state or reschedule anything.
+    private void onLoginSuccess(MelCloudHomeTokenResponse tokenResponse, long generation) {
+        if (!isCurrentInit(generation)) {
+            // initialize() or dispose() ran while the login was in flight; do not publish state or schedule anything.
             return;
         }
         accessToken = tokenResponse.accessToken;

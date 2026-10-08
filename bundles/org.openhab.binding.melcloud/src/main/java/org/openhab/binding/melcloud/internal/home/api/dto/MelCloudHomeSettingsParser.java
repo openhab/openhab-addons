@@ -34,13 +34,30 @@ public final class MelCloudHomeSettingsParser {
                 .filter(value -> !value.isEmpty()).findFirst();
     }
 
-    public static boolean findBoolean(List<MelCloudHomeSetting> settings, String name) {
-        Optional<String> value = findString(settings, name);
-        return value.isPresent() && Boolean.parseBoolean(value.get());
+    /**
+     * Reads a boolean setting without collapsing "absent" into {@code false}, so callers can publish an unknown
+     * state instead of a valid-looking {@code OFF}.
+     *
+     * @param settings the unit's settings array
+     * @param name the setting's name
+     * @return the setting's value, or empty if it is absent or not an explicit {@code true}/{@code false}
+     */
+    public static Optional<Boolean> findBoolean(List<MelCloudHomeSetting> settings, String name) {
+        return findString(settings, name).flatMap(MelCloudHomeSettingsParser::parseBooleanSafely);
     }
 
     public static Optional<Double> findDouble(List<MelCloudHomeSetting> settings, String name) {
         return findString(settings, name).flatMap(MelCloudHomeSettingsParser::parseDoubleSafely);
+    }
+
+    private static Optional<Boolean> parseBooleanSafely(String value) {
+        if ("true".equalsIgnoreCase(value)) {
+            return Optional.of(Boolean.TRUE);
+        }
+        if ("false".equalsIgnoreCase(value)) {
+            return Optional.of(Boolean.FALSE);
+        }
+        return Optional.empty();
     }
 
     private static Optional<Double> parseDoubleSafely(String value) {

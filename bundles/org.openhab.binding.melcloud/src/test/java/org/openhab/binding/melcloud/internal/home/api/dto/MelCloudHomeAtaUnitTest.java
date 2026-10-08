@@ -13,11 +13,11 @@
 package org.openhab.binding.melcloud.internal.home.api.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -108,15 +108,27 @@ class MelCloudHomeAtaUnitTest {
     }
 
     @Test
-    void whenPowerSettingIsMissingThenIsPowerDefaultsToFalse() {
+    void whenPowerSettingIsMissingThenGetPowerReturnsEmptyInsteadOfFalse() {
         // Arrange
         MelCloudHomeAtaUnit unit = new MelCloudHomeAtaUnit();
 
         // Act
-        boolean power = unit.isPower();
+        Optional<Boolean> power = unit.getPower();
 
         // Assert
-        assertFalse(power);
+        assertTrue(power.isEmpty());
+    }
+
+    @Test
+    void whenPowerSettingIsFalseThenGetPowerReturnsFalse() {
+        // Arrange
+        MelCloudHomeAtaUnit unit = unitWithSetting("Power", "False");
+
+        // Act
+        Optional<Boolean> power = unit.getPower();
+
+        // Assert
+        assertEquals(Optional.of(Boolean.FALSE), power);
     }
 
     @Test
@@ -132,14 +144,14 @@ class MelCloudHomeAtaUnitTest {
     }
 
     @Test
-    void whenIsInErrorSettingIsTrueThenIsInErrorReturnsTrue() {
+    void whenIsInErrorSettingIsTrueThenGetIsInErrorReturnsTrue() {
         // Arrange
         MelCloudHomeAtaUnit unit = unitWithSetting("IsInError", "True");
 
         // Act
-        boolean isInError = unit.isInError();
+        Optional<Boolean> isInError = unit.getIsInError();
 
         // Assert
-        assertTrue(isInError);
+        assertEquals(Optional.of(Boolean.TRUE), isInError);
     }
 }

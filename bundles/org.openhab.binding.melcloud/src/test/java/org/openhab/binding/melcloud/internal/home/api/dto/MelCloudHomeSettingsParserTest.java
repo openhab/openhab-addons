@@ -13,7 +13,6 @@
 package org.openhab.binding.melcloud.internal.home.api.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -76,28 +75,40 @@ class MelCloudHomeSettingsParserTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "True, true", "False, false" })
+    @CsvSource({ "True, true", "False, false", "true, true", "FALSE, false" })
     void whenSettingIsBooleanLikeThenFindBooleanParsesIt(String rawValue, boolean expected) {
         // Arrange
         List<MelCloudHomeSetting> settings = settingsOf("Power", rawValue);
 
         // Act
-        boolean result = MelCloudHomeSettingsParser.findBoolean(settings, "Power");
+        Optional<Boolean> result = MelCloudHomeSettingsParser.findBoolean(settings, "Power");
 
         // Assert
-        assertEquals(expected, result);
+        assertEquals(Optional.of(expected), result);
     }
 
     @Test
-    void whenSettingIsAbsentThenFindBooleanDefaultsToFalse() {
+    void whenSettingIsAbsentThenFindBooleanReturnsEmptyInsteadOfFalse() {
         // Arrange
         List<MelCloudHomeSetting> settings = List.of();
 
         // Act
-        boolean result = MelCloudHomeSettingsParser.findBoolean(settings, "Power");
+        Optional<Boolean> result = MelCloudHomeSettingsParser.findBoolean(settings, "Power");
 
         // Assert
-        assertFalse(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void whenSettingIsNotBooleanThenFindBooleanReturnsEmpty() {
+        // Arrange: the ATW API reports HasZone2 as the literal "None" when there is no second zone.
+        List<MelCloudHomeSetting> settings = settingsOf("HasZone2", "None");
+
+        // Act
+        Optional<Boolean> result = MelCloudHomeSettingsParser.findBoolean(settings, "HasZone2");
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test

@@ -29,6 +29,8 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHA
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_SET_TEMPERATURE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_VANE_HORIZONTAL;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_VANE_VERTICAL;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_IN_STANDBY_MODE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_IS_IN_ERROR;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_RSSI;
@@ -74,6 +76,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -356,6 +359,21 @@ class MelCloudHomeAtaUnitHandlerTest {
     }
 
     @Test
+    void whenBridgeRecoversThenTelemetryPollingIsRestarted() throws Exception {
+        // Arrange: the thing starts against an offline bridge, which starts no telemetry task at all
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.OFFLINE);
+        handler.initialize();
+        callback.waitForStatus(ThingStatus.OFFLINE);
+        verify(apiClient, never()).fetchLatestOutdoorTemperature(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any());
+
+        // Act
+        handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(ThingStatus.ONLINE).build());
+
+        // Assert: restarted telemetry only happens because going offline cancelled the previous task
+        verify(apiClient, timeout(3000)).fetchLatestOutdoorTemperature(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any());
+    }
+
+    @Test
     void whenPowerOnCommandIsSentThenControlAtaUnitIsCalledWithPowerTrue() throws Exception {
         // Arrange
         MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
@@ -546,6 +564,48 @@ class MelCloudHomeAtaUnitHandlerTest {
 
         // Assert
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ERROR_CODE));
+    }
+
+    @Test
+    void whenPowerIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit unit = unitWithSettings("OperationMode", "Cool");
+
+        // Act
+        handler.onAtaUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_POWER));
+    }
+
+    @Test
+    void whenInStandbyModeIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtaUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_IN_STANDBY_MODE));
+    }
+
+    @Test
+    void whenIsInErrorIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtaUnitHandler handler = createHandler(UNIT_ID, true, ThingStatus.ONLINE);
+        handler.initialize();
+        MelCloudHomeAtaUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtaUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_IS_IN_ERROR));
     }
 
     @Test

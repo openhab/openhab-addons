@@ -14,17 +14,23 @@ package org.openhab.binding.melcloud.internal.home.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.THING_TYPE_MELCLOUD_HOME_ACCOUNT;
 
+import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
@@ -101,9 +107,13 @@ class MelCloudHomeAccountHandlerTest {
     }
 
     private static MelCloudHomeTokenResponse tokenResponse() {
+        return tokenResponse(ACCESS_TOKEN, REFRESH_TOKEN);
+    }
+
+    private static MelCloudHomeTokenResponse tokenResponse(String accessToken, String refreshToken) {
         MelCloudHomeTokenResponse response = new MelCloudHomeTokenResponse();
-        response.accessToken = ACCESS_TOKEN;
-        response.refreshToken = REFRESH_TOKEN;
+        response.accessToken = accessToken;
+        response.refreshToken = refreshToken;
         response.expiresIn = 3600;
         return response;
     }
@@ -193,5 +203,41 @@ class MelCloudHomeAccountHandlerTest {
 
         // Assert
         verify(listener, timeout(5000)).onAtaUnitMissing();
+    }
+
+    @Test
+    void whenInitializeRunsAgainWhileALoginIsInFlightThenTheSupersededResponseIsIgnored() throws Exception {
+        // Arrange: the first login blocks until released, then answers with a token that must never become current
+        CountDownLatch firstLoginStarted = new CountDownLatch(1);
+        CountDownLatch firstLoginReturned = new CountDownLatch(1);
+        CountDownLatch releaseFirstLogin = new CountDownLatch(1);
+        AtomicInteger loginCalls = new AtomicInteger();
+        when(authService.login(anyString(), anyString())).thenAnswer(invocation -> {
+            if (loginCalls.incrementAndGet() == 1) {
+                firstLoginStarted.countDown();
+                releaseFirstLogin.await(5, TimeUnit.SECONDS);
+                firstLoginReturned.countDown();
+                return tokenResponse("stale-token", "stale-refresh-token");
+            }
+            return tokenResponse();
+        });
+
+        handler.initialize();
+        assertTrue(firstLoginStarted.await(5, TimeUnit.SECONDS), "the first login should have started");
+
+        // Act: a second initialize() supersedes the round whose login is still in flight
+        handler.initialize();
+        callback.waitForOnline();
+        releaseFirstLogin.countDown();
+        assertTrue(firstLoginReturned.await(5, TimeUnit.SECONDS), "the first login should have returned");
+
+        // Assert: poll for a bounded window, since the superseded round would publish right after its login returned
+        Instant deadline = Instant.now().plusSeconds(1);
+        while (Instant.now().isBefore(deadline)) {
+            assertEquals(ACCESS_TOKEN, handler.getAccessToken(), "a superseded round must not replace the token");
+            Thread.sleep(20);
+        }
+        verify(storage, times(1)).put(anyString(), any());
+        verify(storage).put(anyString(), eq(new MelCloudHomeAuthState(REFRESH_TOKEN)));
     }
 }

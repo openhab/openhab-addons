@@ -23,9 +23,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.openhab.binding.melcloud.internal.mock.FileReader;
 
 /**
- * Unit tests for {@link SensitiveDataMasker}, including regression tests against the real MELCloud Home API
- * captures {@code src/test/resources/ata.json} and {@code src/test/resources/atw-ftc7.json} to
- * confirm that personal data and hardware identifiers no longer survive masking.
+ * Unit tests for {@link SensitiveDataMasker}, including regression tests over the synthetic MELCloud Home response
+ * fixtures {@code src/test/resources/ata.json} and {@code src/test/resources/atw-ftc7.json}.
+ *
+ * <p>
+ * The fixtures mirror the API's response shape but deliberately contain recognizable, unmasked sentinel values, so
+ * these tests fail if {@link SensitiveDataMasker#maskJson(String)} stops rewriting them. A fixture that already
+ * carried masked placeholders could not tell masking apart from doing nothing.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -34,6 +38,15 @@ class SensitiveDataMaskerTest {
 
     private static final String ATA_FIXTURE = "src/test/resources/ata.json";
     private static final String ATW_FIXTURE = "src/test/resources/atw-ftc7.json";
+
+    private static final String USER_ID = "11111111-2222-3333-4444-555566667777";
+    private static final String BUILDING_ID = "aaaaaaaa-bbbb-cccc-dddd-eeeeffff0000";
+    private static final String SYSTEM_ID = "99999999-8888-7777-6666-555544443333";
+    private static final String UNIT_ID = "0f0e0d0c-0b0a-0908-0706-050403020100";
+    private static final String MAC_ADDRESS = "001122aabbcc";
+    private static final String FIRST_NAME = "SyntheticFirst";
+    private static final String LAST_NAME = "SyntheticLast";
+    private static final String EMAIL = "synthetic.owner@example.invalid";
 
     @Test
     void whenIdIsLongerThanFourCharactersThenMaskIdKeepsLastFourVisible() {
@@ -177,26 +190,32 @@ class SensitiveDataMaskerTest {
     }
 
     @Test
-    void whenMaskingTheRealAtaFixtureThenNoPersonalDataOrIdentifiersRemain() {
+    void whenMaskingTheSyntheticAtaFixtureThenNoPersonalDataOrIdentifiersRemain() {
         // Arrange
         String raw = FileReader.readFileInString(ATA_FIXTURE);
+        assertTrue(raw.contains(FIRST_NAME), "the fixture must carry the unmasked sentinel this test asserts on");
+        assertTrue(raw.contains(MAC_ADDRESS), "the fixture must carry the unmasked sentinel this test asserts on");
 
         // Act
         String masked = SensitiveDataMasker.maskJson(raw);
 
-        // Assert - personal data is gone
-        assertFalse(masked.contains("Bernd"), "first name must not survive masking");
-        assertFalse(masked.contains("Weymann"), "last name must not survive masking");
-        assertFalse(masked.contains("bernd.w@ymann.de"), "e-mail address must not survive masking");
-        assertFalse(masked.contains("\"givenDisplayName\": \"Loft\""), "device label must not survive masking");
+        // Assert - personal data is fully redacted, not merely absent from the fixture
+        assertFalse(masked.contains(FIRST_NAME), "first name must not survive masking");
+        assertFalse(masked.contains(LAST_NAME), "last name must not survive masking");
+        assertFalse(masked.contains(EMAIL), "e-mail address must not survive masking");
+        assertFalse(masked.contains("SyntheticLoft"), "device label must not survive masking");
+        assertTrue(masked.contains("\"givenDisplayName\": \"***\""));
 
-        // Assert - identifiers are gone in full, only a masked suffix remains
-        assertFalse(masked.contains("931d915c-5072-4f1d-9001-bace1e66c698"), "user id must not survive masking");
-        assertFalse(masked.contains("1a939125-720f-43d6-a35c-098a9d0d9b0a"), "building id must not survive masking");
-        assertFalse(masked.contains("88376d24-d151-41f2-aacf-e28593144d91"), "system id must not survive masking");
-        assertFalse(masked.contains("298f815e-79cc-45dc-81ff-5add6771ac62"), "unit id must not survive masking");
-        assertFalse(masked.contains("b8b7f1c2fd5e"), "MAC address must not survive masking");
-        assertTrue(masked.contains("...fd5e"), "masked MAC address should keep a short correlatable suffix");
+        // Assert - identifiers survive only as their masked suffix
+        assertFalse(masked.contains(USER_ID), "user id must not survive masking");
+        assertFalse(masked.contains(BUILDING_ID), "building id must not survive masking");
+        assertFalse(masked.contains(SYSTEM_ID), "system id must not survive masking");
+        assertFalse(masked.contains(UNIT_ID), "unit id must not survive masking");
+        assertFalse(masked.contains(MAC_ADDRESS), "MAC address must not survive masking");
+        assertTrue(masked.contains("\"id\": \"" + SensitiveDataMasker.maskId(USER_ID) + "\""));
+        assertTrue(masked.contains("\"systemId\": \"" + SensitiveDataMasker.maskId(SYSTEM_ID) + "\""));
+        assertTrue(masked
+                .contains("\"connectedInterfaceIdentifier\": \"" + SensitiveDataMasker.maskId(MAC_ADDRESS) + "\""));
 
         // Assert - non-sensitive structural data is preserved for troubleshooting
         assertTrue(masked.contains("\"hasCoolOperationMode\": true"));
@@ -206,19 +225,31 @@ class SensitiveDataMaskerTest {
     }
 
     @Test
-    void whenMaskingTheRealAtwFixtureThenNoIdentifyingFieldValueRemains() {
+    void whenMaskingTheSyntheticAtwFixtureThenNoIdentifyingFieldValueRemains() {
         // Arrange
         String raw = FileReader.readFileInString(ATW_FIXTURE);
+        assertTrue(raw.contains(FIRST_NAME), "the fixture must carry the unmasked sentinel this test asserts on");
+        assertTrue(raw.contains(MAC_ADDRESS), "the fixture must carry the unmasked sentinel this test asserts on");
 
         // Act
         String masked = SensitiveDataMasker.maskJson(raw);
 
         // Assert - every recognized sensitive key was rewritten to a masked placeholder
-        assertFalse(masked.contains("\"firstname\": \"???"), "firstname must be redacted");
-        assertFalse(masked.contains("\"lastname\": \"???"), "lastname must be redacted");
-        assertFalse(masked.contains("\"email\": \"???"), "email must be redacted");
-        assertFalse(masked.contains("\"macAddress\": \"???"), "macAddress must be redacted");
-        assertFalse(masked.contains("\"givenDisplayName\": \"Warmtepomp"), "device label must be redacted");
+        assertFalse(masked.contains(FIRST_NAME), "firstname must be redacted");
+        assertFalse(masked.contains(LAST_NAME), "lastname must be redacted");
+        assertFalse(masked.contains(EMAIL), "email must be redacted");
+        assertFalse(masked.contains("SyntheticHeatPump"), "device label must be redacted");
+        assertTrue(masked.contains("\"firstname\": \"***\""));
+        assertTrue(masked.contains("\"lastname\": \"***\""));
+        assertTrue(masked.contains("\"email\": \"***\""));
+        assertTrue(masked.contains("\"givenDisplayName\": \"***\""));
+
+        // Assert - identifiers keep only their masked suffix
+        assertFalse(masked.contains(USER_ID), "user id must not survive masking");
+        assertFalse(masked.contains(BUILDING_ID), "building id must not survive masking");
+        assertFalse(masked.contains(UNIT_ID), "unit id must not survive masking");
+        assertFalse(masked.contains(MAC_ADDRESS), "macAddress must not survive masking");
+        assertTrue(masked.contains("\"macAddress\": \"" + SensitiveDataMasker.maskId(MAC_ADDRESS) + "\""));
 
         // Assert - non-sensitive structural/technical data is preserved
         assertTrue(masked.contains("\"ftcModel\": \"ftC7\""));

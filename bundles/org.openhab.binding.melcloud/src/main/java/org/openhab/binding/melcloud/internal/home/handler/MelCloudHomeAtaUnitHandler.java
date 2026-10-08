@@ -163,6 +163,8 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
             accountHandler.registerAtaUnitListener(config.unitId, this);
             startTelemetryPollIfNeeded();
         } else {
+            // Stop the telemetry calls this unit would otherwise keep issuing against an unreachable bridge.
+            cancelTelemetryPoll();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
@@ -192,7 +194,8 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
         switch (channelId) {
             case CHANNEL_POWER:
                 boolean powerValue = command == OnOffType.ON;
-                if (isRedundant(channelId, powerValue, lastUnit != null && lastUnit.isPower() == powerValue)) {
+                if (isRedundant(channelId, powerValue, lastUnit != null
+                        && lastUnit.getPower().filter(reported -> reported.booleanValue() == powerValue).isPresent())) {
                     logger.debug("Skipping power command, unit already reports power={}", powerValue);
                     return;
                 }
@@ -322,7 +325,8 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
     private void publishState(MelCloudHomeAtaUnit unit) {
         updateCapabilityProperties(unit.capabilities);
         updateStatus(ThingStatus.ONLINE);
-        updateState(CHANNEL_POWER, OnOffType.from(unit.isPower()));
+        unit.getPower().ifPresentOrElse(value -> updateState(CHANNEL_POWER, OnOffType.from(value)),
+                () -> updateState(CHANNEL_POWER, UnDefType.UNDEF));
         Integer operationModeCode = OPERATION_MODE_WORD_TO_CODE.get(unit.getOperationMode());
         if (operationModeCode != null) {
             updateState(CHANNEL_HOME_OPERATION_MODE, new DecimalType(operationModeCode));
@@ -359,8 +363,10 @@ public class MelCloudHomeAtaUnitHandler extends BaseThingHandler implements MelC
                 logger.debug("Unknown vane vertical word '{}', skipping channel update", value);
             }
         }, () -> updateState(CHANNEL_HOME_VANE_VERTICAL, UnDefType.UNDEF));
-        updateState(CHANNEL_IN_STANDBY_MODE, OnOffType.from(unit.isInStandbyMode()));
-        updateState(CHANNEL_IS_IN_ERROR, OnOffType.from(unit.isInError()));
+        unit.getInStandbyMode().ifPresentOrElse(value -> updateState(CHANNEL_IN_STANDBY_MODE, OnOffType.from(value)),
+                () -> updateState(CHANNEL_IN_STANDBY_MODE, UnDefType.UNDEF));
+        unit.getIsInError().ifPresentOrElse(value -> updateState(CHANNEL_IS_IN_ERROR, OnOffType.from(value)),
+                () -> updateState(CHANNEL_IS_IN_ERROR, UnDefType.UNDEF));
         unit.getErrorCode().ifPresentOrElse(value -> updateState(CHANNEL_ERROR_CODE, new StringType(value)),
                 () -> updateState(CHANNEL_ERROR_CODE, UnDefType.UNDEF));
         Integer rssi = unit.rssi;

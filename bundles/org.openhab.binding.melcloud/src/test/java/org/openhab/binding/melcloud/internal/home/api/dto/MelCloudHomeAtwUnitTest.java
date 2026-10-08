@@ -72,19 +72,44 @@ class MelCloudHomeAtwUnitTest {
     }
 
     @Test
-    void whenHolidayModeIsNullThenIsHolidayModeEnabledReturnsFalse() {
+    void whenHasZone2SettingIsNotBooleanThenZone2AccessorsReturnEmpty() {
+        // Arrange: the API reports the literal "None" when a unit has no second zone.
+        MelCloudHomeAtwUnit unit = unitWithSettings("HasZone2", "None", "OperationModeZone2", "HeatCurve");
+
+        // Act & Assert
+        assertFalse(unit.hasZone2());
+        assertEquals(Optional.empty(), unit.getOperationModeZone2());
+    }
+
+    @Test
+    void whenHolidayModeIsNullThenGetHolidayModeEnabledReturnsEmpty() {
         // Arrange
         MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
 
         // Act
-        boolean holidayModeEnabled = unit.isHolidayModeEnabled();
+        Optional<Boolean> holidayModeEnabled = unit.getHolidayModeEnabled();
 
         // Assert
-        assertFalse(holidayModeEnabled);
+        assertTrue(holidayModeEnabled.isEmpty());
     }
 
     @Test
-    void whenHolidayModeIsSetAndEnabledThenIsHolidayModeEnabledReturnsTrue() {
+    void whenHolidayModeIsSetAndDisabledThenGetHolidayModeEnabledReturnsFalse() {
+        // Arrange: an explicitly reported "false" is distinguishable from an absent toggle.
+        MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
+        MelCloudHomeToggleState toggleState = new MelCloudHomeToggleState();
+        toggleState.enabled = false;
+        unit.holidayMode = toggleState;
+
+        // Act
+        Optional<Boolean> holidayModeEnabled = unit.getHolidayModeEnabled();
+
+        // Assert
+        assertEquals(Optional.of(Boolean.FALSE), holidayModeEnabled);
+    }
+
+    @Test
+    void whenHolidayModeIsSetAndEnabledThenGetHolidayModeEnabledReturnsTrue() {
         // Arrange
         MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
         MelCloudHomeToggleState toggleState = new MelCloudHomeToggleState();
@@ -92,22 +117,34 @@ class MelCloudHomeAtwUnitTest {
         unit.holidayMode = toggleState;
 
         // Act
-        boolean holidayModeEnabled = unit.isHolidayModeEnabled();
+        Optional<Boolean> holidayModeEnabled = unit.getHolidayModeEnabled();
 
         // Assert
-        assertTrue(holidayModeEnabled);
+        assertEquals(Optional.of(Boolean.TRUE), holidayModeEnabled);
     }
 
     @Test
-    void whenFrostProtectionIsNullThenIsFrostProtectionEnabledReturnsFalse() {
+    void whenFrostProtectionIsNullThenGetFrostProtectionEnabledReturnsEmpty() {
         // Arrange
         MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
 
         // Act
-        boolean frostProtectionEnabled = unit.isFrostProtectionEnabled();
+        Optional<Boolean> frostProtectionEnabled = unit.getFrostProtectionEnabled();
 
         // Assert
-        assertFalse(frostProtectionEnabled);
+        assertTrue(frostProtectionEnabled.isEmpty());
+    }
+
+    @Test
+    void whenPowerSettingIsMissingThenGetPowerReturnsEmpty() {
+        // Arrange
+        MelCloudHomeAtwUnit unit = new MelCloudHomeAtwUnit();
+
+        // Act
+        Optional<Boolean> power = unit.getPower();
+
+        // Assert
+        assertTrue(power.isEmpty());
     }
 
     @Test

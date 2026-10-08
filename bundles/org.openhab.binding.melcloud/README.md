@@ -207,9 +207,9 @@ convention chosen to match the legacy MELCloud binding's numbering and are not i
 | zone1-operation-mode            | Number              | Heating/cooling strategy for zone 1: `0` = Heat Room Temperature, `1` = Heat Flow Temperature, `2` = Heat Curve, `3` = Cool Room Temperature, `4` = Cool Flow Temperature, `5` = Dry Floor. | False |
 | set-temperature-zone1           | Number:Temperature  | Set temperature Zone 1: Min = 10, Max = 30.                                         | False     |
 | room-temperature-zone1          | Number:Temperature  | Room temperature Zone 1.                                                             | True      |
-| zone2-operation-mode            | Number              | Same codes as `zone1-operation-mode`, for zone 2. Only present if the unit reports a second zone. | False |
-| set-temperature-zone2           | Number:Temperature  | Set temperature Zone 2: Min = 10, Max = 30. Only present if the unit reports a second zone. | False |
-| room-temperature-zone2          | Number:Temperature  | Room temperature Zone 2. Only present if the unit reports a second zone.            | True      |
+| zone2-operation-mode            | Number              | Same codes as `zone1-operation-mode`, for zone 2. Reads `UNDEF` unless the unit reports a second zone. | False |
+| set-temperature-zone2           | Number:Temperature  | Set temperature Zone 2: Min = 10, Max = 30. Reads `UNDEF` unless the unit reports a second zone. | False |
+| room-temperature-zone2          | Number:Temperature  | Room temperature Zone 2. Reads `UNDEF` unless the unit reports a second zone.        | True      |
 | tank-water-temperature          | Number:Temperature  | Tank water temperature.                                                             | True      |
 | tank-target-water-temperature   | Number:Temperature  | Tank water target temperature: Min = 20, Max = 65.                                  | False     |
 | forced-hot-water-mode           | Switch              | If water mode is Heat Now (true) or Auto (false).                                   | False     |

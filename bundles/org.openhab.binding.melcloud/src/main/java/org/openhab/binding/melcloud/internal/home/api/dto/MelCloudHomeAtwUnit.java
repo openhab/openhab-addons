@@ -45,21 +45,32 @@ public class MelCloudHomeAtwUnit {
      */
     public List<MelCloudHomeAtwScheduleEntry> schedule = List.of();
 
-    public boolean isHolidayModeEnabled() {
+    /**
+     * @return whether the toggle is enabled, or empty if the API did not report it, so callers can publish an
+     *         unknown state instead of a valid-looking Off
+     */
+    public Optional<Boolean> getHolidayModeEnabled() {
         MelCloudHomeToggleState state = holidayMode;
-        return state != null && state.enabled;
+        return state == null ? Optional.empty() : Optional.of(state.enabled);
     }
 
-    public boolean isFrostProtectionEnabled() {
+    /**
+     * @return whether the toggle is enabled, or empty if the API did not report it, so callers can publish an
+     *         unknown state instead of a valid-looking Off
+     */
+    public Optional<Boolean> getFrostProtectionEnabled() {
         MelCloudHomeToggleState state = frostProtection;
-        return state != null && state.enabled;
+        return state == null ? Optional.empty() : Optional.of(state.enabled);
     }
 
-    public boolean isPower() {
+    /**
+     * @return whether the unit reports being powered on, or empty if the setting is absent from a partial response
+     */
+    public Optional<Boolean> getPower() {
         return MelCloudHomeSettingsParser.findBoolean(settings, "Power");
     }
 
-    public boolean isInStandbyMode() {
+    public Optional<Boolean> getInStandbyMode() {
         return MelCloudHomeSettingsParser.findBoolean(settings, "InStandbyMode");
     }
 
@@ -80,8 +91,12 @@ public class MelCloudHomeAtwUnit {
         return MelCloudHomeSettingsParser.findDouble(settings, "RoomTemperatureZone1");
     }
 
+    /**
+     * A capability flag, not a state: an API response that does not report a second zone is treated as "no zone 2",
+     * which leaves that zone's channels undefined rather than publishing stale values.
+     */
     public boolean hasZone2() {
-        return MelCloudHomeSettingsParser.findBoolean(settings, "HasZone2");
+        return MelCloudHomeSettingsParser.findBoolean(settings, "HasZone2").filter(Boolean::booleanValue).isPresent();
     }
 
     public Optional<String> getOperationModeZone2() {
@@ -104,11 +119,11 @@ public class MelCloudHomeAtwUnit {
         return MelCloudHomeSettingsParser.findDouble(settings, "TankWaterTemperature");
     }
 
-    public boolean isForcedHotWaterMode() {
+    public Optional<Boolean> getForcedHotWaterMode() {
         return MelCloudHomeSettingsParser.findBoolean(settings, "ForcedHotWaterMode");
     }
 
-    public boolean isInError() {
+    public Optional<Boolean> getIsInError() {
         return MelCloudHomeSettingsParser.findBoolean(settings, "IsInError");
     }
 

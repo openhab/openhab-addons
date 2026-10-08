@@ -1,8 +1,8 @@
 {
-	"id": "...c698",
-	"firstname": "***",
-	"lastname": "***",
-	"email": "***",
+	"id": "11111111-2222-3333-4444-555566667777",
+	"firstname": "SyntheticFirst",
+	"lastname": "SyntheticLast",
+	"email": "synthetic.owner@example.invalid",
 	"language": "en",
 	"country": "DE",
 	"numberOfDevicesAllowed": 10,
@@ -11,7 +11,7 @@
 	"numberOfGuestDevicesAllowed": 10,
 	"buildings": [
 		{
-			"id": "...9b0a",
+			"id": "aaaaaaaa-bbbb-cccc-dddd-eeeeffff0000",
 			"name": "Townhouse",
 			"timezone": "Europe/Berlin",
 			"airToAirUnits": [
@@ -19,7 +19,7 @@
 					"unitSettings": null,
 					"schedule": [],
 					"scheduleEnabled": true,
-					"connectedInterfaceIdentifier": "...fd5e",
+					"connectedInterfaceIdentifier": "001122aabbcc",
 					"capabilities": {
 						"isMultiSplitSystem": false,
 						"isLegacyDevice": false,
@@ -48,9 +48,9 @@
 					"overheatProtection": null,
 					"holidayMode": null,
 					"connectedInterfaceType": "melCloudWiFi",
-					"systemId": "...4d91",
-					"id": "...ac62",
-					"givenDisplayName": "***",
+					"systemId": "99999999-8888-7777-6666-555544443333",
+					"id": "0f0e0d0c-0b0a-0908-0706-050403020100",
+					"givenDisplayName": "SyntheticLoft",
 					"displayIcon": "LivingRoom",
 					"settings": [
 						{

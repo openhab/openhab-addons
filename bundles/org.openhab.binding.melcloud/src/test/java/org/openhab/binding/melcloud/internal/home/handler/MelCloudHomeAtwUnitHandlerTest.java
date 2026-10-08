@@ -14,7 +14,6 @@ package org.openhab.binding.melcloud.internal.home.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,15 +26,21 @@ import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHA
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ENERGY_CONSUMED;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ENERGY_PRODUCED;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ERROR_CODE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_FROST_PROTECTION;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOLIDAY_MODE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_FORCED_HOTWATERMODE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_SET_TEMPERATURE_ZONE1;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_SET_TEMPERATURE_ZONE2;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_HOME_TANK_WATER_TEMPERATURE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_IN_STANDBY_MODE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_IS_IN_ERROR;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_OPERATION_STATUS;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_RSSI;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ZONE1_OPERATION_MODE;
+import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.CHANNEL_ZONE2_OPERATION_MODE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_FTC_MODEL;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_COOLING_MODE;
 import static org.openhab.binding.melcloud.internal.MelCloudBindingConstants.PROPERTY_ATW_HAS_ESTIMATED_ENERGY_CONSUMPTION;
@@ -79,6 +84,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -115,13 +121,17 @@ class MelCloudHomeAtwUnitHandlerTest {
     }
 
     private MelCloudHomeAtwUnitHandler createHandler() {
+        return createHandler(ThingStatus.ONLINE);
+    }
+
+    private MelCloudHomeAtwUnitHandler createHandler(ThingStatus bridgeStatus) {
         Configuration configuration = new Configuration(Map.of("unitId", UNIT_ID));
         Thing thing = ThingBuilder.create(THING_TYPE_MELCLOUD_HOME_ATW_UNIT, "test").withConfiguration(configuration)
                 .withBridge(bridgeUID).build();
 
         Bridge bridge = mock(Bridge.class);
         when(bridge.getHandler()).thenReturn(accountHandler);
-        when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
+        when(bridge.getStatus()).thenReturn(bridgeStatus);
         callback.setBridge(bridge);
 
         MelCloudHomeAtwUnitHandler handler = new MelCloudHomeAtwUnitHandler(thing);
@@ -145,7 +155,7 @@ class MelCloudHomeAtwUnitHandlerTest {
     }
 
     @Test
-    void whenHasZone2IsFalseThenZone2ChannelsAreNotUpdated() {
+    void whenHasZone2IsFalseThenZone2ChannelsAreCleared() {
         // Arrange
         MelCloudHomeAtwUnitHandler handler = createHandler();
         handler.initialize();
@@ -158,7 +168,43 @@ class MelCloudHomeAtwUnitHandlerTest {
         // Assert
         callback.waitForOnline();
         assertEquals(OnOffType.ON, callback.getState(CHANNEL_POWER));
-        assertNull(callback.stateMap.get(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2));
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2));
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_SET_TEMPERATURE_ZONE2));
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ZONE2_OPERATION_MODE));
+    }
+
+    @Test
+    void whenZone2DisappearsAfterAnEarlierUpdateThenItsChannelsAreCleared() {
+        // Arrange: a first response reports zone 2, a later one no longer does
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        handler.onAtwUnitUpdated(unitWithSettings("Power", "True", "HasZone2", "True", "RoomTemperatureZone2", "19.0",
+                "SetTemperatureZone2", "21.0", "OperationModeZone2", "HeatCurve"));
+        assertEquals(new QuantityType<>(19.0, SIUnits.CELSIUS), callback.getState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2));
+
+        // Act
+        handler.onAtwUnitUpdated(unitWithSettings("Power", "True", "HasZone2", "False"));
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2));
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_SET_TEMPERATURE_ZONE2));
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_ZONE2_OPERATION_MODE));
+    }
+
+    @Test
+    void whenBridgeRecoversThenTelemetryPollingIsRestarted() throws Exception {
+        // Arrange: the thing starts against an offline bridge, which starts no telemetry task at all
+        MelCloudHomeAtwUnitHandler handler = createHandler(ThingStatus.OFFLINE);
+        handler.initialize();
+        callback.waitForStatus(ThingStatus.OFFLINE);
+        verify(apiClient, never()).fetchLatestEnergyWh(any(), any(), any(), any(), any());
+
+        // Act
+        handler.bridgeStatusChanged(ThingStatusInfoBuilder.create(ThingStatus.ONLINE).build());
+
+        // Assert: restarted telemetry only happens because going offline cancelled the previous task
+        verify(apiClient, timeout(3000)).fetchLatestEnergyWh(eq(ACCESS_TOKEN), eq(UNIT_ID), any(), any(),
+                eq("interval_energy_consumed"));
     }
 
     @Test
@@ -395,6 +441,77 @@ class MelCloudHomeAtwUnitHandlerTest {
 
         // Assert
         assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_OUTDOOR_TEMPERATURE));
+    }
+
+    @Test
+    void whenPowerIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("OperationMode", "Heating");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_POWER));
+    }
+
+    @Test
+    void whenInStandbyModeIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_IN_STANDBY_MODE));
+    }
+
+    @Test
+    void whenForcedHotWaterModeIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOME_FORCED_HOTWATERMODE));
+    }
+
+    @Test
+    void whenIsInErrorIsMissingFromSettingsThenChannelIsUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_IS_IN_ERROR));
+    }
+
+    @Test
+    void whenHolidayAndFrostProtectionAreNullThenTheirChannelsAreUpdatedWithUndef() {
+        // Arrange
+        MelCloudHomeAtwUnitHandler handler = createHandler();
+        handler.initialize();
+        MelCloudHomeAtwUnit unit = unitWithSettings("Power", "True");
+
+        // Act
+        handler.onAtwUnitUpdated(unit);
+
+        // Assert
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_HOLIDAY_MODE));
+        assertEquals(UnDefType.UNDEF, callback.getState(CHANNEL_FROST_PROTECTION));
     }
 
     @Test

@@ -47,7 +47,10 @@ public class MelCloudHomeAtaUnit {
     public MelCloudHomeAtaCapabilities capabilities = new MelCloudHomeAtaCapabilities();
     public List<MelCloudHomeSetting> settings = List.of();
 
-    public boolean isPower() {
+    /**
+     * @return whether the unit reports being powered on, or empty if the setting is absent from a partial response
+     */
+    public Optional<Boolean> getPower() {
         return MelCloudHomeSettingsParser.findBoolean(settings, "Power");
     }
 
@@ -78,11 +81,11 @@ public class MelCloudHomeAtaUnit {
                 .map(value -> VANE_HORIZONTAL_AMERICAN_TO_BRITISH.getOrDefault(value, value));
     }
 
-    public boolean isInStandbyMode() {
+    public Optional<Boolean> getInStandbyMode() {
         return MelCloudHomeSettingsParser.findBoolean(settings, "InStandbyMode");
     }
 
-    public boolean isInError() {
+    public Optional<Boolean> getIsInError() {
         return MelCloudHomeSettingsParser.findBoolean(settings, "IsInError");
     }
 

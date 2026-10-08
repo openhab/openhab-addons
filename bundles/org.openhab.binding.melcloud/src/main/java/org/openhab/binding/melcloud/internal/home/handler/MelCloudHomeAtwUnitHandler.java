@@ -175,6 +175,8 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
             accountHandler.registerAtwUnitListener(config.unitId, this);
             startTelemetryPollIfNeeded();
         } else {
+            // Stop the telemetry calls this unit would otherwise keep issuing against an unreachable bridge.
+            cancelTelemetryPoll();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
@@ -204,7 +206,8 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
         switch (channelId) {
             case CHANNEL_POWER:
                 boolean powerValue = command == OnOffType.ON;
-                if (isRedundant(channelId, powerValue, lastUnit != null && lastUnit.isPower() == powerValue)) {
+                if (isRedundant(channelId, powerValue, lastUnit != null
+                        && lastUnit.getPower().filter(reported -> reported.booleanValue() == powerValue).isPresent())) {
                     logger.debug("Skipping power command, unit already reports power={}", powerValue);
                     return;
                 }
@@ -278,8 +281,8 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                 break;
             case CHANNEL_HOME_FORCED_HOTWATERMODE:
                 boolean forcedHotWaterModeValue = command == OnOffType.ON;
-                if (isRedundant(channelId, forcedHotWaterModeValue,
-                        lastUnit != null && lastUnit.isForcedHotWaterMode() == forcedHotWaterModeValue)) {
+                if (isRedundant(channelId, forcedHotWaterModeValue, lastUnit != null && lastUnit.getForcedHotWaterMode()
+                        .filter(reported -> reported.booleanValue() == forcedHotWaterModeValue).isPresent())) {
                     logger.debug("Skipping forced hot water mode command, unit already reports {}",
                             forcedHotWaterModeValue);
                     return;
@@ -334,7 +337,8 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
     private void publishState(MelCloudHomeAtwUnit unit) {
         updateCapabilityProperties(unit.capabilities);
         updateStatus(ThingStatus.ONLINE);
-        updateState(CHANNEL_POWER, OnOffType.from(unit.isPower()));
+        unit.getPower().ifPresentOrElse(value -> updateState(CHANNEL_POWER, OnOffType.from(value)),
+                () -> updateState(CHANNEL_POWER, UnDefType.UNDEF));
         updateCodeState(CHANNEL_OPERATION_STATUS, OPERATION_STATUS_WORD_TO_CODE, unit.getOperationStatus());
         updateCodeState(CHANNEL_ZONE1_OPERATION_MODE, ZONE_MODE_WORD_TO_CODE, unit.getOperationModeZone1());
         unit.getSetTemperatureZone1().ifPresentOrElse(
@@ -355,6 +359,12 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
                     value -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2,
                             new QuantityType<>(value, SIUnits.CELSIUS)),
                     () -> updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2, UnDefType.UNDEF));
+        } else {
+            // The unit no longer reports a second zone (or no longer reports the flag at all): clear the zone-2
+            // channels instead of leaving the previous response's values visible indefinitely.
+            updateState(CHANNEL_ZONE2_OPERATION_MODE, UnDefType.UNDEF);
+            updateState(CHANNEL_HOME_SET_TEMPERATURE_ZONE2, UnDefType.UNDEF);
+            updateState(CHANNEL_HOME_ROOM_TEMPERATURE_ZONE2, UnDefType.UNDEF);
         }
         unit.getSetTankWaterTemperature().ifPresentOrElse(
                 value -> updateState(CHANNEL_HOME_TANK_TARGET_WATER_TEMPERATURE,
@@ -363,16 +373,23 @@ public class MelCloudHomeAtwUnitHandler extends BaseThingHandler implements MelC
         unit.getTankWaterTemperature().ifPresentOrElse(
                 value -> updateState(CHANNEL_HOME_TANK_WATER_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)),
                 () -> updateState(CHANNEL_HOME_TANK_WATER_TEMPERATURE, UnDefType.UNDEF));
-        updateState(CHANNEL_HOME_FORCED_HOTWATERMODE, OnOffType.from(unit.isForcedHotWaterMode()));
+        unit.getForcedHotWaterMode().ifPresentOrElse(
+                value -> updateState(CHANNEL_HOME_FORCED_HOTWATERMODE, OnOffType.from(value)),
+                () -> updateState(CHANNEL_HOME_FORCED_HOTWATERMODE, UnDefType.UNDEF));
         unit.getOutdoorTemperature().ifPresentOrElse(
                 value -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<>(value, SIUnits.CELSIUS)),
                 () -> updateState(CHANNEL_OUTDOOR_TEMPERATURE, UnDefType.UNDEF));
-        updateState(CHANNEL_IN_STANDBY_MODE, OnOffType.from(unit.isInStandbyMode()));
-        updateState(CHANNEL_IS_IN_ERROR, OnOffType.from(unit.isInError()));
+        unit.getInStandbyMode().ifPresentOrElse(value -> updateState(CHANNEL_IN_STANDBY_MODE, OnOffType.from(value)),
+                () -> updateState(CHANNEL_IN_STANDBY_MODE, UnDefType.UNDEF));
+        unit.getIsInError().ifPresentOrElse(value -> updateState(CHANNEL_IS_IN_ERROR, OnOffType.from(value)),
+                () -> updateState(CHANNEL_IS_IN_ERROR, UnDefType.UNDEF));
         unit.getErrorCode().ifPresentOrElse(value -> updateState(CHANNEL_ERROR_CODE, new StringType(value)),
                 () -> updateState(CHANNEL_ERROR_CODE, UnDefType.UNDEF));
-        updateState(CHANNEL_HOLIDAY_MODE, OnOffType.from(unit.isHolidayModeEnabled()));
-        updateState(CHANNEL_FROST_PROTECTION, OnOffType.from(unit.isFrostProtectionEnabled()));
+        unit.getHolidayModeEnabled().ifPresentOrElse(value -> updateState(CHANNEL_HOLIDAY_MODE, OnOffType.from(value)),
+                () -> updateState(CHANNEL_HOLIDAY_MODE, UnDefType.UNDEF));
+        unit.getFrostProtectionEnabled().ifPresentOrElse(
+                value -> updateState(CHANNEL_FROST_PROTECTION, OnOffType.from(value)),
+                () -> updateState(CHANNEL_FROST_PROTECTION, UnDefType.UNDEF));
         Integer rssi = unit.rssi;
         if (rssi != null) {
             updateState(CHANNEL_RSSI, new DecimalType(mapRssiToSignalStrength(rssi)));

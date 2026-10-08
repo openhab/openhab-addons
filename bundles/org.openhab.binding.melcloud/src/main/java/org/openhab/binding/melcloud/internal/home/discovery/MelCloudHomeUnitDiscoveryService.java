@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MelCloudHomeUnitDiscoveryService} discovers ATA/ATW units under a {@code home-account} bridge via its own
- * one-off {@code /context} fetch. Background discovery waits with a short retry until the bridge is
- * {@link ThingStatus#ONLINE}.
+ * one-off {@code /context} fetch, which the bridge paces against its regular polling and control calls. Background
+ * discovery waits with a short retry until the bridge is {@link ThingStatus#ONLINE}.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -55,6 +55,11 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
 
     private final Logger logger = LoggerFactory.getLogger(MelCloudHomeUnitDiscoveryService.class);
 
+    /**
+     * Guards the two task fields: a run that is already in flight schedules its own offline retry, which must not be
+     * overwritten by the caller that scheduled that run and would otherwise be left untracked.
+     */
+    private final Object taskLock = new Object();
     private @Nullable ScheduledFuture<?> scanTask;
     private volatile @Nullable ScheduledFuture<?> backgroundTask;
     private final AtomicInteger bridgeNotOnlineAttempts = new AtomicInteger();
@@ -70,47 +75,82 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
     @Override
     protected void startBackgroundDiscovery() {
         // Return promptly: discovery performs a blocking network request.
-        backgroundTask = scheduler.schedule(this::discoverUnits, 0, TimeUnit.SECONDS);
+        synchronized (taskLock) {
+            backgroundTask = replaceTask(backgroundTask, this::discoverUnitsInBackground);
+        }
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        ScheduledFuture<?> task = backgroundTask;
-        if (task != null) {
-            task.cancel(true);
-            backgroundTask = null;
+        synchronized (taskLock) {
+            backgroundTask = cancelTask(backgroundTask);
         }
         super.stopBackgroundDiscovery();
     }
 
     @Override
     protected void startScan() {
-        ScheduledFuture<?> scanTask = this.scanTask;
-        if (scanTask != null) {
-            scanTask.cancel(true);
+        // A manual scan is a fresh attempt: give it the full retry budget rather than continuing to count the
+        // attempts automatic discovery already spent.
+        bridgeNotOnlineAttempts.set(0);
+        synchronized (taskLock) {
+            scanTask = replaceTask(scanTask, this::discoverUnitsForManualScan);
         }
-        this.scanTask = scheduler.schedule(this::discoverUnits, 0, TimeUnit.SECONDS);
     }
 
     @Override
     protected void stopScan() {
         super.stopScan();
 
-        ScheduledFuture<?> scanTask = this.scanTask;
-        if (scanTask != null) {
-            scanTask.cancel(true);
-            this.scanTask = null;
+        synchronized (taskLock) {
+            scanTask = cancelTask(scanTask);
         }
     }
 
-    private void discoverUnits() {
+    /**
+     * Cancels {@code current} and schedules {@code run} immediately in its place, so the run replaces the task it
+     * belongs to rather than both being tracked at once.
+     */
+    private ScheduledFuture<?> replaceTask(@Nullable ScheduledFuture<?> current, Runnable run) {
+        cancelTask(current);
+        return scheduler.schedule(run, 0, TimeUnit.SECONDS);
+    }
+
+    private @Nullable ScheduledFuture<?> cancelTask(@Nullable ScheduledFuture<?> task) {
+        if (task != null) {
+            task.cancel(true);
+        }
+        return null;
+    }
+
+    private void discoverUnitsInBackground() {
+        discoverUnits(true);
+    }
+
+    private void discoverUnitsForManualScan() {
+        discoverUnits(false);
+    }
+
+    /**
+     * @param background whether this run belongs to background discovery, so an offline retry is tracked in the
+     *            matching future and stays cancellable by {@link #stopBackgroundDiscovery()} or {@link #stopScan()}
+     */
+    private void discoverUnits(boolean background) {
         if (thingHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             int attempt = bridgeNotOnlineAttempts.incrementAndGet();
             if (attempt <= BRIDGE_NOT_ONLINE_MAX_ATTEMPTS) {
                 logger.debug("MELCloud Home bridge is not online yet, deferring unit discovery by {}s (attempt {}/{})",
                         BRIDGE_NOT_ONLINE_RETRY_DELAY_SECONDS, attempt, BRIDGE_NOT_ONLINE_MAX_ATTEMPTS);
-                backgroundTask = scheduler.schedule(this::discoverUnits, BRIDGE_NOT_ONLINE_RETRY_DELAY_SECONDS,
-                        TimeUnit.SECONDS);
+                synchronized (taskLock) {
+                    ScheduledFuture<?> retry = scheduler.schedule(
+                            background ? this::discoverUnitsInBackground : this::discoverUnitsForManualScan,
+                            BRIDGE_NOT_ONLINE_RETRY_DELAY_SECONDS, TimeUnit.SECONDS);
+                    if (background) {
+                        backgroundTask = retry;
+                    } else {
+                        scanTask = retry;
+                    }
+                }
             } else {
                 logger.debug("MELCloud Home bridge is still not online after {} attempts, giving up on automatic "
                         + "unit discovery for now; a manual scan will retry", BRIDGE_NOT_ONLINE_MAX_ATTEMPTS);
@@ -121,7 +161,7 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
 
         logger.debug("Discover MELCloud Home units");
         try {
-            MelCloudHomeUserContext context = thingHandler.fetchUserContext();
+            MelCloudHomeUserContext context = thingHandler.fetchUserContextPaced();
             ThingUID bridgeUID = thingHandler.getThing().getUID();
 
             context.getAllAtaUnits().forEach(unit -> discoverAtaUnit(unit, bridgeUID));
@@ -138,10 +178,11 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
         Map<String, Object> properties = new HashMap<>();
         properties.put(PROPERTY_UNIT_ID, unit.id);
 
-        String label = "MELCloud Home ATA - " + unit.givenDisplayName;
-        logger.debug("Found ATA unit: {} (id={})", label, SensitiveDataMasker.maskId(unit.id));
+        // The unit's display name is user-supplied data, so only the unit type and a masked id are logged.
+        logger.debug("Found MELCloud Home ATA unit (id={})", SensitiveDataMasker.maskId(unit.id));
 
-        thingDiscovered(DiscoveryResultBuilder.create(unitThing).withLabel(label).withProperties(properties)
+        thingDiscovered(DiscoveryResultBuilder.create(unitThing)
+                .withLabel("MELCloud Home ATA - " + unit.givenDisplayName).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_UNIT_ID).withBridge(bridgeUID).build());
     }
 
@@ -152,10 +193,11 @@ public class MelCloudHomeUnitDiscoveryService extends AbstractThingHandlerDiscov
         Map<String, Object> properties = new HashMap<>();
         properties.put(PROPERTY_UNIT_ID, unit.id);
 
-        String label = "MELCloud Home ATW - " + unit.givenDisplayName;
-        logger.debug("Found ATW unit: {} (id={})", label, SensitiveDataMasker.maskId(unit.id));
+        // The unit's display name is user-supplied data, so only the unit type and a masked id are logged.
+        logger.debug("Found MELCloud Home ATW unit (id={})", SensitiveDataMasker.maskId(unit.id));
 
-        thingDiscovered(DiscoveryResultBuilder.create(unitThing).withLabel(label).withProperties(properties)
+        thingDiscovered(DiscoveryResultBuilder.create(unitThing)
+                .withLabel("MELCloud Home ATW - " + unit.givenDisplayName).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_UNIT_ID).withBridge(bridgeUID).build());
     }
 }

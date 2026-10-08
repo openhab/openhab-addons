@@ -44,16 +44,17 @@ public class MelCloudHomeRequestPacer {
     static final long DEFAULT_MIN_REQUEST_INTERVAL_MILLIS = 500;
 
     /** Upper bound for {@link #scheduleBlocking(PacedCall)}, so a lost task cannot block its caller forever. */
-    private static final long BLOCKING_TIMEOUT_SECONDS = 60;
+    private static final long BLOCKING_TIMEOUT_MILLIS = 60_000;
 
     private final ScheduledExecutorService scheduler;
     private final long minRequestIntervalMillis;
+    private final long blockingTimeoutMillis;
     private final Object lock = new Object();
 
     private Instant nextAllowedInstant = Instant.EPOCH;
 
     public MelCloudHomeRequestPacer(ScheduledExecutorService scheduler) {
-        this(scheduler, DEFAULT_MIN_REQUEST_INTERVAL_MILLIS);
+        this(scheduler, DEFAULT_MIN_REQUEST_INTERVAL_MILLIS, BLOCKING_TIMEOUT_MILLIS);
     }
 
     /**
@@ -61,8 +62,19 @@ public class MelCloudHomeRequestPacer {
      * @param minRequestIntervalMillis minimum spacing between calls, in milliseconds
      */
     MelCloudHomeRequestPacer(ScheduledExecutorService scheduler, long minRequestIntervalMillis) {
+        this(scheduler, minRequestIntervalMillis, BLOCKING_TIMEOUT_MILLIS);
+    }
+
+    /**
+     * @param scheduler the bridge's own scheduler; never a new/dedicated thread
+     * @param minRequestIntervalMillis minimum spacing between calls, in milliseconds
+     * @param blockingTimeoutMillis how long {@link #scheduleBlocking(PacedCall)} waits for its call, in milliseconds
+     */
+    MelCloudHomeRequestPacer(ScheduledExecutorService scheduler, long minRequestIntervalMillis,
+            long blockingTimeoutMillis) {
         this.scheduler = scheduler;
         this.minRequestIntervalMillis = minRequestIntervalMillis;
+        this.blockingTimeoutMillis = blockingTimeoutMillis;
     }
 
     /**
@@ -91,6 +103,11 @@ public class MelCloudHomeRequestPacer {
      * Like {@link #schedule(Runnable)}, but blocks the calling thread until {@code apiCall} has run and returns its
      * result (or propagates its exception), for synchronous {@code ThingActions} callers.
      *
+     * <p>
+     * If the caller stops waiting before its slot arrives (timeout or interruption), {@code apiCall} is skipped
+     * instead of being executed later, so a call that was already reported as failed cannot still reach the
+     * platform afterwards.
+     *
      * @param <T> the call's result type
      * @param apiCall the call to pace and run
      * @return {@code apiCall}'s result
@@ -99,6 +116,9 @@ public class MelCloudHomeRequestPacer {
     public <T> T scheduleBlocking(PacedCall<T> apiCall) throws MelCloudCommException {
         CompletableFuture<T> future = new CompletableFuture<>();
         schedule(() -> {
+            if (future.isDone()) {
+                return;
+            }
             try {
                 future.complete(apiCall.call());
             } catch (MelCloudCommException | RuntimeException e) {
@@ -107,11 +127,12 @@ public class MelCloudHomeRequestPacer {
             }
         });
         try {
-            return future.get(BLOCKING_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            return future.get(blockingTimeoutMillis, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             future.cancel(true);
             throw new MelCloudCommException("Timed out waiting for a paced call to complete", e);
         } catch (InterruptedException e) {
+            future.cancel(true);
             Thread.currentThread().interrupt();
             throw new MelCloudCommException("Interrupted while waiting for a paced call to complete", e);
         } catch (ExecutionException e) {

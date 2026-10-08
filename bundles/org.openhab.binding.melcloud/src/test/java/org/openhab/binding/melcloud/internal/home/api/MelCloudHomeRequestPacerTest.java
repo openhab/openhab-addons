@@ -143,4 +143,30 @@ class MelCloudHomeRequestPacerTest {
         }));
         assertTrue(thrown.getCause() instanceof IllegalStateException);
     }
+
+    @Test
+    void whenScheduleBlockingTimesOutThenItsPacedCallIsSkippedInsteadOfRunningLater() throws InterruptedException {
+        // Arrange: a pacing delay far beyond the blocking timeout, so the caller always gives up first
+        long intervalMillis = 500;
+        long blockingTimeoutMillis = 50;
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        MelCloudHomeRequestPacer pacer = new MelCloudHomeRequestPacer(scheduler, intervalMillis, blockingTimeoutMillis);
+        pacer.schedule(() -> {
+            // First call: reserves the next slot, nothing to assert.
+        });
+        AtomicBoolean ran = new AtomicBoolean(false);
+
+        // Act
+        assertThrows(MelCloudCommException.class, () -> pacer.scheduleBlocking(() -> {
+            ran.set(true);
+            return "too late";
+        }));
+
+        // Assert - a marker queued after the paced task on the same single-threaded scheduler can only run once the
+        // paced task has been passed, so it proves the paced call was skipped rather than merely still pending.
+        CountDownLatch markerDone = new CountDownLatch(1);
+        scheduler.schedule(markerDone::countDown, intervalMillis + 200, TimeUnit.MILLISECONDS);
+        assertTrue(markerDone.await(5, TimeUnit.SECONDS), "marker task should have run");
+        assertFalse(ran.get(), "a call that timed out must not reach the API afterwards");
+    }
 }
