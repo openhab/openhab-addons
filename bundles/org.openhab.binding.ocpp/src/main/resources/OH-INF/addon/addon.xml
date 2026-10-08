@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="ocpp" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>OCPP Binding</name>
+	<description>Connects OCPP 1.6-J chargers (EV charge points) to openHAB as an OCPP central system.</description>
+	<connection>local</connection>
+
+</addon:addon>

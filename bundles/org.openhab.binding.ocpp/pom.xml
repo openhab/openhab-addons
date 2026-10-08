@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.binding.ocpp</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: OCPP Binding</name>
+
+  <properties>
+    <ocpp.version>2.0</ocpp.version>
+    <!-- The ChargeTime jars reference JAXB and javax.annotation, neither of which the runtime exports;
+         the classes that use them are never loaded, so the imports are optional. -->
+    <bnd.importpackage>javax.xml.bind.*;resolution:=optional,javax.annotation;resolution:=optional</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <!-- ChargeTime OCA-OCPP: ocpp16 (models and profiles), ocpp-json (transport), ocpp-common (base).
+         slf4j, gson and jaxb come from the platform and are excluded. -->
+    <dependency>
+      <groupId>eu.chargetime.ocpp</groupId>
+      <artifactId>ocpp16</artifactId>
+      <version>${ocpp.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>eu.chargetime.ocpp</groupId>
+      <artifactId>ocpp-json</artifactId>
+      <version>${ocpp.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.code.gson</groupId>
+          <artifactId>gson</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>eu.chargetime.ocpp</groupId>
+      <artifactId>ocpp-common</artifactId>
+      <version>${ocpp.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>embed-dependencies</id>
+            <configuration>
+              <!-- ocpp-json brings Java-WebSocket, which has to be embedded with it. -->
+              <excludeTransitive>false</excludeTransitive>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
