@@ -1,96 +1,73 @@
 # Windhagerbiowin Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+The Windhagerbiowin binding reads numeric datapoints from the BioWin webserver of a Windhager heating system.
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+Communication uses the BioWin HTTP API and HTTP Digest authentication.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-- `bridge`: Short description of the Bridge, if any
-- `biowin`: BioWin heater Thing with the ThingTypeUID `biowin`
+| Thing Type ID | Description |
+|---------------|-------------|
+| `biowin` | BioWin webserver connection for a Windhager heating system. |
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```properties
-# Configuration for the Windhagerbiowin Binding
-#
-# Default secret key for the pairing of the Windhagerbiowin Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+Things are not discovered automatically and must be configured manually.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-### `BioWin` Thing Configuration
-
-| Name     | Type    | Description                                        | Default | Required | Advanced |
-|----------|---------|----------------------------------------------------|---------|----------|----------|
-| hostname | text    | Hostname or IP address of the BioWin webserver     | N/A     | yes      | no       |
-| port     | integer | Port of the BioWin webserver                       | 80      | no       | yes      |
-| username | text    | Username to access the BioWin webserver            | N/A     | yes      | no       |
-| password | text    | Password to access the BioWin webserver            | N/A     | yes      | no       |
+| Parameter | Required | Default | Description |
+|-----------|----------|---------|-------------|
+| `hostname` | Yes | | Hostname or IP address of the BioWin webserver. |
+| `port` | No | `80` | TCP port of the BioWin webserver. |
+| `username` | Yes | | Username for the BioWin webserver. |
+| `password` | Yes | | Password for the BioWin webserver. |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The binding supports numeric, read-only channels.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Each channel uses the `biowin-value` channel type and requires an `oid` configuration parameter.
 
-| Channel  | Type   | Read/Write | Description                                                          |
-|----------|--------|------------|----------------------------------------------------------------------|
-| channel1 | Number | R          | Reads a BioWin value using a configured OID such as 0/802/435/heat. |
+The optional `refreshInterval` parameter sets the polling interval in seconds and defaults to `60`.
+
+The OIDs below are from a tested BioWin installation.
+
+| Channel ID | Type | Access | OID |
+|------------|------|--------|-----|
+| `PelletTotal` | `Number` | Read-only | `1/60/0/23/103/0` |
+| `UnknownTemp` | `Number` | Read-only | `1/60/0/0/11/0` |
+
+Writing values and automatic discovery are not supported.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
+Replace the hostname, username, and password with the values for your installation.
 
 ### Thing Configuration
 
 ```java
-Example thing configuration goes here.
+Thing windhagerbiowin:biowin:myheater [
+hostname="192.0.2.10",
+port=8888,
+username="your-user",
+password="your-password"
+] {
+Channels:
+Type biowin-value : PelletTotal [
+oid="1/60/0/23/103/0",
+refreshInterval=3600
+]
+Type biowin-value : UnknownTemp [
+oid="1/60/0/0/11/0",
+refreshInterval=60
+]
+}
 ```
 
 ### Item Configuration
 
 ```java
-Example item configuration goes here.
+Number BioWin_Pellets "Pellets Total [%.1f]" { channel="windhagerbiowin:biowin:myheater:PelletTotal" }
+Number BioWin_Temp "Temp [%.1f]" { channel="windhagerbiowin:biowin:myheater:UnknownTemp" }
 ```
-
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_

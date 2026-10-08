@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class WindhagerbiowinChannelConfiguration {
 
     /**
-     * BioWin OID such as 0/802/435/heat.
+     * BioWin OID such as 1/60/0/23/103/0.
      */
     public String oid = "";
 

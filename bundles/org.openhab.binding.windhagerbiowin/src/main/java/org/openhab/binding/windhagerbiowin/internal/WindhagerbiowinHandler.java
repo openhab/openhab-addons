@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.windhagerbiowin.internal;
 
-import static org.openhab.binding.windhagerbiowin.internal.WindhagerbiowinBindingConstants.*;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -148,17 +145,6 @@ public class WindhagerbiowinHandler extends BaseThingHandler {
 
         WindhagerbiowinChannelConfiguration channelConfig = channel.getConfiguration()
                 .as(WindhagerbiowinChannelConfiguration.class);
-
-        String acceptedItemType = channel.getAcceptedItemType();
-        if ("String".equalsIgnoreCase(acceptedItemType)) {
-            String value = localConnector.readString(channelConfig.oid);
-            if (value != null) {
-                updateState(channelUID, new StringType(value));
-            } else {
-                logger.debug("Could not read configured BioWin string oid {}", channelConfig.oid);
-            }
-            return;
-        }
 
         BigDecimal value = localConnector.readValue(channelConfig.oid);
         if (value != null) {

@@ -37,11 +37,11 @@
 	<channel-type id="biowin-value">
 		<item-type>Number</item-type>
 		<label>BioWin Value</label>
-		<description>Reads an integer or decimal value from the BioWin webserver using an OID like 0/802/435/heat.</description>
+		<description>Reads a numeric value from the BioWin webserver using a configured OID.</description>
 		<config-description>
 			<parameter name="oid" type="text" required="true">
 				<label>OID</label>
-				<description>BioWin OID, for example 0/802/435/heat.</description>
+				<description>BioWin OID, for example 1/60/0/23/103/0.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" required="true" min="1" unit="s">
 				<label>Refresh Interval</label>
