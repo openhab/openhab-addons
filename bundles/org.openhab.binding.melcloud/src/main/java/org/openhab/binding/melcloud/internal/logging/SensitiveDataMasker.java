@@ -122,7 +122,11 @@ public final class SensitiveDataMasker {
     }
 
     private static String redactKey(String json, String key, boolean partial) {
-        Pattern pattern = KEY_PATTERNS.computeIfAbsent(key, SensitiveDataMasker::compileKeyPattern);
+        Pattern pattern = KEY_PATTERNS.get(key);
+        if (pattern == null) {
+            pattern = compileKeyPattern(key);
+            KEY_PATTERNS.put(key, pattern);
+        }
         Matcher matcher = pattern.matcher(json);
         StringBuilder result = new StringBuilder();
         while (matcher.find()) {
