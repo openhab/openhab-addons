@@ -77,7 +77,7 @@ public class WindhagerbiowinConnector {
     /**
      * Reads a numeric value from a BioWin webserver OID.
      *
-     * @param oid the BioWin OID, for example {@code 0/802/435/heat}
+     * @param oid the BioWin OID, for example {@code 1/60/0/23/103/0}
      * @return the parsed value, or {@code null} if the request fails or the response is not numeric
      */
     public @Nullable BigDecimal readValue(String oid) {
@@ -98,24 +98,6 @@ public class WindhagerbiowinConnector {
         }
     }
 
-    public @Nullable String readString(String oid) {
-        if (oid.isBlank()) {
-            return null;
-        }
-
-        HttpResponse<String> response = sendRequest(DATAPOINT_API_PATH + normalizeOid(oid));
-        if (response == null || response.statusCode() < 200 || response.statusCode() >= 300) {
-            return null;
-        }
-
-        try {
-            return readValueElement(response.body()).getAsString();
-        } catch (RuntimeException e) {
-            logger.debug("BioWin returned an invalid response for oid {}", oid);
-            return null;
-        }
-    }
-
     private @Nullable HttpResponse<String> sendRequest(String oid) {
         String normalizedPath = oid.isBlank() ? "" : "/" + oid.replaceFirst("^/+", "");
         URI uri = URI.create("http://" + hostname + ":" + port + normalizedPath);
@@ -125,6 +107,7 @@ public class WindhagerbiowinConnector {
             if (response != null && response.statusCode() == 401) {
                 var challengeHeader = response.headers().firstValue("WWW-Authenticate");
                 if (challengeHeader.isPresent()) {
+                    // BioWin protects its API with HTTP Digest authentication.
                     String authorization = createDigestAuthorization(challengeHeader.get(), uri, "GET");
                     if (authorization != null) {
                         response = sendRequest(uri, authorization);
