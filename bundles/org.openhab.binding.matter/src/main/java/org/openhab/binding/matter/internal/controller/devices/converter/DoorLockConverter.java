@@ -52,6 +52,7 @@ import org.openhab.core.config.core.ConfigDescriptionParameterGroupBuilder;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.ParameterOption;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Channel;
@@ -197,6 +198,19 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             channels.put(boltStateChannel, null);
         }
 
+        if (initializingCluster.soundVolume != null) {
+            Channel soundVolumeChannel = ChannelBuilder
+                    .create(new ChannelUID(channelGroupUID, CHANNEL_ID_DOORLOCK_SOUNDVOLUME), CoreItemFactory.NUMBER)
+                    .withType(CHANNEL_DOORLOCK_SOUNDVOLUME).build();
+            List<StateOption> soundVolumeOptions = new ArrayList<>();
+            for (DoorLockCluster.SoundVolumeEnum e : DoorLockCluster.SoundVolumeEnum.values()) {
+                soundVolumeOptions.add(new StateOption(e.getValue().toString(), e.getLabel()));
+            }
+            StateDescription stateDescriptionSoundVolume = StateDescriptionFragmentBuilder.create()
+                    .withOptions(soundVolumeOptions).build().toStateDescription();
+            channels.put(soundVolumeChannel, stateDescriptionSoundVolume);
+        }
+
         return channels;
     }
 
@@ -217,6 +231,13 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                         : DoorLockCluster.unlockDoor(pinCode);
             }
             handler.sendClusterCommand(endpointNumber, DoorLockCluster.CLUSTER_NAME, doorLockCommand);
+        } else if (command instanceof DecimalType decimalType
+                && channelUID.getIdWithoutGroup().equals(CHANNEL_ID_DOORLOCK_SOUNDVOLUME)) {
+            handler.writeAttribute(endpointNumber, DoorLockCluster.CLUSTER_NAME, DoorLockCluster.ATTRIBUTE_SOUND_VOLUME,
+                    String.valueOf(decimalType.intValue())).exceptionally(e -> {
+                        logger.debug("Failed to set sound volume: {}", e.getMessage());
+                        return Void.TYPE.cast(null);
+                    });
         }
         super.handleCommand(channelUID, command);
     }
@@ -262,6 +283,11 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                     requirePinForRemoteOperation = requirePin;
                 }
                 break;
+            case DoorLockCluster.ATTRIBUTE_SOUND_VOLUME:
+                if (message.value instanceof DoorLockCluster.SoundVolumeEnum soundVolume) {
+                    updateState(CHANNEL_ID_DOORLOCK_SOUNDVOLUME, new DecimalType(soundVolume.getValue()));
+                }
+                break;
             default:
                 break;
         }
@@ -300,6 +326,10 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             updateState(CHANNEL_ID_DOORLOCK_DOORSTATE,
                     initializingCluster.doorState == DoorLockCluster.DoorStateEnum.DOOR_CLOSED ? OpenClosedType.CLOSED
                             : OpenClosedType.OPEN);
+        }
+        DoorLockCluster.SoundVolumeEnum soundVolume = initializingCluster.soundVolume;
+        if (soundVolume != null) {
+            updateState(CHANNEL_ID_DOORLOCK_SOUNDVOLUME, new DecimalType(soundVolume.getValue()));
         }
         Map<String, Object> entries = new HashMap<>();
         if (initializingCluster.operatingMode != null) {
