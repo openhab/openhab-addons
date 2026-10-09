@@ -244,7 +244,7 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (ApiException e) {
             api = null;// Firmware may be updated so need to check next connect
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

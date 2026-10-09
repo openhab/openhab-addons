@@ -64,7 +64,7 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
                 ElroDeviceType deviceType = TYPE_MAP.get(device.getDeviceType());
                 if ((deviceType == null) || !thing.getThingTypeUID().equals(THING_TYPE_MAP.get(deviceType))) {
                     String msg = String.format("@text/offline.invalid-device-type [ \"%s\" ]", deviceType);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 } else {
                     bridgeHandler.setDeviceHandler(deviceId, this);
                     updateProperties(bridgeHandler);
@@ -73,10 +73,10 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
                 }
             } else {
                 String msg = String.format("@text/offline.invalid-device-id [ \"%d\" ]", deviceId);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -98,14 +98,14 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge == null) {
             String msg = String.format("@text/offline.no-bridge [ \"%d\" ]", deviceId);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return null;
         }
 
         ElroConnectsBridgeHandler bridgeHandler = (ElroConnectsBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             String msg = String.format("@text/offline.no-bridge-handler [ \"%d\" ]", deviceId);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return null;
         }
 
@@ -117,7 +117,7 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             initialize();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

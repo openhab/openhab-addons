@@ -400,7 +400,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         // Z-Way Password
         String zWayPassword = config.getZWayPassword();
         if (zWayPassword == null || zWayPassword.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The connection to the Z-Way Server can't established, because the Z-Way password is missing. Please set a Z-Way password.");
             return null;
         }
@@ -550,28 +550,27 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     @Override
     public void apiError(String message, boolean invalidateState) {
         if (invalidateState) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 
     @Override
     public void httpStatusError(int httpStatus, String message, boolean invalidateState) {
         if (invalidateState) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    message + "(HTTP status code: " + httpStatus + ").");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message + "(HTTP status code: " + httpStatus + ").");
         }
     }
 
     @Override
     public void authenticationError() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 "Authentication error. Please check username and password.");
     }
 
     @Override
     public void responseFormatError(String message, boolean invalidateApiState) {
         if (invalidateApiState) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 

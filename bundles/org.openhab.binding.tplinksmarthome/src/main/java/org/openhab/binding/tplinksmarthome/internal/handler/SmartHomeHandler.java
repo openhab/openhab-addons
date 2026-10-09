@@ -120,7 +120,7 @@ public class SmartHomeHandler extends BaseThingHandler {
                 logger.debug("Command {} is not supported for channel: {}", command, channelUid.getId());
             }
         } catch (final IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -136,8 +136,7 @@ public class SmartHomeHandler extends BaseThingHandler {
     public void initialize() {
         configuration = getConfigAs(TPLinkSmartHomeConfiguration.class);
         if (StringUtil.isBlank(configuration.ipAddress) && StringUtil.isBlank(configuration.deviceId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No ip address or the device id configured.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No ip address or the device id configured.");
             return;
         }
         logger.debug("Initializing TP-Link Smart device on ip '{}' or deviceId '{}' ", configuration.ipAddress,
@@ -200,7 +199,7 @@ public class SmartHomeHandler extends BaseThingHandler {
                     logger.trace("Communication error, retry {}", retry, e);
                     retry++;
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     return null;
                 }
             } catch (final RuntimeException e) {

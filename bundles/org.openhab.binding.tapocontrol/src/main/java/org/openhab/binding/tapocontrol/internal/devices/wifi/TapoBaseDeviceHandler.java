@@ -403,9 +403,8 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
             if (isExpectedThing(baseDeviceData)) {
                 updateDeviceProperties(baseDeviceData);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "found type:'" + baseDeviceData.getModel() + "' with mac:'"
-                                + baseDeviceData.getRepresentationProperty() + "'. Check IP-Address");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "found type:'" + baseDeviceData.getModel()
+                        + "' with mac:'" + baseDeviceData.getRepresentationProperty() + "'. Check IP-Address");
             }
         } else {
             logger.debug("({}) tried to update device with empty data", uid);
@@ -439,7 +438,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
             if (loginSuccess) {
                 queryDeviceData(true);
             } else if (!Objects.equals(DISPOSED, lifecycle)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
             }
         } catch (Exception e) {
             if (!Objects.equals(DISPOSED, lifecycle)) {
@@ -493,11 +492,11 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
                     connect();
                     break;
                 case COMMUNICATION_ERROR:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, deviceError.getMessage());
                     disconnect();
                     break;
                 case CONFIGURATION_ERROR:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
                     break;
                 default:
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, deviceError.getMessage());

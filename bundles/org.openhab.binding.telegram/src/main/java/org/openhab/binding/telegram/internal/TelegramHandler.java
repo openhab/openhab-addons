@@ -215,18 +215,18 @@ public class TelegramHandler extends BaseThingHandler {
                         if (localBot != null) {
                             localBot.removeGetUpdatesListener();
                         }
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                 "Unauthorized attempt to connect to the Telegram server, please check if the bot token is valid");
                         return;
                     case 429:
                         cancelThingOnlineStatusJob();
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Too Many Requests; temporarily delaying reconnection.");
                         delayThingOnlineStatus();
                         return;
                     case 502:
                         cancelThingOnlineStatusJob();
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Unable to communicate to Telegram servers, check your connection");
                         delayThingOnlineStatus();
                         return;
@@ -236,7 +236,7 @@ public class TelegramHandler extends BaseThingHandler {
                 }
             } else if (exception.getCause() != null) { // cause is only non-null in case of an IOException
                 cancelThingOnlineStatusJob();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, exception.getMessage());
                 delayThingOnlineStatus();
             } else {
                 logger.warn("Telegram exception: {}", exception.getMessage());

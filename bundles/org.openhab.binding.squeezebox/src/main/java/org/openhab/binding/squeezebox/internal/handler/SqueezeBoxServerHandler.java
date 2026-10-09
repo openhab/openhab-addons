@@ -410,7 +410,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         this.password = config.password;
 
         if (host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.host-not-set");
             return;
         }
@@ -421,7 +421,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             clientSocket = new Socket(host, cliport);
         } catch (IOException e) {
             logger.debug("unable to open socket to server: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             scheduleReconnect();
             return;
         }
@@ -431,7 +431,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             listener.start();
             logger.debug("listener connection started to server {}:{}", host, cliport);
         } catch (IllegalThreadStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         // Mark the server ONLINE. bridgeStatusChanged will cause the players to come ONLINE
         updateStatus(ThingStatus.ONLINE);
@@ -514,7 +514,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 }
             } catch (IOException e) {
                 if (!terminate) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     scheduleReconnect();
                 }
             } finally {
@@ -530,8 +530,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             // check for end of stream from readLine
             if (endOfStream && !terminate) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.comm-error.end-of-stream");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.end-of-stream");
                 scheduleReconnect();
             }
             if (requestFavoritesJob != null && !requestFavoritesJob.isDone()) {

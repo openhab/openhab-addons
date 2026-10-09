@@ -76,7 +76,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                         .collect(Collectors.joining(System.lineSeparator()));
                 String description = String.format("Serial port '%s' could not be found. Available ports are:%n%s",
                         config.port, availablePorts);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, description);
                 return;
             }
 
@@ -102,12 +102,11 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 updateStatus(ThingStatus.ONLINE);
 
             } catch (PortInUseException portInUseException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + config.port);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + config.port);
             } catch (UnsupportedCommOperationException | IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
             } catch (TooManyListenersException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Too many listeners to serial port.");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Too many listeners to serial port.");
             }
         }
     }
@@ -168,7 +167,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 outputStream.write(request.getBytes());
                 outputStream.flush();
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error writing '" + request + "' to serial port " + config.port + " : " + e.getMessage());
             }
 
@@ -300,7 +299,7 @@ public class SerialOceanicThingHandler extends OceanicThingHandler implements Se
                 }
             } catch (Exception e) {
                 logger.error("An exception occurred while reading serial port  : {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

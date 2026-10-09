@@ -110,8 +110,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         final AVMFritzDeviceConfiguration config = getConfigAs(AVMFritzDeviceConfiguration.class);
         final String newIdentifier = config.ain;
         if (newIdentifier == null || newIdentifier.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'ain' parameter must be configured.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "The 'ain' parameter must be configured.");
         } else {
             this.identifier = newIdentifier;
             updateStatus(ThingStatus.UNKNOWN);
@@ -412,7 +411,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     @Override
     public void onDeviceGone(ThingUID thingUID) {
         if (thing.getUID().equals(thingUID)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not present in response");
+            updateStatus(ThingStatusDetail.GONE, "Device not present in response");
         }
     }
 

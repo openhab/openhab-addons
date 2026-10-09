@@ -164,7 +164,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             String account = config.getAccountName();
             if (config.getUserId().isEmpty()) {
                 if (account.isEmpty()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "Credentials missing or invalid! Fill credentials into thing configuration or generate UID on the openHAB console - see README");
                     return;
                 }
@@ -390,7 +390,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             } else {
                 if (!errorMessage.isEmpty()) {
                     logger.debug("{}: Communication Error - {}, switch Thing offline", thingId, errorMessage);
-                    updateStatus(newStatus, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 } else {
                     updateStatus(newStatus);
                 }

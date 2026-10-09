@@ -13,6 +13,8 @@
 package org.openhab.binding.airq.internal;
 
 import java.math.BigDecimal;
+import java.net.http.HttpClient;
+import java.nio.channels.Channel;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -49,7 +51,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -62,16 +63,13 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -662,11 +660,12 @@ public class AirqHandler extends BaseThingHandler {
 
                 updateStatus(ThingStatus.ONLINE);
             } catch (JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Syntax error while parsing response from device");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Syntax error while parsing response from device: " + e.getMessage());
+                logger.trace("Parse error in response: {}", jsonAnswer);
             }
         } catch (AirqPasswordIncorrectException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device password incorrect");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Device password incorrect");
         } catch (AirqException e) {
             String causeMessage = "";
             Throwable cause = e.getCause();
@@ -674,7 +673,7 @@ public class AirqHandler extends BaseThingHandler {
                 causeMessage = cause.getClass().getSimpleName() + ": " + cause.getMessage() + ": ";
             }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, causeMessage + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, causeMessage + e.getMessage());
         } catch (InterruptedException e) {
             // nothing
         }

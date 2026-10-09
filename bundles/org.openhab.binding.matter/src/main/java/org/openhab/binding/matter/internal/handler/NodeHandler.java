@@ -490,7 +490,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
             case APPLYING:
                 // we are applying, go offline as the device will reboot if it succeeds or rolls back, and come back
                 // online when it is done
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, translationService
+                updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, translationService
                         .getTranslation(MatterBindingConstants.THING_STATUS_DETAIL_FIRMWARE_APPLYING));
                 if (progressCallback != null && lastHandledOtaState != UpdateStateEnum.APPLYING) {
                     lastHandledOtaState = UpdateStateEnum.APPLYING;

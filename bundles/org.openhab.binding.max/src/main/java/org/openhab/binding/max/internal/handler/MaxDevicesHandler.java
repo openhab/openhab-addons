@@ -107,7 +107,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             if (maxDeviceSerial != null) {
                 logger.debug("Initialized MAX! device handler for {}.", maxDeviceSerial);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Initialized MAX! device missing serialNumber configuration");
             }
             propertiesSet = false;
@@ -115,7 +115,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             getMaxCubeBridgeHandler();
         } catch (Exception e) {
             logger.debug("Exception occurred during initialize : {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -366,7 +366,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
             return;
         }
         if (device.isError() || device.isLinkStatusError()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
         } else if (!refreshingActuals) {
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -527,7 +527,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus(), getThing().getUID());
         if (!bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

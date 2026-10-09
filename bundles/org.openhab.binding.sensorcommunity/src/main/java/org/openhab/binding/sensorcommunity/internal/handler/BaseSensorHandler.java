@@ -104,7 +104,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
             dataUpdate();
         } else {
             // config error, no further actions triggered - Thing Status visible in UI
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration not valid. Sensor ID as a number is mandatory!");
         }
         lifecycleStatus = LifecycleStatus.RUNNING;
@@ -188,20 +188,20 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
 
     protected void statusUpdate(UpdateStatus updateStatus, String details) {
         if (updateStatus == UpdateStatus.OK) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+            updateStatus(ThingStatus.ONLINE);
             startSchedule();
         } else {
             switch (updateStatus) {
                 case CONNECTION_ERROR:
                     // start job even first update delivers no data - recovery is possible
                     startSchedule();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "Update failed due to Connection error. Trying to recover in next refresh");
                     break;
                 case CONNECTION_EXCEPTION:
                     // start job even first update delivers a Connection Exception - recovery is possible
                     startSchedule();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, details);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, details);
                     break;
                 case VALUE_EMPTY:
                     // start job even if first update delivers no values - recovery possible
@@ -211,12 +211,12 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
                     break;
                 case VALUE_ERROR:
                     // final status - values from sensor are wrong and manual check is needed
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "Sensor values doesn't match - please check if Sensor ID is delivering the correct Thing channel values");
                     break;
                 default:
                     // final status - Configuration is wrong
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "Error during update - please check your config data");
                     break;
             }

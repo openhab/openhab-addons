@@ -131,7 +131,7 @@ public class ProteusEcoMeterSHandler extends BaseThingHandler {
             logger.debug("The reply stream ended unexpectedly. Retrying in {}", retryInitDelay);
         } catch (final Exception e) {
             logger.debug("Error communicating with eco meter s. Retrying in {}", retryInitDelay, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Error reading from Port: " + e.getMessage());
         } finally {
             closeSerialPort();

@@ -239,10 +239,10 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         if (e instanceof SenseEnergyApiException apiException) {
             switch (apiException.severity) {
                 case TRANSIENT:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                     break;
                 case CONFIG:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+                    updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
                     break;
                 case FATAL:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getMessage());
@@ -282,7 +282,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             goOnline();
         }
@@ -291,8 +291,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
     public boolean checkBridgeStatus() {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.bridge-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");
             return false;
         }
 
@@ -303,7 +302,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         }
 
         if (bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return false;
         }
 
@@ -575,7 +574,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
             try {
                 datagram.start(SENSE_DATAGRAM_BCAST_PORT, datagramListenerThreadName);
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 logger.warn("Unable to start datagram: {}", e.getLocalizedMessage());
             }
         }
@@ -648,7 +647,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         try {
             webSocket.restartWithBackoff(getApi().getAccessToken());
         } catch (InterruptedException | ExecutionException | IOException | URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.warn("Exeception when restarting webSocket: {}", e.getMessage());
             // will retry at next heartbeat
         }

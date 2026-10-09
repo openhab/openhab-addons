@@ -72,7 +72,7 @@ public abstract class DmxOverEthernetHandler extends DmxBridgeHandler {
             } catch (SocketException e) {
                 logger.debug("could not open socket {} in bridge {}: {}", senderNode, this.thing.getUID(),
                         e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "opening UDP socket failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "opening UDP socket failed");
             }
         }
     }
@@ -87,7 +87,7 @@ public abstract class DmxOverEthernetHandler extends DmxBridgeHandler {
         } else {
             logger.debug("socket was already closed when calling closeConnection in bridge {}", this.thing.getUID());
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "UDP socket closed");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "UDP socket closed");
     }
 
     @Override

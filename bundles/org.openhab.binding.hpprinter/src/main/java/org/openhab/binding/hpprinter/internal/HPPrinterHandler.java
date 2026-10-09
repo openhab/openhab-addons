@@ -81,7 +81,7 @@ public class HPPrinterHandler extends BaseThingHandler {
             localBinder.retrieveProperties();
             localBinder.open();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "You must set an IP Address");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "You must set an IP Address");
         }
     }
 

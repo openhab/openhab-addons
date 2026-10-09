@@ -119,7 +119,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         config = getConfigAs(HandlerConfiguration.class);
         logger.debug("About to initialize Homie device {}", config.deviceid);
         if (config.deviceid.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Object ID unknown");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Object ID unknown");
             return;
         }
         device.initialize(config.basetopic, config.deviceid, thing.getChannels());
@@ -201,10 +201,10 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
                 updateStatus(ThingStatus.OFFLINE);
                 break;
             case init:
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING);
                 break;
             case lost:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device did not send heartbeat in time");
+                updateStatus(ThingStatusDetail.GONE, "Device did not send heartbeat in time");
                 break;
             case ready:
                 updateStatus(ThingStatus.ONLINE);
@@ -213,7 +213,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.DUTY_CYCLE);
                 break;
             case unknown:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device did not publish a ready state");
+                updateStatus(ThingStatusDetail.GONE, "Device did not publish a ready state");
                 break;
             default:
                 break;

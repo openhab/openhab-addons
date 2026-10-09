@@ -157,7 +157,7 @@ public class DigiplexAreaHandler extends BaseThingHandler {
         config = getConfigAs(DigiplexAreaConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         bridgeHandler = (DigiplexBridgeHandler) bridge.getHandler();

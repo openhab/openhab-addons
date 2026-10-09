@@ -118,7 +118,7 @@ public class LightControl2Handler extends BoschSHCDeviceHandler {
     }
 
     private void updateStatusChildDeviceIDsNotObtainable() {
-        super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+        super.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.conf-error.child-device-ids-not-obtainable");
     }
 

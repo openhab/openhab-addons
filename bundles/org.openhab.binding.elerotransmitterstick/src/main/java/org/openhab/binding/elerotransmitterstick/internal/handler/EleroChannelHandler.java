@@ -58,7 +58,7 @@ public class EleroChannelHandler extends BaseThingHandler implements StatusListe
         bridge.addStatusListener(channelId, this);
 
         if (bridge.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
         }
@@ -76,7 +76,7 @@ public class EleroChannelHandler extends BaseThingHandler implements StatusListe
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             logger.debug("Bridge for Elero channel handler for thing {} ({}) changed status to {}",
                     getThing().getLabel(), getThing().getUID(), bridgeStatusInfo.getStatus().toString());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
         }

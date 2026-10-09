@@ -612,7 +612,7 @@ public class SystemInfoHandler extends BaseThingHandler {
             logger.warn("No information for channel {} with device index: {}", channelID, deviceIndex);
         } catch (Exception e) {
             logger.debug("Unexpected error occurred while getting system information!", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unexpected-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.unexpected-error");
         }
         return state != null ? state : UnDefType.UNDEF;
     }

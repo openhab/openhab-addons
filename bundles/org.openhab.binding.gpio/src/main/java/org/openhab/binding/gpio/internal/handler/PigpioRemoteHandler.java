@@ -83,7 +83,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                         logger.warn("Input command exception on channel {} {}", channelUID, pe.toString());
                         if (pe.getErrorCode() == -99999999) {
                             runDisconnectActions();
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                     pe.getLocalizedMessage());
                         }
                     }
@@ -94,7 +94,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                         logger.warn("Output command exception on channel {} {}", channelUID, pe.toString());
                         if (pe.getErrorCode() == -99999999) {
                             runDisconnectActions();
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                     pe.getLocalizedMessage());
                         }
                     }
@@ -116,12 +116,12 @@ public class PigpioRemoteHandler extends BaseThingHandler {
         this.config = lconfig;
 
         if (lconfig.host == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to PiGPIO Service on remote raspberry. IP address not set.");
             return;
         }
         if (lconfig.port < 1 && lconfig.port > 65535) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to PiGPIO Service on remote raspberry. Invalid Port.");
             return;
         }
@@ -161,10 +161,10 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                     this.channelHandlers.put(channelUID, handler);
                 }
             } catch (PigpioException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         String.format("Failed to initialize channel {} {}", channelUID, e.getLocalizedMessage()));
             } catch (ChannelConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         String.format("Invalid configuration for channel {} {}", channelUID, e.getLocalizedMessage()));
             }
         });
@@ -221,7 +221,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                 } catch (PigpioException e) {
                     logger.debug("gpio connection poll : disconnect");
                     runDisconnectActions();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                             e.getLocalizedMessage());
 
                     // We disconnected, reschedule ourselves to try a reconnect.
@@ -268,7 +268,7 @@ public class PigpioRemoteHandler extends BaseThingHandler {
                     logger.debug("gpio connection poll : failed, {}", e.getErrorCode());
                     if (currentStatus.equals(ThingStatus.ONLINE) || currentStatus.equals(ThingStatus.INITIALIZING)) {
                         runDisconnectActions();
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                 e.getLocalizedMessage());
                     }
                 }

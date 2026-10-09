@@ -82,7 +82,7 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, String.format("Connecting to %s", cfg.host));
             scheduleRefreshJob();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration is not valid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Configuration is not valid");
         }
     }
 
@@ -195,12 +195,12 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
                 }
                 if (errorMessage.contains("Command timed out") || errorMessage.contains("Error connecting")) {
                     routeros.stop();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
                 } else if (errorMessage.contains("Connection refused")) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "Remote host refused to connect, make sure port is correct");
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
                 }
             }
         } else {
@@ -238,10 +238,10 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         } catch (MikrotikApiException e) {
             logger.error("RouterOS cache refresh failed in {} due to Mikrotik API error", getThing().getUID(), e);
             routeros.stop();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (Exception e) {
             logger.error("Unhandled exception while refreshing the {} RouterOS model", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

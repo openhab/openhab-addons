@@ -196,7 +196,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                             API_MAXIMUM_ERRORS_IN_INTERVAL, API_ERROR_INTERVAL_SECONDS);
                     apiIntervalErrors = 0;
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000 * API_ERROR_INTERVAL_SECONDS) {
                 logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
                 apiIntervalTimestamp = System.currentTimeMillis();
@@ -442,8 +442,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                                             logger.warn(
                                                     "Unable to find the vehicle with VIN '{}' in the list of vehicles you own",
                                                     getConfig().get(VIN));
-                                            handler.updateStatus(ThingStatus.OFFLINE,
-                                                    ThingStatusDetail.CONFIGURATION_ERROR,
+                                            handler.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                                     "Vin is not available through this account.");
                                         }
                                     }

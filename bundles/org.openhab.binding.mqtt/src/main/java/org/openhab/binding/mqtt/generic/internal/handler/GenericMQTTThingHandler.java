@@ -219,7 +219,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         // If some channels could not start up, put the entire thing offline and display the channels
         // in question to the user.
         if (!configErrors.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid channel configuration: "
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid channel configuration: "
                     + configErrors.stream().map(ChannelUID::getAsString).collect(Collectors.joining(",")));
             return;
         }
@@ -229,9 +229,9 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
     @Override
     protected void updateThingStatus(boolean messageReceived, Optional<Boolean> availibilityTopicsSeen) {
         if (availibilityTopicsSeen.orElse(true)) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 

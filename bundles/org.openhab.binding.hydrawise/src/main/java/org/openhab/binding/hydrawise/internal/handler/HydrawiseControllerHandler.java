@@ -105,7 +105,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             }
         }
@@ -258,8 +258,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
 
             // update values with what the cloud tells us even though the controller may be offline
             if (!controller.status.online) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Service reports controller as offline");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Service reports controller as offline");
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }

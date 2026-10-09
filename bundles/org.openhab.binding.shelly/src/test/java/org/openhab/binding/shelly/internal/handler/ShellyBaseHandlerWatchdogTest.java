@@ -135,7 +135,7 @@ class ShellyBaseHandlerWatchdogTest {
         setField(handler, "stopping", true);
         handler.setCallback(callback);
 
-        handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "gone");
+        handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "gone");
 
         verify(callback, never()).statusUpdated(any(), any());
     }

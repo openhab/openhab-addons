@@ -22,7 +22,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
@@ -51,7 +50,7 @@ public class RFZoneHandler extends ADThingHandler {
         config = getConfigAs(RFZoneConfig.class);
 
         if (config.serial < 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid serial setting");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid serial setting");
             return;
         }
         logger.debug("RF Zone handler initializing for serial {}", config.serial);

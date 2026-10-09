@@ -165,7 +165,7 @@ public class WindcentraleAccountHandler extends BaseBridgeHandler {
         Exception e = apiException;
         if (e != null) {
             if (e instanceof InvalidAccessTokenException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } else {
                 Throwable cause = e.getCause();
                 String description = Stream
@@ -173,10 +173,10 @@ public class WindcentraleAccountHandler extends BaseBridgeHandler {
                                 cause == null ? "" : Objects.requireNonNullElse(cause.getMessage(), ""))
                         .filter(not(String::isBlank)) //
                         .collect(Collectors.joining(": "));
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, description);
             }
         } else {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 }

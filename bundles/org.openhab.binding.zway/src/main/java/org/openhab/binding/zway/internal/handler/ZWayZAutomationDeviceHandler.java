@@ -128,7 +128,7 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
             // than 5000 milliseconds and the handler will suspend (ThingStatus.UNINITIALIZED).
             scheduler.schedule(new Initializer(), 2, TimeUnit.SECONDS);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Z-Way device id required!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Z-Way device id required!");
         }
     }
 
@@ -141,7 +141,7 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
 
         String deviceId = config.getDeviceId();
         if (deviceId == null || deviceId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Z-Wave device couldn't create, because the device id is missing.");
             return null;
         }

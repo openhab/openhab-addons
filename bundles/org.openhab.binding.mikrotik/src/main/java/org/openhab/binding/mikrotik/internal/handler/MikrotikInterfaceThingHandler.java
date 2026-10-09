@@ -104,7 +104,7 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
             if (rosInterface == null) {
                 String statusMsg = String.format("RouterOS interface %s is not found for thing %s", cfg.name,
                         getThing().getUID());
-                updateStatus(OFFLINE, GONE, statusMsg);
+                updateStatus(GONE, statusMsg);
             } else {
                 txByteRate.update(rosInterface.getTxBytes());
                 rxByteRate.update(rosInterface.getRxBytes());

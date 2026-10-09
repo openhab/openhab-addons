@@ -79,8 +79,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/config-status.error.missing-udn");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/config-status.error.missing-udn");
         }
     }
 
@@ -146,11 +145,10 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                 probeAndExecuteCall(BASICACTION, soapHeader, content);
                 updateStatus(ThingStatus.ONLINE);
             } catch (MissingHostException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/config-status.error.missing-ip");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/config-status.error.missing-ip");
             } catch (WemoException e) {
                 logger.warn("Failed to send command '{}' for thing '{}':", command, getThing().getUID(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
@@ -208,11 +206,10 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
             updateState(CHANNEL_COOKED_TIME, newCoockedTime);
             updateStatus(ThingStatus.ONLINE);
         } catch (MissingHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/config-status.error.missing-ip");
         } catch (WemoException e) {
             logger.debug("Failed to get actual state for thing '{}': {}", getThing().getUID(), e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

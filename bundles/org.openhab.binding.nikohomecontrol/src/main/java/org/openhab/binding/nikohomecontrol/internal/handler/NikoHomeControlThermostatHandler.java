@@ -138,7 +138,7 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
 
         NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-bridge-handler");
             return;
         }
@@ -162,15 +162,13 @@ public class NikoHomeControlThermostatHandler extends NikoHomeControlBaseHandler
         }
 
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
             return;
         }
 
         NhcThermostat nhcThermostat = nhcComm.getThermostats().get(deviceId);
         if (nhcThermostat == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.deviceId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.deviceId");
             return;
         }
 

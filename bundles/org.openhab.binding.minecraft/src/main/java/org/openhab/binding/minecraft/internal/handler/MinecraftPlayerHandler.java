@@ -65,7 +65,7 @@ public class MinecraftPlayerHandler extends BaseThingHandler {
         this.config = getConfigAs(PlayerConfig.class);
 
         if (bridgeHandler == null || getThing().getBridgeUID() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
 
             return;
         }

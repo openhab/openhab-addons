@@ -177,15 +177,13 @@ public class NeeoDeviceHandler extends BaseThingHandler {
 
         final String roomKey = getRoomKey();
         if (roomKey == null || roomKey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Room key (from the parent room bridge) was not found");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Room key (from the parent room bridge) was not found");
             return;
         }
 
         final String deviceKey = config.getDeviceKey();
         if (deviceKey == null || deviceKey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Device key was not found or empty");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Device key was not found or empty");
             return;
         }
 
@@ -193,7 +191,7 @@ public class NeeoDeviceHandler extends BaseThingHandler {
             NeeoUtil.checkInterrupt();
             final NeeoBrainApi brainApi = getNeeoBrainApi();
             if (brainApi == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Cannot find the NEEO Brain API");
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Cannot find the NEEO Brain API");
                 return;
             }
 
@@ -201,7 +199,7 @@ public class NeeoDeviceHandler extends BaseThingHandler {
 
             final NeeoDevice device = room.getDevices().getDevice(deviceKey);
             if (device == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Device (" + config.getDeviceKey() + ") was not found in room (" + roomKey + ")");
                 return;
             }
@@ -274,8 +272,7 @@ public class NeeoDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             logger.debug("IOException during initialization", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Room " + roomKey + " couldn't be found");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Room " + roomKey + " couldn't be found");
         } catch (InterruptedException e) {
             logger.debug("Initialization was interrupted", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,

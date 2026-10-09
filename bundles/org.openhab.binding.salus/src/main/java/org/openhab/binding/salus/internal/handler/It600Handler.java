@@ -84,8 +84,7 @@ public class It600Handler extends BaseThingHandler {
         dsn = (String) getConfig().get(DSN);
 
         if ("".equals(dsn)) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "@text/it600-handler.initialize.errors.no-dsn [\"" + DSN + "\"]");
+            updateStatus(CONFIGURATION_ERROR, "@text/it600-handler.initialize.errors.no-dsn [\"" + DSN + "\"]");
             return;
         }
 
@@ -93,13 +92,13 @@ public class It600Handler extends BaseThingHandler {
             var device = this.cloudApi.findDevice(dsn);
             // no device in cloud
             if (device.isEmpty()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                updateStatus(COMMUNICATION_ERROR,
                         "@text/it600-handler.initialize.errors.dsn-not-found [\"" + dsn + "\"]");
                 return;
             }
             // device is not connected
             if (!device.get().connected()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                updateStatus(COMMUNICATION_ERROR,
                         "@text/it600-handler.initialize.errors.dsn-not-connected [\"" + dsn + "\"]");
                 return;
             }
@@ -109,17 +108,16 @@ public class It600Handler extends BaseThingHandler {
                 var result = new ArrayList<>(abstractBridgeHandler.it600RequiredChannels());
                 result.removeAll(deviceProperties);
                 if (!result.isEmpty()) {
-                    updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                            "@text/it600-handler.initialize.errors.missing-channels [\"" + dsn + "\", \""
-                                    + String.join(", ", result) + "\"]");
+                    updateStatus(CONFIGURATION_ERROR, "@text/it600-handler.initialize.errors.missing-channels [\"" + dsn
+                            + "\", \"" + String.join(", ", result) + "\"]");
                     return;
                 }
             } catch (SalusApiException ex) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
+                updateStatus(COMMUNICATION_ERROR, ex.getLocalizedMessage());
                 return;
             }
         } catch (Exception e) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/it600-handler.initialize.errors.general-error");
+            updateStatus(COMMUNICATION_ERROR, "@text/it600-handler.initialize.errors.general-error");
             return;
         }
 
@@ -152,7 +150,7 @@ public class It600Handler extends BaseThingHandler {
             }
         } catch (SalusApiException | AuthSalusApiException e) {
             logger.debug("Error while handling command `{}` on channel `{}`", command, channelUID, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 

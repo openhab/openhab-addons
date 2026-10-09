@@ -187,8 +187,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                         response = gson.fromJson(devicesList, deviceListType);
                     } catch (JsonParseException parseException) {
                         logger.warn("Parsing failed: {}", parseException.getMessage());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/offline.request-failed");
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.request-failed");
                         return null;
                     }
                     Map<String, ElroConnectsConnector> devices = new HashMap<>();
@@ -199,10 +198,9 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     if (accountException == null) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                accountException.getLocalizedMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, accountException.getLocalizedMessage());
                     }
                 }
 
@@ -213,7 +211,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
             logger.debug("Poll exception", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -226,10 +224,9 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     if (accountException == null) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                accountException.getLocalizedMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, accountException.getLocalizedMessage());
                     }
                 }
 
@@ -240,7 +237,7 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
             logger.debug("Login exception", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 

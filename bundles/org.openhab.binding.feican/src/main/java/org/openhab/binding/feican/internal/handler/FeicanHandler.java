@@ -71,7 +71,7 @@ public class FeicanHandler extends BaseThingHandler {
                 handleString(channelUID, stringCommand);
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -80,8 +80,7 @@ public class FeicanHandler extends BaseThingHandler {
         final FeicanConfiguration config = getConfigAs(FeicanConfiguration.class);
 
         if (config.ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/configuration-ip-address-not-set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/configuration-ip-address-not-set");
             return;
         }
 
@@ -90,9 +89,9 @@ public class FeicanHandler extends BaseThingHandler {
             connection = new Connection(config.ipAddress);
             updateStatus(ThingStatus.ONLINE);
         } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (SocketException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

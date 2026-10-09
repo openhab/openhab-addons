@@ -228,10 +228,10 @@ public class EntsoeHandler extends BaseThingHandler {
     }
 
     private void handleConfigError(@Nullable String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
     }
 
     private void handleResponseError(@Nullable String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
     }
 }

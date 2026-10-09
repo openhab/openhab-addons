@@ -83,8 +83,7 @@ public abstract class WlanThermoHandler extends BaseThingHandler {
             pollingScheduler = scheduler.scheduleWithFixedDelay(this::checkConnectionAndUpdate, 0,
                     config.getPollingInterval(), TimeUnit.SECONDS);
         } catch (URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Failed to initialize WlanThermo: " + e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Failed to initialize WlanThermo: " + e.getMessage());
         }
     }
 
@@ -106,11 +105,10 @@ public abstract class WlanThermoHandler extends BaseThingHandler {
                     // rerun immediately to update state
                     checkConnectionAndUpdate();
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "WlanThermo not found under given address.");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "WlanThermo not found under given address.");
                 }
             } catch (URISyntaxException | ExecutionException | TimeoutException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to WlanThermo at " + config.getIpAddress() + ": " + e.getMessage());
             } catch (InterruptedException e) {
                 logger.debug("Connection check interrupted. {}", e.getMessage());
@@ -126,11 +124,11 @@ public abstract class WlanThermoHandler extends BaseThingHandler {
             int status = httpClient.POST(uri).content(new StringContentProvider(json), "application/json")
                     .timeout(5, TimeUnit.SECONDS).send().getStatus();
             if (status == 401) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
                 return false;
             } else if (status != 200) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to update channel on device, Statuscode " + status + " on URI " + uri.toString());
                 logger.debug("Payload sent: {}", json);
                 // Still continue to try next channel
@@ -140,7 +138,7 @@ public abstract class WlanThermoHandler extends BaseThingHandler {
                 return true;
             }
         } catch (TimeoutException | ExecutionException | URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Failed to update channel on device: " + e.getMessage());
             return false;
         }
@@ -152,8 +150,7 @@ public abstract class WlanThermoHandler extends BaseThingHandler {
             logger.debug("Received at {}: {}", endpoint, json);
             return requireNonNull(gson.fromJson(json, object));
         } catch (URISyntaxException | ExecutionException | TimeoutException | WlanThermoException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Update failed: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Update failed: " + e.getMessage());
             for (Channel channel : thing.getChannels()) {
                 updateState(channel.getUID(), UnDefType.UNDEF);
             }

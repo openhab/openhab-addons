@@ -78,14 +78,14 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
         spotifyApi = bridgeHandler.getSpotifyApi();
 
         if (spotifyApi == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                     "Missing configuration from the Spotify Bridge (UID:%s). Fix configuration or report if this problem remains.",
                     getBridge().getBridgeUID()));
             return;
         }
         deviceName = (String) getConfig().get(PROPERTY_SPOTIFY_DEVICE_NAME);
         if (deviceName == null || deviceName.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The deviceName property is not set or empty. If you have an older thing please recreate this thing.");
             deviceName = "";
         } else {
@@ -97,7 +97,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Spotify Bridge Offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Spotify Bridge Offline");
             logger.debug("SpotifyDevice {}: SpotifyBridge is not online: {}", getThing().getThingTypeUID(),
                     bridgeStatusInfo.getStatus());
         }

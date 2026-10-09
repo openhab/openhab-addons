@@ -90,7 +90,7 @@ public class MeterHandler extends BaseThingHandler {
                 logger.debug("The pixometer binding is read-only and can not handle command {}", command);
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -106,7 +106,7 @@ public class MeterHandler extends BaseThingHandler {
 
         Bridge b = this.getBridge();
         if (b == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not find bridge (pixometer config). Did you choose one?");
             return;
         }
@@ -120,7 +120,7 @@ public class MeterHandler extends BaseThingHandler {
             try {
                 updateMeter(cache.getValue());
             } catch (RuntimeException r) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }, 2, pollingPeriod, TimeUnit.MINUTES);
         logger.debug("Refresh job scheduled to run every {} minutes for '{}'", pollingPeriod, getThing().getUID());
@@ -132,7 +132,7 @@ public class MeterHandler extends BaseThingHandler {
     private @Nullable String getTokenFromBridge() {
         Bridge b = this.getBridge();
         if (b == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Could not find bridge (pixometer config). Did you choose one?");
             return null;
         }
@@ -152,7 +152,7 @@ public class MeterHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus(), getThing().getUID());
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, bridgeStatusInfo.getDescription());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, bridgeStatusInfo.getDescription());
         }
     }
 
@@ -193,7 +193,7 @@ public class MeterHandler extends BaseThingHandler {
                     e.getMessage());
 
             logger.debug(errorMsg, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
         }
     }
 

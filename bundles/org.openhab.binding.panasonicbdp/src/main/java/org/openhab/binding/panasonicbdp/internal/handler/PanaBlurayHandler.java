@@ -112,13 +112,13 @@ public class PanaBlurayHandler extends BaseThingHandler {
             urlStr = urlStr.replace("%host%", host);
             nonceUrlStr = nonceUrlStr.replace("%host%", host);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.hostname");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.hostname");
             return;
         }
 
         if (!playerKey.isBlank()) {
             if (playerKey.length() != 32) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.keyerror");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.keyerror");
                 return;
             }
             this.playerKey = playerKey;
@@ -339,7 +339,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Error executing command: {}, {}", fields.getNames().iterator().next(), e.getMessage());
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.exception");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.exception");
             updateState(PLAYER_STATUS, offlineStr);
         } catch (InterruptedException e) {
             logger.debug("InterruptedException executing command: {}, {}", fields.getNames().iterator().next(),

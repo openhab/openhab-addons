@@ -185,19 +185,19 @@ public class KM200ThingHandler extends BaseThingHandler {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
             logger.debug("Bridge not existing");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         logger.debug("initialize, Bridge: {}", bridge);
         KM200GatewayHandler gateway = (KM200GatewayHandler) bridge.getHandler();
         if (gateway == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             logger.debug("Gateway not existing: {}", bridge);
             return;
         }
         String service = KM200Utils.translatesNameToPath(thing.getProperties().get("root"));
         if (service == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "root property missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "root property missing");
             return;
         }
         synchronized (gateway.getDevice()) {

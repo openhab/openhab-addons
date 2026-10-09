@@ -17,7 +17,6 @@ import org.openhab.binding.velbus.internal.packets.VelbusMemoTextPacket;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 
@@ -43,7 +42,7 @@ public abstract class VelbusMemoHandler extends VelbusThermostatHandler {
 
         VelbusBridgeHandler velbusBridgeHandler = getVelbusBridgeHandler();
         if (velbusBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 

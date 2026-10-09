@@ -99,8 +99,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
             task.cancel(true);
         }
         awaitingDataTimeoutTask = scheduler.schedule(() -> {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/status.awaiting-data-timeout");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.awaiting-data-timeout");
         }, AWAITING_DATA_TIMEOUT_MINUTES, TimeUnit.MINUTES);
     }
 
@@ -123,10 +122,10 @@ public class GrowattInverterHandler extends BaseThingHandler {
                                 .valueOf(Duration.between(Instant.now(), dtoTimeStamp).toSeconds(), Units.SECOND));
                         scheduleAwaitingDataTimeoutTask();
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                     }
                 }, () -> {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 });
     }
 

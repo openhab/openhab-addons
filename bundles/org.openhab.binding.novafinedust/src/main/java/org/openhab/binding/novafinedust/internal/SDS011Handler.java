@@ -107,7 +107,7 @@ public class SDS011Handler extends BaseThingHandler {
         // parse port and if the port is found, initialize the reader
         SerialPortIdentifier portId = serialPortManager.getIdentifier(config.port);
         if (portId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port is not known!");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port is not known!");
             logger.debug("Serial port {} was not found, retrying in {}.", config.port, RETRY_INIT_DELAY);
             retryInitJob = scheduler.schedule(this::initialize, RETRY_INIT_DELAY.getSeconds(), TimeUnit.SECONDS);
             return;
@@ -127,7 +127,7 @@ public class SDS011Handler extends BaseThingHandler {
     private void initializeCommunicator(WorkMode mode, Duration interval) {
         SDS011Communicator localCommunicator = communicator;
         if (localCommunicator == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Communicator instance is null in initializeCommunicator()");
             return;
         }
@@ -142,7 +142,7 @@ public class SDS011Handler extends BaseThingHandler {
                 try {
                     localCommunicator.requestSensorData();
                 } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                             "Cannot query data from device");
                 }
             }, 2, config.pollingInterval, TimeUnit.SECONDS);
@@ -157,7 +157,7 @@ public class SDS011Handler extends BaseThingHandler {
                 try {
                     localCommunicator.readSensorData();
                 } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                             "Cannot query data from device, because: " + e.getMessage());
                 }
             }, reportingReadStartDelay, readReportedDataInterval, TimeUnit.SECONDS);
@@ -172,32 +172,32 @@ public class SDS011Handler extends BaseThingHandler {
         try {
             localCommunicator.initialize(mode, interval);
         } catch (final IOException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
         } catch (PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use!");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use!");
         } catch (TooManyListenersException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Cannot attach listener to port, because there are too many listeners!");
         } catch (UnsupportedCommOperationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Cannot set serial port parameters");
         }
     }
 
     private boolean validateConfiguration() {
         if (config.port.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return false;
         }
         if (config.reporting) {
             if (config.reportingInterval < 0 || config.reportingInterval > 30) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Reporting interval has to be between 0 and 30 minutes");
                 return false;
             }
         } else {
             if (config.pollingInterval < 3 || config.pollingInterval > 3600) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Polling interval has to be between 3 and 3600 seconds");
                 return false;
             }
@@ -273,7 +273,7 @@ public class SDS011Handler extends BaseThingHandler {
         if (now.isAfter(lastData)) {
             logger.debug("Check Alive timer: Timeout: lastCommunication={}, interval={}, tollerance={}",
                     lastCommunication, timeBetweenDataShouldArrive, dataCanBeLateTolerance);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Check connection cable and afterwards disable and enable this thing to make it work again");
             // in case someone has pulled the plug, we dispose ourselves and the user has to deactivate/activate the
             // thing once the cable is plugged in again

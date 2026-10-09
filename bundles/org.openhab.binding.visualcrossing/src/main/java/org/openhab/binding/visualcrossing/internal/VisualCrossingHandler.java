@@ -463,14 +463,14 @@ public class VisualCrossingHandler extends BaseThingHandler {
             URI.create(hostname).toURL();
         } catch (MalformedURLException e) {
             logger.debug("Hostname [{}] is not an URL!", hostname, e);
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
+            updateStatus(CONFIGURATION_ERROR,
                     "@text/addon.visualcrossing.weather.error.hostname [\"%s\"]".formatted(hostname));
             return;
         }
 
         var apiKey = config.apiKey;
         if (apiKey == null) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/addon.visualcrossing.weather.error.missing-api-key");
+            updateStatus(CONFIGURATION_ERROR, "@text/addon.visualcrossing.weather.error.missing-api-key");
             return;
         }
 
@@ -490,7 +490,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
             }
         }
         if (location == null) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/addon.visualcrossing.weather.error.no-location");
+            updateStatus(CONFIGURATION_ERROR, "@text/addon.visualcrossing.weather.error.no-location");
             return;
         }
 
@@ -500,7 +500,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
             lang = localeProvider.getLocale().getLanguage().toLowerCase();
         }
         if (!SUPPORTED_LANGUAGES.contains(lang)) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
+            updateStatus(CONFIGURATION_ERROR,
                     "@text/addon.visualcrossing.weather.error.bad-language [\"%s\"]".formatted(lang));
             return;
         }
@@ -524,17 +524,17 @@ public class VisualCrossingHandler extends BaseThingHandler {
             thing.getChannels().forEach(channel -> handleCommand(channel.getUID(), REFRESH));
         } catch (VisualCrossingAuthException e) {
             logger.debug("Auth error while getting timeline for {}", location, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/addon.visualcrossing.weather.error.auth");
+            updateStatus(COMMUNICATION_ERROR, "@text/addon.visualcrossing.weather.error.auth");
         } catch (VisualCrossingRateException e) {
             logger.debug("Rate error while getting timeline for {}", location, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/addon.visualcrossing.weather.error.rate");
+            updateStatus(COMMUNICATION_ERROR, "@text/addon.visualcrossing.weather.error.rate");
         } catch (VisualCrossingApiException e) {
             logger.debug("Error while getting timeline for {}", location, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR,
+            updateStatus(COMMUNICATION_ERROR,
                     "@text/addon.visualcrossing.weather.error.api [\"%s\"]".formatted(e.getLocalizedMessage()));
         } catch (Exception e) {
             logger.debug("Error while getting timeline for {}", location, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR,
+            updateStatus(COMMUNICATION_ERROR,
                     "@text/addon.visualcrossing.weather.error.generic [\"%s\"]".formatted(e.getLocalizedMessage()));
         }
     }

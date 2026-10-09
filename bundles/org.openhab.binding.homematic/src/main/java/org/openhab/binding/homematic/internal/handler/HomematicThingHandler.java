@@ -103,11 +103,11 @@ public class HomematicThingHandler extends BaseThingHandler {
                     doInitializeInBackground();
                 }
             } catch (HomematicClientException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
             } catch (IOException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             } catch (GatewayNotAvailableException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ex.getMessage());
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, ex.getMessage());
             } catch (Exception ex) {
                 logger.error("{}", ex.getMessage(), ex);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ex.getMessage());
@@ -701,7 +701,7 @@ public class HomematicThingHandler extends BaseThingHandler {
             updateStatus(ThingStatus.REMOVED);
         } else {
             // device removal was initiated on homematic side, thing is not removed
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+            updateStatus(ThingStatusDetail.GONE);
         }
     }
 

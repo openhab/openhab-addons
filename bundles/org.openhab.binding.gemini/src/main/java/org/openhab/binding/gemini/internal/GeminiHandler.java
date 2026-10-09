@@ -137,7 +137,7 @@ public class GeminiHandler extends BaseThingHandler {
                     processChatResponse(channelUID, response);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (GeminiApiException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "Could not connect to Gemini API: " + e.getMessage());
                     logger.debug("Request to Gemini failed: {}", e.getMessage(), e);
                 }
@@ -178,14 +178,12 @@ public class GeminiHandler extends BaseThingHandler {
         String apiKey = c.apiKey;
 
         if (apiKey.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error");
             return;
         }
 
         if (!isValidTimeout(c.requestTimeout)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/requestTimeout.configuration-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/requestTimeout.configuration-error");
             return;
         }
 
@@ -198,8 +196,7 @@ public class GeminiHandler extends BaseThingHandler {
                 GeminiApiClient client = this.apiClient;
                 GeminiConfiguration currentConfig = this.config;
                 if (client == null || currentConfig == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.configuration-error");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error");
                     return;
                 }
                 List<GeminiModel> apiModels = client.fetchModels(currentConfig.requestTimeout);
@@ -224,11 +221,10 @@ public class GeminiHandler extends BaseThingHandler {
                     this.models = List.copyOf(modelList);
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
                 }
             } catch (GeminiApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }, 0, TimeUnit.MILLISECONDS);
     }

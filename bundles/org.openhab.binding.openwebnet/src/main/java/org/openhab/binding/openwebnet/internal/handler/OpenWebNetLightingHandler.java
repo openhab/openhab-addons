@@ -26,7 +26,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
@@ -102,7 +101,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 send(Lighting.requestStatus(toWhere(channel.getId())));
             } catch (OWNException e) {
                 logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
