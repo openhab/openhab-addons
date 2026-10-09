@@ -82,7 +82,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class ShellyBluApi extends Shelly2ApiRpc {
     private final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
-    private boolean connected; // true = BLU devices has connected
+    private volatile boolean connected; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
     private final Object pidLock = new Object();
     private int lastPid = -1;
