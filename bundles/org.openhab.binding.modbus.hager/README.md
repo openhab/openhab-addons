@@ -275,11 +275,11 @@ Registers with independent bits are provided as one `Switch` channel per bit.
 
 ```java
 Bridge modbus:tcp:flow "Hager Flow Modbus TCP" [ host="192.168.178.60", port=502, id=0 ] {
-    Bridge modbus:hager-flow-ems:ems "Hager Flow EMS" [ slaveId=0, refresh=5000 ] {
-        Thing modbus:hager-flow-evse:evse1 "Hager Flow EVSE 1" [ slaveId=1 ]
-        Thing modbus:hager-flow-storage:storage "Hager Flow Storage" [ slaveId=20 ]
-        Thing modbus:hager-flow-powermeter:meter1 "Hager Flow PowerMeter 1" [ slaveId=30 ]
-        Thing modbus:hager-flow-sgready:sgready1 "Hager Flow SG-Ready 1" [ slaveId=50 ]
+    Bridge hager-flow-ems ems "Hager Flow EMS" [ slaveId=0, refresh=5000 ] {
+        Thing hager-flow-evse evse1 "Hager Flow EVSE 1" [ slaveId=1 ]
+        Thing hager-flow-storage storage "Hager Flow Storage" [ slaveId=20 ]
+        Thing hager-flow-powermeter meter1 "Hager Flow PowerMeter 1" [ slaveId=30 ]
+        Thing hager-flow-sgready sgready1 "Hager Flow SG-Ready 1" [ slaveId=50 ]
     }
 }
 ```
@@ -309,6 +309,20 @@ The channel UID is built from the binding, the Thing type, the bridge chain and 
 `modbus:<thingTypeId>:<modbusBridgeId>:<emsThingId>:<thingId>:<groupId>#<channelId>`
 for the subordinate roles and `modbus:hager-flow-ems:<modbusBridgeId>:<emsThingId>:<groupId>#<channelId>`
 for the energy manager itself.
+
+### Battery Power Sign
+
+`all-battery-power-sum` (register `4138`) is positive while the battery charges and negative while it
+discharges.
+Setups which expect the opposite sign can invert the value with the `invert` profile of the Basic Profiles
+add-on:
+
+```java
+Number:Power HagerFlow_BatteryPower "Battery Power" { channel="modbus:hager-flow-ems:flow:ems:root-main-measurements#all-battery-power-sum" [profile="basic-profiles:invert"] }
+```
+
+The sign was observed on a running device, see
+[issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6086682236).
 
 ## Known Limitations
 
