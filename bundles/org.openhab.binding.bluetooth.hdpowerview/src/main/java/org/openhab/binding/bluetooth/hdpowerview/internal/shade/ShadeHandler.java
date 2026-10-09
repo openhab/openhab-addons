@@ -270,7 +270,7 @@ public class ShadeHandler extends BeaconBluetoothHandler {
         try {
             new BluetoothAddress(configuration.address);
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
         updateProperty(PROPERTY_HOME_ID, Integer.toHexString(homeId).toUpperCase());
@@ -418,7 +418,7 @@ public class ShadeHandler extends BeaconBluetoothHandler {
     private void readThingStatus() {
         if (thing.getStatus() == ThingStatus.ONLINE) {
             if (Instant.now().isAfter(activityTimeout)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             } else {
                 readServices();
             }

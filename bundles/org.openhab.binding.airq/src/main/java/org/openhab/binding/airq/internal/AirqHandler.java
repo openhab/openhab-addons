@@ -502,12 +502,12 @@ public class AirqHandler extends BaseThingHandler {
 
                 updateStatus(ThingStatus.ONLINE);
             } catch (JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Syntax error while parsing response from device: " + e.getMessage());
                 logger.trace("Parse error in response: {}", jsonAnswer);
             }
         } catch (AirqPasswordIncorrectException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device password incorrect");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Device password incorrect");
         } catch (AirqException e) {
             String causeMessage = "";
             Throwable cause = e.getCause();
@@ -515,7 +515,7 @@ public class AirqHandler extends BaseThingHandler {
                 causeMessage = cause.getClass().getSimpleName() + ": " + cause.getMessage() + ": ";
             }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, causeMessage + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, causeMessage + e.getMessage());
         } catch (InterruptedException e) {
             // nothing
         }

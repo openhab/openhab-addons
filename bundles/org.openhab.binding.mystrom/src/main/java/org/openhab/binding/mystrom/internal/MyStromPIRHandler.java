@@ -52,7 +52,7 @@ public class MyStromPIRHandler extends AbstractMyStromHandler {
             sendHttpRequest(HttpMethod.POST, "/api/v1/settings/pir",
                     "{\"backoff_time\":" + config.getBackoffTime() + ",\"led_enable\":" + config.getLedEnable() + "}");
         } catch (MyStromException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -78,7 +78,7 @@ public class MyStromPIRHandler extends AbstractMyStromHandler {
             updateStatus(ThingStatus.ONLINE);
             return report;
         } catch (MyStromException | JsonParseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return null;
         }
     }

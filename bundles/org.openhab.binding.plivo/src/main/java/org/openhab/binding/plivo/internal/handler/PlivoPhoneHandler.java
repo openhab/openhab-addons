@@ -81,7 +81,7 @@ public class PlivoPhoneHandler extends BaseThingHandler {
 
         String number = config.phoneNumber;
         if (number == null || number.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.missing-phone-number");
             return;
         }
@@ -105,7 +105,7 @@ public class PlivoPhoneHandler extends BaseThingHandler {
             initializeTask = scheduler.submit(this::asyncInitialize);
         } else {
             callbackServlet.unregisterHandler(thing.getUID().getAsString());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -360,14 +360,14 @@ public class PlivoPhoneHandler extends BaseThingHandler {
     private void asyncInitialize() {
         PlivoAccountHandler accountHandler = getAccountHandler();
         if (accountHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-uninitialized.bridge-handler-not-available");
             return;
         }
 
         PlivoApiClient client = accountHandler.getApiClient();
         if (client == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-uninitialized.api-client-not-available");
             return;
         }
@@ -392,7 +392,7 @@ public class PlivoPhoneHandler extends BaseThingHandler {
         } catch (RuntimeException e) {
             // Guard the scheduler task: an unchecked exception here would be swallowed by the Future
             // and leave the Thing stuck in UNKNOWN with nothing in the log.
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.warn("Unexpected error initializing the Plivo phone Thing for {}", phoneNumber, e);
             return;
         }

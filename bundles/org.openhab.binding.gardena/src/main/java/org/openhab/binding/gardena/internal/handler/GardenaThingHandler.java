@@ -86,7 +86,7 @@ public class GardenaThingHandler extends BaseThingHandler {
             updateProperties(device);
             updateStatus(device);
         } catch (GardenaException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
         } catch (AccountHandlerNotAvailableException ex) {
             // ignore
         }
@@ -354,7 +354,7 @@ public class GardenaThingHandler extends BaseThingHandler {
             }
         }
         if (thing.getStatus() != ThingStatus.INITIALIZING) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
+            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR);
         }
         throw new AccountHandlerNotAvailableException("Gardena AccountHandler not yet available!");
     }

@@ -216,14 +216,14 @@ public abstract class AbstractPlugwiseThingHandler extends BaseThingHandler impl
         ThingStatus bridgeStatus = bridge != null ? bridge.getStatus() : null;
         if (bridge == null) {
             removeMessageListener();
-            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridgeStatus == ONLINE && thing.getStatus() != ONLINE) {
             stickHandler = (PlugwiseStickHandler) bridge.getHandler();
             addMessageListener();
             updateStatus(OFFLINE, getThingStatusDetail());
         } else if (bridgeStatus == OFFLINE) {
             removeMessageListener();
-            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatus == UNKNOWN) {
             removeMessageListener();
             updateStatus(UNKNOWN);

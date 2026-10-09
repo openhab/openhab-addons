@@ -318,7 +318,7 @@ public class PS4Handler extends BaseThingHandler {
             socket.receive(packet);
             parseSearchResponse(packet);
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -339,7 +339,7 @@ public class PS4Handler extends BaseThingHandler {
             DatagramPacket packet = new DatagramPacket(wakeup, wakeup.length, inetAddress, DEFAULT_BROADCAST_PORT);
             socket.send(packet);
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -354,7 +354,7 @@ public class PS4Handler extends BaseThingHandler {
             Thread.sleep(100);
             return true;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (InterruptedException e) {
             return true;
         }
@@ -488,7 +488,7 @@ public class PS4Handler extends BaseThingHandler {
                     // Read login response
                     switch (status) {
                         case STATUS_OK:
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
+                            updateStatus(ThingStatus.ONLINE, status.message);
                             loggedIn = true;
                             if (isLinked(CHANNEL_2ND_SCREEN)) {
                                 scheduler.execute(() -> {
@@ -499,7 +499,7 @@ public class PS4Handler extends BaseThingHandler {
                             }
                             break;
                         case STATUS_NOT_PAIRED:
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, status.message);
+                            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, status.message);
                             loggedIn = false;
                             break;
                         case STATUS_MISSING_PAIRING_CODE:
@@ -507,7 +507,7 @@ public class PS4Handler extends BaseThingHandler {
                         case STATUS_WRONG_PAIRING_CODE:
                         case STATUS_WRONG_PASS_CODE:
                         case STATUS_WRONG_USER_CREDENTIAL:
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR, status.message);
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, status.message);
                             loggedIn = false;
                             logger.debug("Not logged in: {}", status.message);
                             break;
@@ -522,7 +522,7 @@ public class PS4Handler extends BaseThingHandler {
                         case STATUS_SOMEONE_ELSE_USING:
                         case STATUS_UPDATE_APP:
                         case STATUS_UPDATE_PS4:
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
+                            updateStatus(ThingStatus.ONLINE, status.message);
                             loggedIn = false;
                             logger.debug("Not logged in: {}", status.message);
                             break;
@@ -597,7 +597,7 @@ public class PS4Handler extends BaseThingHandler {
                 handler = new SocketChannelHandler();
                 socketChannelHandler = handler;
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 throw e;
             }
         }
@@ -622,7 +622,7 @@ public class PS4Handler extends BaseThingHandler {
                 setupConnectionTimeout(config.connectionTimeout);
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -646,7 +646,7 @@ public class PS4Handler extends BaseThingHandler {
                 sendPacketToPS4(packet, channel, true, requiresLogin);
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -670,7 +670,7 @@ public class PS4Handler extends BaseThingHandler {
             SocketChannel channel = getConnection(false);
             login(channel);
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -693,7 +693,7 @@ public class PS4Handler extends BaseThingHandler {
         try {
             getConnection();
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -763,7 +763,7 @@ public class PS4Handler extends BaseThingHandler {
             scheduledFutures.add(future);
 
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         scheduledFutures.removeIf(ScheduledFuture::isDone);
     }
@@ -800,8 +800,7 @@ public class PS4Handler extends BaseThingHandler {
                     }
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Could not determine power status.");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Could not determine power status.");
                 }
                 continue;
             }

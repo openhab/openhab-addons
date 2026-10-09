@@ -79,7 +79,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
+        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
 
         Bridge bridge = getBridge();
         logger.debug("bridge = {}", bridge);
@@ -100,7 +100,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
             if (controllerHandler != null) {
                 controllerHandler.removeListener(this);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, ERROR_OFFLINE_CONTROLLER_OFFLINE);
             return;
         }
 
@@ -160,7 +160,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
 
     @Override
     protected void updateStatus(ThingStatus status) {
-        this.updateStatus(status, ThingStatusDetail.NONE, null);
+        super.updateStatus(status);
     }
 
     @Override

@@ -156,7 +156,7 @@ public class EcoTouchHandler extends BaseThingHandler {
 
         var localConfig = config;
         if (localConfig == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
@@ -172,10 +172,10 @@ public class EcoTouchHandler extends BaseThingHandler {
                 }
                 localConnector.getValue("A1");
             } catch (IOException io) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, io.toString());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, io.toString());
                 return;
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.toString());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.toString());
                 return;
             }
 
@@ -210,9 +210,9 @@ public class EcoTouchHandler extends BaseThingHandler {
                         }
                     }
                 } catch (IOException io) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, io.toString());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, io.toString());
                 } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.toString());
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.toString());
                 } catch (Error e) {
                     // during thing creation, the following error is thrown:
                     // java.lang.NoSuchMethodError: 'org.openhab.binding.ecotouch.internal.EcoTouchTags[]

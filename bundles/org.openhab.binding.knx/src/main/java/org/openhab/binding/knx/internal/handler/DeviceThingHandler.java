@@ -114,7 +114,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         boolean modified = false;
         ThingHandlerCallback callback = getCallback();
         if (callback == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Framework failure: callback must not be null");
+            updateStatus(ThingStatus.OFFLINE, "Framework failure: callback must not be null");
             return;
         }
 
@@ -496,7 +496,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
             attachToClient();
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             detachFromClient();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -524,14 +524,13 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         } catch (KNXException e) {
             logger.debug("An error occurred while testing the reachability of a thing '{}': {}", getThing().getUID(),
                     e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    KNXTranslationProvider.I18N.getLocalizedException(e));
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, KNXTranslationProvider.I18N.getLocalizedException(e));
         }
     }
 
     protected void attachToClient() {
         if (!getClient().isConnected()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         DeviceConfig config = getConfigAs(DeviceConfig.class);
@@ -560,8 +559,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         } catch (KNXFormatException e) {
             logger.debug("An exception occurred while setting the individual address '{}': {}", config.getAddress(),
                     e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    KNXTranslationProvider.I18N.getLocalizedException(e));
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, KNXTranslationProvider.I18N.getLocalizedException(e));
         }
         getClient().registerGroupAddressListener(this);
         scheduleReadJobs();

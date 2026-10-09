@@ -370,8 +370,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (!isThingOffline() && (profile.alwaysOn || !profile.isInitialized() && !isThingOnline())) {
             ThingStatusDetail detail = getThingStatusDetail();
             if (detail != ThingStatusDetail.DUTY_CYCLE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        messages.get("status.config_pending"));
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, messages.get("status.config_pending"));
             }
         }
 
@@ -712,7 +711,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     // set or clear the update available marker
                     boolean updateAvailable = getBool(status.update.hasUpdate);
                     if (updateAvailable && !updateMarkerSet) {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                        updateStatus(ThingStatus.ONLINE,
                                 messages.get("manager.action.checkupd.new", getString(status.update.newVersion)));
                         updateMarkerSet = true; // specifically set update marker flag only in this case
                     } else if (!updateAvailable && updateMarkerSet) {
@@ -951,8 +950,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: Handler is shutting down, ignore", thingName);
             return;
         }
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                messages.get("offline.status-error-restarted"));
+        updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, messages.get("offline.status-error-restarted"));
         requestUpdates(0, true);
     }
 

@@ -556,7 +556,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                 return true;
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can't get version information");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Can't get version information");
         }
         return false;
     }
@@ -573,19 +573,19 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                         logger.debug("Bridge: Zoneminder software version check OK");
                         return true;
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String
                                 .format("Current Zoneminder version: %s. Requires version >= 1.34.0", softwareVersion));
                     }
                 } catch (NumberFormatException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             String.format("Badly formatted version number: %s", softwareVersion));
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         String.format("Can't parse software version: %s", softwareVersion));
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Software version is null");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Software version is null");
         }
         return false;
     }
@@ -601,19 +601,19 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                         logger.debug("Bridge: Zoneminder API version check OK");
                         return true;
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String
                                 .format("Requires API version >= 2.0. This Zoneminder is API version {}", apiVersion));
                     }
                 } catch (NumberFormatException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             String.format("Badly formatted API version: %s", apiVersion));
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         String.format("Can't parse API version: %s", apiVersion));
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API version is null");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "API version is null");
         }
         return false;
     }

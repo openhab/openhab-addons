@@ -14,7 +14,6 @@ package org.openhab.binding.heos.internal.handler;
 
 import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 import static org.openhab.binding.heos.internal.handler.FutureUtil.cancel;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 
 import java.io.IOException;
@@ -139,8 +138,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
                 failureCount++;
 
                 if (failureCount > FAILURE_COUNT_LIMIT) {
-                    updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Failed to handle command: " + e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Failed to handle command: " + e.getMessage());
                 }
             }
         }
@@ -171,7 +169,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             if (!username.isBlank() && !password.isBlank()) {
                 login(connection, username, password);
             } else {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Can't log in. Username or password not set.");
             }
 
@@ -181,7 +179,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             if (connection != null) {
                 connection.closeConnection();
             }
-            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Errors occurred: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Errors occurred: " + e.getMessage());
             cancel(startupFuture, false);
             startupFuture = scheduler.schedule(this::delayedInitialize, 30, TimeUnit.SECONDS);
         }
@@ -408,7 +406,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             } else if (EVENT_STREAM_TIMEOUT.equals(command)) {
                 logger.debug("HEOS Bridge events timed-out might be nothing, trying to reconnect");
             } else if (CONNECTION_LOST.equals(command)) {
-                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 logger.debug("HEOS Bridge OFFLINE");
             } else if (CONNECTION_RESTORED.equals(command)) {
                 initialize();

@@ -110,10 +110,10 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
             } else {
                 // Set status to OFFLINE, if no bridge is available e.g. because the bridge has been removed and the
                 // Thing was reinitialized.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge is missing!");
+                updateStatus(ThingStatus.OFFLINE, "Bridge is missing!");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "zoneID is missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "zoneID is missing");
         }
     }
 
@@ -165,7 +165,7 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             int tempZoneID = getZoneID(getConfig(), getDssBridgeHandler());
             if (tempZoneID == ZONE_ID_NOT_EXISTS) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Configured zone '" + getConfig().get(DigitalSTROMBindingConstants.ZONE_ID)
                                 + "' does not exist, please check the configuration.");
             } else {
@@ -174,17 +174,16 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
             if (zoneID != null) {
                 if (getDssBridgeHandler() != null && temperatureSensorTransmitter == null) {
                     dssBridgeHandler.registerTemperatureControlStatusListener(this);
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "waiting for listener registration");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "waiting for listener registration");
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No zoneID is set!");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No zoneID is set!");
             }
         }
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         logger.debug("Set status to {}", getThing().getStatusInfo());
     }
@@ -292,7 +291,7 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
                     currentValue = tempControlStatus.getControlValue();
                     updateState(currentChannelID, new PercentType(fixPercent(currentValue.intValue())));
                     if (controlState.equals(ControlStates.EMERGENCY)) {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "The communication with temperation sensor fails. Temperature control state emergency (temperature control though the control value) is active.");
                     }
                 }
@@ -303,7 +302,7 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
                 updateProperties(properties);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "digitalSTROM temperature control is for this zone not configured in.");
         }
     }

@@ -343,16 +343,15 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
 
             var statusCode = contentResponse.getStatus();
             if (!(statusCode == 200 || statusCode == 204)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/unsuccessful.communication-error");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/unsuccessful.communication-error");
                 logger.debug("Could not send data, Response {}, StatusCode: {}", response, statusCode);
             }
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ie.toString());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ie.toString());
             logger.debug("Could not send data: {}, {}", urlStr, ie.toString());
         } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
             logger.debug("Could not send data: {}, {}", urlStr, e.toString());
         }
     }
@@ -388,10 +387,10 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
     @Override
     protected void updateChannelsAndStatus(@Nullable GoEStatusResponseBaseDTO goeResponse, @Nullable String message) {
         if (goeResponse == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
             allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
         } else {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
             allChannels.forEach(channel -> updateState(channel, getValue(channel, goeResponse)));
         }
     }

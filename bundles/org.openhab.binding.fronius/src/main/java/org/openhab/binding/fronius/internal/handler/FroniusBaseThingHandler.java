@@ -82,11 +82,11 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         // this is important so FroniusBridgeHandler::childHandlerInitialized gets called
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -160,7 +160,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
                     getThing().getUID().getId());
         } catch (FroniusCommunicationException | RuntimeException e) {
             logger.debug("Exception caught in refresh() for {}", getThing().getUID().getId(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

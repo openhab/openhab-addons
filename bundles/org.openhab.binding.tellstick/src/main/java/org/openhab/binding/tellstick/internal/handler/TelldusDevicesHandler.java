@@ -133,7 +133,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
                 }
             } catch (TellstickException e) {
                 logger.debug("Failed to send command to tellstick", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } else {
             logger.warn("Setting of channel {} not possible. Read-only", channelUID);
@@ -167,11 +167,10 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
             if (bridge != null) {
                 bridgeStatusChanged(bridge.getStatusInfo());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge defined");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge defined");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Missing serialNumber configuration");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Missing serialNumber configuration");
         }
     }
 
@@ -206,16 +205,16 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
                             logger.warn(
                                     "Could not find {}, please make sure it is defined and that telldus service is running",
                                     deviceId);
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                         }
                     }
                 }
             } catch (Exception e) {
                 logger.warn("Failed to init device {}", deviceId, e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+                updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -422,7 +421,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
                 }
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
             updateStatus(ThingStatus.REMOVED);

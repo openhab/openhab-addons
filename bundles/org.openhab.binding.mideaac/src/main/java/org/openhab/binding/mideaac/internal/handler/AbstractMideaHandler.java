@@ -124,8 +124,7 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
         }
 
         if (!config.isDiscoveryPossible()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration_error_invalid_discovery");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration_error_invalid_discovery");
             return false;
         }
 
@@ -136,12 +135,10 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
         scheduler.execute(() -> {
             try {
                 // Keep thing OFFLINE with message about attempting discovery.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration_pending_discovery");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration_pending_discovery");
                 discoveryService.discoverThing(config.ipAddress, this);
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.communication_error_discovery");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication_error_discovery");
             }
         });
 
@@ -163,20 +160,17 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
         }
 
         if (!config.isTokenKeyObtainable()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration_error_invalid_token");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration_error_invalid_token");
             return false;
         }
 
         scheduler.execute(() -> {
             try {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration_pending_token");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration_pending_token");
                 CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
                 getTokenKeyCloud(cloudProvider);
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.communication_error_token");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication_error_token");
             }
         });
 
@@ -235,7 +229,7 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
         try {
             refreshDeviceState(); // Delegate to subclass
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -249,7 +243,7 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
         try {
             handleDeviceCommand(channelUID, command);
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -326,8 +320,7 @@ public abstract class AbstractMideaHandler extends BaseThingHandler implements D
             logger.debug("Token and Key obtained from cloud, saving, back to initialize");
             initialize();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration_error_invalid_token ");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration_error_invalid_token ");
         }
     }
 

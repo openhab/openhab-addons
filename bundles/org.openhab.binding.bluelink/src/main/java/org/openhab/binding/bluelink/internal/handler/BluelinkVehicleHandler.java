@@ -98,8 +98,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         final BluelinkVehicleConfiguration config = getConfigAs(BluelinkVehicleConfiguration.class);
         final String vin = config.vin;
         if (vin == null || vin.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/vehicle-handler.initialize.vin-required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/vehicle-handler.initialize.vin-required");
             return;
         }
 
@@ -128,7 +127,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     private void loadVehicle(final String vin) {
         final var bridgeHnd = getBridgeHandler();
         if (bridgeHnd == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 
@@ -139,14 +138,13 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
                 updateProperty(PROPERTY_ENGINE_TYPE, v.engineType().name());
                 createDynamicChannels();
                 updateStatus(ThingStatus.ONLINE);
-            }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            }, () -> updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/vehicle-handler.initialize.vehicle-not-found")
 
             );
         } catch (final BluelinkApiException e) {
             logger.debug("error loading vehicle: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/vehicle-handler.initialize.vehicle-data-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/vehicle-handler.initialize.vehicle-data-error");
         }
     }
 
@@ -365,7 +363,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             }
         } catch (final BluelinkApiException e) {
             logger.debug("Failed to refresh {}vehicle status: {}", forceRefresh ? "forced " : "", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
         } finally {
             lock.unlock();
         }

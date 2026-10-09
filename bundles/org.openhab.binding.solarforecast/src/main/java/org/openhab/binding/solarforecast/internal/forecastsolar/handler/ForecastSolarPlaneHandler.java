@@ -99,8 +99,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             if (handler != null) {
                 if (handler instanceof ForecastSolarBridgeHandler fsbh) {
                     bridgeHandler = fsbh;
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                            "@text/solarforecast.plane.status.await-feedback");
+                    updateStatus(ThingStatus.UNKNOWN, "@text/solarforecast.plane.status.await-feedback");
                     bridge().addPlane(this);
                 } else {
                     configErrorStatus("@text/solarforecast.plane.status.wrong-handler" + " [\"" + handler + "\"]");
@@ -135,7 +134,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     }
 
     protected void configErrorStatus(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
     }
 
     @Override
@@ -186,7 +185,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (SolarForecastException sfe) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.OFFLINE,
                     "@text/solarforecast.plane.status.exception [\"" + sfe.getMessage() + "\"]");
         }
     }
@@ -207,9 +206,9 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             int responseStatus = cr.getStatus();
             handleResponse(responseStatus, cr.getContentAsString());
         } catch (ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             Thread.currentThread().interrupt();
         }
     }
@@ -222,18 +221,18 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                 updateForecast(newForecast);
                 updateStatus(ThingStatus.ONLINE);
             } catch (SolarForecastException fse) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                updateStatus(ThingStatus.OFFLINE,
                         "@text/solarforecast.plane.status.json-status [\"" + fse.getMessage() + "\"]");
             }
         } else if (responseStatus == HttpStatus.TOO_MANY_REQUESTS_429) {
             // special handling for 429 response: https://doc.forecast.solar/facing429
             // bridge shall "calm down" until at least one hour is expired
             bridge().calmDown();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/solarforecast.plane.status.http-status [\"" + responseStatus + "\"]");
         } else {
             logger.trace("Call failed with status {}. Response: {}", responseStatus, forecastContent);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/solarforecast.plane.status.http-status [\"" + responseStatus + "\"]");
         }
     }

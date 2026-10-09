@@ -94,7 +94,7 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
             pinStateHolder = new Mcp23017PinStateHolder(mcpProvider, this.thing);
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalArgumentException | SecurityException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "An exception occurred while adding pin. Check pin configuration. Exception: " + e.getMessage());
         }
     }
@@ -156,7 +156,7 @@ public class Mcp23017Handler extends BaseThingHandler implements GpioPinListener
             mcp = new MCP23017GpioProvider(busNumber, address);
             mcp.setPollingTime(POLLING_INTERVAL);
         } catch (UnsupportedBusNumberException | IOException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Tried to access not available I2C bus: " + ex.getMessage());
         }
         logger.debug("got mcpProvider {}", mcp);

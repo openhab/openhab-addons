@@ -104,7 +104,7 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
         this.updateStatus(ThingStatus.UNKNOWN);
 
         if (this.getBridge() == null) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Please select bridge");
+            this.updateStatus(ThingStatus.UNINITIALIZED);
             return;
         }
 

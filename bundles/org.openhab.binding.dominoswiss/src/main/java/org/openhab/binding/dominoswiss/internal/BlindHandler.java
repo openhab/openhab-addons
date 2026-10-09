@@ -57,7 +57,7 @@ public class BlindHandler extends BaseThingHandler {
             localDominoswissHandler = (EGateHandler) bridge.getHandler();
         }
         if (localDominoswissHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate not available");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate not available");
             logger.debug("Blind thing {} has no server configured, ignoring command: {}", getThing().getUID(), command);
             return;
         }
@@ -163,14 +163,14 @@ public class BlindHandler extends BaseThingHandler {
                 try {
                     ThingStatus bridgeStatus = bridge.getStatus();
                     if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                        updateStatus(ThingStatus.ONLINE);
                         localDominoswissHandler = (EGateHandler) bridge.getHandler();
                     } else if (bridgeStatus == ThingStatus.OFFLINE) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                     }
                 } catch (Exception e) {
                     logger.debug("Could not update ThingStatus ", e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.toString());
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.toString());
 
                 }
             }

@@ -148,8 +148,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             return;
         }
         if (r.getResponseCode() == 403) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Allow authentication for 3rd party apps. Trying again in " + POLL_FREQUENCY_SEC + " seconds");
+
             stopTimer();
             connectionJob = scheduler.schedule(this::requestApiKey, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
         } else if (r.getResponseCode() == 200) {
@@ -161,7 +162,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             Configuration configuration = editConfiguration();
             configuration.put(CONFIG_APIKEY, config.apikey);
             updateConfiguration(configuration);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for configuration");
+            updateStatus(ThingStatus.UNKNOWN);
             initializeBridgeState();
         } else {
             throw new IllegalStateException("Unknown status code for authorisation request");
@@ -203,7 +204,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
                     || t instanceof CompletionException) {
                 logger.debug("Get full state failed", t);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, t.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, t.getMessage());
             }
             return Optional.empty();
         });
@@ -220,13 +221,11 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
                 return;
             }
             if (state.config.name.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "You are connected to a HUE bridge, not a deCONZ software!");
+                updateStatus(ThingStatus.OFFLINE, "You are connected to a HUE bridge, not a deCONZ software!");
                 return;
             }
             if (state.config.websocketport == 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "deCONZ software too old. No websocket support!");
+                updateStatus(ThingStatus.OFFLINE, "deCONZ software too old. No websocket support!");
                 return;
             }
 
@@ -252,9 +251,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             }
         })).exceptionally(e -> {
             if (e != null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.OFFLINE);
             }
             logger.warn("Initial full state request or result parsing failed", e);
             if (!thingDisposing) {
@@ -285,12 +284,12 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      *
      */
     private void requestApiKey() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Requesting API Key");
+        updateStatus(ThingStatus.UNKNOWN);
         stopTimer();
         String url = buildUrl(config.getHostWithoutPort(), config.httpPort);
         http.post(url, "{\"devicetype\":\"openHAB\"}", config.timeout).thenAccept(this::parseAPIKeyResponse)
                 .exceptionally(e -> {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     logger.warn("Authorisation failed", e);
                     return null;
                 });
@@ -329,7 +328,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             return;
         }
         ignoreConnectionLost = true;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
         stopTimer();
 
         // make sure we get a new connection

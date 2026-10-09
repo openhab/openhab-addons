@@ -95,8 +95,7 @@ public class SmartMeterHandler extends BaseThingHandler {
         logger.debug("config port = {}", port);
 
         if (port == null || port.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter 'port' is mandatory and must be configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Parameter 'port' is mandatory and must be configured");
         } else {
             String initMessage = config.initMessage;
             byte[] pullSequence = initMessage == null ? null : HexUtils.hexToBytes(initMessage.replaceAll("\\s+", ""));
@@ -104,8 +103,7 @@ public class SmartMeterHandler extends BaseThingHandler {
             this.conformity = Conformity.valueOf(config.conformity);
             this.smlDevice = MeterDeviceFactory.getDevice(serialPortManagerSupplier, config.mode,
                     this.thing.getUID().getAsString(), port, pullSequence, baudrate, config.baudrateChangeDelay);
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
-                    "Waiting for messages from device");
+            updateStatus(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING, "Waiting for messages from device");
 
             smlDevice.addValueChangeListener(channelTypeProvider);
 
@@ -207,7 +205,7 @@ public class SmartMeterHandler extends BaseThingHandler {
                     updateState(channel.getUID(), state);
                 }
 
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.ONLINE);
             }
 
             private void addObisPropertyToChannel(String obis, Channel channel) {
@@ -235,7 +233,7 @@ public class SmartMeterHandler extends BaseThingHandler {
 
             @Override
             public void errorOccurred(Throwable e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
             }
         };
         this.smlDevice.addValueChangeListener(valueChangeListener);

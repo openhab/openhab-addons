@@ -191,7 +191,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             } catch (ProcessingException e) {
                 logger.debug("An exception occurred while fetching system info of the Helios IP Vario '{}' : '{}'",
                         getThing().getUID().toString(), e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return;
             }
@@ -199,7 +199,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             if (response == null) {
                 logger.debug("There is a configuration problem for the Helios IP Vario '{}'",
                         getThing().getUID().toString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return;
             }
@@ -222,7 +222,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                 logger.debug(
                         "An error occurred while communicating with the Helios IP Vario '{}': code '{}', param '{}' : '{}'",
                         new Object[] { getThing().getUID().toString(), error.code, error.param, error.description });
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         error.code + ":" + error.param + ":" + error.description);
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return;
@@ -303,7 +303,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                 logger.debug(
                         "An exception occurred while subscribing to the log entries of the Helios IP Vario '{}' : '{}'",
                         getThing().getUID().toString(), e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return 0;
             }
@@ -335,7 +335,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                     logger.debug(
                             "An error occurred while communicating with the Helios IP Vario '{}': code '{}', param '{}' : '{}'",
                             getThing().getUID().toString(), error.code, error.param, error.description);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             error.code + ":" + error.param + ":" + error.description);
                     scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                     return 0;
@@ -343,7 +343,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             } else {
                 logger.debug("An error occurred while subscribing to the log entries of the Helios IP Vario '{}'",
                         getThing().getUID().toString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return 0;
             }
@@ -365,7 +365,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                         "An exception occurred while unsubscribing from the log entries of the Helios IP Vario '{}' : {}",
                         getThing().getUID().toString(), e.getMessage(), e);
                 logSubscriptionID = 0;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return;
             }
@@ -394,7 +394,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                             "An error occurred while communicating with the Helios IP Vario '{}' : code '{}', param '{}' : '{}'",
                             getThing().getUID().toString(), error.code, error.param, error.description);
                     logSubscriptionID = 0;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             error.code + ":" + error.param + ":" + error.description);
                     scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                     return;
@@ -403,7 +403,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                 logger.debug("An error occurred while unsubscribing from the log entries of the Helios IP Vario '{}'",
                         getThing().getUID().toString());
                 logSubscriptionID = 0;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return;
             }
@@ -426,7 +426,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                 logger.debug("An exception occurred while pulling log entries from the Helios IP Vario '{}' : '{}'",
                         getThing().getUID().toString(), e.getMessage(), e);
                 this.logSubscriptionID = 0;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return null;
             }
@@ -459,7 +459,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                             "An error occurred while communicating with the Helios IP Vario '{}' : code '{}', param '{}' : '{}'",
                             getThing().getUID().toString(), error.code, error.param, error.description);
                     this.logSubscriptionID = 0;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             error.code + ":" + error.param + ":" + error.description);
                     scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                     return null;
@@ -468,7 +468,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                 logger.debug("An error occurred while polling log entries from the Helios IP Vario '{}'",
                         getThing().getUID().toString());
                 this.logSubscriptionID = 0;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return null;
             }
@@ -488,7 +488,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             logger.debug(
                     "An exception occurred while requesting switch capabilities from the Helios IP Vario '{}' : '{}'",
                     getThing().getUID().toString(), e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
             return null;
         }
@@ -526,7 +526,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                     logger.debug(
                             "The API is not supported by the Helios hardware or current license, or the Authentication method is not set to Basic");
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             error.code + ":" + error.param + ":" + error.description);
                     scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 }
@@ -535,7 +535,7 @@ public class HeliosHandler221 extends BaseThingHandler {
         } else {
             logger.debug("An error occurred while requesting switch capabilities from the Helios IP Vario '{}'",
                     getThing().getUID().toString());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
         }
 
@@ -554,7 +554,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             } catch (NullPointerException e) {
                 logger.debug("An exception occurred while triggering a switch  on the Helios IP Vario '{}' : '{}'",
                         getThing().getUID().toString(), e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return;
             }
@@ -582,7 +582,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                     logger.error(
                             "An error occurred while communicating with the Helios IP Vario '{}' : code '{}', param '{}' : '{}'",
                             getThing().getUID().toString(), error.code, error.param, error.description);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             error.code + ":" + error.param + ":" + error.description);
                     scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                     return;
@@ -590,7 +590,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             } else {
                 logger.warn("An error occurred while triggering a switch on the Helios IP Vario '{}'",
                         getThing().getUID().toString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return;
             }
@@ -609,7 +609,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             } catch (NullPointerException e) {
                 logger.error("An exception occurred while dis/enabling a switch  on the Helios IP Vario '{}' : '{}'",
                         getThing().getUID().toString(), e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return;
             }
@@ -638,7 +638,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                     logger.error(
                             "An error occurred while communicating with the Helios IP Vario '{}': code '{}', param '{}' : '{}'",
                             getThing().getUID().toString(), error.code, error.param, error.description);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             error.code + ":" + error.param + ":" + error.description);
                     scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                     return;
@@ -646,7 +646,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             } else {
                 logger.warn("An error occurred while dis/enabling a switch on the Helios IP Vario '{}'",
                         getThing().getUID().toString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 return;
             }
@@ -664,7 +664,7 @@ public class HeliosHandler221 extends BaseThingHandler {
             logger.error(
                     "An exception occurred while requesting port capabilities from the Helios IP Vario '{}' : '{}'",
                     getThing().getUID().toString(), e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
             return null;
         }
@@ -700,7 +700,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                     logger.debug(
                             "The API is not supported by the Helios hardware or current license, or the Authentication method is not set to Basic");
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             error.code + ":" + error.param + ":" + error.description);
                     scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
                 }
@@ -709,7 +709,7 @@ public class HeliosHandler221 extends BaseThingHandler {
         } else {
             logger.warn("An error occurred while requesting port capabilities from the Helios IP Vario '{}'",
                     getThing().getUID().toString());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
         }
 
@@ -732,7 +732,7 @@ public class HeliosHandler221 extends BaseThingHandler {
         } catch (NullPointerException e) {
             logger.error("An exception occurred while fetching system info of the Helios IP Vario '{}' : '{}'",
                     getThing().getUID().toString(), e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);
             return;
         }
@@ -1003,7 +1003,7 @@ public class HeliosHandler221 extends BaseThingHandler {
                         }
                     }
                 } catch (ProcessingException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     logger.trace("An underlying exception forced the Helios IP Vario to go offline : '{}'",
                             e.getMessage(), e);
                     scheduler.schedule(resetRunnable, RESET_INTERVAL, TimeUnit.SECONDS);

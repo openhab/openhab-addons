@@ -179,7 +179,7 @@ public class HydrawiseLocalHandler extends BaseThingHandler {
             initPolling(COMMAND_REFRESH_SECONDS);
         } catch (HydrawiseAuthenticationException e) {
             logger.debug("Credentials not valid");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Credentials not valid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Credentials not valid");
             configureInternal();
         }
     }
@@ -245,15 +245,14 @@ public class HydrawiseLocalHandler extends BaseThingHandler {
                 initPolling(refresh);
             } else {
                 logger.debug("Could not connect to service");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Invalid response from service");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Invalid response from service");
             }
         } catch (HydrawiseConnectionException e) {
             logger.debug("Could not connect to service");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (HydrawiseAuthenticationException e) {
             logger.debug("Credentials not valid");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Credentials not valid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Credentials not valid");
         }
     }
 
@@ -294,7 +293,7 @@ public class HydrawiseLocalHandler extends BaseThingHandler {
         } catch (HydrawiseConnectionException e) {
             // poller will continue to run, set offline until next run
             logger.debug("Exception polling", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (HydrawiseAuthenticationException e) {
             // if are creds are not valid, we need to try re authorizing again
             logger.debug("Authorization exception during polling", e);

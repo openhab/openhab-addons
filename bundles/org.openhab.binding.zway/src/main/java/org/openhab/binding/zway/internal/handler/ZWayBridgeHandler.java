@@ -139,7 +139,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
                     logger.error("Unexpected error");
                 }
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                             "Error occurred when initialize bridge.");
                 }
             }
@@ -238,14 +238,13 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     public void initialize() {
         logger.info("Initializing Z-Way bridge ...");
 
-        // Set thing status to a valid status
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
-
         // Configuration - thing status update with an error message
         mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {
             logger.debug("Configuration complete: {}", mConfig);
+
+            updateStatus(ThingStatus.UNKNOWN);
 
             mZWayApi = new ZWayApiHttp(mConfig.getZWayIpAddress(), mConfig.getZWayPort(), mConfig.getZWayProtocol(),
                     mConfig.getZWayUsername(), mConfig.getZWayPassword(), -1, false, this);
@@ -400,7 +399,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
         // Z-Way Password
         String zWayPassword = config.getZWayPassword();
         if (zWayPassword == null || zWayPassword.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The connection to the Z-Way Server can't established, because the Z-Way password is missing. Please set a Z-Way password.");
             return null;
         }
@@ -550,28 +549,27 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     @Override
     public void apiError(String message, boolean invalidateState) {
         if (invalidateState) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 
     @Override
     public void httpStatusError(int httpStatus, String message, boolean invalidateState) {
         if (invalidateState) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    message + "(HTTP status code: " + httpStatus + ").");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message + "(HTTP status code: " + httpStatus + ").");
         }
     }
 
     @Override
     public void authenticationError() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 "Authentication error. Please check username and password.");
     }
 
     @Override
     public void responseFormatError(String message, boolean invalidateApiState) {
         if (invalidateApiState) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 

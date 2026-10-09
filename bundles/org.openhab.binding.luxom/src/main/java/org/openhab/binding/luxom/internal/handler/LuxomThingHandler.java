@@ -42,8 +42,7 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
     public void initialize() {
         String id = (String) getConfig().get("address");
         if (id == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/status.thing-address-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.thing-address-missing");
             address = "noaddress";
             return;
         }
@@ -88,7 +87,7 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
                 && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE) {
             initDeviceState();
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             thingOfflineNotify();
         }
     }
@@ -98,8 +97,7 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
         LuxomBridgeHandler bridgeHandler = getBridgeHandler();
 
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR,
-                    "@text/status.bridge-handler-missing");
+            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "@text/status.bridge-handler-missing");
             thingOfflineNotify();
         } else {
             bridgeHandler.sendCommands(commands);

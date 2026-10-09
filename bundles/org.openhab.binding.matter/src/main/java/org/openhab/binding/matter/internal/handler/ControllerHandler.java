@@ -591,7 +591,7 @@ public class ControllerHandler extends BaseBridgeHandler implements MatterClient
         // reconnect must perform a full enumeration even for sleepy nodes.
         enumeratedNodes.clear();
         client.disconnect();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         reconnect();
     }
 

@@ -58,7 +58,7 @@ public class DaliDeviceHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
 
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else {
             updateStatus(ThingStatus.ONLINE);
         }
@@ -143,7 +143,7 @@ public class DaliDeviceHandler extends BaseThingHandler {
                 }
             }
         } catch (DaliException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

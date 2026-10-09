@@ -116,7 +116,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
 
         if (!MATCHER_IP_ADDRESS.matcher(config.hostName).matches()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "parameter hostName must be set!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "parameter hostName must be set!");
             return;
         }
 
@@ -125,7 +125,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
 
         if (config.portNumber < 0 || config.portNumber > 0xFFFF) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "portNumber is invalid!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "portNumber is invalid!");
             return;
         }
 
@@ -134,7 +134,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
 
         if (config.pollingInterval < FAST_POLL_INTERVAL || config.pollingInterval > LAZY_POLL_INTERVAL) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String
                     .format("pollingInterval must be in range [%d..%d]!", FAST_POLL_INTERVAL, LAZY_POLL_INTERVAL));
             return;
         }
@@ -144,7 +144,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
 
         if (config.socketTimeout < 5 || config.socketTimeout > 20) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     String.format("socketTimeout must be in range [%d..%d]!", 5, 20));
             return;
         }
@@ -170,7 +170,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             String error = e.getMessage();
             if (error != null && error.toLowerCase().startsWith("connection refused")) {
                 logger.warn("CONNECTION REFUSED!! (hub '{}') => {}", getThing().getUID(), SEE_README);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, SEE_README);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, SEE_README);
                 return;
             }
         } catch (NeoHubException e) {
@@ -209,7 +209,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         NeoHubConfiguration config = this.config;
         if (config == null) {
             logger.debug("\"hub '{}' configuration is null", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             try {
                 if (config.useWebSocket) {
@@ -219,7 +219,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
                 }
             } catch (IOException e) {
                 logger.debug("\"hub '{}' error creating web/tcp socket: '{}'", getThing().getUID(), e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
         return null;
@@ -289,7 +289,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
             return NeoHubReturnResult.SUCCEEDED;
         } catch (IOException | NeoHubException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn(MSG_FMT_SET_VALUE_ERR, getThing().getUID(), commandStr, e.getMessage());
             return NeoHubReturnResult.ERR_COMMUNICATION;
         }
@@ -321,7 +321,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
             if (deviceData == null) {
                 logger.warn(MSG_FMT_DEVICE_POLL_ERR, getThing().getUID(), "failed to create device data response");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 return null;
             }
 
@@ -329,12 +329,12 @@ public class NeoHubHandler extends BaseBridgeHandler {
             List<? extends AbstractRecord> devices = deviceData.getDevices();
             if (devices == null || devices.isEmpty()) {
                 logger.warn(MSG_FMT_DEVICE_POLL_ERR, getThing().getUID(), "no devices found");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 return null;
             }
 
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.ONLINE);
                 restartDelay = Duration.from(MIN_RESTART_DELAY);
             }
 
@@ -366,7 +366,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             return deviceData;
         } catch (IOException | NeoHubException e) {
             logger.warn(MSG_FMT_DEVICE_POLL_ERR, getThing().getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             scheduleRestart();
         }
         return null;

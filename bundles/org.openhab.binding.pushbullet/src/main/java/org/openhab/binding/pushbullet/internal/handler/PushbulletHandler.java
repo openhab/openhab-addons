@@ -88,7 +88,7 @@ public class PushbulletHandler extends BaseThingHandler {
         PushbulletConfiguration config = getConfigAs(PushbulletConfiguration.class);
 
         if (config.getAccessToken().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Undefined access token.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Undefined access token.");
             return;
         }
 
@@ -114,10 +114,9 @@ public class PushbulletHandler extends BaseThingHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (PushbulletAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid access token.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid access token.");
         } catch (PushbulletApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to retrieve account info.");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unable to retrieve account info.");
         }
     }
 

@@ -161,7 +161,7 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
             }
         } catch (Exception e) {
             logger.warn("Processing response for '{}'-{} failed with {}", getAddress(), group, e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } finally {
             synchronized (pendingRefresh) {
                 pendingRefresh.remove(group);
@@ -229,7 +229,7 @@ abstract class NikobusModuleHandler extends NikobusBaseThingHandler {
             }
         } catch (Exception e) {
             logger.warn("Processing write confirmation failed with {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

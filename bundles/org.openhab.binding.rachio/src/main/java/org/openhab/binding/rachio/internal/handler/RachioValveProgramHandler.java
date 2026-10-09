@@ -80,12 +80,12 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
                 programId);
 
         if (programId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     i18nText("thing-status.rachio.valve-program.missing-program-id"));
             return;
         }
         if (!initializeCloudHandler()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         scheduleHandlerTask(generation, () -> refreshProgram(programId, true, generation));
@@ -97,7 +97,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
         RachioBridgeHandler handler = cloudHandler;
         RachioValveProgram currentProgram = program;
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -135,7 +135,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.debug("{}: {}", thingId, errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.valve-program.command-failed", errorMessage));
             }
         }
@@ -151,7 +151,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
         }
         RachioBridgeHandler handler = cloudHandler;
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return false;
         }
 
@@ -164,7 +164,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
             program = loadedProgram;
             RachioValveProgram currentProgram = loadedProgram;
             if (currentProgram.id.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         i18nText("thing-status.rachio.valve-program.not-found"));
                 return false;
             }
@@ -215,7 +215,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
             String reason = exceptionMessage(e);
             logger.debug("{}: Unable to load Rachio Valve Program '{}': {}", thingId, programId, reason);
             if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.valve-program.load-failed", programId, reason));
             }
             return false;
@@ -464,7 +464,7 @@ public class RachioValveProgramHandler extends AbstractRachioThingHandler implem
         if (updatedProgram == null) {
             nextProgramRun = null;
             nextSkippedProgramRun = null;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     i18nText("thing-status.rachio.valve-program.not-in-poll"));
             return;
         }

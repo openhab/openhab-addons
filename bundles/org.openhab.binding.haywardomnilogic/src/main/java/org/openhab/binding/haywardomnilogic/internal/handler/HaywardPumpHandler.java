@@ -58,8 +58,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
             setStateDescriptions();
             updateStatus(ThingStatus.ONLINE);
         } catch (HaywardException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to setPumpHandler StateDescriptions");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to setPumpHandler StateDescriptions");
         }
     }
 
@@ -166,7 +165,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -250,7 +249,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

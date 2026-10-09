@@ -257,7 +257,7 @@ public class LGHomBotHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         logger.trace("Status received: {}", status);
         return status;
@@ -584,7 +584,7 @@ public class LGHomBotHandler extends BaseThingHandler {
             int idx = htmlString.indexOf("blkfiles");
             return "/.../usr/data/blackbox/" + htmlString.substring(idx + 13, idx + 50);
         } catch (IOException e1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e1.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e1.getMessage());
         }
         return "";
     }

@@ -195,7 +195,7 @@ public class ElectroluxPortableAirConditionerHandler extends ElectroluxAppliance
             if ("Connected".equalsIgnoreCase(dto.getApplianceState().getConnectionState())) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         getLocalizedText("error.electroluxappliance.pac.not-connected"));
             }
         }

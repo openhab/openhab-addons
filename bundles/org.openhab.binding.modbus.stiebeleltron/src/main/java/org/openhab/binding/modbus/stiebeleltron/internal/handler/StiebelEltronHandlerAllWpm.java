@@ -466,7 +466,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                 }
                 String statusMsg = String.format("@text/offline.com-error [ \"%s\", \"%s\" ]",
                         error.getClass().getName(), error.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
             }
         }
     }
@@ -494,7 +494,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
             return;
         }
 
@@ -507,7 +507,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
 
         if (comms == null) {
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("@text/offline.bridge-not-initialized [ \"%s\" ]", label));
             return;
         }
@@ -516,13 +516,13 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         if (debug) {
             String statusMsg = String.format("@text/offline.com-error [ \"%s\", \"%s\" ]", "com-error",
                     StiebelEltronHandlerAllWpm.class.getName());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
             statusMsg = String.format("@text/offline.com-error-read [ \"%s\", \"%s\" ]", "read-error",
                     StiebelEltronHandlerAllWpm.class.getName());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
             statusMsg = String.format("@text/offline.com-error-write [ \"%s\", \"%s\" ]", "write-error",
                     StiebelEltronHandlerAllWpm.class.getName());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
         }
 
         StiebelEltronHpV2Configuration myconfig = StiebelEltronHandlerAllWpm.this.config;
@@ -1581,7 +1581,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         }
         String statusMsg = String.format("@text/offline.com-error-read [ \"%s\", \"%s\" ]",
                 failure.getCause().getMessage(), failure.getCause().getClass().getName());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
     }
 
     /**
@@ -1594,7 +1594,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         }
         String statusMsg = String.format("@text/offline.com-error-write [ \"%s\", \"%s\" ]",
                 failure.getCause().getMessage(), failure.getCause().getClass().getName());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
     }
 
     /**

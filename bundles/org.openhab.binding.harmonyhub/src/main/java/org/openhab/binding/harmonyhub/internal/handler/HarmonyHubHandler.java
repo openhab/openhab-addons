@@ -277,7 +277,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
                 updateConfiguration(genericConfig);
             } else {
                 logger.debug("host not configured");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "host not configured");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "host not configured");
                 return;
             }
         }
@@ -302,7 +302,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
     private void setOfflineAndReconnect(String error) {
         disconnectFromHub();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, error);
         scheduleRetry(RETRY_TIME);
     }
 

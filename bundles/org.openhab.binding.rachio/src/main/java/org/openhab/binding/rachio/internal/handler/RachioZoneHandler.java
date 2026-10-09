@@ -119,8 +119,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             if (bridge == null || cloudHandler == null || dev == null || zone == null) {
                 String errorMessage = buildZoneResolutionError(configuredZoneId);
                 logger.debug("{}: {}", thingId, errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        buildZoneResolutionStatusDetail(configuredZoneId));
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, buildZoneResolutionStatusDetail(configuredZoneId));
                 return;
             }
 
@@ -128,7 +127,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             registerStatusListener();
             if (!isBridgeOnline()) {
                 logger.debug("{}: Bridge is offline!", thingId);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             } else {
                 logger.debug("{}: Zone status set ONLINE", thingId);
                 goOnline();
@@ -229,7 +228,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.debug("{}: Zone command failed: {}", thingId, errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.zone.command-failed", errorMessage));
             }
         }
@@ -320,8 +319,7 @@ public class RachioZoneHandler extends AbstractRachioThingHandler {
             zone = null;
             dev = null;
             cancelImageDownload();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    i18nText("thing-status.rachio.zone.not-in-poll"));
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, i18nText("thing-status.rachio.zone.not-in-poll"));
         } else if (!isSameInstance(previousZone, zone) || !isSameInstance(previousDevice, dev)) {
             goOnline();
         }

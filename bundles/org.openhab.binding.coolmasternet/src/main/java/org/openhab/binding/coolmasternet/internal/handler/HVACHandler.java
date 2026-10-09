@@ -104,16 +104,14 @@ public class HVACHandler extends BaseThingHandler {
     private @Nullable ControllerHandler getControllerHandler() {
         final Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "CoolMasterNet Controller bridge not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "CoolMasterNet Controller bridge not configured");
             return null;
         }
 
         final ControllerHandler handler = (ControllerHandler) bridge.getHandler();
 
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "CoolMasterNet Controller bridge not initialized");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "CoolMasterNet Controller bridge not initialized");
             return null;
         }
 
@@ -207,7 +205,7 @@ public class HVACHandler extends BaseThingHandler {
         } catch (final IOException ioe) {
             logger.warn("Failed to handle command '{}' on channel '{}' for unit '{}' due to '{}'", command, channel,
                     uid, ioe.getLocalizedMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ioe.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ioe.getLocalizedMessage());
         }
     }
 

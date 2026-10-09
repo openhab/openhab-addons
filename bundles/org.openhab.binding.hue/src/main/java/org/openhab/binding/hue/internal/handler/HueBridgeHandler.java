@@ -594,7 +594,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     private void handleThingUpdateException(String thingType, Throwable e) {
         if (e instanceof IOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof ApiException) {
             // This should not happen - if it does, it is most likely some bug that should be reported.
             logger.warn("Error while accessing {}: {}", thingType, e.getMessage());
@@ -685,8 +685,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
         String ip = hueBridgeConfig.ipAddress;
         if (ip == null || ip.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-ip-address");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-ip-address");
         } else {
             if (hueBridge == null) {
                 hueBridge = new HueBridge(httpClient, ip, hueBridgeConfig.getPort(), hueBridgeConfig.protocol,
@@ -702,7 +701,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                         // Check before registering that the PEM certificate can be downloaded
                         if (tlsTrustManagerProvider.getPEMTrustManager() == null) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                     "@text/offline.conf-error-https-connection");
                             return;
                         }
@@ -735,7 +734,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
      */
     public void onConnectionLost() {
         logger.debug("Bridge connection lost. Updating thing status to OFFLINE.");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.bridge-connection-lost");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.bridge-connection-lost");
     }
 
     /**
@@ -776,8 +775,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         if (hueBridgeConfig.userName == null) {
             logger.warn(
                     "User name for Hue Bridge authentication not available in configuration. Setting ThingStatus to OFFLINE.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-username");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-username");
             return false;
         } else {
             onConnectionResumed();
@@ -851,26 +849,23 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private void handleConfigurationFailure(ConfigurationException ex) {
         logger.warn(
                 "Invalid certificate for secured connection. You might want to enable the \"Use Self-Signed Certificate\" configuration.");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getRawMessage());
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getRawMessage());
     }
 
     private void handleAuthenticationFailure(Exception ex, String userName) {
         logger.warn("User is not authenticated on Hue Bridge {}", hueBridgeConfig.ipAddress);
         logger.warn("Please configure a valid user or remove user from configuration to generate a new one.");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.conf-error-invalid-username");
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-invalid-username");
     }
 
     private void handleLinkButtonNotPressed(LinkButtonException ex) {
         logger.debug("Failed creating new user on Hue Bridge: {}", ex.getMessage());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.conf-error-press-pairing-button");
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-press-pairing-button");
     }
 
     private void handleExceptionWhileCreatingUser(Exception ex) {
         logger.warn("Failed creating new user on Hue Bridge", ex);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.conf-error-creation-username");
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-creation-username");
     }
 
     @Override

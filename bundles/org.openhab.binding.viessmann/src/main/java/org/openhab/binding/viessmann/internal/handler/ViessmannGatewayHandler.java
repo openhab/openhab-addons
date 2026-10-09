@@ -189,7 +189,7 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
             } catch (Exception e) {
                 if (!disposed) {
                     logger.error("Failed to initialize Viessmann Gateway", e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         }, 0, TimeUnit.SECONDS);

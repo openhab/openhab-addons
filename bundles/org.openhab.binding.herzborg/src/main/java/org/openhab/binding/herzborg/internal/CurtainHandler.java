@@ -130,14 +130,14 @@ public class CurtainHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
 
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge not present");
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge not present");
             return;
         }
 
         BridgeHandler handler = bridge.getHandler();
 
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge has no handler");
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge has no handler");
             return;
         }
 
@@ -176,7 +176,7 @@ public class CurtainHandler extends BaseThingHandler {
             Packet reply = bus.doPacket(pkt);
 
             if (reply == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 return null;
             }
 
@@ -184,13 +184,13 @@ public class CurtainHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 return reply;
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Invalid response received: " + DatatypeConverter.printHexBinary(reply.getBuffer()));
                 bus.flush();
             }
 
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         return null;

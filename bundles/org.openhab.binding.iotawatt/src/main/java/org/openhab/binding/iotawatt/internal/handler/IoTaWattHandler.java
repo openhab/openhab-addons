@@ -71,7 +71,7 @@ public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCa
     public void initialize() {
         final IoTaWattConfiguration config = getConfigAs(IoTaWattConfiguration.class);
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/configuration-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/configuration-error");
             return;
         }
 

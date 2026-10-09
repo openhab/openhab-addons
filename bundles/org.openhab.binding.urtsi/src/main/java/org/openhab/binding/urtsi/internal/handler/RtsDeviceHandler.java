@@ -80,7 +80,7 @@ public class RtsDeviceHandler extends BaseThingHandler {
         RtsDeviceConfig rtsDeviceConfig = getConfigAs(RtsDeviceConfig.class);
         String mappedChannel = UrtsiChannelMapping.getMappedChannel(rtsDeviceConfig.channel);
         if (mappedChannel == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The channel '" + rtsDeviceConfig.channel + "' is invalid.");
         } else {
             // Just use the status of the bridge as we do not have any information if there a RTS device listening at

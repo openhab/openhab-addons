@@ -209,8 +209,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         isDisposed = false;
         tibberConfig = getConfigAs(TibberConfiguration.class);
         if (tibberConfig.homeid.isBlank() || tibberConfig.token.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/status.configuration-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.configuration-error");
         } else {
             // Create TibberHistory here (not in constructor) to ensure StorageService OSGi injection is complete
             history = new TibberHistory(storageService, tibberConfig.homeid, this);
@@ -287,7 +286,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
                 if (jsonResponse.has("errors")) {
                     // case: error
                     // if response is ok_200 and an error occurs homeid or token is wrong so raise configuration error
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/status.initial-call-failed  [\"" + responseStatus + " - " + initialResponse + "\"]");
                 } else {
                     JsonObject initalJson = Utils.getJsonObject(jsonResponse, INITIAL_QUERY_JSON_PATH);
@@ -348,8 +347,7 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
     }
 
     private void handleInitializeError(@Nullable String message, boolean retry) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "@text/status.initial-call-failed  [\"" + message + "\"]");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.initial-call-failed  [\"" + message + "\"]");
         if (retry) {
             scheduler.schedule(this::doInitialize, 60, TimeUnit.SECONDS);
         }
@@ -498,25 +496,25 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
                         }
                         updateStatus(ThingStatus.ONLINE);
                     } catch (JsonSyntaxException | DateTimeParseException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "@text/status.price-update-failed  [\"" + e.getMessage() + "\"]");
                     }
                 }
             } else if (jsonResponse.contains("error")) {
                 updatePriceInfoRetry();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/status.price-update-failed  [\"" + responseStatus + "\"]");
             } else {
                 updatePriceInfoRetry();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/status.price-update-failed  [\"" + jsonResponse + "\"]");
             }
         } catch (TimeoutException | ExecutionException e) {
             updatePriceInfoRetry();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.price-update-failed  [\"" + e.getMessage() + "\"]");
         } catch (InterruptedException e1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.price-update-failed  [\"" + e1.getMessage() + "\"]");
             Thread.currentThread().interrupt();
         }

@@ -803,7 +803,7 @@ public class HPPrinterBinder {
         if (result.getStatus() == RequestStatus.SUCCESS) {
             goneOnline();
         } else if (result.getStatus() == RequestStatus.TIMEOUT) {
-            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, result.getErrorMessage());
+            handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, result.getErrorMessage());
         } else {
             handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, result.getErrorMessage());
         }

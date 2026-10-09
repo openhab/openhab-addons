@@ -197,12 +197,12 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
                     }
                     return fbOsHandler;
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
+                updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
         return null;
     }
@@ -235,7 +235,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
             try {
                 internalPoll();
             } catch (FreeboxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }, 0, refreshInterval, TimeUnit.SECONDS);
     }

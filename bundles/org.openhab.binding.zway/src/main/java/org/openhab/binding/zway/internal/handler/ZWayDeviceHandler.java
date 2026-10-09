@@ -118,8 +118,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     logger.error("Unexpected error");
                 }
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Error occurred when starting polling.");
+                    updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Error occurred when starting polling.");
                 }
             }
         }
@@ -200,7 +199,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         logger.debug("Z-Way bridge status changed: {}", bridgeStatusInfo);
 
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge status is offline.");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Bridge status is offline.");
         } else if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             // Initialize thing, if all OK the status of device thing will be ONLINE
 
@@ -236,8 +235,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                 logger.error("Error occurred when performing polling: Unexpected error");
                             }
                             if (getThing().getStatus() == ThingStatus.ONLINE) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                        "Error occurred when performing polling.");
+                                updateStatus(ThingStatus.OFFLINE, "Error occurred when performing polling.");
                             }
                         }
                     } else {
@@ -300,7 +298,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             iae.getMessage(), device.getMetrics().getTitle(), device.getMetrics().getLevel(),
                             channel.getChannelTypeUID());
 
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    updateStatus(ThingStatus.OFFLINE,
                             "Channel refresh for device: " + device.getMetrics().getTitle() + " (level: "
                                     + device.getMetrics().getLevel() + ") with channel: " + channel.getChannelTypeUID()
                                     + " failed!");

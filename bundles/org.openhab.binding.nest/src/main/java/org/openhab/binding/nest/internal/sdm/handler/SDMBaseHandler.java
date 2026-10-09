@@ -92,12 +92,12 @@ public abstract class SDMBaseHandler extends BaseThingHandler implements SDMIden
         ThingStatus bridgeStatus = bridge != null ? bridge.getStatus() : null;
         if (bridge == null) {
             disableRefresh();
-            updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridgeStatus == ONLINE && thing.getStatus() != ONLINE) {
             enableRefresh();
         } else if (bridgeStatus == OFFLINE) {
             disableRefresh();
-            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatus == UNKNOWN) {
             disableRefresh();
             updateStatus(UNKNOWN);
@@ -196,9 +196,9 @@ public abstract class SDMBaseHandler extends BaseThingHandler implements SDMIden
 
             updateStateWithTraits(localDevice.traits);
         } catch (InvalidSDMAccessTokenException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (FailedSendingSDMDataException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

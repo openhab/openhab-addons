@@ -187,9 +187,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     public void processMessage(String topic, byte[] payload) {
         String payloadString = new String(payload, StandardCharsets.UTF_8);
         if (topic.endsWith(TOPIC_STATS)) {
-            ThingStatusInfo statusInfo = getThing().getStatusInfo();
-            if (ThingStatus.UNKNOWN == statusInfo.getStatus()
-                    && ThingStatusDetail.CONFIGURATION_PENDING == statusInfo.getStatusDetail()) {
+            if (ThingStatus.UNKNOWN == getThing().getStatus()) {
                 // Obviously the device is online. We just haven't received a LWT message yet.
                 this.deviceOnline = true;
                 updateStatus(ThingStatus.ONLINE);
@@ -225,18 +223,18 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             connection = null;
             return;
         }
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "Bridge is missing or offline, you need to setup a working MQTT broker first.");
             return;
         }
@@ -247,15 +245,14 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             try {
                 connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        "Bridge handler has no valid broker connection!");
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler has no valid broker connection!");
                 return;
             }
             this.connection = connection;
             if (this.deviceOnline) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for LWT message.");
+                updateStatus(ThingStatus.UNKNOWN);
             }
             connection.subscribe(this.basetopic + TOPIC_LWT, this);
             connection.subscribe(this.basetopic + TOPIC_STATS + "/#", this);

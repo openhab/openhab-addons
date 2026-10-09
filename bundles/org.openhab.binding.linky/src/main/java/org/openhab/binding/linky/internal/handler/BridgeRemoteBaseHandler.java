@@ -118,11 +118,11 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
                     connectionInit();
                     updateStatus(ThingStatus.ONLINE);
                 } catch (LinkyException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             } catch (Exception e) {
                 logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
     }

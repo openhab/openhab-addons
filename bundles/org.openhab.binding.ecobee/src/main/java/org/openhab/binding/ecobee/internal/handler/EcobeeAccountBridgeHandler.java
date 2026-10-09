@@ -113,8 +113,8 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
         api = new EcobeeApi(this, apiKey, apiTimeout, oAuthFactory, httpClient);
 
+        updateStatus(ThingStatus.UNKNOWN);
         scheduleRefreshJob();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking authorization");
     }
 
     @Override

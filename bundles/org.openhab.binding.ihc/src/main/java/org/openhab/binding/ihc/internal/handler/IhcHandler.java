@@ -181,8 +181,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         linkedResourceIds.addAll(getAllLinkedChannelsResourceIds());
         logger.debug("Linked resources {}: {}", linkedResourceIds.size(), linkedResourceIds);
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                "Initializing communication to the IHC / ELKO controller");
+        updateStatus(ThingStatus.UNKNOWN, "Initializing communication to the IHC / ELKO controller");
 
         if (controlJob == null || controlJob.isCancelled()) {
             logger.debug("Start control task, interval={}sec", 1);
@@ -689,8 +688,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     logger.info("Controller state changed to initializing state, waiting for ready state");
                     updateState(new ChannelUID(getThing().getUID(), CHANNEL_CONTROLLER_STATE),
                             new StringType("initialize"));
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                            "Controller is in initializing state");
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Controller is in initializing state");
                     break;
                 case IhcClient.CONTROLLER_STATE_READY:
                     logger.info("Controller state changed to ready state");
@@ -891,12 +889,12 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                 setReconnectRequest(false);
             } catch (IhcFatalExecption e) {
                 logger.warn("Can't open connection to controller {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 setReconnectRequest(false);
                 return;
             } catch (IhcExecption e) {
                 logger.debug("Can't open connection to controller {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 setReconnectRequest(true);
                 return;
             }

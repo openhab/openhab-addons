@@ -82,7 +82,7 @@ public class TwilioPhoneHandler extends BaseThingHandler {
 
         String number = config.phoneNumber;
         if (number == null || number.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.missing-phone-number");
             return;
         }
@@ -109,7 +109,7 @@ public class TwilioPhoneHandler extends BaseThingHandler {
             initializeTask = scheduler.submit(this::asyncInitialize);
         } else {
             callbackServlet.unregisterHandler(thing.getUID().getAsString());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -365,14 +365,14 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     private void asyncInitialize() {
         TwilioAccountHandler accountHandler = getAccountHandler();
         if (accountHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-uninitialized.bridge-handler-not-available");
             return;
         }
 
         TwilioApiClient client = accountHandler.getApiClient();
         if (client == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-uninitialized.api-client-not-available");
             return;
         }

@@ -170,21 +170,21 @@ public class GeneracMobileLinkAccountHandler extends BaseBridgeHandler {
             nextLoginAttempt = Instant.MIN;
         } catch (LoginBlockedException e) {
             logger.debug("Login blocked", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/thing.generacmobilelink.account.offline.communication-error.login-blocked");
             stopOrRestartPoll(false);
         } catch (IOException e) {
             logger.debug("Could not update devices", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/thing.generacmobilelink.account.offline.communication-error.io-exception");
         } catch (SessionExpiredException e) {
             logger.debug("Session expired", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/thing.generacmobilelink.account.offline.communication-error.session-expired");
             loggedIn = false;
         } catch (InvalidCredentialsException e) {
             logger.debug("Credentials Invalid", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/thing.generacmobilelink.account.offline.configuration-error.invalid-credentials");
             loggedIn = false;
             // we don't want to continue polling with bad credentials

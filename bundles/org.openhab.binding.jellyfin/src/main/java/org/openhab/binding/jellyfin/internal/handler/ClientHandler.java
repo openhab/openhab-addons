@@ -129,7 +129,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
         String id = (String) thing.getConfiguration().get("serialNumber");
         if (id == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.configuration.missing-serial-number");
             return;
         }
@@ -138,7 +138,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         // Validate bridge connection
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.configuration.no-bridge");
             return;
         }
@@ -146,14 +146,14 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         // Verify bridge is a ServerHandler
         ServerHandler serverHandler = getServerHandler();
         if (serverHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.configuration.invalid-bridge");
             return;
         }
 
         // Check bridge online status
         if (bridge.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.bridge.not-online");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.bridge.not-online");
             return;
         }
 
@@ -238,7 +238,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateClientState();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.bridge.offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.bridge.offline");
             clearChannelStates();
         }
     }
@@ -337,17 +337,17 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
     private void updateClientState() {
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                     "@text/error.bridge.unavailable");
             return;
         }
 
         synchronized (sessionLock) {
             if (currentSession == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/error.communication.device-not-connected");
             } else if (timeoutMonitor.isTimedOut()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/error.communication.session-timeout");
             } else {
                 updateStatus(ThingStatus.ONLINE);

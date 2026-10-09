@@ -59,7 +59,7 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
     }
 
     public void communicationError(Exception e) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                 "Communication Error with the OpenSprinkler: " + e.getMessage());
     }
 
@@ -80,10 +80,10 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
                     }
                 });
             } catch (CommunicationApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "Could not sync status with the OpenSprinkler. " + e.getMessage());
             } catch (UnauthorizedApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "Unauthorized, check your password is correct");
             }
         }
@@ -107,11 +107,11 @@ public class OpenSprinklerHttpBridgeHandler extends BaseBridgeHandler {
             OpenSprinklerApi localApi = openSprinklerDevice;
             localApi.enterManualMode();
             if (!localApi.isManualModeEnabled()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "Could not initialize the connection to the OpenSprinkler.");
             }
         } catch (CommunicationApiException | GeneralApiException exp) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Could not create an API connection to the OpenSprinkler. Error received: " + exp);
             return;
         }

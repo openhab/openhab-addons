@@ -92,7 +92,7 @@ public class BenqProjectorHandler extends BaseThingHandler {
         } else if (THING_TYPE_PROJECTOR_TCP.equals(thing.getThingTypeUID())) {
             device = Optional.of(new BenqProjectorDevice(config));
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 

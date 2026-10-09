@@ -110,8 +110,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
             int refreshInterval = config.refreshInterval;
 
             if (email.isBlank() || password.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error-no-credentials");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-credentials");
                 return;
             }
 
@@ -121,8 +120,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
             scheduler.execute(() -> authenticateAndStart(email, password, refreshInterval));
         } catch (IllegalArgumentException e) {
             logger.debug("Invalid configuration", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-invalid-config");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-invalid-config");
         }
     }
 
@@ -133,13 +131,11 @@ public class RemehaHeatingHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 startRefreshJob(refreshInterval > 0 ? refreshInterval : 60);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.comm-error-authentication-failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-authentication-failed");
             }
         } catch (RuntimeException e) {
             logger.debug("Authentication error", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-authentication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-authentication-error");
         }
     }
 
@@ -198,8 +194,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
         try {
             JsonObject dashboard = client.getDashboard();
             if (dashboard == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.comm-error-data-fetch-failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-data-fetch-failed");
                 return;
             }
 
@@ -207,8 +202,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
             updateChannelsFromDashboard(dashboard);
         } catch (IllegalStateException | NullPointerException e) {
             logger.debug("Error updating data", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error-data-update-failed");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-data-update-failed");
         }
     }
 

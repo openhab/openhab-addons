@@ -145,7 +145,7 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
             if (ThingStatus.ONLINE == bridge.getStatus()) {
                 doInit();
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         }
     }
@@ -155,7 +155,7 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
         if (handler != null) {
             deviceId = getSprinklerId();
             if ("".equals(deviceId)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Sprinkler id is missing!");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Sprinkler id is missing!");
             } else {
                 OrbitBhyveDevice device = handler.getDevice(deviceId);
                 if (device != null) {
@@ -252,8 +252,7 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
 
     public void setDeviceOnline(boolean connected) {
         if (!connected) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Not connected to Orbit BHyve Cloud");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Not connected to Orbit BHyve Cloud");
         } else {
             updateStatus(ThingStatus.ONLINE);
         }

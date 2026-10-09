@@ -152,7 +152,7 @@ public class HomeConnectBridgeHandler extends BaseBridgeHandler {
                         "Home Connect service is not reachable or a problem occurred! Retrying at %s (%s). bridge=%s",
                         nextReinitializeDateTime.format(DateTimeFormatter.RFC_1123_DATE_TIME), e.getMessage(),
                         getThing().getLabel());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, offlineMessage);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, offlineMessage);
 
                 scheduleReinitialize();
             }

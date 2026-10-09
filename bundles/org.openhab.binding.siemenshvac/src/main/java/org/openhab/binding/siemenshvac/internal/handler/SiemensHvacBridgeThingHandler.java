@@ -96,7 +96,7 @@ public class SiemensHvacBridgeThingHandler extends BaseBridgeHandler {
         baseUrl = lcConfig.baseUrl;
 
         if (baseUrl.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.error-gateway-init");
             return;
         }
@@ -111,7 +111,7 @@ public class SiemensHvacBridgeThingHandler extends BaseBridgeHandler {
 
         config = lcConfig;
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/offline.waiting-bridge-initialization");
+        updateStatus(ThingStatus.UNKNOWN, "@text/offline.waiting-bridge-initialization");
 
         // Will read metadata in background to not block initialize for a long period !
         scheduler.schedule(this::initializeCode, 1, TimeUnit.SECONDS);
@@ -166,8 +166,7 @@ public class SiemensHvacBridgeThingHandler extends BaseBridgeHandler {
             String text = translationProvider.getText(bundleContext.getBundle(), "offline.error-gateway-init",
                     "DefaultValue", local);
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    MessageFormat.format(text, ex.getMessage()));
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, MessageFormat.format(text, ex.getMessage()));
         }
     }
 

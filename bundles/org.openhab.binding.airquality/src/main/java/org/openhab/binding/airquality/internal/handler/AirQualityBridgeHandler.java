@@ -49,7 +49,7 @@ public class AirQualityBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         } else {
             apiBridge = null;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-api-key");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-api-key");
         }
     }
 

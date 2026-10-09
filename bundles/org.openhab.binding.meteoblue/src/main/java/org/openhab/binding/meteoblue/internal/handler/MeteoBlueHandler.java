@@ -90,7 +90,7 @@ public class MeteoBlueHandler extends BaseThingHandler {
         bridge = getBridge();
         if (bridge == null) {
             logger.warn("Unable to initialize meteoblue. No bridge was configured.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not configured.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not configured.");
             return;
         }
 
@@ -141,7 +141,7 @@ public class MeteoBlueHandler extends BaseThingHandler {
      */
     private void flagBadConfig(String message) {
         properlyConfigured = false;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
     }
 
     /**
@@ -335,13 +335,12 @@ public class MeteoBlueHandler extends BaseThingHandler {
         String errorMessage = jsonResult.getErrorMessage();
         if (errorMessage != null) {
             if ("MB_REQUEST::DISPATCH: Invalid api key".equals(errorMessage)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid API Key");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid API Key");
             } else if ("MB_REQUEST::DISPATCH: This datafeed is not authorized for your api key".equals(errorMessage)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "API Key not authorized for this datafeed");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "API Key not authorized for this datafeed");
             } else {
                 logger.warn("Failed to retrieve weather data due to unexpected error. Error message: {}", errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             }
             return false;
         }
@@ -359,7 +358,7 @@ public class MeteoBlueHandler extends BaseThingHandler {
             return httpResponse;
         } catch (IOException e) {
             logger.debug("I/O Exception occurred while retrieving weather data.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "I/O Exception occurred while retrieving weather data.");
             return null;
         }

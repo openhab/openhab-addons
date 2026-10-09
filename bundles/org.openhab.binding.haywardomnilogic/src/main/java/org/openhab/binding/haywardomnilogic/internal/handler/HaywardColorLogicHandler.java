@@ -64,8 +64,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (HaywardException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to set ColorLogixHandler StateDescriptions");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to set ColorLogixHandler StateDescriptions");
         }
     }
 
@@ -207,7 +206,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
                 }
                 this.updateStatus(ThingStatus.ONLINE);
             } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         }
     }
@@ -350,7 +349,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
             } else
 
             {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         }
     }

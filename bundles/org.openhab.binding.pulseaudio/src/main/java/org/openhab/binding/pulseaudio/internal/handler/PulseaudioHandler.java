@@ -114,7 +114,7 @@ public class PulseaudioHandler extends BaseThingHandler {
                     : 64512);
         } catch (PatternSyntaxException p) {
             deviceIdentifier = null;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Incorrect regular expression: " + (String) config.get(DEVICE_PARAMETER_ADDITIONAL_FILTERS));
             return;
         }
@@ -217,9 +217,9 @@ public class PulseaudioHandler extends BaseThingHandler {
     private void initializeWithTheBridge() {
         PulseaudioBridgeHandler pulseaudioBridgeHandler = getPulseaudioBridgeHandler();
         if (pulseaudioBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         } else if (pulseaudioBridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
             deviceUpdate(pulseaudioBridgeHandler.getDevice(deviceIdentifier));
         }
@@ -374,7 +374,7 @@ public class PulseaudioHandler extends BaseThingHandler {
 
     public void deviceUpdate(@Nullable AbstractAudioDeviceConfig device) {
         if (device != null) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
             logger.debug("Updating states of {} id: {}", device, VOLUME_CHANNEL);
             int actualVolume = device.getVolume();
             savedVolume = actualVolume;

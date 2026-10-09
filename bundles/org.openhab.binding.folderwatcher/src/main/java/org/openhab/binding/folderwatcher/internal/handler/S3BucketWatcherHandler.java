@@ -87,7 +87,7 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
             }
         } catch (APIException e) {
             logger.debug("S3 initialization error: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
             return;
         }
 
@@ -96,7 +96,7 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
             previousS3Listing = WatcherCommon.initStorage(currentS3ListingFile, config.s3BucketName);
             logger.debug("Loaded {} previous S3 files from storage", previousS3Listing.size());
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             logger.debug("Can't write file {}: {}", currentS3ListingFile, e.getMessage());
             return;
         }
@@ -108,8 +108,7 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
                         config.pollIntervalS3, TimeUnit.SECONDS);
             } else {
                 logger.debug("Polling interval invalid: {}", config.pollIntervalS3);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Polling interval must be greater than 0 seconds");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Polling interval must be greater than 0 seconds");
                 return;
             }
         }
@@ -139,7 +138,7 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
             previousS3Listing = new ArrayList<>(currentS3Listing);
         } catch (Exception e) {
             logger.debug("Exception connecting to S3 bucket: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Can't connect to the bucket");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Can't connect to the bucket");
             return false;
         }
         return true;

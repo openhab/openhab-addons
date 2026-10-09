@@ -112,13 +112,13 @@ public class PanaBlurayHandler extends BaseThingHandler {
             urlStr = urlStr.replace("%host%", host);
             nonceUrlStr = nonceUrlStr.replace("%host%", host);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.hostname");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.hostname");
             return;
         }
 
         if (!playerKey.isBlank()) {
             if (playerKey.length() != 32) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.keyerror");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.keyerror");
                 return;
             }
             this.playerKey = playerKey;
@@ -181,11 +181,11 @@ public class PanaBlurayHandler extends BaseThingHandler {
                 }
                 debounce = true;
             } else {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.polling");
+                updateStatus(ThingStatus.ONLINE, "@text/error.polling");
                 return;
             }
         } else {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.polling");
+            updateStatus(ThingStatus.ONLINE, "@text/error.polling");
             return;
         }
 
@@ -290,7 +290,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
                         return;
                     } else if (nonce.length() != 32) {
                         logger.debug("Error retrieving nonce, message was: {}", nonce);
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.nonce");
+                        updateStatus(ThingStatus.ONLINE, "@text/error.nonce");
                         return;
                     }
                     try {
@@ -298,7 +298,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
                         fields.add("cAUTH_VALUE", getAuthKey(playerKey + nonce));
                     } catch (NoSuchAlgorithmException e) {
                         logger.debug("Error creating auth key: {}", e.getMessage());
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.authkey");
+                        updateStatus(ThingStatus.ONLINE, "@text/error.authkey");
                         return;
                     }
                 }
@@ -328,10 +328,10 @@ public class PanaBlurayHandler extends BaseThingHandler {
             logger.trace("Response status: {}, response: {}", response.getStatus(), output);
 
             if (response.getStatus() != OK_200) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.polling");
+                updateStatus(ThingStatus.ONLINE, "@text/error.polling");
                 return EMPTY;
             } else if (output.startsWith(PLAYER_CMD_ERR)) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/error.invalid");
+                updateStatus(ThingStatus.ONLINE, "@text/error.invalid");
                 return EMPTY;
             }
 
@@ -339,7 +339,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Error executing command: {}, {}", fields.getNames().iterator().next(), e.getMessage());
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.exception");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.exception");
             updateState(PLAYER_STATUS, offlineStr);
         } catch (InterruptedException e) {
             logger.debug("InterruptedException executing command: {}, {}", fields.getNames().iterator().next(),

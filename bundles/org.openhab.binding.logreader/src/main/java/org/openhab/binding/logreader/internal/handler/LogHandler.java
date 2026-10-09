@@ -85,8 +85,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
     public void initialize() {
         String logDir = System.getProperty("openhab.logdir");
         if (logDir == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Cannot determine system log directory.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Cannot determine system log directory.");
             return;
         }
 
@@ -105,7 +104,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
                     configuration.customBlacklistingPatterns);
         } catch (PatternSyntaxException e) {
             logger.debug("Illegal search pattern syntax '{}'. ", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
 
@@ -118,7 +117,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
         } catch (Exception e) {
             logger.debug("Exception occurred during initalization: {}. ", e.getMessage(), e);
             shutdown();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -169,7 +168,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
     @Override
     public void fileNotFound() {
         final String msg = String.format("Log file '%s' does not exist", configuration.filePath);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, msg);
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, msg);
     }
 
     @Override
@@ -209,6 +208,6 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
     public void handle(@Nullable Exception ex) {
         final String msg = ex != null ? ex.getMessage() : "";
         logger.debug("Error while trying to read log file: {}. ", msg, ex);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, msg);
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, msg);
     }
 }

@@ -19,7 +19,6 @@ import static org.openhab.binding.visualcrossing.internal.TypeBuilder.*;
 import static org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.Channels.BasicChannelGroup.*;
 import static org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.Channels.CurrentConditions.*;
 import static org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.SUPPORTED_LANGUAGES;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
@@ -52,6 +51,7 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -454,7 +454,6 @@ public class VisualCrossingHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(OFFLINE, CONFIGURATION_PENDING, "@text/channel-type.visualcrossing.weather.config-pending");
         weatherResponse.set(null);
 
         var config = getConfigAs(VisualCrossingConfiguration.class);
@@ -463,14 +462,14 @@ public class VisualCrossingHandler extends BaseThingHandler {
             URI.create(hostname).toURL();
         } catch (MalformedURLException e) {
             logger.debug("Hostname [{}] is not an URL!", hostname, e);
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
+            updateStatus(CONFIGURATION_ERROR,
                     "@text/addon.visualcrossing.weather.error.hostname [\"%s\"]".formatted(hostname));
             return;
         }
 
         var apiKey = config.apiKey;
         if (apiKey == null) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/addon.visualcrossing.weather.error.missing-api-key");
+            updateStatus(CONFIGURATION_ERROR, "@text/addon.visualcrossing.weather.error.missing-api-key");
             return;
         }
 
@@ -490,7 +489,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
             }
         }
         if (location == null) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/addon.visualcrossing.weather.error.no-location");
+            updateStatus(CONFIGURATION_ERROR, "@text/addon.visualcrossing.weather.error.no-location");
             return;
         }
 
@@ -500,11 +499,11 @@ public class VisualCrossingHandler extends BaseThingHandler {
             lang = localeProvider.getLocale().getLanguage().toLowerCase();
         }
         if (!SUPPORTED_LANGUAGES.contains(lang)) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
+            updateStatus(CONFIGURATION_ERROR,
                     "@text/addon.visualcrossing.weather.error.bad-language [\"%s\"]".formatted(lang));
             return;
         }
-
+        updateStatus(ThingStatus.UNKNOWN);
         api = new VisualCrossingApi(hostname, apiKey, restClient, new Gson());
         schedule = scheduler.scheduleWithFixedDelay(this::pull, 0, config.refreshInterval, SECONDS);
         // do not set status to online - it is done in `pull` method that is run in schedule
@@ -514,7 +513,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
         var localApi = api;
         if (localApi == null) {
             logger.debug("Api was null!");
-            updateStatus(OFFLINE, CONFIGURATION_PENDING, "@text/channel-type.visualcrossing.weather.config-pending");
+            updateStatus(NOT_YET_READY, "@text/channel-type.visualcrossing.weather.config-pending");
             return;
         }
         try {
@@ -524,17 +523,17 @@ public class VisualCrossingHandler extends BaseThingHandler {
             thing.getChannels().forEach(channel -> handleCommand(channel.getUID(), REFRESH));
         } catch (VisualCrossingAuthException e) {
             logger.debug("Auth error while getting timeline for {}", location, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/addon.visualcrossing.weather.error.auth");
+            updateStatus(COMMUNICATION_ERROR, "@text/addon.visualcrossing.weather.error.auth");
         } catch (VisualCrossingRateException e) {
             logger.debug("Rate error while getting timeline for {}", location, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/addon.visualcrossing.weather.error.rate");
+            updateStatus(COMMUNICATION_ERROR, "@text/addon.visualcrossing.weather.error.rate");
         } catch (VisualCrossingApiException e) {
             logger.debug("Error while getting timeline for {}", location, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR,
+            updateStatus(COMMUNICATION_ERROR,
                     "@text/addon.visualcrossing.weather.error.api [\"%s\"]".formatted(e.getLocalizedMessage()));
         } catch (Exception e) {
             logger.debug("Error while getting timeline for {}", location, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR,
+            updateStatus(COMMUNICATION_ERROR,
                     "@text/addon.visualcrossing.weather.error.generic [\"%s\"]".formatted(e.getLocalizedMessage()));
         }
     }

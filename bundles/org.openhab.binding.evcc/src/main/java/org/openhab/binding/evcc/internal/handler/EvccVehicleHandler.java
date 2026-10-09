@@ -25,7 +25,6 @@ import org.openhab.binding.evcc.internal.handler.routing.MessageRouter;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
@@ -110,7 +109,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
         if (getPropertyOrConfigValue(PROPERTY_VEHICLE_ID).isEmpty()) {
             logger.warn("No vehicle ID given");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
@@ -118,7 +117,7 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
             if (getPropertyOrConfigValue(PROPERTY_VEHICLE_ID).isEmpty()) {
                 logger.warn("No vehicle ID given");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 return;
             }
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);

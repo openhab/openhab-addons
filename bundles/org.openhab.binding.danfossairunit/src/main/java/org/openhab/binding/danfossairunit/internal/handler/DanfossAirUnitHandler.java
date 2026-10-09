@@ -92,11 +92,10 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                     updateState(channelUID, writeAccessor.access(airUnit, command));
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
-                        "@text/offline.connection-not-initialized");
+                updateStatus(ThingStatus.OFFLINE, "@text/offline.connection-not-initialized");
             }
         } catch (IOException ioe) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ioe.getMessage());
         }
     }
 
@@ -115,10 +114,10 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             airUnit = new DanfossAirUnit(localCommunicationController, timeZoneProvider);
             startPolling();
         } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.unknown-host [\"" + config.host + "\"]");
         } catch (DateTimeException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -168,7 +167,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                     channel.getChannelName(), e.getMessage());
         } catch (IOException e) {
             updateState(channelUID, UnDefType.UNDEF);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("Cannot update channel {}: an error occurred retrieving the value: {}",
                     channel.getChannelName(), e.getMessage());
             return;
@@ -202,7 +201,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             propertiesInitializedSuccessfully = true;
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException | UnexpectedResponseValueException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("Cannot initialize properties: an error occurred: {}", e.getMessage());
         }
 

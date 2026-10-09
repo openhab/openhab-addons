@@ -58,8 +58,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
             setStateDescriptions();
             updateStatus(ThingStatus.ONLINE);
         } catch (HaywardException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to set FilterHandler StateDescriptions");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to set FilterHandler StateDescriptions");
         }
     }
 
@@ -171,7 +170,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -259,7 +258,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                 }
                 this.updateStatus(ThingStatus.ONLINE);
             } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         }
     }

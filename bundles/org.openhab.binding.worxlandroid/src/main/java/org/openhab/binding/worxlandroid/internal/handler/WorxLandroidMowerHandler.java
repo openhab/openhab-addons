@@ -97,7 +97,7 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
         MowerConfiguration config = getConfigAs(MowerConfiguration.class);
 
         if (config.serialNumber.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-serial");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-serial");
             return;
         }
 

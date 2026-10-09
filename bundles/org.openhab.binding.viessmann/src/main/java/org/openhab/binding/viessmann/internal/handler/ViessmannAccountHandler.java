@@ -223,7 +223,7 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
                 }
             } catch (Exception e) {
                 if (!disposed) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         }, 0, TimeUnit.SECONDS);

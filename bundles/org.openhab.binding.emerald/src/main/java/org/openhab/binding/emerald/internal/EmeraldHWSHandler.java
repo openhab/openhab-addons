@@ -139,7 +139,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
         try {
             return localBridge.getApi();
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return null;
         }
     }
@@ -189,14 +189,13 @@ public class EmeraldHWSHandler extends BaseThingHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
             return;
         }
         if (bridge.getHandler() instanceof EmeraldAccountHandler emeraldAccountHandler) {
             bridgeHandler = emeraldAccountHandler;
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "@text/offline.conf-error.bridge-not-init");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.bridge-not-init");
             return;
         }
 
@@ -211,8 +210,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
             syncDevice(ctx.heatpump());
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.uuid-not-found");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.uuid-not-found");
         }
     }
 
@@ -233,8 +231,7 @@ public class EmeraldHWSHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error.uuid-not-found");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.uuid-not-found");
             }
         }
     }

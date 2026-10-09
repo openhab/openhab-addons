@@ -65,7 +65,7 @@ public abstract class EaseeBaseThingHandler extends BaseThingHandler
             logger.debug("bridgeStatusChanged: ONLINE");
             if (isInitialized()) {
                 if (bridgeSetsThingOnline) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                    updateStatus(ThingStatus.ONLINE);
                 }
                 startPolling();
             }
@@ -73,9 +73,9 @@ public abstract class EaseeBaseThingHandler extends BaseThingHandler
             logger.debug("bridgeStatusChanged: NOT ONLINE");
             if (isInitialized()) {
                 if (bridgeStatusInfo.getStatus() == ThingStatus.UNKNOWN) {
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
+                    updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_BRIDGE);
                 } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
                 stopPolling();
             }
@@ -101,7 +101,7 @@ public abstract class EaseeBaseThingHandler extends BaseThingHandler
         switch (status.getHttpCode()) {
             case OK:
             case ACCEPTED:
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.ONLINE);
                 break;
             default:
                 updateStatus(ThingStatus.OFFLINE, Utils.getStatusDetailFromHttpCode(status.getHttpCode()), msg);

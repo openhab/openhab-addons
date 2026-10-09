@@ -166,13 +166,13 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         logger.debug("SolarEdge initialized with configuration: {}", config);
         updatePublicApiV2RequestCountProperty(publicApiV2RequestCounter.getRequestCount());
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+        updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_LOGIN);
         if (isOAuthConfigured() && !oAuthClient.hasRefreshToken(config) && !config.getOAuthClientId().isBlank()
                 && !config.getOAuthClientSecret().isBlank()) {
             synchronized (authorizationLock) {
                 setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, authorizationDescription());
+            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, authorizationDescription());
         } else {
             oAuthServlet.unregister(this);
             synchronized (authorizationLock) {
@@ -294,13 +294,13 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         String detailMessage = status.getUserFacingMessage();
         switch (status.getHttpCode()) {
             case SERVICE_UNAVAILABLE:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, detailMessage);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, detailMessage);
                 break;
             case OK:
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.ONLINE);
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detailMessage);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, detailMessage);
         }
     }
 
@@ -463,7 +463,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
                 throw new SolarEdgeOAuthException("SolarEdge OAuth authorization is no longer configured");
             }
             setAuthorizationUrl("");
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+            updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_LOGIN);
         }
     }
 

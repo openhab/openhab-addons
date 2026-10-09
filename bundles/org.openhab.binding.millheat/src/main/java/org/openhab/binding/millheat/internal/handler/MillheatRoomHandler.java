@@ -71,7 +71,7 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
     protected void handleCommand(final ChannelUID channelUID, final Command command, final MillheatModel model) {
         final Optional<Room> optionalRoom = model.findRoomById(roomId);
         if (optionalRoom.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+            updateStatus(ThingStatusDetail.GONE);
             return;
         }
         updateStatus(ThingStatus.ONLINE);
@@ -139,7 +139,7 @@ public class MillheatRoomHandler extends MillheatBaseThingHandler {
         logger.debug("Initializing Mill room using config {}", config);
         final String configuredRoomId = config.roomId;
         if (configuredRoomId == null || configuredRoomId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Room ID is required. Identifiers changed to UUIDs with the new Mill cloud API, so a numeric ID from an older configuration will not work; re-run discovery.");
             return;
         }

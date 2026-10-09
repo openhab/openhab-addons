@@ -122,7 +122,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
             } catch (ConnectionException e) {
                 logger.debug("Command {} from channel {} failed: {}", command, channel,
                         e.getMessage(bundle, i18nProvider));
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
                 return;
             }
             try {
@@ -324,14 +324,11 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Ethernet config model {}", configModel);
             logger.debug("Ethernet config community {}", config.community);
             if (config.host.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-unknown-host");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-host");
             } else if (config.port <= 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-invalid-port");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-port");
             } else if (configModel.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-unknown-model");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-model");
             } else {
                 configOk = true;
 
@@ -349,14 +346,11 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Serial config port {}", config.port);
             logger.debug("Serial config model {}", configModel);
             if (config.port.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-unknown-port");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-port");
             } else if (config.port.toLowerCase().startsWith("rfc2217")) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-invalid-thing-type");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-thing-type");
             } else if (configModel.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-unknown-model");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-model");
             } else {
                 configOk = true;
 
@@ -375,14 +369,11 @@ public class SonyProjectorHandler extends BaseThingHandler {
             logger.debug("Serial over IP config port {}", config.port);
             logger.debug("Serial over IP config model {}", configModel);
             if (config.host.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-unknown-host");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-host");
             } else if (config.port <= 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-invalid-port");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-port");
             } else if (configModel.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-unknown-model");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-model");
             } else {
                 configOk = true;
 
@@ -431,7 +422,7 @@ public class SonyProjectorHandler extends BaseThingHandler {
                 connector.open();
             } catch (ConnectionException e) {
                 logger.debug("Poll projector failed: {}", e.getMessage(bundle, i18nProvider), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
                 return;
             }
 

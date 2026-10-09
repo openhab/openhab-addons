@@ -167,11 +167,11 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
                     }
                 });
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 stopReInitJob();
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             stopReInitJob();
         }
     }
@@ -316,7 +316,7 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
         logger.debug("Could not handle command[{}] for channelUID[{}] on nukiId[{}]!", command, channelUID,
                 configuration.nukiId);
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, nukiBaseResponse.getMessage());
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, nukiBaseResponse.getMessage());
 
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_LOCK, OnOffType.OFF, Function.identity());
         updateState(NukiBindingConstants.CHANNEL_SMARTLOCK_STATE, NukiBindingConstants.LOCK_STATES_UNDEFINED,

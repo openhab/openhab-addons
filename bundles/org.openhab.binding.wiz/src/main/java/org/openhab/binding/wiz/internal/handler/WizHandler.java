@@ -457,12 +457,11 @@ public class WizHandler extends BaseThingHandler {
         disposed = false;
 
         if (registrationRequestParam == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to determine openHAB's IP or MAC address");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to determine openHAB's IP or MAC address");
             return;
         }
         if (!ValidationUtils.isMacValid(config.macAddress)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MAC address is not valid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "MAC address is not valid");
             return;
         }
 
@@ -771,7 +770,7 @@ public class WizHandler extends BaseThingHandler {
                 logger.debug(
                         "[{}] Received response to getConfigRequest from device at {}, but it did not contain device configuration information.",
                         config.ipAddress, config.macAddress);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
 
             // Firmware versions > 1.22 support more details
@@ -820,7 +819,7 @@ public class WizHandler extends BaseThingHandler {
                 logger.debug(
                         "[{}] Received response to getConfigRequest from device at {}, but it did not contain device configuration information.",
                         config.ipAddress, config.macAddress);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } else {
             logger.debug("[{}] No response to registration request from device at {}", config.ipAddress,

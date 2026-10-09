@@ -96,7 +96,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 websocketAddress = new URI("ws://" + localConfig.host + ":946");
                 yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_PROCESS;
             } catch (URISyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Initialize web socket failed: " + e.getMessage());
             }
 
@@ -155,8 +155,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     logger.debug("onError");
                     disposeWebsocketPollingJob();
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Communication lost no ping from YIO DOCK");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Communication lost no ping from YIO DOCK");
                     reconnectWebsocket();
                 }
             });
@@ -345,8 +344,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             default:
                 disposeWebsocketPollingJob();
                 yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Connection lost no ping from YIO DOCK");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost no ping from YIO DOCK");
                 break;
         }
     }
@@ -388,8 +386,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     logger.debug("heartBeat ok");
                 } else {
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Connection lost no ping from YIO DOCK");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost no ping from YIO DOCK");
                     disposeWebsocketPollingJob();
                     reconnectWebsocket();
                 }
@@ -397,8 +394,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             default:
                 disposeWebsocketPollingJob();
                 yioRemoteDockActualStatus = YioRemoteDockHandleStatus.COMMUNICATION_ERROR;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Connection lost no ping from YIO DOCK");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost no ping from YIO DOCK");
                 break;
         }
     }
@@ -419,8 +415,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     TimeUnit.SECONDS);
         } else if (reconnectionCounter == 5) {
             reconnectionCounter = 0;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Connection lost no ping from YIO DOCK");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost no ping from YIO DOCK");
             if (webSocketReconnectionPollingJob == null) {
                 webSocketReconnectionPollingJob = scheduler.scheduleWithFixedDelay(this::reconnectWebsocketJob, 0, 1,
                         TimeUnit.MINUTES);
@@ -442,8 +437,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 logger.debug("Reconnecting YIORemoteHandler");
                 try {
                     disposeWebsocketPollingJob();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Connection lost no ping from YIO DOCK");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost no ping from YIO DOCK");
                     yioremoteDockwebSocketClient.closeWebsocketSession();
                     webSocketClient.stop();
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.RECONNECTION_PROCESS;
@@ -454,7 +448,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     websocketAddress = new URI("ws://" + localConfig.host + ":946");
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_PROCESS;
                 } catch (URISyntaxException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "Initialize web socket failed: " + e.getMessage());
                 }
                 try {

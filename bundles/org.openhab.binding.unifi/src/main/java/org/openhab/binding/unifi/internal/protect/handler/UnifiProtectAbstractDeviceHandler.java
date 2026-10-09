@@ -195,7 +195,7 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends UniFiProtectMo
     }
 
     public void markGone() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.gone");
+        updateStatus(ThingStatusDetail.GONE, "@text/offline.gone");
     }
 
     protected void refreshState(String channelId) {

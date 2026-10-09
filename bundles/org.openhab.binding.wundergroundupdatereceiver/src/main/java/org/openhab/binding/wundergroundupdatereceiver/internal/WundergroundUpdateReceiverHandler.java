@@ -131,8 +131,7 @@ public class WundergroundUpdateReceiverHandler extends BaseThingHandler {
             logger.debug("Wunderground update receiver listening for updates to station id {}", config.stationId);
             return;
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                wundergroundUpdateReceiverServlet.getErrorDetail());
+        updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, wundergroundUpdateReceiverServlet.getErrorDetail());
     }
 
     private void migrateChannels() {

@@ -84,7 +84,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
     public void initialize() {
         apiConfig = getConfigAs(AirGradientAPIConfiguration.class);
         if (!apiConfig.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Need to set hostname to a valid URL. Refresh interval needs to be a positive integer.");
             return;
         }
@@ -131,7 +131,7 @@ public class AirGradientAPIHandler extends BaseBridgeHandler {
                 }
             }
         } catch (AirGradientCommunicationException agce) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
         }
     }
 

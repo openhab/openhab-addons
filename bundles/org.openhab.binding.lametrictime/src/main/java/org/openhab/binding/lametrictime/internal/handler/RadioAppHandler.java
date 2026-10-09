@@ -59,7 +59,7 @@ public class RadioAppHandler extends AbstractLaMetricTimeAppHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("Failed to perform action - taking app offline", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

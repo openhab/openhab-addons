@@ -462,7 +462,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             maxColourTemp = new BigDecimal(config.favouriteWhite);
             minColourTemp = new BigDecimal(config.dimmedCT);
             if (minColourTemp.intValue() <= maxColourTemp.intValue()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "The dimmedCT config value must be greater than the favourite White value.");
                 return;
             }
@@ -501,7 +501,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             if (state.equals(CONNECTED)) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Waiting for 'milight/status: connected' MQTT message to be sent from your ESP Milight hub.");
             }
         } else {
@@ -525,18 +525,18 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             connection = null;
             return;
         }
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "Bridge is missing or offline, you need to setup a working MQTT broker first.");
             return;
         }
@@ -546,13 +546,12 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             try {
                 connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        "Bridge handler has no valid broker connection!");
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler has no valid broker connection!");
                 return;
             }
             this.connection = connection;
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Waiting for 'milight/status: connected' MQTT message to be received. Check hub has 'MQTT Client Status Topic' configured.");
+            updateStatus(ThingStatus.UNKNOWN);
+            logger.info("Waiting for 'milight/status: connected' MQTT message to be received. Check hub has 'MQTT Client Status Topic' configured.");
             connection.subscribe(fullStatesTopic, this);
             connection.subscribe(STATUS_TOPIC, this);
         }

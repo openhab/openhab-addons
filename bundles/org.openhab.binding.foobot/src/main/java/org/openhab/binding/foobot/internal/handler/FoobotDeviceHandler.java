@@ -91,8 +91,7 @@ public class FoobotDeviceHandler extends BaseThingHandler {
         uuid = (String) getConfig().get(FoobotBindingConstants.CONFIG_UUID);
 
         if (uuid.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter 'uuid' is mandatory and must be configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Parameter 'uuid' is mandatory and must be configured");
             return;
         }
         final FoobotAccountHandler bridgeHandler = getBridgeHandler();
@@ -128,15 +127,15 @@ public class FoobotDeviceHandler extends BaseThingHandler {
         try {
             sensorData = connector.getSensorData(uuid);
             if (sensorData == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No sensor data received");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No sensor data received");
                 return sensorData;
             }
         } catch (FoobotApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return null;
         } catch (RuntimeException e) {
             logger.debug("Error requesting sensor data: ", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
             return null;
         }
         if (getThing().getStatus() != ThingStatus.ONLINE) {

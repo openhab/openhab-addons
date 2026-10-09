@@ -63,12 +63,12 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler impleme
                 baseStationId);
 
         if (baseStationId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     i18nText("thing-status.rachio.base-station.missing-base-station-id"));
             return;
         }
         if (!initializeCloudHandler()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         scheduleHandlerTask(generation, () -> refreshBaseStation(baseStationId, true, generation));
@@ -96,7 +96,7 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler impleme
         }
         RachioBridgeHandler handler = cloudHandler;
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return false;
         }
 
@@ -109,7 +109,7 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler impleme
             baseStation = loadedBaseStation;
             RachioBaseStation currentBaseStation = loadedBaseStation;
             if (currentBaseStation.id.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         i18nText("thing-status.rachio.base-station.not-found"));
                 return false;
             }
@@ -151,7 +151,7 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler impleme
             String reason = exceptionMessage(e);
             logger.debug("{}: Unable to load Rachio BaseStation '{}': {}", thingId, baseStationId, reason);
             if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.base-station.load-failed", baseStationId, reason));
             }
             return false;
@@ -212,7 +212,7 @@ public class RachioBaseStationHandler extends AbstractRachioThingHandler impleme
         RachioBaseStation updatedBaseStation = snapshot.baseStations().get(baseStationId);
         baseStation = updatedBaseStation;
         if (updatedBaseStation == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     i18nText("thing-status.rachio.base-station.not-in-poll"));
             return;
         }

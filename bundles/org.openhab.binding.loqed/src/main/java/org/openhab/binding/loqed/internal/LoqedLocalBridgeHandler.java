@@ -96,7 +96,7 @@ public class LoqedLocalBridgeHandler extends BaseBridgeHandler implements LoqedB
         LoqedLocalConfiguration config = getConfigAs(LoqedLocalConfiguration.class);
         String error = config.validate();
         if (!error.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/thing-status.loqed.local-bridge.configuration-invalid");
             return;
         }
@@ -106,7 +106,7 @@ public class LoqedLocalBridgeHandler extends BaseBridgeHandler implements LoqedB
             String callbackBaseUrl = config.callbackBaseUrl.isBlank() ? detectedCallbackBaseUrl
                     : config.callbackBaseUrl;
             if (callbackBaseUrl == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/thing-status.loqed.local-bridge.callback-unavailable");
                 return;
             }
@@ -122,7 +122,7 @@ public class LoqedLocalBridgeHandler extends BaseBridgeHandler implements LoqedB
             updateStatus(ThingStatus.UNKNOWN);
             scheduleInitialization(client, callbackUrl, refreshInterval, generation, 0, 0);
         } catch (LoqedConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/thing-status.loqed.local-bridge.configuration-invalid");
             logger.debug("Invalid LOQED local bridge configuration", e);
         }
@@ -162,19 +162,19 @@ public class LoqedLocalBridgeHandler extends BaseBridgeHandler implements LoqedB
             }
         } catch (LoqedAuthenticationException e) {
             if (isCurrentConnection(client, generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/thing-status.loqed.local-bridge.authentication-error");
                 logger.debug("Could not authenticate with the LOQED local bridge", e);
             }
         } catch (LoqedConfigurationException e) {
             if (isCurrentConnection(client, generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/thing-status.loqed.local-bridge.configuration-invalid");
                 logger.debug("Invalid LOQED local bridge configuration", e);
             }
         } catch (LoqedCommunicationException | LoqedResponseException e) {
             if (isCurrentConnection(client, generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/thing-status.loqed.local-bridge.communication-error");
                 if (retry < MAX_INITIALIZATION_RETRIES) {
                     retryInitialization = true;
@@ -188,7 +188,7 @@ public class LoqedLocalBridgeHandler extends BaseBridgeHandler implements LoqedB
             }
         } catch (LoqedApiException e) {
             if (isCurrentConnection(client, generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/thing-status.loqed.local-bridge.communication-error");
                 logger.debug("Could not initialize LOQED local bridge", e);
             }
@@ -258,19 +258,19 @@ public class LoqedLocalBridgeHandler extends BaseBridgeHandler implements LoqedB
             updateChildren(refreshedLocks);
         } catch (LoqedAuthenticationException e) {
             if (client.equals(apiClient)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/thing-status.loqed.local-bridge.authentication-error");
                 logger.debug("Could not authenticate with the LOQED local bridge", e);
             }
         } catch (LoqedConfigurationException e) {
             if (client.equals(apiClient)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/thing-status.loqed.local-bridge.configuration-invalid");
                 logger.debug("Invalid LOQED local bridge configuration", e);
             }
         } catch (LoqedApiException e) {
             if (client.equals(apiClient)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/thing-status.loqed.local-bridge.communication-error");
                 logger.debug("Could not refresh LOQED local bridge", e);
             }

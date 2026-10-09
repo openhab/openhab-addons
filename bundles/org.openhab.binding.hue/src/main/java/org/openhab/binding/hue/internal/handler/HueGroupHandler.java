@@ -115,14 +115,13 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 if (bridgeStatus == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-group-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-group-id");
         }
     }
 
@@ -181,8 +180,7 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
         FullGroup group = bridgeHandler.getGroupById(groupId);
         if (group == null) {
             logger.debug("Hue group not known on bridge. Cannot handle command.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-wrong-group-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-wrong-group-id");
             return;
         }
 
@@ -433,12 +431,12 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
 
     @Override
     public void onGroupRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.group-removed");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.group-removed");
     }
 
     @Override
     public void onGroupGone() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.group-removed");
+        updateStatus(ThingStatusDetail.GONE, "@text/offline.group-removed");
     }
 
     /**

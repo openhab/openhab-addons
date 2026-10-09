@@ -69,14 +69,13 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
                         INITIAL_DELAY_SECONDS);
                 delayedSchedule = scheduler.schedule(this::initializeDelayed, INITIAL_DELAY_SECONDS, TimeUnit.SECONDS);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "Panel is not updating the information in " + MAX_WAIT_TIME_MILLIS
-                                + " ms. Giving up. Cannot update entity=" + this + ".");
+                updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Panel is not updating the information in "
+                        + MAX_WAIT_TIME_MILLIS + " ms. Giving up. Cannot update entity=" + this + ".");
             }
 
             // Asynchronous update done but panel is not supported
         } else if (!panel.isPanelSupported()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Panel is not supported. Cannot update entity=" + this + ".");
             // All OK
         } else {

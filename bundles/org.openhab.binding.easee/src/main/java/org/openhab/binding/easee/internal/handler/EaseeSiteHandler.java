@@ -38,7 +38,6 @@ import org.openhab.binding.easee.internal.discovery.EaseeSiteDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
@@ -80,7 +79,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
         EaseeConfiguration config = getBridgeConfiguration();
         logger.debug("Easee Site initialized with configuration: {}", config.toString());
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+        updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_LOGIN);
         webInterface.start();
         startPolling();
 
@@ -157,7 +156,7 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
         switch (status.getHttpCode()) {
             case OK:
             case ACCEPTED:
-                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                super.updateStatus(ThingStatus.ONLINE);
                 break;
             default:
                 super.updateStatus(ThingStatus.OFFLINE, Utils.getStatusDetailFromHttpCode(status.getHttpCode()), msg);

@@ -210,8 +210,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             this.updateProperties(newProps);
             removeChannels();
             if (!isDeviceSupported()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Device Model or Type not supported by this thing");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Device Model or Type not supported by this thing");
             }
         }
     }
@@ -338,7 +337,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         // Sanity check basic setup
         final VeSyncBridgeHandler bridge = (VeSyncBridgeHandler) getBridgeHandler();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Missing bridge for API link");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Missing bridge for API link");
             return;
         } else {
             updateStatus(ThingStatus.UNKNOWN);
@@ -464,8 +463,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             logger.debug("Auth exception {}", e.getMessage());
             return EMPTY_STRING;
         } catch (final DeviceUnknownException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Check configuration details - " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Check configuration details - " + e.getMessage());
             // In case the name is updated server side - request the scan rate is increased
             requestBridgeFreqScanMetadataIfReq();
             return EMPTY_STRING;
@@ -504,8 +502,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             logger.debug("Auth exception {}", e.getMessage());
             return EMPTY_STRING;
         } catch (final DeviceUnknownException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Check configuration details - " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Check configuration details - " + e.getMessage());
             // In case the name is updated server side - request the scan rate is increased
             requestBridgeFreqScanMetadataIfReq();
             return EMPTY_STRING;

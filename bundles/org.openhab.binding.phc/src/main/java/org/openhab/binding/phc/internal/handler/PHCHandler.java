@@ -88,7 +88,7 @@ public class PHCHandler extends BaseThingHandler {
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -150,8 +150,7 @@ public class PHCHandler extends BaseThingHandler {
         if (bridgeHandler == null) {
             Bridge bridge = getBridge();
             if (bridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "The Thing requires to select a Bridge");
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
                 return null;
             }
 
@@ -161,8 +160,7 @@ public class PHCHandler extends BaseThingHandler {
             } else {
                 logger.debug("No available bridge handler for {}.", bridge.getUID());
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR,
-                        "No available bridge handler.");
+                updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "No available bridge handler.");
 
                 return null;
             }

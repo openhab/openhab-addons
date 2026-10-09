@@ -126,12 +126,12 @@ public class ThingSedifHandler extends BaseThingHandler {
                         return null;
                     } catch (CommunicationFailedException ex) {
                         // We return null, ExpiringDayCache logic will retry the operation later.
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                         logger.error("Failed to get contract details", ex);
                         return null;
                     } catch (InvalidSessionException ex) {
                         // In case of session error, we force the bridge to reconnect after a delay
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
 
                         Bridge lcBridge = getBridge();
                         if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
@@ -139,7 +139,7 @@ public class ThingSedifHandler extends BaseThingHandler {
                         }
                         return null;
                     } catch (SedifException ex) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                         return null;
                     }
                 });
@@ -157,19 +157,19 @@ public class ThingSedifHandler extends BaseThingHandler {
                         return meterReading;
                     } catch (CommunicationFailedException ex) {
                         // We return null, EpxiringDayCache logic will retry the operation later.
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                         logger.warn("Failed to get consumption data", ex);
                         return null;
                     } catch (InvalidSessionException ex) {
                         // In case of session error, we force the bridge to reconnect after a delay
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                         Bridge lcBridge = getBridge();
                         if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
                             bridgeSedif.scheduleReconnect();
                         }
                         return null;
                     } catch (SedifException ex) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                         return null;
                     }
                 });
@@ -187,19 +187,18 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     private void initialize(@Nullable BridgeSedifWebHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
         if (bridgeHandler == null || bridgeStatus == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
         if (bridgeStatus != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
         SedifConfiguration lcConfig = getConfigAs(SedifConfiguration.class);
 
         if (!lcConfig.seemsValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-mandatory-settings");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-mandatory-settings");
             return;
         }
 
@@ -250,11 +249,11 @@ public class ThingSedifHandler extends BaseThingHandler {
             }
         } catch (InterruptedIOException ioe) {
             logger.warn("Couldn't read Sedif MetaData information from file '{}'.", file.getAbsolutePath());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Couldn't read Sedif MetaData information from file " + file.getAbsolutePath());
         } catch (IOException ioe) {
             logger.warn("Couldn't read Sedif MetaData information from file '{}'.", file.getAbsolutePath());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Couldn't read Sedif MetaData information from file " + file.getAbsolutePath());
         }
     }
@@ -287,7 +286,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             logger.debug("Sedif MetaData information written to {}", file.getAbsolutePath());
         } catch (IOException ioe) {
             logger.warn("Couldn't write Sedif MetaData information to file '{}'.", file.getAbsolutePath());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Couldn't write Sedif MetaData information to file " + file.getAbsolutePath());
         }
     }
@@ -432,7 +431,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             }
 
             if (meterInfo == null || meterInfo.eLma.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/cant-find-meter");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/cant-find-meter");
                 return;
             }
 
@@ -643,8 +642,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             }
             refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, initialDelay, delay, TimeUnit.MINUTES);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.missing-or-invalid-contract");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.missing-or-invalid-contract");
         }
     }
 

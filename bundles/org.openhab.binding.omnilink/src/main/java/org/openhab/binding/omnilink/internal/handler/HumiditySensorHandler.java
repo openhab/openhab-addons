@@ -72,7 +72,7 @@ public class HumiditySensorHandler extends AbstractOmnilinkStatusHandler<Extende
         if (bridgeHandler != null) {
             updateHumiditySensorProperties(bridgeHandler);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing Humidity Sensor!");
         }
     }

@@ -138,8 +138,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
 
         Node node = handler.requestNodeDetails(config.id);
         if (node == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-node-details");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-node-details");
             return;
         }
 
@@ -148,8 +147,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             result = typeGenerator.generate(thing.getUID(), node, true);
         } catch (Exception e) {
             logger.warn("Node {}. Error generating type information during configuration update", config.id, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.build-channels-failed");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.build-channels-failed");
             return;
         }
 
@@ -443,8 +441,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         ZwaveJSNodeConfiguration config = this.config = getConfigAs(ZwaveJSNodeConfiguration.class);
 
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.id-invalid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.id-invalid");
             return;
         }
 
@@ -470,29 +467,26 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     private void internalInitialize() {
         ZwaveJSBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 
         if (!handler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         handler.registerNodeListener(this);
         Node nodeDetails = handler.requestNodeDetails(config.id);
         if (nodeDetails == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-node-details");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-node-details");
             return;
         }
         if (Status.DEAD == nodeDetails.status) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.dead-node");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.dead-node");
             return;
         }
         if (!setupThing(nodeDetails)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.build-channels-failed");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.build-channels-failed");
             return;
         }
         updateStatus(ThingStatus.ONLINE);
@@ -708,13 +702,13 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     @Override
     public void onNodeDead(Event event) {
         logger.trace("Node {}. Dead", config.id);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.dead-node");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.dead-node");
     }
 
     @Override
     public void onNodeRemoved(Event event) {
         logger.trace("Node {}. Removed", config.id);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.conf-error.node-removed");
+        updateStatus(ThingStatusDetail.GONE, "@text/offline.conf-error.node-removed");
     }
 
     @Override

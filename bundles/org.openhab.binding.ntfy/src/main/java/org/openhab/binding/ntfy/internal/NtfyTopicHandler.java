@@ -105,7 +105,7 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             initialize();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             ntfySender = null;
         }
 
@@ -155,7 +155,7 @@ public class NtfyTopicHandler extends BaseThingHandler implements WebSocketConne
 
     @Override
     public void connectionLost(@Nullable String reason) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 reason == null || reason.isBlank() ? "@text/offline.communication-error.websocket-connection-lost"
                         : reason);
     }

@@ -79,7 +79,7 @@ public class AmbientWeatherStationHandler extends BaseThingHandler {
         } catch (ProcessorNotFoundException e) {
             logger.warn("Station {}: Unable to set channel group Id and/or number of sensors: {}", station,
                     e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
             return;
         }
         Thing bridge = getBridge();
@@ -101,7 +101,7 @@ public class AmbientWeatherStationHandler extends BaseThingHandler {
         ThingStatus bridgeStatus = bridgeStatusInfo.getStatus();
         logger.debug("Station {}: Detected bridge status changed to '{}', Update my status", station, bridgeStatus);
         if (bridgeStatus == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatus == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }

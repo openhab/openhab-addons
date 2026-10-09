@@ -111,13 +111,13 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                     updateThingStatus(states);
                     updateThingChannels(states);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -167,7 +167,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
     private void setUnavailable() {
         if (ThingStatus.OFFLINE != thing.getStatus()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, UNAVAILABLE);
         }
     }
 

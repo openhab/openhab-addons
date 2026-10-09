@@ -114,7 +114,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         } catch (InterruptedException ignored) {
         } catch (AndroidDebugBridgeDeviceException | ExecutionException e) {
             if (!(e.getCause() instanceof InterruptedException)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 adbConnection.disconnect();
             }
         } catch (AndroidDebugBridgeDeviceReadException e) {
@@ -220,7 +220,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                         break;
                     case SHUTDOWN_REBOOT:
                         adbConnection.rebootDevice();
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Rebooting");
+                        updateStatus(ThingStatusDetail.GONE, "Rebooting");
                         break;
                 }
                 break;

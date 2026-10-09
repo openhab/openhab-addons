@@ -106,13 +106,13 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             this.adapterAddress = new BluetoothAddress(addr.toUpperCase());
         } else {
             // If configuration does not contain adapter address to use, exit with error.
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
             return;
         }
         this.lazyScan = configuration.lazyScan;
 
         logger.debug("Creating BlueZ adapter with address '{}'", adapterAddress);
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
+        updateStatus(ThingStatus.UNKNOWN, "Initializing");
         deviceManagerFactory.getPropertiesChangedHandler().addListener(this);
         discoveryJob = scheduler.scheduleWithFixedDelay(this::initializeAndRefreshDevices, 5, 10, TimeUnit.SECONDS);
     }
@@ -155,12 +155,12 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             if (localAddress != null) {
                 localAdapter = adapter = deviceManager.getAdapter(localAddress);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No adapter address provided");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No adapter address provided");
                 return null;
             }
         }
         if (localAdapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Native adapter could not be found for address '" + adapterAddress + "'");
             return null;
         }
@@ -168,8 +168,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         if (!localAdapter.isPowered()) {
             localAdapter.setPowered(true);
             // give the device some time to power on
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    "Adapter is not powered, attempting to turn on...");
+            updateStatus(ThingStatus.OFFLINE, "Adapter is not powered, attempting to turn on...");
             return null;
         }
 
@@ -184,7 +183,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
 
         // now lets make sure that discovery is turned on
         if (!localAdapter.startDiscovery()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Trying to start discovery");
+            updateStatus(ThingStatus.OFFLINE, "Trying to start discovery");
             return null;
         }
         return localAdapter;
@@ -197,8 +196,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             // first check if the device manager is ready
             DeviceManagerWrapper deviceManager = deviceManagerFactory.getDeviceManager();
             if (deviceManager == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Bluez DeviceManager not available yet.");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Bluez DeviceManager not available yet.");
                 return;
             }
 
@@ -233,7 +231,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             // don't know what kind of exception the bluez library might throw at us so lets catch them here so our
             // scheduler loop doesn't get terminated
             logger.warn("Unknown exception", ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
     }
 
@@ -332,7 +330,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         // per-device InterfacesRemoved before removing the adapter, so the devices would otherwise
         // stay stuck believing they are still connected.
         forEachDevice(BlueZBluetoothDevice::resetForRemoval);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Adapter removed");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Adapter removed");
     }
 
     @Override

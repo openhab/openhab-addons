@@ -95,7 +95,7 @@ public class POP3IMAPHandler extends BaseThingHandler {
                 case "pop3" -> config.port = 110;
                 case "pop3s" -> config.port = 995;
                 default -> {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                     return;
                 }
             }

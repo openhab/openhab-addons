@@ -233,7 +233,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 logger.debug("checkConnection() {}", unauthorizedException.getMessage(), unauthorizedException);
             }
             if (applKeyRetriesRemaining > 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.api2.conf-error.press-pairing-button");
                 try {
                     registerApplicationKey();
@@ -243,17 +243,15 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 } catch (ApiException e) {
                     setStatusOfflineWithCommunicationError(e);
                 } catch (IllegalStateException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.api2.conf-error.read-only");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.read-only");
                 } catch (AssetNotLoadedException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.api2.conf-error.assets-not-loaded");
                 } catch (InterruptedException e) {
                     return;
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.api2.conf-error.not-authorized");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.not-authorized");
             }
         } catch (ApiException e) {
             if (isUpdatingOwnFirmware()) {
@@ -266,8 +264,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             retryConnection = connectRetriesRemaining > 0;
         } catch (AssetNotLoadedException e) {
             logger.debug("checkConnection() {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.api2.conf-error.assets-not-loaded");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.api2.conf-error.assets-not-loaded");
         } catch (InterruptedException e) {
             return;
         }
@@ -301,10 +298,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         Throwable cause = e.getCause();
         String causeMessage = cause == null ? null : cause.getMessage();
         if (causeMessage == null || causeMessage.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + "\"]");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.api2.comm-error.exception [\"" + e.getMessage() + " -> " + causeMessage + "\"]");
         }
     }
@@ -540,14 +537,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             String ipAddress = config.ipAddress;
             if (ipAddress.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error-no-ip-address");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-ip-address");
                 return;
             }
 
             try {
                 if (!Clip2Bridge.isClip2Supported(ipAddress)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/offline.api2.conf-error.clip2-not-supported");
                     return;
                 }
@@ -561,8 +557,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     config.useSelfSignedCertificate);
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.api2.conf-error.certificate-load");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.certificate-load");
                 return;
             }
 
@@ -781,8 +776,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             onConnectionOffline();
         } catch (AssetNotLoadedException e) {
             logger.trace("updateSelf() {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.api2.conf-error.assets-not-loaded");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.assets-not-loaded");
         } catch (InterruptedException e) {
         }
     }
@@ -946,7 +940,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             boolean newSentFlagValue = false;
             switch (status) {
                 case INSTALLING:
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+                    updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
                     break;
                 case NO_UPDATE, UPDATE_AVAILABLE, UPDATE_PENDING:
                     /*
@@ -956,7 +950,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                      */
                     String description = (statusInfo.getStatusDetail() == ThingStatusDetail.FIRMWARE_UPDATING) ? null
                             : statusInfo.getDescription();
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
+                    updateStatus(ThingStatus.ONLINE, description);
                     break;
                 case READY_TO_INSTALL:
                     if (!softwareUpdateReadyNotificationSent) {
@@ -966,7 +960,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     // note: fall through to set Thing status, status detail, and status description
                 case INSTALL_FAILED:
                 default:
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
+                    updateStatus(ThingStatus.ONLINE, status.i18nKey());
                     break;
             }
             softwareUpdateReadyNotificationSent = newSentFlagValue;
@@ -1148,14 +1142,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         boolean doBridge = softwareStatusMap.get(BridgeConfig.V1_BRIDGE) == UpdateStatusV2.READY_TO_INSTALL;
         if (doBridge) {
             putSoftwareStatus(BridgeConfig.V1_BRIDGE, installingStatus);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+            updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
         }
 
         boolean doDevices = softwareStatusMap.get(BridgeConfig.V1_ANY_DEVICE) == UpdateStatusV2.READY_TO_INSTALL;
         if (doDevices) {
             putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, installingStatus);
             if (!doBridge) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+                updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
             }
         }
 

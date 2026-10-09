@@ -95,7 +95,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
             accountHandler = (AccountHandler) bridge.getHandler();
         }
         if (accountHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler not found.");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 
@@ -108,11 +108,11 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatus) {
         if (bridgeStatus.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         if (ourFeeds.isEmpty()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for feed configuration");
+            updateStatus(ThingStatus.UNKNOWN, "Waiting for feed configuration");
         } else {
             updateStatus(ThingStatus.ONLINE);
         }

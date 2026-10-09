@@ -159,7 +159,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                         // if status is still UNKNOWN after timer ends, set the device OFFLINE
                         if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
                             logger.info("status still UNKNOWN. Setting device={} to OFFLINE", thing.getUID());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                     "@text/offline.comm-error-timeout");
                         }
                     }, GATEWAY_ONLINE_TIMEOUT_SEC, TimeUnit.SECONDS);
@@ -181,8 +181,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         String serialPort = zbBridgeConfig.getSerialPort();
         if (serialPort == null || serialPort.isEmpty()) {
             logger.warn("Cannot connect Zigbee USB Gateway. No serial port has been provided in Bridge configuration.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-serial-port");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-serial-port");
             return null;
         } else {
             USBGateway tmpUSBGateway = new USBGateway(serialPort);
@@ -203,8 +202,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         String host = busBridgeConfig.getHost();
         if (host == null || host.isEmpty()) {
             logger.warn("Cannot connect to BUS Gateway. No host/IP has been provided in Bridge configuration.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-ip-address");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-ip-address");
             return null;
         } else {
             int port = busBridgeConfig.getPort().intValue();
@@ -684,7 +682,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         logger.info("---- ON CONNECTION ERROR for gateway {}: {}", gateway, errMsg);
         isGatewayConnected = false;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                 "@text/offline.comm-error-connection" + " (onConnectionError - " + errMsg + ")");
         tryReconnectGateway();
     }
@@ -706,7 +704,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             errMsg = e.getMessage();
         }
         logger.info("---- DISCONNECTED from gateway {}. OWNException: {}", gateway, errMsg);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                 "@text/offline.comm-error-disconnected" + " (onDisconnected - " + errMsg + ")");
         tryReconnectGateway();
     }
@@ -722,7 +720,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 } catch (OWNAuthException e) {
                     logger.info("---- AUTH error from gateway. Stopping re-connect");
                     reconnecting = false;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "@text/offline.conf-error-auth" + " (" + e + ")");
                 }
             } else {

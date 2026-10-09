@@ -144,7 +144,7 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
             } else {
                 logger.debug("ERROR:  Controller reset needed.  Connecting to device {} failed {} times", address,
                         errorConnectCounter);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connecting to device failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connecting to device failed");
             }
         } else {
             logger.debug("Connected to device {}", address);
@@ -161,8 +161,7 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
             } else {
                 logger.debug("ERROR:  Controller reset needed.  Disconnect from device {} failed {} times", address,
                         errorDisconnectCounter);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Disconnect from device failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Disconnect from device failed");
             }
         } else {
             logger.debug("Disconnected from device {}", address);
@@ -205,8 +204,7 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
                                 logger.debug(
                                         "ERROR:  Controller reset needed.  Read data from device {} failed {} times",
                                         address, errorReadCounter);
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "Read data from device failed");
+                                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Read data from device failed");
                             }
                             disconnect();
                         }
@@ -223,8 +221,7 @@ public abstract class AbstractAirthingsHandler extends BeaconBluetoothHandler {
                 } else {
                     logger.debug("ERROR:  Controller reset needed.  Unhandled serviceState {} on device {}",
                             serviceState, address);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Service discovery for device failed");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Service discovery for device failed");
                 }
                 break;
         }

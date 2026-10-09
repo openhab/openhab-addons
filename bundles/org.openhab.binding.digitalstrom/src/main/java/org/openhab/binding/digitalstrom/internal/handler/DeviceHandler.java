@@ -117,10 +117,10 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
             } else {
                 // Set status to OFFLINE if no bridge is available e.g. because the bridge has been removed and the
                 // Thing was reinitialized.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge is missing!");
+                updateStatus(ThingStatus.OFFLINE, "Bridge is missing!");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "dSID is missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "dSID is missing");
         }
     }
 
@@ -161,8 +161,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
             if (dSID != null) {
                 if (getDssBridgeHandler() != null) {
                     if (device == null) {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                "waiting for listener registration");
+                        updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "waiting for listener registration");
                         dssBridgeHandler.registerDeviceStatusListener(this);
                     } else {
                         updateStatus(ThingStatus.ONLINE);
@@ -171,11 +170,11 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
                     updateStatus(ThingStatus.OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No dSID is set!");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No dSID is set!");
             }
         }
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         logger.debug("Set status to {}", getThing().getStatusInfo());
     }
@@ -422,11 +421,9 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
             this.device = dev;
             if (this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 if (!dev.isPresent()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "Device is not present in the digitalSTROM-System.");
+                    updateStatus(ThingStatus.OFFLINE, "Device is not present in the digitalSTROM-System.");
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "Device is not avaible in the digitalSTROM-System.");
+                    updateStatus(ThingStatus.OFFLINE, "Device is not avaible in the digitalSTROM-System.");
                 }
 
             }

@@ -609,7 +609,7 @@ class RachioScheduleHandlerStatusTest {
         @Override
         protected boolean refreshScheduleRule() {
             if (!refreshSuccess) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.schedule.load-failed", "schedule-id", "failed"));
             }
             return refreshSuccess;
@@ -681,8 +681,7 @@ class RachioScheduleHandlerStatusTest {
                 RachioApiThrottledException throttle) {
             retryScheduled = true;
             this.retryAction = retryAction;
-            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE,
-                    i18nText("thing-status.rachio.thing.initialization-throttle"));
+            updateStatus(ThingStatus.INITIALIZING, i18nText("thing-status.rachio.thing.initialization-throttle"));
             return throttle.getSuggestedRetryDelay().getSeconds();
         }
     }
@@ -738,7 +737,7 @@ class RachioScheduleHandlerStatusTest {
         @Override
         protected boolean refreshFlexScheduleRule() {
             if (!refreshSuccess) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.flex-schedule.load-failed", "flex-id", "failed"));
             }
             return refreshSuccess;
@@ -854,8 +853,7 @@ class RachioScheduleHandlerStatusTest {
                 RachioApiThrottledException throttle) {
             retryScheduled = true;
             this.retryAction = retryAction;
-            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE,
-                    i18nText("thing-status.rachio.thing.initialization-throttle"));
+            updateStatus(ThingStatus.INITIALIZING, i18nText("thing-status.rachio.thing.initialization-throttle"));
             return throttle.getSuggestedRetryDelay().getSeconds();
         }
     }
@@ -915,8 +913,7 @@ class RachioScheduleHandlerStatusTest {
                 RachioApiThrottledException throttle) {
             retryScheduled = true;
             this.retryAction = retryAction;
-            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NONE,
-                    i18nText("thing-status.rachio.thing.initialization-throttle"));
+            updateStatus(ThingStatus.INITIALIZING, i18nText("thing-status.rachio.thing.initialization-throttle"));
             return throttle.getSuggestedRetryDelay().getSeconds();
         }
     }

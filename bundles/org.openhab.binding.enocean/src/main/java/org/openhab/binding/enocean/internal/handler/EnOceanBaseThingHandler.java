@@ -81,7 +81,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         this.gateway = null; // reset gateway in case we change the bridge
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "A bridge is required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "A bridge is required");
         } else {
             initializeThing(bridge.getStatus());
         }
@@ -99,14 +99,13 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
                 if (validateConfig()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            configurationErrorDescription);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configurationErrorDescription);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "A bridge is required");
+            updateStatus(ThingStatus.OFFLINE, "A bridge is required");
         }
     }
 

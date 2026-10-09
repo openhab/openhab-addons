@@ -142,7 +142,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
             this.updateStatus(ThingStatus.ONLINE);
             return stops;
         } catch (final IOException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -193,10 +193,10 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
                 this.restartJob();
             });
         } catch (FilterScannerException | FilterParserException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (JAXBException e) {
             this.logger.error("Error initializing api", e);
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -247,7 +247,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     private void updateChannels() {
         final TimetableLoader currentLoader = this.loader;
         if (currentLoader == null) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+            this.updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
             return;
         }
         final GroupedThings groupedThings = this.groupThingsPerPosition();

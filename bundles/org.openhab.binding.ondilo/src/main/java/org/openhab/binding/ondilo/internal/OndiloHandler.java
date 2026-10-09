@@ -146,7 +146,7 @@ public class OndiloHandler extends BaseThingHandler {
             this.lastRecommendation = null;
 
             if (configPoolId == 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, I18N_ID_INVALID);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, I18N_ID_INVALID);
                 return;
             } else {
                 ondiloId.set(String.valueOf(configPoolId));
@@ -155,7 +155,7 @@ public class OndiloHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             stopBridgeRecoveryJob();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             startBridgeRecoveryJob();
         }
     }

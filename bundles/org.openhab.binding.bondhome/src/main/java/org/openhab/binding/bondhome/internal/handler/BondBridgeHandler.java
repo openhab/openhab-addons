@@ -100,8 +100,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     private void initializeThing() {
         if (config.localToken.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.incorrect-local-token");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.incorrect-local-token");
             this.initializer = null;
             return;
         }
@@ -116,8 +115,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
                 updateConfiguration(c);
                 config = getConfigAs(BondBridgeConfiguration.class);
             } catch (UnknownHostException ignored) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error.unknown-host");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.unknown-host");
                 this.initializer = null;
                 return;
             }
@@ -125,8 +123,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
             try {
                 InetAddress.getByName(config.ipAddress);
             } catch (UnknownHostException ignored) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error.invalid-host");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.invalid-host");
                 this.initializer = null;
                 return;
             }
@@ -311,7 +308,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
         try {
             myVersion = api.getBridgeVersion();
         } catch (BondException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
         // Update all the thing properties based on the result

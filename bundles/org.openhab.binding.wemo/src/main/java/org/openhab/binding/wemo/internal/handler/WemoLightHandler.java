@@ -91,7 +91,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     DEFAULT_REFRESH_INTERVAL_SECONDS, TimeUnit.SECONDS);
             updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
         }
     }
 
@@ -100,7 +100,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             ScheduledFuture<?> job = this.pollingJob;
             if (job != null && !job.isCancelled()) {
                 job.cancel(true);
@@ -142,7 +142,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                 // Check if the Wemo device is set in the UPnP service registry
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    updateStatus(ThingStatus.OFFLINE,
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     return;
                 }
@@ -254,12 +254,11 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (MissingHostException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/config-status.error.missing-ip");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/config-status.error.missing-ip");
             } catch (WemoException e) {
                 logger.warn("Failed to send command '{}' for thing '{}': {}", command, getThing().getUID(),
                         e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }
@@ -315,11 +314,10 @@ public class WemoLightHandler extends WemoBaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (MissingHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/config-status.error.missing-ip");
         } catch (WemoException e) {
             logger.debug("Could not retrieve new Wemo light state for thing '{}':", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

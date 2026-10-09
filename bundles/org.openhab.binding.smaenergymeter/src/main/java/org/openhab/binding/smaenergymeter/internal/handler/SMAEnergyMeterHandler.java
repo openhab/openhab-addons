@@ -82,13 +82,12 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
         try {
             serialNumber = Objects.requireNonNullElse(config.getSerialNumber(), "");
             if (serialNumber.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Meter serial number missing");
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Meter serial number missing");
                 return;
             }
             String mcastGroup = config.getMcastGroup();
             if (mcastGroup == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "mcast group is missing");
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "mcast group is missing");
                 return;
             }
             PacketListener listener = listenerRegistry.getListener(mcastGroup, config.getPort());
@@ -107,7 +106,7 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
                     getThing().getUID());
             // we do not set online status here, it will be set only when data is received
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 

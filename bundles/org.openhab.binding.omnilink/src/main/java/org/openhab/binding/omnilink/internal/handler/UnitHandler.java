@@ -69,7 +69,7 @@ public class UnitHandler extends AbstractOmnilinkStatusHandler<ExtendedUnitStatu
         if (bridgeHandler != null) {
             updateUnitProperties(bridgeHandler);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing Unit!");
         }
     }

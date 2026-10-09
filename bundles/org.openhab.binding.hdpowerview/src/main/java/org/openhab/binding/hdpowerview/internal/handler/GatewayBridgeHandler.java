@@ -133,7 +133,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
                 refreshScenes();
             }
         } catch (IllegalStateException | HubProcessingException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             logger.debug("doRefresh() exception:{}, message:{}", e.getClass().getSimpleName(), e.getMessage(), e);
         }
     }
@@ -197,8 +197,7 @@ public class GatewayBridgeHandler extends BaseBridgeHandler {
         String host = config.host;
 
         if (host == null || host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-host-address");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.no-host-address");
             return;
         }
 

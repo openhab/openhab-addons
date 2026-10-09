@@ -430,7 +430,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                 this.bridgeHandler = bridgeHandler;
 
                 if (bridge.getStatus() == OFFLINE) {
-                    updateStatus(OFFLINE, BRIDGE_OFFLINE, "@text/thing.status.device.bridgeOffline");
+                    updateStatus(BRIDGE_OFFLINE, "@text/thing.status.device.bridgeOffline");
                     return;
                 }
 

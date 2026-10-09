@@ -102,7 +102,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         String configurationError = findConfigurationError(configuration);
         if (configurationError != null) {
             stopChannelUpdate();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             startChannelUpdate();
@@ -127,7 +127,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         String configurationError = findConfigurationError(configuration);
         if (configurationError != null) {
             stopChannelUpdate();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
         } else if (updateJob == null || updateJob.isCancelled()) {
             startChannelUpdate();
         }
@@ -196,7 +196,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         JsonElement jsonObject = expiringCache.getValue();
 
         if (jsonObject == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
 
             updateState(TSV_CHANNEL, UnDefType.UNDEF);
 

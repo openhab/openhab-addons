@@ -275,11 +275,11 @@ public class WLedSegmentHandler extends BaseThingHandler {
         config = getConfigAs(WLedSegmentConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge is selected.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge is selected.");
         } else {
             WLedBridgeHandler localBridgeHandler = (WLedBridgeHandler) bridge.getHandler();
             if (localBridgeHandler == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
                 return;
             }
             WledApi localAPI = localBridgeHandler.api;
@@ -295,7 +295,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
                     removeWhiteChannels();
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         }
     }

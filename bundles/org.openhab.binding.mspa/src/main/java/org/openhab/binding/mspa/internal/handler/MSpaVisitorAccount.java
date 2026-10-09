@@ -66,7 +66,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
         }
         // check for configuration errors
         if (config.grantCode.isBlank() || config.region.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/status.mspa.visitor-account.config-parameter-missing");
             return;
         }
@@ -175,7 +175,7 @@ public class MSpaVisitorAccount extends MSpaBaseAccount {
             handlePossibleInterrupt(e);
         }
         if (failReason != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/status.mspa.token-request-error [\"" + failReason + "\"]");
         } else {
             updateStatus(ThingStatus.ONLINE);

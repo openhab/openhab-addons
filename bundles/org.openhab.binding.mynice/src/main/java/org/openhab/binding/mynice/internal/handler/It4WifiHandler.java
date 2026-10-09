@@ -107,7 +107,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         if (getConfigAs(It4WifiConfiguration.class).username.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-no-username");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -176,7 +176,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
             reqBuilder = new RequestBuilder(config.macAddress, config.username);
             handShaked();
         } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-hostname");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-hostname");
         } catch (IOException e) {
             if (localSocket != null) {
                 try {
@@ -186,7 +186,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                 }
             }
             sslSocket = Optional.empty();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-init");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-init");
             logger.warn("Error in IT4Wifi handshake: {}", e.getMessage());
         }
     }
@@ -226,7 +226,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                             sendCommand(CommandType.CONNECT);
                             return;
                         case wait:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING,
                                     "@text/conf-pending-validation");
                             scheduler.schedule(() -> handShaked(), 15, TimeUnit.SECONDS);
                             return;
@@ -296,10 +296,10 @@ public class It4WifiHandler extends BaseBridgeHandler {
         if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
             dispose();
             if (handshakeAttempts++ <= MAX_HANDSHAKE_ATTEMPTS) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
                 startConnector();
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-limit");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-limit");
             }
         }
     }

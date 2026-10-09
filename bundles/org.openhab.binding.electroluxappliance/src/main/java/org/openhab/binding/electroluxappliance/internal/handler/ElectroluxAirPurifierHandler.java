@@ -147,7 +147,7 @@ public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
             if ("Connected".equalsIgnoreCase(dto.getApplianceState().getConnectionState())) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         getLocalizedText("error.electroluxappliance.ap.not-connected"));
             }
         }

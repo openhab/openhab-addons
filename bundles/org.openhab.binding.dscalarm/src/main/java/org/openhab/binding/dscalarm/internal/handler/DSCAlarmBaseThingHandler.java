@@ -121,12 +121,12 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
 
                 logger.debug("initializeThingHandler(): Thing Handler Initialized - {}", thing.getUID());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 logger.debug("initializeThingHandler(): Thing '{}' is set to OFFLINE because bridge is OFFLINE",
                         thing.getUID());
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             logger.debug("initializeThingHandler(): Thing '{}' is set to OFFLINE because bridge is uninitialized",
                     thing.getUID());
         }

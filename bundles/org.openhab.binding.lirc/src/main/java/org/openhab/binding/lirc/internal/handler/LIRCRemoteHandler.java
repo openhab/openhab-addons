@@ -72,14 +72,14 @@ public class LIRCRemoteHandler extends BaseThingHandler implements LIRCMessageLi
         remoteName = config.getRemote();
         if (remoteName == null) {
             logger.error("Remote name is not set in {}", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Remote name is not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Remote name is not set");
         } else {
             bridgeHandler = (LIRCBridgeHandler) getBridge().getHandler();
             bridgeHandler.registerMessageListener(this);
             if (getBridge().getStatus() == ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         }
     }
@@ -118,13 +118,13 @@ public class LIRCRemoteHandler extends BaseThingHandler implements LIRCMessageLi
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 logger.error("Remote {}: Remote was removed from LIRC server.", remoteName);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } else if (!response.isSuccess()) {
             String error = response.getData()[0];
             Matcher m = UNKNOWN_REMOTE_PATTERN.matcher(error);
             if (m.matches() && remoteName.equals(m.group(1))) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unknown remote");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unknown remote");
             }
         }
     }

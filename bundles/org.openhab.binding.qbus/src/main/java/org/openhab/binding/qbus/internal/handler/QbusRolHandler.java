@@ -103,8 +103,7 @@ public class QbusRolHandler extends QbusGlobalHandler {
                 if (qBridgeHandler.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                            "Bridge offline for SCREEN/STORE ID " + this.rolId);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Bridge offline for SCREEN/STORE ID " + this.rolId);
                 }
             }
         });

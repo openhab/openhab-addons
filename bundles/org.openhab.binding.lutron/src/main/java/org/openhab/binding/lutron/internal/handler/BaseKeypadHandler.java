@@ -198,7 +198,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     public void initialize() {
         Number id = (Number) getThing().getConfiguration().get("integrationId");
         if (id == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
             return;
         }
         integrationId = id.intValue();
@@ -260,14 +260,14 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             logger.debug("Initializing device state for Keypad {}", integrationId);
             Bridge bridge = getBridge();
             if (bridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
             } else if (bridge.getStatus() == ThingStatus.ONLINE) {
                 if (ledList.isEmpty()) {
                     // Device with no LEDs has nothing to query. Assume it is online if bridge is online.
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     // Query LED states. Method handleUpdate() will set thing status to online when response arrives.
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
+                    updateStatus(ThingStatus.UNKNOWN, "Awaiting initial response");
                     // To reduce query volume, query only 1st LED and LEDs with linked channels.
                     for (KeypadComponent component : ledList) {
                         if (component.id() == ledList.get(0).id() || isLinked(channelFromComponent(component.id()))) {
@@ -276,7 +276,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                     }
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         }
     }

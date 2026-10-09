@@ -90,7 +90,7 @@ public class XMPPClientHandler extends BaseBridgeHandler implements XMPPClientEv
     private void doConnect() {
         XMPPClientConfiguration config = getConfigAs(XMPPClientConfiguration.class);
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Please check configuration");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Please check configuration");
             return;
         }
 
@@ -100,11 +100,11 @@ public class XMPPClientHandler extends BaseBridgeHandler implements XMPPClientEv
             updateStatus(ThingStatus.ONLINE);
         } catch (XMPPClientConfigException e) {
             logger.debug("XMPP connection error", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         } catch (XMPPClientException e) {
             logger.debug("XMPP connection error", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
 
@@ -120,7 +120,7 @@ public class XMPPClientHandler extends BaseBridgeHandler implements XMPPClientEv
 
     @Override
     public void onErrorEvent(String errorMessage) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
     }
 
     @Override

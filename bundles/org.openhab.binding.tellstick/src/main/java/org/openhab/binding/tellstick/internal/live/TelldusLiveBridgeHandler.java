@@ -137,7 +137,7 @@ public class TelldusLiveBridgeHandler extends BaseBridgeHandler implements Telld
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.warn("Failed to update", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         monitorAdditionalRefresh(start, Instant.now());
     }

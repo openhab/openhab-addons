@@ -77,15 +77,14 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
 
         String accountSid = config.accountSid;
         if (accountSid == null || accountSid.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.missing-account-sid");
             return;
         }
 
         String authToken = config.authToken;
         if (authToken == null || authToken.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.missing-auth-token");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.missing-auth-token");
             return;
         }
 
@@ -195,7 +194,7 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
     private void asyncValidateAccount() {
         TwilioApiClient client = apiClient;
         if (client == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.api-client-not-initialized");
             return;
         }
@@ -207,14 +206,14 @@ public class TwilioAccountHandler extends BaseBridgeHandler {
                 }
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.configuration-error.account-inactive");
             }
         } catch (TwilioApiException e) {
             if (e.isConfigurationError()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             logger.debug("Failed to validate Twilio account: {}", e.getMessage());
         }

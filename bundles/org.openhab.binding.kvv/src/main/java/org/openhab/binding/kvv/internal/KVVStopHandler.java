@@ -72,20 +72,19 @@ public class KVVStopHandler extends BaseThingHandler {
     private synchronized void init(final boolean createChannels) {
         this.config = getConfigAs(KVVStopConfig.class);
         if (config.stopId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Failed to get stop configuration");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Failed to get stop configuration");
             return;
         }
 
         final Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Failed to get bridge");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Failed to get bridge");
             return;
         }
 
         final KVVBridgeHandler bridgeHandler = (KVVBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "Failed to get bridge handler");
+            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "Failed to get bridge handler");
             return;
         }
 
@@ -186,8 +185,7 @@ public class KVVStopHandler extends BaseThingHandler {
         public void run() {
             final DepartureResult departures = this.bridgeHandler.queryKVV(this.stopConfig);
             if (departures == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to connect to KVV API");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect to KVV API");
             } else {
                 if (wasOffline) {
                     updateStatus(ThingStatus.ONLINE);

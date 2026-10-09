@@ -85,7 +85,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                         }
                     });
                 } catch (DateTimeException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.site.status.timezone" + " [\"" + configuration.timeZone + "\"]");
                     return;
                 }
@@ -94,8 +94,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             refreshJob = sequentialScheduler.scheduleWithFixedDelay(this::updateData, 0, REFRESH_ACTUAL_INTERVAL,
                     TimeUnit.MINUTES);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/solarforecast.site.status.api-key-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/solarforecast.site.status.api-key-missing");
         }
     }
 
@@ -139,8 +138,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     public void updateData() {
         // 1) check if there are planes attached return immediately if not
         if (planes.isEmpty()) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY,
-                    "@text/solarforecast.site.status.no-planes");
+            updateStatus(ThingStatusDetail.NOT_YET_READY, "@text/solarforecast.site.status.no-planes");
             return;
         }
         // 2) all planes update their data, dirty flags inside each handler is set if new forecast was fetched
@@ -157,7 +155,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (SolarForecastException sfe) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.OFFLINE,
                     "@text/solarforecast.site.status.exception [\"" + sfe.getMessage() + "\"]");
         }
     }

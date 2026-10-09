@@ -18,7 +18,6 @@ import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.
 import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.*;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
@@ -69,11 +68,11 @@ public class It600Handler extends BaseThingHandler {
         {
             var bridge = getBridge();
             if (bridge == null) {
-                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.no-bridge");
+                updateStatus(BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.no-bridge");
                 return;
             }
             if (!(bridge.getHandler() instanceof AbstractBridgeHandler<?> cloudHandler)) {
-                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.bridge-wrong-type");
+                updateStatus(CONFIGURATION_ERROR, "@text/it600-handler.initialize.errors.bridge-wrong-type");
                 return;
             }
             this.cloudApi = cloudHandler;
@@ -84,8 +83,7 @@ public class It600Handler extends BaseThingHandler {
         dsn = (String) getConfig().get(DSN);
 
         if ("".equals(dsn)) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "@text/it600-handler.initialize.errors.no-dsn [\"" + DSN + "\"]");
+            updateStatus(CONFIGURATION_ERROR, "@text/it600-handler.initialize.errors.no-dsn [\"" + DSN + "\"]");
             return;
         }
 
@@ -93,13 +91,13 @@ public class It600Handler extends BaseThingHandler {
             var device = this.cloudApi.findDevice(dsn);
             // no device in cloud
             if (device.isEmpty()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                updateStatus(COMMUNICATION_ERROR,
                         "@text/it600-handler.initialize.errors.dsn-not-found [\"" + dsn + "\"]");
                 return;
             }
             // device is not connected
             if (!device.get().connected()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                updateStatus(COMMUNICATION_ERROR,
                         "@text/it600-handler.initialize.errors.dsn-not-connected [\"" + dsn + "\"]");
                 return;
             }
@@ -109,17 +107,16 @@ public class It600Handler extends BaseThingHandler {
                 var result = new ArrayList<>(abstractBridgeHandler.it600RequiredChannels());
                 result.removeAll(deviceProperties);
                 if (!result.isEmpty()) {
-                    updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                            "@text/it600-handler.initialize.errors.missing-channels [\"" + dsn + "\", \""
-                                    + String.join(", ", result) + "\"]");
+                    updateStatus(CONFIGURATION_ERROR, "@text/it600-handler.initialize.errors.missing-channels [\"" + dsn
+                            + "\", \"" + String.join(", ", result) + "\"]");
                     return;
                 }
             } catch (SalusApiException ex) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
+                updateStatus(COMMUNICATION_ERROR, ex.getLocalizedMessage());
                 return;
             }
         } catch (Exception e) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/it600-handler.initialize.errors.general-error");
+            updateStatus(COMMUNICATION_ERROR, "@text/it600-handler.initialize.errors.general-error");
             return;
         }
 
@@ -152,7 +149,7 @@ public class It600Handler extends BaseThingHandler {
             }
         } catch (SalusApiException | AuthSalusApiException e) {
             logger.debug("Error while handling command `{}` on channel `{}`", command, channelUID, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 

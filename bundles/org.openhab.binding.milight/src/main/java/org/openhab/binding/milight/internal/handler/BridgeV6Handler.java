@@ -63,7 +63,7 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
     @Override
     protected void startConnectAndKeepAlive() {
         if (!config.bridgeid.matches("^([0-9A-Fa-f]{12})$")) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridgeID invalid!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "bridgeID invalid!");
             return;
         }
 
@@ -71,7 +71,7 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
             config.port = MilightBindingConstants.PORT_VER6;
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for session");
+        updateStatus(ThingStatus.UNKNOWN);
         int refreshTime = Math.max(Math.min(config.refreshTime, MilightV6SessionManager.TIMEOUT_MS), 100);
         this.session = new MilightV6SessionManager(config.bridgeid, this, address, config.port, refreshTime,
                 new byte[] { (byte) config.passwordByte1, (byte) config.passwordByte2 });
@@ -106,7 +106,7 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
                 break;
             case SESSION_VALID:
                 if (newAddress == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address received");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No IP address received");
                     break;
                 }
                 if (!newAddress.equals(address) || !thing.getStatus().equals(ThingStatus.ONLINE)) {
@@ -124,16 +124,15 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
                 }
                 break;
             case SESSION_INVALID:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Session could not be established");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Session could not be established");
 
                 break;
             default:
                 // Delay putting the session offline
                 offlineReason = state.name();
                 scheduledFuture = scheduler.schedule(
-                        () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, offlineReason),
-                        1000, TimeUnit.MILLISECONDS);
+                        () -> updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, offlineReason), 1000,
+                        TimeUnit.MILLISECONDS);
                 break;
         }
     }

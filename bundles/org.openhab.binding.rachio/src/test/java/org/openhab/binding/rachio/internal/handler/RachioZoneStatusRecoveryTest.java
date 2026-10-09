@@ -285,7 +285,7 @@ class RachioZoneStatusRecoveryTest {
         }
 
         void markOffline() {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
 
         @Override

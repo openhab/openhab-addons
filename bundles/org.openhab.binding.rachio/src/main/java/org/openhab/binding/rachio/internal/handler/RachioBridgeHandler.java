@@ -180,7 +180,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
         String configurationError = validateConfiguration(configuration);
         if (configurationError != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
             return;
         }
 
@@ -189,7 +189,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
             job = scheduler.submit(() -> initializeBridge(generation, configuration));
         } catch (RuntimeException e) {
             if (isLifecycleCurrent(generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.bridge.schedule-initialization-failed"));
             }
             logger.debug("RachioCloud: Unable to schedule initialization", e);
@@ -362,7 +362,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
                         + checkApi.getLastApiResult().rateRemaining + " / " + checkApi.getLastApiResult().rateLimit
                         + "), reset at " + checkApi.getLastApiResult().rateReset;
                 logger.debug("{}", errorCritical);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.bridge.api-rate-limit-blocked",
                                 checkApi.getLastApiResult().rateRemaining, checkApi.getLastApiResult().rateLimit,
                                 checkApi.getLastApiResult().rateReset)); // shutdown bridge+devices+zones
@@ -425,7 +425,7 @@ public class RachioBridgeHandler extends AbstractRachioBridgeHandler {
 
     private void publishCommunicationErrorIfCurrent(@Nullable LifecycleSnapshot lifecycle, String errorMessage) {
         if (lifecycle != null && isLifecycleCurrent(lifecycle.generation(), lifecycle.api())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     i18nText("thing-status.rachio.bridge.refresh-failed", errorMessage));
         }
     }

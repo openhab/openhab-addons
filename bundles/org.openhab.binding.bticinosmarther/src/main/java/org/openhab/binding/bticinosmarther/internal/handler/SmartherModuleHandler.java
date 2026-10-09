@@ -124,14 +124,14 @@ public class SmartherModuleHandler extends BaseThingHandler {
 
         final Bridge localBridge = getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 
         final SmartherBridgeHandler localBridgeHandler = (SmartherBridgeHandler) localBridge.getHandler();
         this.bridgeHandler = localBridgeHandler;
         if (localBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                     "Missing configuration from the Smarther Bridge (UID:%s). Fix configuration or report if this problem remains.",
                     localBridge.getBridgeUID()));
             return;
@@ -139,22 +139,22 @@ public class SmartherModuleHandler extends BaseThingHandler {
 
         this.config = getConfigAs(SmartherModuleConfiguration.class);
         if (StringUtil.isBlank(config.getPlantId())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'Plant Id' property is not set or empty. If you have an older thing please recreate it.");
             return;
         }
         if (StringUtil.isBlank(config.getModuleId())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'Module Id' property is not set or empty. If you have an older thing please recreate it.");
             return;
         }
         if (config.getProgramsRefreshPeriod() <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'Programs Refresh Period' must be > 0. If you have an older thing please recreate it.");
             return;
         }
         if (config.getStatusRefreshPeriod() <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'Module Status Refresh Period' must be > 0. If you have an older thing please recreate it.");
             return;
         }
@@ -186,7 +186,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
                     e.getMessage(), channelUID.getId());
         } catch (SmartherGatewayException e) {
             // catch exceptions and handle it in your binding
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -386,7 +386,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
             // Put module offline when the parent bridge goes offline
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Smarther Bridge Offline");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Smarther Bridge Offline");
             logger.debug("Module[{}] Bridge switched {}", thing.getUID(), bridgeStatusInfo.getStatus());
         } else {
             // Update the module status when the parent bridge return online
@@ -587,24 +587,24 @@ public class SmartherModuleHandler extends BaseThingHandler {
                 } else if (thing.getStatus() != ThingStatus.OFFLINE) {
                     logger.debug("Module[{}] Switched {} as Bridge is not online", thing.getUID(),
                             bridgeStatusInfo.getStatus());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Smarther Bridge Offline");
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Smarther Bridge Offline");
                 }
             }
             return false;
         } catch (SmartherIllegalPropertyValueException e) {
             logger.debug("Module[{}] Illegal property value error during polling: {}", thing.getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
         } catch (SmartherSubscriptionAlreadyExistsException e) {
             logger.debug("Module[{}] Subscription error during polling: {}", thing.getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
         } catch (SmartherGatewayException e) {
             logger.warn("Module[{}] API Gateway error during polling: {}", thing.getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
             // All other exceptions apart from Subscription and Gateway issues
             logger.warn("Module[{}] Unexpected error during polling, please report if this keeps occurring: ",
                     thing.getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
         }
         schedulePoll();
         return false;

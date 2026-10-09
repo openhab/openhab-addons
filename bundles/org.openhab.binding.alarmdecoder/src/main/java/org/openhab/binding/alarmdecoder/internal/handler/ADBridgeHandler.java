@@ -41,7 +41,6 @@ import org.openhab.binding.alarmdecoder.internal.protocol.VersionMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -192,14 +191,14 @@ public abstract class ADBridgeHandler extends BaseBridgeHandler {
             }
             if (message == null) {
                 logger.info("End of input stream detected");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
             }
         } catch (IOException e) {
             logger.debug("I/O error while reading from stream: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
             logger.warn("Runtime exception in reader thread", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } finally {
             logger.debug("Message reader thread exiting");
         }

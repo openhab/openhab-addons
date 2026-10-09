@@ -86,7 +86,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
     }
 
     public void setStatusConnectionError() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 "couldn't establish network connection [host '" + config.ipAddress + "']");
     }
 
@@ -210,8 +210,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
         config = getConfigAs(LuxtronikHeatpumpConfiguration.class);
 
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "At least one mandatory configuration field is empty");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "At least one mandatory configuration field is empty");
             return;
         }
 

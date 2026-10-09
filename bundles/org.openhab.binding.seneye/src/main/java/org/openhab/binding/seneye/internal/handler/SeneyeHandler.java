@@ -94,7 +94,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
 
     @Override
     public void invalidConfig() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
     }
 
     @Override
@@ -102,17 +102,16 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
         SeneyeConfigurationParameters config = getConfigAs(SeneyeConfigurationParameters.class);
 
         if (config.aquarium_name == null || config.aquarium_name.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Check configuration, Aquarium name must be provided");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Check configuration, Aquarium name must be provided");
             return;
         }
         if (config.username == null || config.username.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Seneye username must be provided");
             return;
         }
         if (config.password == null || config.password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Check configuration, Seneye password must be provided");
             return;
         }
@@ -121,7 +120,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
         try {
             this.seneyeService = new SeneyeService(config);
         } catch (CommunicationException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             return; // critical error
         }
 
@@ -145,7 +144,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
             return;
         } catch (InvalidConfigurationException ex) {
             // bad configuration, stay offline until user corrects the configuration
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
 
             return;
         }

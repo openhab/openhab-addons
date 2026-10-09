@@ -97,15 +97,14 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
                 homeLocation = new PointType(configuration.location);
                 // continue with location from configuration
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return;
             }
         }
         // handle location error cases
         PointType localHomeLocation = homeLocation;
         if (localHomeLocation == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/solarforecast.site.status.location-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/solarforecast.site.status.location-missing");
             return;
         }
 
@@ -176,8 +175,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     protected void updateData() {
         // 1) check if there are planes attached return immediately if not
         if (planes.isEmpty()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
-                    "@text/solarforecast.site.status.no-planes");
+            updateStatus(ThingStatusDetail.NOT_YET_READY, "@text/solarforecast.site.status.no-planes");
             return;
         }
         // 2) all planes update their data, dirty flags inside each handler is set if new forecast was fetched
@@ -195,7 +193,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
                 updateTimeseries();
             }
         } catch (SolarForecastException sfe) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.OFFLINE,
                     "@text/solarforecast.site.status.exception [\"" + sfe.getMessage() + "\"]");
         }
     }
@@ -255,7 +253,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         if (calmDownEnd.isAfter(Utils.now())) {
             // wait until calm down time is expired
             long minutes = Duration.between(Utils.now(), calmDownEnd).toMinutes();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/solarforecast.site.status.calmdown [\"" + minutes + "\"]");
             return true;
         }

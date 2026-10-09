@@ -166,8 +166,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
 
             final String ipAddress = config.getIpAddress();
             if (ipAddress == null || ipAddress.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Brain IP Address must be specified");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Brain IP Address must be specified");
                 return;
             }
             final NeeoBrainApi api = new NeeoBrainApi(ipAddress, httpClient);
@@ -237,12 +236,11 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             }
         } catch (IOException e) {
             logger.debug("Exception occurred connecting to brain: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred connecting to brain: " + e.getMessage());
         } catch (InterruptedException e) {
             logger.debug("Initialization was interrupted", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Initialization was interrupted");
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Initialization was interrupted");
         } finally {
             writerLock.unlock();
         }
@@ -318,7 +316,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
                 logger.debug("Checking connectivity to {}:{} - unsuccessful - going offline: {}", ipAddress,
                         NeeoConstants.DEFAULT_BRAIN_PORT, e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Exception occurred connecting to brain: " + e.getMessage());
             } else {
                 logger.debug("Checking connectivity to {}:{} - unsuccessful - still offline", ipAddress,

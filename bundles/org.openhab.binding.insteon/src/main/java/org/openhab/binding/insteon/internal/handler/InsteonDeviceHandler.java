@@ -75,7 +75,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         scheduler.execute(() -> {
             Bridge bridge = getBridge();
             if (bridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
                 return;
             }
 
@@ -85,7 +85,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
             }
 
             if (!InsteonAddress.isValid(config.getAddress())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Invalid device address, it must be formatted as 'AB.CD.EF'.");
                 return;
             }
@@ -93,7 +93,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
             InsteonModem modem = getModem();
             InsteonAddress address = new InsteonAddress(config.getAddress());
             if (modem != null && modem.hasDevice(address)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Duplicate device.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Duplicate device.");
                 return;
             }
 
@@ -244,45 +244,44 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
     public void updateStatus() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
             return;
         }
 
         if (bridge.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
         InsteonModem modem = getModem();
         if (modem == null || !modem.getDB().isComplete()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for modem database.");
+            updateStatus(ThingStatus.UNKNOWN, "Waiting for modem database.");
             return;
         }
 
         InsteonDevice device = getDevice();
         if (device == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unable to determine device.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to determine device.");
             return;
         }
 
         if (!device.hasModemDBEntry()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Device not found in modem database.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Device not found in modem database.");
             return;
         }
 
         if (device.getProductData() == null) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for product data.");
+            updateStatus(ThingStatus.UNKNOWN, "Waiting for product data.");
             return;
         }
 
         if (device.getType() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unsupported device.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unsupported device.");
             return;
         }
 
         if (!device.getLinkDB().isComplete()) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for link database.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for link database.");
             return;
         }
 
@@ -335,7 +334,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
             logger.debug("setting heartbeat timeout to {} min for {}", timeout, getThing().getUID());
 
             heartbeatJob = scheduler.schedule(() -> {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Heartbeat timed out.");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Heartbeat timed out.");
             }, timeout + HEARTBEAT_TIMEOUT_BUFFER, TimeUnit.MINUTES);
         }
     }
@@ -363,7 +362,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         }
 
         responseJob = scheduler.schedule(() -> {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not responding.");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Device not responding.");
         }, handler.getDeviceResponseTimeout(), TimeUnit.MINUTES);
     }
 

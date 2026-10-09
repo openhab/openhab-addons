@@ -109,7 +109,7 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
                 }
             }
         } catch (final IllegalCharsetNameException | UnsupportedCharsetException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Invalid charset");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Invalid charset");
             return false;
         }
 
@@ -121,12 +121,12 @@ public abstract class CommonBridgeHandler extends BaseBridgeHandler {
                 this.eolPattern = eolPattern;
                 logger.debug("{} eolPattern '{}' set", getLogPrefix(), eolPattern);
             } catch (IllegalArgumentException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Invalid EOL sequence");
                 return false;
             }
         } else if (binaryHexData) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "EOL pattern required for charset = HEX");
             return false;
         }

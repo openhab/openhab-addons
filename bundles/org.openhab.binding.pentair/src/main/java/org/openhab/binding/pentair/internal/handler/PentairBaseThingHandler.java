@@ -66,14 +66,12 @@ public abstract class PentairBaseThingHandler extends BaseThingHandler {
         PentairBaseBridgeHandler bh = getBridgeHandler();
 
         if (bh == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.bridge-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");
             return;
         }
 
         if (bh.equipment.get(config.id) != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.duplicate-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.duplicate-id");
             return;
         }
 

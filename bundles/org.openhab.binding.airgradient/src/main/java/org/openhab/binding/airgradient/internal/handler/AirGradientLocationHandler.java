@@ -94,7 +94,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
                     handler.getApiController().setLedMode(getSerialNo(), mode);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (AirGradientCommunicationException agce) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
                 }
             }
         }
@@ -108,7 +108,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
                     handler.getApiController().calibrateCo2(getSerialNo());
                     updateStatus(ThingStatus.ONLINE);
                 } catch (AirGradientCommunicationException agce) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
                 }
             }
         }
@@ -124,9 +124,9 @@ public class AirGradientLocationHandler extends BaseThingHandler {
 
         Bridge controller = getBridge();
         if (controller == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         } else if (ThingStatus.OFFLINE.equals(controller.getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
             updateStatus(ThingStatus.ONLINE);
         }

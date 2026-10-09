@@ -56,8 +56,7 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
         logger.debug("initialize(): Initializing thing {} in combination with bridge {}.", getThing().getUID(),
                 thisBridge);
         if (thisBridge == null) {
-            logger.trace("initialize() updating ThingStatus to OFFLINE/CONFIGURATION_PENDING.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
 
         } else if (thisBridge.getStatus() == ThingStatus.ONLINE) {
             logger.trace("initialize() updating ThingStatus to ONLINE.");
@@ -65,7 +64,7 @@ public class VeluxHandler extends ExtendedBaseThingHandler {
             initializeProperties();
         } else {
             logger.trace("initialize() updating ThingStatus to OFFLINE/BRIDGE_OFFLINE.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         logger.trace("initialize() done.");
     }

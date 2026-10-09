@@ -79,7 +79,7 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
             socket.setSoTimeout(DALI_DEFAULT_TIMEOUT);
             return socket;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             throw e;
         }
     }

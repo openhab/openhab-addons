@@ -386,7 +386,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
                 : new IllegalStateException("Null Exception passed to onWebSocketError");
         logger.debug("{}: Error during websocket communication: {}", getDeviceName(), localThrowable.getMessage(),
                 localThrowable);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, localThrowable.getMessage());
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, localThrowable.getMessage());
         CommandExecutor localCommandExecutor = commandExecutor;
         if (localCommandExecutor != null) {
             localCommandExecutor.postOperationMode(OperationModeType.OFFLINE);
@@ -422,7 +422,7 @@ public class BoseSoundTouchHandler extends BaseThingHandler implements WebSocket
     public void onWebSocketClose(int code, @Nullable String reason) {
         logger.debug("{}: onClose({}, '{}')", getDeviceName(), code, reason);
         missedPongsCount = 0;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
         CommandExecutor localCommandExecutor = commandExecutor;
         if (localCommandExecutor != null) {
             localCommandExecutor.postOperationMode(OperationModeType.OFFLINE);

@@ -28,7 +28,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
@@ -117,8 +116,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             String w = deviceWhere.value();
             if (w == null || !("0".equals(w) || "#0".equals(w) || w.startsWith("#0#"))) {
                 logger.warn("initialize() Invalid WHERE={} for Central Unit.", deviceWhere.value());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error-where");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-where");
                 return;
             }
         }

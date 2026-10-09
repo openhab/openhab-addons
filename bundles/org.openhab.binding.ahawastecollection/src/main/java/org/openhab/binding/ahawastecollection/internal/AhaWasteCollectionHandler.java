@@ -80,7 +80,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
             this.updateStatus(ThingStatus.ONLINE);
             return collectionDates;
         } catch (final IOException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return Map.of();
         }
     }
@@ -105,8 +105,7 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
         final String collectionPlace = config.collectionPlace;
 
         if (commune.isBlank() || street.isBlank() || houseNumber.isBlank() || collectionPlace.isBlank()) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameters are mandatory and must be configured");
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Parameters are mandatory and must be configured");
             return;
         }
 

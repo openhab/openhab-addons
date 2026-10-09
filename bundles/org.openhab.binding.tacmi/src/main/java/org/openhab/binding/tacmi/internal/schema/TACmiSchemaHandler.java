@@ -115,15 +115,15 @@ public class TACmiSchemaHandler extends BaseThingHandler {
         final TACmiSchemaConfiguration config = getConfigAs(TACmiSchemaConfiguration.class);
 
         if (config.host.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No host configured!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No host configured!");
             return;
         }
         if (config.username.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No username configured!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No username configured!");
             return;
         }
         if (config.password.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password configured!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No password configured!");
             return;
         }
         this.online = false;
@@ -203,14 +203,14 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             }
         } catch (final InterruptedException e) {
             // binding shutdown is in progress
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.OFFLINE);
             this.online = false;
         } catch (final ParseException | RuntimeException e) {
             logger.debug("Error parsing API Scheme: {} ", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Error: " + e.getMessage());
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Error: " + e.getMessage());
             this.online = false;
         } catch (final TimeoutException | ExecutionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error: " + e.getMessage());
             this.online = false;
         }
     }

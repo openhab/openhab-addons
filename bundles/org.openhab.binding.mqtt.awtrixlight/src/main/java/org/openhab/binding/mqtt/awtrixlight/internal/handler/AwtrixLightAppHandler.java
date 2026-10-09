@@ -446,17 +446,17 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge is missing or offline.");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge is missing or offline.");
             return;
         }
         ThingHandler handler = localBridge.getHandler();
@@ -468,7 +468,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 thing.setProperty(PROP_APPID, bridgeHardwareId + "-" + this.appName);
             }
             if (this.synchronizationRequired) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY, "Synchronizing...");
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Synchronizing...");
                 this.finishInitJob = scheduler.schedule(this::finishInit, 15, TimeUnit.SECONDS);
             } else {
                 finishInit();
@@ -634,9 +634,9 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         if (ThingStatus.ONLINE == bridgeStatus) {
             updateStatus(ThingStatus.ONLINE);
         } else if (ThingStatus.OFFLINE == bridgeStatus) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
         Future<?> localJob = this.finishInitJob;
         if (localJob != null) {

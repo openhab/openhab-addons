@@ -409,7 +409,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
             } else {
                 detail = "No data received since " + lastData.toString();
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, detail);
         };
 
         if (offlineTimerJob != null) {

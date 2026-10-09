@@ -117,7 +117,7 @@ public class ElroConnectsDeviceGenericAlarm extends ElroConnectsDevice {
                 handler.updateState(BATTERY_LEVEL, UnDefType.UNDEF);
                 handler.updateState(LOW_BATTERY, UnDefType.UNDEF);
                 String msg = String.format("@text/offline.device-not-syncing [ \"%d\" ]", deviceId);
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 break;
             case FAULT:
                 handler.updateState(SIGNAL_STRENGTH, UnDefType.UNDEF);

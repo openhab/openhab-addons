@@ -121,8 +121,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         this.remoteTempDeadband = config.remoteTempDeadband;
 
         if (hostName == null || hostName.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error-hostname");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error-hostname");
             return;
         }
 
@@ -160,8 +159,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             heatProgramJson = localSchedule.getHeatProgramJson();
         } catch (IllegalStateException e) {
             logger.debug("Invalid HEATING program schedule: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error-heating-program");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error-heating-program");
             return;
         }
 
@@ -169,8 +167,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             coolProgramJson = localSchedule.getCoolProgramJson();
         } catch (IllegalStateException e) {
             logger.debug("Invalid COOLING program schedule: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error-cooling-program");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error-cooling-program");
             return;
         }
 
@@ -447,10 +444,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         final String evtVal = event.getValue();
 
         if (KEY_ERROR.equals(evtKey)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.communication-error-get-data");
         } else {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
 
             // Map the JSON response to the correct object and update appropriate channels
             switch (evtKey) {
