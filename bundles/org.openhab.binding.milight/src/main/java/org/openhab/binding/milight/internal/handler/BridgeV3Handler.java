@@ -187,7 +187,7 @@ public class BridgeV3Handler extends AbstractBridgeHandler {
                 break;
             }
             if (timeoutsCounter > attempts) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge did not respond!");
+                updateStatus(ThingStatus.OFFLINE, "Bridge did not respond!");
             }
         } catch (IOException e) {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());

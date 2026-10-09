@@ -42,7 +42,9 @@ public interface SolarEdgeHandler extends ThingHandler, ChannelProvider {
      * @param statusDetail Bridge status detail
      * @param description Bridge status description
      */
-    void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
+    void setStatusInfo(ThingStatus status, @Nullable String description);
+
+    void setStatusInfo(ThingStatusDetail statusDetail, @Nullable String description);
 
     /**
      * Provides the web interface object.

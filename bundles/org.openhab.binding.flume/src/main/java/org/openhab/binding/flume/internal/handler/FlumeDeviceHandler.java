@@ -235,7 +235,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         } else {
             // capture in log since this is an unexpected exception
             logger.warn("Unhandled Exception", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getLocalizedMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getLocalizedMessage());
         }
     }
 

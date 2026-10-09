@@ -225,17 +225,17 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Key unrecoverable with supplied password");
                 return;
             } catch (KeyManagementException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Key management exception");
+                updateStatus(ThingStatus.OFFLINE, "Key management exception");
                 logger.debug("Key management exception", e);
                 return;
             } catch (KeyStoreException | NoSuchAlgorithmException | IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Error initializing keystore");
+                updateStatus(ThingStatus.OFFLINE, "Error initializing keystore");
                 logger.debug("Error initializing keystore", e);
                 return;
             }
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
+        updateStatus(ThingStatus.OFFLINE, "Connecting");
         asyncInitializeTask = scheduler.submit(this::connect); // start the async connect task
     }
 
@@ -305,7 +305,7 @@ public class LeapBridgeHandler extends LutronBridgeHandler implements LeapMessag
             return;
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, STATUS_INITIALIZING);
+        updateStatus(ThingStatus.OFFLINE, STATUS_INITIALIZING);
 
         Thread readerThread = new Thread(this::readerThreadJob, "OH-binding-" + getThing().getUID() + "-BridgeReader");
         readerThread.setDaemon(true);

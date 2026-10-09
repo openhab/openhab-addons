@@ -135,7 +135,7 @@ public class FoobotDeviceHandler extends BaseThingHandler {
             return null;
         } catch (RuntimeException e) {
             logger.debug("Error requesting sensor data: ", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
             return null;
         }
         if (getThing().getStatus() != ThingStatus.ONLINE) {

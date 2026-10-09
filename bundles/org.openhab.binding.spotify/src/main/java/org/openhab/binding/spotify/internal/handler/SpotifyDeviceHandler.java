@@ -68,7 +68,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
                 commandHandler.handleCommand(channelUID, command, active, deviceId);
             }
         } catch (SpotifyException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
         }
     }
 
@@ -159,8 +159,7 @@ public class SpotifyDeviceHandler extends BaseThingHandler {
         if (restricted) {
             // Only change status if device is currently online
             if (thing.getStatus() == ThingStatus.ONLINE || statusUnknown) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "Restricted. No Web API commands will be accepted by this device.");
+                updateStatus(ThingStatus.OFFLINE, "Restricted. No Web API commands will be accepted by this device.");
             }
             return false;
         } else if (statusUnknown || thing.getStatus() == ThingStatus.OFFLINE) {

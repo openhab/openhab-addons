@@ -758,8 +758,13 @@ public class TibberHandler extends BaseThingHandler implements TibberHistoryList
         TibberHistory.TimeWindow window = request.window();
         if (series == null) {
             // Fetch started — update status to show which window is loading
-            updateStatus(thing.getStatus(), thing.getStatusInfo().getStatusDetail(),
-                    "@text/status.history-update [\"" + window.name() + "\"]");
+            String description = "@text/status.history-update [\"" + window.name() + "\"]";
+            ThingStatusDetail detail = thing.getStatusInfo().getStatusDetail();
+            if (detail == ThingStatusDetail.NONE) {
+                updateStatus(thing.getStatus(), description);
+            } else {
+                updateStatus(detail, description);
+            }
             return;
         }
 

@@ -830,7 +830,11 @@ public class LifxLightHandler extends BaseThingHandler {
         if (oldStatusInfo == null || !oldStatusInfo.equals(newStatusInfo) || intervalElapsed) {
             statusInfo = newStatusInfo;
             lastStatusInfoUpdate = LocalDateTime.now();
-            updateStatus(status, statusDetail);
+            if (statusDetail == ThingStatusDetail.NONE) {
+                updateStatus(status);
+            } else {
+                updateStatus(statusDetail);
+            }
         }
     }
 }

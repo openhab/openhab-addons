@@ -110,7 +110,11 @@ public abstract class TradfriThingHandler extends BaseThingHandler implements Co
     @SuppressWarnings("null")
     public void setStatus(ThingStatus status, ThingStatusDetail statusDetail) {
         if (active && getBridge().getStatus() != ThingStatus.OFFLINE && status != ThingStatus.ONLINE) {
-            updateStatus(status, statusDetail);
+            if (statusDetail == ThingStatusDetail.NONE) {
+                updateStatus(status);
+            } else {
+                updateStatus(statusDetail);
+            }
             // we are offline and lost our observe relation - let's try to establish the connection in 10 seconds again
             scheduler.schedule(() -> {
                 if (observeRelation != null) {

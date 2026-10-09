@@ -124,7 +124,7 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
         }
         logger.debug("Foobot Account bridge starting... user: {}, refreshInterval: {}", username, refreshInterval);
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Wait to get associated devices");
+        updateStatus(ThingStatus.UNKNOWN, "Wait to get associated devices");
 
         dataCache = new ExpiringCache<>(Duration.ofMinutes(refreshInterval), this::retrieveDeviceList);
         this.refreshDeviceListJob = scheduler.scheduleWithFixedDelay(this::refreshDeviceList, 0,
@@ -221,14 +221,13 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
                 handler.refreshSensors();
             }
             if (connector.getApiKeyLimitRemaining() == FoobotApiConnector.API_RATE_LIMIT_EXCEEDED) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        FoobotApiConnector.API_RATE_LIMIT_EXCEEDED_MESSAGE);
+                updateStatus(ThingStatus.OFFLINE, FoobotApiConnector.API_RATE_LIMIT_EXCEEDED_MESSAGE);
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (RuntimeException e) {
             logger.debug("Error updating sensor data ", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
         }
     }
 

@@ -276,7 +276,11 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     private void forceOffline(ThingStatusDetail detail, String reason) {
         logger.warn("Online -> Offline due to: {}", reason);
         authenticated = false; // This session is dead; we'll need to re-authenticate next time
-        updateStatus(ThingStatus.OFFLINE, detail, reason);
+        if (ThingStatusDetail.NONE.equals(detail)) {
+            updateStatus(ThingStatus.OFFLINE, reason);
+        } else {
+            updateStatus(detail, reason);
+        }
         RetryableSocket socket = this.socket;
         if (socket != null) {
             socket.close();

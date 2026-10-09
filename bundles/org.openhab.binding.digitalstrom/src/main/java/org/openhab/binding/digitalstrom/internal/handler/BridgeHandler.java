@@ -766,7 +766,7 @@ public class BridgeHandler extends BaseBridgeHandler
                     if (!getThing().getStatusInfo().getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)
                             && !getThing().getStatusInfo().getStatusDetail()
                                     .equals(ThingStatusDetail.CONFIGURATION_ERROR)) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "DeviceStatusManager is stopped.");
+                        updateStatus(ThingStatus.OFFLINE, "DeviceStatusManager is stopped.");
                         devStatMan.start();
                     }
                     break;

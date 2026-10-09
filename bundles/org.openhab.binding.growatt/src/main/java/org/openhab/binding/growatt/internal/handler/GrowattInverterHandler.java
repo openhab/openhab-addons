@@ -88,7 +88,7 @@ public class GrowattInverterHandler extends BaseThingHandler {
         GrowattInverterConfiguration config = getConfigAs(GrowattInverterConfiguration.class);
         deviceId = config.deviceId;
         thing.setProperty(GrowattInverterConfiguration.DEVICE_ID, deviceId);
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.awaiting-data");
+        updateStatus(ThingStatus.UNKNOWN, "@text/status.awaiting-data");
         scheduleAwaitingDataTimeoutTask();
         logger.debug("initialize() thing has {} channels", thing.getChannels().size());
     }

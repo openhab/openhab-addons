@@ -166,7 +166,7 @@ public class BoschAccountHandler extends BaseBridgeHandler implements Authorizat
 
         logger.info("Authorization completed successfully");
 
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.authorization-completed");
+        updateStatus(ThingStatus.ONLINE, "@text/online.authorization-completed");
 
         authorizationListeners.forEach(l -> l.onAuthorizationFlowCompleted());
     }

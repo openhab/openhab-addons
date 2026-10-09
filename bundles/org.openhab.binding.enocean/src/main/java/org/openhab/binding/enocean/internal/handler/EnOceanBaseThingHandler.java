@@ -105,7 +105,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "A bridge is required");
+            updateStatus(ThingStatus.OFFLINE, "A bridge is required");
         }
     }
 

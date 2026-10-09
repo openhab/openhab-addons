@@ -279,7 +279,11 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
             final StatefulHandlerCallback callback = new StatefulHandlerCallback(new AbstractRioHandlerCallback() {
                 @Override
                 public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
-                    updateStatus(status, detail, msg);
+                    if (detail == ThingStatusDetail.NONE) {
+                        updateStatus(status, msg);
+                    } else {
+                        updateStatus(detail, msg);
+                    }
                     if (status != ThingStatus.ONLINE) {
                         disconnect();
                         reconnect();

@@ -68,7 +68,7 @@ public class EaseeChargerHandler extends EaseeBaseThingHandler {
         logger.debug("About to initialize Charger");
         logger.debug("Easee Charger initialized with id: {}", getId());
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
+        updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_BRIDGE);
         startPolling();
 
         enqueueCommand(new Charger(this, getId(), this::updatePropertiesAndOnlineStatus));

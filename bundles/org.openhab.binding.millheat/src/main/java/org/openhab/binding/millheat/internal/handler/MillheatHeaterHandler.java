@@ -76,8 +76,11 @@ public class MillheatHeaterHandler extends MillheatBaseThingHandler {
         final Heater heater = optionalHeater.get();
         // Readings are still published while offline, since they remain the best available, but
         // the thing status marks them as potentially stale.
-        updateStatus(heater.isOnline() ? ThingStatus.ONLINE : ThingStatus.OFFLINE,
-                heater.isOnline() ? ThingStatusDetail.NONE : ThingStatusDetail.COMMUNICATION_ERROR);
+        if (heater.isOnline()) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
+        }
 
         final String channelId = channelUID.getId();
         final boolean refresh = command instanceof RefreshType;

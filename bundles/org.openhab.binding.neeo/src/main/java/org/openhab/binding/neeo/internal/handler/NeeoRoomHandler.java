@@ -228,7 +228,11 @@ public class NeeoRoomHandler extends BaseBridgeHandler {
 
                 @Override
                 public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
-                    updateStatus(status, detail, msg);
+                    if (detail == ThingStatusDetail.NONE) {
+                        updateStatus(status, msg);
+                    } else {
+                        updateStatus(detail, msg);
+                    }
                 }
 
                 @Override

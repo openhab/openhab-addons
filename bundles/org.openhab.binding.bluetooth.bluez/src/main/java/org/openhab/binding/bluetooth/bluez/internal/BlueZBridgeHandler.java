@@ -112,7 +112,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         this.lazyScan = configuration.lazyScan;
 
         logger.debug("Creating BlueZ adapter with address '{}'", adapterAddress);
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
+        updateStatus(ThingStatus.UNKNOWN, "Initializing");
         deviceManagerFactory.getPropertiesChangedHandler().addListener(this);
         discoveryJob = scheduler.scheduleWithFixedDelay(this::initializeAndRefreshDevices, 5, 10, TimeUnit.SECONDS);
     }
@@ -168,8 +168,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         if (!localAdapter.isPowered()) {
             localAdapter.setPowered(true);
             // give the device some time to power on
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    "Adapter is not powered, attempting to turn on...");
+            updateStatus(ThingStatus.OFFLINE, "Adapter is not powered, attempting to turn on...");
             return null;
         }
 
@@ -184,7 +183,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
 
         // now lets make sure that discovery is turned on
         if (!localAdapter.startDiscovery()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Trying to start discovery");
+            updateStatus(ThingStatus.OFFLINE, "Trying to start discovery");
             return null;
         }
         return localAdapter;

@@ -805,7 +805,7 @@ public class HPPrinterBinder {
         } else if (result.getStatus() == RequestStatus.TIMEOUT) {
             handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, result.getErrorMessage());
         } else {
-            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, result.getErrorMessage());
+            handler.updateStatus(ThingStatus.OFFLINE, result.getErrorMessage());
         }
     }
 }

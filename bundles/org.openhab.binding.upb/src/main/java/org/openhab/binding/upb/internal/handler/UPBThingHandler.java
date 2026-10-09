@@ -222,7 +222,7 @@ public class UPBThingHandler extends BaseThingHandler {
     private void updateDeviceStatus(final PIMHandler bridgeHandler) {
         final UPBDevice device = bridgeHandler.getDevice(getNetworkId(), getUnitId());
         if (device == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, Constants.OFFLINE_NODE_NOTFOUND);
+            updateStatus(ThingStatus.OFFLINE, Constants.OFFLINE_NODE_NOTFOUND);
         } else {
             switch (device.getState()) {
                 case INITIALIZING:

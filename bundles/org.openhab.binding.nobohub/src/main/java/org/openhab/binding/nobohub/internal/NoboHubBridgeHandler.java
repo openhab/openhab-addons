@@ -413,7 +413,11 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
     }
 
     public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        updateStatus(status, statusDetail, description);
+        if (statusDetail == ThingStatusDetail.NONE) {
+            updateStatus(status, description);
+        } else {
+            updateStatus(statusDetail, description);
+        }
     }
 
     @Override

@@ -121,7 +121,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
             if (device.getPresent() == 1) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present");
+                updateStatus(ThingStatus.OFFLINE, "Device not present");
             }
 
             updateProperties(device);

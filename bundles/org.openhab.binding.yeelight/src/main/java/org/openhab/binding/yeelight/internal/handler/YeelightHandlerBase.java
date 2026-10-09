@@ -35,7 +35,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
@@ -119,7 +118,7 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     public void updateStatusHelper(ConnectState connectState) {
         switch (connectState) {
             case DISCONNECTED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is offline!");
+                updateStatus(ThingStatus.OFFLINE, "Device is offline!");
                 if (mDevice.isAutoConnect()) {
                     DeviceManager.sInstance.startDiscovery(5 * 1000);
                     logger.debug("Thing OFFLINE. Initiated discovery");

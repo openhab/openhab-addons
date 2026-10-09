@@ -61,7 +61,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         OpenSprinklerApi api = getApi();
         if (api == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "OpenSprinkler bridge has no initialized API.");
+            updateStatus(ThingStatus.OFFLINE, "OpenSprinkler bridge has no initialized API.");
             return;
         }
         try {
@@ -98,9 +98,8 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
                 localBridge.delayedRefresh();
             }
         } catch (GeneralApiException | CommunicationApiException e) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not control the station channel " + (config.stationIndex + 1)
-                            + " for the OpenSprinkler. Error: " + e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Could not control the station channel "
+                    + (config.stationIndex + 1) + " for the OpenSprinkler. Error: " + e.getMessage());
         }
     }
 
@@ -122,9 +121,8 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         try {
             stationOn = api.isStationOpen(stationId);
         } catch (GeneralApiException | CommunicationApiException exp) {
-            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Could not get the station channel " + stationId
-                            + " current state from the OpenSprinkler thing. Error: " + exp.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Could not get the station channel " + stationId
+                    + " current state from the OpenSprinkler thing. Error: " + exp.getMessage());
         }
 
         if (stationOn) {
