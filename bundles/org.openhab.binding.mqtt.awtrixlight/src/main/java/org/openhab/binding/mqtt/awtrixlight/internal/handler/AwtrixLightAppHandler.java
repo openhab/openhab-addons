@@ -468,7 +468,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
                 thing.setProperty(PROP_APPID, bridgeHardwareId + "-" + this.appName);
             }
             if (this.synchronizationRequired) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY, "Synchronizing...");
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Synchronizing...");
                 this.finishInitJob = scheduler.schedule(this::finishInit, 15, TimeUnit.SECONDS);
             } else {
                 finishInit();

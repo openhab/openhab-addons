@@ -163,7 +163,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "trying to connect to gateway...");
+        updateStatus(ThingStatus.UNKNOWN);
 
         connectorTask = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -203,10 +203,10 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                 return;
             }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "opening serial port...");
+            updateStatus(ThingStatus.UNKNOWN);
             localTransceiver.initialize();
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "starting rx thread...");
+            updateStatus(ThingStatus.UNKNOWN);
             localTransceiver.startReceiving(scheduler);
             logger.info("EnOceanSerialTransceiver RX thread up and running");
 
@@ -224,8 +224,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
                 updateProperty(PROPERTY_BASE_ID, HexUtils.bytesToHex(baseId));
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "trying to get bridge base id...");
+                updateStatus(ThingStatus.UNKNOWN);
 
                 logger.debug("request base id");
                 localTransceiver.sendBasePacket(ESP3PacketFactory.CO_RD_IDBASE,

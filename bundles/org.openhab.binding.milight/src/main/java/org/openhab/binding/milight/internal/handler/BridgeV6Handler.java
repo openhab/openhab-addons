@@ -71,7 +71,7 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
             config.port = MilightBindingConstants.PORT_VER6;
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for session");
+        updateStatus(ThingStatus.UNKNOWN);
         int refreshTime = Math.max(Math.min(config.refreshTime, MilightV6SessionManager.TIMEOUT_MS), 100);
         this.session = new MilightV6SessionManager(config.bridgeid, this, address, config.port, refreshTime,
                 new byte[] { (byte) config.passwordByte1, (byte) config.passwordByte2 });
@@ -131,8 +131,8 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
                 // Delay putting the session offline
                 offlineReason = state.name();
                 scheduledFuture = scheduler.schedule(
-                        () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, offlineReason),
-                        1000, TimeUnit.MILLISECONDS);
+                        () -> updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, offlineReason), 1000,
+                        TimeUnit.MILLISECONDS);
                 break;
         }
     }

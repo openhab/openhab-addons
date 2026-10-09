@@ -150,8 +150,7 @@ public class PHCHandler extends BaseThingHandler {
         if (bridgeHandler == null) {
             Bridge bridge = getBridge();
             if (bridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "The Thing requires to select a Bridge");
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
                 return null;
             }
 

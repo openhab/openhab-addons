@@ -178,7 +178,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         activityLifecycle.incrementAndGet();
         handlerConfig = getConfig().as(AccountHandlerConfig.class);
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
+        updateStatus(ThingStatus.UNKNOWN);
         updateState(CHANNEL_REFRESH_ACTIVITY, OnOffType.OFF);
 
         nextDataRefresh = 0;

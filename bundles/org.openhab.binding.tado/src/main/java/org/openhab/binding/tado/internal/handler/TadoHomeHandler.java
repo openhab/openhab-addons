@@ -138,7 +138,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                 // Get user info to verify successful authentication and connection to server
                 User user = api.showUser();
                 if (user == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, confPendingText);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, confPendingText);
                     return;
                 }
 
@@ -181,7 +181,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
             updateProperty(PROPERTY_HOME_TEMPERATURE_UNIT, temperatureUnit.name());
         } catch (IOException | ApiException e) {
             logger.debug("Error accessing tado server: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, confPendingText);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, confPendingText);
             return;
         }
 

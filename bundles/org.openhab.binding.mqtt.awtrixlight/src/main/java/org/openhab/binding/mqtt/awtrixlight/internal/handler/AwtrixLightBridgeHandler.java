@@ -187,9 +187,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
     public void processMessage(String topic, byte[] payload) {
         String payloadString = new String(payload, StandardCharsets.UTF_8);
         if (topic.endsWith(TOPIC_STATS)) {
-            ThingStatusInfo statusInfo = getThing().getStatusInfo();
-            if (ThingStatus.UNKNOWN == statusInfo.getStatus()
-                    && ThingStatusDetail.CONFIGURATION_PENDING == statusInfo.getStatusDetail()) {
+            if (ThingStatus.UNKNOWN == getThing().getStatus()) {
                 // Obviously the device is online. We just haven't received a LWT message yet.
                 this.deviceOnline = true;
                 updateStatus(ThingStatus.ONLINE);
@@ -254,7 +252,7 @@ public class AwtrixLightBridgeHandler extends BaseBridgeHandler implements MqttM
             if (this.deviceOnline) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for LWT message.");
+                updateStatus(ThingStatus.UNKNOWN);
             }
             connection.subscribe(this.basetopic + TOPIC_LWT, this);
             connection.subscribe(this.basetopic + TOPIC_STATS + "/#", this);

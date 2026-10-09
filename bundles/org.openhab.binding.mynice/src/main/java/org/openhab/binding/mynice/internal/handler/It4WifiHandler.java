@@ -226,7 +226,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
                             sendCommand(CommandType.CONNECT);
                             return;
                         case wait:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING,
                                     "@text/conf-pending-validation");
                             scheduler.schedule(() -> handShaked(), 15, TimeUnit.SECONDS);
                             return;

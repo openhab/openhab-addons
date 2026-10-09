@@ -255,8 +255,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
         Optional<String> accessToken = tokenRefresher.getAccessTokenFromStorage(getOAuthServiceHandle());
         if (accessToken.isEmpty()) {
             logger.debug("No OAuth2 access token available. Retrying later.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_NOT_CONFIGURED);
+            updateStatus(ThingStatus.UNKNOWN);
             return;
         }
         getWebservice().setAccessToken(accessToken.get());
