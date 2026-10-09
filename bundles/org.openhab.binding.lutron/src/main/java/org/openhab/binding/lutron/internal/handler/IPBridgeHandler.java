@@ -139,7 +139,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
             heartbeatInterval = (config.heartbeat > 0) ? config.heartbeat : DEFAULT_HEARTBEAT_MINUTES;
             sendDelay = (config.delay < 0) ? 0 : config.delay;
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
+            updateStatus(ThingStatus.OFFLINE, "Connecting");
             scheduler.submit(this::connect); // start the async connect task
         }
     }

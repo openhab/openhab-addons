@@ -125,7 +125,11 @@ public class LoqedLockHandler extends BaseThingHandler {
             String description) {
         synchronized (lifecycleLock) {
             if (generation == lifecycleGeneration) {
-                updateStatus(status, statusDetail, description);
+                if (statusDetail == ThingStatusDetail.NONE) {
+                    updateStatus(status, description);
+                } else {
+                    updateStatus(statusDetail, description);
+                }
             }
         }
     }

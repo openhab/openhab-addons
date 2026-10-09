@@ -149,7 +149,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initialize: '{}'", thing.getUID());
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/message.processor.connecting");
+        updateStatus(ThingStatus.UNKNOWN, "@text/message.processor.connecting");
         if (config.controlPort < 0) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/message.processor.connection.error.port");
             return;

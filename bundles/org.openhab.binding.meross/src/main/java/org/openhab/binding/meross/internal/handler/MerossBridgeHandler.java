@@ -177,6 +177,10 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
     }
 
     public void updateBridgeStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail) {
-        updateStatus(thingStatus, thingStatusDetail);
+        if (thingStatusDetail == ThingStatusDetail.NONE) {
+            updateStatus(thingStatus);
+        } else {
+            updateStatus(thingStatusDetail);
+        }
     }
 }

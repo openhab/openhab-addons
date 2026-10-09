@@ -153,7 +153,7 @@ public class VigilanceHandler extends BaseThingHandler implements MeteoFranceChi
                 }
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No data available for the department");
+                updateStatus(ThingStatus.OFFLINE, "No data available for the department");
             }
         }, () -> logger.warn("No viable bridge"));
     }

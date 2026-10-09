@@ -70,7 +70,7 @@ public class ElroConnectsDevicePowerSocket extends ElroConnectsDevice {
         if (deviceStatus.length() < 6) {
             logger.debug("Could not decode device status: {}", deviceStatus);
             String msg = String.format("@text/offline.device-fault [ \"%d\" ]", deviceId);
-            handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
+            handler.updateStatus(ThingStatus.ONLINE, msg);
             return;
         }
 

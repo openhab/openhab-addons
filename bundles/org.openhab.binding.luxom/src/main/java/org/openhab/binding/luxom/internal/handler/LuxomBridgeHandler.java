@@ -89,7 +89,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
             reconnectInterval = (config.reconnectInterval > 0) ? config.reconnectInterval
                     : DEFAULT_RECONNECT_INTERVAL_IN_MINUTES;
 
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.connecting");
+            updateStatus(ThingStatus.UNKNOWN, "@text/status.connecting");
             scheduler.submit(this::connect); // start the async connect task
         }
     }

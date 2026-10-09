@@ -362,7 +362,11 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
 
         // are we still connected at all?
         if (endPoint != null) {
-            updateStatus(status, statusDetail);
+            if (statusDetail == ThingStatusDetail.NONE) {
+                updateStatus(status);
+            } else {
+                updateStatus(statusDetail);
+            }
         }
     }
 

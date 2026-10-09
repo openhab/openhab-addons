@@ -73,7 +73,7 @@ public abstract class EaseeBaseThingHandler extends BaseThingHandler
             logger.debug("bridgeStatusChanged: NOT ONLINE");
             if (isInitialized()) {
                 if (bridgeStatusInfo.getStatus() == ThingStatus.UNKNOWN) {
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
+                    updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_BRIDGE);
                 } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
                     updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }

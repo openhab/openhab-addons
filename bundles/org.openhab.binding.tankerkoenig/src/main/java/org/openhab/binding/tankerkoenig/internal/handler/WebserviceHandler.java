@@ -115,7 +115,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
 
     @Override
     public void updateStatus(ThingStatus status) {
-        updateStatus(status, ThingStatusDetail.NONE, null);
+        super.updateStatus(status);
     }
 
     /***

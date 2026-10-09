@@ -111,13 +111,23 @@ public class IoTaWattHandler extends BaseThingHandler implements DeviceHandlerCa
     }
 
     @Override
+    public void updateStatus(ThingStatus status, @Nullable String description) {
+        super.updateStatus(status, description);
+    }
+
+    @Override
     public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
         super.updateStatus(status, statusDetail);
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatusDetail statusDetail) {
+        super.updateStatus(statusDetail);
+    }
+
+    @Override
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override

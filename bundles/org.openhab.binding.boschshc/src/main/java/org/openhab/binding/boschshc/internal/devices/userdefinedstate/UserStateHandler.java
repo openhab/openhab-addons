@@ -28,7 +28,6 @@ import org.openhab.binding.boschshc.internal.services.userstate.dto.UserStateSer
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -64,8 +63,7 @@ public class UserStateHandler extends BoschSHCHandler {
         var localConfig = this.config = getConfigAs(BoschSHCConfiguration.class);
         String stateId = localConfig.id;
         if (stateId == null || stateId.isBlank()) {
-            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.empty-state-id");
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.empty-state-id");
             return;
         }
 

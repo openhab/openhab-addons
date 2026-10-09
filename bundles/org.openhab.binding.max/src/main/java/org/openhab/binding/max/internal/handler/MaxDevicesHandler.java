@@ -370,7 +370,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         } else if (!refreshingActuals) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Updating Actual Temperature");
+            updateStatus(ThingStatus.ONLINE, "Updating Actual Temperature");
         }
         if (!propertiesSet) {
             setProperties(device);
@@ -449,7 +449,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 }
 
                 if (refreshingActuals) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Updating Actual Temperature");
+                    updateStatus(ThingStatus.ONLINE, "Updating Actual Temperature");
 
                     if (refreshActualsJob == null || refreshActualsJob.isCancelled()) {
                         refreshActualsJob = scheduler.schedule(this::refreshActualsRestore, REFRESH_ACTUAL_DURATION,

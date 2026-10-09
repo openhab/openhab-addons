@@ -156,8 +156,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         String ipAddress = config.ipAddress.trim();
         if (ipAddress.isEmpty()) {
-            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-empty-ip");
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-empty-ip");
             return;
         }
 
@@ -173,8 +172,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             factory = new BoschSslUtil(ipAddress).getSslContextFactory();
         } catch (PairingFailedException e) {
             logger.debug("Error while obtaining SSL context factory.", e);
-            this.updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-ssl");
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-ssl");
             return;
         }
 
@@ -191,7 +189,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         }
 
         // general checks are OK, therefore set the status to unknown and wait for initial access
-        this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE);
+        this.updateStatus(ThingStatus.UNKNOWN);
 
         // Initialize bridge in the background.
         // Start initial access the first time
@@ -259,8 +257,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             // check if SCH is offline
             if (!httpClient.isOnline()) {
                 // update status already if access is not possible
-                this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
-                        "@text/offline.conf-error-offline");
+                this.updateStatus(ThingStatus.UNKNOWN, "@text/offline.conf-error-offline");
                 // restart later initial access
                 scheduleInitialAccess(httpClient);
                 return;
@@ -270,8 +267,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             // check if SHC access is not possible and pairing necessary
             if (!httpClient.isAccessPossible()) {
                 // update status description to show pairing test
-                this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
-                        "@text/offline.conf-error-pairing");
+                this.updateStatus(ThingStatus.UNKNOWN, "@text/offline.conf-error-pairing");
                 if (!httpClient.doPairing()) {
                     this.updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "@text/offline.conf-error-pairing");
@@ -283,8 +279,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
             // SHC is online and access should possible
             if (!checkBridgeAccess()) {
-                this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        "@text/offline.not-reachable");
+                this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "@text/offline.not-reachable");
                 // restart initial access
                 scheduleInitialAccess(httpClient);
                 return;
@@ -303,7 +298,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             startLongPolling(httpClient);
 
         } catch (InterruptedException e) {
-            this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE, "@text/offline.interrupted");
+            this.updateStatus(ThingStatus.UNKNOWN, "@text/offline.interrupted");
             Thread.currentThread().interrupt();
         }
     }
@@ -758,8 +753,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
-                "@text/offline.long-polling-failed.trying-to-reconnect");
+        this.updateStatus(ThingStatus.UNKNOWN, "@text/offline.long-polling-failed.trying-to-reconnect");
         scheduleInitialAccess(localHttpClient);
     }
 

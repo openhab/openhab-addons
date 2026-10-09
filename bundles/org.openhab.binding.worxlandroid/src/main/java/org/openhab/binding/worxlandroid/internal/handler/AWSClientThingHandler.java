@@ -137,7 +137,7 @@ public abstract class AWSClientThingHandler extends BaseThingHandler
     @Override
     public void onAWSConnectionFailed(@Nullable String message) {
         updateChannelOnOff(GROUP_AWS, CHANNEL_CONNECTED, awsClient.isConnected());
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "No AWS Connection");
+        updateStatus(ThingStatus.ONLINE, "No AWS Connection");
     }
 
     @Override

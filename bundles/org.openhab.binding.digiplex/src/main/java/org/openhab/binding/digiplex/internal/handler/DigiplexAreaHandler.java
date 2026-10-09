@@ -201,7 +201,12 @@ public class DigiplexAreaHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo thingStatusInfo) {
         if (thingStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, thingStatusInfo.getStatusDetail());
+            ThingStatusDetail detail = thingStatusInfo.getStatusDetail();
+            if (detail == ThingStatusDetail.NONE) {
+                updateStatus(ThingStatus.OFFLINE);
+            } else {
+                updateStatus(detail);
+            }
         } else if (thingStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
             sendStatusUpdateRequest();

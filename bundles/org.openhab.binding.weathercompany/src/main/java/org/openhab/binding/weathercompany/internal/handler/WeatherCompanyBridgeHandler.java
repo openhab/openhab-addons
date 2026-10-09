@@ -65,7 +65,7 @@ public class WeatherCompanyBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-api-key");
                 } else {
                     logger.debug("Bridge: IOException trying to validate Api key: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, e.getMessage());
                 }
             }
         }

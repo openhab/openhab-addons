@@ -194,7 +194,7 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
             getChildHandlers().forEach(handler -> handler.bridgeThingUpdated(config, modem));
         }
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting to modem.");
+        updateStatus(ThingStatus.UNKNOWN, "Connecting to modem.");
 
         scheduler.execute(() -> {
             connectJob = scheduler.scheduleWithFixedDelay(() -> {

@@ -348,7 +348,11 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
         logger.debug("Scene {} added", scene.getID());
         if (this.bridgeHandler != null) {
             ThingStatusInfo statusInfo = this.bridgeHandler.getThing().getStatusInfo();
-            updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
+            if (statusInfo.getStatusDetail() == ThingStatusDetail.NONE) {
+                updateStatus(statusInfo.getStatus(), statusInfo.getDescription());
+            } else {
+                updateStatus(statusInfo.getStatusDetail(), statusInfo.getDescription());
+            }
             logger.debug("Set status on {}", getThing().getStatus());
         }
         this.scene = scene;

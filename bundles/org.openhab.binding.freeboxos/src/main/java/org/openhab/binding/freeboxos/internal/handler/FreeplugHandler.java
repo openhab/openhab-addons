@@ -31,7 +31,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +98,7 @@ public class FreeplugHandler extends ApiConsumerHandler {
             if (plug.hasNetwork()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-plug-not-reachable");
+                updateStatus(ThingStatus.OFFLINE, "@text/info-plug-not-reachable");
             }
         } else {
             throw new FreeboxException("Freeplug is absent");

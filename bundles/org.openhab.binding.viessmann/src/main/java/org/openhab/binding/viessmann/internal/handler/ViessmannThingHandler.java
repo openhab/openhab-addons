@@ -96,7 +96,11 @@ public abstract class ViessmannThingHandler extends BaseThingHandler {
     }
 
     public void updateThingStatus(ThingStatus status, ThingStatusDetail statusDetail, String statusMessage) {
-        updateStatus(status, statusDetail, statusMessage);
+        if (statusDetail == ThingStatusDetail.NONE) {
+            updateStatus(status, statusMessage);
+        } else {
+            updateStatus(statusDetail, statusMessage);
+        }
     }
 
     public void setChannelStateDescription(ChannelUID channelUid, List<StateOption> stateOptions) {

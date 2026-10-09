@@ -239,7 +239,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         if (Boolean.TRUE.equals(sensor.getConfig().get(CONFIG_REACHABLE))) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
+            updateStatus(ThingStatus.OFFLINE, "@text/offline.sensor-not-reachable");
         }
 
         // update generic sensor config
@@ -324,7 +324,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
 
     @Override
     public void onSensorRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.sensor-not-reachable");
     }
 
     @Override

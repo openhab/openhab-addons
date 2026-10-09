@@ -89,7 +89,7 @@ public class DimmerHandler extends LutronHandler {
         if (bridge == null) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
+            updateStatus(ThingStatus.UNKNOWN, "Awaiting initial response");
             queryOutput(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL);
             // handleUpdate() will set thing status to online when response arrives
             lastLightLevel.set(config.onLevel);

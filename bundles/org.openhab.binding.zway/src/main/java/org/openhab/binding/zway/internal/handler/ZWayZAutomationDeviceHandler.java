@@ -55,7 +55,11 @@ public class ZWayZAutomationDeviceHandler extends ZWayDeviceHandler {
                 logger.debug("Change Z-Way device status to bridge status: {}", statusInfo.getStatus());
 
                 // Set thing status to bridge status
-                updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
+                if (statusInfo.getStatusDetail() == ThingStatusDetail.NONE) {
+                    updateStatus(statusInfo.getStatus(), statusInfo.getDescription());
+                } else {
+                    updateStatus(statusInfo.getStatusDetail(), statusInfo.getDescription());
+                }
 
                 // Add all available channels
                 DeviceList deviceList = getZWayBridgeHandler().getZWayApi().getDevices();

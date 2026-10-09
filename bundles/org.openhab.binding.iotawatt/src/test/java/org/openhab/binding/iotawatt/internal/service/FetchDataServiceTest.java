@@ -170,8 +170,7 @@ class FetchDataServiceTest {
         service.pollDevice();
 
         // then
-        verify(deviceHandlerCallback).updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
-                exceptionMessage);
+        verify(deviceHandlerCallback).updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, exceptionMessage);
         verify(deviceHandlerCallback, never()).updateState(any(), any());
     }
 
@@ -184,7 +183,7 @@ class FetchDataServiceTest {
         service.pollDevice();
 
         // then
-        verify(deviceHandlerCallback).updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+        verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
         verify(deviceHandlerCallback, never()).updateState(any(), any());
     }
 
@@ -223,9 +222,15 @@ class FetchDataServiceTest {
 
         // then
         if (withErrorMessage) {
-            verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, thingStatusDetail, errorMessage);
-        } else {
+            if (thingStatusDetail == ThingStatusDetail.NONE) {
+                verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, errorMessage);
+            } else {
+                verify(deviceHandlerCallback).updateStatus(thingStatusDetail, errorMessage);
+            }
+        } else if (thingStatusDetail == ThingStatusDetail.NOT_YET_READY) {
             verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, thingStatusDetail);
+        } else {
+            verify(deviceHandlerCallback).updateStatus(thingStatusDetail);
         }
         verify(deviceHandlerCallback, never()).updateState(any(), any());
     }

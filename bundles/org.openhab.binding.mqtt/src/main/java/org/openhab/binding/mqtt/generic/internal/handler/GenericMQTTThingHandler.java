@@ -136,7 +136,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
         ThingHandlerCallback callback = getCallback();
         if (callback == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Framework failure: callback must not be null");
+            updateStatus(ThingStatus.OFFLINE, "Framework failure: callback must not be null");
             return;
         }
 

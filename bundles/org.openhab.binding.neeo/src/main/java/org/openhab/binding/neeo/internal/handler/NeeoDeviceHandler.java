@@ -237,7 +237,11 @@ public class NeeoDeviceHandler extends BaseThingHandler {
 
                 @Override
                 public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
-                    updateStatus(status, detail, msg);
+                    if (detail == ThingStatusDetail.NONE) {
+                        updateStatus(status, msg);
+                    } else {
+                        updateStatus(detail, msg);
+                    }
                 }
 
                 @Override

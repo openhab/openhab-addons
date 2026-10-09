@@ -171,9 +171,13 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
     }
 
     @Override
-    public void updateStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
-            @Nullable String description) {
-        super.updateStatus(thingStatus, thingStatusDetail, description);
+    public void updateStatus(ThingStatus thingStatus, @Nullable String description) {
+        super.updateStatus(thingStatus, description);
+    }
+
+    @Override
+    public void updateStatus(ThingStatusDetail thingStatusDetail, @Nullable String description) {
+        super.updateStatus(thingStatusDetail, description);
     }
 
     @Override
