@@ -112,6 +112,16 @@ public class MqttMessageBuilder {
         return "/appliance/" + deviceUUID + "/subscribe";
     }
 
+    /**
+     * API command.
+     *
+     * @param deviceUUID the device UUID
+     * @return The string identifying a device in a push message from field
+     */
+    public String buildDeviceResponseTopic(String deviceUUID) {
+        return "/appliance/" + deviceUUID + "/publish";
+    }
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
