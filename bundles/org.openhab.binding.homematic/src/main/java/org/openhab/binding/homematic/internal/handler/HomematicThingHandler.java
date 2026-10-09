@@ -110,7 +110,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, ex.getMessage());
             } catch (Exception ex) {
                 logger.error("{}", ex.getMessage(), ex);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ex.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ex.getMessage());
             }
         });
     }
@@ -572,7 +572,11 @@ public class HomematicThingHandler extends BaseThingHandler {
 
         if (oldStatus != newStatus || oldStatusInfo.getStatusDetail() != newDetail
                 || !Objects.equals(oldStatusInfo.getDescription(), newDescription)) {
-            updateStatus(newStatus, newDetail, newDescription);
+            if (newDetail == ThingStatusDetail.NONE) {
+                updateStatus(newStatus, newDescription);
+            } else {
+                updateStatus(newDetail, newDescription);
+            }
         }
         if (oldStatus == ThingStatus.OFFLINE && newStatus == ThingStatus.ONLINE) {
             initialize();

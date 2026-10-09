@@ -143,7 +143,7 @@ public class EnergenieHandler extends BaseThingHandler {
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Couldn't get I/O for the connection");
             } catch (final RuntimeException e) {
                 logger.debug("Unexpected error", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, e.getMessage());
             }
         }
         return false;

@@ -112,7 +112,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
             return;
         }
         if (ourFeeds.isEmpty()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for feed configuration");
+            updateStatus(ThingStatus.UNKNOWN, "Waiting for feed configuration");
         } else {
             updateStatus(ThingStatus.ONLINE);
         }

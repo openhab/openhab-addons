@@ -465,8 +465,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
     }
 
     private void handleBindingError(MercedesMeBindingException e) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                STATUS_BIDNING_ERROR + " [\"" + e.getMessage() + "\"]");
+        updateStatus(ThingStatus.OFFLINE, STATUS_BIDNING_ERROR + " [\"" + e.getMessage() + "\"]");
     }
 
     public void handleConnected() {

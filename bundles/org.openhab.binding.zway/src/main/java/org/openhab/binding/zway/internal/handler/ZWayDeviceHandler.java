@@ -235,8 +235,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                                 logger.error("Error occurred when performing polling: Unexpected error");
                             }
                             if (getThing().getStatus() == ThingStatus.ONLINE) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                        "Error occurred when performing polling.");
+                                updateStatus(ThingStatus.OFFLINE, "Error occurred when performing polling.");
                             }
                         }
                     } else {
@@ -299,7 +298,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                             iae.getMessage(), device.getMetrics().getTitle(), device.getMetrics().getLevel(),
                             channel.getChannelTypeUID());
 
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    updateStatus(ThingStatus.OFFLINE,
                             "Channel refresh for device: " + device.getMetrics().getTitle() + " (level: "
                                     + device.getMetrics().getLevel() + ") with channel: " + channel.getChannelTypeUID()
                                     + " failed!");

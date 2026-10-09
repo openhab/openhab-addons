@@ -256,7 +256,7 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, bridgeError.getMessage());
                     break;
                 default:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, bridgeError.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, bridgeError.getMessage());
             }
         } else {
             updateStatus(ThingStatus.UNKNOWN);

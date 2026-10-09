@@ -78,7 +78,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
                 logger.debug("receiveThread.isAlive() = {}", receiveThreadRef.isAlive());
             }
             if (isInitialized() && (receiveThreadRef == null || !receiveThreadRef.isAlive())) {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
+                updateStatus(ThingStatus.UNKNOWN, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
                 logger.info("Try to restart Teleinfo receiving...");
                 stopReceivingAndCloseSerialPort();
                 openSerialPortAndStartReceiving();
@@ -116,12 +116,12 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
     @Override
     public void onSerialPortInputStreamIOException(TeleinfoReceiveThread receiveThread, IOException e) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
+        updateStatus(ThingStatus.OFFLINE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
     }
 
     @Override
     public void continueOnReadNextFrameTimeoutException() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
+        updateStatus(ThingStatus.UNKNOWN, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
     }
 
     private void openSerialPortAndStartReceiving() {

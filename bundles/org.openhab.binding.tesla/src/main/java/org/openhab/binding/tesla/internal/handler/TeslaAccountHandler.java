@@ -339,10 +339,18 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         lock.lock();
         try {
             ThingStatusInfo authenticationResult = authenticate();
-            updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
-                    authenticationResult.getDescription());
+            updateAuthenticationStatus(authenticationResult);
         } finally {
             lock.unlock();
+        }
+    }
+
+    private void updateAuthenticationStatus(ThingStatusInfo authenticationResult) {
+        ThingStatusDetail detail = authenticationResult.getStatusDetail();
+        if (detail == ThingStatusDetail.NONE) {
+            updateStatus(authenticationResult.getStatus(), authenticationResult.getDescription());
+        } else {
+            updateStatus(detail, authenticationResult.getDescription());
         }
     }
 
@@ -414,8 +422,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 logger.debug("Setting up an authenticated connection to the Tesla back-end");
 
                 ThingStatusInfo authenticationResult = authenticate();
-                updateStatus(authenticationResult.getStatus(), authenticationResult.getStatusDetail(),
-                        authenticationResult.getDescription());
+                updateAuthenticationStatus(authenticationResult);
 
                 if (authenticationResult.getStatus() == ThingStatus.ONLINE) {
                     // get a list of vehicles
@@ -457,8 +464,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
                 } else if (authenticationResult.getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
                     // make sure to set thing to CONFIGURATION_ERROR in case of failed authentication in order not to
                     // hit request limit on retries on the Tesla SSO endpoints.
-                    updateStatus(ThingStatus.OFFLINE, authenticationResult.getStatusDetail(),
-                            authenticationResult.getDescription());
+                    updateStatus(authenticationResult.getStatusDetail(), authenticationResult.getDescription());
                 }
             }
         } catch (Exception e) {

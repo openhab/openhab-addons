@@ -307,7 +307,11 @@ public class GardenaThingHandler extends BaseThingHandler {
         }
 
         if (oldStatus != newStatus || thing.getStatusInfo().getStatusDetail() != newDetail) {
-            updateStatus(newStatus, newDetail);
+            if (newDetail == ThingStatusDetail.NONE) {
+                updateStatus(newStatus);
+            } else {
+                updateStatus(newDetail);
+            }
         }
     }
 

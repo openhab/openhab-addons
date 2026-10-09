@@ -82,7 +82,11 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
 
             @Override
             public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
-                updateStatus(status, detail, msg);
+                if (detail == ThingStatusDetail.NONE) {
+                    updateStatus(status, msg);
+                } else {
+                    updateStatus(detail, msg);
+                }
 
                 if (status != ThingStatus.ONLINE) {
                     disconnect(true);

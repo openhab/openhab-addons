@@ -169,7 +169,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 if (bridgeHandler != null) {
                     if (ThingStatusDetail.COMMUNICATION_ERROR
                             .equals(bridgeHandler.getThing().getStatusInfo().getStatusDetail())) {
-                        bridgeHandler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
+                        bridgeHandler.updateStatus(ThingStatus.ONLINE, "");
                     }
                 }
             }

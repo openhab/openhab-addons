@@ -167,7 +167,11 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
     }
 
     public void updateBridgeStatus(ThingStatus status, ThingStatusDetail statusDetail, String statusMessage) {
-        updateStatus(status, statusDetail, statusMessage);
+        if (statusDetail == ThingStatusDetail.NONE) {
+            updateStatus(status, statusMessage);
+        } else {
+            updateStatus(statusDetail, statusMessage);
+        }
     }
 
     public boolean performThermostatFunction(FunctionRequest request) {

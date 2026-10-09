@@ -136,8 +136,12 @@ public class OpenUVReportHandler extends BaseThingHandler {
                         .forEach(channel -> updateState(channel.getUID(), getState(channel, openUVData)));
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, bridgeStatusInfo.getStatusDetail(),
-                        bridgeStatusInfo.getDescription());
+                ThingStatusDetail detail = bridgeStatusInfo.getStatusDetail();
+                if (detail == ThingStatusDetail.NONE) {
+                    updateStatus(ThingStatus.OFFLINE, bridgeStatusInfo.getDescription());
+                } else {
+                    updateStatus(detail, bridgeStatusInfo.getDescription());
+                }
             }
         }
     }

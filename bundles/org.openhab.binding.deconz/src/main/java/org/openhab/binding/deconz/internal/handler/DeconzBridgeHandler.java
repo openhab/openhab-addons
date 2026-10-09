@@ -221,13 +221,11 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
                 return;
             }
             if (state.config.name.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "You are connected to a HUE bridge, not a deCONZ software!");
+                updateStatus(ThingStatus.OFFLINE, "You are connected to a HUE bridge, not a deCONZ software!");
                 return;
             }
             if (state.config.websocketport == 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "deCONZ software too old. No websocket support!");
+                updateStatus(ThingStatus.OFFLINE, "deCONZ software too old. No websocket support!");
                 return;
             }
 
@@ -253,7 +251,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             }
         })).exceptionally(e -> {
             if (e != null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, e.getMessage());
             } else {
                 updateStatus(ThingStatus.OFFLINE);
             }

@@ -711,7 +711,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     // set or clear the update available marker
                     boolean updateAvailable = getBool(status.update.hasUpdate);
                     if (updateAvailable && !updateMarkerSet) {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                        updateStatus(ThingStatus.ONLINE,
                                 messages.get("manager.action.checkupd.new", getString(status.update.newVersion)));
                         updateMarkerSet = true; // specifically set update marker flag only in this case
                     } else if (!updateAvailable && updateMarkerSet) {

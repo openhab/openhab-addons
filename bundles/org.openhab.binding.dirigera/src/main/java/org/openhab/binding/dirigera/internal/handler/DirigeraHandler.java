@@ -775,10 +775,9 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         if (config.id.isBlank()) {
             List<String> gatewayList = model().getDevicesForTypes(List.of(DEVICE_TYPE_GATEWAY));
             if (gatewayList.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/dirigera.gateway.status.no-gateway");
+                updateStatus(ThingStatus.OFFLINE, "@text/dirigera.gateway.status.no-gateway");
             } else if (gatewayList.size() > 1) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        "@text/dirigera.gateway.status.ambiguous-gateway");
+                updateStatus(ThingStatus.OFFLINE, "@text/dirigera.gateway.status.ambiguous-gateway");
             } else {
                 String id = gatewayList.get(0);
                 Configuration configUpdate = editConfiguration();

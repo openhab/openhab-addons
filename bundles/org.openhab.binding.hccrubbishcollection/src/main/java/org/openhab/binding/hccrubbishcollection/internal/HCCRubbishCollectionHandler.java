@@ -144,7 +144,12 @@ public class HCCRubbishCollectionHandler extends BaseThingHandler {
                 }
             } else {
                 if (localApi.getErrorDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
-                    updateStatus(ThingStatus.OFFLINE, localApi.getErrorDetail(), localApi.getErrorDetailMessage());
+                    ThingStatusDetail detail = localApi.getErrorDetail();
+                    if (detail == ThingStatusDetail.NONE) {
+                        updateStatus(ThingStatus.OFFLINE, localApi.getErrorDetailMessage());
+                    } else {
+                        updateStatus(detail, localApi.getErrorDetailMessage());
+                    }
                     stopUpdate(false);
                 } else {
                     stopUpdate(true);

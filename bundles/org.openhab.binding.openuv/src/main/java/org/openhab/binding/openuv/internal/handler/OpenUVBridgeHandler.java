@@ -148,7 +148,11 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 }
             }
         }
-        updateStatus(ThingStatus.OFFLINE, statusDetail, statusMessage);
+        if (statusDetail == ThingStatusDetail.NONE) {
+            updateStatus(ThingStatus.OFFLINE, statusMessage);
+        } else {
+            updateStatus(statusDetail, statusMessage);
+        }
         return null;
     }
 

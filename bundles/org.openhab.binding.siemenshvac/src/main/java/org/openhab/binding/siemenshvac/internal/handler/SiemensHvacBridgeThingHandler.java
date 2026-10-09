@@ -110,7 +110,7 @@ public class SiemensHvacBridgeThingHandler extends BaseBridgeHandler {
 
         config = lcConfig;
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/offline.waiting-bridge-initialization");
+        updateStatus(ThingStatus.UNKNOWN, "@text/offline.waiting-bridge-initialization");
 
         // Will read metadata in background to not block initialize for a long period !
         scheduler.schedule(this::initializeCode, 1, TimeUnit.SECONDS);
@@ -174,8 +174,8 @@ public class SiemensHvacBridgeThingHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatus status, @Nullable String description) {
+        super.updateStatus(status, description);
     }
 
     public boolean registerDiscoveryListener(SiemensHvacDeviceDiscoveryService listener) {

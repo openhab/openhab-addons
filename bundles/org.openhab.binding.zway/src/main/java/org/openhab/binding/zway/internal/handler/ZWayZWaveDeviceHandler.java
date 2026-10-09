@@ -57,7 +57,11 @@ public class ZWayZWaveDeviceHandler extends ZWayDeviceHandler {
                 logger.debug("Change Z-Way Z-Wave device status to bridge status: {}", statusInfo);
 
                 // Set thing status to bridge status
-                updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
+                if (statusInfo.getStatusDetail() == ThingStatusDetail.NONE) {
+                    updateStatus(statusInfo.getStatus(), statusInfo.getDescription());
+                } else {
+                    updateStatus(statusInfo.getStatusDetail(), statusInfo.getDescription());
+                }
 
                 // Add all available channels
                 logger.debug("Add all available channels");

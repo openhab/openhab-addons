@@ -453,7 +453,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
         }
 
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.ONLINE,
                     updateAvailable
                             ? translationService.getTranslation(
                                     MatterBindingConstants.THING_STATUS_DETAIL_FIRMWARE_UPDATE_AVAILABLE)

@@ -253,7 +253,11 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @param description Bridge status description
      */
     public void setStatusInfo(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        updateStatus(status, statusDetail, description);
+        if (statusDetail == ThingStatusDetail.NONE) {
+            updateStatus(status, description);
+        } else {
+            updateStatus(statusDetail, description);
+        }
     }
 
     /**

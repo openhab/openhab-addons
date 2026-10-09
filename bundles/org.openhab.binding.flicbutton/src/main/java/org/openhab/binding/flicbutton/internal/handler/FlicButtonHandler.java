@@ -164,8 +164,7 @@ public class FlicButtonHandler extends ChildThingHandler<FlicDaemonBridgeHandler
     }
 
     protected void setOffline() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
-                "Disconnect Reason: " + Objects.toString(latestDisconnectReason));
+        updateStatus(ThingStatus.OFFLINE, "Disconnect Reason: " + Objects.toString(latestDisconnectReason));
     }
 
     // Cleanup delayedDisconnect on status change to online

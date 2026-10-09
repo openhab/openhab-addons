@@ -593,7 +593,11 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
     public void updateBridgeStatusExtended(@Nullable ThingStatus status, @Nullable ThingStatusDetail statusDetail,
             @Nullable String statusMessage) {
         if (status != null && statusDetail != null && statusMessage != null) {
-            updateStatus(status, statusDetail, statusMessage);
+            if (statusDetail == ThingStatusDetail.NONE) {
+                updateStatus(status, statusMessage);
+            } else {
+                updateStatus(statusDetail, statusMessage);
+            }
         }
     }
 

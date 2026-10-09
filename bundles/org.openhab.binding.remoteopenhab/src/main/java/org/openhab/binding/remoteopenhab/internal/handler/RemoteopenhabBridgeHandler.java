@@ -388,7 +388,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
                     restartStreamingUpdates();
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.error-channels-creation");
+                    updateStatus(ThingStatus.OFFLINE, "@text/offline.error-channels-creation");
                     stopStreamingUpdates();
                 }
             } else if (restartSse) {

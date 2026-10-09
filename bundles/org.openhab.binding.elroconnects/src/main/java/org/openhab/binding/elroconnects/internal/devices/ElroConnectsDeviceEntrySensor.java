@@ -97,7 +97,7 @@ public class ElroConnectsDeviceEntrySensor extends ElroConnectsDevice {
                 handler.updateState(BATTERY_LEVEL, UnDefType.UNDEF);
                 handler.updateState(LOW_BATTERY, UnDefType.UNDEF);
                 msg = String.format("@text/offline.device-fault [ \"%d\" ]", deviceId);
-                handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
+                handler.updateStatus(ThingStatus.ONLINE, msg);
                 break;
             default:
                 handler.updateState(ENTRY,

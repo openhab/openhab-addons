@@ -499,7 +499,7 @@ public abstract class TapoBaseDeviceHandler extends BaseThingHandler {
                     updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, deviceError.getMessage());
                     break;
                 default:
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, deviceError.getMessage());
+                    updateStatus(ThingStatus.UNKNOWN, deviceError.getMessage());
             }
         }
     }

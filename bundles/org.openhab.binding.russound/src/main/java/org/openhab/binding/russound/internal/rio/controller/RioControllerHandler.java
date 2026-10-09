@@ -181,7 +181,11 @@ public class RioControllerHandler extends AbstractBridgeHandler<RioControllerPro
                 new StatefulHandlerCallback(new AbstractRioHandlerCallback() {
                     @Override
                     public void statusChanged(ThingStatus status, ThingStatusDetail detail, String msg) {
-                        updateStatus(status, detail, msg);
+                        if (detail == ThingStatusDetail.NONE) {
+                            updateStatus(status, msg);
+                        } else {
+                            updateStatus(detail, msg);
+                        }
                     }
 
                     @Override
