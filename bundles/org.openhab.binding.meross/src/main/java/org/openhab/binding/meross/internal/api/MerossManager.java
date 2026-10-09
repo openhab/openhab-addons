@@ -74,7 +74,6 @@ public class MerossManager implements MqttMessageSubscriber {
     private MqttMessageBuilder mqttMessageBuilder;
 
     private String deviceRequestTopic;
-    private String deviceResponseTopic;
 
     private static final int FUTURE_TIMOUT_SEC = 5;
     private @Nullable CompletableFuture<Boolean> ipInitialized;
@@ -91,7 +90,6 @@ public class MerossManager implements MqttMessageSubscriber {
         this.mqttMessageBuilder = mqttConnector.getMqttMessageBuilder();
         this.deviceUUID = deviceUUID;
         this.deviceRequestTopic = mqttMessageBuilder.buildDeviceRequestTopic(deviceUUID);
-        this.deviceResponseTopic = mqttMessageBuilder.buildDeviceResponseTopic(deviceUUID);
         this.callback = callback;
         this.httpClient = httpClient;
         this.mqttConnector = mqttConnector;
@@ -269,11 +267,13 @@ public class MerossManager implements MqttMessageSubscriber {
 
             String method = null;
             Namespace namespace = null;
+            String deviceUUID = null;
             if (jsonObject.has("header") && !jsonObject.get("header").isJsonNull()) {
                 JsonObject header = jsonObject.getAsJsonObject("header");
-                if (header.has("from") && header.get("from").isJsonPrimitive()
-                        && !deviceResponseTopic.equals(header.get("from").getAsString())) {
-                    return;
+                if (header.has("uuid") && header.get("uuid").isJsonPrimitive()) {
+                    deviceUUID = header.get("uuid").getAsString();
+                } else if (header.has("from") && header.get("from").isJsonPrimitive()) {
+                    deviceUUID = mqttMessageBuilder.getDeviceUUID(header.get("from").getAsString());
                 }
                 if (header.has("method") && header.get("method").isJsonPrimitive() && header.has("namespace")
                         && header.get("namespace").isJsonPrimitive()) {
@@ -285,7 +285,7 @@ public class MerossManager implements MqttMessageSubscriber {
                     namespace = Namespace.getNamespaceByAbilityValue(namespaceString);
                 }
             }
-            if (method == null || namespace == null) {
+            if (method == null || namespace == null || !this.deviceUUID.equals(deviceUUID)) {
                 return;
             }
 
