@@ -111,6 +111,14 @@ class AirqHandlerTest {
                 new DecimalType(0.25f));
     }
 
+    @Test
+    void publishesRealTvocReadingInPartsPerBillion() throws Exception {
+        poll("{\"tvoc\": [2353, 401.2]}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#tvoc"),
+                new QuantityType<>(2353, Units.PARTS_PER_BILLION));
+    }
+
     @ParameterizedTest
     @CsvSource({ "TypPS, avgFineDustSize", "dCO2dt, dCO2dt", "dHdt, dHdt", "door_event, doorEvent",
             "measuretime, measureTime", "health, health", "performance, performance" })
@@ -311,8 +319,12 @@ class AirqHandlerTest {
     @Test
     void commandsUseTheGroupLessChannelId() throws Exception {
         AirqHandler commandHandler = requireNonNull(spy(handler));
-        doThrow(new AirqException("stop")).when(commandHandler).getData(anyString(), eq("POST"), anyString());
         commandHandler.config.password = "secret";
+        JsonObject response = new JsonObject();
+        response.addProperty("content",
+                commandHandler.encrypt("{}".getBytes(StandardCharsets.UTF_8), commandHandler.config.password));
+        doReturn(new AirqHandler.Result(response.toString(), 200)).when(commandHandler).getData(anyString(), eq("POST"),
+                anyString());
 
         commandHandler.handleCommand(new ChannelUID(thingUID, "general#wifiInfo"), OnOffType.ON);
 

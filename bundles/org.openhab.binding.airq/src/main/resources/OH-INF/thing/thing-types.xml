@@ -7,7 +7,7 @@
 		<label>air-Q</label>
 		<description>Thing for air-Q Device</description>
 		<category>Sensor</category>
-		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>
 			<channel-group id="measurements" typeId="measurements"/>
