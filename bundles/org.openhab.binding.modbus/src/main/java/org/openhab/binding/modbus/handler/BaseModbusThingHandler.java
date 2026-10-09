@@ -27,7 +27,6 @@ import org.openhab.core.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
@@ -61,7 +60,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
             getModbus();
             getSlaveId();
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, e.getMessage());
         }
 
         modbusInitialize();
@@ -191,7 +190,7 @@ public abstract class BaseModbusThingHandler extends BaseThingHandler {
                 throw new IllegalStateException("Not a Modbus Bridge: " + handler);
             }
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, e.getMessage());
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, e.getMessage());
             throw e;
         }
     }

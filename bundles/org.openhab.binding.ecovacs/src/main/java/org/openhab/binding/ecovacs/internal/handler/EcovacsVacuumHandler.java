@@ -524,7 +524,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     private void initDevice() {
         final EcovacsApiHandler handler = getApiHandler();
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 

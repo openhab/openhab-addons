@@ -297,7 +297,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
         SenseEnergyBridgeHandler bridgeHandler = (SenseEnergyBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return false;
         }
 

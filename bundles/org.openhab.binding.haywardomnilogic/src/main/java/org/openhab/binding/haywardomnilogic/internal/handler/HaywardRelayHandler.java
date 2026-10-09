@@ -59,7 +59,7 @@ public class HaywardRelayHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -110,7 +110,7 @@ public class HaywardRelayHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

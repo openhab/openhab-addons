@@ -392,7 +392,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                             break;
                         case INITIALIZING:
                         case UNINITIALIZED:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
                             break;
                         case UNKNOWN:
                             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);

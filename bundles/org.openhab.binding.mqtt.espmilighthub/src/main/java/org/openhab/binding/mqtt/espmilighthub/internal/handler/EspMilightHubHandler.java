@@ -536,7 +536,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
 
         Bridge localBridge = this.getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "Bridge is missing or offline, you need to setup a working MQTT broker first.");
             return;
         }
@@ -546,8 +546,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttMessag
             try {
                 connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        "Bridge handler has no valid broker connection!");
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler has no valid broker connection!");
                 return;
             }
             this.connection = connection;

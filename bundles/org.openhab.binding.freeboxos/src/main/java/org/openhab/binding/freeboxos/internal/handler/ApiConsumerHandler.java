@@ -202,7 +202,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
         return null;
     }

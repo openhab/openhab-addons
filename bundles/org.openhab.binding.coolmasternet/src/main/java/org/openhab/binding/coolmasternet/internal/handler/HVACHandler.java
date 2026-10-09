@@ -111,8 +111,7 @@ public class HVACHandler extends BaseThingHandler {
         final ControllerHandler handler = (ControllerHandler) bridge.getHandler();
 
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "CoolMasterNet Controller bridge not initialized");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "CoolMasterNet Controller bridge not initialized");
             return null;
         }
 

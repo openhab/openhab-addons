@@ -217,7 +217,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         } else if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())) {
             updateStatus(ThingStatus.ONLINE);
         } else if (ThingStatus.UNINITIALIZED.equals(bridgeStatusInfo.getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 

@@ -157,7 +157,7 @@ public class EchoHandler extends BaseThingHandler {
             account = handler;
             updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler not found.");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
 
         handlerStartTimestamp = System.currentTimeMillis();

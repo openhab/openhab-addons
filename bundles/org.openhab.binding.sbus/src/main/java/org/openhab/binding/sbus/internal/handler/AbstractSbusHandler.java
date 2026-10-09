@@ -73,8 +73,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
 
         sbusAdapter = bridgeHandler.getSbusConnection();
         if (sbusAdapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/error.device.bridge-not-initialized");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "@text/error.device.bridge-not-initialized");
             return;
         }
 

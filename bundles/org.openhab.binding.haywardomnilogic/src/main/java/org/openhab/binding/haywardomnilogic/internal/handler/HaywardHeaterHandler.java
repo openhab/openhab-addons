@@ -65,7 +65,7 @@ public class HaywardHeaterHandler extends HaywardThingHandler {
             }
             this.updateStatus(ThingStatus.ONLINE);
         } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            this.updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

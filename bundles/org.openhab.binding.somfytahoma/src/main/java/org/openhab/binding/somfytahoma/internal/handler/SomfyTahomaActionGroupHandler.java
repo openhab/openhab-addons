@@ -46,7 +46,7 @@ public class SomfyTahomaActionGroupHandler extends SomfyTahomaBaseThingHandler {
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 

@@ -467,7 +467,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     private void internalInitialize() {
         ZwaveJSBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 

@@ -152,7 +152,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                     updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         } else {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-light-id");

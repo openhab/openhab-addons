@@ -253,7 +253,7 @@ public class StationHandler extends BaseThingHandler {
                 }
             }
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         return null;
     }
 }

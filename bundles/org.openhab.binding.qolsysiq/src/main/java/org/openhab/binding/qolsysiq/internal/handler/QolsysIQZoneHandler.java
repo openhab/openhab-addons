@@ -118,7 +118,7 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
             updateZone(z);
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 

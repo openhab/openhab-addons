@@ -127,7 +127,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     private void loadVehicle(final String vin) {
         final var bridgeHnd = getBridgeHandler();
         if (bridgeHnd == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 

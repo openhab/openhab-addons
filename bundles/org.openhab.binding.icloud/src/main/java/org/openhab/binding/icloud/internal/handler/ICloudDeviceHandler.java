@@ -111,8 +111,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
                     updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                        "Bridge handler is not configured");
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler is not configured");
             }
         } else {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not configured");

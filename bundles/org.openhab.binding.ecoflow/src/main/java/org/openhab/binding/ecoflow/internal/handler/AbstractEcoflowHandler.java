@@ -87,7 +87,7 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         final EcoflowApiHandler apiHandler = getApiHandler();
         if (apiHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 
@@ -139,7 +139,7 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
     private void initDevice() {
         final EcoflowApiHandler apiHandler = getApiHandler();
         if (apiHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 

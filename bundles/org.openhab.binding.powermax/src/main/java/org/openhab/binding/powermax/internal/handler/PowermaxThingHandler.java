@@ -120,8 +120,8 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                 logger.debug("Set handler status to OFFLINE for thing {} (bridge OFFLINE)", getThing().getUID());
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            logger.debug("Set handler status to OFFLINE for thing {}", getThing().getUID());
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            logger.debug("Set handler status to UNINITIALIZED for thing {}", getThing().getUID());
         }
     }
 
@@ -274,10 +274,11 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
     }
 
     private boolean isNotReadyForThingStatusUpdate() {
-        return (getThing().getStatus() == ThingStatus.OFFLINE)
-                && ((getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR)
-                        || (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_OFFLINE)
-                        || (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.BRIDGE_UNINITIALIZED));
+        ThingStatusInfo statusInfo = getThing().getStatusInfo();
+        ThingStatusDetail detail = statusInfo.getStatusDetail();
+        return (statusInfo.getStatus() == ThingStatus.UNINITIALIZED && detail == ThingStatusDetail.BRIDGE_UNINITIALIZED)
+                || (statusInfo.getStatus() == ThingStatus.OFFLINE && (detail == ThingStatusDetail.CONFIGURATION_ERROR
+                        || detail == ThingStatusDetail.BRIDGE_OFFLINE));
     }
 
     public PowermaxZoneConfiguration getZoneConfiguration() {

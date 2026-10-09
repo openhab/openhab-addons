@@ -98,7 +98,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                     updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         } else {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-sensor-id");

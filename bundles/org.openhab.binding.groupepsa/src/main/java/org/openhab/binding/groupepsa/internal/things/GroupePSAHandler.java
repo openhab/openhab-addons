@@ -151,7 +151,7 @@ public class GroupePSAHandler extends BaseThingHandler {
                 startGroupePSAPolling(pollingIntervalM);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 

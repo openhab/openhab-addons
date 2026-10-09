@@ -63,7 +63,7 @@ public class TuyaSubDeviceHandler extends BaseTuyaDeviceHandler {
 
         TuyaGatewayHandler gatewayHandler = getGatewayHandler();
         if (gatewayHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 

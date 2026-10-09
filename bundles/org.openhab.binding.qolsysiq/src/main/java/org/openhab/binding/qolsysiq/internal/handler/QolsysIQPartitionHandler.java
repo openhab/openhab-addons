@@ -250,7 +250,7 @@ public class QolsysIQPartitionHandler extends BaseBridgeHandler implements Qolsy
     private void initializePartition() {
         QolsysIQPanelHandler panel = panelHandler();
         if (panel == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         } else if (panel.getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {

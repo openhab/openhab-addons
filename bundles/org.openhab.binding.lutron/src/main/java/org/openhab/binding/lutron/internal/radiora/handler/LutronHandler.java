@@ -38,7 +38,7 @@ public abstract class LutronHandler extends BaseThingHandler {
     public @Nullable RS232Handler getRS232Handler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Unable to get bridge");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Unable to get bridge");
             return null;
         }
         ThingHandler th = bridge.getHandler();

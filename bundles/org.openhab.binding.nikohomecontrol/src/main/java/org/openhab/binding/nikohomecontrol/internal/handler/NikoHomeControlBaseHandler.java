@@ -119,8 +119,7 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
         if (nhcBridgeHandler != null) {
             nhcBridgeHandler.bridgeOnline();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "@text/offline.bridge-unitialized");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "@text/offline.bridge-unitialized");
         }
     }
 

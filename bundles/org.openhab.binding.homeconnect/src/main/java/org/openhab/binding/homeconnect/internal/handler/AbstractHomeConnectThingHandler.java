@@ -142,7 +142,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         // Mark a new initialization generation; any previously scheduled or running init task becomes stale.
         final long generation = ++initializationGeneration;
         if (getBridgeHandler().isEmpty()) {
-            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
         } else if (isBridgeOffline()) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
@@ -808,7 +808,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             }
         });
         if (apiClient.isEmpty()) {
-            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
         }
     }

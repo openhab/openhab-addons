@@ -234,7 +234,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
 
         SenseEnergyMonitorHandler bridgeHandler = (SenseEnergyMonitorHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return false;
         }
 

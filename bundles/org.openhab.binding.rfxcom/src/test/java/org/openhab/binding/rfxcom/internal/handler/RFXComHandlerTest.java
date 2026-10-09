@@ -159,7 +159,7 @@ public class RFXComHandlerTest {
                 .thenReturn(new Configuration(Map.of("deviceId", "RAW", "subType", "RAW_PACKET1")));
 
         handler.initialize();
-        verifyStatusUpdated(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        verifyStatusUpdated(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED);
     }
 
     @Test
@@ -167,7 +167,7 @@ public class RFXComHandlerTest {
         when(thing.getConfiguration()).thenReturn(new Configuration(Map.of("deviceId", "1088338.11", "subType", "AC")));
 
         handler.initialize();
-        verifyStatusUpdated(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        verifyStatusUpdated(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED);
     }
 
     @Test

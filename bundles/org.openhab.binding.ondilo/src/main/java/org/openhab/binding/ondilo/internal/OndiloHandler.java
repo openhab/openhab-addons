@@ -155,7 +155,7 @@ public class OndiloHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             stopBridgeRecoveryJob();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             startBridgeRecoveryJob();
         }
     }
