@@ -314,6 +314,20 @@ public class ShellyBluApiTest {
     }
 
     @Test
+    void onNotifyEventPostsRawPayloadAlarmOnceWhenForwardedByTwoGateways() throws Exception {
+        ShellyBluApi api = buildBluApi();
+        String packet = """
+                {"src": "%s", "params": {"events": [{"event": "oh-blu.data",
+                 "data": {"addr": "aa:bb:cc:dd:ee:ff", "pid": 7, "ver": 2, "raw": "0155fe"}}]}}
+                """;
+
+        api.onNotifyEvent(packet.formatted("shellyblugw-a"));
+        api.onNotifyEvent(packet.formatted("shellyblugw-b"));
+
+        verify(thingMock, times(1)).postEvent("BTH_UNKNOWN_TYPE", false);
+    }
+
+    @Test
     void onNotifyEventOverwritesRepeatedScalarObjectInsteadOfThrowing() throws Exception {
         ShellyBluApi api = buildBluApi();
         String repeatedBatteryPacket = """

@@ -84,6 +84,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     private final Logger logger = LoggerFactory.getLogger(ShellyBluApi.class);
     private boolean connected; // true = BLU devices has connected
     private ShellySettingsStatus deviceStatus = new ShellySettingsStatus();
+    private final Object pidLock = new Object();
     private int lastPid = -1;
     private static final int PID_CYCLE_TRESHOLD = 50;
     private long lastTimeStampPacket = 0;
@@ -224,12 +225,11 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             for (Shelly2NotifyEvent e : events) {
                 String event = getString(e.event);
                 Shelly2NotifyBluEventData blu = event.startsWith(SHELLY2_EVENT_BLUPREFIX) ? e.getBluData(gson) : null;
+                @Nullable
+                String decodedAlarmCode = null;
                 if (blu != null && blu.raw != null) {
                     blu = decodeRawBTHomeData(blu);
-                    String alarmCode = blu.alarmCode;
-                    if (alarmCode != null) {
-                        t.postEvent(alarmCode, false);
-                    }
+                    decodedAlarmCode = blu.alarmCode;
                 }
                 if (event.startsWith(SHELLY2_EVENT_BLUPREFIX)) {
                     if (blu != null) {
@@ -237,25 +237,13 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                 getString(blu.addr), getInteger(blu.pid), eventJSON);
                     }
                     Integer bluPid = blu != null ? blu.pid : null;
-                    if (bluPid != null) {
-                        long epochNow = Instant.now().getEpochSecond();
-                        int pid = bluPid;
-                        if (lastPid != -1 && pid < (lastPid - PID_CYCLE_TRESHOLD)) {
-                            logger.debug(
-                                    "{}: Received pid {} is so low that a new cycle has probably begun since lastPID={}",
-                                    thingName, pid, lastPid);
-                        } else if (pid <= lastPid && epochNow - lastTimeStampPacket > PACKET_TIMESTAMP_TRESHOLD) {
-                            logger.debug(
-                                    "{}: Received pid {} is too low, but received more than {} sec. after lastPID={}. A new cycle has thus probably begun",
-                                    thingName, pid, PACKET_TIMESTAMP_TRESHOLD, lastPid);
-                        } else if (pid <= lastPid) {
-                            logger.debug("{}: Duplicate packet for pid {} received, ignore", thingName, pid);
-                            break;
-                        }
-                        lastPid = pid;
-                        lastTimeStampPacket = epochNow;
+                    if (bluPid != null && isDuplicatePacket(bluPid)) {
+                        break;
                     }
                     getThing().getProfile().gateway = getString(message.src);
+                }
+                if (decodedAlarmCode != null) {
+                    t.postEvent(decodedAlarmCode, false);
                 }
 
                 switch (event) {
@@ -450,6 +438,33 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         } catch (ShellyApiException e) {
             logger.debug("{}: Unable to process event", thingName, e);
             t.incProtErrors();
+        }
+    }
+
+    /**
+     * Checks the packet id against the last accepted one and records it when accepted.
+     * Several gateways may forward the same packet concurrently on their own WebSocket threads.
+     *
+     * @param pid packet id of the received BLU event
+     * @return true if the packet was already processed
+     */
+    private boolean isDuplicatePacket(int pid) {
+        synchronized (pidLock) {
+            long epochNow = Instant.now().getEpochSecond();
+            if (lastPid != -1 && pid < (lastPid - PID_CYCLE_TRESHOLD)) {
+                logger.debug("{}: Received pid {} is so low that a new cycle has probably begun since lastPID={}",
+                        thingName, pid, lastPid);
+            } else if (pid <= lastPid && epochNow - lastTimeStampPacket > PACKET_TIMESTAMP_TRESHOLD) {
+                logger.debug(
+                        "{}: Received pid {} is too low, but received more than {} sec. after lastPID={}. A new cycle has thus probably begun",
+                        thingName, pid, PACKET_TIMESTAMP_TRESHOLD, lastPid);
+            } else if (pid <= lastPid) {
+                logger.debug("{}: Duplicate packet for pid {} received, ignore", thingName, pid);
+                return true;
+            }
+            lastPid = pid;
+            lastTimeStampPacket = epochNow;
+            return false;
         }
     }
 
