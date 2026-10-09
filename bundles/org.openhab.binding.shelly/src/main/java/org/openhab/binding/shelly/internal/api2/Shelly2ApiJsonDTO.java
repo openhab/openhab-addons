@@ -217,6 +217,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_WAKEUPOCAUSE_USB = "usb";
     public static final String SHELLY2_WAKEUPOCAUSE_PERIODIC = "periodic";
     public static final String SHELLY2_WAKEUPOCAUSE_UPDATE = "status_update";
+    public static final String SHELLY2_WAKEUPOCAUSE_ALARM = "alarm";
+    public static final String SHELLY2_WAKEUPOCAUSE_ALARM_TEST = "alarm_test";
     public static final String SHELLY2_WAKEUPOCAUSE_UNDEFINED = "undefined";
 
     // Dimmer US: LED power modes

@@ -67,6 +67,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_WAKEUPT_POWERON = "POWERON"; // device powered up
     public static final String SHELLY_WAKEUPT_EXT_POWER = "EXT_POWER"; // charger connected
     public static final String SHELLY_WAKEUPT_UNKNOWN = "UNKNOWN"; // other event
+    public static final String SHELLY_WAKEUPT_NONE = "0"; // DW2 1.8
 
     //
     // Action URLs according to the device type
