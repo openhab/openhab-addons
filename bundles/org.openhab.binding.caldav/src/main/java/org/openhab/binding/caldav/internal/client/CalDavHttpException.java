@@ -16,6 +16,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpStatus;
 
 /**
  * HTTP failure without sensitive response bodies or URLs.
@@ -57,6 +58,9 @@ public class CalDavHttpException extends IOException {
         return statusCode;
     }
 
+    /**
+     * Returns the HTTP method used for the failed CalDAV request.
+     */
     public String operation() {
         return operation;
     }
@@ -66,6 +70,7 @@ public class CalDavHttpException extends IOException {
     }
 
     public boolean unsupportedReport() {
-        return unsupportedReport || statusCode == 405 || statusCode == 501;
+        return unsupportedReport || statusCode == HttpStatus.METHOD_NOT_ALLOWED_405
+                || statusCode == HttpStatus.NOT_IMPLEMENTED_501;
     }
 }

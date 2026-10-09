@@ -56,6 +56,7 @@ import org.openhab.binding.caldav.internal.config.AccountConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -79,6 +80,8 @@ import com.google.gson.JsonParser;
  * @author Andreas Vilippus - Lifecycle, cache and publication regression coverage
  * @author Andreas Vilippus - Versioned compact snapshots and canonical cache identity tests
  * @author Andreas Vilippus - Structured failure and retained data regression tests
+ * @author Andreas Vilippus - Calendar color channel and metadata lifecycle tests
+ * @author Andreas Vilippus - Localized Thing status and plain Item error tests
  */
 @NonNullByDefault
 @Timeout(15)
@@ -285,7 +288,7 @@ class CalendarHandlerTest {
             h.initialize();
             assertEquals(ThingStatus.UNKNOWN, h.status);
             assertEquals(ThingStatusDetail.NONE, h.detail);
-            assertEquals("Waiting for initial calendar synchronization", h.description);
+            assertEquals("@text/status.calendar.waiting", h.description);
             assertEquals("SYNCING", Objects.requireNonNull(h.published.get("sync#status")).toString());
             assertEquals("", Objects.requireNonNull(h.published.get("sync#error")).toString());
         } finally {
@@ -306,6 +309,9 @@ class CalendarHandlerTest {
                     Handler handler = fixture.handler;
                     assertEquals(ThingStatus.OFFLINE, handler.status, name + ": " + value);
                     assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, handler.detail);
+                    assertEquals("@text/status.calendar.configuration", handler.description);
+                    assertEquals("Invalid calendar configuration; check the collection URL and range settings",
+                            Objects.requireNonNull(handler.published.get("sync#error")).toString());
                     assertEquals("ERROR", Objects.requireNonNull(handler.published.get("sync#status")).toString());
                     assertEquals(UnDefType.UNDEF, handler.published.get("events#json"));
                     assertTrue(fixture.jobs.isEmpty());
@@ -401,7 +407,7 @@ class CalendarHandlerTest {
             assertEquals(synchronizedBefore ? ThingStatus.ONLINE : ThingStatus.UNKNOWN, h.status);
             assertEquals(ThingStatusDetail.NONE, h.detail);
             if (!synchronizedBefore) {
-                assertEquals("Fetching calendar data", h.description);
+                assertEquals("@text/status.calendar.fetching", h.description);
             }
             assertEquals("SYNCING", Objects.requireNonNull(h.published.get("sync#status")).toString());
             assertEquals("", Objects.requireNonNull(h.published.get("sync#error")).toString());
@@ -675,6 +681,113 @@ class CalendarHandlerTest {
     }
 
     @Test
+    void publishesServerCalendarColorsWithoutConversion() {
+        for (String color : List.of("#CEE7FFFF", "#CEE7FF", "#cee7ff", "#cee7ffff", "blue", "DarkGreen", "nonsense")) {
+            try (Fixture fixture = new Fixture(Map.of(), new MemoryStorage(), null, "Calendar",
+                    Map.of("calendarColor", color))) {
+                assertEquals(new StringType(color), fixture.handler.published.get("calendar-color"), color);
+                assertEquals(color, fixture.handler.getThing().getProperties().get("calendarColor"));
+                assertTrue(fixture.jobs.isEmpty());
+                assertTrue(fixture.storage.getKeys().isEmpty());
+            }
+        }
+    }
+
+    @Test
+    void trimsCalendarColorWithoutChangingDiscoveryMetadata() {
+        String raw = "  #CEE7FFFF  ";
+        try (Fixture fixture = new Fixture(Map.of(), new MemoryStorage(), null, "Calendar",
+                Map.of("calendarColor", raw, "calendarPrivileges", "read,write", "calendarDescription", "Family"))) {
+            assertEquals("#CEE7FFFF",
+                    Objects.requireNonNull(fixture.handler.published.get("calendar-color")).toString());
+            assertEquals(
+                    Map.of("calendarColor", raw, "calendarPrivileges", "read,write", "calendarDescription", "Family"),
+                    fixture.handler.getThing().getProperties());
+        }
+    }
+
+    @Test
+    void absentOrBlankCalendarColorPublishesUndef() {
+        for (Map<String, String> properties : List.of(Map.<String, String> of(), Map.of("calendarColor", ""),
+                Map.of("calendarColor", "   "), Map.of("calendarColor", "\u2003"))) {
+            try (Fixture fixture = new Fixture(Map.of(), new MemoryStorage(), null, "Calendar", properties)) {
+                assertEquals(UnDefType.UNDEF, fixture.handler.published.get("calendar-color"));
+            }
+        }
+    }
+
+    @Test
+    void rejectsControlCharactersWithoutRepairingCalendarColor() {
+        for (String raw : List.of("#CEE7FF\nblue", "blue\r", "\tblue", "blue\u0000", "blue\u001B", "blue\u007F",
+                "blue\u0085")) {
+            try (Fixture fixture = new Fixture(Map.of(), new MemoryStorage(), null, "Calendar",
+                    Map.of("calendarColor", raw))) {
+                assertEquals(UnDefType.UNDEF, fixture.handler.published.get("calendar-color"));
+                assertEquals(raw, fixture.handler.getThing().getProperties().get("calendarColor"));
+            }
+        }
+    }
+
+    @Test
+    void thingUpdatesRepublishChangedAndRemovedCalendarColor() {
+        try (Fixture fixture = new Fixture(Map.of(), new MemoryStorage(), null, "Calendar",
+                Map.of("calendarColor", "#CEE7FFFF"))) {
+            Handler h = fixture.handler;
+            for (Map<String, String> properties : List.of(Map.of("calendarColor", "blue"),
+                    Map.of("calendarColor", " #cee7ff "), Map.<String, String> of(),
+                    Map.of("calendarColor", "DarkGreen"))) {
+                Thing current = h.getThing();
+                Thing updated = ThingBuilder.create(current.getThingTypeUID(), current.getUID())
+                        .withConfiguration(current.getConfiguration()).withProperties(properties).build();
+                h.thingUpdated(updated);
+                String raw = properties.get("calendarColor");
+                assertEquals(raw == null ? UnDefType.UNDEF : new StringType(raw.trim()),
+                        h.published.get("calendar-color"));
+                assertEquals(ThingStatus.UNKNOWN, h.status);
+                assertTrue(fixture.jobs.isEmpty());
+            }
+        }
+    }
+
+    @Test
+    void calendarColorRefreshReadsCurrentMetadataWithoutFetchingEvents() throws Exception {
+        AtomicInteger requests = new AtomicInteger();
+        try (Fixture fixture = new Fixture(Map.of(), new MemoryStorage(), null, "Calendar",
+                Map.of("calendarColor", "#CEE7FFFF"))) {
+            Handler h = fixture.handler;
+            h.synchronize((m, u, b, d) -> {
+                requests.incrementAndGet();
+                return multistatus(calendar("running", "DTSTART:20260918T080000Z\nDURATION:PT2H\n"));
+            }, account(), () -> true);
+            Map<String, State> events = new HashMap<>(h.published);
+            events.remove("calendar-color");
+            ChannelUID channel = new ChannelUID(h.getThing().getUID(), "calendar-color");
+            h.getThing().setProperty("calendarColor", " blue ");
+            h.handleCommand(channel, RefreshType.REFRESH);
+            assertEquals("blue", Objects.requireNonNull(h.published.remove("calendar-color")).toString());
+            assertEquals(events, h.published);
+            h.getThing().setProperty("calendarColor", null);
+            h.handleCommand(channel, RefreshType.REFRESH);
+            assertEquals(UnDefType.UNDEF, h.published.remove("calendar-color"));
+            assertEquals(events, h.published);
+            assertEquals(1, requests.get());
+        }
+    }
+
+    @Test
+    void disposedCalendarDoesNotPublishColorOnRefresh() {
+        try (Fixture fixture = new Fixture(Map.of(), new MemoryStorage(), null, "Calendar",
+                Map.of("calendarColor", "blue"))) {
+            Handler h = fixture.handler;
+            h.dispose();
+            h.published.clear();
+            h.getThing().setProperty("calendarColor", "DarkGreen");
+            h.handleCommand(new ChannelUID(h.getThing().getUID(), "calendar-color"), RefreshType.REFRESH);
+            assertTrue(h.published.isEmpty());
+        }
+    }
+
+    @Test
     void allRefreshChannelsAndWriteCommandsAreLocal() throws Exception {
         AtomicInteger requests = new AtomicInteger();
         try (Fixture fixture = new Fixture(Map.of())) {
@@ -684,7 +797,7 @@ class CalendarHandlerTest {
                 return multistatus(calendar("running", "DTSTART:20260918T080000Z\nDURATION:PT2H\n"));
             }, account(), () -> true);
             Map<String, State> before = Map.copyOf(h.published);
-            assertEquals(27, before.size());
+            assertEquals(28, before.size());
             for (String channel : before.keySet()) {
                 h.handleCommand(new ChannelUID(h.getThing().getUID(), channel), RefreshType.REFRESH);
                 h.handleCommand(new ChannelUID(h.getThing().getUID(), channel), OnOffType.ON);
@@ -1102,37 +1215,37 @@ class CalendarHandlerTest {
     @Test
     void http401ExplainsAuthenticationFailureAndPreservesLastUsableData() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 401), ThingStatusDetail.CONFIGURATION_ERROR,
-                "Authentication failed (HTTP 401)", true);
+                "@text/status.calendar.authentication", "Authentication failed (HTTP 401)", true);
     }
 
     @Test
     void http403ExplainsForbiddenCalendarAccess() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 403), ThingStatusDetail.CONFIGURATION_ERROR,
-                "Calendar access forbidden (HTTP 403)", true);
+                "@text/status.calendar.forbidden", "Calendar access forbidden (HTTP 403)", true);
     }
 
     @Test
     void http404BeforeFirstSuccessReportsConfigurationError() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 404), ThingStatusDetail.CONFIGURATION_ERROR,
-                "Calendar collection was not found (HTTP 404)", false);
+                "@text/status.calendar.not-found", "Calendar collection was not found (HTTP 404)", false);
     }
 
     @Test
     void http404AfterLiveSuccessReportsGoneAndPreservesLastUsableData() throws Exception {
-        checkFailure(new CalDavHttpException("REPORT", 404), ThingStatusDetail.GONE,
+        checkFailure(new CalDavHttpException("REPORT", 404), ThingStatusDetail.GONE, "@text/status.calendar.gone",
                 "Calendar collection is no longer available (HTTP 404)", true);
     }
 
     @Test
     void http500ExplainsServerFailureAndPreservesLastUsableData() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 500), ThingStatusDetail.COMMUNICATION_ERROR,
-                "Server returned HTTP 500", true);
+                "@text/status.calendar.http-error [\"500\"]", "Server returned HTTP 500", true);
     }
 
     @Test
     void rejectedReportPreservesHttpStatus() throws Exception {
         checkFailure(new CalDavHttpException("REPORT", 405), ThingStatusDetail.COMMUNICATION_ERROR,
-                "Server returned HTTP 405", true);
+                "@text/status.calendar.http-error [\"405\"]", "Server returned HTTP 405", true);
     }
 
     @Test
@@ -1140,19 +1253,22 @@ class CalendarHandlerTest {
         for (Exception timeout : List.of(new TimeoutException("private-host password"),
                 new SocketTimeoutException("private-host password"))) {
             checkFailure(new IOException("private calendar-data", timeout), ThingStatusDetail.COMMUNICATION_ERROR,
-                    "CalDAV request timed out", true);
+                    "@text/status.timeout", "CalDAV request timed out", true);
         }
         checkFailure(new IOException("private calendar-data", new UnknownHostException("private-host password")),
-                ThingStatusDetail.COMMUNICATION_ERROR, "CalDAV server name could not be resolved", true);
+                ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.dns", "CalDAV server name could not be resolved",
+                true);
         checkFailure(new IOException("private calendar-data", new ConnectException("private-host password")),
-                ThingStatusDetail.COMMUNICATION_ERROR, "Unable to connect to the CalDAV server", true);
+                ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.connection",
+                "Unable to connect to the CalDAV server", true);
         checkFailure(
                 new IOException("private calendar-data", new SSLHandshakeException("private-certificate password")),
-                ThingStatusDetail.COMMUNICATION_ERROR, "TLS connection to the CalDAV server failed", true);
+                ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.tls", "TLS connection to the CalDAV server failed",
+                true);
     }
 
-    private void checkFailure(IOException failure, ThingStatusDetail detail, String description,
-            boolean synchronizedBefore) throws Exception {
+    private void checkFailure(IOException failure, ThingStatusDetail detail, String statusDescription,
+            String description, boolean synchronizedBefore) throws Exception {
         try (Fixture fixture = new Fixture(Map.of())) {
             Handler handler = fixture.handler;
             if (synchronizedBefore) {
@@ -1172,7 +1288,7 @@ class CalendarHandlerTest {
             }, account(), () -> true);
             assertEquals(ThingStatus.OFFLINE, handler.status);
             assertEquals(detail, handler.detail);
-            assertEquals(description, handler.description);
+            assertEquals(statusDescription, handler.description);
             assertEquals(description, Objects.requireNonNull(handler.published.get("sync#error")).toString());
             assertEquals("ERROR", Objects.requireNonNull(handler.published.get("sync#status")).toString());
             assertEquals(events, handler.published.get("events#json"));
@@ -1207,8 +1323,9 @@ class CalendarHandlerTest {
             }, config, () -> true);
             assertEquals(ThingStatus.OFFLINE, handler.status);
             assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, handler.detail);
-            assertEquals("Calendar resource changed during synchronization (HTTP 404)", handler.description);
-            assertEquals(handler.description, Objects.requireNonNull(handler.published.get("sync#error")).toString());
+            assertEquals("@text/status.calendar.resource-changed", handler.description);
+            assertEquals("Calendar resource changed during synchronization (HTTP 404)",
+                    Objects.requireNonNull(handler.published.get("sync#error")).toString());
             assertEquals(events, handler.published.get("events#json"));
             assertEquals(lastSync, handler.published.get("sync#last"));
         }
@@ -1225,15 +1342,17 @@ class CalendarHandlerTest {
             handler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "CalDAV account communication failed"));
             assertEquals(ThingStatusDetail.GONE, handler.detail);
-            assertEquals("Calendar collection is no longer available (HTTP 404)", handler.description);
-            assertEquals(handler.description, Objects.requireNonNull(handler.published.get("sync#error")).toString());
+            assertEquals("@text/status.calendar.gone", handler.description);
+            assertEquals("Calendar collection is no longer available (HTTP 404)",
+                    Objects.requireNonNull(handler.published.get("sync#error")).toString());
             handler.synchronize((method, uri, body, depth) -> multistatus(), account(), () -> true);
             assertEquals(ThingStatus.ONLINE, handler.status);
             assertEquals("", Objects.requireNonNull(handler.published.get("sync#error")).toString());
             handler.bridgeConnectionFailed();
             assertEquals(ThingStatusDetail.BRIDGE_OFFLINE, handler.detail);
-            assertEquals("Account bridge is offline", handler.description);
-            assertEquals(handler.description, Objects.requireNonNull(handler.published.get("sync#error")).toString());
+            assertEquals("@text/status.calendar.bridge-offline", handler.description);
+            assertEquals("Account bridge is offline",
+                    Objects.requireNonNull(handler.published.get("sync#error")).toString());
         }
     }
 }

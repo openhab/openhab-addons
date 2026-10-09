@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Vilippus - Configured polling and retry scheduling
  * @author Andreas Vilippus - Remote-confirmed recovery and retained discovery work
  * @author Andreas Vilippus - Session-bound discovery cancellation
+ * @author Andreas Vilippus - Localized Thing status descriptions
  */
 @NonNullByDefault
 public class AccountHandler extends BaseBridgeHandler {
@@ -140,7 +141,7 @@ public class AccountHandler extends BaseBridgeHandler {
             Session next = new Session(configuration, http);
             synchronized (lifecycle) {
                 session = next;
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for CalDAV server communication");
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.account.waiting");
                 CalDavDiscoveryService service = discoveryService;
                 if (service != null) {
                     service.startScan();
@@ -150,7 +151,7 @@ public class AccountHandler extends BaseBridgeHandler {
             }
         } catch (IllegalArgumentException e) {
             var failure = CalDavErrors.account(e);
-            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.description());
+            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
         }
     }
 
@@ -357,7 +358,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 return;
             }
             current.failures = Math.min(6, current.failures + 1);
-            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.description());
+            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
         }
         if (notifyCalendars) {
             for (var thing : getThing().getThings()) {

@@ -34,6 +34,9 @@ public enum DavPrivilege {
         this.externalName = externalName;
     }
 
+    /**
+     * Returns the DAV privilege name advertised by the server.
+     */
     public String externalName() {
         return externalName;
     }

@@ -36,6 +36,7 @@ import org.eclipse.jetty.client.util.BasicAuthentication;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.caldav.internal.config.AccountConfiguration;
 
 /**
@@ -97,25 +98,25 @@ public final class CalDavClient implements DavTransport {
                 var received = response.getResponse();
                 int status = received == null ? 0 : received.getStatus();
                 if (response.isFailed()) {
-                    result.completeExceptionally(
-                            status >= 300 ? new CalDavHttpException(method, status, false, false, response.getFailure())
-                                    : new IOException("CalDAV transport failed", response.getFailure()));
+                    result.completeExceptionally(status >= HttpStatus.MULTIPLE_CHOICES_300
+                            ? new CalDavHttpException(method, status, false, false, response.getFailure())
+                            : new IOException("CalDAV transport failed", response.getFailure()));
                     return;
                 }
                 String content;
                 try {
                     content = decodeContent(this);
                 } catch (IOException e) {
-                    if (status >= 200 && status < 300) {
+                    if (status >= HttpStatus.OK_200 && status < HttpStatus.MULTIPLE_CHOICES_300) {
                         result.completeExceptionally(e);
                         return;
                     }
                     content = "";
                 }
-                if (status < 200 || status >= 300) {
+                if (status < HttpStatus.OK_200 || status >= HttpStatus.MULTIPLE_CHOICES_300) {
                     boolean invalidToken = false;
                     boolean unsupportedReport = false;
-                    if (status == 403) {
+                    if (status == HttpStatus.FORBIDDEN_403) {
                         try {
                             var error = CalDavXml.parse(content).getDocumentElement();
                             if ("DAV:".equals(error.getNamespaceURI()) && "error".equals(error.getLocalName())) {

@@ -1,3 +1,9 @@
+---
+children:
+
+  - ["doc/calendar-agenda-widget", "Calendar Agenda Widget"]
+---
+
 # CalDAV Binding
 
 The CalDAV binding connects openHAB directly to CalDAV servers.
@@ -25,10 +31,10 @@ Further discovery scans can be started explicitly from the Inbox.
 
 The `discoveryMode` parameter defines what the configured `url` represents and therefore which CalDAV discovery steps are performed.
 
-| Mode     | `url` represents                                   | Discovery steps                                                                                                           |
-|----------|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| `AUTO`   | CalDAV service endpoint                            | Resolve `DAV:current-user-principal`, read all `CALDAV:calendar-home-set` URLs, then enumerate their Calendar Collections |
-| `DIRECT` | Collection container such as a `calendar-home-set` | Enumerate Calendar Collections directly with `PROPFIND` and `Depth: 1`                                                    |
+| Mode       | `url` represents                                     | Discovery steps                                                                                                             |
+| ---------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `AUTO`     | CalDAV service endpoint                              | Resolve `DAV:current-user-principal`, read all `CALDAV:calendar-home-set` URLs, then enumerate their Calendar Collections   |
+| `DIRECT`   | Collection container such as a `calendar-home-set`   | Enumerate Calendar Collections directly with `PROPFIND` and `Depth: 1`                                                      |
 
 In `AUTO` mode, all `calendar-home-set` URLs returned for the principal are processed and the discovered Calendar Collections are deduplicated by collection URI.
 
@@ -50,11 +56,11 @@ Calendars without a display name use a compact path or digest as their label.
 
 Discovery also reads optional server metadata in the same request and stores available values as Thing properties:
 
-| Property | Description |
-| -------- | ----------- |
-| `calendarDescription` | Server-provided Calendar Collection description |
-| `calendarColor` | Server-provided color from the optional Apple calendar extension |
-| `calendarPrivileges` | Reported DAV privileges, sorted and comma-separated, for example `read,write,write-content` |
+| Property              | Description                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| `calendarDescription` | Server-provided Calendar Collection description                                             |
+| `calendarColor`       | Server-provided color from the optional Apple calendar extension                            |
+| `calendarPrivileges`  | Reported DAV privileges, sorted and comma-separated, for example `read,write,write-content` |
 
 These properties are only present when supplied by the server; `calendarPrivileges` requires at least one recognized privilege.
 Privileges are informational and do not grant local permission to write.
@@ -132,46 +138,59 @@ Parser and resource limits cause an error rather than silent truncation.
 
 ## Channels
 
-All Calendar Thing channels are organized in channel groups.
+The `calendar-color` channel belongs to the calendar itself.
+Event and synchronization channels are organized in the groups below.
+
+### `calendar-color`
+
+| Channel          | Channel Type ID  | Item Type | Description                                           |
+| ---------------- | ---------------- | --------- | ----------------------------------------------------- |
+| `calendar-color` | `calendar-color` | String    | Color assigned to this calendar by the CalDAV server. |
+
+This read-only String channel exposes the existing `calendarColor` Thing property without an additional server request.
+Typical server values are CSS-compatible strings such as `#RRGGBB`, `#RRGGBBAA` or named colors like `blue`.
+The binding trims surrounding whitespace and publishes `UNDEF` for missing, blank or control-character-containing values.
+It otherwise preserves the server value, including case and alpha, without validating or converting the color syntax.
+Link it to a String Item to use the calendar color in widgets or rules.
 
 ### `events`
 
-| Channel | Channel Type ID | Item Type | Description |
-| --- | --- | --- | --- |
-| `events#json` | `events-json` | String | All event instances within the configured time range as a JSON array. |
-| `events#count` | `event-count` | Number | Number of event instances within the configured time range. |
-| `events#range-start` | `range-start` | DateTime | Effective start of the current output range. |
-| `events#range-end` | `range-end` | DateTime | Exclusive end of the current output range. |
-| `events#truncated` | `events-truncated` | Switch | Indicates whether additional event instances were omitted because the configured maximum event count was reached. |
+| Channel              | Channel Type ID    | Item Type | Description                                                                                                       |
+| -------------------- | ------------------ | --------- | ----------------------------------------------------------------------------------------------------------------- |
+| `events#json`        | `events-json`      | String    | All event instances within the configured time range as a JSON array.                                             |
+| `events#count`       | `event-count`      | Number    | Number of event instances within the configured time range.                                                       |
+| `events#range-start` | `range-start`      | DateTime  | Effective start of the current output range.                                                                      |
+| `events#range-end`   | `range-end`        | DateTime  | Exclusive end of the current output range.                                                                        |
+| `events#truncated`   | `events-truncated` | Switch    | Indicates whether additional event instances were omitted because the configured maximum event count was reached. |
 
 ### `current`
 
-| Channel | Channel Type ID | Item Type | Description |
-| --- | --- | --- | --- |
-| `current#active` | `current-active` | Switch | Indicates whether an event is currently active. |
-| `current#uid` | `current-uid` | String | UID of the currently active event. |
-| `current#title` | `current-title` | String | Title of the currently active event. |
-| `current#description` | `current-description` | String | Description of the currently active event. |
-| `current#location` | `current-location` | String | Location of the currently active event. |
-| `current#start` | `current-start` | DateTime | Start time of the currently active event. |
-| `current#end` | `current-end` | DateTime | End time of the currently active event. |
-| `current#all-day` | `current-all-day` | Switch | Indicates whether the currently active event is an all-day event. |
-| `current#organizer` | `current-organizer` | String | Organizer of the currently active event. |
-| `current#categories` | `current-categories` | String | Categories of the currently active event. |
+| Channel               | Channel Type ID       | Item Type | Description                                                       |
+| --------------------- | --------------------- | --------- | ----------------------------------------------------------------- |
+| `current#active`      | `current-active`      | Switch    | Indicates whether an event is currently active.                   |
+| `current#uid`         | `current-uid`         | String    | UID of the currently active event.                                |
+| `current#title`       | `current-title`       | String    | Title of the currently active event.                              |
+| `current#description` | `current-description` | String    | Description of the currently active event.                        |
+| `current#location`    | `current-location`    | String    | Location of the currently active event.                           |
+| `current#start`       | `current-start`       | DateTime  | Start time of the currently active event.                         |
+| `current#end`         | `current-end`         | DateTime  | End time of the currently active event.                           |
+| `current#all-day`     | `current-all-day`     | Switch    | Indicates whether the currently active event is an all-day event. |
+| `current#organizer`   | `current-organizer`   | String    | Organizer of the currently active event.                          |
+| `current#categories`  | `current-categories`  | String    | Categories of the currently active event.                         |
 
 ### `next`
 
-| Channel | Channel Type ID | Item Type | Description |
-| --- | --- | --- | --- |
-| `next#uid` | `next-uid` | String | UID of the next event. |
-| `next#title` | `next-title` | String | Title of the next event. |
-| `next#description` | `next-description` | String | Description of the next event. |
-| `next#location` | `next-location` | String | Location of the next event. |
-| `next#start` | `next-start` | DateTime | Start time of the next event. |
-| `next#end` | `next-end` | DateTime | End time of the next event. |
-| `next#all-day` | `next-all-day` | Switch | Indicates whether the next event is an all-day event. |
-| `next#organizer` | `next-organizer` | String | Organizer of the next event. |
-| `next#categories` | `next-categories` | String | Categories of the next event. |
+| Channel            | Channel Type ID    | Item Type | Description                                           |
+| ------------------ | ------------------ | --------- | ----------------------------------------------------- |
+| `next#uid`         | `next-uid`         | String    | UID of the next event.                                |
+| `next#title`       | `next-title`       | String    | Title of the next event.                              |
+| `next#description` | `next-description` | String    | Description of the next event.                        |
+| `next#location`    | `next-location`    | String    | Location of the next event.                           |
+| `next#start`       | `next-start`       | DateTime  | Start time of the next event.                         |
+| `next#end`         | `next-end`         | DateTime  | End time of the next event.                           |
+| `next#all-day`     | `next-all-day`     | Switch    | Indicates whether the next event is an all-day event. |
+| `next#organizer`   | `next-organizer`   | String    | Organizer of the next event.                          |
+| `next#categories`  | `next-categories`  | String    | Categories of the next event.                         |
 
 `current` shows an event that is in progress within the configured time range, including all-day events.
 `next` shows the next upcoming event in that range; past and running events are excluded.
@@ -183,11 +202,11 @@ When there is no current event, `current#active` is `OFF`.
 
 ### `sync`
 
-| Channel | Channel Type ID | Item Type | Description |
-| --- | --- | --- | --- |
-| `sync#last` | `last-sync` | DateTime | Time of the last complete successful synchronization. |
-| `sync#status` | `sync-status` | String | Current synchronization status of the calendar. |
-| `sync#error` | `connection-error` | String | Last communication or synchronization error reported for this calendar. |
+| Channel       | Channel Type ID    | Item Type | Description                                                             |
+| ------------- | ------------------ | --------- | ----------------------------------------------------------------------- |
+| `sync#last`   | `last-sync`        | DateTime  | Time of the last complete successful synchronization.                   |
+| `sync#status` | `sync-status`      | String    | Current synchronization status of the calendar.                         |
+| `sync#error`  | `connection-error` | String    | Last communication or synchronization error reported for this calendar. |
 
 ## `events#json` Format
 
@@ -222,39 +241,45 @@ Timed values are ISO-8601 timestamps with an offset; seconds may be omitted when
 
 ## MainUI Widget
 
-The separate MainUI agenda widget displays events from a String Item linked to `events#json`.
+The [Calendar Agenda Widget](doc/calendar-agenda-widget.md) displays events from `events#json` and can use the `calendar-color` Item.
 Install the widget separately; it is not installed with the binding.
 Widget installation and presentation are independent of the binding configuration.
+
+The optional `calendarColorItem` widget parameter selects a String Item linked to `calendar-color`.
+One color Item supplies the color for all event titles and current-event markers displayed from that calendar.
+The optional manual `color` parameter takes precedence over the color Item; otherwise the widget retains its existing default colors.
+Item states `NULL`, `UNDEF` and empty or whitespace-only strings fall back to those defaults.
+The widget uses the String directly as a CSS color without validating its syntax; use the manual override if a server value is unsuitable.
 
 ## Configuration
 
 ### Account Parameters
 
-| Name | Type | Description | Default | Required | Advanced |
-| --- | --- | --- | --- | --- | --- |
-| `url` | text | Starting URL for CalDAV discovery; its meaning depends on `discoveryMode` | N/A | yes | no |
-| `username` | text | Username used for authentication. Configure both `username` and `password`, or leave both empty for anonymous access. | N/A | no | no |
-| `password` | text | Password or application password used for authentication. Configure both `username` and `password`, or leave both empty for anonymous access. | N/A | no | no |
-| `authType` | text | `BASIC`, `DIGEST`, or `AUTO` to accept either authentication challenge. Used when username and password are configured. | `AUTO` | yes | no |
-| `requestTimeout` | integer | Request timeout in seconds, 1–300 | `30` | yes | no |
-| `verifyCertificate` | boolean | Validates TLS certificates; `false` disables verification | `true` | yes | no |
-| `discoveryMode` | text | Defines what `url` represents: `AUTO` starts with principal discovery; `DIRECT` enumerates Calendar Collections directly at `url` | `AUTO` | yes | no |
-| `refreshInterval` | integer | Polling delay in seconds; 30–2147483647 | `300` | yes | no |
-| `syncMode` | text | `AUTO`, `SYNC_TOKEN`, `ETAG`, or `FULL` | `AUTO` | yes | no |
-| `maxPastDays` | integer | Days before today in the sync horizon, 0–36500 | `30` | yes | no |
-| `maxFutureDays` | integer | Days after today in the sync horizon, 1–36500 | `365` | yes | no |
-| `readOnly` | boolean | Must be `true`; `false` is rejected | `true` | yes | yes |
+| Name                | Type    | Description                                                                                                                                   | Default | Required | Advanced |
+| ------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
+| `url`               | text    | Starting URL for CalDAV discovery; its meaning depends on `discoveryMode`                                                                     | N/A     | yes      | no       |
+| `username`          | text    | Username used for authentication. Configure both `username` and `password`, or leave both empty for anonymous access.                         | N/A     | no       | no       |
+| `password`          | text    | Password or application password used for authentication. Configure both `username` and `password`, or leave both empty for anonymous access. | N/A     | no       | no       |
+| `authType`          | text    | `BASIC`, `DIGEST`, or `AUTO` to accept either authentication challenge. Used when username and password are configured.                       | `AUTO`  | yes      | no       |
+| `requestTimeout`    | integer | Request timeout in seconds, 1–300                                                                                                             | `30`    | yes      | no       |
+| `verifyCertificate` | boolean | Validates TLS certificates; `false` disables verification                                                                                     | `true`  | yes      | no       |
+| `discoveryMode`     | text    | Defines what `url` represents: `AUTO` starts with principal discovery; `DIRECT` enumerates Calendar Collections directly at `url`             | `AUTO`  | yes      | no       |
+| `refreshInterval`   | integer | Polling delay in seconds; 30–2147483647                                                                                                       | `300`   | yes      | no       |
+| `syncMode`          | text    | `AUTO`, `SYNC_TOKEN`, `ETAG`, or `FULL`                                                                                                       | `AUTO`  | yes      | no       |
+| `maxPastDays`       | integer | Days before today in the sync horizon, 0–36500                                                                                                | `30`    | yes      | no       |
+| `maxFutureDays`     | integer | Days after today in the sync horizon, 1–36500                                                                                                 | `365`   | yes      | no       |
+| `readOnly`          | boolean | Must be `true`; `false` is rejected                                                                                                           | `true`  | yes      | yes      |
 
 ### Calendar Parameters
 
-| Name | Type | Description | Default | Required | Advanced |
-| --- | --- | --- | --- | --- | --- |
-| `path` | text | Absolute same-origin Calendar Collection URL or URI reference resolved against the account URL; the collection need not be below the account path | N/A | yes | no |
-| `rangeAnchor` | text | `TODAY` (local midnight) or `NOW` | `TODAY` | yes | no |
-| `rangeStartOffset` | integer | Inclusive start offset in days; -2147483648–2147483647 | `0` | yes | no |
-| `rangeEndOffset` | integer | Inclusive final-day offset; exclusive end adds one day; -2147483648–2147483647 | `6` | yes | no |
-| `maxEvents` | integer | Maximum published instances, 1–50000 | `500` | yes | no |
-| `includeCancelled` | boolean | Includes cancelled instances when `true` | `false` | yes | yes |
+| Name               | Type    | Description                                                                                                                                       | Default | Required | Advanced |
+| ------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
+| `path`             | text    | Absolute same-origin Calendar Collection URL or URI reference resolved against the account URL; the collection need not be below the account path | N/A     | yes      | no       |
+| `rangeAnchor`      | text    | `TODAY` (local midnight) or `NOW`                                                                                                                 | `TODAY` | yes      | no       |
+| `rangeStartOffset` | integer | Inclusive start offset in days; -2147483648–2147483647                                                                                            | `0`     | yes      | no       |
+| `rangeEndOffset`   | integer | Inclusive final-day offset; exclusive end adds one day; -2147483648–2147483647                                                                    | `6`     | yes      | no       |
+| `maxEvents`        | integer | Maximum published instances, 1–50000                                                                                                              | `500`   | yes      | no       |
+| `includeCancelled` | boolean | Includes cancelled instances when `true`                                                                                                          | `false` | yes      | yes      |
 
 The Calendar Collection must have the same scheme, host and effective port as the account URL.
 The account path is not a required prefix of the collection path.
@@ -314,11 +339,12 @@ things:
 ### Item Configuration
 
 ```java
-String   Family_Cal_Events      "Calendar events" { channel="caldav:calendar:ionos:family:events#json" }
-Number   Family_Cal_Count       "Event count"      { channel="caldav:calendar:ionos:family:events#count" }
-Switch   Family_Cal_Truncated   "Event list truncated" { channel="caldav:calendar:ionos:family:events#truncated" }
-DateTime Family_Cal_LastSync    "Last sync" { channel="caldav:calendar:ionos:family:sync#last" }
-String   Family_Cal_SyncStatus  "Sync"             { channel="caldav:calendar:ionos:family:sync#status" }
+String   Family_Cal_Events     "Calendar events"      { channel="caldav:calendar:ionos:family:events#json" }
+String   Family_Cal_Color      "Calendar color"       { channel="caldav:calendar:ionos:family:calendar-color" }
+Number   Family_Cal_Count      "Event count"          { channel="caldav:calendar:ionos:family:events#count" }
+Switch   Family_Cal_Truncated  "Event list truncated" { channel="caldav:calendar:ionos:family:events#truncated" }
+DateTime Family_Cal_LastSync   "Last sync"            { channel="caldav:calendar:ionos:family:sync#last" }
+String   Family_Cal_SyncStatus "Sync"                 { channel="caldav:calendar:ionos:family:sync#status" }
 ```
 
 ### Example: IONOS CalDAV
@@ -392,31 +418,31 @@ If the output range moves beyond the synchronized horizon, the calendar reports 
 
 ## Troubleshooting
 
-### Authentication failed
+### Authentication Failed
 
 HTTP 401 is reported as an authentication failure.
 Check the server URL, username and password/application password.
 The Account Thing remains `OFFLINE` while requests are rejected and returns to `ONLINE` after successful server communication.
 
-### Access forbidden
+### Access Forbidden
 
 HTTP 403 means that the account may be authenticated but does not have permission to access the endpoint or calendar.
 Check the account permissions and the Calendar Collection path.
 
-### Connection errors
+### Connection Errors
 
 The status description distinguishes an unresolved server name, a connection failure, a timeout and a TLS connection failure.
 Check DNS resolution, server availability, network connectivity and the configured request timeout.
 Other HTTP errors include the status code; for example, HTTP 500 indicates a server error.
 The binding retries failed communication automatically and preserves the last usable calendar data.
 
-### Calendar not found
+### Calendar Not Found
 
 HTTP 404 at the discovery endpoint indicates that the configured server URL could not be found.
 For a calendar, verify the Calendar Collection path or run discovery again.
 A calendar that disappears after a successful synchronization is reported as `GONE`.
 
-### TLS certificate error
+### TLS Certificate Error
 
 Check the certificate trust chain, hostname and certificate validity.
 Correct certificate problems and keep certificate verification enabled whenever possible.

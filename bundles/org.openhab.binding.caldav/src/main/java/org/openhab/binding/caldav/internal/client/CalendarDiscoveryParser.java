@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpStatus;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -140,15 +141,16 @@ public final class CalendarDiscoveryParser {
 
     private static List<Element> properties(Element response, boolean optionalMetadata) throws java.io.IOException {
         int status = DavResponse.status(DavResponse.text(response, DAV_NAMESPACE, "status"));
-        if (status != 0 && status != 200) {
+        if (status != 0 && status != HttpStatus.OK_200) {
             throw new java.io.IOException("Discovery resource retrieval failed");
         }
         List<Element> properties = new ArrayList<>();
         for (Element propstat : DavResponse.children(response, DAV_NAMESPACE, "propstat")) {
             int propertyStatus = DavResponse.status(DavResponse.text(propstat, DAV_NAMESPACE, "status"));
-            if (propertyStatus == 200) {
+            if (propertyStatus == HttpStatus.OK_200) {
                 properties.addAll(DavResponse.children(propstat, DAV_NAMESPACE, "prop"));
-            } else if (propertyStatus != 404 && !(optionalMetadata && onlyOptionalMetadata(propstat))) {
+            } else if (propertyStatus != HttpStatus.NOT_FOUND_404
+                    && !(optionalMetadata && onlyOptionalMetadata(propstat))) {
                 throw new java.io.IOException("Discovery property retrieval failed");
             }
         }

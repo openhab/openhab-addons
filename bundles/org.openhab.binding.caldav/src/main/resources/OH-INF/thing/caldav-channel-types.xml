@@ -59,6 +59,13 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-type id="calendar-color">
+		<item-type>String</item-type>
+		<label>Calendar Color</label>
+		<description>Color assigned to this calendar by the CalDAV server.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="events-json">
 		<item-type>String</item-type>
 		<label>Calendar Events</label>

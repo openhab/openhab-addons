@@ -18,16 +18,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.caldav.internal.handler.AccountHandler;
 import org.openhab.binding.caldav.internal.handler.CalendarHandler;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -37,6 +43,7 @@ import org.osgi.service.component.annotations.Reference;
  * 
  * @author Andreas Vilippus - Initial contribution
  * @author Andreas Vilippus - Lifecycle-managed service dependencies
+ * @author Andreas Vilippus - Calendar color channel creation
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class)
@@ -60,6 +67,23 @@ public class CalDavHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES.contains(thingTypeUID);
+    }
+
+    @Override
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
+        Thing created = super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+        if (created != null && supportsThingType(thingTypeUID)
+                && CalDavBindingConstants.CALENDAR_THING_TYPE.equals(thingTypeUID.getId())
+                && created.getChannel("calendar-color") == null) {
+            // The XML schema allows either channels or channel groups. Preserve the existing groups and add this
+            // ungrouped channel when creating a calendar; update instructions cover previously stored Things.
+            return ThingBuilder.create(created)
+                    .withChannel(ChannelBuilder.create(new ChannelUID(created.getUID(), "calendar-color"), "String")
+                            .withType(new ChannelTypeUID(CalDavBindingConstants.BINDING_ID, "calendar-color")).build())
+                    .build();
+        }
+        return created;
     }
 
     @Override

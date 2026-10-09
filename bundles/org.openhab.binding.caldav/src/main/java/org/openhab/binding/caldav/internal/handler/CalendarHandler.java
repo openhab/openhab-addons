@@ -74,6 +74,8 @@ import com.google.gson.Gson;
  * @author Andreas Vilippus - Time-zone generation and exact configuration validation
  * @author Andreas Vilippus - Canonical cache identity and versioned resource snapshots
  * @author Andreas Vilippus - Structured synchronization error details
+ * @author Andreas Vilippus - Calendar color metadata channel
+ * @author Andreas Vilippus - Localized Thing status descriptions
  */
 @NonNullByDefault
 public class CalendarHandler extends BaseThingHandler {
@@ -120,6 +122,7 @@ public class CalendarHandler extends BaseThingHandler {
         synchronized (lifecycle) {
             generation++;
             clearEvents();
+            publishCalendarColor();
             cacheIdentity = "";
             Configuration captured = new Configuration(getConfig().getProperties());
             try {
@@ -129,13 +132,13 @@ public class CalendarHandler extends BaseThingHandler {
                 var failure = CalDavErrors.calendar(e, false);
                 set("sync#status", new StringType("ERROR"));
                 set("sync#error", new StringType(failure.description()));
-                updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.description());
+                updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
                 return;
             }
             active = true;
             set("sync#status", new StringType("SYNCING"));
             set("sync#error", new StringType(""));
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for initial calendar synchronization");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.calendar.waiting");
         }
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof AccountHandler account) {
@@ -170,10 +173,11 @@ public class CalendarHandler extends BaseThingHandler {
             var failure = synchronizationFailure;
             if (failure == null) {
                 set("sync#error", new StringType("Account bridge is offline"));
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Account bridge is offline");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                        "@text/status.calendar.bridge-offline");
             } else {
                 set("sync#error", new StringType(failure.description()));
-                updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.description());
+                updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
             }
         }
     }
@@ -187,7 +191,11 @@ public class CalendarHandler extends BaseThingHandler {
             if (!active) {
                 return;
             }
-            updateState(channel, states.getOrDefault(channel.getId(), UnDefType.UNDEF));
+            if ("calendar-color".equals(channel.getId())) {
+                publishCalendarColor();
+            } else {
+                updateState(channel, states.getOrDefault(channel.getId(), UnDefType.UNDEF));
+            }
         }
     }
 
@@ -239,7 +247,7 @@ public class CalendarHandler extends BaseThingHandler {
                 set("sync#status", new StringType("SYNCING"));
                 set("sync#error", new StringType(""));
                 if (!synchronizedOnce) {
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Fetching calendar data");
+                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.calendar.fetching");
                 }
             }
             CalendarSynchronizer.Result result = worker.synchronize(horizon, zone, account.syncMode,
@@ -287,7 +295,7 @@ public class CalendarHandler extends BaseThingHandler {
             synchronizationFailure = failure;
             set("sync#status", new StringType("ERROR"));
             set("sync#error", new StringType(failure.description()));
-            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.description());
+            updateStatus(ThingStatus.OFFLINE, failure.detail(), failure.statusDescription());
         }
         if (error instanceof CalDavHttpException http) {
             logger.debug("CalDAV {} failed with HTTP {}", http.operation(), http.statusCode());
@@ -439,6 +447,16 @@ public class CalendarHandler extends BaseThingHandler {
         } catch (IllegalArgumentException e) {
             failed(current, () -> true, e);
         }
+    }
+
+    private void publishCalendarColor() {
+        String raw = getThing().getProperties().get("calendarColor");
+        if (raw == null || raw.codePoints().anyMatch(Character::isISOControl)) {
+            set("calendar-color", UnDefType.UNDEF);
+            return;
+        }
+        String color = raw.strip();
+        set("calendar-color", color.isEmpty() ? UnDefType.UNDEF : new StringType(color));
     }
 
     private void set(String channel, State state) {

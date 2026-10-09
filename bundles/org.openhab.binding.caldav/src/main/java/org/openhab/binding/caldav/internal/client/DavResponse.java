@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpStatus;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -71,7 +72,7 @@ public record DavResponse(List<Resource> resources, String token, boolean trunca
             boolean success = false;
             for (Element propstat : children(response, "DAV:", "propstat")) {
                 int propertyStatus = status(text(propstat, "DAV:", "status"));
-                if (propertyStatus == 200) {
+                if (propertyStatus == HttpStatus.OK_200) {
                     success = true;
                     for (Element prop : children(propstat, "DAV:", "prop")) {
                         String value = text(prop, "DAV:", "getetag");
@@ -83,14 +84,14 @@ public record DavResponse(List<Resource> resources, String token, boolean trunca
                             data = value;
                         }
                     }
-                } else if (propertyStatus != 404) {
+                } else if (propertyStatus != HttpStatus.NOT_FOUND_404) {
                     throw new IOException("DAV property retrieval failed");
                 }
             }
             if (status == 0) {
-                status = success ? 200 : 500;
+                status = success ? HttpStatus.OK_200 : HttpStatus.INTERNAL_SERVER_ERROR_500;
             }
-            if (target.equals(canonicalCollection) && status == 200 && etag.isEmpty() && data.isEmpty()) {
+            if (target.equals(canonicalCollection) && status == HttpStatus.OK_200 && etag.isEmpty() && data.isEmpty()) {
                 continue;
             }
             if (++members > MAX_RESOURCES) {

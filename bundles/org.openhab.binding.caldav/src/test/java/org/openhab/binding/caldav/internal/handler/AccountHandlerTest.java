@@ -83,6 +83,7 @@ import com.sun.net.httpserver.HttpServer;
  * @author Andreas Vilippus - Configuration and deterministic account scheduling tests
  * @author Andreas Vilippus - Remote-confirmed recovery and pending discovery regression tests
  * @author Andreas Vilippus - Discovery callback disposal regressions
+ * @author Andreas Vilippus - Localized Thing status regression coverage
  */
 @NonNullByDefault
 @Timeout(30)
@@ -899,6 +900,7 @@ class AccountHandlerTest {
             fixture.scheduler.next(0).action().run();
             assertEquals(ThingStatus.OFFLINE, fixture.handler.status);
             assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, fixture.handler.detail);
+            assertEquals("@text/status.account.authentication", fixture.handler.description);
             assertEquals(1, fixture.requests.get());
             fixture.scheduler.next(600).action().run();
             assertEquals(ThingStatus.OFFLINE, fixture.handler.status,
@@ -918,6 +920,7 @@ class AccountHandlerTest {
         try {
             handler.initialize();
             assertEquals(ThingStatus.UNKNOWN, handler.status);
+            assertEquals("@text/status.account.waiting", handler.description);
             int publications = handler.publications.get();
             scheduler.next(0).action().run();
             assertEquals(ThingStatus.UNKNOWN, handler.status);
@@ -1245,27 +1248,27 @@ class AccountHandlerTest {
 
     @Test
     void http401ProducesAuthenticationDetail() throws Exception {
-        checkHttpFailure(401, ThingStatusDetail.CONFIGURATION_ERROR, "CalDAV authentication failed (HTTP 401)");
+        checkHttpFailure(401, ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.account.authentication");
     }
 
     @Test
     void http403ProducesForbiddenDetail() throws Exception {
-        checkHttpFailure(403, ThingStatusDetail.CONFIGURATION_ERROR, "CalDAV access was forbidden (HTTP 403)");
+        checkHttpFailure(403, ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.account.forbidden");
     }
 
     @Test
     void http404ProducesEndpointConfigurationDetail() throws Exception {
-        checkHttpFailure(404, ThingStatusDetail.CONFIGURATION_ERROR, "CalDAV endpoint was not found (HTTP 404)");
+        checkHttpFailure(404, ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.account.not-found");
     }
 
     @Test
     void rejectedPropfindPreservesHttpStatus() throws Exception {
-        checkHttpFailure(405, ThingStatusDetail.COMMUNICATION_ERROR, "CalDAV request failed (HTTP 405)");
+        checkHttpFailure(405, ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.account.http-error [\"405\"]");
     }
 
     @Test
     void http500ProducesCommunicationError() throws Exception {
-        checkHttpFailure(500, ThingStatusDetail.COMMUNICATION_ERROR, "CalDAV request failed (HTTP 500)");
+        checkHttpFailure(500, ThingStatusDetail.COMMUNICATION_ERROR, "@text/status.account.http-error [\"500\"]");
     }
 
     private void checkHttpFailure(int status, ThingStatusDetail detail, String description) throws Exception {
@@ -1284,25 +1287,23 @@ class AccountHandlerTest {
 
     @Test
     void connectionFailureProducesCommunicationError() {
-        checkTransportFailure(new ConnectException("private-url password"), "Unable to connect to the CalDAV server");
+        checkTransportFailure(new ConnectException("private-url password"), "@text/status.connection");
     }
 
     @Test
     void timeoutProducesTimeoutDetail() {
-        checkTransportFailure(new TimeoutException("private-url password"), "CalDAV request timed out");
-        checkTransportFailure(new SocketTimeoutException("private-url password"), "CalDAV request timed out");
+        checkTransportFailure(new TimeoutException("private-url password"), "@text/status.timeout");
+        checkTransportFailure(new SocketTimeoutException("private-url password"), "@text/status.timeout");
     }
 
     @Test
     void dnsFailureProducesNameResolutionDetail() {
-        checkTransportFailure(new UnknownHostException("private-host password"),
-                "CalDAV server name could not be resolved");
+        checkTransportFailure(new UnknownHostException("private-host password"), "@text/status.dns");
     }
 
     @Test
     void tlsFailureProducesSecureConnectionDetail() {
-        checkTransportFailure(new SSLHandshakeException("private-certificate password"),
-                "TLS connection to the CalDAV server failed");
+        checkTransportFailure(new SSLHandshakeException("private-certificate password"), "@text/status.tls");
     }
 
     private void checkTransportFailure(Throwable failure, String description) {

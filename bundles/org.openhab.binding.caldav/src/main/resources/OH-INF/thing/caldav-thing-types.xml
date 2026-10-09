@@ -5,109 +5,109 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="account">
-		<label>@text/thing-type.caldav.account.label</label>
-		<description>@text/thing-type.caldav.account.description</description>
+		<label>CalDAV Account</label>
+		<description>Connects to a CalDAV server, discovers available calendar collections and manages synchronization.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter-group name="connection">
-				<label>@text/config.group.connection.label</label>
-				<description>@text/config.group.connection.description</description>
+				<label>Connection</label>
+				<description>Connection and authentication settings.</description>
 			</parameter-group>
 			<parameter-group name="discovery">
-				<label>@text/config.group.discovery.label</label>
-				<description>@text/config.group.discovery.description</description>
+				<label>Discovery</label>
+				<description>Calendar discovery settings.</description>
 			</parameter-group>
 			<parameter-group name="synchronization">
-				<label>@text/config.group.synchronization.label</label>
-				<description>@text/config.group.synchronization.description</description>
+				<label>Synchronization</label>
+				<description>Synchronization frequency and local synchronization range.</description>
 			</parameter-group>
 			<parameter-group name="advanced">
-				<label>@text/config.group.advanced.label</label>
-				<description>@text/config.group.advanced.description</description>
+				<label>Advanced</label>
+				<description>Advanced options.</description>
 				<advanced>true</advanced>
 			</parameter-group>
 
 			<parameter name="url" type="text" required="true" groupName="connection">
-				<label>@text/config.account.url.label</label>
-				<description>@text/config.account.url.description</description>
+				<label>CalDAV URL</label>
+				<description>Starting URL for CalDAV discovery. Its meaning depends on the selected discovery mode.</description>
 			</parameter>
 			<parameter name="username" type="text" required="false" groupName="connection">
-				<label>@text/config.account.username.label</label>
-				<description>@text/config.account.username.description</description>
+				<label>Username</label>
+				<description>Optional username used to authenticate with the CalDAV server.</description>
 			</parameter>
 			<parameter name="password" type="text" required="false" groupName="connection">
 				<context>password</context>
-				<label>@text/config.account.password.label</label>
-				<description>@text/config.account.password.description</description>
+				<label>Password</label>
+				<description>Optional password or application password used to authenticate with the CalDAV server.</description>
 			</parameter>
 			<parameter name="authType" type="text" required="true" groupName="connection">
-				<label>@text/config.account.authType.label</label>
-				<description>@text/config.account.authType.description</description>
+				<label>Authentication</label>
+				<description>Authentication method used for the CalDAV server.</description>
 				<default>AUTO</default>
 				<options>
-					<option value="AUTO">@text/config.account.authType.option.AUTO</option>
-					<option value="BASIC">@text/config.account.authType.option.BASIC</option>
-					<option value="DIGEST">@text/config.account.authType.option.DIGEST</option>
+					<option value="AUTO">Automatic</option>
+					<option value="BASIC">Basic Authentication</option>
+					<option value="DIGEST">Digest Authentication</option>
 				</options>
 			</parameter>
 			<parameter name="requestTimeout" type="integer" min="1" max="300" required="true" groupName="connection">
-				<label>@text/config.account.requestTimeout.label</label>
-				<description>@text/config.account.requestTimeout.description</description>
+				<label>Request Timeout</label>
+				<description>Maximum time in seconds to wait for a server response.</description>
 				<default>30</default>
 				<unitLabel>s</unitLabel>
 			</parameter>
 			<parameter name="verifyCertificate" type="boolean" required="true" groupName="connection">
-				<label>@text/config.account.verifyCertificate.label</label>
-				<description>@text/config.account.verifyCertificate.description</description>
+				<label>Verify Certificate</label>
+				<description>Verifies the TLS certificate of the CalDAV server. Disabling this is not recommended.</description>
 				<default>true</default>
 			</parameter>
 
 			<parameter name="discoveryMode" type="text" required="true" groupName="discovery">
-				<label>@text/config.account.discoveryMode.label</label>
-				<description>@text/config.account.discoveryMode.description</description>
+				<label>Discovery Mode</label>
+				<description>Defines what the configured URL represents and which CalDAV discovery steps are performed.</description>
 				<default>AUTO</default>
 				<options>
-					<option value="AUTO">@text/config.account.discoveryMode.option.AUTO</option>
-					<option value="DIRECT">@text/config.account.discoveryMode.option.DIRECT</option>
+					<option value="AUTO">Automatic</option>
+					<option value="DIRECT">Direct</option>
 				</options>
 			</parameter>
 
 			<parameter name="refreshInterval" type="integer" min="30" max="2147483647" required="true"
 				groupName="synchronization">
-				<label>@text/config.account.refreshInterval.label</label>
-				<description>@text/config.account.refreshInterval.description</description>
+				<label>Refresh Interval</label>
+				<description>Interval in seconds between synchronization checks.</description>
 				<default>300</default>
 				<unitLabel>s</unitLabel>
 			</parameter>
 			<parameter name="syncMode" type="text" required="true" groupName="synchronization">
-				<label>@text/config.account.syncMode.label</label>
-				<description>@text/config.account.syncMode.description</description>
+				<label>Synchronization Mode</label>
+				<description>Selects the synchronization method. Automatic mode chooses the best method supported by the server.</description>
 				<default>AUTO</default>
 				<options>
-					<option value="AUTO">@text/config.account.syncMode.option.AUTO</option>
-					<option value="SYNC_TOKEN">@text/config.account.syncMode.option.SYNC_TOKEN</option>
-					<option value="ETAG">@text/config.account.syncMode.option.ETAG</option>
-					<option value="FULL">@text/config.account.syncMode.option.FULL</option>
+					<option value="AUTO">Automatic</option>
+					<option value="SYNC_TOKEN">Sync Token</option>
+					<option value="ETAG">ETag</option>
+					<option value="FULL">Full Synchronization</option>
 				</options>
 			</parameter>
 			<parameter name="maxPastDays" type="integer" min="0" max="36500" required="true"
 				groupName="synchronization">
-				<label>@text/config.account.maxPastDays.label</label>
-				<description>@text/config.account.maxPastDays.description</description>
+				<label>Past Sync Days</label>
+				<description>Number of past days retained in the local synchronization window.</description>
 				<default>30</default>
 				<unitLabel>d</unitLabel>
 			</parameter>
 			<parameter name="maxFutureDays" type="integer" min="1" max="36500" required="true"
 				groupName="synchronization">
-				<label>@text/config.account.maxFutureDays.label</label>
-				<description>@text/config.account.maxFutureDays.description</description>
+				<label>Future Sync Days</label>
+				<description>Number of future days retained in the local synchronization window.</description>
 				<default>365</default>
 				<unitLabel>d</unitLabel>
 			</parameter>
 			<parameter name="readOnly" type="boolean" required="true" groupName="advanced">
-				<label>@text/config.account.readOnly.label</label>
-				<description>@text/config.account.readOnly.description</description>
+				<label>Read Only</label>
+				<description>Must remain enabled. Calendar modifications are not supported.</description>
 				<default>true</default>
 			</parameter>
 		</config-description>
@@ -118,8 +118,8 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>@text/thing-type.caldav.calendar.label</label>
-		<description>@text/thing-type.caldav.calendar.description</description>
+		<label>CalDAV Calendar</label>
+		<description>Represents one CalDAV calendar collection and provides event instances from the configured time range.</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
@@ -129,56 +129,60 @@
 			<channel-group id="sync" typeId="sync"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter-group name="calendar">
-				<label>@text/config.group.calendar.label</label>
-				<description>@text/config.group.calendar.description</description>
+				<label>Calendar</label>
+				<description>Calendar collection settings.</description>
 			</parameter-group>
 			<parameter-group name="range">
-				<label>@text/config.group.range.label</label>
-				<description>@text/config.group.range.description</description>
+				<label>Time Range</label>
+				<description>Defines which event instances are exposed by the calendar thing.</description>
 			</parameter-group>
 			<parameter-group name="advanced">
-				<label>@text/config.group.advanced.label</label>
-				<description>@text/config.group.advanced.description</description>
+				<label>Advanced</label>
+				<description>Advanced options.</description>
 				<advanced>true</advanced>
 			</parameter-group>
 
 			<parameter name="path" type="text" required="true" groupName="calendar">
-				<label>@text/config.calendar.path.label</label>
-				<description>@text/config.calendar.path.description</description>
+				<label>Calendar Path</label>
+				<description>Path or URL of the CalDAV calendar collection.</description>
 			</parameter>
 
 			<parameter name="rangeAnchor" type="text" required="true" groupName="range">
-				<label>@text/config.calendar.rangeAnchor.label</label>
-				<description>@text/config.calendar.rangeAnchor.description</description>
+				<label>Range Reference</label>
+				<description>Defines whether offsets are calculated from the start of the current day or from the current time.</description>
 				<default>TODAY</default>
 				<options>
-					<option value="TODAY">@text/config.calendar.rangeAnchor.option.TODAY</option>
-					<option value="NOW">@text/config.calendar.rangeAnchor.option.NOW</option>
+					<option value="TODAY">Today</option>
+					<option value="NOW">Current Time</option>
 				</options>
 			</parameter>
 			<parameter name="rangeStartOffset" type="integer" min="-2147483648" max="2147483647" required="true"
 				groupName="range">
-				<label>@text/config.calendar.rangeStartOffset.label</label>
-				<description>@text/config.calendar.rangeStartOffset.description</description>
+				<label>Start Offset</label>
+				<description>Offset at which the output range begins. Negative values select past days.</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="rangeEndOffset" type="integer" min="-2147483648" max="2147483647" required="true"
 				groupName="range">
-				<label>@text/config.calendar.rangeEndOffset.label</label>
-				<description>@text/config.calendar.rangeEndOffset.description</description>
+				<label>End Offset</label>
+				<description>Offset defining the last included day of the output range.</description>
 				<default>6</default>
 			</parameter>
 			<parameter name="maxEvents" type="integer" min="1" max="50000" required="true" groupName="range">
-				<label>@text/config.calendar.maxEvents.label</label>
-				<description>@text/config.calendar.maxEvents.description</description>
+				<label>Maximum Events</label>
+				<description>Maximum number of event instances exposed for the configured time range.</description>
 				<default>500</default>
 			</parameter>
 
 			<parameter name="includeCancelled" type="boolean" required="true" groupName="advanced">
-				<label>@text/config.calendar.includeCancelled.label</label>
-				<description>@text/config.calendar.includeCancelled.description</description>
+				<label>Include Cancelled Events</label>
+				<description>Includes cancelled events in the output.</description>
 				<default>false</default>
 			</parameter>
 		</config-description>
