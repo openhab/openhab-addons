@@ -211,7 +211,7 @@ public class TelldusDevicesHandler extends BaseThingHandler implements DeviceSta
                 }
             } catch (Exception e) {
                 logger.warn("Failed to init device {}", deviceId, e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+                updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
             }
         } else {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);

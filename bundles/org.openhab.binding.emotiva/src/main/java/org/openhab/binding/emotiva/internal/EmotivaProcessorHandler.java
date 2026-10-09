@@ -209,8 +209,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 this.menuNotifyListener = menuListenerConnector;
                 menuListenerConnector.connect(this::handleStatusUpdate, true);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "@text/message.processor.connection.failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/message.processor.connection.failed");
                 disconnect();
                 scheduleConnectRetry(retryConnectInMinutes);
             }
@@ -218,8 +217,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             // OH shutdown - don't log anything, Framework will call dispose()
         } catch (Exception e) {
             logger.error("Connection to '{}' failed", localConfig.ipAddress, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "@text/message.processor.connection.failed");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/message.processor.connection.failed");
             disconnect();
             scheduleConnectRetry(retryConnectInMinutes);
         }

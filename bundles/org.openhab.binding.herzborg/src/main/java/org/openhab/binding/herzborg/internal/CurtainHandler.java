@@ -130,14 +130,14 @@ public class CurtainHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
 
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge not present");
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge not present");
             return;
         }
 
         BridgeHandler handler = bridge.getHandler();
 
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge has no handler");
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Bridge has no handler");
             return;
         }
 

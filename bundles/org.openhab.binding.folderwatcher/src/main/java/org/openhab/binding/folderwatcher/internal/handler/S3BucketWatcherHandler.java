@@ -87,7 +87,7 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
             }
         } catch (APIException e) {
             logger.debug("S3 initialization error: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
             return;
         }
 

@@ -172,13 +172,13 @@ public class GridBoxHandler extends BaseThingHandler {
             reConnectAttempts = 0;
         } catch (GridBoxApiAuthenticationException e) {
             // maybe the authentication is no longer valid, so try to re-authenticate
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
+            updateStatus(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
                     "@text/offline.configuration-error.authenticationlost");
             stopUpdater();
             config.idToken = null;
             initializeApi();
         } catch (GridBoxApiSystemNotFoundException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
+            updateStatus(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
                     "@text/offline.configuration-error.systemidunknown");
             stopUpdater();
             config.systemId = null;

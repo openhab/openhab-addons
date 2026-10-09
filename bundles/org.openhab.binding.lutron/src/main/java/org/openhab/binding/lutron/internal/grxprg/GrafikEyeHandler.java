@@ -238,7 +238,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
     @Override
     public void thingUpdated(Thing thing) {
         cancelPolling();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING);
+        updateStatus(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING);
         this.thing = thing;
         internalInitialize();
     }

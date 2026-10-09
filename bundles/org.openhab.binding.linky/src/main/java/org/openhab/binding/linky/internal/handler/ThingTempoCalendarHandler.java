@@ -105,11 +105,6 @@ public class ThingTempoCalendarHandler extends ThingBaseRemoteHandler {
         pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
     }
 
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-    }
-
     public boolean supportNewApiFormat() throws LinkyException {
         Bridge bridge = getBridge();
         if (bridge == null) {

@@ -239,7 +239,7 @@ public class NibeHeatPumpHandler extends BaseThingHandler implements NibeHeatPum
             }
         } else {
             logger.debug("No connection to heat pump");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
+            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR);
         }
     }
 
