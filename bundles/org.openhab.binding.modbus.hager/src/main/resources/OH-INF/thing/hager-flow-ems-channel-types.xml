@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="hager-flow-ems-vendor-name">
+		<item-type>String</item-type>
+		<label>Vendor Name</label>
+	</channel-type>
+	<channel-type id="hager-flow-ems-product-code">
+		<item-type>String</item-type>
+		<label>Product Code</label>
+	</channel-type>
+	<channel-type id="hager-flow-ems-vendor-url">
+		<item-type>String</item-type>
+		<label>Vendor URL</label>
+	</channel-type>
+	<channel-type id="hager-flow-ems-product-serial-number">
+		<item-type>String</item-type>
+		<label>Product Code (Serial number)</label>
+	</channel-type>
+	<channel-type id="hager-flow-ems-sw-version">
+		<item-type>String</item-type>
+		<label>SW version</label>
+	</channel-type>
+	<channel-type id="hager-flow-ems-max-current-phase">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Max Current Phase</label>
+		<description>Main Fuse.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-max-current-phase-derated">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Max Current Phase Derated (80%)</label>
+		<description>Main Fuse derated.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-max-power-phase">
+		<item-type>Number:Power</item-type>
+		<label>Max Power Phase</label>
+		<description>Main Fuse.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-max-power-phase-derated">
+		<item-type>Number:Power</item-type>
+		<label>Max Power Phase Derated (80%)</label>
+		<description>Main Fuse derated.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-max-power">
+		<item-type>Number:Power</item-type>
+		<label>Max Power</label>
+		<description>Max Installation power from grid.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-max-power-derated">
+		<item-type>Number:Power</item-type>
+		<label>Max Power Derated (80%)</label>
+		<description>Max Installation power from grid derated.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-evcs-count">
+		<item-type>Number</item-type>
+		<label>EVCS Number</label>
+		<description>Number of Connected EVSE.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-evcs-list-evcs-1">
+		<item-type>Switch</item-type>
+		<label>EVCS 1</label>
+		<description>Charging station 1 is connected to the energy manager.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-evcs-list-evcs-2">
+		<item-type>Switch</item-type>
+		<label>EVCS 2</label>
+		<description>Charging station 2 is connected to the energy manager.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-evcs-list-evcs-3">
+		<item-type>Switch</item-type>
+		<label>EVCS 3</label>
+		<description>Charging station 3 is connected to the energy manager.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-evcs-list-evcs-4">
+		<item-type>Switch</item-type>
+		<label>EVCS 4</label>
+		<description>Charging station 4 is connected to the energy manager.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-evcs-list-evcs-5">
+		<item-type>Switch</item-type>
+		<label>EVCS 5</label>
+		<description>Charging station 5 is connected to the energy manager.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-evcs-list-evcs-6">
+		<item-type>Switch</item-type>
+		<label>EVCS 6</label>
+		<description>Charging station 6 is connected to the energy manager.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-evcs-list-evcs-7">
+		<item-type>Switch</item-type>
+		<label>EVCS 7</label>
+		<description>Charging station 7 is connected to the energy manager.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-evcs-list-evcs-8">
+		<item-type>Switch</item-type>
+		<label>EVCS 8</label>
+		<description>Charging station 8 is connected to the energy manager.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-phase-number">
+		<item-type>Number</item-type>
+		<label>Phase Number</label>
+		<description>One phase or Three phases.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-sun-power-priority-battery-first">
+		<item-type>Switch</item-type>
+		<label>Battery First</label>
+		<description>Battery is charged before the car.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-sun-power-priority-allow-battery-discharge-into-car">
+		<item-type>Switch</item-type>
+		<label>Battery to Car</label>
+		<description>Battery discharge into the car is allowed.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-blackout-active">
+		<item-type>String</item-type>
+		<label>Blackout Active</label>
+		<description>Possible values: NOT_POSSIBLE, ACTIVE, NOT_ACTIVE, NOT_AVAILABLE, SWITCH_IN_ISLAND_STATE.</description>
+	</channel-type>
+	<channel-type id="hager-flow-ems-sgready-brain-disable">
+		<item-type>String</item-type>
+		<label>SGReady Brain disable</label>
+		<description>Possible values: SGReady Brain enabled, SGReady Brain disabled.</description>
+	</channel-type>
+	<channel-type id="hager-flow-ems-sgready-power">
+		<item-type>Number:Power</item-type>
+		<label>SGReady Power</label>
+		<description>Total nominal power controlled by the SG-Ready interface.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-slaveid-type">
+		<item-type>String</item-type>
+		<label>SlaveID type</label>
+		<description>Possible values: Main system (EMS), EVSE, Storage, Power Meter, SG-Ready.</description>
+	</channel-type>
+	<channel-type id="hager-flow-ems-slave-id-index-by-type">
+		<item-type>Number</item-type>
+		<label>Slave ID index by type</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-root-main-current-sum">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Root/Main Current (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-root-main-current-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Root/Main Current (L1)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-root-main-current-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Root/Main Current (L2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-root-main-current-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Root/Main Current (L3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-root-main-power-sum">
+		<item-type>Number:Power</item-type>
+		<label>Root/Main Power (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-root-main-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>Root/Main Power (L1)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-root-main-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>Root/Main Power (L2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-root-main-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>Root/Main Power (L3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-all-evcs-current-sum">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>All EVCS Current (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-all-evcs-power-sum">
+		<item-type>Number:Power</item-type>
+		<label>All EVCS Power (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-all-pv-current-sum">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>All PV Current (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-all-pv-power-sum">
+		<item-type>Number:Power</item-type>
+		<label>All PV Power (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-all-battery-current-sum">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>All Battery Current (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-all-battery-power-sum">
+		<item-type>Number:Power</item-type>
+		<label>All Battery Power (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-battery-state-of-charge">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery State of Charge</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-all-house-consumption-current-sum">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>All HouseConsumption Current (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-all-house-consumption-power-sum">
+		<item-type>Number:Power</item-type>
+		<label>All HouseConsumption Power (ΣL)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-autarky-last-hour">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autarky (last hour)</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-self-consumption-last-hour">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self Consumption (last hour)</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-margin-to-max-power-total">
+		<item-type>Number:Power</item-type>
+		<label>MarginToMaxPowerTotal</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-margin-to-max-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>MarginToMaxPowerL1</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-margin-to-max-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>MarginToMaxPowerL2</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-ems-margin-to-max-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>MarginToMaxPowerL3</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

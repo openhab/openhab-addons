@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="hager-flow-powermeter-identity">
+		<label>PowerMeter Identity</label>
+		<description>Identification of the power meter, read as ASCII strings.</description>
+		<channels>
+			<channel id="powermeter-id" typeId="hager-flow-powermeter-id"/>
+			<channel id="powermeter-name" typeId="hager-flow-powermeter-name"/>
+			<channel id="powermeter-type" typeId="hager-flow-powermeter-type"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="hager-flow-powermeter-status">
+		<label>PowerMeter Status</label>
+		<description>Connection and service state of the power meter.</description>
+		<channels>
+			<channel id="powermeter-connection-status" typeId="hager-flow-powermeter-connection-status"/>
+			<channel id="powermeter-working-status" typeId="hager-flow-powermeter-working-status"/>
+			<channel id="powermeter-in-service-status" typeId="hager-flow-powermeter-in-service-status"/>
+			<channel id="powermeter-active-phase-l1-active" typeId="hager-flow-powermeter-active-phase-l1-active"/>
+			<channel id="powermeter-active-phase-l2-active" typeId="hager-flow-powermeter-active-phase-l2-active"/>
+			<channel id="powermeter-active-phase-l3-active" typeId="hager-flow-powermeter-active-phase-l3-active"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="hager-flow-powermeter-measurements">
+		<label>PowerMeter Measurements</label>
+		<description>Power, voltage and energy values of the power meter.</description>
+		<channels>
+			<channel id="powermeter-power-sum" typeId="hager-flow-powermeter-power-sum"/>
+			<channel id="powermeter-power-l1" typeId="hager-flow-powermeter-power-l1"/>
+			<channel id="powermeter-power-l2" typeId="hager-flow-powermeter-power-l2"/>
+			<channel id="powermeter-power-l3" typeId="hager-flow-powermeter-power-l3"/>
+			<channel id="powermeter-voltage-l1" typeId="hager-flow-powermeter-voltage-l1"/>
+			<channel id="powermeter-voltage-l2" typeId="hager-flow-powermeter-voltage-l2"/>
+			<channel id="powermeter-voltage-l3" typeId="hager-flow-powermeter-voltage-l3"/>
+			<channel id="powermeter-energy-sum" typeId="hager-flow-powermeter-energy-sum"/>
+			<channel id="powermeter-energy-l1" typeId="hager-flow-powermeter-energy-l1"/>
+			<channel id="powermeter-energy-l2" typeId="hager-flow-powermeter-energy-l2"/>
+			<channel id="powermeter-energy-l3" typeId="hager-flow-powermeter-energy-l3"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

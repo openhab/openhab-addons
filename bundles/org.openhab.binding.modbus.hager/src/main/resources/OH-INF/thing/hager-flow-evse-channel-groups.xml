@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="hager-flow-evse-identity">
+		<label>Identity information</label>
+		<description>Identification of the charging station, read as ASCII strings.</description>
+		<channels>
+			<channel id="evcs-number" typeId="hager-flow-evse-evcs-number"/>
+			<channel id="evcs-type" typeId="hager-flow-evse-evcs-type"/>
+			<channel id="evcs-name" typeId="hager-flow-evse-evcs-name"/>
+			<channel id="evcs-serial" typeId="hager-flow-evse-evcs-serial"/>
+			<channel id="evcs-firmware-version" typeId="hager-flow-evse-evcs-firmware-version"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="hager-flow-evse-general-status-and-configuration">
+		<label>General Status and configuration</label>
+		<description>Operating state and charging limits of the charging station.</description>
+		<channels>
+			<channel id="evcs-state-normal-mode" typeId="hager-flow-evse-evcs-state-normal-mode"/>
+			<channel id="evcs-state-default-mode" typeId="hager-flow-evse-evcs-state-default-mode"/>
+			<channel id="evcs-state-sun-mode-active" typeId="hager-flow-evse-evcs-state-sun-mode-active"/>
+			<channel id="evcs-state-temperature-derating-active"
+				typeId="hager-flow-evse-evcs-state-temperature-derating-active"/>
+			<channel id="evcs-state-schuko-active" typeId="hager-flow-evse-evcs-state-schuko-active"/>
+			<channel id="evcs-state-crc-wrong-meter-value-range"
+				typeId="hager-flow-evse-evcs-state-crc-wrong-meter-value-range"/>
+			<channel id="evcs-state-limited-operation" typeId="hager-flow-evse-evcs-state-limited-operation"/>
+			<channel id="evcs-energy-all" typeId="hager-flow-evse-evcs-energy-all"/>
+			<channel id="evcs-solar-energy" typeId="hager-flow-evse-evcs-solar-energy"/>
+			<channel id="evcs-connection-state" typeId="hager-flow-evse-evcs-connection-state"/>
+			<channel id="evcs-working-state" typeId="hager-flow-evse-evcs-working-state"/>
+			<channel id="evcs-service-state" typeId="hager-flow-evse-evcs-service-state"/>
+			<channel id="evcs-power-meter-connection-state" typeId="hager-flow-evse-evcs-power-meter-connection-state"/>
+			<channel id="evcs-power-meter-working-state" typeId="hager-flow-evse-evcs-power-meter-working-state"/>
+			<channel id="evcs-power-meter-service-state" typeId="hager-flow-evse-evcs-power-meter-service-state"/>
+			<channel id="evcs-availability" typeId="hager-flow-evse-evcs-availability"/>
+			<channel id="evcs-station-enabled" typeId="hager-flow-evse-evcs-station-enabled"/>
+			<channel id="evcs-max-charging-power" typeId="hager-flow-evse-evcs-max-charging-power"/>
+			<channel id="evcs-max-charging-power-per-phase" typeId="hager-flow-evse-evcs-max-charging-power-per-phase"/>
+			<channel id="evcs-max-charging-current" typeId="hager-flow-evse-evcs-max-charging-current"/>
+			<channel id="evcs-min-charging-power" typeId="hager-flow-evse-evcs-min-charging-power"/>
+			<channel id="evcs-min-charging-power-per-phase" typeId="hager-flow-evse-evcs-min-charging-power-per-phase"/>
+			<channel id="evcs-min-charging-current" typeId="hager-flow-evse-evcs-min-charging-current"/>
+			<channel id="evcs-boost-mode" typeId="hager-flow-evse-evcs-boost-mode"/>
+			<channel id="evcs-phase-management" typeId="hager-flow-evse-evcs-phase-management"/>
+			<channel id="evcs-charge-strategy" typeId="hager-flow-evse-evcs-charge-strategy"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="hager-flow-evse-charging-session-information">
+		<label>Charging Session Information</label>
+		<description>Values of the charging session currently in progress.</description>
+		<channels>
+			<channel id="evcs-state-session-sun-mode-active" typeId="hager-flow-evse-evcs-state-session-sun-mode-active"/>
+			<channel id="evcs-state-session-temperature-derating-active"
+				typeId="hager-flow-evse-evcs-state-session-temperature-derating-active"/>
+			<channel id="charging-session-id" typeId="hager-flow-evse-charging-session-id"/>
+			<channel id="charging-session-badge-id" typeId="hager-flow-evse-charging-session-badge-id"/>
+			<channel id="active-phase" typeId="hager-flow-evse-active-phase"/>
+			<channel id="energy-session" typeId="hager-flow-evse-energy-session"/>
+			<channel id="grid-energy-session" typeId="hager-flow-evse-grid-energy-session"/>
+			<channel id="solar-energy-session" typeId="hager-flow-evse-solar-energy-session"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="hager-flow-evse-instantaneous-measures">
+		<label>Instantaneous Measures</label>
+		<description>Currents and powers measured during the running charging session.</description>
+		<channels>
+			<channel id="total-charging-current" typeId="hager-flow-evse-total-charging-current"/>
+			<channel id="charging-current-l1" typeId="hager-flow-evse-charging-current-l1"/>
+			<channel id="charging-current-l2" typeId="hager-flow-evse-charging-current-l2"/>
+			<channel id="charging-current-l3" typeId="hager-flow-evse-charging-current-l3"/>
+			<channel id="charging-power-total" typeId="hager-flow-evse-charging-power-total"/>
+			<channel id="charging-power-l1" typeId="hager-flow-evse-charging-power-l1"/>
+			<channel id="charging-power-l2" typeId="hager-flow-evse-charging-power-l2"/>
+			<channel id="charging-power-l3" typeId="hager-flow-evse-charging-power-l3"/>
+			<channel id="assign-power-total" typeId="hager-flow-evse-assign-power-total"/>
+			<channel id="assigned-power-l1" typeId="hager-flow-evse-assigned-power-l1"/>
+			<channel id="assigned-power-l2" typeId="hager-flow-evse-assigned-power-l2"/>
+			<channel id="assigned-power-l3" typeId="hager-flow-evse-assigned-power-l3"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

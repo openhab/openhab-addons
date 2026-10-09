@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="hager-flow-evse-evcs-number">
+		<item-type>Number</item-type>
+		<label>EVCS Number</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-type">
+		<item-type>String</item-type>
+		<label>EVCS Type</label>
+		<description>Possible values: virtual, E3DC wallbox, Easy Connect wallbox, wallbox RSCP group (farming), Edison
+			Connect wallbox, Multi Connect wallbox, Eebus Wallbox.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-name">
+		<item-type>String</item-type>
+		<label>EVCS Name</label>
+		<description>Friendly name set by User.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-serial">
+		<item-type>String</item-type>
+		<label>EVCS Serial</label>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-firmware-version">
+		<item-type>String</item-type>
+		<label>EVCS Firmware version</label>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-state-normal-mode">
+		<item-type>Switch</item-type>
+		<label>Normal Mode</label>
+		<description>Charging station operates in normal mode.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-state-default-mode">
+		<item-type>Switch</item-type>
+		<label>Default Mode</label>
+		<description>Charging station fell back to default mode because of a parameter error.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-state-sun-mode-active">
+		<item-type>Switch</item-type>
+		<label>Sun Mode</label>
+		<description>Charging from surplus photovoltaic power is active.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-state-temperature-derating-active">
+		<item-type>Switch</item-type>
+		<label>Temperature Derating</label>
+		<description>Charging power is reduced because of high temperature.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-state-schuko-active">
+		<item-type>Switch</item-type>
+		<label>Schuko Socket</label>
+		<description>The additional Schuko socket is active.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-state-crc-wrong-meter-value-range">
+		<item-type>Switch</item-type>
+		<label>Meter Value Error</label>
+		<description>The energy meter reports a value outside the expected range.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-state-limited-operation">
+		<item-type>Switch</item-type>
+		<label>Limited Operation</label>
+		<description>Not all operating modes are available.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-energy-all">
+		<item-type>Number:Energy</item-type>
+		<label>EVCS Energy All</label>
+		<description>EVCS Energy index.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-solar-energy">
+		<item-type>Number:Energy</item-type>
+		<label>EVCS Solar Energy</label>
+		<description>EVCS Solar Energy index.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-connection-state">
+		<item-type>String</item-type>
+		<label>EVCS Connection State</label>
+		<description>Possible values: EVCS disconnected, EVCS connected.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-working-state">
+		<item-type>String</item-type>
+		<label>EVCS Working State</label>
+		<description>Possible values: EVCS not working properly, EVCS working normally.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-service-state">
+		<item-type>String</item-type>
+		<label>EVCS Service State</label>
+		<description>Possible values: no upgrade ongoing, firmware upgrade ongoing.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-power-meter-connection-state">
+		<item-type>String</item-type>
+		<label>EVCS Power Meter Connection State</label>
+		<description>Possible values: power meter disconnected, power meter connected.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-power-meter-working-state">
+		<item-type>String</item-type>
+		<label>EVCS Power Meter Working State</label>
+		<description>Possible values: power meter not working properly, power meter working normally.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-power-meter-service-state">
+		<item-type>String</item-type>
+		<label>EVCS Power Meter Service State</label>
+		<description>Possible values: no upgrade ongoing, firmware upgrade ongoing.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-availability">
+		<item-type>String</item-type>
+		<label>EVCS Availability</label>
+		<description>Possible values: Unavailable (charge is forbidden), Available (charge might be authorized).</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-station-enabled">
+		<item-type>String</item-type>
+		<label>EVCS Station Enabled</label>
+		<description>Possible values: Disabled, Enabled.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-max-charging-power">
+		<item-type>Number:Power</item-type>
+		<label>EVCS Max Charging Power</label>
+		<description>In total for all phases. This value might be changed when charging session is started.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-max-charging-power-per-phase">
+		<item-type>Number:Power</item-type>
+		<label>EVCS Max Charging Power per Phase</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-max-charging-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EVCS Max Charging Current</label>
+		<description>EVCS max allowed charging current.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-min-charging-power">
+		<item-type>Number:Power</item-type>
+		<label>EVCS Min Charging Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-min-charging-power-per-phase">
+		<item-type>Number:Power</item-type>
+		<label>EVCS Min Charging Power per Phase</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-min-charging-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>EVCS Min Charging Current</label>
+		<description>EVCS min allowed charging current.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-boost-mode">
+		<item-type>Switch</item-type>
+		<label>EVCS Boost Mode</label>
+		<description>Boost mode override for the next charging session.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-phase-management">
+		<item-type>String</item-type>
+		<label>EVCS Phase Management</label>
+		<description>Possible values: mono, tri, auto.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-charge-strategy">
+		<item-type>String</item-type>
+		<label>EVCS Charge Strategy</label>
+		<description>Possible values: Boost (Immediate), Delayed, disabled.</description>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-state-session-sun-mode-active">
+		<item-type>Switch</item-type>
+		<label>Sun Mode</label>
+		<description>Charging from surplus photovoltaic power was active during the session.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-evcs-state-session-temperature-derating-active">
+		<item-type>Switch</item-type>
+		<label>Temperature Derating</label>
+		<description>Charging power was reduced during the session because of high temperature.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-charging-session-id">
+		<item-type>String</item-type>
+		<label>Charging Session ID</label>
+	</channel-type>
+	<channel-type id="hager-flow-evse-charging-session-badge-id">
+		<item-type>String</item-type>
+		<label>Charging Session Badge ID</label>
+	</channel-type>
+	<channel-type id="hager-flow-evse-active-phase">
+		<item-type>Number</item-type>
+		<label>Active Phase</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-energy-session">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Session</label>
+		<description>Energy meter since start of current charging session, restarts at 0 Wh at each charging session.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-grid-energy-session">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Energy Session</label>
+		<description>Energy meter since start of current charging session, restarts at 0 Wh at each charging session.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-solar-energy-session">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Energy Session</label>
+		<description>Energy meter since start of current charging session, restarts at 0 Wh at each charging session.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-total-charging-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Total Charging Current</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-charging-current-l1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charging Current (L1)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-charging-current-l2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charging Current (L2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-charging-current-l3">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charging Current (L3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-charging-power-total">
+		<item-type>Number:Power</item-type>
+		<label>Charging Power Total</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-charging-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>Charging Power (L1)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-charging-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>Charging Power (L2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-charging-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>Charging Power (L3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-assign-power-total">
+		<item-type>Number:Power</item-type>
+		<label>Assign Power Total</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-assigned-power-l1">
+		<item-type>Number:Power</item-type>
+		<label>Assigned Power (L1)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-assigned-power-l2">
+		<item-type>Number:Power</item-type>
+		<label>Assigned Power (L2)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-evse-assigned-power-l3">
+		<item-type>Number:Power</item-type>
+		<label>Assigned Power (L3)</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>
