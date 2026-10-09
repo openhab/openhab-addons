@@ -314,7 +314,7 @@ public class IpObserverHandler extends BaseThingHandler {
             Thread.currentThread().interrupt();
             errorReason = String.format("InterruptedException: %s", e.getMessage());
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
     }
 
     private void pollStation() {

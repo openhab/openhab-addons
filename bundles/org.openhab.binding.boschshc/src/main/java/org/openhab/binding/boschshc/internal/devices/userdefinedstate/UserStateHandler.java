@@ -64,7 +64,7 @@ public class UserStateHandler extends BoschSHCHandler {
         var localConfig = this.config = getConfigAs(BoschSHCConfiguration.class);
         String stateId = localConfig.id;
         if (stateId == null || stateId.isBlank()) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.empty-state-id");
             return;
         }
@@ -75,11 +75,11 @@ public class UserStateHandler extends BoschSHCHandler {
             var info = bridgeHandler.getUserStateInfo(stateId);
             logger.trace("User-defined state initialized:\n{}", info);
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
         super.initialize();
@@ -117,11 +117,11 @@ public class UserStateHandler extends BoschSHCHandler {
         try {
             getBridgeHandler().putState(stateId, "", serviceState);
         } catch (BoschSHCException | ExecutionException | TimeoutException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Error while putting user-defined state for %s", stateId));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Error while putting user-defined state for %s", stateId));
         }
     }

@@ -126,7 +126,7 @@ public abstract class BaseEvohomeHandler extends BaseThingHandler {
      */
     private void checkConfig() {
         if (configuration.id.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
         }
     }
 }

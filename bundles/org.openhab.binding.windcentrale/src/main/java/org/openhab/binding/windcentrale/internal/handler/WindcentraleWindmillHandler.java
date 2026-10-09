@@ -77,7 +77,7 @@ public class WindcentraleWindmillHandler extends BaseThingHandler {
             Windmill windmill = this.windmill;
             return api == null || windmill == null ? null : api.getLiveData(windmill);
         } catch (FailedGettingDataException | InvalidAccessTokenException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             return null;
         }
     });
@@ -127,7 +127,7 @@ public class WindcentraleWindmillHandler extends BaseThingHandler {
 
         if (windmill == null) {
             // only occurs when a mismatch is introduced between config parameter options and enum values
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Invalid windmill name: " + config.name);
             return;
         }

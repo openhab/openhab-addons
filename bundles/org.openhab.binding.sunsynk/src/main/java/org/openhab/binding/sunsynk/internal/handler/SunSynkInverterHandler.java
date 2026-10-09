@@ -228,7 +228,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         try {
             inv.sendSettings(settingsCharge);
         } catch (SunSynkSendCommandException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not send command to inverter " + config.getAlias() + ". Authentication Failure !");
             return;
         }
@@ -250,7 +250,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         config = getConfigAs(SunSynkInverterConfig.class);
         logger.debug("Inverter Config: {}", config);
         if (config.getRefresh() < 60) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Refresh time " + config.getRefresh() + " is not valid. Refresh time must be at least 60 seconds.");
             return;
         }
@@ -278,7 +278,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
         Optional<SunSynkAccountHandler> checkBridge = getSafeBridge();
         if (!checkBridge.isPresent()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No SunSynk Account");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "No SunSynk Account");
             return;
         }
         SunSynkAccountHandler bridgeHandler = checkBridge.get();
@@ -292,7 +292,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                         : "unknown cause";
                 logger.debug("Sun Synk account refresh failed: Msg = {}. Cause = {}.", message, causeMessage);
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Sun Synk account refresh failed");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Sun Synk account refresh failed");
             bridgeHandler.setBridgeOffline();
             return;
         }
@@ -323,14 +323,14 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                         + " for Inverter " + this.config.getAlias() + " serial " + this.config.getSerialnumber());
             }
         } catch (SunSynkGetStatusException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         } catch (JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not get state of inverter " + config.getAlias() + ". JSON parsing Failure !");
             return;
         } catch (SunSynkDeviceControllerException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not get state of inverter " + config.getAlias() + ". DeviceController Failure !");
             return;
         }

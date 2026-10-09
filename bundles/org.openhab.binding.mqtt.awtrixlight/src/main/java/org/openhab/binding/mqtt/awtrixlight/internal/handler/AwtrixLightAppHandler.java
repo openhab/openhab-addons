@@ -446,11 +446,11 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
@@ -634,7 +634,7 @@ public class AwtrixLightAppHandler extends BaseThingHandler implements MqttMessa
         if (ThingStatus.ONLINE == bridgeStatus) {
             updateStatus(ThingStatus.ONLINE);
         } else if (ThingStatus.OFFLINE == bridgeStatus) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }

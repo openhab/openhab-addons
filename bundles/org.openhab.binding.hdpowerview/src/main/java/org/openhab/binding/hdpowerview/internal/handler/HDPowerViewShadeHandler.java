@@ -107,8 +107,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         logger.debug("Initializing shade handler for shade {}", shadeId);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.invalid-bridge-handler");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);

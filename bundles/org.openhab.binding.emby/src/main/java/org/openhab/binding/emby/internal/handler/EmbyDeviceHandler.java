@@ -424,22 +424,21 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
 
                 if (!(getBridge() instanceof Bridge bridge)
                         || !(bridge.getHandler() instanceof EmbyBridgeHandler bridgeHandler)) {
-                    updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR, "@text/thing.status.device.noBridge");
+                    updateStatus(CONFIGURATION_ERROR, "@text/thing.status.device.noBridge");
                     return;
                 }
                 this.bridgeHandler = bridgeHandler;
 
                 if (bridge.getStatus() == OFFLINE) {
-                    updateStatus(OFFLINE, BRIDGE_OFFLINE, "@text/thing.status.device.bridgeOffline");
+                    updateStatus(BRIDGE_OFFLINE, "@text/thing.status.device.bridgeOffline");
                     return;
                 }
 
                 updateStatus(ThingStatus.ONLINE);
             } catch (ConfigValidationException e) {
-                updateStatus(ThingStatus.OFFLINE, CONFIGURATION_ERROR,
-                        "@text/thing.status.device.configInValid " + e.getMessage());
+                updateStatus(CONFIGURATION_ERROR, "@text/thing.status.device.configInValid " + e.getMessage());
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, "@text/thing.status.device.initalizationFalied");
+                updateStatus(COMMUNICATION_ERROR, "@text/thing.status.device.initalizationFalied");
                 logger.error("Initialization failed: {}", e.getMessage());
             }
         });
@@ -450,7 +449,7 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         if (connected) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR);
+            updateStatus(COMMUNICATION_ERROR);
         }
     }
 

@@ -198,7 +198,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
     public void initialize() {
         Number id = (Number) getThing().getConfiguration().get("integrationId");
         if (id == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
             return;
         }
         integrationId = id.intValue();
@@ -260,7 +260,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
             logger.debug("Initializing device state for Keypad {}", integrationId);
             Bridge bridge = getBridge();
             if (bridge == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
             } else if (bridge.getStatus() == ThingStatus.ONLINE) {
                 if (ledList.isEmpty()) {
                     // Device with no LEDs has nothing to query. Assume it is online if bridge is online.
@@ -276,7 +276,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                     }
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         }
     }

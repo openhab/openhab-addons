@@ -84,7 +84,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
         }
 
         if (serialPortName == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port not specified");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Serial port not specified");
             return;
         }
 
@@ -102,7 +102,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
     private void openConnection() {
         SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
         if (portIdentifier == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid port: " + serialPortName);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Invalid port: " + serialPortName);
             return;
         }
 
@@ -135,12 +135,11 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
                 startUpdateProcessorTimeJob();
             }
         } catch (PortInUseException portInUseException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + serialPortName);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + serialPortName);
         } catch (UnsupportedCommOperationException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Communication error");
         } catch (TooManyListenersException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Too many listeners to serial port.");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Too many listeners to serial port.");
         }
     }
 
@@ -236,7 +235,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
                 }
             } catch (IOException e) {
                 logger.debug("Error reading from serial port: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error reading from port");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error reading from port");
             }
         }
     }
@@ -248,7 +247,7 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
             serialOutput.flush();
         } catch (IOException e) {
             logger.debug("Error writing to serial port: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error writing to port.");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error writing to port.");
         }
     }
 

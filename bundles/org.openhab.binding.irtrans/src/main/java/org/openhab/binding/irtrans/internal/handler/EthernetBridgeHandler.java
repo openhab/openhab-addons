@@ -128,8 +128,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 }
             } else {
                 logger.debug("Cannot connect to IRtrans Ethernet device. IP address or port number not set.");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "IP address or port number not set.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "IP address or port number not set.");
             }
 
             if (getConfig().get(IS_LISTENER) != null) {
@@ -187,7 +186,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
     }
 
     public void onConnectionLost() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
 
         try {
             if (socketChannel != null) {
@@ -226,7 +225,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 } catch (IOException e) {
                     logger.debug("An exception occurred while connecting to '{}:{}' : {}", getConfig().get(IP_ADDRESS),
                             ((BigDecimal) getConfig().get(PORT_NUMBER)).intValue(), e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
 
                 try {
@@ -234,7 +233,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 } catch (NumberFormatException | InterruptedException e) {
                     Thread.currentThread().interrupt();
                     logger.debug("An exception occurred while putting a thread to sleep: '{}'", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
                 onConnectable();
             }
@@ -324,7 +323,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                     listenerKey = listenerChannel.register(selector, SelectionKey.OP_ACCEPT);
                 } catch (ClosedChannelException e1) {
                     logger.debug("An exception occurred while registering a selector: '{}'", e1.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e1.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e1.getMessage());
                 }
             }
         } catch (IOException e3) {
@@ -359,7 +358,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                     onConnectionLost();
                 } catch (IOException e1) {
                     logger.debug("An exception occurred while getting a remote address: '{}'", e1.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e1.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e1.getMessage());
                 }
             }
 
@@ -514,7 +513,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 Thread.currentThread().interrupt();
                 logger.debug("An exception occurred while sending a command to the IRtrans transceiver for '{}': {}",
                         getThing().getUID(), e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
 
@@ -590,7 +589,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 selector.selectNow();
             } catch (IOException e) {
                 logger.debug("An exception occurred while selecting: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
 
             Iterator<SelectionKey> it = selector.selectedKeys().iterator();
@@ -611,7 +610,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                         } catch (IOException e) {
                             logger.debug("An exception occurred while accepting a connection on channel '{}': {}",
                                     listenerChannel, e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         }
                     }
                 }

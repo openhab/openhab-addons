@@ -150,22 +150,19 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
         String host = config.host.trim();
         if (host.length() == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-undefined-host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-undefined-host");
             return;
         }
         String path = config.restPath.trim();
         if (path.length() == 0 || !path.startsWith("/")) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-invalid-rest-path");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-rest-path");
             return;
         }
         URL url;
         try {
             url = new URI(config.useHttps ? "https" : "http", null, host, config.port, path, null, null).toURL();
         } catch (MalformedURLException | URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-invalid-rest-url");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-rest-url");
             return;
         }
 
@@ -377,8 +374,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         try {
             restClient.tryApi();
             if (restClient.getRestApiVersion() == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-unsupported-server");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unsupported-server");
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 List<RemoteopenhabItem> items = restClient.getRemoteItems("name,type,groupType,state,stateDescription");
 
@@ -402,7 +398,7 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
         } catch (RemoteopenhabException e) {
             logger.debug("checkConnection for thing {} failed: {}", getThing().getUID(),
                     e.getMessage(bundle, i18nProvider), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
             stopStreamingUpdates();
         }
     }
@@ -476,15 +472,13 @@ public class RemoteopenhabBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onDisconnected() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "@text/offline.comm-error-disconnected");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-disconnected");
     }
 
     @Override
     public void onError(String message) {
         logger.debug("onError: {}", message);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "@text/offline.comm-error-receiving-events");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error-receiving-events");
     }
 
     @Override

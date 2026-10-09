@@ -113,7 +113,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
 
         NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-bridge-handler");
             return;
         }
@@ -137,15 +137,13 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
         }
 
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
             return;
         }
 
         NhcMeter nhcMeter = nhcComm.getMeters().get(deviceId);
         if (nhcMeter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.deviceId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.deviceId");
             return;
         }
 
@@ -153,8 +151,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
         if (!(MeterType.ENERGY_HOME.equals(meterType) || MeterType.ENERGY_LIVE.equals(meterType)
                 || MeterType.ENERGY.equals(meterType) || MeterType.GAS.equals(meterType)
                 || MeterType.WATER.equals(meterType))) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.meterType");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.meterType");
             return;
         }
 
@@ -174,8 +171,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
         try {
             LocalDateTime.parse(startDate);
         } catch (DateTimeParseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.meterStartDate");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.meterStartDate");
             return;
         }
 

@@ -140,7 +140,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     }
 
     protected void configErrorStatus(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
     }
 
     @Override
@@ -232,9 +232,9 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     updateForecast(newForecast);
                 }
             } catch (ExecutionException | TimeoutException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (InterruptedException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 Thread.currentThread().interrupt();
             }
         }
@@ -275,7 +275,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     private void apiCallFailure(String url, int status) {
         updateState(GROUP_UPDATE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_API_COUNT,
                 StringType.valueOf(getCounter().toString()));
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 "@text/solarforecast.plane.status.http-status [\"" + status + "\"]");
     }
 

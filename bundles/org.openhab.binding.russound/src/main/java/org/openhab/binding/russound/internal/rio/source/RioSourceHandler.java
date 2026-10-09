@@ -207,38 +207,35 @@ public class RioSourceHandler extends AbstractThingHandler<RioSourceProtocol> im
         logger.debug("Initializing");
         final Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Cannot be initialized without a bridge");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Cannot be initialized without a bridge");
             return;
         }
         if (bridge.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
         final ThingHandler handler = bridge.getHandler();
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No handler specified (null) for the bridge!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No handler specified (null) for the bridge!");
             return;
         }
 
         if (!(handler instanceof RioSystemHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Source must be attached to a System bridge: " + handler.getClass());
             return;
         }
 
         final RioSourceConfig config = getConfigAs(RioSourceConfig.class);
         if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
             return;
         }
 
         final int configSource = config.getSource();
         if (configSource < 1 || configSource > 12) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Source must be between 1 and 12: " + configSource);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Source must be between 1 and 12: " + configSource);
             return;
         }
         source.set(configSource);
@@ -279,7 +276,7 @@ public class RioSourceHandler extends AbstractThingHandler<RioSourceProtocol> im
             updateStatus(ThingStatus.ONLINE);
             getProtocolHandler().postOnline();
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
         }
     }
 }

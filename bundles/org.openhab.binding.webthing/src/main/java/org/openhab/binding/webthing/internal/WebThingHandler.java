@@ -104,8 +104,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
                     logger.debug("WebThing {} connected", getWebThingLabel());
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "webThing uri has not been set");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "webThing uri has not been set");
                 logger.warn("could not initialize WebThing. URI is not set or invalid. {}", this.webThingURI);
             }
         });
@@ -181,7 +180,7 @@ public class WebThingHandler extends BaseThingHandler implements ChannelHandler 
 
     public void onError(String reason) {
         var wasConnectedBefore = isOnline();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
 
         // close the WebThing connection. If the handler is still active, the WebThing connection
         // will be re-established within the periodically watchdog task

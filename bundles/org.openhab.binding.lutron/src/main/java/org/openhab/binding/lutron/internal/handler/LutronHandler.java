@@ -82,7 +82,7 @@ public abstract class LutronHandler extends BaseThingHandler {
             initDeviceState();
 
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             thingOfflineNotify();
         }
     }

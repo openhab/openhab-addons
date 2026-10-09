@@ -541,7 +541,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     updateStatus(ThingStatus.ONLINE);
                 });
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         }
     }

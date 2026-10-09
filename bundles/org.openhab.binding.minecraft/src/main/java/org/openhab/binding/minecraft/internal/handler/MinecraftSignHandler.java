@@ -63,7 +63,7 @@ public class MinecraftSignHandler extends BaseThingHandler {
         this.config = getConfigAs(SignConfig.class);
 
         if (getThing().getBridgeUID() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
 
             return;
         }

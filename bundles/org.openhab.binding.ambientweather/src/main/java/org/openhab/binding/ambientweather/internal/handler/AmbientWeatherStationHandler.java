@@ -101,7 +101,7 @@ public class AmbientWeatherStationHandler extends BaseThingHandler {
         ThingStatus bridgeStatus = bridgeStatusInfo.getStatus();
         logger.debug("Station {}: Detected bridge status changed to '{}', Update my status", station, bridgeStatus);
         if (bridgeStatus == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatus == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }

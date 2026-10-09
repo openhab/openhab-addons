@@ -370,8 +370,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         if (!isThingOffline() && (profile.alwaysOn || !profile.isInitialized() && !isThingOnline())) {
             ThingStatusDetail detail = getThingStatusDetail();
             if (detail != ThingStatusDetail.DUTY_CYCLE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        messages.get("status.config_pending"));
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, messages.get("status.config_pending"));
             }
         }
 
@@ -951,8 +950,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: Handler is shutting down, ignore", thingName);
             return;
         }
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                messages.get("offline.status-error-restarted"));
+        updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, messages.get("offline.status-error-restarted"));
         requestUpdates(0, true);
     }
 

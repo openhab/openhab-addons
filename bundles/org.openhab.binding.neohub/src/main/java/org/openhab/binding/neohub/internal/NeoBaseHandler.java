@@ -89,7 +89,7 @@ public class NeoBaseHandler extends BaseThingHandler {
         NeoBaseConfiguration config = getConfigAs(NeoBaseConfiguration.class);
 
         if (config.deviceNameInHub.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MSG_DEVICE_NAME_NOT_CONFIGURED);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, MSG_DEVICE_NAME_NOT_CONFIGURED);
             return;
         }
 
@@ -97,7 +97,7 @@ public class NeoBaseHandler extends BaseThingHandler {
 
         NeoHubHandler hub = getNeoHub();
         if (hub == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MSG_HUB_CONFIG);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, MSG_HUB_CONFIG);
             return;
         }
 
@@ -119,20 +119,20 @@ public class NeoBaseHandler extends BaseThingHandler {
         AbstractRecord deviceRecord = deviceData.getDeviceRecord(config.deviceNameInHub);
 
         if (deviceRecord == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             logger.warn(MSG_FMT_DEVICE_CONFIG, thing.getLabel());
             return;
         }
 
         ThingStatus thingStatus = getThing().getStatus();
         if (deviceRecord.offline() && (thingStatus == ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             logger.debug(MSG_FMT_DEVICE_COMM, thing.getLabel());
             return;
         }
 
         if ((!deviceRecord.offline()) && (thingStatus != ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
         }
 
         toOpenHabSendChannelValues(deviceRecord);
@@ -200,7 +200,7 @@ public class NeoBaseHandler extends BaseThingHandler {
                         logger.debug(MSG_FMT_COMMAND_OK, getThing().getLabel());
 
                         if (getThing().getStatus() != ThingStatus.ONLINE) {
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                            updateStatus(ThingStatus.ONLINE);
                         }
 
                         // initialize the de-bouncer for this channel
@@ -210,12 +210,12 @@ public class NeoBaseHandler extends BaseThingHandler {
 
                     case ERR_COMMUNICATION:
                         logger.debug(MSG_HUB_COMM, hub.getThing().getUID());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                         break;
 
                     case ERR_INITIALIZATION:
                         logger.warn(MSG_HUB_CONFIG, hub.getThing().getUID());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                        updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                         break;
                 }
             } else {

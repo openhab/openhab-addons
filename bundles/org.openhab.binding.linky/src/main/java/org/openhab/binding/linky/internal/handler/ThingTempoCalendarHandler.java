@@ -165,7 +165,7 @@ public class ThingTempoCalendarHandler extends ThingBaseRemoteHandler {
                         REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
             }
         } catch (LinkyException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -250,7 +250,7 @@ public class ThingTempoCalendarHandler extends ThingBaseRemoteHandler {
                 return result;
             } catch (LinkyException e) {
                 logger.debug("Exception when getting tempo data: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
         return null;

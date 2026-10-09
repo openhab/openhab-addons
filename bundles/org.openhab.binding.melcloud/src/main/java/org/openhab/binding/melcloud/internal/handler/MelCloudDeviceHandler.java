@@ -87,7 +87,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null || !(bridge.getHandler() instanceof BridgeHandler bridgeHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge Not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge Not set");
             return;
         }
 
@@ -126,7 +126,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             startAutomaticRefresh();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

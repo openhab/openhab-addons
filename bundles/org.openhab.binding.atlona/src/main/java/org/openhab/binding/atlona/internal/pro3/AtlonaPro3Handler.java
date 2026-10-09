@@ -445,7 +445,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
         }
 
         if (config.getIpAddress() == null || config.getIpAddress().trim().length() == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "IP Address of Atlona Pro3 is missing from configuration");
             return;
         }
@@ -505,7 +505,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
                             if (session.isConnected()) {
                                 atlonaHandler.refreshAll();
                             } else {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                         "Atlona PRO3 has disconnected. Will try to reconnect later.");
                             }
                         } else if (status == ThingStatus.OFFLINE) {
@@ -531,7 +531,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
             // do nothing
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, response);
         retryConnect();
     }
 

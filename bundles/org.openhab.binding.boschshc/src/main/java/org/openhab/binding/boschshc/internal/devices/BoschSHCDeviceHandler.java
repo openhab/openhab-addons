@@ -138,7 +138,7 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
     @Nullable
     protected Device validateDeviceId(@Nullable String deviceId) {
         if (deviceId == null || deviceId.isBlank()) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.empty-device-id");
             return null;
         }
@@ -150,10 +150,10 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
             logger.trace("Device validated and initialized:\n{}", deviceInfo);
             return deviceInfo;
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
 
         return null;

@@ -647,8 +647,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         try {
             String host = getConfig().get(HOST_PARAMETER).toString();
             if (host == null || host.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "No network address specified");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No network address specified");
             } else {
                 connection.connect(host, getIntConfigParameter(WS_PORT_PARAMETER, 9090), scheduler, getImageBaseUrl());
 
@@ -659,8 +658,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                         updatePVRChannelStateDescription(PVR_RADIO, CHANNEL_PVR_OPEN_RADIO);
                         updateProfileStateDescription();
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "No connection established");
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No connection established");
                     }
                 }, 1, getIntConfigParameter(REFRESH_PARAMETER, 10), TimeUnit.SECONDS);
 
@@ -672,7 +670,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             }
         } catch (Exception e) {
             logger.debug("error during opening connection: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
@@ -752,7 +750,7 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 logger.debug("error during reading version: {}", e.getMessage(), e);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No connection established");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "No connection established");
         }
     }
 

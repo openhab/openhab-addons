@@ -301,7 +301,7 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
                     try {
                         initPairingCodeRetrieval(target);
                     } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "offline.error-occurred-while-presenting-pairing-code");
                     }
                 } else {

@@ -89,7 +89,7 @@ public class AdorneSwitchHandler extends BaseThingHandler {
         if (configZoneId != null) {
             zoneId = configZoneId;
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
         updateStatus(ThingStatus.ONLINE);
@@ -102,7 +102,7 @@ public class AdorneSwitchHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.trace("bridgeStatusChanged bridgeStatusInfo:{}", bridgeStatusInfo.getStatus());
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
             updateStatus(bridgeStatusInfo.getStatus());
         }

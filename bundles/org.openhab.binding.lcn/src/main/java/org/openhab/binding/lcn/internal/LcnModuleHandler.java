@@ -149,7 +149,7 @@ public class LcnModuleHandler extends BaseThingHandler {
                 }
             });
         } catch (LcnException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 

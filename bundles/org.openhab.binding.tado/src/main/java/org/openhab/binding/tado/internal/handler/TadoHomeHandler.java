@@ -144,7 +144,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
 
                 List<UserHomes> homes = user.getHomes();
                 if (homes == null || homes.isEmpty()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, CONF_ERROR_NO_HOME);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, CONF_ERROR_NO_HOME);
                     return;
                 }
 
@@ -167,7 +167,7 @@ public class TadoHomeHandler extends BaseBridgeHandler implements AccessTokenRef
                 }
 
                 if (firstHomeId == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, CONF_ERROR_NO_HOME_ID);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, CONF_ERROR_NO_HOME_ID);
                     return;
                 }
 

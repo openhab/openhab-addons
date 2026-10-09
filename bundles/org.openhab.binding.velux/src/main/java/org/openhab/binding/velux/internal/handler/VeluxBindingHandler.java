@@ -137,7 +137,7 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
         if (this.isInitialized()) {
             logger.trace("updateVisibleInformation(): updating thing status.");
             if (currentNumberOfBridges < 1) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING);
             } else {
                 updateStatus(ThingStatus.ONLINE);
             }

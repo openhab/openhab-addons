@@ -149,15 +149,13 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
         config = getConfigAs(HttpThingConfig.class);
 
         if (config.baseURL.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter baseURL must not be empty!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Parameter baseURL must not be empty!");
             return;
         }
 
         // check protocol is set
         if (!config.baseURL.startsWith("http://") && !config.baseURL.startsWith("https://")) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "baseURL is invalid: protocol not defined.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "baseURL is invalid: protocol not defined.");
             return;
         }
 
@@ -225,7 +223,7 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
                 logger.debug("No authentication configured for thing '{}'", thing.getUID());
             }
         } catch (URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot create URI from baseUrl.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Cannot create URI from baseUrl.");
         }
         // create channels
         thing.getChannels().forEach(this::createChannel);
@@ -353,8 +351,7 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
     public void onHttpError(@Nullable String message) {
         updateState(CHANNEL_LAST_FAILURE, new DateTimeType(Instant.now().atZone(timeZoneProvider.getTimeZone())));
         if (config.strictErrorHandling) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    Objects.requireNonNullElse(message, ""));
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, Objects.requireNonNullElse(message, ""));
         }
     }
 

@@ -81,7 +81,7 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
                     "@text/casokitchen.winecooler-2z.status.wait-for-response");
             startSchedule();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configInvalidReason);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configInvalidReason);
         }
     }
 
@@ -204,9 +204,8 @@ public class TwoZonesWinecoolerHandler extends BaseThingHandler {
                 updateChannels(statusResult);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/casokitchen.winecooler-2z.status.http-status [\"" + responseStatus + " - " + responseContent
-                            + "\"]");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/casokitchen.winecooler-2z.status.http-status [\""
+                    + responseStatus + " - " + responseContent + "\"]");
         }
     }
 

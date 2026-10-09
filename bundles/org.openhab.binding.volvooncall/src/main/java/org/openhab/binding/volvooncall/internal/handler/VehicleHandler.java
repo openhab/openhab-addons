@@ -148,7 +148,7 @@ public class VehicleHandler extends BaseThingHandler {
 
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
@@ -217,7 +217,7 @@ public class VehicleHandler extends BaseThingHandler {
             vehicleStatus = newVehicleStatus;
         } catch (VolvoOnCallException e) {
             logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             freeRefreshJob();
             startAutomaticRefresh(configuration.refresh, service);
         }
@@ -564,7 +564,7 @@ public class VehicleHandler extends BaseThingHandler {
                 }
             } catch (VolvoOnCallException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
         pendingActions.removeIf(ScheduledFuture::isDone);

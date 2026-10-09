@@ -74,7 +74,7 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(MerossBridgeConfiguration.class);
 
         if (config.hostName.isBlank() || config.userEmail.isBlank() || config.userPassword.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
@@ -109,7 +109,7 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
             }
             merossHttpConnector.logout();
         } catch (ConnectException | MerossApiException | MqttException | InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

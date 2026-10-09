@@ -24,7 +24,6 @@ import java.net.UnknownHostException;
 
 import org.openhab.binding.dscalarm.internal.config.EnvisalinkBridgeConfiguration;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,11 +62,9 @@ public class EnvisalinkBridgeHandler extends DSCAlarmBaseBridgeHandler {
         EnvisalinkBridgeConfiguration configuration = getConfigAs(EnvisalinkBridgeConfiguration.class);
 
         if (configuration.ipAddress == null || configuration.ipAddress.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Set an IP address in the thing configuration.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Set an IP address in the thing configuration.");
         } else if (configuration.port == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Set a TCP port in the thing configuration.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Set a TCP port in the thing configuration.");
         } else {
             ipAddress = configuration.ipAddress.trim();
             tcpPort = configuration.port.intValue();

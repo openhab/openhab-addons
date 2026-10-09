@@ -178,7 +178,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     }
 
     public void errorInformer(String msgError) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msgError);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msgError);
     }
 
     @Override
@@ -190,20 +190,17 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
         // Validate required configuration
         if (localConfig.hostname.isBlank() || localConfig.username.isBlank() || localConfig.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-credentials");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-credentials");
             return;
         }
 
         if (localConfig.snapshotPath.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-snapshot-path");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-snapshot-path");
             return;
         }
 
         if (localConfig.enableWebRTC && localConfig.go2rtcPath.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-missing-go2rtc-path");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-missing-go2rtc-path");
             return;
         }
 
@@ -1524,7 +1521,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         if (!isValidPort(backchannelBase) || !isValidPort(backchannelMax)) {
             String detail = String.format("Invalid backchannel port range %d-%d (go2rtcApiPort=%d, sipExtensions=%d)",
                     backchannelBase, backchannelMax, cfg.go2rtcApiPort, extensions.size());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, detail);
             logger.warn(detail);
             return false;
         }
@@ -1535,7 +1532,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             if (!isValidPort(sipBase) || !isValidPort(sipMax)) {
                 String detail = String.format("Invalid SIP port range %d-%d (localSipPort=%d, sipExtensions=%d)",
                         sipBase, sipMax, cfg.localSipPort, extensions.size());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, detail);
                 logger.warn(detail);
                 return false;
             }
@@ -1543,7 +1540,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             if (rangesOverlap(sipBase, sipMax, backchannelBase, backchannelMax)) {
                 String detail = String.format("SIP/backchannel port ranges overlap (sip=%d-%d, backchannel=%d-%d)",
                         sipBase, sipMax, backchannelBase, backchannelMax);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, detail);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, detail);
                 logger.warn(detail);
                 return false;
             }

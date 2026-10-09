@@ -76,7 +76,7 @@ public abstract class EntityBaseHandler extends BaseThingHandler {
 
             // Asynchronous update done but panel is not supported
         } else if (!panel.isPanelSupported()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Panel is not supported. Cannot update entity=" + this + ".");
             // All OK
         } else {

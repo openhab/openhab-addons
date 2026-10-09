@@ -609,7 +609,7 @@ class RachioScheduleHandlerStatusTest {
         @Override
         protected boolean refreshScheduleRule() {
             if (!refreshSuccess) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.schedule.load-failed", "schedule-id", "failed"));
             }
             return refreshSuccess;
@@ -738,7 +738,7 @@ class RachioScheduleHandlerStatusTest {
         @Override
         protected boolean refreshFlexScheduleRule() {
             if (!refreshSuccess) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.flex-schedule.load-failed", "flex-id", "failed"));
             }
             return refreshSuccess;

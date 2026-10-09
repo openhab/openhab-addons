@@ -459,7 +459,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         }
         if (!validBridgeFound) {
             logger.debug("No valid protocol selected, aborting this {} binding.", VeluxBindingConstants.BINDING_ID);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/runtime.bridge-offline-no-valid-bridgeProtocol-selected");
             logger.trace("bridgeParamsUpdated() done.");
             return;
@@ -471,7 +471,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             }
         } catch (IOException e) {
             logger.debug("bridgeParamsUpdated(): Bridge ip address not reachable.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
         logger.trace("bridgeParamsUpdated(): Trying to authenticate towards bridge.");
@@ -479,8 +479,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         if (!thisBridge.bridgeLogin()) {
             logger.warn("{} bridge login sequence failed; expecting bridge is OFFLINE.",
                     VeluxBindingConstants.BINDING_ID);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/runtime.bridge-offline-login-sequence-failed");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/runtime.bridge-offline-login-sequence-failed");
             logger.trace("bridgeParamsUpdated() done.");
             return;
         }
@@ -869,7 +868,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
         } else {
             if ((thingStatus == ThingStatus.ONLINE || thingStatus == ThingStatus.UNKNOWN)
                     && lastSuccessfulCommunication.plus(offlineDelay).isBefore(lastCommunication)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
 
