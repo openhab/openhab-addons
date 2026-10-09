@@ -209,15 +209,13 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                     startTouchJob();
                 } else {
                     logger.debug("No token found. Start pairing background job");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "@text/error.nanoleaf.controller.noToken");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.nanoleaf.controller.noToken");
                     startPairingJob();
                     stopUpdateJob();
                 }
             } else {
                 logger.warn("No IP address and port configured for the Nanoleaf controller");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "@text/error.nanoleaf.controller.noIp");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.nanoleaf.controller.noIp");
                 stopAllJobs();
             }
         } catch (IllegalArgumentException iae) {
@@ -365,8 +363,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
                         TimeUnit.SECONDS);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "@text/error.nanoleaf.controller.noToken");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.nanoleaf.controller.noToken");
         }
     }
 
@@ -441,8 +438,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.invalidToken");
             final String localAuthToken = getAuthToken();
             if (localAuthToken == null || localAuthToken.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "@text/error.nanoleaf.controller.noToken");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.nanoleaf.controller.noToken");
             }
         } catch (NanoleafException ne) {
             logger.debug("Status update failed for controller {} : {}", getThing().getUID(), ne.getMessage());

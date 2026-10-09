@@ -234,7 +234,7 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         }
 
         final UnifiProtectNVRConfiguration config = getConfigAs(UnifiProtectNVRConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.initializing");
+        updateStatus(ThingStatus.UNKNOWN);
 
         initializationTask = parentHandler.getSessionAsync().whenCompleteAsync((session, sessionError) -> {
             if (shuttingDown) {

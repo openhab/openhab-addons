@@ -83,8 +83,6 @@ public class RdsHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
-
         RdsConfiguration config = this.config = getConfigAs(RdsConfiguration.class);
 
         if (config.plantId.isEmpty()) {
@@ -92,7 +90,7 @@ public class RdsHandler extends BaseThingHandler {
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
+        updateStatus(ThingStatus.UNKNOWN);
 
         try {
             RdsCloudHandler cloud = getCloudHandler();

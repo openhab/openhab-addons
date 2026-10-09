@@ -160,7 +160,7 @@ public class TuyaDeviceHandler extends BaseTuyaDeviceHandler implements DeviceIn
                     configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.port,
                     configuration.protocol, getAllDpIds());
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.wait-for-ip");
+            updateStatus(ThingStatus.UNKNOWN);
         }
 
         udpDiscoveryListener.registerListener(configuration.deviceId, this);
