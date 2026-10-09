@@ -770,7 +770,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
             nodeDefinitionUpdateGeneration++;
             updateStatusAfterNodeDefinitionChange = false;
             cancelPendingNodeDefinitionUpdate();
-            updateStatus(ThingStatus.OFFLINE, "@text/offline.conf-error.node-removed");
+            updateStatus(ThingStatusDetail.GONE, "@text/offline.conf-error.node-removed");
         }
     }
 

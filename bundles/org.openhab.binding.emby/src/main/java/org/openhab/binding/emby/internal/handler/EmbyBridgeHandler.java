@@ -126,7 +126,7 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY);
+        updateStatus(ThingStatus.UNKNOWN);
 
         final ScheduledExecutorService exec = requireNonNull(scheduler, "scheduler must not be null");
 
