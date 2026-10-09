@@ -397,6 +397,7 @@ Currently the miio binding supports more than 380 different models.
 | Mijia Smart Pet Water Dispenser    | miio:basic       | [mmgg.pet_waterer.s3](#mmgg-pet_waterer-s3) | Experimental | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"filter-cotton-reset-cotton-life","siid":5,"aiid":1,"in":[]}`<br />`action{"did":"remain-clean-time-reset-clean-time","siid":6,"aiid":1,"in":[]}`<br />Please test and feedback if they are working so they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | XIAOWAN Smart Pet Water Dispenser  | miio:basic       | [mmgg.pet_waterer.s4](#mmgg-pet_waterer-s4) | Experimental | Identified manual actions for execution<br />`action{"did":"filter-reset-filter-life","siid":3,"aiid":1,"in":[]}`<br />`action{"did":"filter-cotton-reset-cotton-life","siid":5,"aiid":1,"in":[]}`<br />`action{"did":"remain-clean-time-reset-clean-time","siid":6,"aiid":1,"in":[]}`<br />Please test and feedback if they are working so they can be linked to a channel.<br />Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | Xiaomi Smart Pet Fountain          | miio:basic       | [mmgg.pet_waterer.wi11](#mmgg-pet_waterer-wi11) | Yes          |            |
+| MR.BOND                            | miio:basic       | [mrbond.airer.m0](#mrbond-airer-m0) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1pro](#mrbond-airer-m1pro) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1s](#mrbond-airer-m1s) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
 | MR.BOND                            | miio:basic       | [mrbond.airer.m1super](#mrbond-airer-m1super) | Experimental | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
@@ -2857,41 +2858,45 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | pump_block_flag            | Switch               | Status - Pump Blocked                    |            |
 | lid_up_flag                | Switch               | Status - Lid Open                        |            |
 
+### MR.BOND (<a name="mrbond-airer-m0">mrbond.airer.m0</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| led                        | Switch               | LED                                      |            |
+| motor                      | Number               | Motor                                    | Value mapping `["0"="Stop","1"="Rise","2"="Down"]` |
+| airer_location             | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
+
 ### MR.BOND (<a name="mrbond-airer-m1pro">mrbond.airer.m1pro</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| dry                        | Switch               | Dry                                      |            |
-| led                        | Switch               | LED Status                               |            |
-| motor                      | Number               | Motor                                    |            |
-| drytime                    | Number               | Dry Time                                 |            |
-| airer_location             | Number               | Airer Location                           |            |
-| disinfect                  | Switch               | disinfect                                |            |
-| distime                    | Number               | Disinfect Time                           |            |
+| dry                        | Switch               | Dry                                      | Only available when the airer is at its highest position. ON starts the shortest drying cycle (30 minutes), use the drymode channel to select the drying time. The channel is ON for any running drying cycle. |
+| drymode                    | Number               | Dry Mode                                 | Only available when the airer is at its highest position. Write only, the current drying state is shown by the dry channel. Value mapping `["0"="Off","1"="30 minutes","2"="60 minutes","3"="90 minutes","4"="120 minutes"]`. Mode 4 is sent with `set_dryswitch`, like the Mi Home app does. |
+| led                        | Switch               | LED                                      |            |
+| motor                      | Number               | Motor                                    | Value mapping `["0"="Stop","1"="Rise","2"="Down"]` |
+| drytime                    | Number:Time          | Dry Time                                 |            |
+| airer_location             | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
 
 ### MR.BOND (<a name="mrbond-airer-m1s">mrbond.airer.m1s</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| dry                        | Switch               | Dry                                      |            |
-| led                        | Switch               | LED Status                               |            |
-| motor                      | Number               | Motor                                    |            |
-| drytime                    | Number               | Dry Time                                 |            |
-| airer_location             | Number               | Airer Location                           |            |
-| disinfect                  | Switch               | disinfect                                |            |
-| distime                    | Number               | Disinfect Time                           |            |
+| led                        | Switch               | LED                                      |            |
+| motor                      | Number               | Motor                                    | Value mapping `["0"="Stop","1"="Rise","2"="Down"]` |
+| airer_location             | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
 
 ### MR.BOND (<a name="mrbond-airer-m1super">mrbond.airer.m1super</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| dry                        | Switch               | Dry                                      |            |
-| led                        | Switch               | LED Status                               |            |
-| motor                      | Number               | Motor                                    |            |
-| drytime                    | Number               | Dry Time                                 |            |
-| airer_location             | Number               | Airer Location                           |            |
-| disinfect                  | Switch               | disinfect                                |            |
-| distime                    | Number               | Disinfect Time                           |            |
+| dry                        | Switch               | Dry                                      | Only available when the airer is at its highest position. ON starts the shortest drying cycle (30 minutes), use the drymode channel to select the drying time. The channel is ON for any running drying cycle. |
+| drymode                    | Number               | Dry Mode                                 | Only available when the airer is at its highest position. Write only, the current drying state is shown by the dry channel. Value mapping `["0"="Off","1"="30 minutes","2"="60 minutes","3"="90 minutes","4"="120 minutes"]`. Mode 4 is sent with `set_dryswitch`, like the Mi Home app does. |
+| led                        | Switch               | LED                                      |            |
+| motor                      | Number               | Motor                                    | Value mapping `["0"="Stop","1"="Rise","2"="Down"]` |
+| drytime                    | Number:Time          | Dry Time                                 |            |
+| airer_location             | Number               | Airer Location                           | Value mapping `["0"="Normal","1"="Highest","2"="Lowest"]` |
+| disinfect                  | Switch               | Disinfect                                | Only available when the airer is at its highest position. |
+| distime                    | Number:Time          | Disinfect Time                           |            |
 
 ### NWT Internet Dehumidifier 30L (<a name="nwt-derh-330ef">nwt.derh.330ef</a>) Channels
 
@@ -9514,6 +9519,17 @@ Switch pump_block_flag "Status - Pump Blocked" (G_pet_waterer) {channel="miio:ba
 Switch lid_up_flag "Status - Lid Open" (G_pet_waterer) {channel="miio:basic:pet_waterer:lid_up_flag"}
 ```
 
+### MR.BOND (mrbond.airer.m0) item file lines
+
+note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
+
+```java
+Group G_airer "MR.BOND" <status>
+Switch led "LED" (G_airer) {channel="miio:basic:airer:led"}
+Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
+Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
+```
+
 ### MR.BOND (mrbond.airer.m1pro) item file lines
 
 note: Autogenerated example. Replace the id (airer) in the channel with your own. Replace `basic` with `generic` in the Thing UID depending on how your Thing was discovered.
@@ -9521,12 +9537,11 @@ note: Autogenerated example. Replace the id (airer) in the channel with your own
 ```java
 Group G_airer "MR.BOND" <status>
 Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
-Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
+Number drymode "Dry Mode" (G_airer) {channel="miio:basic:airer:drymode"}
+Switch led "LED" (G_airer) {channel="miio:basic:airer:led"}
 Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
-Number drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
+Number:Time drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
 Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
-Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
-Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 ```
 
 ### MR.BOND (mrbond.airer.m1s) item file lines
@@ -9535,13 +9550,9 @@ note: Autogenerated example. Replace the id (airer) in the channel with your own
 
 ```java
 Group G_airer "MR.BOND" <status>
-Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
-Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
+Switch led "LED" (G_airer) {channel="miio:basic:airer:led"}
 Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
-Number drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
 Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
-Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
-Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 ```
 
 ### MR.BOND (mrbond.airer.m1super) item file lines
@@ -9551,12 +9562,13 @@ note: Autogenerated example. Replace the id (airer) in the channel with your own
 ```java
 Group G_airer "MR.BOND" <status>
 Switch dry "Dry" (G_airer) {channel="miio:basic:airer:dry"}
-Switch led "LED Status" (G_airer) {channel="miio:basic:airer:led"}
+Number drymode "Dry Mode" (G_airer) {channel="miio:basic:airer:drymode"}
+Switch led "LED" (G_airer) {channel="miio:basic:airer:led"}
 Number motor "Motor" (G_airer) {channel="miio:basic:airer:motor"}
-Number drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
+Number:Time drytime "Dry Time" (G_airer) {channel="miio:basic:airer:drytime"}
 Number airer_location "Airer Location" (G_airer) {channel="miio:basic:airer:airer_location"}
-Switch disinfect "disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
-Number distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
+Switch disinfect "Disinfect" (G_airer) {channel="miio:basic:airer:disinfect"}
+Number:Time distime "Disinfect Time" (G_airer) {channel="miio:basic:airer:distime"}
 ```
 
 ### NWT Internet Dehumidifier 30L (nwt.derh.330ef) item file lines
