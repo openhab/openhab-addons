@@ -187,7 +187,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     private void initialize(@Nullable BridgeSedifWebHandler bridgeHandler, @Nullable ThingStatus bridgeStatus) {
         if (bridgeHandler == null || bridgeStatus == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
         if (bridgeStatus != ThingStatus.ONLINE) {

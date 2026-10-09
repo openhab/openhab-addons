@@ -50,7 +50,7 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
         }
 
         if (qBridgeHandler == null) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "No bridge handler initialized for " + type + " with id " + globalId + ".");
             return null;
         }
@@ -67,7 +67,7 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
     public @Nullable QbusBridgeHandler getBridgeHandler(String type, @Nullable Integer globalId) {
         Bridge qBridge = getBridge();
         if (qBridge == null) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "No bridge initialized for " + type + " with ID " + globalId);
             return null;
         }

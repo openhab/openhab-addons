@@ -78,7 +78,7 @@ public abstract class ChildThingHandler<BridgeHandlerType extends BridgeHandler>
             }
         } else {
             bridgeValid = false;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge missing.");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge missing.");
         }
     }
 }

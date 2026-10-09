@@ -17,7 +17,6 @@ import static org.openhab.binding.salus.internal.SalusBindingConstants.Channels.
 import static org.openhab.binding.salus.internal.SalusBindingConstants.It600Device.HoldType.*;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 
@@ -79,11 +78,11 @@ public class It600Handler extends BaseThingHandler {
         {
             var bridge = getBridge();
             if (bridge == null) {
-                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.no-bridge");
+                updateStatus(BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.no-bridge");
                 return;
             }
             if (!(bridge.getHandler() instanceof AbstractBridgeHandler<?> cloudHandler)) {
-                updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/it600-handler.initialize.errors.bridge-wrong-type");
+                updateStatus(CONFIGURATION_ERROR, "@text/it600-handler.initialize.errors.bridge-wrong-type");
                 return;
             }
             this.cloudApi = cloudHandler;

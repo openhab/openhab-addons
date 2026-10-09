@@ -337,7 +337,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
         // Sanity check basic setup
         final VeSyncBridgeHandler bridge = (VeSyncBridgeHandler) getBridgeHandler();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Missing bridge for API link");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "Missing bridge for API link");
             return;
         } else {
             updateStatus(ThingStatus.UNKNOWN);
