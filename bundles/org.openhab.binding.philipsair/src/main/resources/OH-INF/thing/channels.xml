@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="philipsair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Device power</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="fan-speed">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<description>Fan speed</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<state pattern="%s">
+			<options>
+				<option value="s">Silent</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="t">Turbo</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Filter mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%s">
+			<options>
+				<option value="P">Auto</option>
+				<option value="A">Allergen</option>
+				<option value="S">Sleep</option>
+				<option value="M">Manual</option>
+				<option value="B">Bacteria</option>
+				<option value="N">Night</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="button-light">
+		<item-type>Switch</item-type>
+		<label>Buttons</label>
+		<description>Buttons light</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
+		<state pattern="%s"/>
+	</channel-type>
+	<channel-type id="displayed-index">
+		<item-type>String</item-type>
+		<label>Displayed Index</label>
+		<description>Index shown on the display</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%s">
+			<options>
+				<option value="0">Allergen Index</option>
+				<option value="1">PM2.5</option>
+				<option value="2">Gas</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="light-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>LED Light Level</label>
+		<description>Level 100, 75, 50, 25, 0</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+		<state pattern="%d %unit%" min="0" max="100" step="25"/>
+	</channel-type>
+	<channel-type id="child-lock">
+		<item-type>Switch</item-type>
+		<label>Child Lock</label>
+		<description>Child lock enabled/disabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="timer-remaining">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Timer Remaining</label>
+		<description>Time left until the timer switches the device off</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="timer">
+		<item-type>Number</item-type>
+		<label>Timer</label>
+		<description>Timer in hours, 0 is off. Up to 5 or 12 hours, depending on the model</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state min="0" max="12" pattern="%d" step="1"/>
+	</channel-type>
+
+	<channel-type id="pm25">
+		<item-type unitHint="µg/m³">Number:Density</item-type>
+		<label>PM2.5</label>
+		<description>PM 2.5 particles pollution level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f µg/m³"/>
+	</channel-type>
+	<channel-type id="allergen-index">
+		<item-type>Number</item-type>
+		<label>Allergen Index</label>
+		<description>Allergen index</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="tvoc">
+		<item-type>Number</item-type>
+		<label>TVOC</label>
+		<description>Total volatile organic compounds (TVOC) level. Recent models report it as an index from 1 to 4</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+	<channel-type id="rssi" advanced="true">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Signal Strength</label>
+		<description>Wi-Fi signal strength</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="air-quality-threshold">
+		<item-type>Number</item-type>
+		<label>Air Quality Threshold</label>
+		<description>Air quality level at which the Philips app sends a notification</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state pattern="%d">
+			<options>
+				<option value="1">Good</option>
+				<option value="4">Fair</option>
+				<option value="7">Poor</option>
+				<option value="10">Very poor</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="error-code">
+		<item-type>String</item-type>
+		<label>Error Message</label>
+		<description>Error reported by the device</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="0">No error</option>
+				<option value="49408">No water</option>
+				<option value="32768">Water tank open</option>
+				<option value="49155">Clean pre-filter</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="beep" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Beep</label>
+		<description>The device beeps when a button is pressed</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="standby-sensors" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sensors in Standby</label>
+		<description>The sensors keep measuring when the device is in standby</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="allergy-sleep" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Allergy Sleep</label>
+		<description>Sleep mode that is gentle for allergic people</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="display" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Display</label>
+		<description>The display of the device is on</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="display-brightness">
+		<item-type>String</item-type>
+		<label>Display Brightness</label>
+		<description>Brightness of the display, with the steps the model offers</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+		<state pattern="%s"/>
+	</channel-type>
+	<channel-type id="lamp-mode">
+		<item-type>String</item-type>
+		<label>Lamp Mode</label>
+		<description>What the lamp of the device shows</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="pre-filter-life">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Pre-filter</label>
+		<description>Estimated time to perform a manual clean up of the Pre-filter</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="wick-filter-life">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Wick</label>
+		<description>Wick filter estimated lifetime</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="carbon-filter-life">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>Carbon</label>
+		<description>Active carbon filter estimated lifetime</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="hepa-filter-life">
+		<item-type unitHint="h">Number:Time</item-type>
+		<label>HEPA Filter</label>
+		<description>HEPA filter estimated lifetime</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="humidity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Current humidity</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%" min="0" max="100"/>
+	</channel-type>
+	<channel-type id="target-humidity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity Setpoint</label>
+		<description>Humidity setpoint</description>
+		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state pattern="%.0f %unit%" min="40" max="70" step="10"/>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="function">
+		<item-type>String</item-type>
+		<label>Function</label>
+		<description>P: Purification, PH: Purification and Humidification</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state pattern="%s">
+			<options>
+				<option value="P">Purification</option>
+				<option value="PH">Purification and Humidity</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="water-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Water Level</label>
+		<description>Water tank level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>
