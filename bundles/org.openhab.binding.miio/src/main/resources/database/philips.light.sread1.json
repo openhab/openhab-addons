@@ -2,7 +2,8 @@
 	"deviceMapping": {
 		"id": [
 			"philips.light.sread1",
-			"philips.light.sread2"
+			"philips.light.sread2",
+			"philips.light.zysread"
 		],
 		"channels": [
 			{
@@ -17,10 +18,7 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "bright",
@@ -48,7 +46,25 @@
 				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Brightness"
+				]
+			},
+			{
+				"property": "scene_num",
+				"friendlyName": "Scene",
+				"channel": "scene",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_user_scene",
+						"parameterType": "NUMBER"
+					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
 				]
 			},
 			{
@@ -63,6 +79,10 @@
 						"command": "enable_amb",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
@@ -70,6 +90,12 @@
 				"friendlyName": "Ambient Brightness",
 				"channel": "ambientBrightness",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 1,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %%"
+				},
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -77,19 +103,12 @@
 						"command": "set_amb_bright",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "light",
+				"tags": [
+					"Control",
+					"Brightness"
 				]
-			},
-			{
-				"property": "dvalue",
-				"friendlyName": "Ambient Illumination",
-				"channel": "illumination",
-				"type": "Number",
-				"stateDescription": {
-					"pattern": "%.1f",
-					"readOnly": true
-				},
-				"refresh": true,
-				"actions": []
 			},
 			{
 				"property": "eyecare",
@@ -103,20 +122,74 @@
 						"command": "set_eyecare",
 						"parameterType": "ONOFF"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
 			},
 			{
-				"property": "bl",
+				"property": "notifystatus",
+				"friendlyName": "Eye Fatigue Reminder",
+				"channel": "notifyuser",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_notifyuser",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "bls",
 				"friendlyName": "Night Light",
 				"channel": "bl",
 				"type": "Switch",
 				"refresh": true,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "enable_bl",
+						"parameterType": "ONOFF"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "dvalue",
+				"friendlyName": "Delay Off",
+				"channel": "delayoff",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 60,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "delay_off",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Turns the light off after the set time, 0 cancels the timer"
 			}
 		]
 	}
