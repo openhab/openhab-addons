@@ -940,7 +940,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             boolean newSentFlagValue = false;
             switch (status) {
                 case INSTALLING:
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+                    updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
                     break;
                 case NO_UPDATE, UPDATE_AVAILABLE, UPDATE_PENDING:
                     /*
@@ -1149,7 +1149,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (doDevices) {
             putSoftwareStatus(BridgeConfig.V1_ANY_DEVICE, installingStatus);
             if (!doBridge) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
+                updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, installingKey);
             }
         }
 

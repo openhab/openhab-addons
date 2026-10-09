@@ -162,7 +162,7 @@ public class BuienradarHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             logger.warn("Cannot retrieve predictions", e);
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Could not reach buienradar: %s", e.getMessage()));
         }
     }

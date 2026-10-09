@@ -708,7 +708,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
     @Override
     public void onNodeRemoved(Event event) {
         logger.trace("Node {}. Removed", config.id);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.conf-error.node-removed");
+        updateStatus(ThingStatusDetail.GONE, "@text/offline.conf-error.node-removed");
     }
 
     @Override

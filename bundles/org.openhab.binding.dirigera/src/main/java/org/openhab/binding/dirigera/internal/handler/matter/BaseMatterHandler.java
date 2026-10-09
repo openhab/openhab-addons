@@ -70,8 +70,6 @@ import org.slf4j.LoggerFactory;
 public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, DebugHandler {
     private static final ThingStatusInfo UNKNOWN_INITIALZING = new ThingStatusInfo(ThingStatus.UNKNOWN,
             ThingStatusDetail.NONE, null);
-    private static final ThingStatusInfo UNKNOWN_NOT_READY = new ThingStatusInfo(ThingStatus.UNKNOWN,
-            ThingStatusDetail.NOT_YET_READY, null);
     private final Logger logger = LoggerFactory.getLogger(BaseMatterHandler.class);
     private final List<PowerListener> powerListeners = new ArrayList<>();
     private @Nullable Gateway gateway;
@@ -177,10 +175,10 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         // ONLINE(OFFLINE response, if
         if (ThingStatus.ONLINE.equals(gateway().getThing().getStatus())
                 && !ThingStatus.ONLINE.equals(handlerStatusInfo.getStatus())) {
-            updateStatus(UNKNOWN_INITIALZING.getStatus(), UNKNOWN_INITIALZING.getStatusDetail(), null);
+            updateStatus(ThingStatus.UNKNOWN);
             initializationFuture = scheduler.schedule(child::initializeDevice, 0, TimeUnit.SECONDS);
         } else {
-            updateStatus(UNKNOWN_NOT_READY.getStatus(), UNKNOWN_NOT_READY.getStatusDetail(), null);
+            updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
