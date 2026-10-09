@@ -6,7 +6,9 @@
 
 	<thing-type id="appliance">
 		<label>Samsung OCF Appliance</label>
-		<description>Direct authenticated control of a compatible Samsung appliance. No SmartThings Hub is required.</description>
+		<description>Direct authenticated control of a compatible Samsung appliance. Dynamic channels are created only for
+			recognized appliance resources; descriptions report advertised command values and ranges when available. No
+			SmartThings Hub is required.</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<representation-property>deviceId</representation-property>
 		<config-description>
@@ -94,7 +96,8 @@
 	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Appliance Number</label>
-		<description>Numeric resource state. Supported command values depend on live device capabilities.</description>
+		<description>Numeric resource state. The channel description reports validated command ranges when available;
+			otherwise supported command values depend on live device capabilities.</description>
 	</channel-type>
 	<channel-type id="number-readonly">
 		<item-type>Number</item-type>
@@ -131,7 +134,8 @@
 	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>Appliance Setting</label>
-		<description>Text resource state. Valid commands depend on live device capabilities; no fixed option list is assumed.</description>
+		<description>Text resource state. Mode channels report the exact command values advertised by the appliance, with
+			display names when available. Other valid commands depend on live device capabilities.</description>
 	</channel-type>
 	<channel-type id="string-readonly">
 		<item-type>String</item-type>

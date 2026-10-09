@@ -147,6 +147,22 @@ class ApplianceHandlerTest {
     }
 
     @Test
+    void publishesCapabilityDescriptionOnDynamicChannels() throws Exception {
+        transport.identity = json("{\"di\":\"" + DEVICE_ID + "\",\"rt\":[\"oic.d.dehumidifier\"]}");
+        transport.batch = json("""
+                [{"href":"/mode/vs/0","rep":{"x.com.samsung.da.modes":["Auto"],
+                 "x.com.samsung.da.supportedModes":["Auto","Sleep"],
+                 "x.com.samsung.da.modesName":["Automatic","Sleep Mode"]}},
+                 {"href":"/remotectrl/0","rep":{"value":true}}]
+                """);
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+
+        assertEquals("Operating Mode reported by the appliance. Supported command values (display names): "
+                + "Auto (Automatic), Sleep (Sleep Mode).", channel(handler, "Operating Mode").getDescription());
+    }
+
+    @Test
     void refreshOnlyReadsAndUnchangedChannelsAreNotRebuilt() throws Exception {
         ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);

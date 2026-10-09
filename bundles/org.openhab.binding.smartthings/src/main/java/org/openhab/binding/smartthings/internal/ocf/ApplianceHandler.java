@@ -413,7 +413,8 @@ public class ApplianceHandler extends BaseThingHandler {
                     type += "-readonly";
                 }
                 channels.add(ChannelBuilder.create(new ChannelUID(getThing().getUID(), point.id()), point.itemType())
-                        .withType(new ChannelTypeUID(BINDING_ID, type)).withLabel(point.label()).build());
+                        .withType(new ChannelTypeUID(BINDING_ID, type)).withLabel(point.label())
+                        .withDescription(point.description()).build());
             }
             Map<String, String> properties = new HashMap<>(getThing().getProperties());
             UUID identity = current.identity;

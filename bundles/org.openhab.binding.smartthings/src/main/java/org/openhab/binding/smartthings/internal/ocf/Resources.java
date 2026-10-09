@@ -15,12 +15,12 @@ package org.openhab.binding.smartthings.internal.ocf;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -45,7 +45,7 @@ import com.google.gson.JsonPrimitive;
 
 /**
  * Cached OCF representations and deliberately limited, verified Samsung appliance controls.
- * Unknown resources remain available as read-only JSON diagnostics.
+ * Only recognized appliance capabilities are exposed as channels.
  *
  * @author Kai Kreuzer - Initial contribution
  */
@@ -72,7 +72,8 @@ public class Resources {
     private final Map<String, JsonObject> resources = new LinkedHashMap<>();
 
     /** A channel backed by one field, or the complete JSON representation when field is empty. */
-    public record Point(String id, String href, String field, String itemType, String label, boolean writable) {
+    public record Point(String id, String href, String field, String itemType, String label, String description,
+            boolean writable) {
     }
 
     private record Bounds(BigDecimal minimum, BigDecimal maximum, BigDecimal increment, Unit<Temperature> unit) {
@@ -131,11 +132,10 @@ public class Resources {
         resources.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
             String href = entry.getKey();
             JsonObject rep = entry.getValue();
-            // OCF security resources must not expose credentials through diagnostic channels.
+            // OCF security resources must never be exposed through channels.
             if (isStub(rep) || href.contains("/sec/")) {
                 return;
             }
-            int count = result.size();
             String modesSuffix = modeSuffix(href);
             if (href.endsWith(POWER) && rep.has("value")) {
                 add(result, href, "value", "Switch", "Power",
@@ -192,11 +192,17 @@ public class Resources {
                                 && (deviceType(base, "oic.d.airpurifier") || deviceType(base, "oic.d.dehumidifier")))
                                 && currentMode(rep) != null && supportedModes(rep).contains(currentMode(rep)));
             }
-            if (result.size() == count) {
-                add(result, href, "", "String", "Resource " + href, false);
-            }
         });
-        return List.copyOf(result);
+        Set<String> usedIds = new HashSet<>();
+        return result.stream().map(point -> {
+            String id = point.id();
+            for (int suffix = 2; !usedIds.add(id); suffix++) {
+                id = point.id() + "-" + suffix;
+            }
+            return id.equals(point.id()) ? point
+                    : new Point(id, point.href(), point.field(), point.itemType(), point.label(), point.description(),
+                            point.writable());
+        }).toList();
     }
 
     /** Returns UNDEF for malformed or unknown values, without coercing them into valid appliance states. */
@@ -206,9 +212,6 @@ public class Resources {
                 || points().stream().noneMatch(p -> p.id().equals(point.id()) && p.href().equals(point.href())
                         && p.field().equals(point.field()) && p.itemType().equals(point.itemType()))) {
             return UnDefType.UNDEF;
-        }
-        if (point.field().isEmpty()) {
-            return new StringType(sanitized(rep).toString());
         }
         JsonObject temperatureRep = point.href().endsWith(TEMPERATURES_VS) ? temperatureItem(rep) : rep;
         JsonElement value = temperatureRep == null ? null : temperatureRep.get(point.field());
@@ -428,14 +431,60 @@ public class Resources {
         return rep.size() == 1 && rep.has("href");
     }
 
-    private static void add(List<Point> points, String href, String field, String itemType, String label,
-            boolean writable) {
-        String source = href + "\0" + field;
-        String readable = (href.substring(1) + (field.isEmpty() ? "-json" : "-" + field)).replaceAll("[^A-Za-z0-9_-]",
-                "-");
-        // Stable hashing avoids renaming channels when another path sanitizes to the same ID.
-        String hash = UUID.nameUUIDFromBytes(source.getBytes(StandardCharsets.UTF_8)).toString();
-        points.add(new Point(readable + "-" + hash, href, field, itemType, label, writable));
+    private void add(List<Point> points, String href, String field, String itemType, String label, boolean writable) {
+        String resource = href.substring(1);
+        String fieldName = field.substring(field.lastIndexOf('.') + 1);
+        String readable = (resource + "-" + fieldName).replaceAll("[^A-Za-z0-9_-]+", "-").replaceAll("-{2,}", "-")
+                .replaceAll("(^-|-$)", "");
+        points.add(new Point(readable, href, field, itemType, label, description(href, field, label), writable));
+    }
+
+    private String description(String href, String field, String label) {
+        JsonObject rep = resources.get(href);
+        if (rep != null && modeSuffix(href) != null) {
+            List<String> modes = supportedModes(rep);
+            if (!modes.isEmpty()) {
+                JsonElement names = rep.get(VENDOR + "modesName");
+                if (names != null && names.isJsonArray() && names.getAsJsonArray().size() == modes.size()) {
+                    List<String> displayNames = new ArrayList<>();
+                    for (JsonElement name : names.getAsJsonArray()) {
+                        String text = string(name);
+                        if (text == null || text.isBlank()) {
+                            displayNames.clear();
+                            break;
+                        }
+                        displayNames.add(text);
+                    }
+                    if (displayNames.size() == modes.size()) {
+                        List<String> options = new ArrayList<>();
+                        for (int index = 0; index < modes.size(); index++) {
+                            options.add(modes.get(index) + " (" + displayNames.get(index) + ")");
+                        }
+                        return label + " reported by the appliance. Supported command values (display names): "
+                                + String.join(", ", options) + ".";
+                    }
+                }
+                return label + " reported by the appliance. Supported command values: " + String.join(", ", modes)
+                        + ".";
+            }
+            return label + " reported by the appliance. No supported command values were advertised.";
+        }
+        if (href.endsWith(AIRFLOW) && "speed".equals(field)) {
+            return label
+                    + " reported by the appliance. Valid commands for supported air purifiers are integers from 0 to 4.";
+        }
+        Bounds limits = null;
+        if (rep != null && href.endsWith(DESIRED)) {
+            limits = bounds(href, rep);
+        } else if (rep != null && href.endsWith(TEMPERATURES_VS) && field.equals(VENDOR + "desired")) {
+            JsonObject item = temperatureItem(rep);
+            limits = item == null ? null : vendorBounds(item);
+        }
+        if (limits != null) {
+            return label + " setpoint from " + limits.minimum() + " to " + limits.maximum() + " "
+                    + limits.unit().getSymbol() + " in increments of " + limits.increment() + ".";
+        }
+        return label + " reported by the appliance.";
     }
 
     private static String prefix(String href, String suffix) {
@@ -571,31 +620,6 @@ public class Resources {
             }
         }
         return null;
-    }
-
-    private static JsonElement sanitized(JsonElement value) {
-        if (value.isJsonObject()) {
-            JsonObject result = new JsonObject();
-            value.getAsJsonObject().entrySet().forEach(entry -> {
-                String key = entry.getKey().toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z]", "");
-                if (!key.matches(
-                        ".*(password|credential|secret|psk|token|privatekey|privatedata|owneruuid|ownerid).*")) {
-                    result.add(entry.getKey(), sanitized(entry.getValue()));
-                }
-            });
-            return result;
-        }
-        if (value.isJsonArray()) {
-            JsonArray result = new JsonArray();
-            value.getAsJsonArray().forEach(entry -> {
-                String href = entry.isJsonObject() ? string(entry.getAsJsonObject().get("href")) : null;
-                if (href == null || !href.contains("/sec/")) {
-                    result.add(sanitized(entry));
-                }
-            });
-            return result;
-        }
-        return value.deepCopy();
     }
 
     private static boolean validSpeed(@Nullable BigDecimal value) {
