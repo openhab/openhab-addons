@@ -292,7 +292,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             if (id != null && !UNAUTHORIZED.equals(id)) {
                 eventsId = id;
                 logger.debug("Events id: {}", eventsId);
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                updateStatus(ThingStatus.ONLINE,
                         isDevModeReady() ? "LAN mode" : cloudFallback ? "Cloud mode fallback" : "Cloud mode");
             } else {
                 logger.debug("Events id error: {}", id);

@@ -100,7 +100,7 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
             // Check if the Wemo device is set in the UPnP service registry
             if (!isUpnpDeviceRegistered()) {
                 logger.debug("UPnP device {} not yet registered", getUDN());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                updateStatus(ThingStatus.OFFLINE,
                         "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                 return;
             }

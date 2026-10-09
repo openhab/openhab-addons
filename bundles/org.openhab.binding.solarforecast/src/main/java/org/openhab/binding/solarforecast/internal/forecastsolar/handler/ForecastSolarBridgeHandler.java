@@ -193,7 +193,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
                 updateTimeseries();
             }
         } catch (SolarForecastException sfe) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.OFFLINE,
                     "@text/solarforecast.site.status.exception [\"" + sfe.getMessage() + "\"]");
         }
     }

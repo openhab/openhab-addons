@@ -92,7 +92,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
     public synchronized void setDeviceAndUpdateThingState(AccountHandler accountHandler,
             @Nullable SmartHomeBaseDevice smartHomeBaseDevice) {
         if (smartHomeBaseDevice == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Can't find smartHomeBaseDevice");
+            updateStatus(ThingStatus.OFFLINE, "Can't find smartHomeBaseDevice");
             return;
         }
 
@@ -158,7 +158,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
 
         if (changed) {
             updateThing(thingBuilder.build());
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Thing has changed.");
+            updateStatus(ThingStatus.UNKNOWN, "Thing has changed.");
             accountHandler.forceDelayedSmartHomeStateUpdate(deviceId);
         }
     }
@@ -218,7 +218,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
         AccountHandler accountHandler = getAccountHandler();
         SmartHomeBaseDevice smartHomeBaseDevice = this.smartHomeBaseDevice;
         if (smartHomeBaseDevice == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Can't find smartHomeBaseDevice");
+            updateStatus(ThingStatus.OFFLINE, "Can't find smartHomeBaseDevice");
             return;
         }
 

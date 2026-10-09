@@ -99,7 +99,7 @@ public class AnthemHandler extends BaseThingHandler {
         }
         reconnectIntervalMinutes = configuration.reconnectIntervalMinutes;
         commandDelayMsec = configuration.commandDelayMsec;
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/thing-status-detail-connecting");
+        updateStatus(ThingStatus.UNKNOWN, "@text/thing-status-detail-connecting");
         asyncInitializeTask = scheduler.submit(this::connect);
     }
 

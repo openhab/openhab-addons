@@ -84,7 +84,7 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
             } else {
                 // Set status to OFFLINE if no bridge is available e.g. because the bridge has been removed and the
                 // Thing was reinitialized.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge is missing!");
+                updateStatus(ThingStatus.OFFLINE, "Bridge is missing!");
             }
         } else {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "dSID is missing");
@@ -182,11 +182,9 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
             this.circuit = circ;
             if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 if (!circuit.isPresent()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "Circuit is not present in the digitalSTROM-System.");
+                    updateStatus(ThingStatus.OFFLINE, "Circuit is not present in the digitalSTROM-System.");
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "Circuit is not available in the digitalSTROM-System.");
+                    updateStatus(ThingStatus.OFFLINE, "Circuit is not available in the digitalSTROM-System.");
                 }
 
             }

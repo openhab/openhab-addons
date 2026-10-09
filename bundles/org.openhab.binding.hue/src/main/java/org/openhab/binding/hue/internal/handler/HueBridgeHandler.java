@@ -734,7 +734,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
      */
     public void onConnectionLost() {
         logger.debug("Bridge connection lost. Updating thing status to OFFLINE.");
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.bridge-connection-lost");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.bridge-connection-lost");
     }
 
     /**

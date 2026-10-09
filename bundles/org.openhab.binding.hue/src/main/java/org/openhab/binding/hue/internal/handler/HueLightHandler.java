@@ -526,7 +526,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
         } else {
             // we assume OFFLINE without any error (NONE), as this is an
             // expected state (when bulb powered off)
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-not-reachable");
+            updateStatus(ThingStatus.OFFLINE, "@text/offline.light-not-reachable");
         }
 
         logger.debug("onLightStateChanged Light {}: on {} bri {} hue {} sat {} temp {} mode {} XY {}",
@@ -571,7 +571,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
 
     @Override
     public void onLightRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.light-removed");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.light-removed");
     }
 
     @Override

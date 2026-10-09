@@ -99,7 +99,7 @@ public class PegelOnlineHandler extends BaseThingHandler {
         }
         warnMap = config.getWarnings();
         String description = "@text/pegelonline.handler.status.wait-feedback";
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, description);
+        updateStatus(ThingStatus.UNKNOWN, description);
         schedule = scheduler.scheduleWithFixedDelay(this::performMeasurement, 0, config.refreshInterval,
                 TimeUnit.MINUTES);
     }

@@ -155,7 +155,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (SolarForecastException sfe) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.OFFLINE,
                     "@text/solarforecast.site.status.exception [\"" + sfe.getMessage() + "\"]");
         }
     }

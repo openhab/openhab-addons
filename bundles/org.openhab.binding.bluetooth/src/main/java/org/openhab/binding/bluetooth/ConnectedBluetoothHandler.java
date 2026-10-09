@@ -275,7 +275,7 @@ public abstract class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
                 if (device.getConnectionState() == ConnectionState.CONNECTED) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device is not connected.");
+                    updateStatus(ThingStatus.OFFLINE, "Device is not connected.");
                 }
             }
         } else {

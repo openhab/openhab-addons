@@ -445,7 +445,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.communication");
         } catch (RuntimeException e) {
             logger.debug("Update job failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.nanoleaf.controller.runtime");
+            updateStatus(ThingStatus.OFFLINE, "@text/error.nanoleaf.controller.runtime");
         }
     }
 
@@ -507,7 +507,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler implements Nano
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.authRequest");
         } catch (RuntimeException e) {
             logger.warn("Pairing job failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.nanoleaf.controller.runtime");
+            updateStatus(ThingStatus.OFFLINE, "@text/error.nanoleaf.controller.runtime");
         } catch (Exception e) {
             logger.warn("Cannot start http client", e);
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.noClient");

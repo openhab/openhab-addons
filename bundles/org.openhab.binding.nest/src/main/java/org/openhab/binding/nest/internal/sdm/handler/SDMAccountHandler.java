@@ -345,7 +345,7 @@ public class SDMAccountHandler extends BaseBridgeHandler {
             }
         } else {
             String description = config.usePubSub() ? "Using periodic refresh and Pub/Sub" : "Using periodic refresh";
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, description);
+            updateStatus(ThingStatus.ONLINE, description);
         }
     }
 }

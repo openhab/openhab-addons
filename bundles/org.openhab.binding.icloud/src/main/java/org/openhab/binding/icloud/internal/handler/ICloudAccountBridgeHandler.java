@@ -189,7 +189,7 @@ public class ICloudAccountBridgeHandler extends BaseBridgeHandler {
                     }
                 } catch (IllegalStateException e) {
                     logger.debug("Need to authenticate first.", e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Wait for login");
+                    updateStatus(ThingStatus.OFFLINE, "Wait for login");
                     return null;
                 } catch (IOException e) {
                     logger.warn("Unable to refresh device data", e);

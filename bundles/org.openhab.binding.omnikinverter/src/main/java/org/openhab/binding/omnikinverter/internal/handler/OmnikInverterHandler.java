@@ -183,7 +183,7 @@ public class OmnikInverterHandler extends BaseThingHandler {
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IOException e) {
             logger.debug("Unknown exception when pulling data from the inverter: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Unknown error: " + e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, "Unknown error: " + e.getMessage());
         }
     }
 }

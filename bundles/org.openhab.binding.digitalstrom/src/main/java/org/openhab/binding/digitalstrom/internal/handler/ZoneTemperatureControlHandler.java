@@ -110,7 +110,7 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
             } else {
                 // Set status to OFFLINE, if no bridge is available e.g. because the bridge has been removed and the
                 // Thing was reinitialized.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge is missing!");
+                updateStatus(ThingStatus.OFFLINE, "Bridge is missing!");
             }
         } else {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "zoneID is missing");

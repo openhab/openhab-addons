@@ -107,7 +107,7 @@ public class TuyaSubDeviceHandler extends BaseTuyaDeviceHandler {
             // The gateway cannot connect at all, e.g. because its IP address is not known yet
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
+            updateStatus(ThingStatus.ONLINE, "@text/online.wait-for-device");
         }
     }
 

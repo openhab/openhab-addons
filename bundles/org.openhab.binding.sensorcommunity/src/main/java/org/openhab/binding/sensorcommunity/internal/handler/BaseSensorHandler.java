@@ -206,7 +206,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
                 case VALUE_EMPTY:
                     // start job even if first update delivers no values - recovery possible
                     startSchedule();
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                    updateStatus(ThingStatus.ONLINE,
                             "No values delivered by Sensor. Trying to recover in next refresh");
                     break;
                 case VALUE_ERROR:

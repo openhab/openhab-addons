@@ -184,7 +184,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         if (!currentThingStatus.equals(statusMessage) || (currentThingFailed != failed)) {
             if (failed) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, statusMessage);
+                updateStatus(ThingStatus.OFFLINE, statusMessage);
             } else {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -196,7 +196,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.protocols-starting");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.protocols-starting");
 
         GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
         String ipAddress = googletvConfig.ipAddress;

@@ -181,7 +181,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 }
             } catch (final SpotifyException e) {
                 logger.debug("Handle Spotify command failed: ", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, e.getMessage());
             }
         }
     }
@@ -435,7 +435,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 // This only should catch RuntimeException as the apiCall don't throw other exceptions.
                 logger.info("Unexpected error during polling status, please report if this keeps occurring: ", e);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, e.getMessage());
             }
         }
         return false;

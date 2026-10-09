@@ -504,7 +504,7 @@ public abstract class LGThinQAbstractDeviceHandler<@NonNull C extends Capability
                 if (getThing().getStatus() != ThingStatus.OFFLINE) {
                     // only update channels if the device has just gone OFFLINE.
                     updateDeviceChannelsWrapper(shot);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.device-disconnected");
+                    updateStatus(ThingStatus.OFFLINE, "@text/offline.device-disconnected");
                     onDeviceDisconnected();
                 }
             } else {

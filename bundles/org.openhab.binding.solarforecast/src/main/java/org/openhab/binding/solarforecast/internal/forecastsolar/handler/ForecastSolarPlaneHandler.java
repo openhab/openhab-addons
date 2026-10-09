@@ -99,8 +99,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             if (handler != null) {
                 if (handler instanceof ForecastSolarBridgeHandler fsbh) {
                     bridgeHandler = fsbh;
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
-                            "@text/solarforecast.plane.status.await-feedback");
+                    updateStatus(ThingStatus.UNKNOWN, "@text/solarforecast.plane.status.await-feedback");
                     bridge().addPlane(this);
                 } else {
                     configErrorStatus("@text/solarforecast.plane.status.wrong-handler" + " [\"" + handler + "\"]");
@@ -186,7 +185,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (SolarForecastException sfe) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.OFFLINE,
                     "@text/solarforecast.plane.status.exception [\"" + sfe.getMessage() + "\"]");
         }
     }
@@ -222,7 +221,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                 updateForecast(newForecast);
                 updateStatus(ThingStatus.ONLINE);
             } catch (SolarForecastException fse) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                updateStatus(ThingStatus.OFFLINE,
                         "@text/solarforecast.plane.status.json-status [\"" + fse.getMessage() + "\"]");
             }
         } else if (responseStatus == HttpStatus.TOO_MANY_REQUESTS_429) {

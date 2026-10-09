@@ -166,7 +166,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
         logger.debug("SolarEdge initialized with configuration: {}", config);
         updatePublicApiV2RequestCountProperty(publicApiV2RequestCounter.getRequestCount());
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+        updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_LOGIN);
         if (isOAuthConfigured() && !oAuthClient.hasRefreshToken(config) && !config.getOAuthClientId().isBlank()
                 && !config.getOAuthClientSecret().isBlank()) {
             synchronized (authorizationLock) {
@@ -463,7 +463,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
                 throw new SolarEdgeOAuthException("SolarEdge OAuth authorization is no longer configured");
             }
             setAuthorizationUrl("");
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_LOGIN);
+            updateStatus(ThingStatus.UNKNOWN, STATUS_WAITING_FOR_LOGIN);
         }
     }
 

@@ -104,7 +104,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                     updateProperties(properties);
                     brH.registerDevice(oid, this);
                     logger.debug("associated thing to bridge with ownId={}", ownId);
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/unknown.waiting-state");
+                    updateStatus(ThingStatus.UNKNOWN, "@text/unknown.waiting-state");
                 }
             }
         } else {
@@ -115,7 +115,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/unknown.waiting-state");
+            updateStatus(ThingStatus.UNKNOWN, "@text/unknown.waiting-state");
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
         }

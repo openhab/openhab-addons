@@ -234,8 +234,7 @@ public class GroupePSAHandler extends BaseThingHandler {
                 if (isConnected(vehicle)) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/comm-error-vehicle-not-connected-to-cloud");
+                    updateStatus(ThingStatus.OFFLINE, "@text/comm-error-vehicle-not-connected-to-cloud");
                 }
             } else {
                 updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/comm-error-query-vehicle-failed");

@@ -839,7 +839,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         try {
             client.setRestartAction(bridgeId);
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Restarting...");
+            updateStatus(ThingStatus.OFFLINE, "Restarting...");
         } catch (IOException e) {
             handleClientException(e);
         }
@@ -916,7 +916,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE);
         } else {
             logger.debug("Unknown exception", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
         }
         if (isReinitialize) {
             scheduleRestartClient(true);

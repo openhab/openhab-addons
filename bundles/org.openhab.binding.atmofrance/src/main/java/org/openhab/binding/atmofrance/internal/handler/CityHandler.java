@@ -103,7 +103,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 if (getBridgeHandler(AtmoFranceApiHandler.class) != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-data");
+                    updateStatus(ThingStatus.OFFLINE, "@text/no-data");
                 } else {
                     // the call to getBridgeHandler will already have put me on OFFLINE/BRIDGE_OFFLINE
                     return;
@@ -141,7 +141,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 if (getBridgeHandler(AtmoFranceApiHandler.class) != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-pollens");
+                    updateStatus(ThingStatus.OFFLINE, "@text/no-pollens");
                 } else {
                     // the call to getBridgeHandler will already have put me on OFFLINE/BRIDGE_OFFLINE
                     return;

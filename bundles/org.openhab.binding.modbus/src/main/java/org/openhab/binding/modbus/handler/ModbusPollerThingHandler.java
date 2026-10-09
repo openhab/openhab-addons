@@ -359,7 +359,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
         if (config.getRefresh() <= 0L) {
             logger.debug("Not registering polling with ModbusManager since refresh disabled");
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Not polling");
+            updateStatus(ThingStatus.ONLINE, "Not polling");
         } else {
             logger.debug("Registering polling with ModbusManager");
             pollTask = localComms.registerRegularPoll(localRequest, config.getRefresh(), 0, callbackDelegator,

@@ -79,7 +79,7 @@ public class MikrotikRouterosBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initializing MikrotikRouterosBridgeHandler with config = {}", cfg);
         if (cfg.isValid()) {
             this.routeros = new RouterosDevice(cfg.host, cfg.port, cfg.login, cfg.password);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, String.format("Connecting to %s", cfg.host));
+            updateStatus(ThingStatus.OFFLINE, String.format("Connecting to %s", cfg.host));
             scheduleRefreshJob();
         } else {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Configuration is not valid");

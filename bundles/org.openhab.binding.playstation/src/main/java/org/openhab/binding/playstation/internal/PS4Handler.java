@@ -488,7 +488,7 @@ public class PS4Handler extends BaseThingHandler {
                     // Read login response
                     switch (status) {
                         case STATUS_OK:
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
+                            updateStatus(ThingStatus.ONLINE, status.message);
                             loggedIn = true;
                             if (isLinked(CHANNEL_2ND_SCREEN)) {
                                 scheduler.execute(() -> {
@@ -522,7 +522,7 @@ public class PS4Handler extends BaseThingHandler {
                         case STATUS_SOMEONE_ELSE_USING:
                         case STATUS_UPDATE_APP:
                         case STATUS_UPDATE_PS4:
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
+                            updateStatus(ThingStatus.ONLINE, status.message);
                             loggedIn = false;
                             logger.debug("Not logged in: {}", status.message);
                             break;

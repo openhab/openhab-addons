@@ -517,7 +517,7 @@ public class BigAssFanHandler extends BaseThingHandler {
         if ((isOffline() && getDetail() == ThingStatusDetail.NONE) || !isOffline()) {
             logger.debug("Changing status of {} from {}({}) to OFFLINE({})", thing.getUID(), getStatus(), getDetail(),
                     statusDetail);
-            updateStatus(ThingStatus.OFFLINE, statusDetail, statusMessage);
+            updateStatus(statusDetail, statusMessage);
             return;
         }
     }

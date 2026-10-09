@@ -593,10 +593,10 @@ public class SmartherModuleHandler extends BaseThingHandler {
             return false;
         } catch (SmartherIllegalPropertyValueException e) {
             logger.debug("Module[{}] Illegal property value error during polling: {}", thing.getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
         } catch (SmartherSubscriptionAlreadyExistsException e) {
             logger.debug("Module[{}] Subscription error during polling: {}", thing.getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
         } catch (SmartherGatewayException e) {
             logger.warn("Module[{}] API Gateway error during polling: {}", thing.getUID(), e.getMessage());
             updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -604,7 +604,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
             // All other exceptions apart from Subscription and Gateway issues
             logger.warn("Module[{}] Unexpected error during polling, please report if this keeps occurring: ",
                     thing.getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, e.getMessage());
         }
         schedulePoll();
         return false;

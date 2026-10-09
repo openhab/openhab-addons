@@ -1841,7 +1841,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                         super.updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
                         return;
                     case READY_TO_INSTALL:
-                        super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());
+                        super.updateStatus(ThingStatus.ONLINE, status.i18nKey());
                         return;
                     default:
                 }

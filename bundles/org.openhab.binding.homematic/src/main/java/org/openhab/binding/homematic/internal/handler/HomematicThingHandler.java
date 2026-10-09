@@ -110,7 +110,7 @@ public class HomematicThingHandler extends BaseThingHandler {
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, ex.getMessage());
             } catch (Exception ex) {
                 logger.error("{}", ex.getMessage(), ex);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, ex.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ex.getMessage());
             }
         });
     }

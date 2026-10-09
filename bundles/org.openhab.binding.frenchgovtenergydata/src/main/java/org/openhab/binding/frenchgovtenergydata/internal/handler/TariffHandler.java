@@ -118,7 +118,7 @@ public abstract class TariffHandler<T extends Tariff> extends BaseThingHandler {
 
             tariffs.stream().filter(t -> t.puissance == puissance).filter(Tariff::isActive).findFirst().ifPresentOrElse(
                     this::updateChannels,
-                    () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No active tariff"));
+                    () -> updateStatus(ThingStatus.OFFLINE, "No active tariff"));
 
             ZonedDateTime now = ZonedDateTime.now();
             ZonedDateTime nextUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)

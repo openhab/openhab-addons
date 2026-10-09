@@ -148,7 +148,7 @@ public class Tr064SubHandler extends BaseThingHandler {
         }
         final ThingHandlerCallback callback = getCallback();
         if (callback == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Could not get callback");
+            updateStatus(ThingStatus.OFFLINE, "Could not get callback");
             return;
         }
         if (checkProperties(scpdUtil)) {

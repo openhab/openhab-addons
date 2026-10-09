@@ -431,7 +431,7 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
 
     @Override
     public void onGroupRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.group-removed");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.group-removed");
     }
 
     @Override

@@ -102,7 +102,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogi
         validateAndGenerateClientId();
         setupCloudConnector();
         loginFuture = scheduler.schedule(this::connectorLogin, 1, TimeUnit.SECONDS);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.cloud-initiating");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.cloud-initiating");
         updateState(CHANNEL_LOGIN_IMAGE, HOURGLASS_IMAGE);
         updateState(CHANNEL_TWOFA, UnDefType.NULL);
         updateState(CHANNEL_TRIGGER_LOGIN, OnOffType.OFF);
@@ -315,7 +315,7 @@ public class MiIoCloudThingHandler extends BaseThingHandler implements CloudLogi
         // Stop any in-progress connector and reset the login state
         cloudConnector.resetLogin();
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.cloud-retrigger");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.cloud-retrigger");
         updateState(CHANNEL_LOGIN_IMAGE, HOURGLASS_IMAGE);
         updateState(CHANNEL_TWOFA, UnDefType.NULL);
 

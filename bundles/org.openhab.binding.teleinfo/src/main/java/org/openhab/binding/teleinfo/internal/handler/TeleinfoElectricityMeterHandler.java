@@ -160,7 +160,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
 
     @Override
     protected void updateStatus(ThingStatus status) {
-        this.updateStatus(status, ThingStatusDetail.NONE, null);
+        super.updateStatus(status);
     }
 
     @Override

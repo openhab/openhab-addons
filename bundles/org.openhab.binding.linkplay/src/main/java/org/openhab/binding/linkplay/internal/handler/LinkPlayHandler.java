@@ -593,7 +593,7 @@ public class LinkPlayHandler extends BaseThingHandler
         }
         if (!allSubscriptionsSuccessful) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Waiting for UPnP subscriptions");
+                updateStatus(ThingStatus.UNKNOWN, "Waiting for UPnP subscriptions");
             }
             return;
         }

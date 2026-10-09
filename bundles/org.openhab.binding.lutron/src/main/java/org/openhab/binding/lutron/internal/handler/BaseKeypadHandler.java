@@ -267,7 +267,7 @@ public abstract class BaseKeypadHandler extends LutronHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     // Query LED states. Method handleUpdate() will set thing status to online when response arrives.
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
+                    updateStatus(ThingStatus.UNKNOWN, "Awaiting initial response");
                     // To reduce query volume, query only 1st LED and LEDs with linked channels.
                     for (KeypadComponent component : ledList) {
                         if (component.id() == ledList.get(0).id() || isLinked(channelFromComponent(component.id()))) {

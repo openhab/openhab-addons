@@ -129,7 +129,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (device.getPresent() == 1) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Device not present");
+                updateStatus(ThingStatus.OFFLINE, "Device not present");
             }
             currentDevice = device;
 

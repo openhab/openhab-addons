@@ -140,7 +140,7 @@ public class LGWebOSHandler extends BaseThingHandler
         s.setListener(this);
         socket = s;
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.tv-off");
+        updateStatus(ThingStatus.OFFLINE, "@text/offline.tv-off");
 
         startReconnectJob();
     }
@@ -285,7 +285,7 @@ public class LGWebOSHandler extends BaseThingHandler
                 postUpdate(CHANNEL_POWER, OnOffType.OFF);
                 break;
             case DISCONNECTED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.tv-off");
+                updateStatus(ThingStatus.OFFLINE, "@text/offline.tv-off");
                 channelHandlers.forEach((k, v) -> {
                     v.onDeviceRemoved(k, this);
                     v.removeAnySubscription(this);
@@ -298,7 +298,7 @@ public class LGWebOSHandler extends BaseThingHandler
                 stopReconnectJob();
                 break;
             case REGISTERING:
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.registering");
+                updateStatus(ThingStatus.ONLINE, "@text/online.registering");
                 findMacAddress();
                 break;
             case REGISTERED:

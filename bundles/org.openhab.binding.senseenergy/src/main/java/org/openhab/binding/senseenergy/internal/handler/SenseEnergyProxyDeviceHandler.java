@@ -118,7 +118,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
 
     @Override
     public void updateStatus(ThingStatus thingStatus) {
-        this.updateStatus(thingStatus, ThingStatusDetail.NONE, null);
+        super.updateStatus(thingStatus);
     }
 
     @Override

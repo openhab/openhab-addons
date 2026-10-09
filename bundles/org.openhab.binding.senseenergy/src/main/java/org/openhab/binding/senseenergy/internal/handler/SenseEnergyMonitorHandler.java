@@ -245,7 +245,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
                     updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
                     break;
                 case FATAL:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, e.getMessage());
                     break;
                 case DATA:
                     logger.warn("Data exception: {}", e.toString());

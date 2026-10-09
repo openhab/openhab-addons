@@ -313,7 +313,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
         UdpCubeCommand reboot = new UdpCubeCommand(UdpCubeCommand.UdpCommandType.REBOOT, maxConfiguration.serialNumber);
         reboot.setIpAddress(maxConfiguration.ipAddress);
         reboot.send();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Rebooting");
+        updateStatus(ThingStatus.OFFLINE, "Rebooting");
     }
 
     public void deviceInclusion() {

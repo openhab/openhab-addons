@@ -208,7 +208,7 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
         updateStatus(ThingStatus.UNKNOWN);
         return connection.subscribe(topic, this).handle((subscriptionSuccess, subscriptionException) -> {
             if (subscriptionSuccess) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.waiting-initial-data");
+                updateStatus(ThingStatus.ONLINE, "@text/online.waiting-initial-data");
                 heartbeatFuture = scheduler.scheduleWithFixedDelay(this::heartbeat, heartbeatTimeoutMillisecs,
                         heartbeatTimeoutMillisecs, TimeUnit.MILLISECONDS);
             } else {

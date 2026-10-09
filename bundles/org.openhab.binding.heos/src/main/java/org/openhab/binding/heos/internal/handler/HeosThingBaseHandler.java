@@ -264,7 +264,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
      * @param eventObject containing information about the even which was sent to us by the HEOS device
      */
     protected void handleThingStateUpdate(HeosEventObject eventObject) {
-        updateStatus(ONLINE, ThingStatusDetail.NONE, "Receiving events");
+        updateStatus(ONLINE, "Receiving events");
 
         HeosEvent command = eventObject.command;
 
@@ -306,7 +306,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                 break;
 
             case PLAYER_PLAYBACK_ERROR:
-                updateStatus(UNKNOWN, ThingStatusDetail.NONE, eventObject.getAttribute(ERROR));
+                updateStatus(UNKNOWN, eventObject.getAttribute(ERROR));
                 break;
 
             case PLAYER_QUEUE_CHANGED:

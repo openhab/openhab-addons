@@ -56,7 +56,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -167,7 +166,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                     updateState(channelId, getChannelState(channelId, synop));
                 }
             });
-        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Synop message available"));
+        }, () -> updateStatus(ThingStatus.OFFLINE, "No Synop message available"));
     }
 
     private State getChannelState(String channelId, Synop synop) {

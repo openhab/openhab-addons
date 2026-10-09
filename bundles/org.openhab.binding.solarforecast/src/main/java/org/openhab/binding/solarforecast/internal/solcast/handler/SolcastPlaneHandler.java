@@ -206,7 +206,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (SolarForecastException sfe) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.OFFLINE,
                     "@text/solarforecast.plane.status.exception [\"" + sfe.getMessage() + "\"]");
         }
     }

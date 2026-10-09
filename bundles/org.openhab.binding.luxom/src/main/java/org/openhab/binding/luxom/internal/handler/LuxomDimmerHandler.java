@@ -74,7 +74,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
                 logger.debug("Switch {} will not reply, so always keeping it ONLINE", getAddress());
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.awaiting-initial-response");
+                updateStatus(ThingStatus.UNKNOWN, "@text/status.awaiting-initial-response");
                 ping(); // handleUpdate() will set thing status to online when response arrives
             }
         } else {

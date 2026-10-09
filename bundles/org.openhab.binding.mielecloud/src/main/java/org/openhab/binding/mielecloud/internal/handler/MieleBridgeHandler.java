@@ -302,8 +302,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
             case REQUEST_INTERRUPTED:
             case OTHER_HTTP_ERROR:
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                        I18NKeys.BRIDGE_STATUS_DESCRIPTION_TRANSIENT_HTTP_ERROR);
+                updateStatus(ThingStatus.OFFLINE, I18NKeys.BRIDGE_STATUS_DESCRIPTION_TRANSIENT_HTTP_ERROR);
                 break;
         }
     }
