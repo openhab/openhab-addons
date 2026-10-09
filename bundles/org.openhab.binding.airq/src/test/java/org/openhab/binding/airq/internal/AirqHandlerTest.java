@@ -57,6 +57,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -120,8 +121,8 @@ class AirqHandlerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ "TypPS, avgFineDustSize", "dCO2dt, dCO2dt", "dHdt, dHdt", "door_event, doorEvent",
-            "measuretime, measureTime", "health, health", "performance, performance" })
+    @CsvSource({ "TypPS, avgFineDustSize", "dCO2dt, dCO2dt", "dHdt, dHdt", "door_event, doorEvent", "health, health",
+            "performance, performance" })
     void preservesLegacyScalarMappings(String key, String channel) throws Exception {
         poll("{\"" + key + "\": 125}");
 
@@ -147,7 +148,7 @@ class AirqHandlerTest {
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#status"), new StringType("OK"));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#timestamp"),
                 new DateTimeType(Instant.EPOCH));
-        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#uptime"),
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#uptime"),
                 new QuantityType<>(123, Units.SECOND));
     }
 
@@ -192,7 +193,8 @@ class AirqHandlerTest {
         doReturn("""
                 {"Wifi": true, "WLANssid": ["first", "second"], "pass": "password", "TimeServer": "time.example",
                  "geopos": {"lat": 50, "long": 10}, "devicename": "device", "SecondsMeasurementDelay": 5,
-                 "NightMode": {"StartDay": "08:00", "BrightnessNight": 2, "FanNightOff": true},
+                 "NightMode": {"StartDay": "08:00", "StartNight": "22:30", "BrightnessNight": 2, "FanNightOff": true},
+                 "Rejection": "50Hz+60Hz",
                  "WLAN config": {"MAC": "mac", "IP address": "ip"}, "AutoUpdate": 1,
                  "warmup-phase": false, "air-Q-Hardware-Version": "hardware", "sensors": ["co2", "sound"],
                  "Industry": true, "id": "device-id", "SensorInfo": "info"}
@@ -212,9 +214,13 @@ class AirqHandlerTest {
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#deviceName"),
                 new StringType("device"));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#averagingRhythm"),
-                new DecimalType(5));
+                new QuantityType<>(5, Units.SECOND));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#nightModeStartDay"),
-                new StringType("08:00"));
+                new QuantityType<>(480, Units.MINUTE));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#nightModeStartNight"),
+                new QuantityType<>(1350, Units.MINUTE));
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#powerFreqSuppression"),
+                new StringType("50Hz+60Hz"));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#nightModeBrightnessNight"),
                 new DecimalType(2));
         requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#nightModeFanNightOff"),
@@ -229,6 +235,111 @@ class AirqHandlerTest {
                 allOf(hasEntry("hardwareVersion", "\"hardware\""), hasEntry("sensorList", "co2, sound"),
                         hasEntry("Industry", "true"), hasEntry("id", "\"device-id\""),
                         hasEntry("sensorInfo", "\"info\"")));
+    }
+
+    @Test
+    void measurementDurationUsesMilliseconds() throws Exception {
+        poll("{\"measuretime\": 2006}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "measurements#measureTime"),
+                new QuantityType<>(2006, MetricPrefix.MILLI(Units.SECOND)));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "nightModeStartDay, 480 min, StartDay, 08:00", "nightModeStartNight, 81000 s, StartNight, 22:30",
+            "nightModeStartDay, 0 min, StartDay, 00:00", "nightModeStartNight, 1439 min, StartNight, 23:59" })
+    void timeCommandsAreEncodedAsDeviceClockTimes(String channel, String command, String key, String expected)
+            throws Exception {
+        JsonObject settings = requireNonNull(sendSettings(channel, QuantityType.valueOf(command)));
+
+        assertThat(settings.getAsJsonObject("NightMode").get(key).getAsString(), is(expected));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "00:00, 0", "08:00, 480", "23:59, 1439" })
+    void clockReadingsUseMinutesSinceMidnight(String clock, int minutes) throws Exception {
+        readConfiguration("{\"NightMode\": {\"StartDay\": \"" + clock + "\"}}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#nightModeStartDay"),
+                new QuantityType<>(minutes, Units.MINUTE));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "24:00", "08:60", "invalid", "08:00:30" })
+    void invalidClockReadingsBecomeUndefined(String clock) throws Exception {
+        readConfiguration("{\"NightMode\": {\"StartDay\": \"" + clock + "\"}}");
+
+        requireNonNull(verify(callback)).stateUpdated(new ChannelUID(thingUID, "general#nightModeStartDay"),
+                UnDefType.UNDEF);
+    }
+
+    private void readConfiguration(String payload) throws Exception {
+        JsonObject response = new JsonObject();
+        response.addProperty("content", handler.encrypt(payload.getBytes(StandardCharsets.UTF_8), ""));
+        AirqHandler configurationHandler = new AirqHandler(thing, requireNonNull(mock(HttpClient.class))) {
+            @Override
+            protected Result getData(String address, String method, @Nullable String body) {
+                assertThat(method, is("GET"));
+                assertThat(body, nullValue());
+                return new Result(response.toString(), 200);
+            }
+        };
+        configurationHandler.setCallback(callback);
+        configurationHandler.getConfigData();
+    }
+
+    @Test
+    void plainNumericTimeCommandsUseChannelUnits() throws Exception {
+        JsonObject day = requireNonNull(sendSettings("nightModeStartDay", new DecimalType(480)));
+        assertThat(day.getAsJsonObject("NightMode").get("StartDay").getAsString(), is("08:00"));
+        JsonObject delay = requireNonNull(sendSettings("averagingRhythm", new DecimalType(5)));
+        assertThat(delay.get("SecondsMeasurementDelay").getAsInt(), is(5));
+    }
+
+    @Test
+    void measurementDelayCommandUsesSeconds() throws Exception {
+        JsonObject settings = requireNonNull(sendSettings("averagingRhythm", new QuantityType<>(2, Units.MINUTE)));
+
+        assertThat(settings.get("SecondsMeasurementDelay").getAsInt(), is(120));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "50Hz", "60Hz", "50Hz+60Hz" })
+    void suppressionCommandsPreserveAllDeviceModes(String mode) throws Exception {
+        JsonObject settings = requireNonNull(sendSettings("powerFreqSuppression", new StringType(mode)));
+
+        assertThat(settings.get("Rejection").getAsString(), is(mode));
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "nightModeStartDay, -1 min", "nightModeStartDay, 1440 min", "nightModeStartNight, 0.5 min",
+            "averagingRhythm, -1 s", "averagingRhythm, 1.5 s", "averagingRhythm, 2147483648 s",
+            "nightModeStartDay, 2 Hz" })
+    void invalidNumericSettingsDoNotSendRequests(String channel, String command) throws Exception {
+        assertThat(sendSettings(channel, QuantityType.valueOf(command)), nullValue());
+    }
+
+    private @Nullable JsonObject sendSettings(String channel, Command command) throws Exception {
+        List<String> requests = new ArrayList<>();
+        String password = "secret";
+        JsonObject response = new JsonObject();
+        response.addProperty("content", handler.encrypt("{}".getBytes(StandardCharsets.UTF_8), password));
+        AirqHandler commandHandler = new AirqHandler(thing, requireNonNull(mock(HttpClient.class))) {
+            @Override
+            protected Result getData(String address, String method, @Nullable String body) {
+                assertThat(method, is("POST"));
+                requests.add(requireNonNull(body));
+                return new Result(response.toString(), 200);
+            }
+        };
+        commandHandler.config.password = password;
+        commandHandler.handleCommand(new ChannelUID(thingUID, "general#" + channel), command);
+        if (requests.isEmpty()) {
+            return null;
+        }
+        assertThat(requests, hasSize(1));
+        return json(commandHandler.decrypt(
+                requests.getFirst().substring("request=".length()).getBytes(StandardCharsets.UTF_8), password));
     }
 
     private void poll(String payload) throws Exception {
@@ -329,6 +440,28 @@ class AirqHandlerTest {
         commandHandler.handleCommand(new ChannelUID(thingUID, "general#wifiInfo"), OnOffType.ON);
 
         requireNonNull(verify(commandHandler)).getData(anyString(), eq("POST"), anyString());
+    }
+
+    @ParameterizedTest
+    @CsvSource({ "SecondsMeasurementDelay, s", "mtime, ms", "uptime, s", "nightmodeStartDay, min",
+            "nightmodeStartNight, min" })
+    void timeChannelTypesHaveMatchingUnitHints(String typeId, String unit) throws Exception {
+        Element itemType = element(xml("thing/thing-types.xml"), "//channel-type[@id='" + typeId + "']/item-type");
+
+        assertThat(itemType.getTextContent(), is("Number:Time"));
+        assertThat(itemType.getAttribute("unitHint"), is(unit));
+    }
+
+    @Test
+    void uptimeBelongsToGeneralInMetadataAndUpgrade() throws Exception {
+        assertThat(findElement(xml("thing/thing-types.xml"),
+                "//channel-group-type[@id='general']/channels/channel[@id='uptime']"), notNullValue());
+        assertThat(findElement(xml("thing/thing-types.xml"),
+                "//channel-group-type[@id='measurements']/channels/channel[@id='uptime']"), nullValue());
+        assertThat(
+                element(xml("update/update.xml"), "//instruction-set[@targetVersion='5']/update-channel[@id='uptime']")
+                        .getAttribute("groupIds"),
+                is("general"));
     }
 
     private static Document xml(String resource) throws Exception {

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.airq.internal;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -19,11 +20,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -83,6 +87,9 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AirqHandler extends BaseThingHandler {
+    private static final DateTimeFormatter CLOCK_TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm", Locale.ROOT)
+            .withResolverStyle(ResolverStyle.STRICT);
+
     private record ChannelMapping(String dataKey, String channelId, String type, @Nullable Unit<?> unit,
             String groupId) {
         ChannelMapping(String dataKey, String channelId, String type) {
@@ -114,12 +121,13 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("TypPS", "avgFineDustSize", "number"), new ChannelMapping("dCO2dt", "dCO2dt", "number"),
             new ChannelMapping("dHdt", "dHdt", "number"), new ChannelMapping("door_event", "doorEvent", "number"),
             new ChannelMapping("health", "healthIndex", "index"), new ChannelMapping("health", "health", "number"),
-            new ChannelMapping("measuretime", "measureTime", "number"),
+            new ChannelMapping("measuretime", "measureTime", "numberMilliseconds"),
             new ChannelMapping("performance", "performanceIndex", "index"),
             new ChannelMapping("performance", "performance", "number"),
             new ChannelMapping("timestamp", "timestamp", "datetime"),
-            new ChannelMapping("uptime", "uptime", "numberTimePeriod"), new ChannelMapping("tvoc", "tvoc", "pairPPB"),
-            new ChannelMapping("virus", "virus_free", "pair"), new ChannelMapping("mold", "mold_free", "pair"),
+            new ChannelMapping("uptime", "uptime", "numberTimePeriod", null, "general"),
+            new ChannelMapping("tvoc", "tvoc", "pairPPB"), new ChannelMapping("virus", "virus_free", "pair"),
+            new ChannelMapping("mold", "mold_free", "pair"),
             new ChannelMapping("c2h4o", "c2h4o", Units.MICROGRAM_PER_CUBICMETRE),
             new ChannelMapping("nh3_MR100", "nh3-mr100", Units.MICROGRAM_PER_CUBICMETRE),
             new ChannelMapping("ash3", "ash3", Units.MICROGRAM_PER_CUBICMETRE),
@@ -159,7 +167,7 @@ public class AirqHandler extends BaseThingHandler {
             new ChannelMapping("FireAlarm", "fireAlarm", "boolean"),
             new ChannelMapping("air-Q-Hardware-Version", "hardwareVersion", "property"),
             new ChannelMapping("WLAN config", "", "wlan"), new ChannelMapping("cloudUpload", "cloudUpload", "boolean"),
-            new ChannelMapping("SecondsMeasurementDelay", "averagingRhythm", "number"),
+            new ChannelMapping("SecondsMeasurementDelay", "averagingRhythm", "numberTimePeriod"),
             new ChannelMapping("Rejection", "powerFreqSuppression", "string"),
             new ChannelMapping("air-Q-Software-Version", "softwareVersion", "property"),
             new ChannelMapping("sensors", "sensorList", "proparr"),
@@ -224,17 +232,14 @@ public class AirqHandler extends BaseThingHandler {
         this.httpClient = httpClient;
     }
 
-    private boolean isTimeFormat(String str) {
-        try {
-            LocalTime.parse(str);
-        } catch (DateTimeParseException e) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        String channelId = channelUID.getIdWithoutGroup();
+        if ("averagingRhythm".equals(channelId) || "nightModeStartDay".equals(channelId)
+                || "nightModeStartNight".equals(channelId)) {
+            handleTimeCommand(channelId, command);
+            return;
+        }
         if ((command instanceof OnOffType) || (command instanceof StringType)) {
             JsonObject newobj = new JsonObject();
             JsonObject subjson = new JsonObject();
@@ -320,28 +325,6 @@ public class AirqHandler extends BaseThingHandler {
                     newobj.addProperty(channelUID.getIdWithoutGroup(), command.toString());
                     changeSettings(newobj);
                     break;
-                case "nightmodeStartDay":
-                    if (isTimeFormat(command.toString())) {
-                        subjson.addProperty("StartDay", command.toString());
-                        newobj.add("NightMode", subjson);
-                        changeSettings(newobj);
-                    } else {
-                        logger.warn(
-                                "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct time format (eg. 08:00)",
-                                channelUID.getIdWithoutGroup(), command.toString());
-                    }
-                    break;
-                case "nightmodeStartNight":
-                    if (isTimeFormat(command.toString())) {
-                        subjson.addProperty("StartNight", command.toString());
-                        newobj.add("NightMode", subjson);
-                        changeSettings(newobj);
-                    } else {
-                        logger.warn(
-                                "air-Q - airqHandler - handleCommand(): {} should be set to {} but it isn't a correct time format (eg. 08:00)",
-                                channelUID.getIdWithoutGroup(), command.toString());
-                    }
-                    break;
                 case "location":
                     PointType pt = (PointType) command;
                     subjson.addProperty("lat", pt.getLatitude());
@@ -386,15 +369,6 @@ public class AirqHandler extends BaseThingHandler {
                                 channelUID.getIdWithoutGroup(), command.toString());
                     }
                     break;
-                case "averagingRhythm":
-                    try {
-                        newobj.addProperty("SecondsMeasurementDelay", Integer.parseUnsignedInt(command.toString()));
-                    } catch (NumberFormatException exc) {
-                        logger.warn(
-                                "air-Q - airqHandler - handleCommand(): {} only accepts an integer value, and {} is not.",
-                                channelUID.getIdWithoutGroup(), command.toString());
-                    }
-                    break;
                 case "powerFreqSuppression":
                     String newFreq = command.toString();
                     if ("50Hz".equals(newFreq) || "60Hz".equals(newFreq) || "50Hz+60Hz".equals(newFreq)) {
@@ -423,6 +397,46 @@ public class AirqHandler extends BaseThingHandler {
                 TimeUnit.MILLISECONDS);
         getConfigDataJob = scheduler.scheduleWithFixedDelay(this::getConfigData, 0, POLLING_PERIOD_CONFIG,
                 TimeUnit.MINUTES);
+    }
+
+    private void handleTimeCommand(String channelId, Command command) {
+        boolean measurementDelay = "averagingRhythm".equals(channelId);
+        Unit<?> unit = measurementDelay ? Units.SECOND : Units.MINUTE;
+        BigDecimal value;
+        if (command instanceof QuantityType<?> quantity) {
+            QuantityType<?> converted = quantity.toUnit(unit);
+            if (converted == null) {
+                logger.debug("Ignoring incompatible time unit for channel {}", channelId);
+                return;
+            }
+            value = converted.toBigDecimal();
+        } else if (command instanceof DecimalType decimal) {
+            value = decimal.toBigDecimal();
+        } else {
+            logger.debug("Ignoring non-numeric time command for channel {}", channelId);
+            return;
+        }
+        int timeValue;
+        try {
+            timeValue = value.intValueExact();
+        } catch (ArithmeticException e) {
+            logger.debug("Ignoring non-integer or out-of-range time command for channel {}", channelId);
+            return;
+        }
+        if (timeValue < 0 || (!measurementDelay && timeValue >= 24 * 60)) {
+            logger.debug("Ignoring out-of-range time command for channel {}", channelId);
+            return;
+        }
+        JsonObject settings = new JsonObject();
+        if (measurementDelay) {
+            settings.addProperty("SecondsMeasurementDelay", timeValue);
+        } else {
+            JsonObject nightMode = new JsonObject();
+            String key = "nightModeStartDay".equals(channelId) ? "StartDay" : "StartNight";
+            nightMode.addProperty(key, LocalTime.ofSecondOfDay(timeValue * 60).format(CLOCK_TIME_FORMAT));
+            settings.add("NightMode", nightMode);
+        }
+        changeSettings(settings);
     }
 
     // AES decoding based on this tutorial: https://www.javainterviewpoint.com/aes-256-encryption-and-decryption/
@@ -692,7 +706,20 @@ public class AirqHandler extends BaseThingHandler {
                     break;
                 case "numberTimePeriod":
                     updateMappedState(channelName,
-                            new QuantityType<>(dec.get(airqName).getAsBigInteger(), Units.SECOND));
+                            new QuantityType<>(dec.get(airqName).getAsBigDecimal(), Units.SECOND));
+                    break;
+                case "numberMilliseconds":
+                    updateMappedState(channelName,
+                            new QuantityType<>(dec.get(airqName).getAsBigDecimal(), MetricPrefix.MILLI(Units.SECOND)));
+                    break;
+                case "clockTime":
+                    try {
+                        LocalTime time = LocalTime.parse(dec.get(airqName).getAsString(), CLOCK_TIME_FORMAT);
+                        updateMappedState(channelName, new QuantityType<>(time.toSecondOfDay() / 60, Units.MINUTE));
+                    } catch (DateTimeParseException e) {
+                        updateMappedState(channelName, UnDefType.UNDEF);
+                        logger.debug("Ignoring malformed clock time for channel {}", channelName);
+                    }
                     break;
                 case "pair":
                     ResultPair pair = new ResultPair(dec.get(airqName));
@@ -747,9 +774,9 @@ public class AirqHandler extends BaseThingHandler {
                     if (daynightdata != null) {
                         JsonObject jsonDaynightdata = daynightdata.getAsJsonObject();
                         processType(jsonDaynightdata, "StartDay", nestedChannel(channelName, "nightModeStartDay"),
-                                "string");
+                                "clockTime");
                         processType(jsonDaynightdata, "StartNight", nestedChannel(channelName, "nightModeStartNight"),
-                                "string");
+                                "clockTime");
                         processType(jsonDaynightdata, "BrightnessDay",
                                 nestedChannel(channelName, "nightModeBrightnessDay"), "number");
                         processType(jsonDaynightdata, "BrightnessNight",

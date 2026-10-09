@@ -231,7 +231,6 @@
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="tvoc" typeId="tvoc"/>
-			<channel id="uptime" typeId="uptime"/>
 			<channel id="virus_free" typeId="virus_free"/>
 			<channel id="mold_free" typeId="mold_free"/>
 		</channels>
@@ -240,6 +239,7 @@
 		<label>General</label>
 		<channels>
 			<channel id="status" typeId="status"/>
+			<channel id="uptime" typeId="uptime"/>
 			<channel id="wifi" typeId="Wifi"/>
 			<channel id="ssid" typeId="WLANssid"/>
 			<channel id="password" typeId="pass"/>
@@ -376,9 +376,9 @@
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="mtime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="ms">Number:Time</item-type>
 		<label>Time Needed for Measurement</label>
-		<state readOnly="true" pattern="%d ms"></state>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="no2" advanced="false">
 		<item-type unitHint="μg/m³">Number:Density</item-type>
@@ -460,7 +460,7 @@
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Uptime</label>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
@@ -815,12 +815,16 @@
 		<label>Location of air-Q Device</label>
 	</channel-type>
 	<channel-type id="nightmodeStartDay" advanced="false">
-		<item-type>String</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>Start of Day Operation</label>
+		<description>Minutes since midnight UTC at which day operation starts.</description>
+		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
 	<channel-type id="nightmodeStartNight" advanced="false">
-		<item-type>String</item-type>
+		<item-type unitHint="min">Number:Time</item-type>
 		<label>End of Day Operation</label>
+		<description>Minutes since midnight UTC at which night operation starts.</description>
+		<state min="0" max="1439" step="1" pattern="%1$tHh:%1$tMm"/>
 	</channel-type>
 	<channel-type id="nightmodeBrightnessDay" advanced="false">
 		<item-type>Number:Dimensionless</item-type>
@@ -895,9 +899,9 @@
 		<label>Upload to air-Q Cloud</label>
 	</channel-type>
 	<channel-type id="SecondsMeasurementDelay" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Rhythm Historic Average</label>
-		<state pattern="%d s"></state>
+		<state min="0" step="1" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="Rejection" advanced="true">
 		<item-type>String</item-type>

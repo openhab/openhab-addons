@@ -47,8 +47,6 @@ This includes also the Maximum Error per sensor value.
 Legacy Maximum Error channels use the `_maxerr` suffix.
 The advanced gas, relative-pressure, and maximum-noise channels introduced in Thing version 5 use the `-maxerr` suffix.
 Channels are grouped into General, Measurements, Advanced Measurements, Maximum Errors, and Advanced Maximum Errors.
-Things created before Thing version 5 keep their existing flat channels, so existing Item links stay valid.
-New Things, and the channels added in version 5, use the group-qualified channel address `airq:airq:<thing-id>:<group-id>#<channel-id>`.
 
 The rw column is empty if the channel is only readable, w if the channel can be written and rw if it allows both to be read and written.
 
@@ -128,8 +126,8 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | wifiInfo                 | Switch                           | rw  | Show WLAN status with LED                                                              |
 | timeServer               | String                           | rw  | Name of Timeserver address                                                             |
 | location                 | Location                         | rw  | Location of air-Q device                                                               |
-| nightmodeStartDay        | String                           | rw  | Time to start day operation                                                            |
-| nightmodeStartNight      | String                           | rw  | End of day operation                                                                   |
+| nightModeStartDay        | Number:Time                      | rw  | Start of day operation, minutes since midnight UTC                                     |
+| nightModeStartNight      | Number:Time                      | rw  | End of day operation, minutes since midnight UTC                                       |
 | nightmodeBrightnessDay   | Number:Dimensionless             | rw  | Brightness of LED during the day                                                       |
 | nightmodeBrightnessNight | Number:Dimensionless             | rw  | Brightness of LED at night                                                             |
 | nightmodeFanNightOff     | Switch                           | rw  | Switch off fan at night                                                                |
@@ -146,7 +144,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | wlanConfigNetMask        | String                           | rw  | Network mask                                                                           |
 | wlanConfigBssid          | String                           | rw  | Network BSSID                                                                          |
 | cloudUpload              | Switch                           | rw  | Upload to air-Q cloud                                                                  |
-| averagingRhythm          | Number                           | rw  | Rhythm of measurement for historic average                                             |
+| averagingRhythm          | Number:Time                      | rw  | Rhythm of measurement for historic average in seconds                                  |
 | powerFreqSuppression     | String                           | rw  | Power Frequency                                                                        |
 | autoDriftCompensation    | Switch                           | rw  | Compensate automatic drift                                                             |
 | autoUpdate               | Switch                           | rw  | Install Firmware updates automatically                                                 |
@@ -167,7 +165,16 @@ For maximum noise, the error channel is `sound-max-maxerr`, distinct from the ex
 These channels support scalar readings as well as `[value, uncertainty]` pairs; for scalars, the error channel is `UNDEF`.
 Absent readings for these channels are silently ignored, since not every device has every sensor.
 Explicit `null` or malformed readings set these measurements and their error channels to `UNDEF` and recover on the next valid reading.
-Legacy channels retain their existing value, unit, and missing-reading behavior.
+Other legacy measurement conversions retain their existing behavior.
+
+Day/night start channels use minutes (`min`) since midnight UTC, from 0 to 1439; for example, 480 min corresponds to 08:00.
+The binding converts these numeric values to and from the device's `HH:mm` representation.
+Time commands accept quantities in compatible units or plain integers in the channel's hinted unit.
+Day/night times require whole minutes, and averaging delay requires whole non-negative seconds.
+Power-frequency suppression is a String setting accepting `50Hz`, `60Hz`, or `50Hz+60Hz`.
+
+Set the linked TVOC Item's `unit` metadata to `ppb`.
+Without it, a `Number:Dimensionless` Item can store the reading in unit `one`: 2353 ppb becomes 0.000002353 and may display as zero when rounded.
 
 ### Reporting Missing Measurements
 
@@ -222,7 +229,7 @@ Number                airQ_doorEvent              "Door Event (exp.)"           
 Number:Dimensionless  airQ_health                 "Health Index"                          {channel="airq:airq:1:measurements#health"}
 Number:Dimensionless  airQ_humidityRelative       "Humidity"                              {channel="airq:airq:1:measurements#humidityRelative"}
 Number                airQ_humidityAbsolute       "Absolute Humidity"                     {channel="airq:airq:1:measurements#humidityAbsolute"}
-Number:Time           airQ_measureTime            "Time needed for measurement"           {channel="airq:airq:1:measurements#measureTime"}
+Number:Time           airQ_measureTime            "Time needed for measurement"           {unit="ms",channel="airq:airq:1:measurements#measureTime"}
 Number                airQ_no2                    "NO2 concentration"                     {channel="airq:airq:1:measurements#no2"}
 Number                airQ_o3                     "O3 concentration"                      {channel="airq:airq:1:measurements#o3"}
 Number:Dimensionless  airQ_o2                     "Oxygen concentration"                  {channel="airq:airq:1:measurements#o2"}
@@ -236,8 +243,8 @@ Number                airQ_so2                    "SO2 concentration"           
 Number:Dimensionless  airQ_sound                  "Noise"                                 {channel="airq:airq:1:measurements#sound"}
 Number:Temperature    airQ_temperature            "Temperature"                           {channel="airq:airq:1:measurements#temperature"}
 DateTime              airQ_timestamp              "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                            {channel="airq:airq:1:measurements#timestamp"}
-Number:Dimensionless  airQ_voc                    "VOC concentration"                     {channel="airq:airq:1:measurements#tvoc"}
-Number:Time           airQ_uptime                 "Uptime"                                {channel="airq:airq:1:measurements#uptime"}
+Number:Dimensionless  airQ_voc                    "VOC concentration"                     {unit="ppb",channel="airq:airq:1:measurements#tvoc"}
+Number:Time           airQ_uptime                 "Uptime"                                {unit="s",channel="airq:airq:1:general#uptime"}
 Number:Dimensionless  airQ_Virus_free             "Virus-Free index"                      {unit="%",channel="airq:airq:1:virus_free"}
 Number:Dimensionless  airQ_Mold_free              "Mold-Free index"                       {unit="%",channel="airq:airq:1:mold_free"}
 
@@ -271,8 +278,8 @@ String airQ_password                "Device Password"                           
 Switch airQ_wifiInfo                "Show WLAN status with LED"                      {channel="airq:airq:1:general#wifiInfo"}
 String airQ_timeServer              "Name of Timeserver address"                     {channel="airq:airq:1:general#timeServer"}
 Location airQ_location              "Location of air-Q device"                       {channel="airq:airq:1:general#location"}
-String airQ_nightMode_startDay      "Time to start day operation"                    {channel="airq:airq:1:general#nightModeStartDay"}
-String airQ_nightMode_startNight    "End of day operation"                           {channel="airq:airq:1:general#nightModeStartNight"}
+Number:Time airQ_nightMode_startDay   "Start of day operation"                       {unit="min",channel="airq:airq:1:general#nightModeStartDay"}
+Number:Time airQ_nightMode_startNight "End of day operation"                         {unit="min",channel="airq:airq:1:general#nightModeStartNight"}
 Number:Dimensionless airQ_nightMode_brightnessDay "Brightness of LED during the day" {channel="airq:airq:1:general#nightModeBrightnessDay"}
 Number:Dimensionless airQ_nightMode_brightnessNight   "Brightness of LED at night"   {channel="airq:airq:1:general#nightModeBrightnessNight"}
 Switch airQ_nightMode_fanNightOff   "Switch off fan at night"                        {channel="airq:airq:1:general#nightModeFanNightOff"}
@@ -289,7 +296,7 @@ String airQ_WLAN_config_IPAddress   "Assigned IP address"                       
 String airQ_WLAN_config_netMask     "Network mask"                                   {channel="airq:airq:1:general#wlanConfigNetMask"}
 String airQ_WLAN_config_BSSID       "Network BSSID"                                  {channel="airq:airq:1:general#wlanConfigBssid"}
 Switch airQ_cloudUpload             "Upload to air-Q cloud"                          {channel="airq:airq:1:general#cloudUpload"}
-Number airQ_averagingRhythm         "Rhythm of measurement for historic average"     {channel="airq:airq:1:general#averagingRhythm"}
+Number:Time airQ_averagingRhythm    "Rhythm of measurement for historic average"     {unit="s",channel="airq:airq:1:general#averagingRhythm"}
 String airQ_powerFreqSuppression    "Power Frequency"                                {channel="airq:airq:1:general#powerFreqSuppression"}
 Switch airQ_autoDriftCompensation   "Compensate automatic drift"                     {channel="airq:airq:1:general#autoDriftCompensation"}
 Switch airQ_autoUpdate              "Install Firmware updates automatically"         {channel="airq:airq:1:general#autoUpdate"}

@@ -560,7 +560,7 @@
 			<update-channel id="tvoc" groupIds="measurements">
 				<type>airq:tvoc</type>
 			</update-channel>
-			<update-channel id="uptime" groupIds="measurements">
+			<update-channel id="uptime" groupIds="general">
 				<type>airq:uptime</type>
 			</update-channel>
 			<update-channel id="virus_free" groupIds="measurements">
