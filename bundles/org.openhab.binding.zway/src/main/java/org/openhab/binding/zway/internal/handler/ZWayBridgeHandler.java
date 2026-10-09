@@ -238,14 +238,13 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
     public void initialize() {
         logger.info("Initializing Z-Way bridge ...");
 
-        // Set thing status to a valid status
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking configuration...");
-
         // Configuration - thing status update with an error message
         mConfig = loadAndCheckConfiguration();
 
         if (mConfig != null) {
             logger.debug("Configuration complete: {}", mConfig);
+
+            updateStatus(ThingStatus.UNKNOWN);
 
             mZWayApi = new ZWayApiHttp(mConfig.getZWayIpAddress(), mConfig.getZWayPort(), mConfig.getZWayProtocol(),
                     mConfig.getZWayUsername(), mConfig.getZWayPassword(), -1, false, this);

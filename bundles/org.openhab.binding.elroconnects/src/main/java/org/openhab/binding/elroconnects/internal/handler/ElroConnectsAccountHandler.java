@@ -109,11 +109,11 @@ public class ElroConnectsAccountHandler extends BaseBridgeHandler {
         enableBackgroundDiscovery = config.enableBackgroundDiscovery;
 
         if ((username == null) || username.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.no-username");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.no-username");
             return;
         }
         if ((password == null) || password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.no-password");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.no-password");
             return;
         }
 

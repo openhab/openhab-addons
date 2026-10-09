@@ -196,7 +196,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
         // check and get appliance profile
         var profile = applianceProfileService.getProfile(configuration.haId);
         if (profile == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.profile-pending");
+            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.profile-pending");
             return;
         }
 
@@ -241,11 +241,11 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                         webSocketClientService.connect();
                     } catch (Error e) {
                         if (isUnsatisfiedLinkError(e) && isLinux()) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED,
+                            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                                     "@text/offline.tls-unsupported-glibc [\"" + getOSName() + "\", \"" + getOSArch()
                                             + "\", \"" + CONSCRYPT_REQUIRED_GLIBC_MIN_VERSION + "\"]");
                         } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED,
+                            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                                     "@text/offline.tls-unsupported [\"" + getOSName() + "\", \"" + getOSArch() + "\"]");
                         }
                         logger.error("Could not initialize {}!", WebSocketTlsConscryptClientService.class.getName(), e);

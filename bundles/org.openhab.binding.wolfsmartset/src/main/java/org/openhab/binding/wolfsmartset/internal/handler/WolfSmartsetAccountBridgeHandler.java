@@ -107,7 +107,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
         } else {
             try {
                 api = new WolfSmartsetApi(username, password, httpClient, scheduler);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Checking authorization");
+                updateStatus(ThingStatus.UNKNOWN);
                 scheduleRefreshJob();
             } catch (WolfSmartsetCloudException e) {
                 logger.error("unable to create wolf smartset api", e);

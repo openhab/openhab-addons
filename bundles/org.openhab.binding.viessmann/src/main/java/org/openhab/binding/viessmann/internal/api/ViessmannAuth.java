@@ -270,17 +270,17 @@ public class ViessmannAuth {
     }
 
     private void updateBridgeStatusLogin() {
-        bridgeHandler.updateBridgeStatusExtended(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+        bridgeHandler.updateBridgeStatusExtended(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "Login fails. Please check user and password.");
     }
 
     private void updateBridgeStatusApiKey() {
-        bridgeHandler.updateBridgeStatusExtended(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+        bridgeHandler.updateBridgeStatusExtended(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "The login failed. Please check API Key.");
     }
 
     private void updateBridgeStatusRedirectionUri() {
-        bridgeHandler.updateBridgeStatusExtended(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+        bridgeHandler.updateBridgeStatusExtended(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "The login failed. Please check the Redirection URI for your client in the Viessmann Developer Portal. <br> It must be <b>"
                         + callbackUrl + "/viessmann/authcode/</b>");
     }

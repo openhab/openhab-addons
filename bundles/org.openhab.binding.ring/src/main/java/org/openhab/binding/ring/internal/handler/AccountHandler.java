@@ -412,8 +412,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
         if ((!refreshToken.isEmpty()) || !(config.username.isEmpty() && config.password.isEmpty())) {
 
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Authenticating in background...");
+            updateStatus(ThingStatus.UNKNOWN);
 
             // Push all the heavy network calls to a background thread to prevent openHAB from blocking!
             scheduler.execute(() -> {
@@ -424,8 +423,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     tokens = restClient.getTokens(config.username, config.password, refreshToken, twofactorCode,
                             hardwareId);
                     saveRefreshTokenToFile(tokens.refreshToken());
-                    updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "Retrieving device list");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Retrieving device list");
                     config.twofactorCode = "";
                     updatedConfiguration.put("twofactorCode", config.twofactorCode);
                     updateConfiguration(updatedConfiguration);
@@ -466,7 +464,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 }
             });
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Please login via CLI or by updating the Thing properties");
         }
     }

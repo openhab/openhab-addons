@@ -82,13 +82,12 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
         try {
             serialNumber = Objects.requireNonNullElse(config.getSerialNumber(), "");
             if (serialNumber.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Meter serial number missing");
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Meter serial number missing");
                 return;
             }
             String mcastGroup = config.getMcastGroup();
             if (mcastGroup == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "mcast group is missing");
+                updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "mcast group is missing");
                 return;
             }
             PacketListener listener = listenerRegistry.getListener(mcastGroup, config.getPort());
