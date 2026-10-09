@@ -219,14 +219,14 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                         YamahaBridgeHandler brHandler = getBridgeHandler();
                         if (brHandler == null) {
                             logger.warn("Bridge handler not initialized, cannot initialize zone");
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
                             return;
                         }
 
                         var protocolFactory = getProtocolFactory();
                         if (protocolFactory == null) {
                             logger.warn("Protocol factory not initialized, cannot initialize zone");
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
                             return;
                         }
 
@@ -246,7 +246,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                 zoneAvailableInputs = null;
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 

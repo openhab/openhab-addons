@@ -513,7 +513,7 @@ public class ZwaveJSNodeHandler extends BaseThingHandler implements ZwaveNodeLis
         }
         ZwaveJSBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
-            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
+            updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
             return;
         }
 

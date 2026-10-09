@@ -124,7 +124,7 @@ public class AirGradientLocationHandler extends BaseThingHandler {
 
         Bridge controller = getBridge();
         if (controller == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         } else if (ThingStatus.OFFLINE.equals(controller.getStatus())) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {

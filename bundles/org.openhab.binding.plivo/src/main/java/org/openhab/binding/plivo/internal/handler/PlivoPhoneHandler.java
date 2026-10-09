@@ -360,14 +360,14 @@ public class PlivoPhoneHandler extends BaseThingHandler {
     private void asyncInitialize() {
         PlivoAccountHandler accountHandler = getAccountHandler();
         if (accountHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-uninitialized.bridge-handler-not-available");
             return;
         }
 
         PlivoApiClient client = accountHandler.getApiClient();
         if (client == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-uninitialized.api-client-not-available");
             return;
         }

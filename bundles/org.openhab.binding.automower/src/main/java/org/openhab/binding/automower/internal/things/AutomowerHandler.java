@@ -361,7 +361,7 @@ public class AutomowerHandler extends BaseThingHandler {
             scheduler.execute(() -> completeInitAsync());
 
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 

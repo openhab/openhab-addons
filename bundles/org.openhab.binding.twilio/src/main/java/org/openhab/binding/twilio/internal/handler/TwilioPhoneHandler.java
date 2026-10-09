@@ -365,14 +365,14 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     private void asyncInitialize() {
         TwilioAccountHandler accountHandler = getAccountHandler();
         if (accountHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-uninitialized.bridge-handler-not-available");
             return;
         }
 
         TwilioApiClient client = accountHandler.getApiClient();
         if (client == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED,
                     "@text/offline.bridge-uninitialized.api-client-not-available");
             return;
         }

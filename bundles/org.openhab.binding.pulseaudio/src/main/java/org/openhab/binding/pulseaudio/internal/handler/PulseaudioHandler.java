@@ -217,7 +217,7 @@ public class PulseaudioHandler extends BaseThingHandler {
     private void initializeWithTheBridge() {
         PulseaudioBridgeHandler pulseaudioBridgeHandler = getPulseaudioBridgeHandler();
         if (pulseaudioBridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         } else if (pulseaudioBridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else {

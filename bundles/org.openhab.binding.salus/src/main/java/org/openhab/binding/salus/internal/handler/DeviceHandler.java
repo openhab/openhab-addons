@@ -16,7 +16,6 @@ import static java.math.RoundingMode.HALF_EVEN;
 import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.BINDING_ID;
 import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
@@ -75,12 +74,12 @@ public class DeviceHandler extends BaseThingHandler {
     public void initialize() {
         var bridge = getBridge();
         if (bridge == null) {
-            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/device-handler.initialize.errors.no-bridge");
+            updateStatus(BRIDGE_UNINITIALIZED, "@text/device-handler.initialize.errors.no-bridge");
             return;
         }
         var bridgeHandler = bridge.getHandler();
         if (!(bridgeHandler instanceof AbstractBridgeHandler<?> cloudHandler)) {
-            updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/device-handler.initialize.errors.bridge-wrong-type");
+            updateStatus(CONFIGURATION_ERROR, "@text/device-handler.initialize.errors.bridge-wrong-type");
             return;
         }
         this.cloudApi = cloudHandler;
