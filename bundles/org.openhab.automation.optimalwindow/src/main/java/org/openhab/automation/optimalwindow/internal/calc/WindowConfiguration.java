@@ -32,7 +32,7 @@ import org.openhab.core.util.DurationUtils;
  */
 @NonNullByDefault
 public class WindowConfiguration {
-    private static final Duration MAX_RANGE_DURATION = Duration.ofHours(48);
+    public static final Duration MAX_RANGE_DURATION = Duration.ofHours(48);
 
     public String forecastItem = "";
     public @Nullable String persistenceService;

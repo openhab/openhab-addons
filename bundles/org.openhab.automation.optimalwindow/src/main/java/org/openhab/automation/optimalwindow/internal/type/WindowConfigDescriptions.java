@@ -98,7 +98,7 @@ public class WindowConfigDescriptions {
                 statusItem(CONFIG_COUNTDOWN_ITEM, "Countdown Item",
                         "Number:Time item for the time until the next start of the window."),
                 statusItem(CONFIG_REMAINING_ITEM, "Remaining Item",
-                        "Number:Time item for the time until the end of an active window."),
+                        "Number:Time item for the time until the end of the active part of the window."),
                 statusItem(CONFIG_WINDOW_TEXT_ITEM, "Window Text Item",
                         "String item for the window as text, e.g. 10:45\u201314:45."));
     }

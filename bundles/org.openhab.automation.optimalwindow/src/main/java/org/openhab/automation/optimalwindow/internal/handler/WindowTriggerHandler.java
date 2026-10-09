@@ -32,7 +32,6 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.optimalwindow.internal.calc.TimeRange;
-import org.openhab.automation.optimalwindow.internal.calc.WindowCalculator;
 import org.openhab.automation.optimalwindow.internal.calc.WindowConfiguration;
 import org.openhab.automation.optimalwindow.internal.calc.WindowResult;
 import org.openhab.core.automation.ModuleHandlerCallback;
@@ -56,9 +55,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Triggers a rule when the optimal window starts and when it ends, and optionally updates status items.
  *
- * The window is checked every minute. It is recalculated when the forecast item receives a new time series, when the
- * search range moves on, and at least every {@link #MAX_RESULT_AGE}. Once a window has started, it is kept until the
- * end of its search range, so new forecast values cannot interrupt a running window.
+ * The window is checked every minute. When it is recalculated and which window is kept is decided by the
+ * {@link WindowTracker}.
  *
  * When the trigger starts, e.g. after a restart of openHAB, it fires once with the current state, so a device is
  * switched off if the end of a window was missed.
@@ -69,14 +67,12 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class WindowTriggerHandler extends BaseTriggerModuleHandler {
     private static final Duration REFRESH_INTERVAL = Duration.ofMinutes(1);
-    static final Duration MAX_RESULT_AGE = Duration.ofMinutes(15);
 
     private final Logger logger = LoggerFactory.getLogger(WindowTriggerHandler.class);
-    private final WindowCalculator calculator;
+    private final WindowTracker tracker;
     private final EventPublisher eventPublisher;
     private final Supplier<ZoneId> zoneSupplier;
     private final Clock clock;
-    private final WindowConfiguration config;
 
     private final @Nullable String activeItem;
     private final @Nullable String startItem;
@@ -88,25 +84,23 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
 
     private @Nullable ScheduledFuture<?> initialRefreshJob;
     private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable WindowResult lockedResult;
-    private @Nullable WindowResult cachedResult;
-    private @Nullable TimeRange cachedRange;
-    private Instant cachedAt = Instant.EPOCH;
-    private @Nullable List<TimeRange> plannedRanges;
-    private Instant plannedUntil = Instant.EPOCH;
+    // a planned window persisted before a restart is unknown, so it is replaced up to the longest possible range
+    private @Nullable List<TimeRange> plannedRanges = List.of();
+    private Instant plannedUntil;
     private boolean active = false;
     private boolean started = false;
+    private boolean disposed = false;
 
-    public WindowTriggerHandler(Trigger module, WindowCalculator calculator, EventPublisher eventPublisher,
+    public WindowTriggerHandler(Trigger module, WindowTracker tracker, EventPublisher eventPublisher,
             Supplier<ZoneId> zoneSupplier, Clock clock) {
         super(module);
-        this.calculator = calculator;
+        this.tracker = tracker;
         this.eventPublisher = eventPublisher;
         this.zoneSupplier = zoneSupplier;
         this.clock = clock;
+        plannedUntil = clock.instant().plus(WindowConfiguration.MAX_RANGE_DURATION);
 
         Configuration configuration = module.getConfiguration();
-        config = WindowConfiguration.from(configuration);
         activeItem = getItemName(configuration, CONFIG_ACTIVE_ITEM);
         startItem = getItemName(configuration, CONFIG_START_ITEM);
         endItem = getItemName(configuration, CONFIG_END_ITEM);
@@ -133,6 +127,8 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
 
     @Override
     public synchronized void dispose() {
+        // a refresh that is already waiting for the lock must not run anymore
+        disposed = true;
         cancel(initialRefreshJob);
         initialRefreshJob = null;
         cancel(refreshJob);
@@ -148,36 +144,21 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
         }
     }
 
-    /**
-     * @return the name of the forecast item
-     */
-    public String getForecastItem() {
-        return config.forecastItem;
-    }
-
-    /**
-     * Called when the forecast item received a new time series. The window is recalculated on the next refresh,
-     * which also gives the persistence service time to store the new values.
-     */
-    public synchronized void forecastUpdated() {
-        cachedResult = null;
-        cachedRange = null;
-    }
-
     synchronized void refresh() {
+        if (disposed) {
+            return;
+        }
         ZonedDateTime now = ZonedDateTime.now(clock).withZoneSameInstant(zoneSupplier.get());
         WindowResult result;
         try {
-            result = getResult(now);
-        } catch (IllegalStateException e) {
-            logger.warn("Cannot calculate optimal window for '{}': {}", config.forecastItem, e.getMessage());
+            result = tracker.getResult(now);
+        } catch (RuntimeException e) {
+            // any exception would stop the scheduled refresh, so it is only logged
+            logger.warn("Cannot calculate optimal window for '{}': {}", tracker.getForecastItem(), e.getMessage());
             result = null;
         }
 
         boolean nowActive = result != null && result.isActive(now.toInstant());
-        if (nowActive && result != null) {
-            lockedResult = result;
-        }
 
         // fire once on start, so a device is switched off if the end of a window was missed
         if (nowActive != active || !started) {
@@ -186,30 +167,6 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
             fire(result);
         }
         updateItems(result, now);
-    }
-
-    private @Nullable WindowResult getResult(ZonedDateTime now) {
-        TimeRange range = WindowCalculator.getRange(config.rangeStart, config.rangeDuration, now);
-        Instant instant = now.toInstant();
-        WindowResult localLockedResult = lockedResult;
-        if (localLockedResult != null && localLockedResult.getSearchRange().contains(instant)
-                && (localLockedResult.getSearchRange().equals(range) || localLockedResult.getEnd().isAfter(instant))) {
-            // keep the started window until the end of its search range, or until it has finished if the next search
-            // range has already started, e.g. for overlapping ranges
-            return localLockedResult;
-        }
-        lockedResult = null;
-
-        if (range.equals(cachedRange) && cachedAt.plus(MAX_RESULT_AGE).isAfter(instant)) {
-            return cachedResult;
-        }
-
-        WindowResult result = calculator.calculate(config, now);
-        logger.trace("Optimal window for {}: {}", config, result);
-        cachedResult = result;
-        cachedRange = range;
-        cachedAt = instant;
-        return result;
     }
 
     private void fire(@Nullable WindowResult result) {
