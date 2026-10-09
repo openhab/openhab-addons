@@ -1257,8 +1257,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 getScheduler().schedule(() -> doMigration(sourceUniqueId, sourceThing, targetBridge, targetThing),
                         MIGRATION_DELAY_SECONDS, TimeUnit.SECONDS);
                 logger.info("{} has embedded accessories; auto-migrating it", thing.getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "@text/status.migrating-accessory-to-bridge");
+                updateStatus(ThingStatusDetail.NOT_YET_READY, "@text/status.migrating-accessory-to-bridge");
                 return true;
             } catch (Exception e) {
                 migrating.set(false);
@@ -1326,8 +1325,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             logger.warn("{} while auto-migrating {} to {}; try editing Thing-Type from 'accessory' to 'bridge'.",
                     e.getMessage(), oldThing.getUID(), newBridge.getUID());
             migrating.set(false);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "@text/status.migrating-accessory-to-bridge-failed");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/status.migrating-accessory-to-bridge-failed");
             return;
         }
         String mac = thing.getProperties().get(Thing.PROPERTY_MAC_ADDRESS);

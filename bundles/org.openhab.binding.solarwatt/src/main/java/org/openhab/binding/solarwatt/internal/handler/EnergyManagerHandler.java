@@ -236,10 +236,10 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
 
     private void initDeviceCache(SolarwattBridgeConfiguration localConfig) {
         if (localConfig.hostname.isEmpty()) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname is not set");
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Hostname is not set");
+            return;
         } else {
-            this.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Waiting to retrieve devices.");
+            updateStatus(ThingStatus.UNKNOWN);
             this.connector.setConfiguration(localConfig);
 
             this.devicesCache = new ExpiringCache<>(Duration.of(localConfig.refresh, ChronoUnit.SECONDS),
@@ -366,7 +366,7 @@ public class EnergyManagerHandler extends BaseBridgeHandler {
 
             return devicesData;
         } catch (final SolarwattConnectionException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
         return null;

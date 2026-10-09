@@ -78,7 +78,7 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         if (config.email.isBlank() || config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.user-credentials-missing");
             return;
         }

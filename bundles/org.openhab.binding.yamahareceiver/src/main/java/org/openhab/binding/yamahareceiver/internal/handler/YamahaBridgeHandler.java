@@ -390,8 +390,7 @@ public class YamahaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onConnectionCreated(@Nullable AbstractConnection connection) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                "Waiting for connection with Yamaha device");
+        updateStatus(ThingStatus.UNKNOWN);
 
         this.connection = connection;
         this.systemControl = null;

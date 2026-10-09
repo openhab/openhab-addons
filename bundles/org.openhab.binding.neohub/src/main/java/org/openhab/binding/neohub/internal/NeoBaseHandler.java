@@ -101,7 +101,7 @@ public class NeoBaseHandler extends BaseThingHandler {
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     // ======== helper methods used by this class or descendants ===========

@@ -83,7 +83,7 @@ public final class LinuxInputHandler extends DeviceReadingHandler {
         if (!config.enable) {
             statusDesc = "Administratively disabled";
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, statusDesc);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, statusDesc);
         return true;
     }
 

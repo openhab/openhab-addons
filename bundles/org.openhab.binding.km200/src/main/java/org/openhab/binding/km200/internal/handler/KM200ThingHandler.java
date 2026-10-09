@@ -201,12 +201,12 @@ public class KM200ThingHandler extends BaseThingHandler {
             return;
         }
         synchronized (gateway.getDevice()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
             if (!gateway.getDevice().getInited()) {
                 updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
                 logger.debug("Bridge: not initialized: {}", bridge);
                 return;
             }
+            updateStatus(ThingStatus.UNKNOWN);
             List<Channel> subChannels = new ArrayList<>();
             if (gateway.getDevice().containsService(service)) {
                 KM200ServiceObject serObj = gateway.getDevice().getServiceObject(service);

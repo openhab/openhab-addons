@@ -132,7 +132,7 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
         config = getConfigAs(MycroftConfiguration.class);
         if (config.host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "No host defined");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No host defined");
             return;
         } else if (config.port < 0 || config.port > 0xFFFF) {
             updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Port should be between 0 and 65536");

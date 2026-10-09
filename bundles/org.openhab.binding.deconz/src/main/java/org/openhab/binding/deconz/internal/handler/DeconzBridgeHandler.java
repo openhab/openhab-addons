@@ -148,8 +148,9 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             return;
         }
         if (r.getResponseCode() == 403) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Allow authentication for 3rd party apps. Trying again in " + POLL_FREQUENCY_SEC + " seconds");
+
             stopTimer();
             connectionJob = scheduler.schedule(this::requestApiKey, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
         } else if (r.getResponseCode() == 200) {
@@ -161,7 +162,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             Configuration configuration = editConfiguration();
             configuration.put(CONFIG_APIKEY, config.apikey);
             updateConfiguration(configuration);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for configuration");
+            updateStatus(ThingStatus.UNKNOWN);
             initializeBridgeState();
         } else {
             throw new IllegalStateException("Unknown status code for authorisation request");
@@ -285,7 +286,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
      *
      */
     private void requestApiKey() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Requesting API Key");
+        updateStatus(ThingStatus.UNKNOWN);
         stopTimer();
         String url = buildUrl(config.getHostWithoutPort(), config.httpPort);
         http.post(url, "{\"devicetype\":\"openHAB\"}", config.timeout).thenAccept(this::parseAPIKeyResponse)

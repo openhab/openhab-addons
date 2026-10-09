@@ -2087,10 +2087,10 @@ class TestMigrationFromThingToBridge {
         verify(callback, atLeastOnce()).statusUpdated(ArgumentMatchers.any(Thing.class), statusCaptor.capture());
 
         boolean foundMigrationStatus = statusCaptor.getAllValues().stream()
-                .anyMatch(status -> status.getStatus() == ThingStatus.OFFLINE
-                        && status.getStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING);
+                .anyMatch(status -> status.getStatus() == ThingStatus.UNINITIALIZED
+                        && status.getStatusDetail() == ThingStatusDetail.NOT_YET_READY);
 
-        assertTrue(foundMigrationStatus, "Status should be OFFLINE with CONFIGURATION_PENDING during migration");
+        assertTrue(foundMigrationStatus, "Status should be UNINITIALIZED with NOT_YET_READY during migration");
     }
 
     @Test
