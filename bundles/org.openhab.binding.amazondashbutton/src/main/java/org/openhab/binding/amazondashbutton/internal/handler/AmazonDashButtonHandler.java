@@ -61,7 +61,7 @@ public class AmazonDashButtonHandler extends BaseThingHandler implements PcapNet
             PcapNetworkInterfaceWrapper pcapNetworkInterface = PcapUtil
                     .getNetworkInterfaceByName(pcapNetworkInterfaceName);
             if (pcapNetworkInterface == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "The networkinterface " + pcapNetworkInterfaceName + " is not present.");
                 return;
             }

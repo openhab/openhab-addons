@@ -298,8 +298,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
     private synchronized void disconnect(@Nullable Exception e, @Nullable ThingStatusDetail detail) {
         releaseConnection();
         if (e != null) {
-            statusUpdateCallback.updateStatus(ThingStatus.OFFLINE,
-                    detail != null ? detail : ThingStatusDetail.COMMUNICATION_ERROR,
+            statusUpdateCallback.updateStatus(detail != null ? detail : ThingStatusDetail.COMMUNICATION_ERROR,
                     KNXTranslationProvider.I18N.getLocalizedException(e));
         } else {
             statusUpdateCallback.updateStatus(ThingStatus.OFFLINE);

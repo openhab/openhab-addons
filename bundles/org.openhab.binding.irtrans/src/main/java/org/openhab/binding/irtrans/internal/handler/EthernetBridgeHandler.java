@@ -117,7 +117,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
             selector = Selector.open();
         } catch (IOException e) {
             logger.debug("An exception occurred while registering the selector: '{}'", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
         }
 
         if (selector != null) {

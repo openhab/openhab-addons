@@ -933,7 +933,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void setThingOfflineAndDisconnect(ThingStatusDetail detail, String messageKey, Object... arguments) {
         if (!isThingOffline()) {
-            updateStatus(ThingStatus.OFFLINE, detail, messages.get(messageKey, arguments));
+            updateStatus(detail, messages.get(messageKey, arguments));
         }
         api.close(); // Gen2: disconnect WS/close http sessions
         watchdog = 0;
@@ -946,8 +946,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public void setThingStatus(ThingStatus status, ThingStatusDetail detail, String messageKey, Object... arguments) {
-        updateStatus(status, detail, messages.get(messageKey, arguments));
+    public void setThingStatus(ThingStatusDetail detail, String messageKey, Object... arguments) {
+        updateStatus(detail, messages.get(messageKey, arguments));
     }
 
     @Override

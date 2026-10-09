@@ -126,7 +126,11 @@ public class FreeAtHomeDeviceHandler extends BaseThingHandler implements FreeAtH
             @Nullable String description) {
         synchronized (initializeLock) {
             if (isCurrentRun(generation)) {
-                updateStatus(status, detail, description);
+                if (detail == ThingStatusDetail.NONE) {
+                    updateStatus(status, description);
+                } else {
+                    updateStatus(detail, description);
+                }
             }
         }
     }

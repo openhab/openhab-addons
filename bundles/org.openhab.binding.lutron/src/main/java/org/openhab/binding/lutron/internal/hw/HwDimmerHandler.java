@@ -93,7 +93,7 @@ public class HwDimmerHandler extends BaseThingHandler {
     private void queryLevel() {
         HwSerialBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
+            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
             return;
         }
 
@@ -104,7 +104,7 @@ public class HwDimmerHandler extends BaseThingHandler {
     private void outputLevel(Number level) {
         HwSerialBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
+            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
             return;
         }
 

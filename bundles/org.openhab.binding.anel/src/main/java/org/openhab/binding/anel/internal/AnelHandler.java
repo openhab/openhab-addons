@@ -131,7 +131,7 @@ public class AnelHandler extends BaseThingHandler {
             // OH shutdown - don't log anything, Framework will call dispose()
         } catch (Exception e) {
             logger.debug("Connection to '{}' failed", config, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Connection to '" + config
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection to '" + config
                     + "' failed unexpectedly with " + e.getClass().getSimpleName() + ": " + e.getMessage());
             dispose();
         }

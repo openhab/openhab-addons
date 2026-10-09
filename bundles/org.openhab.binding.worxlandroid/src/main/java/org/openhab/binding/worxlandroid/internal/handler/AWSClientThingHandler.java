@@ -228,8 +228,8 @@ public abstract class AWSClientThingHandler extends BaseThingHandler
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     protected abstract void internalHandleCommand(@Nullable String groupId, String channelId, Command command);

@@ -184,8 +184,7 @@ public class SystemInfoHandler extends BaseThingHandler {
             } else {
                 synchronized (this) {
                     if (isCurrentInitialization(generation)) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                "@text/offline.cannot-initialize");
+                        updateStatus(ThingStatus.OFFLINE, "@text/offline.cannot-initialize");
                     }
                 }
             }

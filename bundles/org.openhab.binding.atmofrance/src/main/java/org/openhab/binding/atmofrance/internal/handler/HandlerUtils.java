@@ -92,7 +92,9 @@ public interface HandlerUtils {
         getJobs().clear();
     }
 
-    void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
+    void updateStatus(ThingStatusDetail statusDetail);
+
+    void updateStatus(ThingStatusDetail statusDetail, @Nullable String description);
 
     @Nullable
     Bridge getBridge();

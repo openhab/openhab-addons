@@ -306,8 +306,7 @@ public class UnifiAccessNotificationRouter {
             }
             UnifiAccessBaseHandler bh = bridgeHandler.getBaseHandler(deviceId);
             if (bh != null) {
-                bh.updateStatus(org.openhab.core.thing.ThingStatus.OFFLINE,
-                        org.openhab.core.thing.ThingStatusDetail.GONE, "@text/offline.access-gone");
+                bh.updateStatus(org.openhab.core.thing.ThingStatusDetail.GONE, "@text/offline.access-gone");
             }
         }
     }

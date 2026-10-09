@@ -261,12 +261,10 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
                         tokenManager.getValidRegisteredToken(bridgeName);
                     } catch (IOException e) {
                         logger.error("Unexpected error reading LGThinq TokenFile", e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                "@text/error.toke-file-corrupted");
+                        updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "@text/error.toke-file-corrupted");
                         return;
                     } catch (RefreshTokenException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                                "@text/error.toke-refresh");
+                        updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "@text/error.toke-refresh");
                         logger.error("Error refreshing token", e);
                         return;
                     }

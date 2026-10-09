@@ -100,7 +100,7 @@ public abstract class ADThingHandler extends BaseThingHandler {
         ADBridgeHandler bridgeHandler = bridge == null ? null : (ADBridgeHandler) bridge.getHandler();
 
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "No bridge associated");
+            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR);
         } else {
             bridgeHandler.sendADCommand(command);
         }
