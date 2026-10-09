@@ -411,15 +411,20 @@ public class ApplianceHandler extends BaseThingHandler {
                     case "Switch" -> "switch";
                     case "Number" -> "number";
                     case "Number:Temperature" -> "temperature";
-                    case "Number:Power" -> "power";
                     default -> "string";
                 };
-                if (!point.writable()) {
-                    type += "-readonly";
-                }
+                ChannelTypeUID typeUID = switch (point.itemType()) {
+                    case "Switch" ->
+                        "Power".equals(point.label()) && point.writable() ? new ChannelTypeUID("system:power")
+                                : new ChannelTypeUID(BINDING_ID, point.writable() ? type : type + "-readonly");
+                    case "Number:Power" -> new ChannelTypeUID("system:electric-power");
+                    case "Number:Temperature" ->
+                        "Temperature".equals(point.label()) ? new ChannelTypeUID("system:indoor-temperature")
+                                : new ChannelTypeUID(BINDING_ID, point.writable() ? type : type + "-readonly");
+                    default -> new ChannelTypeUID(BINDING_ID, point.writable() ? type : type + "-readonly");
+                };
                 channels.add(ChannelBuilder.create(new ChannelUID(getThing().getUID(), point.id()), point.itemType())
-                        .withType(new ChannelTypeUID(BINDING_ID, type)).withLabel(point.label())
-                        .withDescription(point.description()).build());
+                        .withType(typeUID).withLabel(point.label()).withDescription(point.description()).build());
             }
             Map<String, String> properties = new HashMap<>(getThing().getProperties());
             UUID identity = current.identity;

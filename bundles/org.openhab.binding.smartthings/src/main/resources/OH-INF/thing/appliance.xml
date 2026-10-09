@@ -118,19 +118,6 @@
 		<category>Temperature</category>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="power">
-		<item-type>Number:Power</item-type>
-		<label>Appliance Power</label>
-		<description>Power resource state in its protocol-defined unit.</description>
-		<category>Energy</category>
-	</channel-type>
-	<channel-type id="power-readonly">
-		<item-type>Number:Power</item-type>
-		<label>Appliance Power State</label>
-		<description>Read-only power resource state in its protocol-defined unit.</description>
-		<category>Energy</category>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>Appliance Setting</label>

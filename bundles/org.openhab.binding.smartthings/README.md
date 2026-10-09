@@ -124,8 +124,10 @@ Changing the host alone does not authorize a different appliance identity.
 ### Channels
 
 Channels are created from authenticated resource representations rather than a fixed SmartThings capability list.
-Their identifiers are concise, readable names derived from the resource path and the final field name (for example,
-`mode-vs-0-modes`). If names collide, a deterministic numeric suffix distinguishes them. Use the channels displayed on
+Their identifiers are concise, readable names derived from the resource path, omitting trailing `/vs/0` or `/0`
+segments (for example, `/mode/vs/0` becomes `mode`). If names collide, raw channels are omitted when a non-raw channel
+shares that identifier; otherwise a deterministic fallback based on the full resource path and field name is used.
+Remaining collisions receive numeric suffixes. Use the channels displayed on
 the Thing's Channels tab when linking Items; these identifiers replace the previous long IDs, so existing Items may need
 to be relinked.
 

@@ -142,12 +142,37 @@ class ApplianceHandlerTest {
         awaitStatus(ThingStatus.ONLINE);
         Channel power = channel(handler, "Power");
         assertEquals(OnOffType.ON, states.get(power.getUID().getId()));
-        assertEquals("smartthings:switch", power.getChannelTypeUID().toString());
+        assertEquals("system:power", power.getChannelTypeUID().toString());
         assertEquals("smartthings:switch-readonly", channel(handler, "Remote Control").getChannelTypeUID().toString());
         assertEquals(DEVICE_ID, handler.getThing().getProperties().get("deviceId"));
         assertFalse(handler.getThing().getProperties().containsKey("ownerId"));
         assertEquals(List.of("/oic/d", "/device/0"), transport.reads);
         assertEquals(1, changes.size());
+    }
+
+    @Test
+    void powerMeasurementsUseTheSystemChannelType() throws Exception {
+        transport.identity = json("{\"di\":\"" + DEVICE_ID + "\"}");
+        transport.batch = json(
+                "[{\"href\":\"/energy/consumption/vs/0\",\"rep\":" + "{\"x.com.samsung.da.instantaneousPower\":93}}]");
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+
+        Channel power = channel(handler, "Power Consumption");
+        assertEquals("system:electric-power", power.getChannelTypeUID().toString());
+        assertNull(descriptionProvider.getStateDescription(power, null, null).getPattern());
+    }
+
+    @Test
+    void currentTemperaturesUseTheIndoorTemperatureSystemChannelType() throws Exception {
+        transport.batch = json(
+                "[{\"href\":\"/temperature/current/0\",\"rep\":" + "{\"temperature\":21,\"units\":\"C\"}}]");
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+
+        Channel temperature = channel(handler, "Temperature");
+        assertEquals("system:indoor-temperature", temperature.getChannelTypeUID().toString());
+        assertEquals("temperature-current", temperature.getUID().getId());
     }
 
     @Test
@@ -203,7 +228,7 @@ class ApplianceHandlerTest {
     }
 
     @Test
-    void removesDescriptionsWhenStandardPowerSupersedesTheVendorChannel() throws Exception {
+    void keepsPowerChannelIdWhenStandardResourceSupersedesVendorChannel() throws Exception {
         transport.batch = json("""
                 [{"href":"/power/vs/0","rep":{"x.com.samsung.da.power":"On"}},
                  {"href":"/remotectrl/0","rep":{"value":true}}]
@@ -215,9 +240,9 @@ class ApplianceHandlerTest {
         transport.batch = json("[{\"href\":\"/power/0\",\"rep\":{\"value\":true}}]");
         handler.handleCommand(vendor.getUID(), RefreshType.REFRESH);
         awaitStatus(ThingStatus.ONLINE);
-        assertNotEquals(vendor.getUID(), channel(handler, "Power").getUID());
-        assertNull(descriptionProvider.getStateDescription(vendor, null, null));
-        assertNull(descriptionProvider.getCommandDescription(vendor, null, null));
+        Channel standard = channel(handler, "Power");
+        assertEquals(vendor.getUID(), standard.getUID());
+        assertNotNull(descriptionProvider.getStateDescription(standard, null, null));
     }
 
     @Test

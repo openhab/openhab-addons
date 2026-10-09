@@ -197,8 +197,22 @@ public class Resources {
                                 && currentMode(rep) != null && supportedModes(rep).contains(currentMode(rep)));
             }
         });
+        Map<String, List<Point>> pointsById = new LinkedHashMap<>();
+        result.forEach(point -> pointsById.computeIfAbsent(point.id(), ignored -> new ArrayList<>()).add(point));
+        List<Point> uniquePoints = new ArrayList<>();
+        for (List<Point> points : pointsById.values()) {
+            List<Point> retained = points.size() > 1
+                    && points.stream().anyMatch(point -> !point.label().endsWith("(Raw)"))
+                            ? points.stream().filter(point -> !point.label().endsWith("(Raw)")).toList()
+                            : points;
+            for (Point point : retained) {
+                uniquePoints.add(retained.size() == 1 ? point
+                        : new Point(fallbackId(point), point.href(), point.field(), point.itemType(), point.label(),
+                                point.description(), point.writable()));
+            }
+        }
         Set<String> usedIds = new HashSet<>();
-        return result.stream().map(point -> {
+        return uniquePoints.stream().map(point -> {
             String id = point.id();
             for (int suffix = 2; !usedIds.add(id); suffix++) {
                 id = point.id() + "-" + suffix;
@@ -216,18 +230,11 @@ public class Resources {
         JsonObject rep = resources.get(point.href());
         if (rep != null && "Number:Temperature".equals(point.itemType())) {
             JsonObject item = point.href().endsWith(TEMPERATURES_VS) ? temperatureItem(rep) : null;
-            Unit<Temperature> unit = item == null ? temperatureUnit(rep.get("units"))
-                    : temperatureUnit(item.get(VENDOR + "unit"));
-            if (unit != null) {
-                builder.withPattern("%s " + unit);
-            }
             Bounds limits = point.href().endsWith(DESIRED) ? bounds(point.href(), rep)
                     : item != null && point.field().equals(VENDOR + "desired") ? vendorBounds(item) : null;
             if (limits != null) {
                 builder.withMinimum(limits.minimum()).withMaximum(limits.maximum()).withStep(limits.increment());
             }
-        } else if ("Number:Power".equals(point.itemType())) {
-            builder.withPattern("%s W");
         } else if (point.href().endsWith(AIRFLOW) && "speed".equals(point.field())
                 && deviceType(prefix(point.href(), AIRFLOW), "oic.d.airpurifier")) {
             builder.withMinimum(BigDecimal.ZERO).withMaximum(BigDecimal.valueOf(4)).withStep(BigDecimal.ONE);
@@ -483,11 +490,18 @@ public class Resources {
     }
 
     private void add(List<Point> points, String href, String field, String itemType, String label, boolean writable) {
-        String resource = href.substring(1);
-        String fieldName = field.substring(field.lastIndexOf('.') + 1);
-        String readable = (resource + "-" + fieldName).replaceAll("[^A-Za-z0-9_-]+", "-").replaceAll("-{2,}", "-")
-                .replaceAll("(^-|-$)", "");
+        String resource = href.substring(1).replaceFirst("/vs/0$", "").replaceFirst("/0$", "");
+        String readable = readableId(resource);
         points.add(new Point(readable, href, field, itemType, label, description(href, field, label), writable));
+    }
+
+    private static String fallbackId(Point point) {
+        String fieldName = point.field().substring(point.field().lastIndexOf('.') + 1);
+        return readableId(point.href().substring(1) + "-" + fieldName);
+    }
+
+    private static String readableId(String value) {
+        return value.replaceAll("[^A-Za-z0-9_-]+", "-").replaceAll("-{2,}", "-").replaceAll("(^-|-$)", "");
     }
 
     private String description(String href, String field, String label) {

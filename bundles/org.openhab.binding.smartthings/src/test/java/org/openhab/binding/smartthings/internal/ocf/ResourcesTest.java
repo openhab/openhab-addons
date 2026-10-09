@@ -77,13 +77,13 @@ class ResourcesTest {
         assertEquals(new BigDecimal("16"), description.getMinimum());
         assertEquals(new BigDecimal("30"), description.getMaximum());
         assertEquals(new BigDecimal("0.5"), description.getStep());
-        assertEquals("%s °C", description.getPattern());
+        assertNull(description.getPattern());
         assertFalse(description.isReadOnly());
         resources.update(desired.href(), json("{\"units\":\"F\",\"range\":[60,86],\"increment\":1}"));
         description = resources.stateDescription(point(desired.href(), desired.field())).toStateDescription();
         assertEquals(new BigDecimal("60"), description.getMinimum());
         assertEquals(BigDecimal.ONE, description.getStep());
-        assertEquals("%s °F", description.getPattern());
+        assertNull(description.getPattern());
         resources.update(desired.href(), json("{\"range\":null}"));
         description = resources.stateDescription(point(desired.href(), desired.field())).toStateDescription();
         assertNull(description.getMinimum());
@@ -252,7 +252,8 @@ class ResourcesTest {
         assertEquals(OnOffType.ON, resources.state(vendor));
         assertEquals(json("{\"x.com.samsung.da.power\":\"Off\"}"), resources.command(vendor, OnOffType.OFF));
         resources.update("/power/0", json("{\"value\":\"unavailable\"}"));
-        assertEquals(OnOffType.ON, resources.state(vendor));
+        Point vendorWithCollision = point("/power/vs/0", "x.com.samsung.da.power");
+        assertEquals(OnOffType.ON, resources.state(vendorWithCollision));
         assertFalse(point("/power/0", "value").writable());
         resources.update("/power/0", json("{\"value\":false}"));
         assertEquals(OnOffType.OFF, resources.state(point("/power/0", "value")));
@@ -379,14 +380,11 @@ class ResourcesTest {
                 {"x.com.samsung.da.instantaneousPower":"-500","x.com.samsung.da.cumulativePower":"1234"}
                 """));
         Point watts = point("/energy/consumption/vs/0", "x.com.samsung.da.instantaneousPower");
-        Point cumulative = point("/energy/consumption/vs/0", "x.com.samsung.da.cumulativePower");
+        assertEquals("energy-consumption", watts.id());
         assertEquals(UnDefType.UNDEF, resources.state(watts));
-        assertEquals(new DecimalType(1234), resources.state(cumulative));
-        assertEquals("Number", cumulative.itemType());
-        assertFalse(cumulative.writable());
+        assertTrue(resources.points().stream().noneMatch(point -> point.label().endsWith("(Raw)")));
         resources.update("/energy/consumption/vs/0", json("{\"x.com.samsung.da.instantaneousPower\":93}"));
         assertEquals(new QuantityType<>(93, Units.WATT), resources.state(watts));
-        assertEquals(new DecimalType(1234), resources.state(cumulative));
         resources.update("/water/consumption/vs/0", json("{\"x.com.samsung.da.cumulativeWater\":\"45\"}"));
         assertEquals(new DecimalType(45),
                 resources.state(point("/water/consumption/vs/0", "x.com.samsung.da.cumulativeWater")));
@@ -504,7 +502,13 @@ class ResourcesTest {
         assertEquals(resources.points(), reverse.points());
 
         resources.update("/mode/vs/0", json("{\"x.com.samsung.da.modes\":[\"Auto\"]}"));
-        assertEquals("mode-vs-0-modes", point("/mode/vs/0", "x.com.samsung.da.modes").id());
+        assertEquals("mode", point("/mode/vs/0", "x.com.samsung.da.modes").id());
+
+        Resources energy = new Resources();
+        energy.update("/energy/consumption/vs/0",
+                json("{\"x.com.samsung.da.instantaneousPower\":93," + "\"x.com.samsung.da.cumulativePower\":1234}"));
+        assertEquals(List.of("energy-consumption"), energy.points().stream().map(Point::id).toList());
+        assertEquals("energy-consumption", energy.points().getFirst().id());
     }
 
     @Test
@@ -593,7 +597,7 @@ class ResourcesTest {
         assertEquals(new BigDecimal("16"), description.getMinimum());
         assertEquals(new BigDecimal("30"), description.getMaximum());
         assertEquals(new BigDecimal("1.0"), description.getStep());
-        assertEquals("%s °C", description.getPattern());
+        assertNull(description.getPattern());
         assertFalse(description.isReadOnly());
         assertNull(resources.stateDescription(point(desired.href(), "x.com.samsung.da.current")).toStateDescription()
                 .getMinimum());
