@@ -134,8 +134,10 @@ public final class HagerFlowEmsRegisterMap {
             4122, 1, U16, READ_ONLY, Units.AMPERE, Map.of(), List.of());
     public static final Register ALL_PV_POWER_SUM = new Register("all-pv-power-sum", GROUP_ROOT_MAIN_MEASUREMENTS, 4126,
             2, U32, READ_ONLY, Units.WATT, Map.of(), List.of());
+    // The Modbus table documents address 4134, but the register is at 4133, see
+    // https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6082009683
     public static final Register ALL_BATTERY_CURRENT_SUM = new Register("all-battery-current-sum",
-            GROUP_ROOT_MAIN_MEASUREMENTS, 4134, 1, U16, READ_ONLY, Units.AMPERE, Map.of(), List.of());
+            GROUP_ROOT_MAIN_MEASUREMENTS, 4133, 1, U16, READ_ONLY, Units.AMPERE, Map.of(), List.of());
     public static final Register ALL_BATTERY_POWER_SUM = new Register("all-battery-power-sum",
             GROUP_ROOT_MAIN_MEASUREMENTS, 4138, 2, I32, READ_ONLY, Units.WATT, Map.of(), List.of());
     public static final Register BATTERY_STATE_OF_CHARGE = new Register("battery-state-of-charge",
