@@ -266,6 +266,7 @@ public class MerossManager implements MqttMessageSubscriber {
             JsonObject jsonObject = JsonParser.parseString(mqttPayload).getAsJsonObject();
 
             String method = null;
+            String namespaceString = null;
             Namespace namespace = null;
             String deviceUUID = null;
             if (jsonObject.has("header") && !jsonObject.get("header").isJsonNull()) {
@@ -278,15 +279,15 @@ public class MerossManager implements MqttMessageSubscriber {
                 if (header.has("method") && header.get("method").isJsonPrimitive() && header.has("namespace")
                         && header.get("namespace").isJsonPrimitive()) {
                     method = header.get("method").getAsString();
-                    String namespaceString = header.get("namespace").getAsString();
-                    if ("GETACK".equals(method)) {
-                        setResponse(mqttPayload, namespaceString);
-                    }
+                    namespaceString = header.get("namespace").getAsString();
                     namespace = Namespace.getNamespaceByAbilityValue(namespaceString);
                 }
             }
-            if (method == null || namespace == null || !this.deviceUUID.equals(deviceUUID)) {
+            if (method == null || namespaceString == null || namespace == null || !this.deviceUUID.equals(deviceUUID)) {
                 return;
+            }
+            if ("GETACK".equals(method)) {
+                setResponse(mqttPayload, namespaceString);
             }
 
             JsonObject payload;

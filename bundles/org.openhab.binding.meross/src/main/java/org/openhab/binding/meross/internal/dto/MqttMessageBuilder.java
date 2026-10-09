@@ -113,16 +113,6 @@ public class MqttMessageBuilder {
     }
 
     /**
-     * API command.
-     *
-     * @param deviceUUID the device UUID
-     * @return The string identifying a device in a push message from field
-     */
-    public String buildDeviceResponseTopic(String deviceUUID) {
-        return "/appliance/" + deviceUUID + "/publish";
-    }
-
-    /**
      * Extract the deviceUUID from the topic. The topic is expected to be in the format
      * "/appliance/{deviceUUID}/publish" or "/appliance/{deviceUUID}/subscribe".
      *
