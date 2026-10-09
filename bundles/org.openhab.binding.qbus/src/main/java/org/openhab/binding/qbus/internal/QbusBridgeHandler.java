@@ -145,7 +145,7 @@ public class QbusBridgeHandler extends BaseBridgeHandler {
      * @param message
      */
     public void bridgePending(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING, message);
+        updateStatus(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING, message);
     }
 
     /**

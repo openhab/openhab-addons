@@ -199,7 +199,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
                 }
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR);
+                updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR);
             }
         } else {
             updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
@@ -346,8 +346,8 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override

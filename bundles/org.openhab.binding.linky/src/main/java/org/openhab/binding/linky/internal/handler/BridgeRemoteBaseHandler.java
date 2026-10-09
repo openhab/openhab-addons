@@ -153,11 +153,6 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
         super.dispose();
     }
 
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
-    }
-
     public abstract String getToken(ThingBaseRemoteHandler handler) throws LinkyException;
 
     @Override

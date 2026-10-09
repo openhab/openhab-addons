@@ -243,7 +243,7 @@ public class RioSourceHandler extends AbstractThingHandler<RioSourceProtocol> im
         // Get the socket session from the
         final SocketSession socketSession = getSocketSession();
         if (socketSession == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "No socket session found");
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "No socket session found");
             return;
         }
 

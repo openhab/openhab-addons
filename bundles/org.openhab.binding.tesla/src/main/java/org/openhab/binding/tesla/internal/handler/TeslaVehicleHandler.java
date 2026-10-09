@@ -528,13 +528,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail) {
-        super.updateStatus(status, statusDetail);
-    }
-
-    @Override
-    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    protected void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     public void requestData(String command) {

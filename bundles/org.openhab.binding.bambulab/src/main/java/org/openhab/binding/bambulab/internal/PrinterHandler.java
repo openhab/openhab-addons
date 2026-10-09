@@ -27,7 +27,6 @@ import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.Ams
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel.*;
 import static org.openhab.binding.bambulab.internal.PrinterConfiguration.CLOUD_MODE_HOSTNAME;
 import static org.openhab.binding.bambulab.internal.StateParserHelper.*;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatus.UNKNOWN;
 import static org.openhab.core.thing.ThingStatusDetail.*;
@@ -177,7 +176,7 @@ public class PrinterHandler extends BaseBridgeHandler
         try {
             internalInitialize();
         } catch (InitializationException e) {
-            updateStatus(OFFLINE, e.getThingStatusDetail(), e.getDescription());
+            updateStatus(e.getThingStatusDetail(), e.getDescription());
         }
     }
 
@@ -551,8 +550,8 @@ public class PrinterHandler extends BaseBridgeHandler
     }
 
     @Override
-    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
-        super.updateStatus(status, statusDetail, description);
+    public void updateStatus(ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(statusDetail, description);
     }
 
     @Override
