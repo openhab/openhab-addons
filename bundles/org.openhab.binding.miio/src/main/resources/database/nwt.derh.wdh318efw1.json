@@ -32,7 +32,10 @@
 				"actions": [
 					{
 						"command": "set_mode",
-						"parameterType": "STRING"
+						"parameterType": "STRING",
+						"condition": {
+							"name": "LowerCase"
+						}
 					}
 				],
 				"tags": [

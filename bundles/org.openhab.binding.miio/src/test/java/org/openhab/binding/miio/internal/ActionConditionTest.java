@@ -68,4 +68,21 @@ public class ActionConditionTest {
         assertNull(resp);
         assertNotEquals(new JsonPrimitive(-1), resp);
     }
+
+    @Test
+    public void assertLowerCase() {
+        MiIoDeviceActionCondition condition = new MiIoDeviceActionCondition();
+        condition.setName("LowerCase");
+        Map<String, Object> deviceVariables = Collections.emptyMap();
+
+        assertEquals(new JsonPrimitive("on"),
+                ActionConditions.executeAction(condition, deviceVariables, new JsonPrimitive("ON"), null));
+        assertEquals(new JsonPrimitive("auto"),
+                ActionConditions.executeAction(condition, deviceVariables, new JsonPrimitive("auto"), null));
+        assertEquals(new JsonPrimitive(5),
+                ActionConditions.executeAction(condition, deviceVariables, new JsonPrimitive(5), null));
+        assertEquals(new JsonPrimitive(true),
+                ActionConditions.executeAction(condition, deviceVariables, new JsonPrimitive(true), null));
+        assertNull(ActionConditions.executeAction(condition, deviceVariables, null, null));
+    }
 }

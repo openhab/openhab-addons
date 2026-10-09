@@ -235,9 +235,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         value = new JsonPrimitive(((DecimalType) command).toBigDecimal());
                     } else if (command instanceof StringType) {
                         if (paramType == CommandParameterType.STRING) {
-                            value = new JsonPrimitive(command.toString().toLowerCase());
+                            value = new JsonPrimitive(command.toString());
                         } else if (paramType == CommandParameterType.CUSTOMSTRING) {
-                            String text = command.toString().toLowerCase();
+                            String text = command.toString();
                             if (valuePos < parameters.size() && parameters.get(valuePos).isJsonPrimitive()) {
                                 Matcher matcher = VALUE_TOKEN.matcher(parameters.get(valuePos).getAsString());
                                 if (matcher.find()) {
