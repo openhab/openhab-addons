@@ -13,54 +13,60 @@
 
 package org.openhab.automation.optimalwindow.internal.calc;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link TimeRange} defines a time range (defined by two timestamps)
  *
  * @author Jan N. Klug - Initial contribution
+ * @author Thomas Leber - Use {@link Instant}
  */
 @NonNullByDefault
-public record TimeRange(long start, long end) implements Comparable<TimeRange> {
+public record TimeRange(Instant start, Instant end) implements Comparable<TimeRange> {
     /**
-     * Check if a given timestamp is in this time range
+     * Check if a given point in time is in this time range
      *
-     * @param timestamp the timestamp
-     * 
-     * @return {@code true} if the timestamp is equal to or greater than {@link #start} and less than {@link #end}
+     * @param pointInTime the point in time
+     *
+     * @return {@code true} if the point in time is equal to or after {@link #start} and before {@link #end}
      */
-    public boolean contains(long timestamp) {
-        return timestamp >= start && timestamp < end;
+    public boolean contains(Instant pointInTime) {
+        return !pointInTime.isBefore(start) && pointInTime.isBefore(end);
     }
 
     /**
-     * Check if another time range is inside this time range
+     * Returns the part of this time range that is also within the other time range.
      *
      * @param other the other time range
      *
-     * @return {@code true} if {@link #start} of this time range is the same or before the other time range's
-     *         {@link #start} and this {@link #end} is the same or after the other time range's {@link #end}
+     * @return the overlapping part, or {@code null} if the time ranges do not overlap
      */
-    public boolean contains(TimeRange other) {
-        return start <= other.start && end >= other.end;
+    public @Nullable TimeRange intersection(TimeRange other) {
+        Instant overlapStart = start.isAfter(other.start) ? start : other.start;
+        Instant overlapEnd = end.isBefore(other.end) ? end : other.end;
+        return overlapStart.isBefore(overlapEnd) ? new TimeRange(overlapStart, overlapEnd) : null;
     }
 
     /**
-     * @return the duration of this time range in milliseconds
+     * @return the duration of this time range
      */
-    public long duration() {
-        return end - start;
+    public Duration duration() {
+        return Duration.between(start, end);
     }
 
     /**
-     * Compare two time ranges by their start timestamp
+     * Compare two time ranges by their start
      *
      * @param o the object to be compared
      *
-     * @return the result of {@link Long#compare(long, long)} for the {@link #start} timestamps
+     * @return the result of {@link Instant#compareTo(Instant)} for the {@link #start} timestamps
      */
     @Override
     public int compareTo(TimeRange o) {
-        return Long.compare(start, o.start);
+        return start.compareTo(o.start);
     }
 }

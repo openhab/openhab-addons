@@ -15,6 +15,7 @@ package org.openhab.automation.optimalwindow.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Clock;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -41,9 +42,9 @@ public class InWindowConditionHandlerTest {
     private static final ZonedDateTime DAY = ZonedDateTime.of(2026, 10, 7, 0, 0, 0, 0, ZONE);
 
     private static final ForecastSource CHEAP_FROM_2_TO_4 = (item, service, begin, end) -> {
-        SortedMap<Long, Double> values = new TreeMap<>();
+        SortedMap<Instant, Double> values = new TreeMap<>();
         for (int hour = 0; hour < 48; hour++) {
-            values.put(DAY.plusHours(hour).toInstant().toEpochMilli(), hour >= 2 && hour < 4 ? 5.0 : 20.0);
+            values.put(DAY.plusHours(hour).toInstant(), hour >= 2 && hour < 4 ? 5.0 : 20.0);
         }
         return values;
     };

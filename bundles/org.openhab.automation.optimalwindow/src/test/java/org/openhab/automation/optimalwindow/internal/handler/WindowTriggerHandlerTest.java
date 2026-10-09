@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,17 +75,16 @@ public class WindowTriggerHandlerTest {
     private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduler;
 
     private final MutableClock clock = new MutableClock(DAY.toInstant());
-    private SortedMap<Long, Double> forecast = new TreeMap<>();
+    private SortedMap<Instant, Double> forecast = new TreeMap<>();
     private final ForecastSource source = (item, service, begin, end) -> forecast;
 
     /**
      * Hourly forecast for two days, cheap from {@code cheapFrom} to {@code cheapTo} on the first day.
      */
-    private static SortedMap<Long, Double> forecast(int cheapFrom, int cheapTo) {
-        SortedMap<Long, Double> values = new TreeMap<>();
+    private static SortedMap<Instant, Double> forecast(int cheapFrom, int cheapTo) {
+        SortedMap<Instant, Double> values = new TreeMap<>();
         for (int hour = 0; hour < 48; hour++) {
-            values.put(DAY.plusHours(hour).toInstant().toEpochMilli(),
-                    hour >= cheapFrom && hour < cheapTo ? 5.0 : 20.0);
+            values.put(DAY.plusHours(hour).toInstant(), hour >= cheapFrom && hour < cheapTo ? 5.0 : 20.0);
         }
         return values;
     }
@@ -293,6 +294,92 @@ public class WindowTriggerHandlerTest {
     }
 
     @Test
+    void plannedWindowIsClearedWhenForecastIsMissing() {
+        WindowTriggerHandler handler = createHandler(Map.of());
+
+        at(1);
+        handler.refresh();
+        forecast = new TreeMap<>();
+        handler.forecastUpdated();
+        handler.refresh();
+
+        List<ItemTimeSeriesEvent> events = timeSeriesEvents();
+        assertEquals(2, events.size());
+        assertEquals(
+                List.of(new TimeSeries.Entry(DAY.plusHours(1).toInstant(), OnOffType.OFF),
+                        new TimeSeries.Entry(DAY.plusHours(24).toInstant(), OnOffType.OFF)),
+                events.get(1).getTimeSeries().getStates().toList());
+
+        // the same plan is sent again when the forecast is available again
+        forecast = forecast(2, 4);
+        handler.forecastUpdated();
+        handler.refresh();
+        assertEquals(3, timeSeriesEvents().size());
+    }
+
+    @Test
+    void disposeClearsPlannedWindowAndStopsRefresh() {
+        ScheduledFuture<?> initialRefresh = mock(ScheduledFuture.class);
+        doReturn(initialRefresh).when(scheduler).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
+        WindowTriggerHandler handler = createHandler(Map.of());
+
+        at(1);
+        handler.refresh();
+        handler.dispose();
+
+        List<ItemTimeSeriesEvent> events = timeSeriesEvents();
+        assertEquals(2, events.size());
+        assertEquals(
+                List.of(new TimeSeries.Entry(DAY.plusHours(1).toInstant(), OnOffType.OFF),
+                        new TimeSeries.Entry(DAY.plusHours(24).toInstant(), OnOffType.OFF)),
+                events.get(1).getTimeSeries().getStates().toList());
+        // also the first refresh, which may not have run yet
+        verify(initialRefresh).cancel(true);
+    }
+
+    @Test
+    void remainingIsTimeUntilEndOfCurrentPart() {
+        // cheapest are 02:00 - 04:00, the third hour is the first of the equally priced hours
+        WindowTriggerHandler handler = createHandler(Map.of("length", "3h", "consecutive", false));
+
+        clock.instant = DAY.plusMinutes(30).toInstant();
+        handler.refresh();
+        assertEquals(new StringType("00:00\u201301:00, 02:00\u201304:00"), lastState("WindowText"));
+        assertEquals(new QuantityType<>(30, Units.MINUTE), lastState("Remaining"));
+    }
+
+    @Test
+    void startedWindowIsKeptWhenNextRangeStarts() {
+        // ranges of 30 hours overlap, the window 23:00 - 01:00 must not be interrupted by the next range at 00:00
+        SortedMap<Instant, Double> values = new TreeMap<>();
+        for (int hour = 0; hour < 60; hour++) {
+            double value = hour == 23 || hour == 24 ? 5.0 : hour == 30 || hour == 31 ? 1.0 : 20.0;
+            values.put(DAY.plusHours(hour).toInstant(), value);
+        }
+        forecast = values;
+        WindowTriggerHandler handler = createHandler(Map.of("rangeDuration", "30h"));
+
+        at(23);
+        handler.refresh();
+        assertEquals(OptimalWindowConstants.EVENT_START, triggered().get(0).get(OptimalWindowConstants.OUTPUT_EVENT));
+
+        at(24);
+        handler.refresh();
+        assertEquals(1, triggered().size());
+
+        // the window of the next range is calculated after the running window has ended
+        at(25);
+        handler.refresh();
+        assertEquals(2, triggered().size());
+        assertEquals(new StringType("06:00\u201308:00"), lastState("WindowText"));
+
+        at(30);
+        handler.refresh();
+        assertEquals(3, triggered().size());
+        assertEquals(OptimalWindowConstants.EVENT_START, triggered().get(2).get(OptimalWindowConstants.OUTPUT_EVENT));
+    }
+
+    @Test
     void unresolvedTemplateReferencesUseDefaults() {
         // a rule created from the template keeps the references of optional parameters that were left empty
         WindowTriggerHandler handler = createHandler(Map.of("persistenceService", "{{persistenceService}}",
@@ -314,6 +401,11 @@ public class WindowTriggerHandlerTest {
         long activeUpdates = new ArrayList<>(postedEvents()).stream()
                 .filter(e -> e instanceof ItemStateEvent s && s.getItemName().equals("Active")).count();
         assertEquals(1, activeUpdates);
+    }
+
+    private List<ItemTimeSeriesEvent> timeSeriesEvents() {
+        return postedEvents().stream().filter(ItemTimeSeriesEvent.class::isInstance)
+                .map(ItemTimeSeriesEvent.class::cast).toList();
     }
 
     private List<Event> postedEvents() {

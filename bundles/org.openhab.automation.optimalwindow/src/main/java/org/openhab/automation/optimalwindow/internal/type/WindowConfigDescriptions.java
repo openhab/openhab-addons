@@ -14,7 +14,6 @@ package org.openhab.automation.optimalwindow.internal.type;
 
 import static org.openhab.automation.optimalwindow.internal.OptimalWindowConstants.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,20 +44,16 @@ public class WindowConfigDescriptions {
                 .withDescription("Number item with forecast values, e.g. electricity prices. "
                         + "The future values must be persisted with the forecast strategy.") //
                 .build());
-        parameters.add(ConfigDescriptionParameterBuilder.create(CONFIG_RANGE_START, Type.INTEGER) //
-                .withDefault("0") //
-                .withMinimum(BigDecimal.ZERO) //
-                .withMaximum(BigDecimal.valueOf(23)) //
+        parameters.add(ConfigDescriptionParameterBuilder.create(CONFIG_RANGE_START, Type.TEXT) //
+                .withContext("time") //
+                .withDefault("00:00") //
                 .withLabel("Range Start") //
-                .withDescription("First hour of the range to search the window in.") //
+                .withDescription("Start time of the range to search the window in, e.g. 22:00.") //
                 .build());
-        parameters.add(ConfigDescriptionParameterBuilder.create(CONFIG_RANGE_DURATION, Type.INTEGER) //
-                .withDefault("24") //
-                .withMinimum(BigDecimal.ONE) //
-                .withMaximum(BigDecimal.valueOf(48)) //
-                .withUnit("h") //
+        parameters.add(ConfigDescriptionParameterBuilder.create(CONFIG_RANGE_DURATION, Type.TEXT) //
+                .withDefault("24h") //
                 .withLabel("Range Duration") //
-                .withDescription("Duration of the range to search the window in, in hours.") //
+                .withDescription("Duration of the range to search the window in, e.g. 8h or 10h30m, at most 48h.") //
                 .build());
         parameters.add(ConfigDescriptionParameterBuilder.create(CONFIG_LENGTH, Type.TEXT) //
                 .withRequired(true) //

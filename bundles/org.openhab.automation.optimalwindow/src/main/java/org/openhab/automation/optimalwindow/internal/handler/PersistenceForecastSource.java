@@ -12,6 +12,7 @@
  */
 package org.openhab.automation.optimalwindow.internal.handler;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -43,7 +44,7 @@ public class PersistenceForecastSource implements ForecastSource {
     }
 
     @Override
-    public SortedMap<Long, Double> getValues(String itemName, @Nullable String serviceId, ZonedDateTime begin,
+    public SortedMap<Instant, Double> getValues(String itemName, @Nullable String serviceId, ZonedDateTime begin,
             ZonedDateTime end) throws IllegalStateException {
         PersistenceService service = serviceId != null ? persistenceServiceRegistry.get(serviceId)
                 : persistenceServiceRegistry.getDefault();
@@ -55,11 +56,11 @@ public class PersistenceForecastSource implements ForecastSource {
         FilterCriteria filter = new FilterCriteria().setItemName(itemName).setBeginDate(begin).setEndDate(end)
                 .setOrdering(Ordering.ASCENDING);
 
-        SortedMap<Long, Double> result = new TreeMap<>();
+        SortedMap<Instant, Double> result = new TreeMap<>();
         for (HistoricItem historicItem : queryableService.query(filter)) {
             Double value = toDouble(historicItem.getState());
             if (value != null) {
-                result.put(historicItem.getInstant().toEpochMilli(), value);
+                result.put(historicItem.getInstant(), value);
             }
         }
         return result;

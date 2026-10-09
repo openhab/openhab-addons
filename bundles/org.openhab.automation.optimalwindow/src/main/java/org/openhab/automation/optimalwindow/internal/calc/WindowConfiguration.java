@@ -15,8 +15,9 @@ package org.openhab.automation.optimalwindow.internal.calc;
 
 import static org.openhab.automation.optimalwindow.internal.OptimalWindowConstants.*;
 
-import java.math.BigDecimal;
+import java.time.DateTimeException;
 import java.time.Duration;
+import java.time.LocalTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,10 +32,12 @@ import org.openhab.core.util.DurationUtils;
  */
 @NonNullByDefault
 public class WindowConfiguration {
+    private static final Duration MAX_RANGE_DURATION = Duration.ofHours(48);
+
     public String forecastItem = "";
     public @Nullable String persistenceService;
-    public int rangeStart = 0;
-    public int rangeDuration = 24;
+    public LocalTime rangeStart = LocalTime.MIDNIGHT;
+    public Duration rangeDuration = Duration.ofHours(24);
     public Duration length = Duration.ZERO;
     public boolean consecutive = true;
     public boolean maximum = false;
@@ -61,23 +64,19 @@ public class WindowConfiguration {
             result.persistenceService = service;
         }
 
-        result.rangeStart = getInt(config, CONFIG_RANGE_START, result.rangeStart);
-        if (result.rangeStart < 0 || result.rangeStart > 23) {
-            throw new IllegalArgumentException("Range start must be between 0 and 23");
+        result.rangeStart = getTime(config, CONFIG_RANGE_START, result.rangeStart);
+
+        result.rangeDuration = getDuration(config, CONFIG_RANGE_DURATION, result.rangeDuration);
+        if (result.rangeDuration.isNegative() || result.rangeDuration.isZero()
+                || result.rangeDuration.compareTo(MAX_RANGE_DURATION) > 0) {
+            throw new IllegalArgumentException("Range duration must be positive and not longer than 48 hours");
         }
 
-        result.rangeDuration = getInt(config, CONFIG_RANGE_DURATION, result.rangeDuration);
-        if (result.rangeDuration < 1 || result.rangeDuration > 48) {
-            throw new IllegalArgumentException("Range duration must be between 1 and 48 hours");
-        }
-
-        Object length = getValue(config, CONFIG_LENGTH);
-        if (length == null) {
+        if (getValue(config, CONFIG_LENGTH) == null) {
             throw new IllegalArgumentException("Length is not set");
         }
-        result.length = DurationUtils.parse(length.toString());
-        if (result.length.isNegative() || result.length.isZero()
-                || result.length.compareTo(Duration.ofHours(result.rangeDuration)) > 0) {
+        result.length = getDuration(config, CONFIG_LENGTH, Duration.ZERO);
+        if (result.length.isNegative() || result.length.isZero() || result.length.compareTo(result.rangeDuration) > 0) {
             throw new IllegalArgumentException("Length must be positive and not longer than the range duration");
         }
 
@@ -116,18 +115,45 @@ public class WindowConfiguration {
         return value;
     }
 
-    private static int getInt(Configuration config, String key, int defaultValue) {
+    /**
+     * Get a time of day like {@code 22:00}, in whole minutes.
+     */
+    private static LocalTime getTime(Configuration config, String key, LocalTime defaultValue) {
         Object value = getValue(config, key);
-        if (value instanceof Number number) {
-            return number.intValue();
-        } else if (value instanceof String string) {
-            try {
-                return new BigDecimal(string).intValue();
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("'" + key + "' must be a number, but is '" + string + "'");
-            }
+        if (value == null) {
+            return defaultValue;
         }
-        return defaultValue;
+        try {
+            LocalTime time = LocalTime.parse(value.toString());
+            if (time.getSecond() != 0 || time.getNano() != 0) {
+                throw new IllegalArgumentException(
+                        "'" + key + "' must be given in whole minutes, but is '" + value + "'");
+            }
+            return time;
+        } catch (DateTimeException e) {
+            throw new IllegalArgumentException("'" + key + "' must be a time like 22:00, but is '" + value + "'");
+        }
+    }
+
+    /**
+     * Get a duration like {@code 8h} or {@code 1h30m}, in whole minutes. The unit is required.
+     */
+    private static Duration getDuration(Configuration config, String key, Duration defaultValue) {
+        Object value = getValue(config, key);
+        if (value == null) {
+            return defaultValue;
+        }
+        Duration duration;
+        try {
+            duration = DurationUtils.parse(value.toString());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "'" + key + "' must be a duration like 8h or 1h30m, but is '" + value + "'");
+        }
+        if (duration.toSecondsPart() != 0 || duration.toNanosPart() != 0) {
+            throw new IllegalArgumentException("'" + key + "' must be given in whole minutes, but is '" + value + "'");
+        }
+        return duration;
     }
 
     private static boolean getBoolean(Configuration config, String key, boolean defaultValue) {
@@ -142,7 +168,7 @@ public class WindowConfiguration {
 
     @Override
     public String toString() {
-        return String.format("{ item: %s, s: %d, d: %d, l: %s, c: %b, max: %b, p: %b }", forecastItem, rangeStart,
+        return String.format("{ item: %s, s: %s, d: %s, l: %s, c: %b, max: %b, p: %b }", forecastItem, rangeStart,
                 rangeDuration, length, consecutive, maximum, preferStart);
     }
 }
