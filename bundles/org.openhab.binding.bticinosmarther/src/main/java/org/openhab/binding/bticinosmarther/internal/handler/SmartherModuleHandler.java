@@ -124,7 +124,7 @@ public class SmartherModuleHandler extends BaseThingHandler {
 
         final Bridge localBridge = getBridge();
         if (localBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 

@@ -95,7 +95,7 @@ public class FlashBriefingProfileHandler extends BaseThingHandler {
             accountHandler = (AccountHandler) bridge.getHandler();
         }
         if (accountHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Bridge handler not found.");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             return;
         }
 

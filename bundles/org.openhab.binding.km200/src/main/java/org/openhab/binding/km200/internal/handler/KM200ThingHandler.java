@@ -203,7 +203,7 @@ public class KM200ThingHandler extends BaseThingHandler {
         synchronized (gateway.getDevice()) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING);
             if (!gateway.getDevice().getInited()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
                 logger.debug("Bridge: not initialized: {}", bridge);
                 return;
             }

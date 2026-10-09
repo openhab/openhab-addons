@@ -171,7 +171,7 @@ public abstract class AbstractNukiDeviceHandler<T extends NukiDeviceConfiguratio
                 stopReInitJob();
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
             stopReInitJob();
         }
     }

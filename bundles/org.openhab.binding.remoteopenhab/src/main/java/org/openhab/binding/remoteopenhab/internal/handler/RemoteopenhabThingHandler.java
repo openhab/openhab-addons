@@ -122,7 +122,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
                 updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -226,7 +226,13 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
             status = ThingStatus.OFFLINE;
         }
         ThingStatusDetail detail = ThingStatusDetail.valueOf(statusInfo.statusDetail);
-        updateStatus(status, detail, statusInfo.description);
+        if (detail == ThingStatusDetail.NONE) {
+            updateStatus(status, statusInfo.description);
+        } else if (detail == ThingStatusDetail.BRIDGE_UNINITIALIZED) {
+            updateStatus(status, detail, statusInfo.description);
+        } else {
+            updateStatus(detail, statusInfo.description);
+        }
         logger.debug("updateStatus {} with status {} detail {} description {}", thingUID, status, detail,
                 statusInfo.description);
     }

@@ -115,8 +115,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         boolean stationOn = false;
         OpenSprinklerApi api = getApi();
         if (api == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "OpenSprinkler bridge has no initialized API.");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "OpenSprinkler bridge has no initialized API.");
             return null;
         }
 
@@ -145,8 +144,7 @@ public class OpenSprinklerStationHandler extends OpenSprinklerBaseHandler {
         long remainingWaterTime = 0;
         OpenSprinklerApi api = getApi();
         if (api == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                    "OpenSprinkler bridge has no initialized API.");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "OpenSprinkler bridge has no initialized API.");
             return null;
         }
 

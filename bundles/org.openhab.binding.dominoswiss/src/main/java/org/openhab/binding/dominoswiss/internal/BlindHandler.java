@@ -57,7 +57,7 @@ public class BlindHandler extends BaseThingHandler {
             localDominoswissHandler = (EGateHandler) bridge.getHandler();
         }
         if (localDominoswissHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate not available");
+            updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED, "EGate not available");
             logger.debug("Blind thing {} has no server configured, ignoring command: {}", getThing().getUID(), command);
             return;
         }
