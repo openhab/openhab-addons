@@ -1,161 +1,141 @@
----
-children:
-  - ["doc/SmartthingsInstallation", "Installation of Smartthings code"]
-  - ["doc/Troubleshooting", "Smartthings Binding Troubleshooting Guidelines"]
----
+# Samsung SmartThings Binding
 
-# Samsung Smartthings Binding
+This binding supports direct, authenticated local control of compatible Samsung OCF appliances, with particular support for air conditioners.
+This is a local-only replacement: the former SmartThings Hub bridge, capability Things, servlet, and SmartApp integration are no longer supported.
+Existing hub-based configurations must be removed and replaced with standalone local appliances; arbitrary hub-connected devices cannot be migrated to this protocol.
 
-This binding integrates the Samsung Smartthings Hub into openHAB.
+## Local Samsung OCF Appliances
 
-## Supported Things
+The `localAppliance` Thing communicates directly with an appliance using CoAP over DTLS and CBOR, following the local protocol used by [localthings](https://github.com/mbillow/localthings).
+It does not require a SmartThings Hub, SmartApp, cloud token, or cloud API for operation.
+This is **not** a general replacement for the SmartThings Hub or a means of controlling every device registered in SmartThings.
+Support depends on the appliance exposing compatible Samsung OCF resources and accepting the supplied local credentials.
 
-This binding supports most of the SmartThings devices that are defined in the [SmartThings Capabilities list](https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference/).
-If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
+### Local Prerequisites
 
-## Discovery
+- Give the appliance a stable address on the same reachable local network as openHAB.
+- Allow UDP traffic between openHAB and the appliance.
+  With `port=0`, the binding uses public CoAP discovery at that host to obtain the advertised secure DTLS port; it does not scan the network.
+  Alternatively, configure the advertised secure port explicitly.
+- Import credentials you are authorized to use, in one of the two modes below.
+  The binding does not obtain credentials from the cloud, pair with an appliance, provision ownership, or reset its security database.
+- Enable the appliance's Remote Control setting where required for writes.
+  This is separate from DTLS authentication: a working read connection does not prove that writes are permitted.
 
-Discovery allows openHAB to examine a binding and automatically find the Things available on that binding.
-Discovery is supported by the SmartThings binding and is run automatically on startup.
+Do not reset the appliance, remove its SmartThings registration, or disable certificate verification to enable this integration.
+Credential compatibility varies by firmware; cloud-free operation after configuration does not imply universally cloud-free credential provisioning.
 
-## SmartThings Configuration
+### Local Authentication
 
-Prior to running the binding the SmartThings hub must have the required openHAB software installed. [Follow these instructions](doc/SmartthingsInstallation.md)
+**Client certificate mode:** Set `keyStore` to an absolute path to a PKCS12 file on the openHAB server.
+It must contain one authorized private key and its client certificate chain.
+Set `keyStorePassword` and explicitly provide `serverFingerprint`, the SHA-256 fingerprint of the appliance's leaf certificate, obtained from a trusted, authenticated out-of-band source.
+The fingerprint may be hexadecimal with colon separators.
+The binding pins this certificate; it never automatically trusts the first certificate observed on the network.
+Protect the key store and its password, and restrict file access to the openHAB service account.
 
-**The binding will not work until this part has been completed, do not skip this part of the setup.**
+Some compatible Samsung firmware accepts an offline-generated, UUID-compatible self-signed client identity, as used by localthings.
+That profile uses the published Samsung service UUID `ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9` in the client certificate organizational unit, together with a UUID-formatted client identity in the common name.
+This is a **firmware-specific compatibility option**, not a universal authorization or provisioning mechanism.
+An imported client identity must still be accepted by the appliance, and the appliance certificate must still be explicitly pinned.
+Strict newer OCF firmware may require a previously provisioned OwnerPSK instead.
 
-## openHAB Configuration
+For firmware known to accept that offline profile, create a client identity locally with OpenSSL:
 
-This binding is an openHAB binding and uses the Bridge / Thing design with the SmartThings Hub being the Bridge and the controlled modules being the Things.
-The following definitions are specified in the .things file.
+```shell
+umask 077
+openssl req -x509 -newkey rsa:2048 -sha256 -days 365 \
+  -keyout client.key -out client.pem \
+  -subj "/OU=uuid:ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9/CN=urn:uuid:ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9" \
+  -addext "basicConstraints=critical,CA:FALSE" \
+  -addext "keyUsage=critical,digitalSignature,keyEncipherment" \
+  -addext "extendedKeyUsage=clientAuth" \
+  -addext "subjectAltName=URI:urn:uuid:ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9"
+openssl pkcs12 -export -inkey client.key -in client.pem -out appliance.p12
+```
 
-### Bridge Configuration
+Enter passwords interactively rather than putting them on the command line.
+Use the PKCS12 export password for `keyStorePassword` and store `appliance.p12` where only the openHAB service account can read it.
+This creates only a client credential; it does not establish trust in the appliance.
+Obtain its certificate through an independently authenticated source, or verify its chain against an independently trusted Samsung OCF root before calculating the leaf fingerprint:
 
-The bridge requires the IP address and port used to connect the openHAB server to the SmartThings Hub.
+```shell
+openssl x509 -in verified-appliance-leaf.pem -noout -fingerprint -sha256
+```
+
+Do not pin a certificate merely because it was returned by the configured IP address.
+A replacement appliance certificate requires a newly verified fingerprint.
+
+**OwnerPSK mode:** Set `ownerId` to the owner UUID associated with a previously provisioned, authorized OwnerPSK and set `ownerPsk` to the key in hexadecimal (16 or 32 bytes, hence 32 or 64 hexadecimal characters).
+This owner UUID is not the device UUID.
+Leave `keyStore` unset in this mode; OwnerPSK and client certificate modes are mutually exclusive.
+The binding does not derive or provision an OwnerPSK.
+
+### Local Thing Configuration
+
+A local appliance is a standalone Thing without a bridge.
+Create it manually in Main UI or in a `.things` file:
 
 ```java
-Bridge smartthings:smartthings:Home    [ smartthingsIp="192.168.1.12", smartthingsPort=39500 ] {
+Thing smartthings:localAppliance:bedroom "Bedroom Air Conditioner" [ host="192.168.1.50", port=0, keyStore="/etc/openhab/secrets/appliance.p12", keyStorePassword="YOUR_KEYSTORE_PASSWORD", serverFingerprint="YOUR_TRUSTED_SHA256_FINGERPRINT" ]
 ```
 
-where:
+Replace the password and fingerprint placeholders with your authorized credentials.
+Never publish your key store, passwords, OwnerPSK, or owner UUID in logs, support reports, or shared examples.
 
-- **smartthings:smartthings:Home** identifies this is a SmartThings hub named Home.
-    The first two segments must be smartthings:smartthings.
-    You can choose any unique name for the last segment.
-    The last segment is used when you identify items connected to this hubthingTypeId.
-- **smartthingsIp** is the IP address of the SmartThings Hub.
-    Your router should be configured such that the SmartThings Hub is always assigned to this IP address.
-- **smartthingsPort** is the port the SmartThings hub listens on. 39500 is the port assigned by SmartThings so it should be used unless you have a good reason for using another port.
+| Parameter           | Default | Description                                                                                          |
+|---------------------|---------|------------------------------------------------------------------------------------------------------|
+| `host`              | —       | Required appliance IP address or host name.                                                           |
+| `port`              | `0`     | Secure CoAP port; `0` discovers the advertised port from this host.                                    |
+| `localPort`         | `0`     | Local UDP port; `0` selects a deterministic stable port. Override if multiple Things conflict.        |
+| `refreshInterval`   | `60`    | Poll delay in seconds, minimum `10`.                                                                  |
+| `timeout`           | `12`    | Per-request timeout in seconds, from `1` to `60`.                                                      |
+| `deviceId`          | —       | Optional expected appliance UUID, checked against authenticated `/oic/d`.                             |
+| `keyStore`          | —       | Client PKCS12 file path, required in certificate mode.                                                 |
+| `keyStorePassword`  | —       | PKCS12/private-key password.                                                                         |
+| `serverFingerprint` | —       | Trusted SHA-256 appliance leaf certificate fingerprint, required in certificate mode.                 |
+| `ownerId`           | —       | Previously provisioned owner UUID, required in OwnerPSK mode.                                         |
+| `ownerPsk`          | —       | Authorized 16- or 32-byte OwnerPSK encoded as hexadecimal, required in OwnerPSK mode.                   |
 
-**Warning** This binding only supports one Bridge.
-If you try to configure a second bridge it will be ignored.
+If `deviceId` is omitted, the binding remembers the first authenticated device UUID in the Thing's `deviceid` property and checks subsequent reads against it.
+A configured or remembered identity mismatch prevents state publication and writes.
+Changing the host alone does not authorize a different appliance identity.
 
-### Thing Configuration
+### Local Channels and Air Conditioners
 
-Each attached Thing must specify the type of device and its SmartThings device name. The format of the Thing description is:
+Channels are created from authenticated resource representations rather than a fixed SmartThings capability list.
+Their identifiers are derived deterministically from the resource path and field, so reconnecting does not rename channels.
+Use the channels displayed on the Thing's Channels tab when linking Items.
 
-```java
-Thing <thingTypeId> name [ smartthingsName="<deviceName>", {smartthingsTimeout=<timeout>} ]
-```
+On compatible air conditioners, the following resources are recognized:
 
-where:
+| Setting | Samsung OCF resource | Behavior |
+|---------|----------------------|----------|
+| Power | `/power/vs/0` | `On`/`Off`, exposed as a Switch. |
+| Current temperature | `/temperature/current/0` | Read-only quantity in the advertised unit. |
+| Target temperature | `/temperature/desired/0` | Quantity checked against the advertised range and increment. |
+| Temperature fallback | `/temperatures/vs/0` | Supports a single zone with identifier `0` when standard temperature resources are unavailable. |
+| Operating mode | `/mode/vs/0` | Only advertised modes; supports scalar or single-mode array representations. |
+| Fan strength | `/wind/strength/vs/0` | Raw advertised choices, which may be numeric strings. |
+| Swing direction | `/wind/direction/vs/0` | Raw advertised choices such as `Fix`, `All`, `Up_And_Low`, or `Left_And_Right`. |
+| Comfort mode | `/mode/convenient/vs/0` | Only advertised choices; `Nano` means WindFree and `NanoSleep` combines WindFree and sleep on supporting Samsung firmware. |
 
-- **[thingTypeId](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/)** corresponds to the "Preferences Reference" in the SmartThings Capabilities document but without the capability.prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
-- **name** is what you want to call this Thing and is used in defining the items that use this Thing.
-- **deviceName** is the name you assigned to the device when you discovered and connected to it in the SmartThings App
-- Optional: **timeout** is how long openHAB will wait for a response to the request before throwing a timeout exception. The default is 3 seconds.
+The resource paths can vary by appliance; channels are derived from the resources actually returned.
+Do not send guessed or unsupported modes.
+Not every model exposes every setting or permits every write.
+Temperatures use device-reported units; setpoints and other commands are checked against the device's live capabilities, limits, and increments.
+No generic temperature range, fan scale, or fixed mode choices are assumed.
+Other known appliance resources are mapped to appropriately typed channels; unknown non-security resources are available as read-only JSON diagnostics.
+Security resources are never exposed as diagnostic channels.
 
-#### Example
+The binding polls `/device/0`, requests the batch interface only when necessary, and reads linked resource stubs individually.
+Partial representations preserve previously received fields rather than turning missing readings into zero or empty states.
+`REFRESH` only reads; it does not write to the appliance.
+Every write is serialized, revalidates live capabilities and Remote Control, and is followed by a readback instead of an optimistic state update.
+A failed POST is not retried automatically because the appliance may already have applied it.
+Some appliances acknowledge a write before their readings change; an immediate readback may still show the previous value until a subsequent poll.
+Communication failures set the Thing offline, and subsequent polls can restore it online.
 
-```java
-Bridge smartthings:smartthings:Home    [ smartthingsIp="192.168.1.12", smartthingsPort=39500 ] {
-    Thing switchLevel              KitchenLights           [ smartthingsName="Kitchen lights" ]
-    Thing contactSensor            MainGarageDoor          [ smartthingsName="Garage Door Open Sensor" ]
-    Thing temperatureMeasurement   MainGarageTemp          [ smartthingsName="Garage Door Open Sensor" ]
-    Thing battery                  MainGarageBattery       [ smartthingsName="Garage Door Open Sensor" ]
-    Thing switch                   OfficeLight             [ smartthingsName="Office Light", smartthingsTimeout=7 ]
-    Thing valve                    SimulatedValve          [ smartthingsName="Simulated Valve" ]
-}
-```
-
-## Items
-
-These are specified in the .items file. This section describes the specifics related to this binding.
-Please see the [Items documentation](https://www.openhab.org/docs/configuration/items.html) for a full explanation of configuring items.
-
-The most important Thing is getting the **channel** specification correct. The general format is:
-
-```java
-{ channel="smartthings:<thingTypeId>:<hubName>:<thingName>:<channelId>" }
-```
-
-The parts (separated by :) are defined as:
-
-1. **smartthings** to specify this is a SmartThings device
-1. **thingTypeId** specifies the type of the Thing  you are connecting to. This is the same as described in the last section.
-1. **hubName** identifies the name of the hub specified above. This corresponds to the third segment in the **Bridge** definition.
-1. **thingName** identifies the Thing this is attached to and is the "name" you specified in the **Thing** definition.
-1. **channelId** corresponds to the attribute in the [SmartThings Capabilities list](https://docs.smartthings.com/en/latest/capabilities-reference.html). For switch it would be "switch".
-
-### Example
-
-```java
-Dimmer  KitchenLights        "Kitchen lights level"     <slider>          { channel="smartthings:switchLevel:Home:KitchenLights:level" }
-Switch  KitchenLightSwitch   "Kitchen lights switch"    <light>           { channel="smartthings:switchLevel:Home:KitchenLights:switch" }
-Contact MainGarageDoor       "Garage door status [%s]" <garagedoor>       { channel="smartthings:contactSensor:Home:MainGarageDoor:contact" }
-Number  MainGarageTemp       "Garage temperature [%.0f]"  <temperature>   { channel="smartthings:temperatureMeasurement:Home:MainGarageTemp:temperature" }
-Number  MainGarageBattery    "Garage battery [%.0f]"  <battery>           { channel="smartthings:battery:Home:MainGarageBattery:battery" }
-Switch  OfficeLight          "Office light"    <light>                    { channel="smartthings:switch:Home:OfficeLight:switch" }
-String  SimulatedValve       "Simulated valve"                            { channel="smartthings:valve:Home:SimulatedValve:valve" }
-```
-
-**Special note about Valves**
-SmartThings includes a **valve** which can be Open or Closed but openHAB does not include a Valve item type.
-Therefore, the valve is defined as having an item type of String.
-And, therefore the item needs to be defined with an item type of string.
-It can be controlled in the sitemap by specifying the Element type of Switch and providing a mapping of: mappings=[open="Open", closed="Close"]. Such as:
-
-```java
-Switch item=SimulatedValve mappings=[open="Open", closed="Close"]
-```
-
-**RGB Bulb example**
-Here is a sample configuration for a RGB bulb, such as a Sengled model E11-N1EA bulb. Currently this binding does not have a RGB specific bulb therefore a Thing is required for each part of the bulb.
-
-## Full Example
-
-### Things File
-
-```java
-colorControl            SengledColorControl         [ smartthingsName="Sengled Bulb"]
-colorTemperature        SengledColorTemperature     [ smartthingsName="Sengled Bulb"]
-switch                  SengledSwitch               [ smartthingsName="Sengled Bulb"]
-switchLevel             SengledSwitchLevel          [ smartthingsName="Sengled Bulb"]
-```
-
-### Items File
-
-```java
-Color  SengledColorControl    "Sengled bulb color"   <colorpicker>   {channel="smartthings:colorControl:Home:SengledColorControl:color"}
-Number SengledTemperature     "Sengled bulb color temperature"       {channel="smartthings:colorTemperature:Home:SengledColorTemperature:colorTemperature"}
-Switch SengledSwitch          "Sengled bulb switch"   <switch>       {channel="smartthings:switch:Home:SengledSwitch:switch"}
-Dimmer SengledDimmer          "Sengled bulb dimmer"   <slider>       {channel="smartthings:switchLevel:Home:SengledSwitchLevel:level"}
-```
-
-### Sitemap File
-
-```perl
-Frame label="Sengled RGBW Bulb" {
-    Switch item=SengledSwitch label="Switch"
-    Slider  item=SengledDimmer label="Level [%d]"
-    Text item=SengledTemperature label="Color Temperature [%d]"
-    Colorpicker item=SengledColorControl label="Color [%s]"  icon="colorwheel"
-}
-```
-
-## References
-
-1. [openHAB configuration documentation](https://openhab.org/docs/configuration/index.html)
-1. [SmartThings Capabilities Reference](https://docs.smartthings.com/en/latest/capabilities-reference.html)
-1. [SmartThings Developers Documentation](https://docs.smartthings.com/en/latest/index.html)
-1. [SmartThings Development Environment](https://graph.api.smartthings.com/)
+For troubleshooting, first check network reachability, the advertised port, imported credentials, the pinned fingerprint where applicable, and the appliance's Remote Control setting.
+Do not share credentials or bypass DTLS verification.
+Firmware that rejects both authorized credential profiles is not supported by this local implementation.

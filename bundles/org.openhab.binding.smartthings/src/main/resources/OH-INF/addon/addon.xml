@@ -5,6 +5,7 @@
 
 	<type>binding</type>
 	<name>Samsung Smartthings Binding</name>
-	<description>This is the binding for the Samsung Smartthings hub.</description>
+	<description>Direct local control of Samsung OCF appliances, including air conditioners, using authenticated CoAP over
+		DTLS.</description>
 	<connection>local</connection>
 </addon:addon>
