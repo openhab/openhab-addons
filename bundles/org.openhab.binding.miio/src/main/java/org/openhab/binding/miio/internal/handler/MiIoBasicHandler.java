@@ -257,8 +257,20 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         value = ActionConditions.executeAction(miIoDeviceActionCondition, deviceVariables, value,
                                 command);
                     }
+                    // the value is inside a parameter, e.g. [{"piid": 1, "value": "$value$"}]
+                    boolean valueInParameters = false;
+                    if (value != null && value.isJsonPrimitive() && hasNestedValueToken(parameters)) {
+                        JsonElement replaced = replaceValueToken(parameters.deepCopy(), value.getAsJsonPrimitive());
+                        if (action.isMiOtAction()) {
+                            // for an action the parameters are the input list
+                            value = replaced;
+                        } else {
+                            parameters = replaced.getAsJsonArray();
+                            valueInParameters = true;
+                        }
+                    }
                     // Check for miot channel
-                    if (value != null) {
+                    if (value != null && !valueInParameters) {
                         if (action.isMiOtAction()) {
                             value = miotActionTransform(action, miIoBasicChannel, value);
                         } else if (miIoBasicChannel.isMiOt()) {
@@ -266,19 +278,25 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         }
                     }
                     if (paramType != CommandParameterType.NONE && paramType != CommandParameterType.ONOFFPARA
-                            && value != null) {
+                            && value != null && !valueInParameters) {
                         if (parameters.size() > 0) {
                             parameters.set(valuePos, value);
                         } else {
                             parameters.add(value);
                         }
                     }
+                    JsonElement cmdParameters = parameters;
                     if (action.isMiOtAction() && parameters.size() > 0 && parameters.get(0).isJsonObject()) {
                         // hack as unlike any other commands miot actions parameters appear to be send as a json object
                         // instead of a json array
-                        cmd = cmd + parameters.get(0).getAsJsonObject().toString();
-                    } else {
-                        cmd = cmd + parameters.toString();
+                        cmdParameters = parameters.get(0);
+                    }
+                    cmd = cmd + cmdParameters.toString();
+                    if (value != null && containsValueToken(cmdParameters)) {
+                        // e.g. a parameterType without a single value, like EMPTY, or a token in a returnValue
+                        logger.debug("Command {} for channel '{}' not send: $value$ in the parameters is not replaced",
+                                cmd, channelUID.getId());
+                        continue;
                     }
                     if (value != null) {
                         logger.debug("Sending command {}", cmd);
@@ -304,6 +322,63 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         } else {
             logger.debug("Actions not loaded yet, or none available");
         }
+    }
+
+    private static boolean hasNestedValueToken(JsonArray parameters) {
+        for (JsonElement parameter : parameters) {
+            if (!parameter.isJsonPrimitive() && containsValueToken(parameter)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean containsValueToken(JsonElement element) {
+        if (element.isJsonArray()) {
+            for (JsonElement child : element.getAsJsonArray()) {
+                if (containsValueToken(child)) {
+                    return true;
+                }
+            }
+        } else if (element.isJsonObject()) {
+            for (Entry<String, JsonElement> member : element.getAsJsonObject().entrySet()) {
+                if (containsValueToken(member.getValue())) {
+                    return true;
+                }
+            }
+        } else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+            return VALUE_TOKEN.matcher(element.getAsString()).find();
+        }
+        return false;
+    }
+
+    /**
+     * Replaces the $value$ token in all texts of the element. A text that only consists of the token is replaced by
+     * the value itself, keeping its type. Otherwise the value is inserted in the text.
+     *
+     * @param element the element to process; arrays and objects are modified in place
+     * @param value the value to insert
+     * @return the element with the token replaced
+     */
+    private static JsonElement replaceValueToken(JsonElement element, JsonPrimitive value) {
+        if (element.isJsonArray()) {
+            JsonArray array = element.getAsJsonArray();
+            for (int i = 0; i < array.size(); i++) {
+                array.set(i, replaceValueToken(array.get(i), value));
+            }
+        } else if (element.isJsonObject()) {
+            for (Entry<String, JsonElement> member : element.getAsJsonObject().entrySet()) {
+                member.setValue(replaceValueToken(member.getValue(), value));
+            }
+        } else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+            Matcher matcher = VALUE_TOKEN.matcher(element.getAsString());
+            if (matcher.matches()) {
+                return value;
+            } else if (matcher.find()) {
+                return new JsonPrimitive(matcher.replaceAll(Matcher.quoteReplacement(value.getAsString())));
+            }
+        }
+        return element;
     }
 
     protected void forceStatusUpdate() {
