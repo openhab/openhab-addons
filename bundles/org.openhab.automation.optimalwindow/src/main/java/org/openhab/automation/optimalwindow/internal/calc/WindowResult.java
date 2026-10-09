@@ -13,6 +13,7 @@
 
 package org.openhab.automation.optimalwindow.internal.calc;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -30,10 +31,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public abstract class WindowResult {
     private final TimeRange searchRange;
-    private long start;
-    private long end;
     private double weightedSum;
-    private long totalDuration;
+    private Duration totalDuration = Duration.ZERO;
 
     protected WindowResult(TimeRange searchRange) {
         this.searchRange = searchRange;
@@ -46,36 +45,36 @@ public abstract class WindowResult {
         return searchRange;
     }
 
-    public long getStart() {
-        return start;
+    /**
+     * @return the start of the first part of the window, must only be called if the window is not empty
+     */
+    public Instant getStart() {
+        return getRanges().getFirst().start();
     }
 
-    public long getEnd() {
-        return end;
+    /**
+     * @return the end of the last part of the window, must only be called if the window is not empty
+     */
+    public Instant getEnd() {
+        return getRanges().getLast().end();
     }
 
     /**
      * @return the average forecast value within the window, weighted by duration
      */
     public double getAverage() {
-        return totalDuration > 0 ? weightedSum / totalDuration : Double.NaN;
+        return totalDuration.isZero() ? Double.NaN : weightedSum / totalDuration.toMillis();
     }
 
     /**
-     * Add a time range with its value to this result.
+     * Add a time range with its value to the average of this result.
      *
      * @param range the time range
      * @param value the forecast value of the range
      */
     protected void add(TimeRange range, double value) {
-        if (start == 0 || start > range.start()) {
-            start = range.start();
-        }
-        if (end == 0 || end < range.end()) {
-            end = range.end();
-        }
-        weightedSum += value * range.duration();
-        totalDuration += range.duration();
+        weightedSum += value * range.duration().toMillis();
+        totalDuration = totalDuration.plus(range.duration());
     }
 
     /**
@@ -86,8 +85,7 @@ public abstract class WindowResult {
      * @return true if the window is active, false otherwise
      */
     public boolean isActive(Instant pointInTime) {
-        long millis = pointInTime.toEpochMilli();
-        return getRanges().stream().anyMatch(range -> range.contains(millis));
+        return getRanges().stream().anyMatch(range -> range.contains(pointInTime));
     }
 
     /**
@@ -100,8 +98,9 @@ public abstract class WindowResult {
      */
     public String getText(ZoneId zoneId) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm").withZone(zoneId);
-        return getRanges().stream().map(range -> formatter.format(Instant.ofEpochMilli(range.start())) + "\u2013"
-                + formatter.format(Instant.ofEpochMilli(range.end()))).collect(Collectors.joining(", "));
+        return getRanges().stream()
+                .map(range -> formatter.format(range.start()) + "\u2013" + formatter.format(range.end()))
+                .collect(Collectors.joining(", "));
     }
 
     /**

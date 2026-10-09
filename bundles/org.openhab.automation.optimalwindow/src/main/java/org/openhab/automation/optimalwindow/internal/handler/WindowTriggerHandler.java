@@ -86,12 +86,14 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
     private final @Nullable String windowTextItem;
     private final Map<String, State> lastStates = new HashMap<>();
 
+    private @Nullable ScheduledFuture<?> initialRefreshJob;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable WindowResult lockedResult;
     private @Nullable WindowResult cachedResult;
     private @Nullable TimeRange cachedRange;
     private Instant cachedAt = Instant.EPOCH;
     private @Nullable List<TimeRange> plannedRanges;
+    private Instant plannedUntil = Instant.EPOCH;
     private boolean active = false;
     private boolean started = false;
 
@@ -124,19 +126,26 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
         Instant now = clock.instant();
         long delay = Duration.between(now, now.truncatedTo(ChronoUnit.MINUTES).plus(REFRESH_INTERVAL)).toMillis();
         ScheduledExecutorService scheduler = triggerCallback.getScheduler();
-        scheduler.execute(this::refresh);
+        initialRefreshJob = scheduler.schedule(this::refresh, 0, TimeUnit.MILLISECONDS);
         refreshJob = scheduler.scheduleAtFixedRate(this::refresh, delay, REFRESH_INTERVAL.toMillis(),
                 TimeUnit.MILLISECONDS);
     }
 
     @Override
     public synchronized void dispose() {
-        ScheduledFuture<?> localJob = refreshJob;
-        if (localJob != null) {
-            localJob.cancel(true);
-        }
+        cancel(initialRefreshJob);
+        initialRefreshJob = null;
+        cancel(refreshJob);
         refreshJob = null;
+        // remove the planned window, so the active item is not switched by an obsolete plan
+        clearPlannedWindow(clock.instant());
         super.dispose();
+    }
+
+    private static void cancel(@Nullable ScheduledFuture<?> job) {
+        if (job != null) {
+            job.cancel(true);
+        }
     }
 
     /**
@@ -181,13 +190,17 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
 
     private @Nullable WindowResult getResult(ZonedDateTime now) {
         TimeRange range = WindowCalculator.getRange(config.rangeStart, config.rangeDuration, now);
+        Instant instant = now.toInstant();
         WindowResult localLockedResult = lockedResult;
-        if (localLockedResult != null && localLockedResult.getSearchRange().equals(range)) {
+        if (localLockedResult != null && localLockedResult.getSearchRange().contains(instant)
+                && (localLockedResult.getSearchRange().equals(range) || localLockedResult.getEnd().isAfter(instant))) {
+            // keep the started window until the end of its search range, or until it has finished if the next search
+            // range has already started, e.g. for overlapping ranges
             return localLockedResult;
         }
         lockedResult = null;
 
-        if (range.equals(cachedRange) && cachedAt.plus(MAX_RESULT_AGE).isAfter(now.toInstant())) {
+        if (range.equals(cachedRange) && cachedAt.plus(MAX_RESULT_AGE).isAfter(instant)) {
             return cachedResult;
         }
 
@@ -195,7 +208,7 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
         logger.trace("Optimal window for {}: {}", config, result);
         cachedResult = result;
         cachedRange = range;
-        cachedAt = now.toInstant();
+        cachedAt = instant;
         return result;
     }
 
@@ -209,8 +222,8 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
         outputs.put(OUTPUT_COMMAND, OnOffType.from(active));
         if (result != null) {
             ZoneId zone = zoneSupplier.get();
-            outputs.put(OUTPUT_START, ZonedDateTime.ofInstant(Instant.ofEpochMilli(result.getStart()), zone));
-            outputs.put(OUTPUT_END, ZonedDateTime.ofInstant(Instant.ofEpochMilli(result.getEnd()), zone));
+            outputs.put(OUTPUT_START, result.getStart().atZone(zone));
+            outputs.put(OUTPUT_END, result.getEnd().atZone(zone));
             outputs.put(OUTPUT_AVERAGE, BigDecimal.valueOf(result.getAverage()));
         }
         triggerCallback.triggered(module, outputs);
@@ -224,14 +237,15 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
             updateItem(countdownItem, UnDefType.UNDEF);
             updateItem(remainingItem, UnDefType.UNDEF);
             updateItem(windowTextItem, UnDefType.UNDEF);
+            clearPlannedWindow(now.toInstant());
             return;
         }
 
-        long nowMillis = now.toInstant().toEpochMilli();
-        updateItem(startItem, new DateTimeType(Instant.ofEpochMilli(result.getStart())));
-        updateItem(endItem, new DateTimeType(Instant.ofEpochMilli(result.getEnd())));
-        updateItem(countdownItem, toMinutes(getNextStart(result, nowMillis) - nowMillis));
-        updateItem(remainingItem, toMinutes(active ? result.getEnd() - nowMillis : 0));
+        Instant instant = now.toInstant();
+        updateItem(startItem, new DateTimeType(result.getStart()));
+        updateItem(endItem, new DateTimeType(result.getEnd()));
+        updateItem(countdownItem, toMinutes(Duration.between(instant, getNextStart(result, instant))));
+        updateItem(remainingItem, toMinutes(Duration.between(instant, getCurrentEnd(result, instant))));
         updateItem(windowTextItem, new StringType(result.getText(zoneSupplier.get())));
         sendPlannedWindow(result, now);
     }
@@ -239,8 +253,25 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
     /**
      * @return the start of the next part of the window that has not started yet, or now if none is left
      */
-    private static long getNextStart(WindowResult result, long now) {
-        return result.getRanges().stream().mapToLong(TimeRange::start).filter(start -> start > now).min().orElse(now);
+    private static Instant getNextStart(WindowResult result, Instant now) {
+        for (TimeRange range : result.getRanges()) {
+            if (range.start().isAfter(now)) {
+                return range.start();
+            }
+        }
+        return now;
+    }
+
+    /**
+     * @return the end of the part of the window that contains now, or now if the window is not active
+     */
+    private static Instant getCurrentEnd(WindowResult result, Instant now) {
+        for (TimeRange range : result.getRanges()) {
+            if (range.contains(now)) {
+                return range.end();
+            }
+        }
+        return now;
     }
 
     /**
@@ -255,27 +286,46 @@ public class WindowTriggerHandler extends BaseTriggerModuleHandler {
         }
         plannedRanges = ranges;
 
-        long nowMillis = now.toInstant().toEpochMilli();
+        Instant instant = now.toInstant();
         TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-        timeSeries.add(now.toInstant(), OnOffType.from(active));
+        timeSeries.add(instant, OnOffType.from(active));
         for (TimeRange range : ranges) {
-            if (range.end() <= nowMillis) {
+            if (!range.end().isAfter(instant)) {
                 continue;
             }
-            if (range.start() > nowMillis) {
-                timeSeries.add(Instant.ofEpochMilli(range.start()), OnOffType.ON);
+            if (range.start().isAfter(instant)) {
+                timeSeries.add(range.start(), OnOffType.ON);
             }
-            timeSeries.add(Instant.ofEpochMilli(range.end()), OnOffType.OFF);
+            timeSeries.add(range.end(), OnOffType.OFF);
         }
-        long rangeEnd = result.getSearchRange().end();
-        if (rangeEnd > result.getEnd() && rangeEnd > nowMillis) {
-            timeSeries.add(Instant.ofEpochMilli(rangeEnd), OnOffType.OFF);
+        // the window is always within the search range
+        plannedUntil = result.getSearchRange().end();
+        if (plannedUntil.isAfter(result.getEnd()) && plannedUntil.isAfter(instant)) {
+            timeSeries.add(plannedUntil, OnOffType.OFF);
         }
         eventPublisher.post(ItemEventFactory.createTimeSeriesEvent(itemName, timeSeries, null));
     }
 
-    private static State toMinutes(long millis) {
-        return new QuantityType<>(Math.max(0, millis / 60000), Units.MINUTE);
+    /**
+     * Replace a previously sent planned window with {@code OFF}, so no obsolete future states remain.
+     */
+    private void clearPlannedWindow(Instant now) {
+        String itemName = activeItem;
+        if (itemName == null || plannedRanges == null) {
+            return;
+        }
+        plannedRanges = null;
+
+        TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
+        timeSeries.add(now, OnOffType.OFF);
+        if (plannedUntil.isAfter(now)) {
+            timeSeries.add(plannedUntil, OnOffType.OFF);
+        }
+        eventPublisher.post(ItemEventFactory.createTimeSeriesEvent(itemName, timeSeries, null));
+    }
+
+    private static State toMinutes(Duration duration) {
+        return new QuantityType<>(Math.max(0, duration.toMinutes()), Units.MINUTE);
     }
 
     private void updateItem(@Nullable String itemName, State state) {

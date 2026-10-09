@@ -12,6 +12,8 @@
  */
 package org.openhab.automation.optimalwindow.internal.calc;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -33,10 +35,10 @@ public class NonConsecutiveWindowResult extends WindowResult {
      *
      * @param intervals the forecast intervals within the search range
      * @param searchRange the range that was searched
-     * @param length the total length in milliseconds
+     * @param length the total length
      * @param maximum if true, the intervals with the highest values are selected instead of the lowest
      */
-    public NonConsecutiveWindowResult(List<ForecastInterval> intervals, TimeRange searchRange, long length,
+    public NonConsecutiveWindowResult(List<ForecastInterval> intervals, TimeRange searchRange, Duration length,
             boolean maximum) {
         super(searchRange);
 
@@ -49,21 +51,33 @@ public class NonConsecutiveWindowResult extends WindowResult {
         sorted.sort(byValue.thenComparing(ForecastInterval::timerange));
 
         List<TimeRange> members = new ArrayList<>();
-        long total = 0;
+        Duration total = Duration.ZERO;
         for (ForecastInterval interval : sorted) {
-            if (total >= length) {
+            if (total.compareTo(length) >= 0) {
                 break;
             }
-            members.add(interval.timerange());
-            add(interval.timerange(), interval.value());
-            total += interval.timerange().duration();
+            TimeRange member = interval.timerange();
+            Duration missing = length.minus(total);
+            if (member.duration().compareTo(missing) > 0) {
+                // the last selected interval is only used partially, so the window does not exceed the length. The
+                // used part is next to an already selected interval if possible, so the window is not split up.
+                Instant start = member.start();
+                Instant end = member.end();
+                boolean followsSelected = members.stream().anyMatch(selected -> selected.end().equals(start));
+                boolean precedesSelected = members.stream().anyMatch(selected -> selected.start().equals(end));
+                member = !followsSelected && precedesSelected ? new TimeRange(end.minus(missing), end)
+                        : new TimeRange(start, start.plus(missing));
+            }
+            members.add(member);
+            add(member, interval.value());
+            total = total.plus(member.duration());
         }
 
         // sort the members and merge adjacent ranges
         members.sort(Comparator.naturalOrder());
         for (TimeRange member : members) {
             int last = ranges.size() - 1;
-            if (last >= 0 && ranges.get(last).end() == member.start()) {
+            if (last >= 0 && ranges.get(last).end().equals(member.start())) {
                 ranges.set(last, new TimeRange(ranges.get(last).start(), member.end()));
             } else {
                 ranges.add(member);

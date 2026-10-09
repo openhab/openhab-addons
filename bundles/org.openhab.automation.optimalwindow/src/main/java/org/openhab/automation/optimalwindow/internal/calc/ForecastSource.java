@@ -12,6 +12,7 @@
  */
 package org.openhab.automation.optimalwindow.internal.calc;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.SortedMap;
 
@@ -33,10 +34,10 @@ public interface ForecastSource {
      * @param begin the begin of the period
      * @param end the end of the period
      *
-     * @return the values by their timestamp in epoch milliseconds
+     * @return the values by their timestamp
      * 
      * @throws IllegalStateException if the values cannot be retrieved
      */
-    SortedMap<Long, Double> getValues(String itemName, @Nullable String serviceId, ZonedDateTime begin,
+    SortedMap<Instant, Double> getValues(String itemName, @Nullable String serviceId, ZonedDateTime begin,
             ZonedDateTime end) throws IllegalStateException;
 }

@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -94,11 +95,11 @@ public class PersistenceForecastSourceTest {
                         historicItem(BEGIN.plusHours(1), new QuantityType<>(0.2, Units.ONE)),
                         historicItem(BEGIN.plusHours(2), OnOffType.ON)));
 
-        SortedMap<Long, Double> values = new PersistenceForecastSource(registry).getValues("Price", null, BEGIN, END);
+        SortedMap<Instant, Double> values = new PersistenceForecastSource(registry).getValues("Price", null, BEGIN,
+                END);
 
         // states that are not numbers are skipped
-        assertEquals(Map.of(BEGIN.toInstant().toEpochMilli(), 10.5, BEGIN.plusHours(1).toInstant().toEpochMilli(), 0.2),
-                values);
+        assertEquals(Map.of(BEGIN.toInstant(), 10.5, BEGIN.plusHours(1).toInstant(), 0.2), values);
     }
 
     @Test

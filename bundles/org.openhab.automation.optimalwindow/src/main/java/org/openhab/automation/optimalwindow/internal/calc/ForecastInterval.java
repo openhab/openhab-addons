@@ -29,6 +29,6 @@ public record ForecastInterval(double value, TimeRange timerange) {
 
     @Override
     public String toString() {
-        return String.format("(%1$tF %1$tR - %2$tR: %3$.3f)", timerange.start(), timerange.end(), value);
+        return String.format("(%s - %s: %.3f)", timerange.start(), timerange.end(), value);
     }
 }
