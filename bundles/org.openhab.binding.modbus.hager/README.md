@@ -335,6 +335,11 @@ table, but they are read as `I32` because they can become negative.
 The vendor was notified about the incorrect documentation, see
 [openhab-addons issue 18711](https://github.com/openhab/openhab-addons/issues/18711).
 
+The All Battery Current value of the energy manager is read from register `4133`, the Modbus table documents
+it as register `4134`.
+The correction was confirmed against a running device, see
+[issue comment](https://github.com/openhab/openhab-addons/issues/18711#issuecomment-6082009683).
+
 The register addresses of the `Sun Power priority` register (`513`) were inferred from the address range
 around it, because the address column of that row is not contained in the text layer of the source document.
 
