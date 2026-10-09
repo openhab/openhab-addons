@@ -346,7 +346,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         // check if we are in standby
         if (STANDBY_MSG.equals(evt.getKey())) {
             if (!ThingStatusDetail.BRIDGE_OFFLINE.equals(thing.getStatusInfo().getStatusDetail())) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.BRIDGE_OFFLINE, STANDBY_MSG);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, STANDBY_MSG);
             }
             return;
         }

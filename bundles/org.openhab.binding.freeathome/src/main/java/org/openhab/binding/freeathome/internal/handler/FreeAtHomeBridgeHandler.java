@@ -1023,7 +1023,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 updateStatus(ThingStatus.ONLINE); // Set the status to ONLINE
             } else {
                 logger.warn("Failed to fetch SysAP version after successful reconnect");
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/comm-error.fetch-version-error");
             }
 

@@ -621,8 +621,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     }
 
     @Override
-    public void onStatusUpdated(ThingStatus status, ThingStatusDetail statusDetail) {
-        updateStatus(status, statusDetail);
+    public void onStatusUpdated(ThingStatusDetail statusDetail) {
+        updateStatus(statusDetail);
+    }
+
+    @Override
+    public void onStatusUpdated(ThingStatus status) {
+        updateStatus(status);
     }
 
     @Override

@@ -169,7 +169,7 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             if (!username.isBlank() && !password.isBlank()) {
                 login(connection, username, password);
             } else {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Can't log in. Username or password not set.");
             }
 

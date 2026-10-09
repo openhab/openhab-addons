@@ -619,8 +619,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
      */
     private final void initializeThing() {
         if (this.config.get().getRefreshInterval() == 0) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
-                    "@text/thing-status.argoclima.awaiting-request");
+            updateStatus(ThingStatus.UNKNOWN);
             return;
         }
 

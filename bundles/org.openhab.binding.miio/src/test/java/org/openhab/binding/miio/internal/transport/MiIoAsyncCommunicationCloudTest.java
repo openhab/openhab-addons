@@ -76,7 +76,7 @@ public class MiIoAsyncCommunicationCloudTest {
         assertTrue(result.isError());
         assertEquals("Cannot execute request. Cloud service not available",
                 result.getResponse().get("error").getAsString());
-        verify(listener, never()).onStatusUpdated(any(), any());
+        verifyNoInteractions(listener);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class MiIoAsyncCommunicationCloudTest {
 
         assertFalse(result.isError());
         assertEquals(JsonParser.parseString("{\"recipes\":[]}"), result.getResult());
-        verify(listener, never()).onStatusUpdated(any(), any());
+        verifyNoInteractions(listener);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class MiIoAsyncCommunicationCloudTest {
 
         assertTrue(result.isError());
         assertEquals("Received message is not a JSON object", result.getResponse().get("error").getAsString());
-        verify(listener, never()).onStatusUpdated(any(), any());
+        verifyNoInteractions(listener);
     }
 
     @Test
@@ -110,7 +110,19 @@ public class MiIoAsyncCommunicationCloudTest {
 
         assertTrue(result.isError());
         assertEquals("Received message is not a JSON object", result.getResponse().get("error").getAsString());
-        verify(listener, never()).onStatusUpdated(any(), any());
+        verifyNoInteractions(listener);
+    }
+
+    @Test
+    public void successfulCloudRpcCommandSetsDeviceOnline() throws MiCloudException {
+        when(cloudConnector.sendRPCCommand(anyString(), anyString(), any(MiIoSendCommand.class)))
+                .thenReturn("{\"id\":1,\"result\":[]}");
+
+        MiIoSendCommand result = communication.sendMiIoSendCommand(command("get_prop"));
+
+        assertFalse(result.isError());
+        verify(listener).onStatusUpdated(ThingStatus.ONLINE);
+        verifyNoMoreInteractions(listener);
     }
 
     @Test
@@ -121,6 +133,7 @@ public class MiIoAsyncCommunicationCloudTest {
         MiIoSendCommand result = communication.sendMiIoSendCommand(command("get_prop"));
 
         assertTrue(result.isError());
-        verify(listener).onStatusUpdated(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        verify(listener).onStatusUpdated(ThingStatusDetail.COMMUNICATION_ERROR);
+        verifyNoMoreInteractions(listener);
     }
 }

@@ -184,7 +184,7 @@ class FetchDataServiceTest {
         service.pollDevice();
 
         // then
-        verify(deviceHandlerCallback).updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+        verify(deviceHandlerCallback).updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
         verify(deviceHandlerCallback, never()).updateState(any(), any());
     }
 

@@ -507,7 +507,7 @@ public class PS4Handler extends BaseThingHandler {
                         case STATUS_WRONG_PAIRING_CODE:
                         case STATUS_WRONG_PASS_CODE:
                         case STATUS_WRONG_USER_CREDENTIAL:
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR, status.message);
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, status.message);
                             loggedIn = false;
                             logger.debug("Not logged in: {}", status.message);
                             break;

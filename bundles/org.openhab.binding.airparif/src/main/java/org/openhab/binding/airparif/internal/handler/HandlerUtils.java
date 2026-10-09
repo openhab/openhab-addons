@@ -54,7 +54,7 @@ public interface HandlerUtils {
                 updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, null);
         }
         return null;
     }
@@ -75,7 +75,7 @@ public interface HandlerUtils {
         getJobs().clear();
     }
 
-    void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
+    void updateStatus(ThingStatusDetail statusDetail, @Nullable String description);
 
     @Nullable
     Bridge getBridge();

@@ -325,8 +325,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                 logger.warn("Failed to start WebRTC streaming for {}: {}", mainStreamName, e.getMessage(), e);
                 if (!disposed && Objects.equals(go2rtcManager, manager)) {
                     updateState(CHANNEL_WEBRTC_URL, UnDefType.UNDEF);
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "WebRTC startup failed: " + e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "WebRTC startup failed: " + e.getMessage());
                 }
             }
         });

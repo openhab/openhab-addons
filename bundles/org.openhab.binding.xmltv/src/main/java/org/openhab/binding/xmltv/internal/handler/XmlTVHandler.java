@@ -89,7 +89,7 @@ public class XmlTVHandler extends BaseBridgeHandler {
                         currentXmlFile = xmlFile;
                         updateStatus(ThingStatus.ONLINE);
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "@text/file-outdated");
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/file-outdated");
                     }
                     xsr.close();
                 } catch (JAXBException e) {
