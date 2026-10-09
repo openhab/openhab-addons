@@ -186,7 +186,7 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
 
         NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-bridge-handler");
             return;
         }
@@ -210,23 +210,20 @@ public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler imp
         }
 
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
             return;
         }
 
         NhcAction nhcAction = nhcComm.getActions().get(deviceId);
         if (nhcAction == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.deviceId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.deviceId");
             return;
         }
 
         ActionType actionType = nhcAction.getType();
         if (!(ActionType.TRIGGER.equals(actionType) || ActionType.RELAY.equals(actionType)
                 || ActionType.DIMMER.equals(actionType) || ActionType.ROLLERSHUTTER.equals(actionType))) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.actionType");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.actionType");
             return;
         }
 

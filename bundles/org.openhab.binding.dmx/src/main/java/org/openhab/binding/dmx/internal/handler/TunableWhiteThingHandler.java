@@ -187,13 +187,13 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
         Bridge bridge = getBridge();
         DmxBridgeHandler bridgeHandler;
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge assigned");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "no bridge assigned");
             dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
             return;
         } else {
             bridgeHandler = (DmxBridgeHandler) bridge.getHandler();
             if (bridgeHandler == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge handler available");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "no bridge handler available");
                 dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
                 return;
             }
@@ -202,8 +202,7 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
         TunableWhiteThingHandlerConfiguration configuration = getConfig()
                 .as(TunableWhiteThingHandlerConfiguration.class);
         if (configuration.dmxid.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "DMX channel configuration missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "DMX channel configuration missing");
             dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
             return;
         }
@@ -215,7 +214,7 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
                 channels.add(bridgeHandler.getDmxChannel(channel, this.thing));
             }
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
             return;
         }
@@ -235,7 +234,7 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
             this.turnOnValue = turnOnValue;
             logger.trace("set turnonvalue to {} in {}", turnOnValue, this.thing.getUID());
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "turn-on value malformed");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "turn-on value malformed");
             dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
             return;
         }
@@ -249,7 +248,7 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
             this.turnOffValue = turnOffValue;
             logger.trace("set turnoffvalue to {} in {}", turnOffValue, this.thing.getUID());
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "turn-off value malformed");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "turn-off value malformed");
             dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
             return;
         }
@@ -266,7 +265,7 @@ public class TunableWhiteThingHandler extends DmxThingHandler {
             updateStatus(ThingStatus.ONLINE);
             dmxHandlerStatus = ThingStatusDetail.NONE;
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

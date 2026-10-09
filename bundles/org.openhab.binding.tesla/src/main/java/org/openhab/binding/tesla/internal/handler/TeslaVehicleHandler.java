@@ -674,7 +674,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             TeslaAccountHandler.API_ERROR_INTERVAL_SECONDS);
                 }
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             } else if ((System.currentTimeMillis() - apiIntervalTimestamp) > 1000
                     * TeslaAccountHandler.API_ERROR_INTERVAL_SECONDS) {
                 logger.trace("Resetting the error counter. ({} errors in the last interval)", apiIntervalErrors);
@@ -864,7 +864,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
 
                 }
             } catch (ProcessingException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
         return null;
@@ -1259,7 +1259,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                                     logger.warn(
                                             "Event : Reached the maximum number of errors ({}) for the current interval ({} seconds)",
                                             EVENT_MAXIMUM_ERRORS_IN_INTERVAL, EVENT_ERROR_INTERVAL_SECONDS);
-                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                                     eventEndpoint.closeConnection();
                                 }
 

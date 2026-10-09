@@ -86,7 +86,7 @@ public class GardenaThingHandler extends BaseThingHandler {
             updateProperties(device);
             updateStatus(device);
         } catch (GardenaException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
         } catch (AccountHandlerNotAvailableException ex) {
             // ignore
         }

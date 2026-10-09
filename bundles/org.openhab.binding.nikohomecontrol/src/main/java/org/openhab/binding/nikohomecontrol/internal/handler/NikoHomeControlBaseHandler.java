@@ -90,7 +90,7 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
         if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
 
         refresh();
@@ -100,8 +100,7 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
 
     @Override
     public void deviceRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.configuration-error.deviceRemoved");
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.deviceRemoved");
     }
 
     abstract void startCommunication();
@@ -112,8 +111,7 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
         nhcComm.scheduleRestartCommunication();
         // If still not active, take thing offline and return.
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
             return;
         }
         // Also put the bridge back online
@@ -152,7 +150,7 @@ public abstract class NikoHomeControlBaseHandler extends BaseThingHandler implem
                 refresh();
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 }

@@ -140,8 +140,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
             @Nullable
             PointType userLocation = locationProvider.getLocation();
             if (userLocation == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        getLocalizedText("site.error.no-user-location"));
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, getLocalizedText("site.error.no-user-location"));
                 return;
             } else {
                 location = userLocation;
@@ -150,8 +149,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
             try {
                 location = new PointType(config.location);
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        getLocalizedText("site.error.invalid-location"));
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, getLocalizedText("site.error.invalid-location"));
                 return;
             }
         }
@@ -245,8 +243,7 @@ public class MetOfficeDataHubSiteHandler extends BaseThingHandler implements ISi
     private void sendForecastRequest(final boolean daily) {
         MetOfficeDataHubBridgeHandler uplinkBridge = getMetOfficeDataHubBridge();
         if (uplinkBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    getLocalizedText("site.error.no-bridge"));
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, getLocalizedText("site.error.no-bridge"));
             return;
         }
         final String pollId = (daily) ? dailyPollKey : hourlyPollKey;

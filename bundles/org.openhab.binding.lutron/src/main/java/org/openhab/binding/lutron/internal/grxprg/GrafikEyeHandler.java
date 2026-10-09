@@ -253,7 +253,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             internalInitialize();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -265,26 +265,25 @@ public class GrafikEyeHandler extends BaseThingHandler {
         config = getConfigAs(GrafikEyeConfig.class);
 
         if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
             return;
         }
 
         final String configErr = config.validate();
         if (configErr != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configErr);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configErr);
             return;
         }
 
         final Bridge bridge = getBridge();
         if (bridge == null || !(bridge.getHandler() instanceof PrgBridgeHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "GrafikEye must have a parent PRG Bridge");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "GrafikEye must have a parent PRG Bridge");
             return;
         }
 
         final ThingHandler handler = bridge.getHandler();
         if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 

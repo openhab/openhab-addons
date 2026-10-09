@@ -225,7 +225,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         configuration = getConfigAs(EnvoyConfiguration.class);
         if (!EnphaseBindingConstants.isValidSerial(configuration.serialNumber)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial number is not valid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Serial number is not valid");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -260,7 +260,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
         } catch (final EnvoyConnectionException e) {
             logger.trace("refreshInverters connection problem", e);
         } catch (final EnphaseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return null;
     }
@@ -288,7 +288,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
                 logger.trace("refreshDevices connection problem", e);
             }
         } catch (final EnphaseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return null;
         }
         // Ensemble devices (IQ Batteries) are added to the same map, so they are handled like the other devices.
@@ -322,7 +322,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
             // Transient problem (e.g. timeout); retried on the next refresh.
             logger.trace("refreshEnsembleDevices connection problem", e);
         } catch (final EnphaseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return Map.of();
     }
@@ -362,7 +362,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
                 logger.trace("refreshDeviceData connection problem", e);
             }
         } catch (final EnphaseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return null;
     }
@@ -453,21 +453,21 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
                         consecutiveConnectionErrors, MAX_TRANSIENT_CONNECTION_ERRORS, getThing().getUID(),
                         e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 scheduleHostnameUpdate(false);
             }
         } catch (final EntrezConnectionException e) {
             logger.debug("EntrezConnectionException in Enphase thing {}: ", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (final EntrezJwtInvalidException e) {
             logger.debug("EntrezJwtInvalidException in Enphase thing {}: ", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (final EnphaseException e) {
             logger.debug("EnphaseException in Enphase thing {}: ", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (final RuntimeException e) {
             logger.debug("Unexpected error in Enphase thing {}: ", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -490,7 +490,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
             logger.trace("Configuration OK.");
             return true;
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
             return false;
         }
     }
@@ -679,7 +679,7 @@ public class EnvoyBridgeHandler extends BaseBridgeHandler {
             updateHostnameFuture = null;
             updateData(true);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "No ip address known of the Envoy gateway. If this isn't updated in a few minutes run discovery scan or check your connection.");
             scheduleHostnameUpdate(true);
         }

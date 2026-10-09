@@ -328,7 +328,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         Ed25519PublicKeyParameters accessoryKey = keyStore.getAccessoryKey(uniqueId);
         if (accessoryKey == null) {
             logger.debug("{} no stored pairing credentials", thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.not-paired");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.not-paired");
             return false;
         }
 
@@ -369,7 +369,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             logger.debug("{} restored pairing was not verified", thing.getUID(), e);
             sessionUpgradeInProgress.set(false);
             scheduleConnectionAttempt();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     THING_STATUS_FMT.formatted("error.pairing-verification-failed", e.getMessage()));
             return false;
         }
@@ -467,7 +467,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private @Nullable String checkedIpAddress() {
         Object obj = getConfig().get(CONFIG_IP_ADDRESS);
         if (obj == null || !(obj instanceof String ipAddress) || !IPV4_PATTERN.matcher(ipAddress).matches()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.invalid-ip-address");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.invalid-ip-address");
             return null;
         }
         return ipAddress;
@@ -475,7 +475,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     private @Nullable String checkedUniqueId() {
         if (!(getConfig().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) || uniqueId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.missing-unique-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.missing-unique-id");
             return null;
         }
         return uniqueId;
@@ -484,7 +484,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private @Nullable String checkedHostName() {
         Object obj = getConfig().get(CONFIG_HTTP_HOST_HEADER);
         if (obj == null || !(obj instanceof String hostName)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.invalid-host-name");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.invalid-host-name");
             return null;
         }
         if (!hostName.isBlank() && !HOST_PATTERN.matcher(hostName).matches()) {
@@ -496,8 +496,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private @Nullable Long checkedAccessoryId() {
         accessoryId = getAccessoryId();
         if (accessoryId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.invalid-accessory-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.invalid-accessory-id");
             return null;
         }
         return accessoryId;
@@ -513,7 +512,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
             return ipTransport;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     THING_STATUS_FMT.formatted("error.failed-to-connect", e.getMessage()));
         }
         return null;
@@ -573,7 +572,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (Exception e) {
             // catch all; log all exceptions
             logger.debug("{} pairing / verification failed '{}'", thing.getUID(), e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     THING_STATUS_FMT.formatted("error.pairing-verification-failed", e.getMessage()));
             return ACTION_RESULT_ERROR_FORMAT.formatted("pairing error");
         }
@@ -619,7 +618,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     public String unpair() {
         String result = unpairInner();
         if (result.startsWith(ACTION_RESULT_OK)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.not-paired");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.not-paired");
         }
         return result;
     }
@@ -991,7 +990,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
         }
         String description = THING_STATUS_FMT.formatted("error." + i18nSuffix.replace(' ', '-'), message);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, description);
         scheduleConnectionAttempt();
     }
 

@@ -157,10 +157,10 @@ public class EaseeSiteHandler extends BaseBridgeHandler implements EaseeBridgeHa
         switch (status.getHttpCode()) {
             case OK:
             case ACCEPTED:
-                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                super.updateStatus(ThingStatus.ONLINE);
                 break;
             default:
-                super.updateStatus(ThingStatus.OFFLINE, Utils.getStatusDetailFromHttpCode(status.getHttpCode()), msg);
+                super.updateStatus(Utils.getStatusDetailFromHttpCode(status.getHttpCode()), msg);
         }
     }
 

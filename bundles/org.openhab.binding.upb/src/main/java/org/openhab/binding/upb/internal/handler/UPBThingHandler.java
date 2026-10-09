@@ -76,12 +76,12 @@ public class UPBThingHandler extends BaseThingHandler {
             // use value from binding config
             final Byte defaultNetworkId = this.defaultNetworkId;
             if (defaultNetworkId == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing network ID");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "missing network ID");
                 return;
             }
             networkId = defaultNetworkId.byteValue();
         } else if (val.compareTo(BigDecimal.ZERO) < 0 || val.compareTo(BigDecimal.valueOf(255)) > 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "invalid network ID");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "invalid network ID");
             return;
         } else {
             networkId = val.byteValue();
@@ -89,18 +89,18 @@ public class UPBThingHandler extends BaseThingHandler {
 
         final BigDecimal cfgUnitId = (BigDecimal) getConfig().get(Constants.CONFIGURATION_UNIT_ID);
         if (cfgUnitId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing unit ID");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "missing unit ID");
             return;
         }
         unitId = cfgUnitId.intValue();
         if (unitId < 1 || unitId > 250) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "invalid unit ID");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "invalid unit ID");
             return;
         }
 
         final Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, Constants.OFFLINE_CTLR_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, Constants.OFFLINE_CTLR_OFFLINE);
             return;
         }
         bridgeStatusChanged(bridge.getStatusInfo());
@@ -111,7 +111,7 @@ public class UPBThingHandler extends BaseThingHandler {
         logger.debug("DEV {}: Controller status is {}", unitId, bridgeStatusInfo.getStatus());
 
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, Constants.OFFLINE_CTLR_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, Constants.OFFLINE_CTLR_OFFLINE);
             return;
         }
 
@@ -231,8 +231,7 @@ public class UPBThingHandler extends BaseThingHandler {
                     break;
                 case DEAD:
                 case FAILED:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            Constants.OFFLINE_NODE_DEAD);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, Constants.OFFLINE_NODE_DEAD);
                     break;
             }
         }
@@ -250,7 +249,7 @@ public class UPBThingHandler extends BaseThingHandler {
     private void updateStatus(final CmdStatus result) {
         switch (result) {
             case WRITE_FAILED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, Constants.OFFLINE_NODE_DEAD);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, Constants.OFFLINE_NODE_DEAD);
                 break;
 
             case ACK:

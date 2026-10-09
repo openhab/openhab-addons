@@ -51,34 +51,34 @@ public class X10DeviceHandler extends InsteonBaseThingHandler {
 
         scheduler.execute(() -> {
             if (getBridge() == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
                 return;
             }
 
             String houseCode = config.getHouseCode();
             if (!X10Address.isValidHouseCode(houseCode)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Invalid X10 house code, it must be between A and P.");
                 return;
             }
 
             int unitCode = config.getUnitCode();
             if (!X10Address.isValidUnitCode(unitCode)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "Invalid X10 unit code, it must be between 1 and 16.");
                 return;
             }
 
             DeviceType deviceType = DeviceTypeRegistry.getInstance().getDeviceType(config.getDeviceType());
             if (deviceType == null || !deviceType.getName().startsWith("X10")) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid device type.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid device type.");
                 return;
             }
 
             InsteonModem modem = getModem();
             X10Address address = new X10Address(houseCode, unitCode);
             if (modem != null && modem.hasDevice(address)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Duplicate device.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Duplicate device.");
                 return;
             }
 
@@ -141,12 +141,12 @@ public class X10DeviceHandler extends InsteonBaseThingHandler {
     public void updateStatus() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
             return;
         }
 
         if (bridge.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -158,7 +158,7 @@ public class X10DeviceHandler extends InsteonBaseThingHandler {
 
         X10Device device = getDevice();
         if (device == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unable to determine device.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to determine device.");
             return;
         }
 

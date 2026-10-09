@@ -95,7 +95,7 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
             // StopHandler, our bridge, won't be marked as online until it has data itself.
             stopHandler.registerRouteDataListener(this);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge unavailable");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Bridge unavailable");
         }
     }
 
@@ -137,7 +137,7 @@ public class RouteHandler extends BaseThingHandler implements RouteDataListener 
     private RouteConfiguration loadAndCheckConfiguration() {
         RouteConfiguration config = getConfigAs(RouteConfiguration.class);
         if (config.getRouteId() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "routeId is not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "routeId is not set");
             return null;
         }
         return config;

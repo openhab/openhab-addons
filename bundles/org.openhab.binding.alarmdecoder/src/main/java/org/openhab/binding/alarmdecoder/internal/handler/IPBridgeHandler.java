@@ -59,11 +59,11 @@ public class IPBridgeHandler extends ADBridgeHandler {
         discovery = config.discovery;
 
         if (config.hostname == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "hostname not configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "hostname not configured");
             return;
         }
         if (config.tcpPort <= 0 || config.tcpPort > 65535) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "invalid port number configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "invalid port number configured");
             return;
         }
 
@@ -93,10 +93,10 @@ public class IPBridgeHandler extends ADBridgeHandler {
             connectionCheckJob = scheduler.scheduleWithFixedDelay(this::connectionCheck, config.reconnect,
                     config.reconnect, TimeUnit.MINUTES);
         } catch (UnknownHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "unknown host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "unknown host");
             disconnect();
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
             scheduleConnectRetry(config.reconnect); // Possibly a retryable error. Try again later.
         }

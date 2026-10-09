@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluelink.internal.handler;
 
+import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
@@ -23,17 +24,16 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 import javax.measure.quantity.Temperature;
+import javax.swing.plaf.synth.Region;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.bluelink.internal.api.AbstractBluelinkApi;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiCA;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiEU;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiUS;
 import org.openhab.binding.bluelink.internal.api.LoginRejectedException;
-import org.openhab.binding.bluelink.internal.api.Region;
 import org.openhab.binding.bluelink.internal.api.RetryableRequestException;
 import org.openhab.binding.bluelink.internal.api.VehicleStatusCallback;
 import org.openhab.binding.bluelink.internal.config.BluelinkAccountConfiguration;
@@ -51,7 +51,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -113,8 +112,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         try {
             region = Region.valueOf(regionStr);
         } catch (final IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/account-handler.initialize.unsupported-region");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/account-handler.initialize.unsupported-region");
             return;
         }
 
@@ -122,8 +120,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         final String username = config.username;
         final String password = config.password;
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/account-handler.initialize.missing-credentials");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/account-handler.initialize.missing-credentials");
             return;
         }
 
@@ -134,13 +131,12 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
             try {
                 brand = Brand.valueOf(configuredBrand.toUpperCase(Locale.ROOT));
             } catch (final IllegalArgumentException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/account-handler.initialize.unsupported-brand");
                 return;
             }
         } else if (region != Region.US) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/account-handler.initialize.brand-required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/account-handler.initialize.brand-required");
             return;
         } else {
             brand = Brand.UNKNOWN;
@@ -181,13 +177,12 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                     logger.debug("Bluelink login successful");
                     setOnline(bluelinkApi);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/account-handler.login.login-failed");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/account-handler.login.login-failed");
                 }
             });
         } catch (final RetryableRequestException e) {
             updateIfCurrent(generation, () -> {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
                 loginTask = scheduler.schedule(this::login, LOGIN_RETRY_DELAY.toSeconds(), TimeUnit.SECONDS);
             });
         } catch (final LoginRejectedException e) {
@@ -196,13 +191,12 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                     case CONSENT_REQUIRED, INVALID_CREDENTIALS, REJECTED -> ThingStatusDetail.CONFIGURATION_ERROR;
                     case BLOCKED, SIGNATURE_REJECTED, TIMESTAMP_REJECTED -> ThingStatusDetail.COMMUNICATION_ERROR;
                 };
-                updateStatus(ThingStatus.OFFLINE, detail,
-                        isLegacyRefreshToken(e) ? "@text/account-handler.login.refresh-token"
-                                : e.getStatusDescription());
+                updateStatus(detail, isLegacyRefreshToken(e) ? "@text/account-handler.login.refresh-token"
+                        : e.getStatusDescription());
             });
         } catch (final BluelinkApiException e) {
-            updateIfCurrent(generation, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    e.getStatusDescription()));
+            updateIfCurrent(generation,
+                    () -> updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription()));
         }
     }
 

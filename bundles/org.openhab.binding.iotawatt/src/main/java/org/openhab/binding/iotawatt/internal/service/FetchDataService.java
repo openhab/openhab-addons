@@ -77,14 +77,14 @@ public class FetchDataService {
                 deviceHandlerCallback.updateStatus(ThingStatus.ONLINE);
                 updateChannels(statusResponse.get());
             } else {
-                deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                deviceHandlerCallback.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (IoTaWattClientInterruptedException e) {
             deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY);
         } catch (IoTaWattClientCommunicationException e) {
-            deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            deviceHandlerCallback.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         } catch (IoTaWattClientConfigurationException e) {
-            deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            deviceHandlerCallback.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     getErrorMessage(e));
         } catch (IoTaWattClientException e) {
             deviceHandlerCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, getErrorMessage(e));

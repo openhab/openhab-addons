@@ -71,7 +71,7 @@ public class SimpleDeviceHandler extends BaseThingHandler {
             this.updateDeviceProperties();
             this.updateDeviceChannels();
         } else {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing!");
         }
     }
@@ -220,7 +220,7 @@ public class SimpleDeviceHandler extends BaseThingHandler {
             }
         } else {
             // this handler can't work without a bridge
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing!");
         }
 

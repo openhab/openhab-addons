@@ -109,13 +109,13 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
             Bridge bridge = getBridge();
             if (bridge == null || bridge.getHandler() == null
                     || !(bridge.getHandler() instanceof PlugwiseHABridgeHandler)) {
-                updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "You must choose a Plugwise Home Automation bridge for this thing.");
                 return;
             }
 
             if (bridge.getStatus() == OFFLINE) {
-                updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                         "The Plugwise Home Automation bridge is currently offline.");
             }
 
@@ -189,8 +189,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
      */
     private boolean checkConfig(C config) {
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configuration is missing or corrupted");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Configuration is missing or corrupted");
             return false;
         } else {
             return true;
@@ -225,7 +224,7 @@ public abstract class PlugwiseHABaseHandler<E, C extends PlugwiseHAThingConfig> 
                     try {
                         entity = getEntity(controller);
                     } catch (PlugwiseHAException e) {
-                        updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                         setLinkedChannelsUndef();
                     }
                     if (entity != null) {

@@ -132,7 +132,7 @@ public class GoveeHandler extends BaseThingHandler {
             } catch (IndexOutOfBoundsException e) {
                 logger.warn("Unexpected List.remove() exception:{}", e.getMessage());
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
                                 + "\"]");
             }
@@ -156,16 +156,14 @@ public class GoveeHandler extends BaseThingHandler {
 
         final String deviceId = goveeConfiguration.getDeviceId();
         if (deviceId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.device-id.missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.device-id.missing");
             return;
         }
         thing.setProperty(DEVICE_ID, deviceId);
 
         final String ipAddress = goveeConfiguration.hostname;
         if (ipAddress.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.ip-address.missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.ip-address.missing");
             return;
         }
 
@@ -173,7 +171,7 @@ public class GoveeHandler extends BaseThingHandler {
         maxKelvin = Objects.requireNonNullElse(goveeConfiguration.maxKelvin, COLOR_TEMPERATURE_MAX_VALUE.intValue());
         if ((minKelvin < COLOR_TEMPERATURE_MIN_VALUE) || (maxKelvin > COLOR_TEMPERATURE_MAX_VALUE)
                 || (minKelvin >= maxKelvin)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-color-temperature-range");
             return;
         }
@@ -339,8 +337,7 @@ public class GoveeHandler extends BaseThingHandler {
 
     public void handleIncomingStatus(String response) {
         if (response.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.empty-response");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error.empty-response");
             return;
         }
 
@@ -351,7 +348,7 @@ public class GoveeHandler extends BaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (JsonSyntaxException jse) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, jse.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, jse.getMessage());
         }
     }
 

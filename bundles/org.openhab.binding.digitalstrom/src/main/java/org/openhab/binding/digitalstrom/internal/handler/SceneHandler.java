@@ -132,32 +132,30 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
                     String sceneID = getSceneID(getConfig(), bridgeHandler);
                     switch (sceneID) {
                         case SCENE_WRONG:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                     "Configured scene '" + getConfig().get(DigitalSTROMBindingConstants.SCENE_ID)
                                             + "' does not exist or cannot be used, please check the configuration.");
                             break;
                         case ZONE_WRONG:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                     "Configured zone '" + getConfig().get(DigitalSTROMBindingConstants.ZONE_ID)
                                             + "' does not exist, please check the configuration.");
                             break;
                         case GROUP_WRONG:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                     "Configured group '" + getConfig().get(DigitalSTROMBindingConstants.GROUP_ID)
                                             + "' does not exist, please check the configuration.");
                             break;
                         case NO_STRUC_MAN:
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING,
                                     "Waiting for building digitalSTROM model.");
                             break;
                         case NO_SCENE:
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "No Scene-ID is set!");
+                            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No Scene-ID is set!");
                             break;
                         default:
                             this.sceneThingID = sceneID;
-                            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                    "Waiting for listener registration");
+                            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for listener registration");
                             logger.debug("Set status on {}", getThing().getStatus());
                             this.bridgeHandler.registerSceneStatusListener(this);
                     }
@@ -169,7 +167,7 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
             }
         }
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         logger.debug("Set status to {}", getThing().getStatusInfo());
     }

@@ -96,14 +96,14 @@ public class XmlTVHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
                 }
             } catch (XMLStreamException | FileNotFoundException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } finally {
                 try {
                     if (xsr != null) {
                         xsr.close();
                     }
                 } catch (XMLStreamException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 }
             }
         }, 0, config.refresh, TimeUnit.HOURS);

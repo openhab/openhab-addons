@@ -74,7 +74,7 @@ abstract class HusdataHandler extends BaseThingHandler {
         try {
             connection = createConnection();
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
 

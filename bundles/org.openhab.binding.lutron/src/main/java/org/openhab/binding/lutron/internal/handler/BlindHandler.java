@@ -63,13 +63,12 @@ public class BlindHandler extends LutronHandler {
     public void initialize() {
         config = getConfigAs(BlindConfig.class);
         if (config.integrationId <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
             return;
         }
         if (config.type == null || (!(BLIND_TYPE_SHEER.equalsIgnoreCase(config.type))
                 && !(BLIND_TYPE_VENETIAN.equalsIgnoreCase(config.type)))) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter type not set to valid value");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Parameter type not set to valid value");
             return;
         }
         String blindType = config.type;
@@ -85,14 +84,14 @@ public class BlindHandler extends LutronHandler {
         logger.debug("Initializing device state for Shade {}", getIntegrationId());
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
             queryOutput(TargetType.BLIND, OutputCommand.ACTION_LIFTLEVEL);
             // handleUpdate() will set thing status to online when response arrives
             queryOutput(TargetType.BLIND, OutputCommand.ACTION_TILTLEVEL);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

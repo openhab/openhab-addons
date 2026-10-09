@@ -128,13 +128,13 @@ public class ChaserThingHandler extends DmxThingHandler {
         Bridge bridge = getBridge();
         DmxBridgeHandler bridgeHandler;
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge assigned");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "no bridge assigned");
             dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
             return;
         } else {
             bridgeHandler = (DmxBridgeHandler) bridge.getHandler();
             if (bridgeHandler == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge handler available");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "no bridge handler available");
                 dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
                 return;
             }
@@ -143,8 +143,7 @@ public class ChaserThingHandler extends DmxThingHandler {
         ChaserThingHandlerConfiguration configuration = getConfig().as(ChaserThingHandlerConfiguration.class);
 
         if (configuration.dmxid.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "DMX channel configuration missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "DMX channel configuration missing");
             dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
             return;
         }
@@ -157,7 +156,7 @@ public class ChaserThingHandler extends DmxThingHandler {
                 channels.add(bridgeHandler.getDmxChannel(channel, this.thing));
             }
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
             return;
         }
@@ -168,15 +167,14 @@ public class ChaserThingHandler extends DmxThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     dmxHandlerStatus = ThingStatusDetail.NONE;
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "chaser configuration malformed");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "chaser configuration malformed");
                 dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Chase configuration missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Chase configuration missing");
             dmxHandlerStatus = ThingStatusDetail.CONFIGURATION_ERROR;
         }
 

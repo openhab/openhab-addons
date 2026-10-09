@@ -135,10 +135,10 @@ public class SenseEnergyBridgeHandler extends BaseBridgeHandler {
         if (e instanceof SenseEnergyApiException apiException) {
             switch (apiException.severity) {
                 case TRANSIENT:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                     break;
                 case CONFIG:
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+                    updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
                     break;
                 case FATAL:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getMessage());

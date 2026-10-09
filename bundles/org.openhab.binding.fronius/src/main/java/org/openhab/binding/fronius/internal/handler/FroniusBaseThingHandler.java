@@ -86,7 +86,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -160,7 +160,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
                     getThing().getUID().getId());
         } catch (FroniusCommunicationException | RuntimeException e) {
             logger.debug("Exception caught in refresh() for {}", getThing().getUID().getId(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

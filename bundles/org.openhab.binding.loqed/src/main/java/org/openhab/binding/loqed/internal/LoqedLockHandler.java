@@ -191,8 +191,7 @@ public class LoqedLockHandler extends BaseThingHandler {
             return;
         }
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "@text/thing-status.loqed.lock.bridge-unavailable");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/thing-status.loqed.lock.bridge-unavailable");
             return;
         }
         try {
@@ -205,13 +204,13 @@ public class LoqedLockHandler extends BaseThingHandler {
         } catch (LoqedAuthenticationException | LoqedConfigurationException e) {
             logger.debug("Could not set LOQED lock {} to {}", commandLockId, boltState, e);
             if (isCurrentGeneration(generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/thing-status.loqed.lock.command-configuration-error");
             }
         } catch (LoqedApiException e) {
             logger.debug("Could not set LOQED lock {} to {}", commandLockId, boltState, e);
             if (isCurrentGeneration(generation)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/thing-status.loqed.lock.command-communication-error");
             }
         }
@@ -234,16 +233,14 @@ public class LoqedLockHandler extends BaseThingHandler {
 
     public void updateFromBridge(List<LoqedLockData> locks) {
         locks.stream().filter(lock -> lockId.equals(lock.id)).findFirst().ifPresentOrElse(this::updateChannels, () -> {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/thing-status.loqed.lock.unavailable");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing-status.loqed.lock.unavailable");
             getThing().getChannels().forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
         });
     }
 
     private void updateChannels(LoqedLockData lock) {
         if (!lock.online) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/thing-status.loqed.lock.disconnected");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/thing-status.loqed.lock.disconnected");
             updateState(CHANNEL_BOLT_STATE, UnDefType.UNDEF);
             updateState(CHANNEL_LOCK, UnDefType.UNDEF);
             updateState(CHANNEL_BATTERY_LEVEL, UnDefType.UNDEF);

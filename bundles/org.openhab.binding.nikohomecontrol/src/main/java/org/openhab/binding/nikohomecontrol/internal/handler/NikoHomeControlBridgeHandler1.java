@@ -60,7 +60,7 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
             nhcComm = new NikoHomeControlCommunication1(this, scheduler, eventThreadName);
             startCommunication();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.ip");
         }
     }

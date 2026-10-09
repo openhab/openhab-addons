@@ -94,8 +94,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.UNKNOWN);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/config-status.error.missing-udn");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/config-status.error.missing-udn");
         }
     }
 
@@ -240,11 +239,10 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             probeAndExecuteCall(DEVICEACTION, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
         } catch (MissingHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/config-status.error.missing-ip");
         } catch (WemoException e) {
             logger.warn("Failed to send command '{}' for thing '{}':", command, getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -473,11 +471,10 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (MissingHostException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/config-status.error.missing-ip");
         } catch (RuntimeException | ParserConfigurationException | SAXException | IOException | WemoException e) {
             logger.debug("Failed to get actual state for thing '{}':", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

@@ -193,7 +193,7 @@ public class TuyaDeviceHandler extends BaseTuyaDeviceHandler implements DeviceIn
                         configuration.protocol, getAllDpIds());
             } catch (IllegalArgumentException e) {
                 logger.warn("{}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

@@ -228,7 +228,7 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
                 }
             } catch (Exception e) {
                 if (!disposed) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         }, 0, TimeUnit.SECONDS);

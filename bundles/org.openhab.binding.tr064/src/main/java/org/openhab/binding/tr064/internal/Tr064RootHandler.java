@@ -153,8 +153,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
     public void initialize() {
         config = getConfigAs(Tr064RootConfiguration.class);
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "At least one mandatory configuration field is empty");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "At least one mandatory configuration field is empty");
             return;
         }
 
@@ -173,8 +172,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
         try {
             scpdUtil = new SCPDUtil(httpClient, endpointBaseURL, timeout);
         } catch (SCPDException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "could not get device definitions from " + config.host);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "could not get device definitions from " + config.host);
             return;
         }
 
@@ -193,7 +191,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
             communicationEstablished = true;
             installPolling();
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -230,8 +228,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
             });
         } catch (RuntimeException e) {
             logger.warn("Exception while refreshing remote data for thing '{}':", thing.getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Refresh exception: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Refresh exception: " + e.getMessage());
         }
     }
 
@@ -303,7 +300,7 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
 
                 return true;
             } catch (SCPDException | SOAPException | Tr064CommunicationException | URISyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return false;
             }
         }

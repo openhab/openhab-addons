@@ -59,13 +59,12 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No device bridge has been configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No device bridge has been configured");
             return;
         }
 
         if (ThingStatus.ONLINE != bridge.getStatus()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -84,7 +83,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
 
     private void updateWidget(@Nullable ThingHandler handler) {
         if (!(handler instanceof LaMetricTimeHandler)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect bridge thing found");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect bridge thing found");
             return;
         }
         LaMetricTimeHandler deviceHandler = (LaMetricTimeHandler) handler;
@@ -100,7 +99,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
                 widget = widgets.get(config.widgetId);
 
                 if (widget == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "No widget found with package name " + packageName + " and widget ID " + config.widgetId);
                     return;
                 }
@@ -109,7 +108,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
             }
         } catch (ApplicationNotFoundException e) {
             logger.debug("LaMetric Time application not found", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "No application found with package name " + packageName);
             return;
         }
@@ -155,7 +154,7 @@ public abstract class AbstractLaMetricTimeAppHandler extends BaseThingHandler im
             handleAppCommand(channelUID, command);
         } catch (Exception e) {
             logger.debug("Failed to communicate - taking app offline", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

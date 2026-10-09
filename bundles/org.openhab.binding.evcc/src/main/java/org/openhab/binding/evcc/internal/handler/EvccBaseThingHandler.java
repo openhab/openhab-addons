@@ -524,7 +524,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             HttpMethod httpMethod = HttpMethod.valueOf(method);
             handler.requestQueue.enqueueRequest(url, httpMethod, payload, this::checkResponse,
-                    error -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
+                    error -> updateStatus(ThingStatusDetail.COMMUNICATION_ERROR));
         });
     }
 
@@ -554,20 +554,20 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         try {
             if (!completion.await(6, TimeUnit.SECONDS)) {
                 logger.debug("Timed out reading evcc API response from {}", url);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 return null;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("Interrupted while reading evcc API response from {}", url, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return null;
         }
 
         Exception error = errorRef.get();
         if (error != null) {
             logger.debug("Failed to read evcc API response from {}", url, error);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             return null;
         }
         return responseBody.get();
@@ -605,10 +605,10 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     public void bridgeStatusChanged(ThingStatusInfo statusInfo) {
         switch (statusInfo.getStatus()) {
             case OFFLINE:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 break;
             case UNINITIALIZED:
-                updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+                updateStatus(ThingStatusDetail.BRIDGE_UNINITIALIZED);
                 break;
             case ONLINE:
                 Bridge bridge = getBridge();

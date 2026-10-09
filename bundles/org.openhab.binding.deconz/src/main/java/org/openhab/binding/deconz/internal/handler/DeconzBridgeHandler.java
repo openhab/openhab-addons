@@ -203,7 +203,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
                     || t instanceof CompletionException) {
                 logger.debug("Get full state failed", t);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, t.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, t.getMessage());
             }
             return Optional.empty();
         });
@@ -254,7 +254,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             if (e != null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.OFFLINE);
             }
             logger.warn("Initial full state request or result parsing failed", e);
             if (!thingDisposing) {
@@ -290,7 +290,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
         String url = buildUrl(config.getHostWithoutPort(), config.httpPort);
         http.post(url, "{\"devicetype\":\"openHAB\"}", config.timeout).thenAccept(this::parseAPIKeyResponse)
                 .exceptionally(e -> {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     logger.warn("Authorisation failed", e);
                     return null;
                 });
@@ -329,7 +329,7 @@ public class DeconzBridgeHandler extends BaseBridgeHandler implements WebSocketC
             return;
         }
         ignoreConnectionLost = true;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
         stopTimer();
 
         // make sure we get a new connection

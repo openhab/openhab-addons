@@ -134,13 +134,12 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         FlumeBridgeHandler bh = getBridgeHandler();
 
         if (bh == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.bridge-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");
             return;
         }
 
         if (bh.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -170,7 +169,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             goOnline();
         }
@@ -219,22 +218,20 @@ public class FlumeDeviceHandler extends BaseThingHandler {
     public void handleApiException(Exception e) {
         if (e instanceof FlumeApiException flumeApiException) {
             if (flumeApiException.isConfigurationIssue()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        flumeApiException.getLocalizedMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, flumeApiException.getLocalizedMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        flumeApiException.getLocalizedMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, flumeApiException.getLocalizedMessage());
             }
         } else if (e instanceof IOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
         } else if (e instanceof InterruptedIOException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         } else if (e instanceof InterruptedException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         } else if (e instanceof TimeoutException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         } else if (e instanceof ExecutionException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         } else {
             // capture in log since this is an unexpected exception
             logger.warn("Unhandled Exception", e);
@@ -298,8 +295,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         result = getApi().queryUsage(config.id, listQuery);
 
         if (result == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.cloud-connection-issue");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.cloud-connection-issue");
             return;
         }
 
@@ -351,8 +347,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
                 ));
 
         if (result == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.cloud-connection-issue");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.cloud-connection-issue");
             return;
         }
 

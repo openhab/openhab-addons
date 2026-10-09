@@ -104,7 +104,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
         try {
             connection = createConnection();
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
 
@@ -272,7 +272,7 @@ abstract class Rego6xxHeatPumpHandler extends BaseThingHandler {
                 channelDescriptors.clear();
             }
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (Rego6xxProtocolException | RuntimeException e) {
             logger.warn("Executing command for channel '{}' failed.", channelIID, e);
             if (channelIID != null) {

@@ -95,7 +95,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         ConfigurationLevel configLevel = localConfig.check();
 
         if (configLevel != ConfigurationLevel.COMPLETED) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configLevel.message);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configLevel.message);
             return;
         }
         this.config = localConfig;
@@ -122,7 +122,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
             if (e.getStatusDetail() instanceof ThingStatusDetail statusDetail) {
                 updateStatus(ThingStatus.OFFLINE, statusDetail, e.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 schedule("reconnect", this::initiateConnection, Duration.ofHours(1));
             }
         }

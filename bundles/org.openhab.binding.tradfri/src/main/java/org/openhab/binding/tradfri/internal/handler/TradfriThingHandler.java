@@ -77,7 +77,7 @@ public abstract class TradfriThingHandler extends BaseThingHandler implements Co
                     coapClient.setEndpoint(handler.getEndpoint());
                 } catch (URISyntaxException e) {
                     logger.debug("Illegal device URI `{}`: {}", uriString, e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                     return;
                 }
 
@@ -87,7 +87,7 @@ public abstract class TradfriThingHandler extends BaseThingHandler implements Co
                 break;
             case OFFLINE:
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                         String.format("Gateway offline '%s'", tradfriGateway.getStatusInfo()));
                 break;
         }

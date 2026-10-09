@@ -224,7 +224,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
                 try {
                     SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
                     if (portIdentifier == null) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Port does not exist");
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Port does not exist");
                         throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
                     }
                     SerialPort sp = portIdentifier.open("org.openhab.binding.bluetooth.bluegiga", 2000);
@@ -258,18 +258,18 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
                     });
 
                     if (inputStream.isEmpty() || outputStream.isEmpty()) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                 "Serial Error: Communication stream not available");
                         throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
                     }
 
                     return sp;
                 } catch (PortInUseException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "Serial Error: Port in use");
                     throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
                 } catch (UnsupportedCommOperationException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                             "Serial Error: Unsupported operation");
                     throw new RetryException(INITIALIZATION_INTERVAL_SEC, TimeUnit.SECONDS);
                 } catch (RuntimeException ex) {
@@ -314,7 +314,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
                     updateStatus(ThingStatus.ONLINE);
                     startScheduledTasks();
                 } catch (BlueGigaException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                             "Initialization of BlueGiga controller failed");
                 }
             }).exceptionally(th -> {
@@ -327,7 +327,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             });
 
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR);
         }
     }
 
@@ -1071,6 +1071,6 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     @Override
     public void bluegigaClosed(Exception reason) {
         logger.debug("BlueGiga connection closed, request reinitialization, reason: {}", reason.getMessage());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason.getMessage());
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason.getMessage());
     }
 }

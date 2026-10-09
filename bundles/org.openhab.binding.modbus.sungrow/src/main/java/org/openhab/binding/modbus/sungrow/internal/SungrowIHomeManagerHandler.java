@@ -140,13 +140,13 @@ public class SungrowIHomeManagerHandler extends BaseModbusThingHandler {
         final SungrowInverterConfiguration config = getConfigAs(SungrowInverterConfiguration.class);
 
         if (config.pollInterval <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Invalid poll interval: " + config.pollInterval);
             return;
         }
 
         if (config.maxTries <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Invalid Maximum Tries When Reading: " + config.maxTries);
             return;
         }
@@ -243,7 +243,7 @@ public class SungrowIHomeManagerHandler extends BaseModbusThingHandler {
 
     private void readError(AsyncModbusFailure<ModbusReadRequestBlueprint> error) {
         this.logger.debug("Failed to get modbus data", error.getCause());
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 "Failed to retrieve data: " + error.getCause().getMessage());
     }
 

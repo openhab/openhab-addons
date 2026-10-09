@@ -27,14 +27,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.openhab.binding.yioremote.internal.dto.AuthenticationMessage;
 import org.openhab.binding.yioremote.internal.dto.DockCommandMessage;
-import org.openhab.binding.yioremote.internal.dto.DockMessage;
 import org.openhab.binding.yioremote.internal.dto.IRCodeSendMessage;
 import org.openhab.binding.yioremote.internal.utils.Websocket;
 import org.openhab.binding.yioremote.internal.utils.WebsocketInterface;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -43,12 +40,9 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link YIOremoteDockHandler} manages the WebSocket connection to a YIO Dock and handles the commands sent to its
@@ -96,7 +90,7 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
         String host = config.host.trim();
 
         if (host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-no-host");
             return;
         }
@@ -104,7 +98,7 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
         try {
             dockUri = new URI("ws", null, host, DOCK_PORT, null, null, null);
         } catch (URISyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-invalid-host [\"" + host + "\"]");
             return;
         }
@@ -219,7 +213,7 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
     private void connectionLost(String statusDescription) {
         closeWebsocket();
         connectionState = ConnectionState.DISCONNECTED;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusDescription);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusDescription);
     }
 
     private void closeWebsocket() {
@@ -336,7 +330,7 @@ public class YIOremoteDockHandler extends BaseThingHandler implements WebsocketI
         closeWebsocket();
         // no reconnect until the configuration is changed
         connectionState = ConnectionState.AUTHENTICATION_FAILED;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/offline.conf-error-authentication-failed [\"" + Objects.requireNonNullElse(reason, "") + "\"]");
     }
 

@@ -125,7 +125,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
         } catch (NumberFormatException e) {
             logger.debug("Wrong configuration: {} setting must be {} or an integer >= 1000",
                     OpenWebNetBindingConstants.CONFIG_PROPERTY_SHUTTER_RUN, AUTO_CALIBRATION);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.wrong-configuration");
             shutterRun = SHUTTER_RUN_UNDEFINED;
         }
@@ -147,7 +147,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                 send(Automation.requestStatus(w.value()));
             } catch (OWNException e) {
                 logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

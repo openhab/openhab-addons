@@ -194,7 +194,7 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
                 send(EnergyManagement.requestCurrentMonthTotalizer(w.value()));
             } catch (OWNException e) {
                 logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

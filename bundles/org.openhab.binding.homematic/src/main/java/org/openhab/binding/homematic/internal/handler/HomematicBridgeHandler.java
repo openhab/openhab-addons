@@ -140,14 +140,14 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                 }
                 gateway.startWatchdogs();
             } catch (IOException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                 logger.debug(
                         "Homematic bridge was set to OFFLINE-COMMUNICATION_ERROR due to the following exception: {}",
                         ex.getMessage(), ex);
                 disposeInternal();
                 scheduleReinitialize();
             } catch (ConfigurationException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
                 disposeInternal();
             }
         }
@@ -354,7 +354,7 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
 
     @Override
     public void onConnectionLost() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection lost");
     }
 
     @Override
@@ -395,13 +395,13 @@ public class HomematicBridgeHandler extends BaseBridgeHandler implements Homemat
                     logger.info("Duty cycle threshold exceeded by homematic bridge {}, it will go OFFLINE.",
                             thing.getUID());
                     isInDutyCycle = true;
-                    this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE);
+                    this.updateStatus(ThingStatusDetail.DUTY_CYCLE);
                 } else if (dutyCycleRatio == DUTY_CYCLE_DISCONNECTED) {
                     logger.info(
                             "Duty cycle indicates a communication problem by homematic bridge {}, it will go OFFLINE.",
                             thing.getUID());
                     isInDutyCycle = true;
-                    this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    this.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             } else {
                 if (dutyCycleRatio < DUTY_CYCLE_RATIO_LIMIT && dutyCycleRatio != DUTY_CYCLE_DISCONNECTED) {

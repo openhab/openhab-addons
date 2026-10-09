@@ -114,8 +114,7 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
     public void initialize() {
         serialNumber = getConfigAs(EcoflowDeltaConfiguration.class).serialNumber;
         if (serialNumber.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.config-error-no-serial");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.config-error-no-serial");
         } else {
             logger.debug("{}: Initializing handler", serialNumber);
             initTask.setNamePrefix(serialNumber);
@@ -149,8 +148,7 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
             Optional<DeviceListResponseEntry> deviceStatusOpt = api.getDeviceList().stream()
                     .filter(d -> d.serialNumber.equals(serialNumber)).findFirst();
             if (!deviceStatusOpt.isPresent()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.config-error-device-not-present");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-device-not-present");
                 return;
             }
 
@@ -159,9 +157,9 @@ abstract class AbstractEcoflowHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         } catch (EcoflowApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

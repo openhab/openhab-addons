@@ -145,7 +145,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             accessible.set(false);
         } else if (isBridgeOffline()) {
-            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             accessible.set(false);
         } else {
             updateStatus(UNKNOWN);
@@ -285,7 +285,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             } catch (ApplianceOfflineException e) {
                 logger.debug("Could not handle command {}. Appliance offline. thing={}, haId={}, error={}",
                         command.toFullString(), getThingLabel(), getThingHaId(), e.getMessage());
-                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 resetChannelsOnOfflineEvent();
                 resetProgramStateChannels(true);
             } catch (CommunicationException e) {
@@ -794,14 +794,14 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
                 logger.debug(
                         "Update status to OFFLINE. Home Connect service is not reachable or a problem occurred!  thing={}, haId={}, error={}.",
                         getThingLabel(), getThingHaId(), e.getMessage());
-                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Home Connect service is not reachable or a problem occurred! (" + e.getMessage() + ").");
                 accessible.set(false);
             } catch (AuthorizationException e) {
                 logger.debug(
                         "Update status to OFFLINE. Home Connect service is not reachable or a problem occurred!  thing={}, haId={}, error={}",
                         getThingLabel(), getThingHaId(), e.getMessage());
-                updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Home Connect service is not reachable or a problem occurred! (" + e.getMessage() + ").");
                 accessible.set(false);
                 handleAuthenticationError(e);

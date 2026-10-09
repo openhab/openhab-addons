@@ -55,7 +55,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         if (getBridge() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             // note: the framework handles bridge configuration resp. offline errors
             updateStatus(ThingStatus.ONLINE);

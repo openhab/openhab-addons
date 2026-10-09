@@ -828,7 +828,7 @@ public class LinkPlayHandler extends BaseThingHandler
     }
 
     public void setOffline(String reason) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
         upnpClient.clearSubscriptionState();
         upnpClient.sendDeviceSearchRequest();
         scheduleReconnect();

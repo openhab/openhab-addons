@@ -83,7 +83,7 @@ public class AnelHandler extends BaseThingHandler {
         final AnelConfiguration config2 = config;
         final String host = config2 == null ? null : config2.hostname;
         if (config2 == null || host == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Cannot initialize thing without configuration: " + config2);
             return;
         }
@@ -120,7 +120,7 @@ public class AnelHandler extends BaseThingHandler {
                     updateProperty(IAnelConstants.UNIQUE_PROPERTY_NAME, mac);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Device does not respond (check IP, ports, and network connection): " + config);
             }
 
@@ -154,7 +154,7 @@ public class AnelHandler extends BaseThingHandler {
                 final String msg = "Setting thing offline because it did not respond to the last "
                         + IAnelConstants.UNANSWERED_REFRESH_REQUESTS_TO_SET_THING_OFFLINE + " status requests: "
                         + config;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
             }
 
             try {
@@ -236,7 +236,7 @@ public class AnelHandler extends BaseThingHandler {
             if (sendingFailures++ == IAnelConstants.ATTEMPTS_WITH_COMMUNICATION_ERRORS) {
                 final String msg = "Setting thing offline because binding failed to send " + sendingFailures
                         + " messages to it: " + config;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
             } else if (sendingFailures < IAnelConstants.ATTEMPTS_WITH_COMMUNICATION_ERRORS) {
                 logger.warn("Failed to send message to: {}", config, e);
             }
@@ -247,8 +247,7 @@ public class AnelHandler extends BaseThingHandler {
         refreshRequestWithoutResponse = 0;
         try {
             if (newStatus != null && newStatus.contains(IAnelConstants.ERROR_CREDENTIALS)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Invalid username or password for " + config);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid username or password for " + config);
                 return;
             }
             if (newStatus != null && newStatus.contains(IAnelConstants.ERROR_INSUFFICIENT_RIGHTS)) {
@@ -290,7 +289,7 @@ public class AnelHandler extends BaseThingHandler {
                 if (updateStateFailures++ == IAnelConstants.ATTEMPTS_WITH_COMMUNICATION_ERRORS) {
                     final String msg = "Setting thing offline because status updated failed " + updateStateFailures
                             + " times in a row for: " + config;
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 } else if (updateStateFailures < IAnelConstants.ATTEMPTS_WITH_COMMUNICATION_ERRORS) {
                     logger.warn("Status update failed for: {}", config, e);
                 }

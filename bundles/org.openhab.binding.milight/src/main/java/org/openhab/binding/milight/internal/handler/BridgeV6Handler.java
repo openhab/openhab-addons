@@ -63,7 +63,7 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
     @Override
     protected void startConnectAndKeepAlive() {
         if (!config.bridgeid.matches("^([0-9A-Fa-f]{12})$")) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridgeID invalid!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "bridgeID invalid!");
             return;
         }
 
@@ -106,7 +106,7 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
                 break;
             case SESSION_VALID:
                 if (newAddress == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address received");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No IP address received");
                     break;
                 }
                 if (!newAddress.equals(address) || !thing.getStatus().equals(ThingStatus.ONLINE)) {
@@ -124,8 +124,7 @@ public class BridgeV6Handler extends AbstractBridgeHandler implements ISessionSt
                 }
                 break;
             case SESSION_INVALID:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Session could not be established");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Session could not be established");
 
                 break;
             default:

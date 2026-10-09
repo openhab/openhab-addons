@@ -57,21 +57,20 @@ public class InsteonSceneHandler extends InsteonBaseThingHandler {
 
         scheduler.execute(() -> {
             if (getBridge() == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
                 return;
             }
 
             int group = config.getGroup();
             if (!InsteonScene.isValidGroup(group)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Invalid scene group, it must be between " + InsteonScene.GROUP_MIN + " and "
-                                + InsteonScene.GROUP_MAX + ".");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid scene group, it must be between "
+                        + InsteonScene.GROUP_MIN + " and " + InsteonScene.GROUP_MAX + ".");
                 return;
             }
 
             InsteonModem modem = getModem();
             if (modem != null && modem.hasScene(group)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Duplicate scene.");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Duplicate scene.");
                 return;
             }
 
@@ -153,12 +152,12 @@ public class InsteonSceneHandler extends InsteonBaseThingHandler {
     public void updateStatus() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge selected.");
             return;
         }
 
         if (bridge.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -170,13 +169,12 @@ public class InsteonSceneHandler extends InsteonBaseThingHandler {
 
         InsteonScene scene = getScene();
         if (scene == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unable to determine scene.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to determine scene.");
             return;
         }
 
         if (!scene.hasModemDBEntry()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Scene not found in modem database.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Scene not found in modem database.");
             return;
         }
 
