@@ -62,6 +62,7 @@ public class ApplianceHandler extends BaseThingHandler {
     private final Object lifecycle = new Object();
     private final ReentrantLock io = new ReentrantLock();
     private final TransportFactory transportFactory;
+    private final ApplianceDescriptionProvider descriptionProvider;
     private final ScheduledExecutorService executor;
     private volatile @Nullable Session session;
     private long generation;
@@ -98,15 +99,18 @@ public class ApplianceHandler extends BaseThingHandler {
         private static final long serialVersionUID = 1L;
     }
 
-    public ApplianceHandler(Thing thing) {
+    public ApplianceHandler(Thing thing, ApplianceDescriptionProvider descriptionProvider) {
         super(thing);
         this.transportFactory = CoapTransport::new;
+        this.descriptionProvider = descriptionProvider;
         this.executor = scheduler;
     }
 
-    ApplianceHandler(Thing thing, TransportFactory transportFactory, ScheduledExecutorService executor) {
+    ApplianceHandler(Thing thing, TransportFactory transportFactory, ScheduledExecutorService executor,
+            ApplianceDescriptionProvider descriptionProvider) {
         super(thing);
         this.transportFactory = transportFactory;
+        this.descriptionProvider = descriptionProvider;
         this.executor = executor;
     }
 
@@ -152,6 +156,7 @@ public class ApplianceHandler extends BaseThingHandler {
             activation = ++generation;
             previous = session;
             session = null;
+            descriptionProvider.retainDescriptions(getThing().getUID(), Set.of());
             if (previous != null) {
                 previous.commands.clear();
                 if (previous.poll != null) {
@@ -424,13 +429,22 @@ public class ApplianceHandler extends BaseThingHandler {
             if (!channels.equals(getThing().getChannels()) || !properties.equals(getThing().getProperties())) {
                 updateThing(editThing().withChannels(channels).withProperties(properties).build());
             }
+            Set<ChannelUID> channelUIDs = new HashSet<>();
             for (Point point : points) {
+                if (!isActive(current)) {
+                    return;
+                }
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), point.id());
+                channelUIDs.add(channelUID);
+                descriptionProvider.setDescription(channelUID, current.resources.stateDescription(point),
+                        current.resources.commandOptions(point));
                 if (!isActive(current)) {
                     return;
                 }
                 updateState(point.id(), current.resources.state(point));
             }
             if (isActive(current)) {
+                descriptionProvider.retainDescriptions(getThing().getUID(), channelUIDs);
                 updateStatus(ThingStatus.ONLINE);
             }
         }

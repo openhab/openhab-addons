@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.events.EventPublisher;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -48,6 +49,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
@@ -68,6 +70,8 @@ class ApplianceHandlerTest {
     private final ControlledScheduler executor = new ControlledScheduler();
     private final FakeTransport transport = new FakeTransport();
     private final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+    private final ApplianceDescriptionProvider descriptionProvider = new ApplianceDescriptionProvider(
+            mock(EventPublisher.class), mock(ItemChannelLinkRegistry.class));
     private final BlockingQueue<ThingStatusInfo> statuses = new LinkedBlockingQueue<>();
     private final Map<String, State> states = new ConcurrentHashMap<>();
     private final List<Thing> changes = new CopyOnWriteArrayList<>();
@@ -104,7 +108,7 @@ class ApplianceHandlerTest {
             afterThingUpdate.run();
             return null;
         }).when(callback).thingUpdated(any());
-        ApplianceHandler handler = new ApplianceHandler(thing, config -> transport, executor);
+        ApplianceHandler handler = new ApplianceHandler(thing, config -> transport, executor, descriptionProvider);
         handlers.add(handler);
         handler.setCallback(callback);
         assertTimeoutPreemptively(Duration.ofSeconds(2), handler::initialize);
@@ -155,6 +159,61 @@ class ApplianceHandlerTest {
         assertTrue(transport.posts.isEmpty());
         assertEquals(1, changes.size());
         assertEquals(4, transport.reads.size());
+    }
+
+    @Test
+    void refreshesDescriptionsWithoutRebuildingChannelsAndClearsThemOnDisposal() throws Exception {
+        transport.batch = json("""
+                [{"href":"/mode/vs/0","rep":{"x.com.samsung.da.modes":"Auto",
+                  "x.com.samsung.da.supportedModes":["Auto","Sleep"]}}]
+                """);
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        Channel mode = channel(handler, "Operating Mode");
+        assertEquals(2, descriptionProvider.getStateDescription(mode, null, null).getOptions().size());
+        transport.batch = json("""
+                [{"href":"/mode/vs/0","rep":{"x.com.samsung.da.supportedModes":["Auto","Sleep","Turbo"]}}]
+                """);
+        handler.handleCommand(mode.getUID(), RefreshType.REFRESH);
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(1, changes.size());
+        assertEquals(3, descriptionProvider.getStateDescription(mode, null, null).getOptions().size());
+        handler.dispose();
+        assertNull(descriptionProvider.getStateDescription(mode, null, null));
+        assertNull(descriptionProvider.getCommandDescription(mode, null, null));
+    }
+
+    @Test
+    void removesDescriptionsWhenStandardPowerSupersedesTheVendorChannel() throws Exception {
+        transport.batch = json("""
+                [{"href":"/power/vs/0","rep":{"x.com.samsung.da.power":"On"}},
+                 {"href":"/remotectrl/0","rep":{"value":true}}]
+                """);
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        Channel vendor = channel(handler, "Power");
+        assertNotNull(descriptionProvider.getStateDescription(vendor, null, null));
+        transport.batch = json("[{\"href\":\"/power/0\",\"rep\":{\"value\":true}}]");
+        handler.handleCommand(vendor.getUID(), RefreshType.REFRESH);
+        awaitStatus(ThingStatus.ONLINE);
+        assertNotEquals(vendor.getUID(), channel(handler, "Power").getUID());
+        assertNull(descriptionProvider.getStateDescription(vendor, null, null));
+        assertNull(descriptionProvider.getCommandDescription(vendor, null, null));
+    }
+
+    @Test
+    void disposalDuringRefreshCannotRestoreDescriptions() throws Exception {
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        Channel power = channel(handler, "Power");
+        transport.block = true;
+        handler.handleCommand(power.getUID(), RefreshType.REFRESH);
+        assertTrue(transport.entered.await(WAIT_SECONDS, TimeUnit.SECONDS));
+        assertTimeoutPreemptively(Duration.ofSeconds(2), handler::dispose);
+        transport.release.countDown();
+        executor.awaitWorkers();
+        assertNull(descriptionProvider.getStateDescription(power, null, null));
+        assertNull(descriptionProvider.getCommandDescription(power, null, null));
     }
 
     @Test

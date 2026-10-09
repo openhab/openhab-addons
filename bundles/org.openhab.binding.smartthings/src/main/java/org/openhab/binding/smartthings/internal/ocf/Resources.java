@@ -35,7 +35,11 @@ import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonArray;
@@ -197,6 +201,53 @@ public class Resources {
             }
         });
         return List.copyOf(result);
+    }
+
+    /** Describes the same choices and limits used to validate commands, without guessing device capabilities. */
+    synchronized StateDescriptionFragment stateDescription(Point point) {
+        StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create()
+                .withReadOnly(!point.writable()).withOptions(stateOptions(point));
+        JsonObject rep = resources.get(point.href());
+        if (rep != null && "Number:Temperature".equals(point.itemType())) {
+            JsonObject item = point.href().endsWith(TEMPERATURES_VS) ? temperatureItem(rep) : null;
+            Unit<Temperature> unit = item == null ? temperatureUnit(rep.get("units"))
+                    : temperatureUnit(item.get(VENDOR + "unit"));
+            if (unit != null) {
+                builder.withPattern("%s " + unit);
+            }
+            Bounds limits = point.href().endsWith(DESIRED) ? bounds(point.href(), rep)
+                    : item != null && point.field().equals(VENDOR + "desired") ? vendorBounds(item) : null;
+            if (limits != null) {
+                builder.withMinimum(limits.minimum()).withMaximum(limits.maximum()).withStep(limits.increment());
+            }
+        } else if ("Number:Power".equals(point.itemType())) {
+            builder.withPattern("%s W");
+        } else if (point.href().endsWith(AIRFLOW) && "speed".equals(point.field())
+                && deviceType(prefix(point.href(), AIRFLOW), "oic.d.airpurifier")) {
+            builder.withMinimum(BigDecimal.ZERO).withMaximum(BigDecimal.valueOf(4)).withStep(BigDecimal.ONE);
+        }
+        return builder.build();
+    }
+
+    synchronized List<CommandOption> commandOptions(Point point) {
+        return point.writable()
+                ? stateOptions(point).stream().map(option -> new CommandOption(option.getValue(), option.getLabel()))
+                        .toList()
+                : List.of();
+    }
+
+    private List<StateOption> stateOptions(Point point) {
+        if ("Switch".equals(point.itemType())) {
+            return List.of(new StateOption("ON", "On"), new StateOption("OFF", "Off"));
+        }
+        if (point.href().endsWith(AIRFLOW) && "speed".equals(point.field())
+                && deviceType(prefix(point.href(), AIRFLOW), "oic.d.airpurifier")) {
+            return List.of("0", "1", "2", "3", "4").stream().map(value -> new StateOption(value, value)).toList();
+        }
+        JsonObject rep = resources.get(point.href());
+        return rep != null && modeSuffix(point.href()) != null && point.field().equals(VENDOR + "modes")
+                ? supportedModes(rep).stream().distinct().map(value -> new StateOption(value, value)).toList()
+                : List.of();
     }
 
     /** Returns UNDEF for malformed or unknown values, without coercing them into valid appliance states. */

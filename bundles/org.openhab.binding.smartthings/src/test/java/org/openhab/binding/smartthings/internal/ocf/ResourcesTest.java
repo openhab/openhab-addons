@@ -15,6 +15,7 @@ package org.openhab.binding.smartthings.internal.ocf;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,84 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 class ResourcesTest {
     private final Resources resources = new Resources();
+
+    @Test
+    void descriptionsExposeRawAdvertisedChoicesAndTrackCapabilityUpdates() throws IOException {
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.airconditioner\"]}"));
+        resources.update("/wind/strength/vs/0", json("""
+                {"x.com.samsung.da.modes":"2","x.com.samsung.da.supportedModes":["2","4","Auto","2"]}
+                """));
+        Point fan = point("/wind/strength/vs/0", "x.com.samsung.da.modes");
+        assertEquals(List.of("2", "4", "Auto"), resources.stateDescription(fan).toStateDescription().getOptions()
+                .stream().map(option -> option.getValue()).toList());
+        assertEquals(List.of("2", "4", "Auto"),
+                resources.commandOptions(fan).stream().map(option -> option.getCommand()).toList());
+        resources.update(fan.href(), json("{\"x.com.samsung.da.modes\":\"4\"}"));
+        assertEquals(3, resources.commandOptions(point(fan.href(), fan.field())).size());
+        resources.update(fan.href(), json("{\"x.com.samsung.da.supportedModes\":[\"4\",{}]}"));
+        Point invalid = point(fan.href(), fan.field());
+        assertTrue(resources.stateDescription(invalid).toStateDescription().getOptions().isEmpty());
+        assertTrue(resources.stateDescription(invalid).toStateDescription().isReadOnly());
+        assertTrue(resources.commandOptions(invalid).isEmpty());
+    }
+
+    @Test
+    void temperatureDescriptionsExposeValidatedBoundsAndNativeUnits() throws IOException {
+        resources.update("/temperature/desired/0", json("""
+                {"temperature":20,"units":"C","range":[16,30]}
+                """));
+        Point desired = point("/temperature/desired/0", "temperature");
+        assertNull(resources.stateDescription(desired).toStateDescription().getMinimum());
+        assertTrue(resources.stateDescription(desired).toStateDescription().isReadOnly());
+        resources.update("/temperature/control/vs/0", json("{\"x.com.samsung.da.increment\":\"0.5\"}"));
+        var description = resources.stateDescription(point(desired.href(), desired.field())).toStateDescription();
+        assertEquals(new BigDecimal("16"), description.getMinimum());
+        assertEquals(new BigDecimal("30"), description.getMaximum());
+        assertEquals(new BigDecimal("0.5"), description.getStep());
+        assertEquals("%s °C", description.getPattern());
+        assertFalse(description.isReadOnly());
+        resources.update(desired.href(), json("{\"units\":\"F\",\"range\":[60,86],\"increment\":1}"));
+        description = resources.stateDescription(point(desired.href(), desired.field())).toStateDescription();
+        assertEquals(new BigDecimal("60"), description.getMinimum());
+        assertEquals(BigDecimal.ONE, description.getStep());
+        assertEquals("%s °F", description.getPattern());
+        resources.update(desired.href(), json("{\"range\":null}"));
+        description = resources.stateDescription(point(desired.href(), desired.field())).toStateDescription();
+        assertNull(description.getMinimum());
+        assertNull(description.getMaximum());
+        assertNull(description.getStep());
+        assertTrue(description.isReadOnly());
+    }
+
+    @Test
+    void switchFanAndDiagnosticDescriptionsMatchTheirChannelTypes() throws IOException {
+        resources.update("/power/vs/0", json("{\"x.com.samsung.da.power\":\"On\"}"));
+        resources.update("/remotectrl/0", json("{\"value\":true}"));
+        resources.update("/airflow/0", json("{\"speed\":1}"));
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.airpurifier\"]}"));
+        resources.update("/diagnostic/0", json("{\"supportedStates\":[\"Run\",\"Stop\"]}"));
+        Point power = point("/power/vs/0", "x.com.samsung.da.power");
+        assertEquals(List.of("ON", "OFF"),
+                resources.commandOptions(power).stream().map(option -> option.getCommand()).toList());
+        Point remote = point("/remotectrl/0", "value");
+        assertEquals(2, resources.stateDescription(remote).toStateDescription().getOptions().size());
+        assertTrue(resources.commandOptions(remote).isEmpty());
+        Point fan = point("/airflow/0", "speed");
+        var description = resources.stateDescription(fan).toStateDescription();
+        assertEquals(BigDecimal.ZERO, description.getMinimum());
+        assertEquals(BigDecimal.valueOf(4), description.getMaximum());
+        assertEquals(BigDecimal.ONE, description.getStep());
+        assertEquals(5, resources.commandOptions(fan).size());
+        resources.update("/oic/d", json("{\"rt\":[\"oic.d.oven\"]}"));
+        fan = point("/airflow/0", "speed");
+        assertNull(resources.stateDescription(fan).toStateDescription().getMaximum());
+        assertTrue(resources.stateDescription(fan).toStateDescription().getOptions().isEmpty());
+        assertTrue(resources.commandOptions(fan).isEmpty());
+        Point diagnostic = point("/diagnostic/0", "");
+        assertTrue(resources.stateDescription(diagnostic).toStateDescription().isReadOnly());
+        assertTrue(resources.stateDescription(diagnostic).toStateDescription().getOptions().isEmpty());
+        assertTrue(resources.commandOptions(diagnostic).isEmpty());
+    }
 
     @Test
     void readsEveryBatchEntryIncludingIndexZero() throws IOException {
@@ -504,6 +583,14 @@ class ResourcesTest {
     void vendorTemperatureFallbackUsesMinimalBoundedUpdates() throws IOException {
         vendorTemperatures();
         Point desired = point("/temperatures/vs/0", "x.com.samsung.da.desired");
+        var description = resources.stateDescription(desired).toStateDescription();
+        assertEquals(new BigDecimal("16"), description.getMinimum());
+        assertEquals(new BigDecimal("30"), description.getMaximum());
+        assertEquals(new BigDecimal("1.0"), description.getStep());
+        assertEquals("%s °C", description.getPattern());
+        assertFalse(description.isReadOnly());
+        assertNull(resources.stateDescription(point(desired.href(), "x.com.samsung.da.current")).toStateDescription()
+                .getMinimum());
         assertEquals(new QuantityType<>("22 °C"), resources.state(desired));
         assertEquals(new QuantityType<>("21 °C"),
                 resources.state(point("/temperatures/vs/0", "x.com.samsung.da.current")));

@@ -16,13 +16,16 @@ import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstan
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.ocf.ApplianceDescriptionProvider;
 import org.openhab.binding.smartthings.internal.ocf.ApplianceHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Creates standalone handlers for Samsung OCF appliances.
@@ -32,6 +35,13 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class)
 public class SmartThingsHandlerFactory extends BaseThingHandlerFactory {
+    private final ApplianceDescriptionProvider descriptionProvider;
+
+    @Activate
+    public SmartThingsHandlerFactory(@Reference ApplianceDescriptionProvider descriptionProvider) {
+        this.descriptionProvider = descriptionProvider;
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return THING_TYPE_APPLIANCE.equals(thingTypeUID);
@@ -39,6 +49,6 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        return supportsThingType(thing.getThingTypeUID()) ? new ApplianceHandler(thing) : null;
+        return supportsThingType(thing.getThingTypeUID()) ? new ApplianceHandler(thing, descriptionProvider) : null;
     }
 }

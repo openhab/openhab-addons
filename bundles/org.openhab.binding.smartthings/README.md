@@ -145,6 +145,8 @@ Do not send guessed or unsupported modes.
 Not every model exposes every setting or permits every write.
 Temperatures use device-reported units; setpoints and other commands are checked against the device's live capabilities, limits, and increments.
 No generic temperature range, fan scale, or fixed mode choices are assumed.
+The channels expose appliance-specific state and command descriptions: advertised mode choices, supported switch and fan commands, and temperature units, limits, and increments.
+These descriptions are refreshed alongside resource readings; read-only channels expose no command choices.
 Other known appliance resources are mapped to appropriately typed channels; unknown non-security resources are available as read-only JSON diagnostics.
 Security resources are never exposed as diagnostic channels.
 

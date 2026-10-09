@@ -13,10 +13,12 @@
 package org.openhab.binding.smartthings.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.smartthings.internal.ocf.ApplianceDescriptionProvider;
 import org.openhab.binding.smartthings.internal.ocf.ApplianceHandler;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -29,7 +31,8 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
  */
 @NonNullByDefault
 class SmartThingsHandlerFactoryTest {
-    private final SmartThingsHandlerFactory factory = new SmartThingsHandlerFactory();
+    private final SmartThingsHandlerFactory factory = new SmartThingsHandlerFactory(
+            mock(ApplianceDescriptionProvider.class));
 
     @Test
     void supportsOnlyAppliances() {
