@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,12 +60,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * DTLS 1.2 CoAP client with explicitly imported credentials and bounded CBOR exchanges.
+ * DTLS 1.2 CoAP client with generated or imported credentials and bounded CBOR exchanges.
  *
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-final class LocalCoapTransport implements LocalTransport {
+final class CoapTransport implements Transport {
     private final InetAddress host;
     private final int port;
     private final long timeoutMillis;
@@ -74,7 +74,7 @@ final class LocalCoapTransport implements LocalTransport {
     private final Set<Request> pending = new HashSet<>();
     private boolean closed;
 
-    LocalCoapTransport(LocalApplianceConfiguration config) throws IOException {
+    CoapTransport(ApplianceConfiguration config) throws IOException {
         try {
             config.validate();
             host = InetAddress.getByName(config.host);
@@ -83,7 +83,7 @@ final class LocalCoapTransport implements LocalTransport {
             }
             timeoutMillis = TimeUnit.SECONDS.toMillis(config.timeout);
             if (config.port == 0) {
-                LocalDiscovery.Descriptor descriptor = LocalDiscovery.discover(host, config.timeout);
+                Discovery.Descriptor descriptor = Discovery.discover(host, config.timeout);
                 if (!config.deviceId.isBlank() && !config.deviceId.equalsIgnoreCase(descriptor.deviceId())) {
                     throw new IOException("Discovered appliance identity differs from the configured device");
                 }
@@ -93,11 +93,11 @@ final class LocalCoapTransport implements LocalTransport {
             }
             endpoint = startEndpoint(dtlsConfiguration(config, host));
         } catch (IllegalArgumentException | GeneralSecurityException e) {
-            throw new IOException("Invalid local appliance credentials or connection configuration");
+            throw new IOException("Invalid appliance credentials or connection configuration");
         }
     }
 
-    LocalCoapTransport(InetAddress host, int port, long timeoutMillis, Endpoint endpoint) {
+    CoapTransport(InetAddress host, int port, long timeoutMillis, Endpoint endpoint) {
         this.host = host;
         this.port = port;
         this.timeoutMillis = timeoutMillis;
@@ -122,38 +122,38 @@ final class LocalCoapTransport implements LocalTransport {
             } else {
                 connector.destroy();
             }
-            throw new IOException("Cannot start local appliance transport");
+            throw new IOException("Cannot start appliance transport");
         }
     }
 
     static ScheduledExecutorService scheduler() {
-        return ThreadPoolManager.getScheduledPool("smartthings-local");
+        return ThreadPoolManager.getScheduledPool("smartthings");
     }
 
     static Configuration networkConfiguration() {
         CoapConfig.register();
         UdpConfig.register();
         DtlsConfig.register();
-        return new Configuration().set(CoapConfig.MAX_RESOURCE_BODY_SIZE, LocalCbor.MAX_BODY_SIZE)
+        return new Configuration().set(CoapConfig.MAX_RESOURCE_BODY_SIZE, Cbor.MAX_BODY_SIZE)
                 .set(CoapConfig.BLOCKWISE_REUSE_TOKEN, true)
                 // A rejected POST must not be resubmitted automatically as a different blockwise exchange.
                 .set(CoapConfig.BLOCKWISE_ENTITY_TOO_LARGE_AUTO_FAILOVER, false).set(CoapConfig.MAX_ACTIVE_PEERS, 1);
     }
 
-    static int localPort(LocalApplianceConfiguration config, InetAddress host) {
-        return config.localPort != 0 ? config.localPort
+    static int clientPort(ApplianceConfiguration config, InetAddress host) {
+        return config.clientPort != 0 ? config.clientPort
                 : 40000 + Math.floorMod(31 * Arrays.hashCode(host.getAddress()) + config.deviceId.hashCode(), 20000);
     }
 
-    static DtlsConnectorConfig dtlsConfiguration(LocalApplianceConfiguration config, InetAddress host)
+    static DtlsConnectorConfig dtlsConfiguration(ApplianceConfiguration config, InetAddress host)
             throws IOException, GeneralSecurityException {
         DtlsConnectorConfig.Builder builder = DtlsConnectorConfig.builder(networkConfiguration())
-                .setAddress(new InetSocketAddress(localPort(config, host)))
+                .setAddress(new InetSocketAddress(clientPort(config, host)))
                 .set(DtlsConfig.DTLS_ROLE, DtlsRole.CLIENT_ONLY).set(DtlsConfig.DTLS_MAX_CONNECTIONS, 1)
                 .set(DtlsConfig.DTLS_USE_SERVER_NAME_INDICATION, false)
                 .setAsList(DtlsConfig.DTLS_CURVES, SupportedGroup.secp256r1);
         if (!config.ownerPsk.isBlank()) {
-            UUID owner = LocalApplianceConfiguration.uuid(config.ownerId);
+            UUID owner = ApplianceConfiguration.uuid(config.ownerId);
             byte[] identity = ByteBuffer.allocate(16).putLong(owner.getMostSignificantBits())
                     .putLong(owner.getLeastSignificantBits()).array();
             byte[] key = config.psk();
@@ -168,32 +168,47 @@ final class LocalCoapTransport implements LocalTransport {
             }
         } else {
             char[] password = config.keyStorePassword.toCharArray();
-            try (InputStream input = Files.newInputStream(Path.of(config.keyStore))) {
-                KeyStore store = KeyStore.getInstance("PKCS12");
-                store.load(input, password);
-                List<String> aliases = new ArrayList<>();
-                var entries = store.aliases();
-                while (entries.hasMoreElements()) {
-                    String alias = entries.nextElement();
-                    if (store.isKeyEntry(alias)) {
-                        aliases.add(alias);
+            try {
+                PrivateKey key;
+                Certificate[] chain;
+                if (config.keyStore.isBlank()) {
+                    ClientIdentity identity = ClientIdentity.load();
+                    key = identity.privateKey();
+                    chain = identity.chain();
+                } else {
+                    KeyStore store = KeyStore.getInstance("PKCS12");
+                    try (InputStream input = Files.newInputStream(Path.of(config.keyStore))) {
+                        store.load(input, password);
                     }
-                }
-                if (aliases.size() != 1 || !(store.getKey(aliases.getFirst(), password) instanceof PrivateKey key)) {
-                    throw new GeneralSecurityException("A single client private key is required");
-                }
-                Certificate[] chain = store.getCertificateChain(aliases.getFirst());
-                if (chain == null || chain.length == 0) {
-                    throw new GeneralSecurityException("A client certificate chain is required");
+                    List<String> aliases = new ArrayList<>();
+                    var entries = store.aliases();
+                    while (entries.hasMoreElements()) {
+                        String alias = entries.nextElement();
+                        if (store.isKeyEntry(alias)) {
+                            aliases.add(alias);
+                        }
+                    }
+                    if (aliases.size() != 1
+                            || !(store.getKey(aliases.getFirst(), password) instanceof PrivateKey privateKey)) {
+                        throw new GeneralSecurityException("A single client private key is required");
+                    }
+                    key = privateKey;
+                    Certificate[] certificates = store.getCertificateChain(aliases.getFirst());
+                    if (certificates == null || certificates.length == 0) {
+                        throw new GeneralSecurityException("A client certificate chain is required");
+                    }
+                    chain = certificates;
                 }
                 builder.setCertificateIdentityProvider(new SingleCertificateProvider(key, chain, CertificateType.X_509))
-                        .setAdvancedCertificateVerifier(new PinnedCertificateVerifier(config.fingerprint()))
+                        .setAdvancedCertificateVerifier(
+                                config.serverFingerprint.isBlank() ? new SamsungCertificateVerifier()
+                                        : new PinnedCertificateVerifier(config.fingerprint()))
                         // Samsung advertises CA names even when it authorizes a self-signed client UUID.
                         // Truncating against those names would silently send an empty client certificate.
                         .set(DtlsConfig.DTLS_TRUNCATE_CLIENT_CERTIFICATE_PATH, false)
                         .setAsList(DtlsConfig.DTLS_CIPHER_SUITES, CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256);
             } catch (IOException | GeneralSecurityException | RuntimeException e) {
-                throw new GeneralSecurityException("Cannot load local appliance client credentials");
+                throw new GeneralSecurityException("Cannot load appliance client credentials");
             } finally {
                 Arrays.fill(password, '\0');
             }
@@ -213,7 +228,7 @@ final class LocalCoapTransport implements LocalTransport {
         Request request = Request.newPost().setURI(resourceUri(host, port, href));
         request.getOptions().setAccept(MediaTypeRegistry.APPLICATION_CBOR)
                 .setContentFormat(MediaTypeRegistry.APPLICATION_CBOR);
-        request.setPayload(LocalCbor.encode(fields));
+        request.setPayload(Cbor.encode(fields));
         exchange(request);
     }
 
@@ -246,7 +261,7 @@ final class LocalCoapTransport implements LocalTransport {
     private Response exchange(Request request) throws IOException {
         synchronized (lifecycle) {
             if (closed) {
-                throw new IOException("Local appliance transport is closed");
+                throw new IOException("Appliance transport is closed");
             }
             pending.add(request);
         }
@@ -255,24 +270,24 @@ final class LocalCoapTransport implements LocalTransport {
             Response response = request.waitForResponse(timeoutMillis);
             synchronized (lifecycle) {
                 if (closed) {
-                    throw new IOException("Local appliance transport is closed");
+                    throw new IOException("Appliance transport is closed");
                 }
             }
             if (response == null) {
-                throw new IOException("Local appliance request failed or timed out");
+                throw new IOException("Appliance request failed or timed out");
             }
             if (!response.isSuccess()) {
-                throw new IOException("Local appliance request rejected with CoAP code " + response.getCode());
+                throw new IOException("Appliance request rejected with CoAP code " + response.getCode());
             }
-            if (response.getPayloadSize() > LocalCbor.MAX_BODY_SIZE) {
-                throw new IOException("Local appliance response is too large");
+            if (response.getPayloadSize() > Cbor.MAX_BODY_SIZE) {
+                throw new IOException("Appliance response is too large");
             }
             return response;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new IOException("Local appliance request interrupted");
+            throw new IOException("Appliance request interrupted");
         } catch (RuntimeException e) {
-            throw new IOException("Local appliance request failed");
+            throw new IOException("Appliance request failed");
         } finally {
             request.cancel();
             synchronized (lifecycle) {
@@ -285,7 +300,7 @@ final class LocalCoapTransport implements LocalTransport {
         if (response.getOptions().getContentFormat() != MediaTypeRegistry.APPLICATION_CBOR) {
             throw new IOException("Expected an appliance CBOR response");
         }
-        return LocalCbor.decode(response.getPayload());
+        return Cbor.decode(response.getPayload());
     }
 
     @Override

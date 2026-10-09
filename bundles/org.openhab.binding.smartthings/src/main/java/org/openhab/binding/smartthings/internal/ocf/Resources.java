@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -50,7 +50,7 @@ import com.google.gson.JsonPrimitive;
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-public class LocalResources {
+public class Resources {
     private static final String VENDOR = "x.com.samsung.da.";
     private static final String POWER = "/power/0";
     private static final String POWER_VS = "/power/vs/0";
@@ -78,7 +78,7 @@ public class LocalResources {
     private record Bounds(BigDecimal minimum, BigDecimal maximum, BigDecimal increment, Unit<Temperature> unit) {
     }
 
-    public LocalResources() {
+    public Resources() {
     }
 
     /**

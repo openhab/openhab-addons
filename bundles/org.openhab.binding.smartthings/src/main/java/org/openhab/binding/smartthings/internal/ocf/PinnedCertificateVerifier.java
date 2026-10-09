@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;

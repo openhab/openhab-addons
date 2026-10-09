@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import java.util.HexFormat;
 import java.util.UUID;
@@ -18,15 +18,15 @@ import java.util.UUID;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Local appliance connection and explicitly supplied credentials.
+ * Appliance connection and optional imported credentials.
  *
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-public class LocalApplianceConfiguration {
+public class ApplianceConfiguration {
     public String host = "";
     public int port;
-    public int localPort;
+    public int clientPort;
     public int refreshInterval = 60;
     public int timeout = 12;
     public String deviceId = "";
@@ -37,15 +37,15 @@ public class LocalApplianceConfiguration {
     public String serverFingerprint = "";
 
     void validate() {
-        if (host.isBlank() || !host.matches("[A-Za-z0-9_.:%-]+") || port < 0 || port > 65535 || localPort < 0
-                || localPort > 65535 || refreshInterval < 10 || timeout < 1 || timeout > 60) {
+        if (host.isBlank() || !host.matches("[A-Za-z0-9_.:%-]+") || port < 0 || port > 65535 || clientPort < 0
+                || clientPort > 65535 || refreshInterval < 10 || timeout < 1 || timeout > 60) {
             throw new IllegalArgumentException("Check host, ports, refresh interval and timeout");
         }
         if (!deviceId.isBlank()) {
             uuid(deviceId);
         }
         if (!ownerPsk.isBlank()) {
-            if (!keyStore.isBlank()) {
+            if (!keyStore.isBlank() || !keyStorePassword.isEmpty() || !serverFingerprint.isBlank()) {
                 throw new IllegalArgumentException("Configure either OwnerPSK or a client key store, not both");
             }
             uuid(ownerId);
@@ -53,9 +53,13 @@ public class LocalApplianceConfiguration {
             if (length != 16 && length != 32) {
                 throw new IllegalArgumentException("OwnerPSK must contain 16 or 32 bytes in hexadecimal");
             }
-        } else if (keyStore.isBlank() || fingerprint().length != 32) {
-            throw new IllegalArgumentException(
-                    "Supply an OwnerPSK or a client key store and server SHA-256 fingerprint");
+        } else {
+            if (!ownerId.isBlank() || keyStore.isBlank() && !keyStorePassword.isEmpty()) {
+                throw new IllegalArgumentException("Incomplete imported credentials");
+            }
+            if (!serverFingerprint.isBlank() && fingerprint().length != 32) {
+                throw new IllegalArgumentException("A SHA-256 certificate fingerprint is required");
+            }
         }
     }
 

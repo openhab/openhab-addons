@@ -4,8 +4,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>Samsung Smartthings Binding</name>
-	<description>Direct local control of Samsung OCF appliances, including air conditioners, using authenticated CoAP over
-		DTLS.</description>
+	<name>Samsung SmartThings Binding</name>
+	<description>Direct control of Samsung OCF appliances using authenticated CoAP over DTLS.</description>
 	<connection>local</connection>
+	<service-id>binding.smartthings</service-id>
+	<config-description-ref uri="binding:smartthings"/>
 </addon:addon>

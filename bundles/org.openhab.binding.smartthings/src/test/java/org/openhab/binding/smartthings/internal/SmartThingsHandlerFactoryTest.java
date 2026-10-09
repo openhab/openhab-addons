@@ -13,37 +13,38 @@
 package org.openhab.binding.smartthings.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.*;
+import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.smartthings.internal.local.LocalApplianceHandler;
+import org.openhab.binding.smartthings.internal.ocf.ApplianceHandler;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 
 /**
- * Verifies local-only standalone appliance dispatch.
+ * Verifies standalone appliance dispatch.
  *
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-class SmartthingsHandlerFactoryTest {
-    private final SmartthingsHandlerFactory factory = new SmartthingsHandlerFactory();
+class SmartThingsHandlerFactoryTest {
+    private final SmartThingsHandlerFactory factory = new SmartThingsHandlerFactory();
 
     @Test
-    void supportsOnlyLocalAppliances() {
-        assertTrue(factory.supportsThingType(THING_TYPE_LOCAL_APPLIANCE));
+    void supportsOnlyAppliances() {
+        assertEquals("smartthings:appliance", THING_TYPE_APPLIANCE.toString());
+        assertTrue(factory.supportsThingType(THING_TYPE_APPLIANCE));
         for (String removed : new String[] { "smartthings", "switch", "airConditionerMode", "unknown" }) {
             assertFalse(factory.supportsThingType(new ThingTypeUID(BINDING_ID, removed)));
         }
     }
 
     @Test
-    void createsStandaloneLocalHandlersWithoutABridge() {
+    void createsStandaloneHandlersWithoutABridge() {
         for (String id : new String[] { "first", "second" }) {
-            assertInstanceOf(LocalApplianceHandler.class, factory.createHandler(ThingBuilder
-                    .create(THING_TYPE_LOCAL_APPLIANCE, new ThingUID(THING_TYPE_LOCAL_APPLIANCE, id)).build()));
+            assertInstanceOf(ApplianceHandler.class, factory.createHandler(
+                    ThingBuilder.create(THING_TYPE_APPLIANCE, new ThingUID(THING_TYPE_APPLIANCE, id)).build()));
         }
     }
 

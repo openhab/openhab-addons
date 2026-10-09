@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.smartthings.internal;
 
-import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.THING_TYPE_LOCAL_APPLIANCE;
+import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_APPLIANCE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.smartthings.internal.local.LocalApplianceHandler;
+import org.openhab.binding.smartthings.internal.ocf.ApplianceHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -25,21 +25,20 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Creates standalone handlers for local Samsung OCF appliances.
+ * Creates standalone handlers for Samsung OCF appliances.
  *
- * @author Bob Raker - Initial contribution
- * @author Kai Kreuzer - Local-only binding rewrite
+ * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class)
-public class SmartthingsHandlerFactory extends BaseThingHandlerFactory {
+public class SmartThingsHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return THING_TYPE_LOCAL_APPLIANCE.equals(thingTypeUID);
+        return THING_TYPE_APPLIANCE.equals(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        return supportsThingType(thing.getThingTypeUID()) ? new LocalApplianceHandler(thing) : null;
+        return supportsThingType(thing.getThingTypeUID()) ? new ApplianceHandler(thing) : null;
     }
 }

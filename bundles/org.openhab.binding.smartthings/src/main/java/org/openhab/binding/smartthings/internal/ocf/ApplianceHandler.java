@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
-import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.BINDING_ID;
+import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.BINDING_ID;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -30,7 +30,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.smartthings.internal.local.LocalResources.Point;
+import org.openhab.binding.smartthings.internal.ocf.Resources.Point;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -48,17 +48,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * Polling and capability-checked local control of an authenticated Samsung OCF appliance.
+ * Polling and capability-checked control of an authenticated Samsung OCF appliance.
  *
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-public class LocalApplianceHandler extends BaseThingHandler {
+public class ApplianceHandler extends BaseThingHandler {
     private static final String IDENTITY = "/oic/d";
     private static final String COLLECTION = "/device/0";
-    private static final String DEVICE_ID_PROPERTY = "deviceid";
+    private static final String DEVICE_ID_PROPERTY = "deviceId";
     private static final int MAX_PENDING_COMMANDS = 16;
-    private final Logger logger = LoggerFactory.getLogger(LocalApplianceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ApplianceHandler.class);
     private final Object lifecycle = new Object();
     private final ReentrantLock io = new ReentrantLock();
     private final TransportFactory transportFactory;
@@ -68,19 +68,19 @@ public class LocalApplianceHandler extends BaseThingHandler {
 
     @FunctionalInterface
     interface TransportFactory {
-        LocalTransport create(LocalApplianceConfiguration configuration) throws IOException;
+        Transport create(ApplianceConfiguration configuration) throws IOException;
     }
 
     private record PendingCommand(String channel, Command command) {
     }
 
     private static final class Session {
-        final LocalApplianceConfiguration configuration;
-        final LocalResources resources = new LocalResources();
+        final ApplianceConfiguration configuration;
+        final Resources resources = new Resources();
         final ArrayDeque<PendingCommand> commands = new ArrayDeque<>();
         @Nullable
         UUID identity;
-        volatile @Nullable LocalTransport transport;
+        volatile @Nullable Transport transport;
         @Nullable
         ScheduledFuture<?> poll;
         @Nullable
@@ -88,7 +88,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
         boolean running;
         boolean refresh = true;
 
-        Session(LocalApplianceConfiguration configuration, @Nullable UUID identity) {
+        Session(ApplianceConfiguration configuration, @Nullable UUID identity) {
             this.configuration = configuration;
             this.identity = identity;
         }
@@ -98,13 +98,13 @@ public class LocalApplianceHandler extends BaseThingHandler {
         private static final long serialVersionUID = 1L;
     }
 
-    public LocalApplianceHandler(Thing thing) {
+    public ApplianceHandler(Thing thing) {
         super(thing);
-        this.transportFactory = LocalCoapTransport::new;
+        this.transportFactory = CoapTransport::new;
         this.executor = scheduler;
     }
 
-    LocalApplianceHandler(Thing thing, TransportFactory transportFactory, ScheduledExecutorService executor) {
+    ApplianceHandler(Thing thing, TransportFactory transportFactory, ScheduledExecutorService executor) {
         super(thing);
         this.transportFactory = transportFactory;
         this.executor = executor;
@@ -113,12 +113,13 @@ public class LocalApplianceHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         long activation = retireSession();
-        LocalApplianceConfiguration configuration = getConfigAs(LocalApplianceConfiguration.class);
+        ApplianceConfiguration configuration = getConfigAs(ApplianceConfiguration.class);
         try {
             configuration.validate();
-            String expected = configuration.deviceId.isBlank() ? getThing().getProperties().get(DEVICE_ID_PROPERTY)
+            String expected = configuration.deviceId.isBlank() ? getThing().getProperties()
+                    .getOrDefault(DEVICE_ID_PROPERTY, getThing().getProperties().getOrDefault("deviceid", ""))
                     : configuration.deviceId;
-            UUID identity = expected == null || expected.isBlank() ? null : LocalApplianceConfiguration.uuid(expected);
+            UUID identity = expected == null || expected.isBlank() ? null : ApplianceConfiguration.uuid(expected);
             synchronized (lifecycle) {
                 if (generation != activation) {
                     return;
@@ -132,7 +133,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
             synchronized (lifecycle) {
                 if (generation == activation) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Check local connection settings and explicitly imported credentials");
+                            "Check connection settings and any imported credentials");
                 }
             }
         }
@@ -180,7 +181,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
             } else if (current.commands.size() < MAX_PENDING_COMMANDS) {
                 current.commands.addLast(new PendingCommand(channelUID.getId(), command));
             } else {
-                logger.debug("Local appliance command queue is full; command discarded");
+                logger.debug("Appliance command queue is full; command discarded");
                 return;
             }
             startWorker(current);
@@ -218,7 +219,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
                     if (!isActive(current)) {
                         return;
                     }
-                    LocalTransport transport = current.transport;
+                    Transport transport = current.transport;
                     if (transport == null) {
                         transport = transportFactory.create(current.configuration);
                         current.transport = transport;
@@ -241,9 +242,9 @@ public class LocalApplianceHandler extends BaseThingHandler {
                         "Authenticated appliance identity does not match this Thing");
             } catch (IOException e) {
                 failure(current, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Local appliance communication failed; check network and credentials");
+                        "Appliance communication failed; check network and credentials");
             } catch (IllegalArgumentException e) {
-                logger.debug("Local appliance command or resource representation was rejected");
+                logger.debug("Appliance command or resource representation was rejected");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 synchronized (lifecycle) {
@@ -252,9 +253,8 @@ public class LocalApplianceHandler extends BaseThingHandler {
                 }
                 return;
             } catch (RuntimeException e) {
-                logger.warn("Unexpected failure processing a local appliance operation");
-                failure(current, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unexpected local appliance processing failure");
+                logger.warn("Unexpected failure processing an appliance operation");
+                failure(current, ThingStatusDetail.COMMUNICATION_ERROR, "Unexpected appliance processing failure");
             } finally {
                 if (refresh) {
                     schedulePoll(current);
@@ -263,12 +263,12 @@ public class LocalApplianceHandler extends BaseThingHandler {
         }
     }
 
-    private void readResources(Session current, LocalTransport transport, LocalResources resources) throws IOException {
+    private void readResources(Session current, Transport transport, Resources resources) throws IOException {
         JsonElement identity = transport.get(IDENTITY);
         verifyIdentity(current, identity);
         resources.update(IDENTITY, identity);
         JsonElement payload = transport.get(COLLECTION);
-        LocalResources received = new LocalResources();
+        Resources received = new Resources();
         received.update(COLLECTION, payload);
         resources.update(COLLECTION, payload);
         if (!hasBatchRepresentation(payload)) {
@@ -278,7 +278,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
                 resources.update(COLLECTION, batch);
             } catch (IOException e) {
                 // Some appliances expose only collection links, which can still be hydrated individually.
-                logger.debug("Local appliance batch interface unavailable; reading linked resources instead");
+                logger.debug("Appliance batch interface unavailable; reading linked resources instead");
             }
         }
         Set<String> visited = new HashSet<>();
@@ -298,7 +298,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
                     resources.update(href, representation);
                 } catch (IOException e) {
                     // Optional enrichment must not invalidate a successful baseline batch read.
-                    logger.debug("A linked local appliance resource could not be read");
+                    logger.debug("A linked appliance resource could not be read");
                 }
             }
         }
@@ -340,7 +340,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
         }
         UUID identity;
         try {
-            identity = LocalApplianceConfiguration.uuid(deviceId.getAsString());
+            identity = ApplianceConfiguration.uuid(deviceId.getAsString());
         } catch (IllegalArgumentException e) {
             throw new IOException("Invalid authenticated appliance identity");
         }
@@ -350,14 +350,14 @@ public class LocalApplianceHandler extends BaseThingHandler {
         current.identity = identity;
     }
 
-    private void sendCommand(Session current, LocalTransport transport, PendingCommand pending) throws IOException {
+    private void sendCommand(Session current, Transport transport, PendingCommand pending) throws IOException {
         Point previous = current.resources.points().stream().filter(point -> point.id().equals(pending.channel()))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("Unknown resource channel"));
         if (!previous.writable()) {
             throw new IllegalArgumentException("Resource channel is read-only");
         }
         // A separate live model fails closed if capabilities or Remote Control disappear from a fresh response.
-        LocalResources live = new LocalResources();
+        Resources live = new Resources();
         readResources(current, transport, live);
         for (String href : current.resources.snapshot().keySet()) {
             if (!IDENTITY.equals(href) && !COLLECTION.equals(href) && !isSecurityResource(href)) {
@@ -371,7 +371,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
                                     && href.endsWith("/temperature/control/vs/0")) {
                         throw e;
                     }
-                    logger.debug("An unrelated local appliance resource could not be refreshed before a command");
+                    logger.debug("An unrelated appliance resource could not be refreshed before a command");
                 }
             }
         }
@@ -381,7 +381,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
         try {
             fields = live.command(point, pending.command());
         } catch (IllegalArgumentException e) {
-            logger.debug("Local appliance command rejected by the current capabilities or Remote Control setting");
+            logger.debug("Appliance command rejected by the current capabilities or Remote Control setting");
             return;
         }
         if (!isActive(current)) {
@@ -403,11 +403,11 @@ public class LocalApplianceHandler extends BaseThingHandler {
             List<Channel> channels = new ArrayList<>();
             for (Point point : points) {
                 String type = switch (point.itemType()) {
-                    case "Switch" -> "local-switch";
-                    case "Number" -> "local-number";
-                    case "Number:Temperature" -> "local-temperature";
-                    case "Number:Power" -> "local-power";
-                    default -> "local-string";
+                    case "Switch" -> "switch";
+                    case "Number" -> "number";
+                    case "Number:Temperature" -> "temperature";
+                    case "Number:Power" -> "power";
+                    default -> "string";
                 };
                 if (!point.writable()) {
                     type += "-readonly";
@@ -419,6 +419,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
             UUID identity = current.identity;
             if (identity != null) {
                 properties.put(DEVICE_ID_PROPERTY, identity.toString());
+                properties.remove("deviceid");
             }
             if (!channels.equals(getThing().getChannels()) || !properties.equals(getThing().getProperties())) {
                 updateThing(editThing().withChannels(channels).withProperties(properties).build());
@@ -466,7 +467,7 @@ public class LocalApplianceHandler extends BaseThingHandler {
     }
 
     private static void closeTransport(Session current) {
-        LocalTransport transport = current.transport;
+        Transport transport = current.transport;
         if (transport != null) {
             transport.close();
         }

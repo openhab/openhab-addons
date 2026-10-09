@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import java.io.IOException;
 
@@ -30,14 +30,14 @@ import com.google.gson.JsonParseException;
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-final class LocalCbor {
+final class Cbor {
     static final int MAX_BODY_SIZE = 65536;
     private static final ObjectMapper MAPPER = new ObjectMapper(
             CBORFactory.builder().streamReadConstraints(StreamReadConstraints.builder().maxNestingDepth(64)
                     .maxStringLength(MAX_BODY_SIZE).maxNumberLength(100).build()).build());
     private static final ObjectMapper JSON = new ObjectMapper();
 
-    private LocalCbor() {
+    private Cbor() {
     }
 
     static JsonElement decode(byte[] bytes) throws IOException {

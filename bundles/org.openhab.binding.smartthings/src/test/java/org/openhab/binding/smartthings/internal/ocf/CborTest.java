@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,7 +30,7 @@ import com.google.gson.JsonPrimitive;
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-class LocalCborTest {
+class CborTest {
     @Test
     void roundTripsBatchAndTypedValues() throws IOException {
         var value = JsonParser.parseString("""
@@ -38,9 +38,9 @@ class LocalCborTest {
                  {"href":"/temperature/current/0","rep":{"temperature":21.5,"units":"C"}},
                  {"href":"/custom/0","rep":{"text":"ümlaut","nullable":null,"range":[16,30]}}]
                 """);
-        assertEquals(value, LocalCbor.decode(LocalCbor.encode(value)));
+        assertEquals(value, Cbor.decode(Cbor.encode(value)));
         assertEquals(JsonParser.parseString("{\"value\":true}"),
-                LocalCbor.decode(HexFormat.of().parseHex("bf6576616c7565f5ff")));
+                Cbor.decode(HexFormat.of().parseHex("bf6576616c7565f5ff")));
     }
 
     @Test
@@ -50,16 +50,16 @@ class LocalCborTest {
         bytes[1] = (byte) 0xff;
         bytes[2] = (byte) 0xfd;
         java.util.Arrays.fill(bytes, 3, bytes.length, (byte) 'x');
-        assertEquals(new JsonPrimitive("x".repeat(65533)), LocalCbor.decode(bytes));
+        assertEquals(new JsonPrimitive("x".repeat(65533)), Cbor.decode(bytes));
     }
 
     @Test
     void rejectsEmptyTruncatedTrailingAndOversizedRepresentations() {
         for (byte[] input : new byte[][] { new byte[0], new byte[65537], { (byte) 0xa1 }, { (byte) 0xf5, (byte) 0xf4 },
                 { (byte) 0xff } }) {
-            assertThrows(IOException.class, () -> LocalCbor.decode(input));
+            assertThrows(IOException.class, () -> Cbor.decode(input));
         }
-        assertThrows(IOException.class, () -> LocalCbor.encode(new JsonPrimitive("x".repeat(65536))));
+        assertThrows(IOException.class, () -> Cbor.encode(new JsonPrimitive("x".repeat(65536))));
     }
 
     @Test
@@ -71,6 +71,6 @@ class LocalCborTest {
             current.add(next);
             current = next;
         }
-        assertThrows(IOException.class, () -> LocalCbor.decode(LocalCbor.encode(root)));
+        assertThrows(IOException.class, () -> Cbor.decode(Cbor.encode(root)));
     }
 }

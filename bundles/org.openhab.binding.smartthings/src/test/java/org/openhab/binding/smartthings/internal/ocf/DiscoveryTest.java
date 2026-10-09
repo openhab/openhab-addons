@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -41,21 +41,21 @@ import com.google.gson.JsonParser;
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-class LocalDiscoveryTest {
+class DiscoveryTest {
     private static final String IDENTITY = "12345678-1234-5678-9abc-123456789abc";
     private final InetAddress host = InetAddress.getByAddress(new byte[] { (byte) 192, 0, 2, 10 });
 
-    LocalDiscoveryTest() throws IOException {
+    DiscoveryTest() throws IOException {
     }
 
     @Test
     void discoversLegacySamsungSecurePortFromCborLinks() throws Exception {
-        byte[] resources = LocalCbor.encode(JsonParser.parseString("""
+        byte[] resources = Cbor.encode(JsonParser.parseString("""
                 [{"di":"12345678-1234-5678-9abc-123456789abc","links":[
                   {"href":"/oic/sec/doxm","rt":["oic.r.doxm"],"p":{"sec":true,"port":49155}}
                 ]}]
                 """));
-        var descriptor = LocalDiscovery.descriptor(LocalCbor.decode(resources), device(), host);
+        var descriptor = Discovery.descriptor(Cbor.decode(resources), device(), host);
         assertEquals(49155, descriptor.securePort());
         assertEquals(IDENTITY, descriptor.deviceId());
         assertEquals("Samsung Room A/C", descriptor.name());
@@ -68,10 +68,10 @@ class LocalDiscoveryTest {
                   {"ep":"coap://192.0.2.10:49154"},
                   {"ep":"coaps://192.0.2.10:49155"}]}]}
                 """);
-        assertEquals(49155, LocalDiscovery.descriptor(listing, device(), host).securePort());
+        assertEquals(49155, Discovery.descriptor(listing, device(), host).securePort());
         InetAddress ipv6 = InetAddress.getByName("::1");
-        assertEquals(49155, LocalDiscovery.securePort(ipv6, "coaps://[::1]:49155"));
-        assertEquals(5684, LocalDiscovery.securePort(host, "coaps://192.0.2.10"));
+        assertEquals(49155, Discovery.securePort(ipv6, "coaps://[::1]:49155"));
+        assertEquals(5684, Discovery.securePort(host, "coaps://192.0.2.10"));
     }
 
     @Test
@@ -81,7 +81,7 @@ class LocalDiscoveryTest {
                 "coaps://192.0.2.10:49155/power/0", "coaps://192.0.2.10:49155?x=y", "coaps://192.0.2.10:49155#fragment",
                 "coaps://192.0.2.10:0", "coaps://192.0.2.10:65536", "coap://192.0.2.10:49155",
                 "coaps://[bad-ipv6]:49155")) {
-            assertThrows(IOException.class, () -> LocalDiscovery.securePort(host, ep), ep);
+            assertThrows(IOException.class, () -> Discovery.securePort(host, ep), ep);
         }
     }
 
@@ -95,24 +95,50 @@ class LocalDiscoveryTest {
                 "{\"links\":[{\"p\":{\"sec\":false,\"port\":49155}}]}",
                 "{\"links\":[{\"p\":{\"sec\":true,\"port\":49155.5}}]}",
                 "{\"links\":[{\"p\":{\"sec\":true,\"port\":49155}}," + "{\"p\":{\"sec\":true,\"port\":49156}}]}")) {
-            assertThrows(IOException.class,
-                    () -> LocalDiscovery.descriptor(JsonParser.parseString(listing), device(), host), listing);
+            assertThrows(IOException.class, () -> Discovery.descriptor(JsonParser.parseString(listing), device(), host),
+                    listing);
         }
-        assertThrows(IOException.class, () -> LocalDiscovery.descriptor(JsonParser.parseString("{}"),
+        assertThrows(IOException.class, () -> Discovery.descriptor(JsonParser.parseString("{}"),
                 JsonParser.parseString("{\"di\":\"not-a-device\"}"), host));
+    }
+
+    @Test
+    void verifiesSamsungPlatformWithoutConfusingPlatformAndDeviceIdentities() throws IOException {
+        for (String manufacturer : List.of("Samsung", "Samsung Electronics", "Samsung Electronics Co., Ltd.",
+                "SAMSUNG ELECTRONICS")) {
+            Discovery.verifySamsung(
+                    JsonParser.parseString(
+                            "{\"mnmn\":\"" + manufacturer + "\",\"pi\":\"87654321-4321-6789-abcd-987654321abc\"}"),
+                    IDENTITY);
+        }
+        Discovery.verifySamsung(
+                JsonParser.parseString("[{\"di\":\"" + IDENTITY + "\",\"mnmn\":\"Samsung Electronics\"}]"), IDENTITY);
+    }
+
+    @Test
+    void rejectsMissingForeignMalformedAndConflictingManufacturerMetadata() {
+        for (String platform : List.of("{}", "null", "[]", "[true]", "{\"mnmn\":null}", "{\"mnmn\":42}",
+                "{\"mnmn\":\"\"}", "{\"mnmn\":\"Other vendor\"}", "{\"mnmn\":\"Not Samsung\"}",
+                "{\"mnmn\":\"Samsung impersonator\"}", "{\"mnmn\":\"Samsung\",\"di\":\"invalid\"}",
+                "{\"mnmn\":\"Samsung\",\"di\":\"87654321-4321-6789-abcd-987654321abc\"}",
+                "[{\"mnmn\":\"Samsung\"},{\"mnmn\":\"Other vendor\"}]")) {
+            assertThrows(IOException.class, () -> Discovery.verifySamsung(JsonParser.parseString(platform), IDENTITY),
+                    platform);
+        }
     }
 
     @Test
     @Timeout(10)
     void discoversWorkingPortAfterAnUnavailablePort() throws Exception {
         InetAddress loopback = InetAddress.getLoopbackAddress();
-        var endpoint = new CoapEndpoint.Builder().setConfiguration(LocalCoapTransport.networkConfiguration())
+        var endpoint = new CoapEndpoint.Builder().setConfiguration(CoapTransport.networkConfiguration())
                 .setInetSocketAddress(new InetSocketAddress(loopback, 0)).build();
-        var server = new CoapServer(LocalCoapTransport.networkConfiguration());
+        var server = new CoapServer(CoapTransport.networkConfiguration());
         server.addEndpoint(endpoint);
         var oic = new CoapResource("oic");
-        oic.add(resource("d", LocalCbor.encode(device())));
-        oic.add(resource("res", LocalCbor.encode(JsonParser.parseString("""
+        oic.add(resource("d", Cbor.encode(device())));
+        oic.add(resource("p", Cbor.encode(JsonParser.parseString("{\"mnmn\":\"Samsung Electronics\"}"))));
+        oic.add(resource("res", Cbor.encode(JsonParser.parseString("""
                 [{"di":"12345678-1234-5678-9abc-123456789abc","links":[
                   {"href":"/oic/sec/doxm","p":{"sec":true,"port":49155}}
                 ]}]
@@ -125,8 +151,12 @@ class LocalDiscoveryTest {
                 unavailable = socket.getLocalPort();
             }
             var ports = new LinkedHashSet<>(List.of(unavailable, endpoint.getAddress().getPort()));
-            var found = LocalDiscovery.discover(loopback, ports, 5);
+            var found = Discovery.discoverSamsung(loopback, ports, 5);
             assertEquals(IDENTITY, found.deviceId());
+            oic.add(resource("p", Cbor.encode(JsonParser.parseString("{\"mnmn\":\"Other vendor\"}"))));
+            assertThrows(IOException.class, () -> Discovery.discoverSamsung(loopback,
+                    new LinkedHashSet<>(List.of(endpoint.getAddress().getPort())), 2));
+            assertEquals(IDENTITY, Discovery.discover(loopback, endpoint.getAddress().getPort(), 2).deviceId());
             assertEquals(49155, found.securePort());
         } finally {
             server.destroy();
@@ -137,21 +167,21 @@ class LocalDiscoveryTest {
     @Timeout(15)
     void lastDiscoveryPortCanUseTheRemainingConfiguredTimeout() throws Exception {
         InetAddress loopback = InetAddress.getLoopbackAddress();
-        var endpoint = new CoapEndpoint.Builder().setConfiguration(LocalCoapTransport.networkConfiguration())
+        var endpoint = new CoapEndpoint.Builder().setConfiguration(CoapTransport.networkConfiguration())
                 .setInetSocketAddress(new InetSocketAddress(loopback, 0)).build();
-        var server = new CoapServer(LocalCoapTransport.networkConfiguration());
+        var server = new CoapServer(CoapTransport.networkConfiguration());
         var responses = Executors.newSingleThreadScheduledExecutor(task -> {
-            Thread thread = new Thread(task, "local-discovery-response-test");
+            Thread thread = new Thread(task, "discovery-response-test");
             thread.setDaemon(true);
             return thread;
         });
-        byte[] listing = LocalCbor.encode(JsonParser.parseString("""
+        byte[] listing = Cbor.encode(JsonParser.parseString("""
                 [{"di":"12345678-1234-5678-9abc-123456789abc","links":[
                   {"href":"/oic/sec/doxm","p":{"sec":true,"port":49155}}
                 ]}]
                 """));
         var oic = new CoapResource("oic");
-        oic.add(resource("d", LocalCbor.encode(device())));
+        oic.add(resource("d", Cbor.encode(device())));
         oic.add(new CoapResource("res") {
             @Override
             @NonNullByDefault({})
@@ -167,8 +197,7 @@ class LocalDiscoveryTest {
         server.add(oic);
         try {
             server.start();
-            var found = LocalDiscovery.discover(loopback, new LinkedHashSet<>(List.of(endpoint.getAddress().getPort())),
-                    6);
+            var found = Discovery.discover(loopback, new LinkedHashSet<>(List.of(endpoint.getAddress().getPort())), 6);
             assertEquals(IDENTITY, found.deviceId());
         } finally {
             responses.shutdownNow();
@@ -188,7 +217,7 @@ class LocalDiscoveryTest {
     }
 
     private static com.google.gson.JsonElement device() throws IOException {
-        return LocalCbor.decode(LocalCbor.encode(JsonParser.parseString("""
+        return Cbor.decode(Cbor.encode(JsonParser.parseString("""
                 {"di":"12345678-1234-5678-9abc-123456789abc","n":"Samsung Room A/C",
                  "rt":["oic.wk.d","oic.d.airconditioner"]}
                 """)));

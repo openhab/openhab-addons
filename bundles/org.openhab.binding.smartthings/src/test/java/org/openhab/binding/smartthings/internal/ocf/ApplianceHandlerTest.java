@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.THING_TYPE_LOCAL_APPLIANCE;
+import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_APPLIANCE;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -56,14 +56,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Deterministic local handler tests with no socket or appliance access.
+ * Deterministic handler tests with no socket or appliance access.
  *
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-class LocalApplianceHandlerTest {
+class ApplianceHandlerTest {
     private static final String DEVICE_ID = "51c01fcf-1b37-4f98-8d68-1e4c5c07edcc";
-    private static final ThingUID UID = new ThingUID(THING_TYPE_LOCAL_APPLIANCE, "test");
+    private static final ThingUID UID = new ThingUID(THING_TYPE_APPLIANCE, "test");
     private static final long WAIT_SECONDS = 5;
     private final ControlledScheduler executor = new ControlledScheduler();
     private final FakeTransport transport = new FakeTransport();
@@ -71,25 +71,25 @@ class LocalApplianceHandlerTest {
     private final BlockingQueue<ThingStatusInfo> statuses = new LinkedBlockingQueue<>();
     private final Map<String, State> states = new ConcurrentHashMap<>();
     private final List<Thing> changes = new CopyOnWriteArrayList<>();
-    private final List<LocalApplianceHandler> handlers = new ArrayList<>();
+    private final List<ApplianceHandler> handlers = new ArrayList<>();
     private Runnable afterThingUpdate = () -> {
     };
 
     @AfterEach
     void tearDown() throws InterruptedException {
         transport.release.countDown();
-        handlers.forEach(LocalApplianceHandler::dispose);
+        handlers.forEach(ApplianceHandler::dispose);
         executor.shutdownNow();
         assertTrue(executor.awaitTermination(WAIT_SECONDS, TimeUnit.SECONDS));
     }
 
-    private LocalApplianceHandler initialize(Map<String, Object> overrides, Map<String, String> properties)
+    private ApplianceHandler initialize(Map<String, Object> overrides, Map<String, String> properties)
             throws Exception {
         Map<String, Object> settings = new ConcurrentHashMap<>(Map.of("host", "127.0.0.1", "port", 5684, "keyStore",
                 "unused.p12", "serverFingerprint", "00".repeat(32), "refreshInterval", 10));
         settings.putAll(overrides);
-        Thing thing = ThingBuilder.create(THING_TYPE_LOCAL_APPLIANCE, UID)
-                .withConfiguration(new Configuration(settings)).withProperties(properties).build();
+        Thing thing = ThingBuilder.create(THING_TYPE_APPLIANCE, UID).withConfiguration(new Configuration(settings))
+                .withProperties(properties).build();
         doAnswer(invocation -> {
             statuses.add(invocation.getArgument(1));
             return null;
@@ -104,14 +104,14 @@ class LocalApplianceHandlerTest {
             afterThingUpdate.run();
             return null;
         }).when(callback).thingUpdated(any());
-        LocalApplianceHandler handler = new LocalApplianceHandler(thing, config -> transport, executor);
+        ApplianceHandler handler = new ApplianceHandler(thing, config -> transport, executor);
         handlers.add(handler);
         handler.setCallback(callback);
         assertTimeoutPreemptively(Duration.ofSeconds(2), handler::initialize);
         return handler;
     }
 
-    private LocalApplianceHandler initialize() throws Exception {
+    private ApplianceHandler initialize() throws Exception {
         return initialize(Map.of(), Map.of());
     }
 
@@ -127,21 +127,20 @@ class LocalApplianceHandlerTest {
         throw new AssertionError();
     }
 
-    private static Channel channel(LocalApplianceHandler handler, String label) {
+    private static Channel channel(ApplianceHandler handler, String label) {
         return handler.getThing().getChannels().stream().filter(candidate -> label.equals(candidate.getLabel()))
                 .findFirst().orElseThrow();
     }
 
     @Test
     void initializesAsynchronouslyAndPublishesTheFirstBatchEntry() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         Channel power = channel(handler, "Power");
         assertEquals(OnOffType.ON, states.get(power.getUID().getId()));
-        assertEquals("smartthings:local-switch", power.getChannelTypeUID().toString());
-        assertEquals("smartthings:local-switch-readonly",
-                channel(handler, "Remote Control").getChannelTypeUID().toString());
-        assertEquals(DEVICE_ID, handler.getThing().getProperties().get("deviceid"));
+        assertEquals("smartthings:switch", power.getChannelTypeUID().toString());
+        assertEquals("smartthings:switch-readonly", channel(handler, "Remote Control").getChannelTypeUID().toString());
+        assertEquals(DEVICE_ID, handler.getThing().getProperties().get("deviceId"));
         assertFalse(handler.getThing().getProperties().containsKey("ownerId"));
         assertEquals(List.of("/oic/d", "/device/0"), transport.reads);
         assertEquals(1, changes.size());
@@ -149,7 +148,7 @@ class LocalApplianceHandlerTest {
 
     @Test
     void refreshOnlyReadsAndUnchangedChannelsAreNotRebuilt() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         handler.handleCommand(channel(handler, "Power").getUID(), RefreshType.REFRESH);
         awaitStatus(ThingStatus.ONLINE);
@@ -166,7 +165,7 @@ class LocalApplianceHandlerTest {
         transport.batchInterface = json("""
                 [{"href":"/power/0"},{"href":"/remotectrl/0","rep":{"value":true}}]
                 """);
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         assertEquals(OnOffType.ON, states.get(channel(handler, "Power").getUID().getId()));
         assertEquals(List.of("/oic/d", "/device/0", "/device/0?if=oic.if.b", "/power/0"), transport.reads);
@@ -178,7 +177,7 @@ class LocalApplianceHandlerTest {
     void unsupportedBatchInterfaceStillHydratesDefaultLinks() throws Exception {
         transport.batch = json("{\"links\":[{\"href\":\"/power/0\"}]}");
         transport.failBatch = true;
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         assertEquals(OnOffType.ON, states.get(channel(handler, "Power").getUID().getId()));
         assertTrue(transport.reads.contains("/power/0"));
@@ -188,7 +187,7 @@ class LocalApplianceHandlerTest {
     void linkOnlyCollectionsAreHydratedAgainOnEveryPoll() throws Exception {
         transport.batch = json("{\"links\":[{\"href\":\"/power/0\"}]}");
         transport.failBatch = true;
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         ChannelUID power = channel(handler, "Power").getUID();
         assertEquals(OnOffType.ON, states.get(power.getId()));
@@ -206,7 +205,7 @@ class LocalApplianceHandlerTest {
                  {"href":"/remotectrl/0","rep":{"value":true}},
                  {"href":"/diagnostic/0","rep":{"value":"previous"}}]
                 """);
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         handler.handleCommand(channel(handler, "Power").getUID(), OnOffType.OFF);
         awaitStatus(ThingStatus.ONLINE);
@@ -218,7 +217,7 @@ class LocalApplianceHandlerTest {
     @ParameterizedTest
     @ValueSource(strings = { "/power/0", "/remotectrl/0" })
     void unavailableTargetOrRemoteControlGatePreventsWrites(String href) throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         transport.unavailable = href;
         handler.handleCommand(channel(handler, "Power").getUID(), OnOffType.OFF);
@@ -228,7 +227,7 @@ class LocalApplianceHandlerTest {
 
     @Test
     void readbackDoesNotPublishAnOptimisticCommandState() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         ChannelUID power = channel(handler, "Power").getUID();
         transport.blockReadback = true;
@@ -243,7 +242,7 @@ class LocalApplianceHandlerTest {
 
     @Test
     void failedReadbackDoesNotRetryTheWriteOrPublishAnOptimisticState() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         ChannelUID power = channel(handler, "Power").getUID();
         transport.failReadback = true;
@@ -271,7 +270,7 @@ class LocalApplianceHandlerTest {
 
     @Test
     void disposalDuringLiveValidationPreventsPost() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         transport.block = true;
         handler.handleCommand(channel(handler, "Power").getUID(), OnOffType.OFF);
@@ -286,7 +285,7 @@ class LocalApplianceHandlerTest {
 
     @Test
     void channelWritabilityChangesWithoutRenamingTheChannel() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         ChannelUID uid = channel(handler, "Power").getUID();
         transport.batch = json("""
@@ -296,13 +295,13 @@ class LocalApplianceHandlerTest {
         handler.handleCommand(uid, RefreshType.REFRESH);
         awaitStatus(ThingStatus.ONLINE);
         assertEquals(uid, channel(handler, "Power").getUID());
-        assertEquals("smartthings:local-switch-readonly", channel(handler, "Power").getChannelTypeUID().toString());
+        assertEquals("smartthings:switch-readonly", channel(handler, "Power").getChannelTypeUID().toString());
         assertEquals(2, changes.size());
     }
 
     @Test
     void incompleteBatchStubDoesNotReplacePreviouslyKnownState() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         transport.batch = json("""
                 [{"href":"/power/0","rep":{"href":"/power/0"}},
@@ -316,7 +315,7 @@ class LocalApplianceHandlerTest {
 
     @Test
     void writesMinimalCommandThenReadsBackActualState() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         handler.handleCommand(channel(handler, "Power").getUID(), OnOffType.OFF);
         awaitStatus(ThingStatus.ONLINE);
@@ -328,7 +327,7 @@ class LocalApplianceHandlerTest {
 
     @Test
     void remoteControlIsRecheckedBeforePosting() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         transport.remote = false;
         handler.handleCommand(channel(handler, "Power").getUID(), OnOffType.OFF);
@@ -341,11 +340,10 @@ class LocalApplianceHandlerTest {
 
     @Test
     void readonlyAndForeignChannelsNeverPost() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         handler.handleCommand(channel(handler, "Remote Control").getUID(), OnOffType.OFF);
-        handler.handleCommand(new ChannelUID(new ThingUID(THING_TYPE_LOCAL_APPLIANCE, "other"), "power"),
-                OnOffType.OFF);
+        handler.handleCommand(new ChannelUID(new ThingUID(THING_TYPE_APPLIANCE, "other"), "power"), OnOffType.OFF);
         handler.handleCommand(channel(handler, "Power").getUID(), RefreshType.REFRESH);
         awaitStatus(ThingStatus.ONLINE);
         assertTrue(transport.posts.isEmpty());
@@ -353,7 +351,7 @@ class LocalApplianceHandlerTest {
 
     @Test
     void failedPostIsNotRetriedAndScheduledReadsRecover() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         transport.failPost = true;
         handler.handleCommand(channel(handler, "Power").getUID(), OnOffType.OFF);
@@ -368,7 +366,7 @@ class LocalApplianceHandlerTest {
     @Test
     void failedReadGoesOfflineAndScheduledReadsRecover() throws Exception {
         transport.failRead = true;
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, awaitStatus(ThingStatus.OFFLINE).getStatusDetail());
         assertTrue(states.isEmpty());
         transport.failRead = false;
@@ -384,10 +382,21 @@ class LocalApplianceHandlerTest {
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, awaitStatus(ThingStatus.OFFLINE).getStatusDetail());
         assertTrue(states.isEmpty());
         assertTrue(changes.isEmpty());
+        initialize(Map.of(), Map.of("deviceId", different));
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, awaitStatus(ThingStatus.OFFLINE).getStatusDetail());
+        assertTrue(states.isEmpty());
         initialize(Map.of(), Map.of("deviceid", different));
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, awaitStatus(ThingStatus.OFFLINE).getStatusDetail());
         assertTrue(states.isEmpty());
-        assertEquals(List.of("/oic/d", "/oic/d"), transport.reads);
+        assertEquals(List.of("/oic/d", "/oic/d", "/oic/d"), transport.reads);
+    }
+
+    @Test
+    void migratesLegacyIdentityAfterAuthentication() throws Exception {
+        ApplianceHandler handler = initialize(Map.of(), Map.of("deviceid", DEVICE_ID));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(DEVICE_ID, handler.getThing().getProperties().get("deviceId"));
+        assertFalse(handler.getThing().getProperties().containsKey("deviceid"));
     }
 
     @Test
@@ -411,7 +420,7 @@ class LocalApplianceHandlerTest {
     @Test
     void disposalDoesNotBlockOnRequestsOrPublishLateResults() throws Exception {
         transport.block = true;
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         assertTrue(transport.entered.await(WAIT_SECONDS, TimeUnit.SECONDS));
         assertTimeoutPreemptively(Duration.ofSeconds(2), handler::dispose);
         assertTrue(transport.closed.await(WAIT_SECONDS, TimeUnit.SECONDS));
@@ -427,7 +436,7 @@ class LocalApplianceHandlerTest {
     @Test
     void reinitializationSuppressesStaleCallbacksAndKeepsIoSerialized() throws Exception {
         transport.block = true;
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         assertTrue(transport.entered.await(WAIT_SECONDS, TimeUnit.SECONDS));
         assertTimeoutPreemptively(Duration.ofSeconds(2), handler::initialize);
         assertTrue(transport.closed.await(WAIT_SECONDS, TimeUnit.SECONDS));
@@ -436,12 +445,12 @@ class LocalApplianceHandlerTest {
         awaitStatus(ThingStatus.ONLINE);
         assertEquals(1, changes.size());
         assertEquals(1, transport.maximumActive.get());
-        assertEquals(DEVICE_ID, handler.getThing().getProperties().get("deviceid"));
+        assertEquals(DEVICE_ID, handler.getThing().getProperties().get("deviceId"));
     }
 
     @Test
     void commandQueueAndRefreshRequestsAreBoundedWhileIoIsBlocked() throws Exception {
-        LocalApplianceHandler handler = initialize();
+        ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
         ChannelUID power = channel(handler, "Power").getUID();
         transport.block = true;
@@ -464,7 +473,7 @@ class LocalApplianceHandlerTest {
         return JsonParser.parseString(text);
     }
 
-    private static final class FakeTransport implements LocalTransport {
+    private static final class FakeTransport implements Transport {
         final List<String> reads = new CopyOnWriteArrayList<>();
         final List<String> posts = new CopyOnWriteArrayList<>();
         final BlockingQueue<String> completedReads = new LinkedBlockingQueue<>();
@@ -571,7 +580,7 @@ class LocalApplianceHandlerTest {
 
         ControlledScheduler() {
             super(3, task -> {
-                Thread thread = new Thread(task, "local-handler-test");
+                Thread thread = new Thread(task, "appliance-handler-test");
                 thread.setDaemon(true);
                 return thread;
             });

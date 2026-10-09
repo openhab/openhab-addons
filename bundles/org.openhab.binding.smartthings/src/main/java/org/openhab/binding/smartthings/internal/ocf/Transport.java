@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import java.io.IOException;
 
@@ -20,12 +20,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * Authenticated access to one local appliance, without ownership provisioning.
+ * Authenticated access to one appliance, without ownership provisioning.
  *
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-interface LocalTransport extends AutoCloseable {
+interface Transport extends AutoCloseable {
     JsonElement get(String path) throws IOException;
 
     void post(String href, JsonObject fields) throws IOException;

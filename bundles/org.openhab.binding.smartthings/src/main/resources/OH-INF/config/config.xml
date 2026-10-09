@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="binding:smartthings">
+		<parameter name="discoverySubnet" type="text">
+			<label>Discovery Subnet</label>
+			<description>Optional private IPv4 CIDR for user-triggered Inbox scans, for example 192.168.1.0/24. Only
+				10.0.0.0/8,
+				172.16.0.0/12 and 192.168.0.0/16 addresses with a /24 to /32 prefix are accepted.
+				No background scanning is
+				performed.</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

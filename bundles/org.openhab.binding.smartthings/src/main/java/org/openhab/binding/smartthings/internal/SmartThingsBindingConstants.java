@@ -16,16 +16,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * Identifiers for the local Samsung OCF binding.
+ * Identifiers for the Samsung OCF binding.
  *
- * @author Bob Raker - Initial contribution
- * @author Kai Kreuzer - Local-only binding rewrite
+ * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-public final class SmartthingsBindingConstants {
+public final class SmartThingsBindingConstants {
     public static final String BINDING_ID = "smartthings";
-    public static final ThingTypeUID THING_TYPE_LOCAL_APPLIANCE = new ThingTypeUID(BINDING_ID, "localAppliance");
+    public static final ThingTypeUID THING_TYPE_APPLIANCE = new ThingTypeUID(BINDING_ID, "appliance");
 
-    private SmartthingsBindingConstants() {
+    private SmartThingsBindingConstants() {
     }
 }

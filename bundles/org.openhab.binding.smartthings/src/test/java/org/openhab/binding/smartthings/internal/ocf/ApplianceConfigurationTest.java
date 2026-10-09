@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,13 +25,13 @@ import org.junit.jupiter.api.Test;
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-class LocalApplianceConfigurationTest {
+class ApplianceConfigurationTest {
     @Test
     void acceptsImportedPskOrExplicitlyPinnedKeyStore() {
-        LocalApplianceConfiguration config = LocalCoapTransportTest.configuration();
+        ApplianceConfiguration config = CoapTransportTest.configuration();
         assertDoesNotThrow(config::validate);
         config.ownerPsk = config.ownerPsk.repeat(2);
-        config.localPort = 65535;
+        config.clientPort = 65535;
         config.port = 65535;
         assertDoesNotThrow(config::validate);
         config.ownerPsk = "";
@@ -44,7 +44,7 @@ class LocalApplianceConfigurationTest {
 
     @Test
     void rejectsMissingMixedInvalidAndNonCanonicalCredentialsWithoutEchoingThem() {
-        LocalApplianceConfiguration config = LocalCoapTransportTest.configuration();
+        ApplianceConfiguration config = CoapTransportTest.configuration();
         for (String secret : List.of("private-value", "xx".repeat(16), "a", "00".repeat(15), "00".repeat(33))) {
             config.ownerPsk = secret;
             IllegalArgumentException error = assertThrows(IllegalArgumentException.class, config::validate);
@@ -60,7 +60,7 @@ class LocalApplianceConfigurationTest {
             assertFalse(error.toString().contains(identity));
             assertNull(error.getCause());
         }
-        config.ownerId = LocalCoapTransportTest.configuration().ownerId;
+        config.ownerId = CoapTransportTest.configuration().ownerId;
         config.keyStore = "client.p12";
         assertThrows(IllegalArgumentException.class, config::validate);
         config.ownerPsk = "";
@@ -72,15 +72,33 @@ class LocalApplianceConfigurationTest {
     }
 
     @Test
+    void acceptsAutomaticIdentityWithCaTrustOrAnExplicitPinAndOptionalImportedIdentity() {
+        ApplianceConfiguration config = new ApplianceConfiguration();
+        config.host = "127.0.0.1";
+        assertDoesNotThrow(config::validate);
+        config.serverFingerprint = "ab".repeat(32);
+        assertDoesNotThrow(config::validate);
+        config.serverFingerprint = "";
+        config.keyStore = "client.p12";
+        config.keyStorePassword = "test-password";
+        assertDoesNotThrow(config::validate);
+        config.keyStore = "";
+        assertThrows(IllegalArgumentException.class, config::validate);
+        config.keyStorePassword = "";
+        config.ownerId = "01234567-89ab-cdef-0123-456789abcdef";
+        assertThrows(IllegalArgumentException.class, config::validate);
+    }
+
+    @Test
     void boundsPortsTimeoutRefreshAndHost() {
-        LocalApplianceConfiguration config = LocalCoapTransportTest.configuration();
+        ApplianceConfiguration config = CoapTransportTest.configuration();
         for (int invalid : List.of(-1, 65536)) {
             config.port = invalid;
             assertThrows(IllegalArgumentException.class, config::validate);
             config.port = 0;
-            config.localPort = invalid;
+            config.clientPort = invalid;
             assertThrows(IllegalArgumentException.class, config::validate);
-            config.localPort = 0;
+            config.clientPort = 0;
         }
         for (int invalid : List.of(0, 61)) {
             config.timeout = invalid;

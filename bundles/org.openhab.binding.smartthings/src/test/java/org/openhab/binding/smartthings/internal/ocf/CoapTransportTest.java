@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,13 +50,13 @@ import com.google.gson.JsonParser;
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-class LocalCoapTransportTest {
+class CoapTransportTest {
     private final InetAddress host = InetAddress.getLoopbackAddress();
 
     @Test
     void ownerIdentityUsesRawUuidBytesAndOnlySamsungPskCipher() throws Exception {
-        LocalApplianceConfiguration config = configuration();
-        var dtls = LocalCoapTransport.dtlsConfiguration(config, host);
+        ApplianceConfiguration config = configuration();
+        var dtls = CoapTransport.dtlsConfiguration(config, host);
         var profile = dtls.getConfiguration();
         assertEquals(DtlsRole.CLIENT_ONLY, profile.get(DtlsConfig.DTLS_ROLE));
         assertEquals(1, profile.get(DtlsConfig.DTLS_MAX_CONNECTIONS));
@@ -67,37 +67,37 @@ class LocalCoapTransportTest {
         assertNotNull(store);
         assertArrayEquals(HexFormat.of().parseHex("0123456789abcdef0123456789abcdef"),
                 store.getIdentity(new InetSocketAddress(host, 49155), null).getBytes());
-        assertEquals(LocalCoapTransport.localPort(config, host), dtls.getAddress().getPort());
-        assertEquals(LocalCoapTransport.localPort(config, host), LocalCoapTransport.localPort(config, host));
-        config.localPort = 41001;
-        assertEquals(41001, LocalCoapTransport.localPort(config, host));
-        var coap = LocalCoapTransport.networkConfiguration();
+        assertEquals(CoapTransport.clientPort(config, host), dtls.getAddress().getPort());
+        assertEquals(CoapTransport.clientPort(config, host), CoapTransport.clientPort(config, host));
+        config.clientPort = 41001;
+        assertEquals(41001, CoapTransport.clientPort(config, host));
+        var coap = CoapTransport.networkConfiguration();
         assertTrue(coap.get(CoapConfig.BLOCKWISE_REUSE_TOKEN));
         assertFalse(coap.get(CoapConfig.BLOCKWISE_ENTITY_TOO_LARGE_AUTO_FAILOVER));
         assertEquals(65536, coap.get(CoapConfig.MAX_RESOURCE_BODY_SIZE));
     }
 
     @Test
-    void certificateProfileRequiresOneImportedPrivateKeyAndExplicitPin() throws Exception {
-        Path directory = Path.of("target", "local-certificate-profile-test");
+    void certificateProfileAcceptsOneImportedPrivateKeyWithPinOrCaTrust() throws Exception {
+        Path directory = Path.of("target", "certificate-profile-test");
         Files.createDirectories(directory);
         Path file = directory.resolve("client.p12");
         Process keytool = new ProcessBuilder(Path.of(System.getProperty("java.home"), "bin", "keytool").toString(),
-                "-genkeypair", "-alias", "local-test", "-keyalg", "EC", "-groupname", "secp256r1", "-dname",
-                "CN=synthetic-local-test", "-storetype", "PKCS12", "-keystore", file.toString(), "-storepass",
+                "-genkeypair", "-alias", "appliance-test", "-keyalg", "EC", "-groupname", "secp256r1", "-dname",
+                "CN=synthetic-appliance-test", "-storetype", "PKCS12", "-keystore", file.toString(), "-storepass",
                 "test-password", "-keypass", "test-password", "-noprompt")
                 .redirectOutput(ProcessBuilder.Redirect.DISCARD).redirectError(ProcessBuilder.Redirect.DISCARD).start();
         try {
             assertTrue(keytool.waitFor(30, TimeUnit.SECONDS));
             assertEquals(0, keytool.exitValue());
-            LocalApplianceConfiguration config = configuration();
+            ApplianceConfiguration config = configuration();
             config.ownerId = "";
             config.ownerPsk = "";
             config.keyStore = file.toString();
             config.keyStorePassword = "test-password";
             config.serverFingerprint = "ab".repeat(32);
             config.validate();
-            var dtls = LocalCoapTransport.dtlsConfiguration(config, host);
+            var dtls = CoapTransport.dtlsConfiguration(config, host);
             assertNotNull(dtls.getCertificateIdentityProvider());
             assertInstanceOf(PinnedCertificateVerifier.class, dtls.getAdvancedCertificateVerifier());
             assertNull(dtls.getAdvancedPskStore());
@@ -105,9 +105,13 @@ class LocalCoapTransportTest {
             assertFalse(dtls.getConfiguration().get(DtlsConfig.DTLS_TRUNCATE_CLIENT_CERTIFICATE_PATH));
             assertEquals(List.of(CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256),
                     dtls.getConfiguration().get(DtlsConfig.DTLS_CIPHER_SUITES));
+            config.serverFingerprint = "";
+            config.validate();
+            assertInstanceOf(SamsungCertificateVerifier.class,
+                    CoapTransport.dtlsConfiguration(config, host).getAdvancedCertificateVerifier());
             config.keyStorePassword = "private-invalid-password";
             config.port = 49155;
-            IOException failure = assertThrows(IOException.class, () -> new LocalCoapTransport(config));
+            IOException failure = assertThrows(IOException.class, () -> new CoapTransport(config));
             assertFalse(failure.toString().contains(config.keyStorePassword));
             assertNull(failure.getCause());
             KeyStore empty = KeyStore.getInstance("PKCS12");
@@ -116,7 +120,7 @@ class LocalCoapTransportTest {
                 empty.store(output, "test-password".toCharArray());
             }
             config.keyStorePassword = "test-password";
-            assertThrows(IOException.class, () -> new LocalCoapTransport(config));
+            assertThrows(IOException.class, () -> new CoapTransport(config));
         } finally {
             keytool.destroyForcibly();
             Files.deleteIfExists(file);
@@ -127,14 +131,14 @@ class LocalCoapTransportTest {
     @Test
     void validatesPathsBeforeSendingToTheFixedPeer() throws Exception {
         Endpoint endpoint = mock(Endpoint.class);
-        try (LocalCoapTransport transport = new LocalCoapTransport(host, 49155, 100, endpoint)) {
+        try (CoapTransport transport = new CoapTransport(host, 49155, 100, endpoint)) {
             for (String path : List.of("https://example.org/power/0", "//other/power/0", "power/0", "/", "/../power/0",
                     "/a/./b", "/a//b", "/%2e%2e/power/0", "/power/0#x", "/a\\b", "/oic/sec/doxm", "/oic/sec",
                     "/oic/res?rt=oic.r.doxm", "/a?value=http://other", "/a?x=%2F")) {
                 assertThrows(IOException.class, () -> transport.get(path), path);
             }
             verify(endpoint, never()).sendRequest(any());
-            var uri = LocalCoapTransport.resourceUri(host, 49155, "/device/0?if=oic.if.b");
+            var uri = CoapTransport.resourceUri(host, 49155, "/device/0?if=oic.if.b");
             assertEquals("coaps", uri.getScheme());
             assertEquals(49155, uri.getPort());
             assertEquals("/device/0", uri.getPath());
@@ -152,18 +156,18 @@ class LocalCoapTransportTest {
             last.set(request);
             Response response = new Response(ResponseCode.CONTENT);
             response.getOptions().setContentFormat(MediaTypeRegistry.APPLICATION_CBOR);
-            response.setPayload(LocalCbor.encode(JsonParser.parseString("{\"value\":true}")));
+            response.setPayload(Cbor.encode(JsonParser.parseString("{\"value\":true}")));
             request.setResponse(response);
             return null;
         }).when(endpoint).sendRequest(any());
-        try (LocalCoapTransport transport = new LocalCoapTransport(host, 49155, 1000, endpoint)) {
+        try (CoapTransport transport = new CoapTransport(host, 49155, 1000, endpoint)) {
             assertTrue(transport.get("/power/0").getAsJsonObject().get("value").getAsBoolean());
             assertEquals(60, last.get().getOptions().getAccept());
             JsonObject fields = new JsonObject();
             fields.addProperty("value", false);
             transport.post("/power/0", fields);
             assertEquals(60, last.get().getOptions().getContentFormat());
-            assertEquals(fields, LocalCbor.decode(last.get().getPayload()));
+            assertEquals(fields, Cbor.decode(last.get().getPayload()));
         }
         verify(endpoint, times(2)).sendRequest(any());
     }
@@ -175,7 +179,7 @@ class LocalCoapTransportTest {
             ((Request) invocation.getArgument(0)).setResponse(new Response(ResponseCode.CHANGED));
             return null;
         }).when(endpoint).sendRequest(any());
-        try (LocalCoapTransport transport = new LocalCoapTransport(host, 49155, 1000, endpoint)) {
+        try (CoapTransport transport = new CoapTransport(host, 49155, 1000, endpoint)) {
             assertDoesNotThrow(() -> transport.post("/power/0", new JsonObject()));
             verify(endpoint, times(1)).sendRequest(any());
         }
@@ -190,7 +194,7 @@ class LocalCoapTransportTest {
                 ((Request) invocation.getArgument(0)).setResponse(response);
                 return null;
             }).when(endpoint).sendRequest(any());
-            try (LocalCoapTransport transport = new LocalCoapTransport(host, 49155, 100, endpoint)) {
+            try (CoapTransport transport = new CoapTransport(host, 49155, 100, endpoint)) {
                 assertThrows(IOException.class, () -> transport.get("/power/0"));
             }
         }
@@ -206,7 +210,7 @@ class LocalCoapTransportTest {
             sent.countDown();
             return null;
         }).when(endpoint).sendRequest(any());
-        LocalCoapTransport transport = new LocalCoapTransport(host, 49155, 60000, endpoint);
+        CoapTransport transport = new CoapTransport(host, 49155, 60000, endpoint);
         CompletableFuture<IOException> result = CompletableFuture
                 .supplyAsync(() -> assertThrows(IOException.class, () -> transport.get("/power/0")));
         try {
@@ -232,7 +236,7 @@ class LocalCoapTransportTest {
             pending.set(invocation.getArgument(0));
             return null;
         }).when(endpoint).sendRequest(any());
-        try (LocalCoapTransport transport = new LocalCoapTransport(host, 49155, 1, endpoint)) {
+        try (CoapTransport transport = new CoapTransport(host, 49155, 1, endpoint)) {
             assertThrows(IOException.class, () -> transport.post("/power/0", new JsonObject()));
             assertTrue(pending.get().isCanceled());
             verify(endpoint, times(1)).sendRequest(any());
@@ -242,7 +246,7 @@ class LocalCoapTransportTest {
     @Test
     void interruptionIsPreservedAndExceptionDetailsAreSafe() throws Exception {
         Endpoint endpoint = mock(Endpoint.class);
-        try (LocalCoapTransport transport = new LocalCoapTransport(host, 49155, 60000, endpoint)) {
+        try (CoapTransport transport = new CoapTransport(host, 49155, 60000, endpoint)) {
             Thread.currentThread().interrupt();
             try {
                 assertThrows(IOException.class, () -> transport.get("/power/0"));
@@ -264,8 +268,8 @@ class LocalCoapTransportTest {
         return response;
     }
 
-    static LocalApplianceConfiguration configuration() {
-        LocalApplianceConfiguration config = new LocalApplianceConfiguration();
+    static ApplianceConfiguration configuration() {
+        ApplianceConfiguration config = new ApplianceConfiguration();
         config.host = "127.0.0.1";
         config.ownerId = "01234567-89ab-cdef-0123-456789abcdef";
         config.ownerPsk = "00112233445566778899aabbccddeeff";

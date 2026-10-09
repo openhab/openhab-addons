@@ -1,23 +1,22 @@
 # Samsung SmartThings Binding
 
-This binding supports direct, authenticated local control of compatible Samsung OCF appliances, with particular support for air conditioners.
-This is a local-only replacement: the former SmartThings Hub bridge, capability Things, servlet, and SmartApp integration are no longer supported.
-Existing hub-based configurations must be removed and replaced with standalone local appliances; arbitrary hub-connected devices cannot be migrated to this protocol.
+This binding supports direct, authenticated local control of compatible Samsung OCF appliances.
 
-## Local Samsung OCF Appliances
+## Samsung OCF Appliances
 
-The `localAppliance` Thing communicates directly with an appliance using CoAP over DTLS and CBOR, following the local protocol used by [localthings](https://github.com/mbillow/localthings).
+The `appliance` Thing communicates directly with an appliance using CoAP over DTLS and CBOR.
 It does not require a SmartThings Hub, SmartApp, cloud token, or cloud API for operation.
 This is **not** a general replacement for the SmartThings Hub or a means of controlling every device registered in SmartThings.
 Support depends on the appliance exposing compatible Samsung OCF resources and accepting the supplied local credentials.
 
-### Local Prerequisites
+### Prerequisites
 
 - Give the appliance a stable address on the same reachable local network as openHAB.
 - Allow UDP traffic between openHAB and the appliance.
-  With `port=0`, the binding uses public CoAP discovery at that host to obtain the advertised secure DTLS port; it does not scan the network.
+  With `port=0`, the binding uses public CoAP discovery at that host to obtain the advertised secure DTLS port; this single-host lookup does not scan a subnet.
   Alternatively, configure the advertised secure port explicitly.
-- Import credentials you are authorized to use, in one of the two modes below.
+- Normally, no credential configuration is needed: the binding generates a persistent client identity and verifies the appliance certificate against its bundled Samsung OCF root.
+  This requires firmware that accepts the Samsung service client profile described below.
   The binding does not obtain credentials from the cloud, pair with an appliance, provision ownership, or reset its security database.
 - Enable the appliance's Remote Control setting where required for writes.
   This is separate from DTLS authentication: a working read connection does not prove that writes are permitted.
@@ -25,89 +24,110 @@ Support depends on the appliance exposing compatible Samsung OCF resources and a
 Do not reset the appliance, remove its SmartThings registration, or disable certificate verification to enable this integration.
 Credential compatibility varies by firmware; cloud-free operation after configuration does not imply universally cloud-free credential provisioning.
 
-### Local Authentication
+### Discovery
 
-**Client certificate mode:** Set `keyStore` to an absolute path to a PKCS12 file on the openHAB server.
-It must contain one authorized private key and its client certificate chain.
-Set `keyStorePassword` and explicitly provide `serverFingerprint`, the SHA-256 fingerprint of the appliance's leaf certificate, obtained from a trusted, authenticated out-of-band source.
-The fingerprint may be hexadecimal with colon separators.
-The binding pins this certificate; it never automatically trusts the first certificate observed on the network.
-Protect the key store and its password, and restrict file access to the openHAB service account.
+Inbox discovery is an explicit, bounded subnet scan, not mDNS or multicast discovery.
+There is no automatic or background network scanning, and no subnet is inferred from the openHAB network interfaces.
+In Main UI, open **Settings → Bindings → Samsung SmartThings Binding** and set **Discovery Subnet** (`discoverySubnet`).
+Then start a Samsung SmartThings scan in the Inbox.
+Alternatively, set the binding configuration in `services/smartthings.cfg`:
 
-Some compatible Samsung firmware accepts an offline-generated, UUID-compatible self-signed client identity, as used by localthings.
-That profile uses the published Samsung service UUID `ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9` in the client certificate organizational unit, together with a UUID-formatted client identity in the common name.
-This is a **firmware-specific compatibility option**, not a universal authorization or provisioning mechanism.
-An imported client identity must still be accepted by the appliance, and the appliance certificate must still be explicitly pinned.
-Strict newer OCF firmware may require a previously provisioned OwnerPSK instead.
-
-For firmware known to accept that offline profile, create a client identity locally with OpenSSL:
-
-```shell
-umask 077
-openssl req -x509 -newkey rsa:2048 -sha256 -days 365 \
-  -keyout client.key -out client.pem \
-  -subj "/OU=uuid:ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9/CN=urn:uuid:ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9" \
-  -addext "basicConstraints=critical,CA:FALSE" \
-  -addext "keyUsage=critical,digitalSignature,keyEncipherment" \
-  -addext "extendedKeyUsage=clientAuth" \
-  -addext "subjectAltName=URI:urn:uuid:ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9"
-openssl pkcs12 -export -inkey client.key -in client.pem -out appliance.p12
+```properties
+binding.smartthings:discoverySubnet=192.168.1.0/24
 ```
 
-Enter passwords interactively rather than putting them on the command line.
-Use the PKCS12 export password for `keyStorePassword` and store `appliance.p12` where only the openHAB service account can read it.
-This creates only a client credential; it does not establish trust in the appliance.
-Obtain its certificate through an independently authenticated source, or verify its chain against an independently trusted Samsung OCF root before calculating the leaf fingerprint:
+Use a literal IPv4 CIDR with a prefix between `/24` and `/32`, entirely within the private ranges `10.0.0.0/8`, `172.16.0.0/12`, or `192.168.0.0/16`.
+Public, loopback, link-local, multicast, unspecified, hostname-based, larger, and malformed ranges are rejected.
+Host bits are normalized to the subnet boundary.
+Each scan covers at most 256 total addresses; network and broadcast addresses are omitted for `/24` through `/30`, while both `/31` addresses and the single `/32` address are eligible.
+Use `/32` to discover only one known appliance.
+Leaving the setting empty disables Inbox discovery.
 
-```shell
-openssl x509 -in verified-appliance-leaf.pem -noout -fingerprint -sha256
-```
+The scan uses read-only public CoAP requests to UDP ports `5683`, `49154`, and `49153`, with at most four concurrent probes and a three-second budget per host.
+A complete `/24` scan can take about three minutes and is stopped after 210 seconds; results are published when the scan completes.
+Cancelling, restarting, or reconfiguring a scan discards its incomplete results.
+The appliance must expose its device UUID, an unambiguous secure DTLS port, and Samsung manufacturer metadata (`mnmn`) through `/oic/p`.
+Unknown manufacturers and conflicting advertisements of the same UUID at different addresses are not published.
+Some firmware does not provide public discovery metadata; create its Thing manually instead.
+UDP firewalls, guest-network isolation, VLAN routing, and appliance sleep modes may prevent discovery.
 
-Do not pin a certificate merely because it was returned by the configured IP address.
-A replacement appliance certificate requires a newly verified fingerprint.
+Results have a stable UUID-based Thing identity and prefill `host`, `port`, and the expected `deviceId`.
+These unauthenticated advertisements do **not** establish trust, obtain credentials, pair, or change appliance ownership or state.
+The default certificate authentication is configured automatically; alternative credentials and certificate pins are advanced options described below.
+Discovery does not update an existing Thing's configured host after a DHCP address change; use a DHCP reservation or update the host manually.
+
+### Authentication
+
+**Automatic certificate mode (default):** Leave `keyStore`, `keyStorePassword`, `serverFingerprint`, `ownerId`, and `ownerPsk` empty.
+The binding generates an RSA client key and a self-signed client certificate using the Samsung service UUID `ab0b0ac4-aae9-4958-a04d-8ec36fe1b2f9`.
+You do not need OpenSSL, certificates, keys, or a password to configure a compatible appliance.
+This is a **firmware-specific compatibility profile**, not a universal authorization or provisioning mechanism.
+Firmware that rejects this profile needs already authorized imported credentials or is unsupported.
+
+The identity is shared by this binding's appliances and stored in `$OPENHAB_USERDATA/etc/smartthings/client.p12`.
+It is reused across restarts and renewed near certificate expiry without changing its private key.
+The directory and files are restricted to the openHAB service account; filesystems that cannot enforce owner-only permissions are rejected.
+The automatically managed PKCS12 uses an empty password because filesystem access control, rather than a built-in password, protects the private key.
+Protect userdata backups accordingly.
+A corrupt or unreadable identity is not silently replaced; restore it from a protected backup or resolve the storage problem.
+
+Appliance certificate signatures, validity and authentication usage are checked against the bundled Samsung Electronics OCF Root CA.
+Its DER SHA-256 fingerprint is `E363FD4CC50380266D757321469E9ADEC15E5ECBEE28201447ECE02A52ED627F`.
+The public certificate was obtained from the community-maintained [SmartThings-Local repository](https://github.com/QuiteYellow/SmartThings-Local/blob/main/smartthings_local/protocol/ocf_root_ca.pem); source and license attribution are in `NOTICE`.
+Its manufacturer provenance has not been independently authenticated.
+The binding does not download trust anchors at runtime, use system roots, or trust an unverified first connection.
+Samsung certificates identify OCF UUIDs rather than IP/DNS names, so host-name verification is not used; the logical device UUID is checked separately through authenticated `/oic/d`.
+
+**Advanced certificate options:** To use your own authorized identity, set `keyStore` to an absolute PKCS12 path containing one private key and its certificate chain, and set `keyStorePassword` if needed.
+Protect this file and its password, and restrict access to the openHAB service account.
+To override CA trust, set `serverFingerprint` to the SHA-256 fingerprint of the appliance's leaf certificate, obtained through an independently authenticated, out-of-band source.
+Hexadecimal with optional colon separators is accepted.
+This pins the valid, signing leaf certificate instead of using CA path validation, and works with either generated or imported client identities.
+Never pin a certificate merely because it was returned by the configured IP address.
+A replacement pinned certificate requires a newly verified fingerprint.
 
 **OwnerPSK mode:** Set `ownerId` to the owner UUID associated with a previously provisioned, authorized OwnerPSK and set `ownerPsk` to the key in hexadecimal (16 or 32 bytes, hence 32 or 64 hexadecimal characters).
 This owner UUID is not the device UUID.
-Leave `keyStore` unset in this mode; OwnerPSK and client certificate modes are mutually exclusive.
+Leave `keyStore`, `keyStorePassword`, and `serverFingerprint` unset in this mode; OwnerPSK and client certificate modes are mutually exclusive.
 The binding does not derive or provision an OwnerPSK.
 
-### Local Thing Configuration
+### Thing Configuration
 
-A local appliance is a standalone Thing without a bridge.
+An appliance is a standalone Thing without a bridge.
 Create it manually in Main UI or in a `.things` file:
 
 ```java
-Thing smartthings:localAppliance:bedroom "Bedroom Air Conditioner" [ host="192.168.1.50", port=0, keyStore="/etc/openhab/secrets/appliance.p12", keyStorePassword="YOUR_KEYSTORE_PASSWORD", serverFingerprint="YOUR_TRUSTED_SHA256_FINGERPRINT" ]
+Thing smartthings:appliance:bedroom "Bedroom Appliance" [ host="192.168.1.50", port=0 ]
 ```
 
-Replace the password and fingerprint placeholders with your authorized credentials.
 Never publish your key store, passwords, OwnerPSK, or owner UUID in logs, support reports, or shared examples.
 
 | Parameter           | Default | Description                                                                                          |
 |---------------------|---------|------------------------------------------------------------------------------------------------------|
 | `host`              | —       | Required appliance IP address or host name.                                                           |
 | `port`              | `0`     | Secure CoAP port; `0` discovers the advertised port from this host.                                    |
-| `localPort`         | `0`     | Local UDP port; `0` selects a deterministic stable port. Override if multiple Things conflict.        |
+| `clientPort`         | `0`     | Client UDP port; `0` selects a deterministic stable port. Override if multiple Things conflict.        |
 | `refreshInterval`   | `60`    | Poll delay in seconds, minimum `10`.                                                                  |
 | `timeout`           | `12`    | Per-request timeout in seconds, from `1` to `60`.                                                      |
 | `deviceId`          | —       | Optional expected appliance UUID, checked against authenticated `/oic/d`.                             |
-| `keyStore`          | —       | Client PKCS12 file path, required in certificate mode.                                                 |
+| `keyStore`          | —       | Optional imported client PKCS12 path; empty generates a persistent identity.                                                 |
 | `keyStorePassword`  | —       | PKCS12/private-key password.                                                                         |
-| `serverFingerprint` | —       | Trusted SHA-256 appliance leaf certificate fingerprint, required in certificate mode.                 |
+| `serverFingerprint` | —       | Optional trusted SHA-256 leaf pin; empty verifies against the bundled Samsung OCF CA.                 |
 | `ownerId`           | —       | Previously provisioned owner UUID, required in OwnerPSK mode.                                         |
 | `ownerPsk`          | —       | Authorized 16- or 32-byte OwnerPSK encoded as hexadecimal, required in OwnerPSK mode.                   |
 
-If `deviceId` is omitted, the binding remembers the first authenticated device UUID in the Thing's `deviceid` property and checks subsequent reads against it.
+If `deviceId` is omitted, the binding remembers the first authenticated device UUID in the Thing's `deviceId` property and checks subsequent reads against it.
+Previously stored `deviceid` properties remain checked and are migrated after successful authentication.
 A configured or remembered identity mismatch prevents state publication and writes.
 Changing the host alone does not authorize a different appliance identity.
 
-### Local Channels and Air Conditioners
+### Channels
 
 Channels are created from authenticated resource representations rather than a fixed SmartThings capability list.
 Their identifiers are derived deterministically from the resource path and field, so reconnecting does not rename channels.
 Use the channels displayed on the Thing's Channels tab when linking Items.
 
-On compatible air conditioners, the following resources are recognized:
+Depending on the appliance's advertised capabilities, the following resources are recognized:
 
 | Setting | Samsung OCF resource | Behavior |
 |---------|----------------------|----------|
@@ -136,6 +156,6 @@ A failed POST is not retried automatically because the appliance may already hav
 Some appliances acknowledge a write before their readings change; an immediate readback may still show the previous value until a subsequent poll.
 Communication failures set the Thing offline, and subsequent polls can restore it online.
 
-For troubleshooting, first check network reachability, the advertised port, imported credentials, the pinned fingerprint where applicable, and the appliance's Remote Control setting.
+For troubleshooting, first check network reachability, the advertised port, identity storage permissions, any imported credentials or certificate pin, and the appliance's Remote Control setting.
 Do not share credentials or bypass DTLS verification.
 Firmware that rejects both authorized credential profiles is not supported by this local implementation.

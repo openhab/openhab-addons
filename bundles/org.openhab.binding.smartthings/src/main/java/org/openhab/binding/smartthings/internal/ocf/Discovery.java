@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -39,11 +39,11 @@ import com.google.gson.JsonObject;
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-final class LocalDiscovery {
+final class Discovery {
     record Descriptor(String deviceId, String name, int securePort) {
     }
 
-    private LocalDiscovery() {
+    private Discovery() {
     }
 
     static Descriptor discover(InetAddress host, int timeoutSeconds) throws IOException {
@@ -62,11 +62,24 @@ final class LocalDiscovery {
     }
 
     static Descriptor discover(InetAddress host, Set<Integer> ports, int timeoutSeconds) throws IOException {
+        return discover(host, ports, timeoutSeconds, false);
+    }
+
+    static Descriptor discoverSamsung(InetAddress host, int timeoutSeconds) throws IOException {
+        return discoverSamsung(host, new LinkedHashSet<>(List.of(5683, 49154, 49153)), timeoutSeconds);
+    }
+
+    static Descriptor discoverSamsung(InetAddress host, Set<Integer> ports, int timeoutSeconds) throws IOException {
+        return discover(host, ports, timeoutSeconds, true);
+    }
+
+    private static Descriptor discover(InetAddress host, Set<Integer> ports, int timeoutSeconds, boolean samsungOnly)
+            throws IOException {
         if (timeoutSeconds < 1 || timeoutSeconds > 60 || host.isAnyLocalAddress() || host.isMulticastAddress()) {
             throw new IOException("Invalid appliance discovery address or timeout");
         }
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(timeoutSeconds);
-        var scheduler = LocalCoapTransport.scheduler();
+        var scheduler = CoapTransport.scheduler();
         int remainingProbes = ports.size();
         for (int port : ports) {
             if (Thread.currentThread().isInterrupted()) {
@@ -78,7 +91,7 @@ final class LocalDiscovery {
             // A closed UDP port can leave an ICMP socket error for the next send on macOS.
             // Isolate probes so an unavailable port cannot poison discovery of a working one.
             CoapEndpoint endpoint = new CoapEndpoint.Builder()
-                    .setConfiguration(LocalCoapTransport.networkConfiguration().set(CoapConfig.MAX_ACTIVE_PEERS, 16))
+                    .setConfiguration(CoapTransport.networkConfiguration().set(CoapConfig.MAX_ACTIVE_PEERS, 16))
                     .setPort(0).build();
             try {
                 endpoint.setExecutors(scheduler, scheduler);
@@ -86,19 +99,23 @@ final class LocalDiscovery {
                 JsonElement resources = get(endpoint, host, port, "/oic/res", "rt=oic.r.doxm", deadline,
                         remainingProbes--);
                 JsonElement device = get(endpoint, host, port, "/oic/d", "", deadline, 0);
-                return descriptor(resources, device, host);
+                Descriptor descriptor = descriptor(resources, device, host);
+                if (samsungOnly) {
+                    verifySamsung(get(endpoint, host, port, "/oic/p", "", deadline, 0), descriptor.deviceId());
+                }
+                return descriptor;
             } catch (IOException e) {
                 if (Thread.currentThread().isInterrupted()) {
                     throw e;
                 }
                 // Probe other public ports, but never guess a secure port or modify ownership.
             } catch (RuntimeException e) {
-                throw new IOException("Local appliance discovery failed");
+                throw new IOException("Appliance discovery failed");
             } finally {
                 endpoint.destroy();
             }
         }
-        throw new IOException("No usable local appliance endpoint was advertised");
+        throw new IOException("No usable appliance endpoint was advertised");
     }
 
     private static JsonElement get(CoapEndpoint endpoint, InetAddress host, int port, String path, String query,
@@ -121,7 +138,7 @@ final class LocalDiscovery {
                     || source.getPeerAddress().getPort() != port) {
                 throw new IOException("Appliance discovery request failed or timed out");
             }
-            return LocalCoapTransport.representation(response);
+            return CoapTransport.representation(response);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Appliance discovery interrupted");
@@ -139,7 +156,7 @@ final class LocalDiscovery {
             String name = "Samsung Appliance";
             for (JsonObject representation : devices) {
                 if (representation.has("di")) {
-                    String identity = LocalApplianceConfiguration.uuid(string(representation, "di")).toString();
+                    String identity = ApplianceConfiguration.uuid(string(representation, "di")).toString();
                     if (!deviceId.isEmpty() && !deviceId.equals(identity)) {
                         throw new IOException("Conflicting appliance identities");
                     }
@@ -171,6 +188,31 @@ final class LocalDiscovery {
             return new Descriptor(deviceId, name, securePorts.iterator().next());
         } catch (IllegalArgumentException | IllegalStateException | ArithmeticException e) {
             throw new IOException("Invalid appliance discovery representation");
+        }
+    }
+
+    static void verifySamsung(JsonElement platform, String deviceId) throws IOException {
+        boolean found = false;
+        try {
+            for (JsonObject representation : objects(platform)) {
+                // A platform UUID (pi) is distinct from the device UUID (di).
+                if (representation.has("di")
+                        && !deviceId.equals(ApplianceConfiguration.uuid(string(representation, "di")).toString())) {
+                    throw new IOException("Conflicting appliance platform identity");
+                }
+                if (representation.has("mnmn")) {
+                    String manufacturer = string(representation, "mnmn").trim();
+                    if (!manufacturer.matches("(?i)Samsung(?: Electronics(?: Co\\.,? Ltd\\.?)?)?")) {
+                        throw new IOException("Not a Samsung appliance");
+                    }
+                    found = true;
+                }
+            }
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            throw new IOException("Invalid appliance platform representation");
+        }
+        if (!found) {
+            throw new IOException("No Samsung manufacturer was advertised");
         }
     }
 

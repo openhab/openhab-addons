@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.smartthings.internal.local;
+package org.openhab.binding.smartthings.internal.ocf;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.smartthings.internal.local.LocalResources.Point;
+import org.openhab.binding.smartthings.internal.ocf.Resources.Point;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -35,13 +35,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Tests for the local OCF representation and command model without a network connection.
+ * Tests for the OCF representation and command model without a network connection.
  *
  * @author Kai Kreuzer - Initial contribution
  */
 @NonNullByDefault
-class LocalResourcesTest {
-    private final LocalResources resources = new LocalResources();
+class ResourcesTest {
+    private final Resources resources = new Resources();
 
     @Test
     void readsEveryBatchEntryIncludingIndexZero() throws IOException {
@@ -260,7 +260,7 @@ class LocalResourcesTest {
                 "{\"temperature\":20,\"units\":\"C\",\"range\":[16,30],\"increment\":99}",
                 "{\"temperature\":20,\"units\":\"C\",\"range\":[16,null],\"increment\":1}",
                 "{\"temperature\":{},\"units\":\"C\",\"range\":[16,30],\"increment\":1}")) {
-            LocalResources model = new LocalResources();
+            Resources model = new Resources();
             model.update("/temperature/desired/0", json(payload));
             Point desired = model.points().getFirst();
             assertFalse(desired.writable(), payload);
@@ -416,7 +416,7 @@ class LocalResourcesTest {
         assertEquals(firstId, point("/a/b", "").id());
         assertNotEquals(firstId, secondId);
         assertTrue(firstId.matches("[A-Za-z0-9_-]+"));
-        LocalResources reverse = new LocalResources();
+        Resources reverse = new Resources();
         reverse.update("/a-b", json("{\"value\":2}"));
         reverse.update("/a/b", json("{\"value\":1}"));
         assertEquals(resources.points(), reverse.points());
