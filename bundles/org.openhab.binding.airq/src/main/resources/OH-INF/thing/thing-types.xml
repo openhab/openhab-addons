@@ -462,7 +462,7 @@
 	<channel-type id="uptime" advanced="true">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Uptime</label>
-		<state readOnly="true" pattern="%d %unit%"></state>
+		<state readOnly="true" pattern="%1$tdd:%1$tHh:%1$tMm:%1$tSs"></state>
 	</channel-type>
 	<channel-type id="virus_free" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
