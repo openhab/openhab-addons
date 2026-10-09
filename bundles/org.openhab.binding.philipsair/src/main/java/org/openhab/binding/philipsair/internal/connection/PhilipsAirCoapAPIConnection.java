@@ -464,7 +464,7 @@ public class PhilipsAirCoapAPIConnection extends PhilipsAirAPIConnection {
                     return null;
                 }
                 if (synced.isEmpty()) {
-                    logger.warn("Counter sync with {} failed, command '{}' ({} profile) not sent", host, command,
+                    logger.debug("Counter sync with {} failed, command '{}' ({} profile) not sent", host, command,
                             profile);
                     return null;
                 }

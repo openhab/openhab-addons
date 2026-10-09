@@ -91,14 +91,14 @@ public class PhilipsAirCoapCipher {
             String iv = keyAndIv.substring(keyAndIv.length() / 2);
             String encryptedCmd = encrypt(commandText, secret, iv);
             String calculatedHash = toSHA(sequence + encryptedCmd);
-            String encrypedMessage = sequence + encryptedCmd + calculatedHash;
+            String encryptedMessage = sequence + encryptedCmd + calculatedHash;
             if (logger.isTraceEnabled()) {
                 logger.trace("Encrypting: '{}'", commandText);
                 logger.trace("Encrypted: {}", encryptedCmd);
                 logger.trace("Hash: {}", calculatedHash);
-                logger.trace("Encypted message: {}", encrypedMessage);
+                logger.trace("Encrypted message: {}", encryptedMessage);
             }
-            return encrypedMessage;
+            return encryptedMessage;
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
             logger.trace("Error decoding message: {}", e.getMessage(), e);

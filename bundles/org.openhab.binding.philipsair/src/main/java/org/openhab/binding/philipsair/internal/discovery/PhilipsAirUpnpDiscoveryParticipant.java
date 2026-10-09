@@ -155,7 +155,9 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
 
     /**
      * Maps the UPnP model number to a thing type. Devices report the model number with or without the region suffix
-     * (e.g. 'AC2889' or 'AC2889/10'), so both are matched against the thing type id (e.g. 'ac2889-10').
+     * (e.g. 'AC2889' or 'AC2889/10'), so both are matched against the thing type id (e.g. 'ac2889-10'). The base model
+     * has to be equal. The region suffix only has to be equal when both the device and the thing type id have one, so
+     * a thing type id without suffix (e.g. 'ac2729') covers all regions.
      */
     static ThingTypeUID getThingType(@Nullable String modelNumber) {
         String model = modelNumber != null ? modelNumber.toLowerCase(Locale.ROOT).replace('/', '-') : "";
@@ -163,12 +165,18 @@ public class PhilipsAirUpnpDiscoveryParticipant implements UpnpDiscoveryParticip
             for (ThingTypeUID thingType : List.of(THING_TYPE_AC2889_10, THING_TYPE_AC1214_10, THING_TYPE_AC2729,
                     THING_TYPE_AC3829_10)) {
                 String thingTypeId = thingType.getId();
-                if (thingTypeId.startsWith(model) || model.startsWith(thingTypeId)) {
+                if (baseModel(model).equals(baseModel(thingTypeId))
+                        && (model.equals(thingTypeId) || model.indexOf('-') < 0 || thingTypeId.indexOf('-') < 0)) {
                     return thingType;
                 }
             }
         }
         return THING_TYPE_UNIVERSAL;
+    }
+
+    private static String baseModel(String model) {
+        int suffixIndex = model.indexOf('-');
+        return suffixIndex < 0 ? model : model.substring(0, suffixIndex);
     }
 
     private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {

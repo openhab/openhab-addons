@@ -75,6 +75,8 @@ public class PhilipsAirCoapDiscoveryTest {
     public void incompleteOrInvalidResponseCreatesNoResult() {
         discovery.discovered("{\"name\":\"Living\"}", "192.168.1.60");
         discovery.discovered("not json", "192.168.1.60");
+        discovery.discovered("{\"name\":\"Living\",\"device_id\":\"\"}", "192.168.1.60");
+        discovery.discovered("{\"name\":\"Living\",\"device_id\":\"ab:cd\"}", "192.168.1.60");
 
         assertTrue(results.isEmpty());
     }

@@ -82,7 +82,9 @@ public class PhilipsAirUpnpDiscoveryParticipantTest {
 
     @ParameterizedTest
     @CsvSource({ "AC2889, ac2889-10", "AC2889/10, ac2889-10", "AC3829, ac3829-10", "AC3829/10, ac3829-10",
-            "AC1214, ac1214-10", "AC2729, ac2729", "AC2729/50, ac2729", "AC3829/50, universal", "AC3333, universal" })
+            "AC1214, ac1214-10", "AC2729, ac2729", "AC2729/50, ac2729", "AC3829/50, universal", "AC3333, universal",
+            "AC, universal", "AC28, universal", "AC28890/10, universal", "AC2889/100, universal",
+            "AC27290, universal" })
     public void thingTypeIsDerivedFromModelNumber(String modelNumber, String expectedThingTypeId) {
         stubPurifier(modelNumber);
 

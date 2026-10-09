@@ -41,6 +41,7 @@ import org.openhab.binding.philipsair.internal.PhilipsAirBindingConstants;
 import org.openhab.binding.philipsair.internal.PhilipsAirConfiguration;
 import org.openhab.binding.philipsair.internal.connection.CoapMessageLogger;
 import org.openhab.binding.philipsair.internal.model.PhilipsAirPurifierDeviceDTO;
+import org.openhab.core.common.AbstractUID;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -220,7 +221,8 @@ public class PhilipsAirCoapDiscovery extends AbstractDiscoveryService {
         try {
             PhilipsAirPurifierDeviceDTO info = gson.fromJson(response, PhilipsAirPurifierDeviceDTO.class);
             String deviceId = info != null ? info.getDeviceId() : null;
-            if (info == null || deviceId == null) {
+            // the id becomes the last segment of the thing UID, which has to be valid and not blank
+            if (info == null || deviceId == null || deviceId.isBlank() || !AbstractUID.isValid(deviceId)) {
                 logger.debug(
                         "Philips Air Purifier (COAP) discovery result from IP={} was incomplete or could not be parsed: '{}'",
                         host, response);
