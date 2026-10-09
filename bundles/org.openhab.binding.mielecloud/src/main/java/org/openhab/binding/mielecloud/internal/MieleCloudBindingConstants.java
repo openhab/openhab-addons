@@ -87,6 +87,12 @@ public final class MieleCloudBindingConstants {
     public static final ThingTypeUID THING_TYPE_HOB = new ThingTypeUID(BINDING_ID, "hob");
 
     /**
+     * The {@link ThingTypeUID} of Miele hobs with vapor extraction.
+     */
+    public static final ThingTypeUID THING_TYPE_HOB_WITH_VAPOR_EXTRACTION = new ThingTypeUID(BINDING_ID,
+            "hob_with_vapor_extraction");
+
+    /**
      * The {@link ThingTypeUID} of Miele wine storages.
      */
     public static final ThingTypeUID THING_TYPE_WINE_STORAGE = new ThingTypeUID(BINDING_ID, "wine_storage");

@@ -126,4 +126,7 @@ public enum DeviceType {
 
     @SerializedName("68")
     WINE_CABINET_FREEZER_COMBINATION,
+
+    @SerializedName("74")
+    HOB_WITH_VAPOR_EXTRACTION,
 }
