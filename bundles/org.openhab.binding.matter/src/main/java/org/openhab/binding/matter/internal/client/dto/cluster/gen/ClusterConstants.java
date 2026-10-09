@@ -67,6 +67,12 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_ACCESSCONTROL_ARL = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_ACCESSCONTROL_ARL);
 
+    public static final String CHANNEL_NAME_ACCESSCONTROL_AUXILIARYACL = "AuxiliaryAcl";
+    public static final String CHANNEL_LABEL_ACCESSCONTROL_AUXILIARYACL = "Auxiliary Acl";
+    public static final String CHANNEL_ID_ACCESSCONTROL_AUXILIARYACL = "accesscontrol-auxiliaryacl";
+    public static final ChannelTypeUID CHANNEL_ACCESSCONTROL_AUXILIARYACL = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_ACCESSCONTROL_AUXILIARYACL);
+
     // AccountLogin Cluster
     // Actions Cluster
     public static final String CHANNEL_NAME_ACTIONS_ACTIONLIST = "ActionList";
@@ -149,6 +155,79 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_AIRQUALITY_AIRQUALITY = "airquality-airquality";
     public static final ChannelTypeUID CHANNEL_AIRQUALITY_AIRQUALITY = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_AIRQUALITY_AIRQUALITY);
+
+    // AmbientContextSensing Cluster
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_HUMANACTIVITYDETECTED = "HumanActivityDetected";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_HUMANACTIVITYDETECTED = "Human Activity Detected";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_HUMANACTIVITYDETECTED = "ambientcontextsensing-humanactivitydetected";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_HUMANACTIVITYDETECTED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_HUMANACTIVITYDETECTED);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_OBJECTIDENTIFIED = "ObjectIdentified";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_OBJECTIDENTIFIED = "Object Identified";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTIDENTIFIED = "ambientcontextsensing-objectidentified";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_OBJECTIDENTIFIED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTIDENTIFIED);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_AUDIOCONTEXTDETECTED = "AudioContextDetected";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_AUDIOCONTEXTDETECTED = "Audio Context Detected";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_AUDIOCONTEXTDETECTED = "ambientcontextsensing-audiocontextdetected";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_AUDIOCONTEXTDETECTED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_AUDIOCONTEXTDETECTED);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPE = "AmbientContextType";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPE = "Ambient Context Type";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPE = "ambientcontextsensing-ambientcontexttype";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPE);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPESUPPORTED = "AmbientContextTypeSupported";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPESUPPORTED = "Ambient Context Type Supported";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPESUPPORTED = "ambientcontextsensing-ambientcontexttypesupported";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPESUPPORTED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_AMBIENTCONTEXTTYPESUPPORTED);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_OBJECTCOUNTREACHED = "ObjectCountReached";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_OBJECTCOUNTREACHED = "Object Count Reached";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTCOUNTREACHED = "ambientcontextsensing-objectcountreached";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_OBJECTCOUNTREACHED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTCOUNTREACHED);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_OBJECTCOUNTCONFIG = "ObjectCountConfig";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_OBJECTCOUNTCONFIG = "Object Count Config";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTCOUNTCONFIG = "ambientcontextsensing-objectcountconfig";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_OBJECTCOUNTCONFIG = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTCOUNTCONFIG);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_OBJECTCOUNT = "ObjectCount";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_OBJECTCOUNT = "Object Count";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTCOUNT = "ambientcontextsensing-objectcount";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_OBJECTCOUNT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_OBJECTCOUNT);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_SIMULTANEOUSDETECTIONLIMIT = "SimultaneousDetectionLimit";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_SIMULTANEOUSDETECTIONLIMIT = "Simultaneous Detection Limit";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_SIMULTANEOUSDETECTIONLIMIT = "ambientcontextsensing-simultaneousdetectionlimit";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_SIMULTANEOUSDETECTIONLIMIT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_SIMULTANEOUSDETECTIONLIMIT);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_HOLDTIME = "HoldTime";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_HOLDTIME = "Hold Time";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_HOLDTIME = "ambientcontextsensing-holdtime";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_HOLDTIME = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_HOLDTIME);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_HOLDTIMELIMITS = "HoldTimeLimits";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_HOLDTIMELIMITS = "Hold Time Limits";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_HOLDTIMELIMITS = "ambientcontextsensing-holdtimelimits";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_HOLDTIMELIMITS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_HOLDTIMELIMITS);
+
+    public static final String CHANNEL_NAME_AMBIENTCONTEXTSENSING_PREDICTEDACTIVITY = "PredictedActivity";
+    public static final String CHANNEL_LABEL_AMBIENTCONTEXTSENSING_PREDICTEDACTIVITY = "Predicted Activity";
+    public static final String CHANNEL_ID_AMBIENTCONTEXTSENSING_PREDICTEDACTIVITY = "ambientcontextsensing-predictedactivity";
+    public static final ChannelTypeUID CHANNEL_AMBIENTCONTEXTSENSING_PREDICTEDACTIVITY = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_AMBIENTCONTEXTSENSING_PREDICTEDACTIVITY);
 
     // ApplicationBasic Cluster
     public static final String CHANNEL_NAME_APPLICATIONBASIC_VENDORNAME = "VendorName";
@@ -741,6 +820,12 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTBRIGHTNESS = "cameraavstreammanagement-statuslightbrightness";
     public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTBRIGHTNESS = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_STATUSLIGHTBRIGHTNESS);
+
+    public static final String CHANNEL_NAME_CAMERAAVSTREAMMANAGEMENT_IMAGEROTATIONDISCRETEANGLES = "ImageRotationDiscreteAngles";
+    public static final String CHANNEL_LABEL_CAMERAAVSTREAMMANAGEMENT_IMAGEROTATIONDISCRETEANGLES = "Image Rotation Discrete Angles";
+    public static final String CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_IMAGEROTATIONDISCRETEANGLES = "cameraavstreammanagement-imagerotationdiscreteangles";
+    public static final ChannelTypeUID CHANNEL_CAMERAAVSTREAMMANAGEMENT_IMAGEROTATIONDISCRETEANGLES = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_CAMERAAVSTREAMMANAGEMENT_IMAGEROTATIONDISCRETEANGLES);
 
     // CarbonDioxideConcentrationMeasurement Cluster
     public static final String CHANNEL_NAME_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "MeasuredValue";
@@ -2690,6 +2775,12 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_GENERALDIAGNOSTICS_TESTEVENTTRIGGERSENABLED = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_GENERALDIAGNOSTICS_TESTEVENTTRIGGERSENABLED);
 
+    public static final String CHANNEL_NAME_GENERALDIAGNOSTICS_DEVICELOADSTATUS = "DeviceLoadStatus";
+    public static final String CHANNEL_LABEL_GENERALDIAGNOSTICS_DEVICELOADSTATUS = "Device Load Status";
+    public static final String CHANNEL_ID_GENERALDIAGNOSTICS_DEVICELOADSTATUS = "generaldiagnostics-deviceloadstatus";
+    public static final ChannelTypeUID CHANNEL_GENERALDIAGNOSTICS_DEVICELOADSTATUS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_GENERALDIAGNOSTICS_DEVICELOADSTATUS);
+
     // GroupKeyManagement Cluster
     public static final String CHANNEL_NAME_GROUPKEYMANAGEMENT_GROUPKEYMAP = "GroupKeyMap";
     public static final String CHANNEL_LABEL_GROUPKEYMANAGEMENT_GROUPKEYMAP = "Group Key Map";
@@ -2714,6 +2805,43 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_GROUPKEYMANAGEMENT_MAXGROUPKEYSPERFABRIC = "groupkeymanagement-maxgroupkeysperfabric";
     public static final ChannelTypeUID CHANNEL_GROUPKEYMANAGEMENT_MAXGROUPKEYSPERFABRIC = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_GROUPKEYMANAGEMENT_MAXGROUPKEYSPERFABRIC);
+
+    public static final String CHANNEL_NAME_GROUPKEYMANAGEMENT_GROUPCASTADOPTION = "GroupcastAdoption";
+    public static final String CHANNEL_LABEL_GROUPKEYMANAGEMENT_GROUPCASTADOPTION = "Groupcast Adoption";
+    public static final String CHANNEL_ID_GROUPKEYMANAGEMENT_GROUPCASTADOPTION = "groupkeymanagement-groupcastadoption";
+    public static final ChannelTypeUID CHANNEL_GROUPKEYMANAGEMENT_GROUPCASTADOPTION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_GROUPKEYMANAGEMENT_GROUPCASTADOPTION);
+
+    // Groupcast Cluster
+    public static final String CHANNEL_NAME_GROUPCAST_MEMBERSHIP = "Membership";
+    public static final String CHANNEL_LABEL_GROUPCAST_MEMBERSHIP = "Membership";
+    public static final String CHANNEL_ID_GROUPCAST_MEMBERSHIP = "groupcast-membership";
+    public static final ChannelTypeUID CHANNEL_GROUPCAST_MEMBERSHIP = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_GROUPCAST_MEMBERSHIP);
+
+    public static final String CHANNEL_NAME_GROUPCAST_MAXMEMBERSHIPCOUNT = "MaxMembershipCount";
+    public static final String CHANNEL_LABEL_GROUPCAST_MAXMEMBERSHIPCOUNT = "Max Membership Count";
+    public static final String CHANNEL_ID_GROUPCAST_MAXMEMBERSHIPCOUNT = "groupcast-maxmembershipcount";
+    public static final ChannelTypeUID CHANNEL_GROUPCAST_MAXMEMBERSHIPCOUNT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_GROUPCAST_MAXMEMBERSHIPCOUNT);
+
+    public static final String CHANNEL_NAME_GROUPCAST_MAXMCASTADDRCOUNT = "MaxMcastAddrCount";
+    public static final String CHANNEL_LABEL_GROUPCAST_MAXMCASTADDRCOUNT = "Max Mcast Addr Count";
+    public static final String CHANNEL_ID_GROUPCAST_MAXMCASTADDRCOUNT = "groupcast-maxmcastaddrcount";
+    public static final ChannelTypeUID CHANNEL_GROUPCAST_MAXMCASTADDRCOUNT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_GROUPCAST_MAXMCASTADDRCOUNT);
+
+    public static final String CHANNEL_NAME_GROUPCAST_USEDMCASTADDRCOUNT = "UsedMcastAddrCount";
+    public static final String CHANNEL_LABEL_GROUPCAST_USEDMCASTADDRCOUNT = "Used Mcast Addr Count";
+    public static final String CHANNEL_ID_GROUPCAST_USEDMCASTADDRCOUNT = "groupcast-usedmcastaddrcount";
+    public static final ChannelTypeUID CHANNEL_GROUPCAST_USEDMCASTADDRCOUNT = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_GROUPCAST_USEDMCASTADDRCOUNT);
+
+    public static final String CHANNEL_NAME_GROUPCAST_FABRICUNDERTEST = "FabricUnderTest";
+    public static final String CHANNEL_LABEL_GROUPCAST_FABRICUNDERTEST = "Fabric Under Test";
+    public static final String CHANNEL_ID_GROUPCAST_FABRICUNDERTEST = "groupcast-fabricundertest";
+    public static final ChannelTypeUID CHANNEL_GROUPCAST_FABRICUNDERTEST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_GROUPCAST_FABRICUNDERTEST);
 
     // Groups Cluster
     public static final String CHANNEL_NAME_GROUPS_NAMESUPPORT = "NameSupport";
@@ -4647,6 +4775,12 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_SMOKECOALARM_EXPIRYDATE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_SMOKECOALARM_EXPIRYDATE);
 
+    public static final String CHANNEL_NAME_SMOKECOALARM_UNMOUNTED = "Unmounted";
+    public static final String CHANNEL_LABEL_SMOKECOALARM_UNMOUNTED = "Unmounted";
+    public static final String CHANNEL_ID_SMOKECOALARM_UNMOUNTED = "smokecoalarm-unmounted";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_UNMOUNTED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_SMOKECOALARM_UNMOUNTED);
+
     // SoftwareDiagnostics Cluster
     public static final String CHANNEL_NAME_SOFTWAREDIAGNOSTICS_THREADMETRICS = "ThreadMetrics";
     public static final String CHANNEL_LABEL_SOFTWAREDIAGNOSTICS_THREADMETRICS = "Thread Metrics";
@@ -4716,6 +4850,67 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_TARGETNAVIGATOR_CURRENTTARGET = "targetnavigator-currenttarget";
     public static final ChannelTypeUID CHANNEL_TARGETNAVIGATOR_CURRENTTARGET = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_TARGETNAVIGATOR_CURRENTTARGET);
+
+    // TemperatureAlarm Cluster
+    public static final String CHANNEL_NAME_TEMPERATUREALARM_MASK = "Mask";
+    public static final String CHANNEL_LABEL_TEMPERATUREALARM_MASK = "Mask";
+    public static final String CHANNEL_ID_TEMPERATUREALARM_MASK = "temperaturealarm-mask";
+    public static final ChannelTypeUID CHANNEL_TEMPERATUREALARM_MASK = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TEMPERATUREALARM_MASK);
+
+    public static final String CHANNEL_NAME_TEMPERATUREALARM_LATCH = "Latch";
+    public static final String CHANNEL_LABEL_TEMPERATUREALARM_LATCH = "Latch";
+    public static final String CHANNEL_ID_TEMPERATUREALARM_LATCH = "temperaturealarm-latch";
+    public static final ChannelTypeUID CHANNEL_TEMPERATUREALARM_LATCH = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TEMPERATUREALARM_LATCH);
+
+    public static final String CHANNEL_NAME_TEMPERATUREALARM_STATE = "State";
+    public static final String CHANNEL_LABEL_TEMPERATUREALARM_STATE = "State";
+    public static final String CHANNEL_ID_TEMPERATUREALARM_STATE = "temperaturealarm-state";
+    public static final ChannelTypeUID CHANNEL_TEMPERATUREALARM_STATE = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TEMPERATUREALARM_STATE);
+
+    public static final String CHANNEL_NAME_TEMPERATUREALARM_SUPPORTED = "Supported";
+    public static final String CHANNEL_LABEL_TEMPERATUREALARM_SUPPORTED = "Supported";
+    public static final String CHANNEL_ID_TEMPERATUREALARM_SUPPORTED = "temperaturealarm-supported";
+    public static final ChannelTypeUID CHANNEL_TEMPERATUREALARM_SUPPORTED = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TEMPERATUREALARM_SUPPORTED);
+
+    public static final String CHANNEL_NAME_TEMPERATUREALARM_CRITICALOVERTEMPERATURETHRESHOLD = "CriticalOverTemperatureThreshold";
+    public static final String CHANNEL_LABEL_TEMPERATUREALARM_CRITICALOVERTEMPERATURETHRESHOLD = "Critical Over Temperature Threshold";
+    public static final String CHANNEL_ID_TEMPERATUREALARM_CRITICALOVERTEMPERATURETHRESHOLD = "temperaturealarm-criticalovertemperaturethreshold";
+    public static final ChannelTypeUID CHANNEL_TEMPERATUREALARM_CRITICALOVERTEMPERATURETHRESHOLD = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TEMPERATUREALARM_CRITICALOVERTEMPERATURETHRESHOLD);
+
+    public static final String CHANNEL_NAME_TEMPERATUREALARM_MAJOROVERTEMPERATURETHRESHOLD = "MajorOverTemperatureThreshold";
+    public static final String CHANNEL_LABEL_TEMPERATUREALARM_MAJOROVERTEMPERATURETHRESHOLD = "Major Over Temperature Threshold";
+    public static final String CHANNEL_ID_TEMPERATUREALARM_MAJOROVERTEMPERATURETHRESHOLD = "temperaturealarm-majorovertemperaturethreshold";
+    public static final ChannelTypeUID CHANNEL_TEMPERATUREALARM_MAJOROVERTEMPERATURETHRESHOLD = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TEMPERATUREALARM_MAJOROVERTEMPERATURETHRESHOLD);
+
+    public static final String CHANNEL_NAME_TEMPERATUREALARM_MINOROVERTEMPERATURETHRESHOLD = "MinorOverTemperatureThreshold";
+    public static final String CHANNEL_LABEL_TEMPERATUREALARM_MINOROVERTEMPERATURETHRESHOLD = "Minor Over Temperature Threshold";
+    public static final String CHANNEL_ID_TEMPERATUREALARM_MINOROVERTEMPERATURETHRESHOLD = "temperaturealarm-minorovertemperaturethreshold";
+    public static final ChannelTypeUID CHANNEL_TEMPERATUREALARM_MINOROVERTEMPERATURETHRESHOLD = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TEMPERATUREALARM_MINOROVERTEMPERATURETHRESHOLD);
+
+    public static final String CHANNEL_NAME_TEMPERATUREALARM_MINORUNDERTEMPERATURETHRESHOLD = "MinorUnderTemperatureThreshold";
+    public static final String CHANNEL_LABEL_TEMPERATUREALARM_MINORUNDERTEMPERATURETHRESHOLD = "Minor Under Temperature Threshold";
+    public static final String CHANNEL_ID_TEMPERATUREALARM_MINORUNDERTEMPERATURETHRESHOLD = "temperaturealarm-minorundertemperaturethreshold";
+    public static final ChannelTypeUID CHANNEL_TEMPERATUREALARM_MINORUNDERTEMPERATURETHRESHOLD = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TEMPERATUREALARM_MINORUNDERTEMPERATURETHRESHOLD);
+
+    public static final String CHANNEL_NAME_TEMPERATUREALARM_MAJORUNDERTEMPERATURETHRESHOLD = "MajorUnderTemperatureThreshold";
+    public static final String CHANNEL_LABEL_TEMPERATUREALARM_MAJORUNDERTEMPERATURETHRESHOLD = "Major Under Temperature Threshold";
+    public static final String CHANNEL_ID_TEMPERATUREALARM_MAJORUNDERTEMPERATURETHRESHOLD = "temperaturealarm-majorundertemperaturethreshold";
+    public static final ChannelTypeUID CHANNEL_TEMPERATUREALARM_MAJORUNDERTEMPERATURETHRESHOLD = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TEMPERATUREALARM_MAJORUNDERTEMPERATURETHRESHOLD);
+
+    public static final String CHANNEL_NAME_TEMPERATUREALARM_CRITICALUNDERTEMPERATURETHRESHOLD = "CriticalUnderTemperatureThreshold";
+    public static final String CHANNEL_LABEL_TEMPERATUREALARM_CRITICALUNDERTEMPERATURETHRESHOLD = "Critical Under Temperature Threshold";
+    public static final String CHANNEL_ID_TEMPERATUREALARM_CRITICALUNDERTEMPERATURETHRESHOLD = "temperaturealarm-criticalundertemperaturethreshold";
+    public static final ChannelTypeUID CHANNEL_TEMPERATUREALARM_CRITICALUNDERTEMPERATURETHRESHOLD = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_TEMPERATUREALARM_CRITICALUNDERTEMPERATURETHRESHOLD);
 
     // TemperatureControl Cluster
     public static final String CHANNEL_NAME_TEMPERATURECONTROL_TEMPERATURESETPOINT = "TemperatureSetpoint";
@@ -5061,6 +5256,30 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_THERMOSTAT_SETPOINTHOLDEXPIRYTIMESTAMP = "thermostat-setpointholdexpirytimestamp";
     public static final ChannelTypeUID CHANNEL_THERMOSTAT_SETPOINTHOLDEXPIRYTIMESTAMP = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_THERMOSTAT_SETPOINTHOLDEXPIRYTIMESTAMP);
+
+    public static final String CHANNEL_NAME_THERMOSTAT_MAXTHERMOSTATSUGGESTIONS = "MaxThermostatSuggestions";
+    public static final String CHANNEL_LABEL_THERMOSTAT_MAXTHERMOSTATSUGGESTIONS = "Max Thermostat Suggestions";
+    public static final String CHANNEL_ID_THERMOSTAT_MAXTHERMOSTATSUGGESTIONS = "thermostat-maxthermostatsuggestions";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_MAXTHERMOSTATSUGGESTIONS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_THERMOSTAT_MAXTHERMOSTATSUGGESTIONS);
+
+    public static final String CHANNEL_NAME_THERMOSTAT_THERMOSTATSUGGESTIONS = "ThermostatSuggestions";
+    public static final String CHANNEL_LABEL_THERMOSTAT_THERMOSTATSUGGESTIONS = "Thermostat Suggestions";
+    public static final String CHANNEL_ID_THERMOSTAT_THERMOSTATSUGGESTIONS = "thermostat-thermostatsuggestions";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_THERMOSTATSUGGESTIONS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_THERMOSTAT_THERMOSTATSUGGESTIONS);
+
+    public static final String CHANNEL_NAME_THERMOSTAT_CURRENTTHERMOSTATSUGGESTION = "CurrentThermostatSuggestion";
+    public static final String CHANNEL_LABEL_THERMOSTAT_CURRENTTHERMOSTATSUGGESTION = "Current Thermostat Suggestion";
+    public static final String CHANNEL_ID_THERMOSTAT_CURRENTTHERMOSTATSUGGESTION = "thermostat-currentthermostatsuggestion";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_CURRENTTHERMOSTATSUGGESTION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_THERMOSTAT_CURRENTTHERMOSTATSUGGESTION);
+
+    public static final String CHANNEL_NAME_THERMOSTAT_THERMOSTATSUGGESTIONNOTFOLLOWINGREASON = "ThermostatSuggestionNotFollowingReason";
+    public static final String CHANNEL_LABEL_THERMOSTAT_THERMOSTATSUGGESTIONNOTFOLLOWINGREASON = "Thermostat Suggestion Not Following Reason";
+    public static final String CHANNEL_ID_THERMOSTAT_THERMOSTATSUGGESTIONNOTFOLLOWINGREASON = "thermostat-thermostatsuggestionnotfollowingreason";
+    public static final ChannelTypeUID CHANNEL_THERMOSTAT_THERMOSTATSUGGESTIONNOTFOLLOWINGREASON = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_THERMOSTAT_THERMOSTATSUGGESTIONNOTFOLLOWINGREASON);
 
     // ThermostatUserInterfaceConfiguration Cluster
     public static final String CHANNEL_NAME_THERMOSTATUSERINTERFACECONFIGURATION_TEMPERATUREDISPLAYMODE = "TemperatureDisplayMode";

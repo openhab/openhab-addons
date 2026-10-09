@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link OndiloBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @NonNullByDefault
 public class OndiloBridgeConfiguration {

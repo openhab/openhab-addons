@@ -102,10 +102,10 @@ public class CommodityPriceCluster extends BaseCluster {
          * This field shall indicate the ID of the associated TariffComponent for this price component. If there is no
          * associated TariffComponent, this field shall be omitted.
          */
-        public Integer tariffComponentId; // uint32
+        public Long tariffComponentId; // uint32
 
         public CommodityPriceComponentStruct(BigInteger price, TariffPriceTypeEnum source, String description,
-                Integer tariffComponentId) {
+                Long tariffComponentId) {
             this.price = price;
             this.source = source;
             this.description = description;
@@ -121,13 +121,13 @@ public class CommodityPriceCluster extends BaseCluster {
          * This field shall indicate the beginning timestamp in UTC of the period covered by the price indicated in the
          * Price field, or the price level indicated in the Price Level field, or both.
          */
-        public Integer periodStart; // epoch-s
+        public Long periodStart; // epoch-s
         /**
          * This field shall indicate the ending timestamp in UTC of the period covered by the price indicated in the
          * Price field, or the price level indicated in the Price Level field, or both.
          * If this field is null, then the period has no definite end.
          */
-        public Integer periodEnd; // epoch-s
+        public Long periodEnd; // epoch-s
         /**
          * This field shall indicate the price of the commodity per TariffUnit.
          */
@@ -149,7 +149,7 @@ public class CommodityPriceCluster extends BaseCluster {
          */
         public List<CommodityPriceComponentStruct> components; // list
 
-        public CommodityPriceStruct(Integer periodStart, Integer periodEnd, BigInteger price, Integer priceLevel,
+        public CommodityPriceStruct(Long periodStart, Long periodEnd, BigInteger price, Integer priceLevel,
                 String description, List<CommodityPriceComponentStruct> components) {
             this.periodStart = periodStart;
             this.periodEnd = periodEnd;

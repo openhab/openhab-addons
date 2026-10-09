@@ -123,8 +123,11 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
                 case HttpStatus.OK_200:
                     return true;
                 default:
-                    logger.trace("request returned status '{}', reason: {}, content = {}", responseStep3.getStatus(),
-                            responseStep3.getReason(), responseStep3.getContentAsString());
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("request returned status '{}', reason: {}, content = {}",
+                                responseStep3.getStatus(), responseStep3.getReason(),
+                                Utils.maskSecrets(responseStep3.getContentAsString()));
+                    }
                     throw new MiCloudException(responseStep3.getStatus() + responseStep3.getReason());
             }
         } catch (InterruptedException e) {
@@ -149,8 +152,10 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
 
         final ContentResponse responseStep1 = request.send();
         final String content = responseStep1.getContentAsString();
-        logger.trace("Xiaomi Login step 1 content response= {}", content);
-        logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Xiaomi Login step 1 content response= {}", Utils.maskSecrets(content));
+            logger.trace("Xiaomi Login step 1 response = {}", responseStep1);
+        }
 
         try {
             JsonElement resp = JsonParser.parseString(CloudUtil.parseJson(content));
@@ -203,8 +208,10 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
         final ContentResponse responseStep2 = request.send();
 
         final String content2 = responseStep2.getContentAsString();
-        logger.trace("Xiaomi login step 2 response = {}", responseStep2);
-        logger.trace("Xiaomi login step 2 content = {}", content2);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Xiaomi login step 2 response = {}", responseStep2);
+            logger.trace("Xiaomi login step 2 content = {}", Utils.maskSecrets(content2));
+        }
 
         JsonElement resp2 = JsonParser.parseString(CloudUtil.parseJson(content2));
         CloudLoginDTO jsonResp = GSON.fromJson(resp2, CloudLoginDTO.class);
@@ -225,32 +232,30 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
         Integer securityStatus = jsonResp.getSecurityStatus();
         Integer pwd = jsonResp.getPwd();
 
-        logger.trace("Xiaomi login ssecurity = {}", ssecurity);
+        logger.trace("Xiaomi login ssecurity = {}", Utils.obfuscateToken(ssecurity));
         logger.trace("Xiaomi login userId = {}", userId);
         logger.trace("Xiaomi login cUserId = {}", cUserId);
-        logger.trace("Xiaomi login passToken = {}", passToken);
-        logger.trace("Xiaomi login location = {}", location);
+        logger.trace("Xiaomi login passToken = {}", Utils.obfuscateToken(passToken));
+        logger.trace("Xiaomi login location = {}", Utils.maskUrl(location));
         logger.trace("Xiaomi login code = {}", code);
         logger.trace("Xiaomi login captcha URL = {}", captchaUrl);
         logger.trace("Xiaomi login callbackUrl = {}", callbackUrl);
 
         if ("87001".equals(code)) {
-            logger.debug("Xiaomi Cloud Step2 failed captcha: {}", CloudUtil.parseJson(content2));
+            logger.debug("Xiaomi Cloud Step2 failed captcha: {}", Utils.sanitizeForLog(CloudUtil.parseJson(content2)));
             updateLoginState(CloudLoginState.CAPTCHA_FAILED);
         }
 
         if (securityStatus != 0) {
-            logger.debug("Xiaomi Cloud Step2 response: {}", CloudUtil.parseJson(content2));
-            logger.debug(
-                    """
-                            Xiaomi Login code: {}
-                            SecurityStatus: {}
-                            Pwd code: {}
-                            Location login URL: {}
-                            In case of login issues check userId/password details are correct.
-                            If login details are correct, try to login using browser from the openHAB ip using the browser. Alternatively try to complete login with above URL.\
-                            """,
-                    code, securityStatus, pwd, location);
+            logger.debug("Xiaomi Cloud Step2 response: {}", Utils.sanitizeForLog(CloudUtil.parseJson(content2)));
+            logger.debug("""
+                    Xiaomi Login code: {}
+                    SecurityStatus: {}
+                    Pwd code: {}
+                    Location login URL: {}
+                    In case of login issues check userId/password details are correct.
+                    If login details are correct, try to login using browser from the openHAB ip using the browser.\
+                    """, code, securityStatus, pwd, Utils.maskUrl(location));
 
             if (!notificationUrl.isEmpty()) {
                 logger.info("Click submit and get token. Then enter the token in OH:\r\n{} ", notificationUrl);
@@ -354,7 +359,7 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
             JsonElement resultJson = JsonParser.parseString(jsonContent);
 
             if (!resultJson.isJsonObject()) {
-                logger.warn("2FA response is not a valid JSON object: {}", resultContent);
+                logger.warn("2FA response is not a valid JSON object: {}", Utils.sanitizeForLog(resultContent));
                 return;
             }
 
@@ -377,10 +382,12 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
 
             if (!location.isEmpty()) {
                 final ContentResponse response = loginStep3(location);
-                logger.trace("Xiaomi login step 3 status = {}", response.getStatus());
-                logger.trace("Xiaomi login step 3 response = {}", response);
-                logger.trace("Xiaomi login step 3 header = {}", response.getHeaders().toString());
-                logger.trace("Xiaomi login step 3 content = {}", response.getContentAsString());
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Xiaomi login step 3 status = {}", response.getStatus());
+                    logger.trace("Xiaomi login step 3 response = {}", response);
+                    logger.trace("Xiaomi login step 3 header = {}", maskHeaders(response.getHeaders()));
+                    logger.trace("Xiaomi login step 3 content = {}", Utils.maskSecrets(response.getContentAsString()));
+                }
             } else {
                 logger.warn("2FA completed but no redirect location found");
             }
@@ -405,11 +412,12 @@ public class MiCloudUserIdLoginConnector extends MiCloudConnector {
             String headerName = header.getName();
             if ("location".equalsIgnoreCase(headerName)) {
                 String value = header.getValue();
-                logger.trace("Found location header: {}", value);
+                logger.trace("Found location header: {}", value != null ? Utils.maskUrl(value) : "");
                 return value != null ? value : "";
             }
             if ("extension-pragma".equalsIgnoreCase(headerName)) {
-                logger.trace("Found extension-pragma header: {}", header.getValue());
+                final @Nullable String pragma = header.getValue();
+                logger.trace("Found extension-pragma header: {}", pragma != null ? Utils.maskSecrets(pragma) : "");
             }
         }
         return "";

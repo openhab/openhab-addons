@@ -60,6 +60,7 @@ import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
+import org.openhab.binding.shelly.internal.provider.ShellyStateDescriptionProvider;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.binding.shelly.internal.util.ShellyVersionComparator;
@@ -98,6 +99,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     protected final Logger logger = LoggerFactory.getLogger(ShellyBaseHandler.class);
     protected final ShellyChannelDefinitions channelDefinitions;
+    protected final ShellyStateDescriptionProvider stateDescriptionProvider;
 
     public String thingName = "";
     public String thingType = "";
@@ -133,6 +135,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     // Scheduler
     private volatile double watchdog = now();
+    private volatile double lastReport = 0;
     protected volatile int scheduledUpdates = 0;
     private volatile boolean throttleRetryPending = false;
     private int skipCount = UPDATE_SKIP_COUNT;
@@ -158,7 +161,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public ShellyBaseHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingRuntimeConfig bindingConfig, ShellyThingTable thingTable,
             final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient,
-            final LocationProvider locationProvider) {
+            final LocationProvider locationProvider, final ShellyStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
 
         this.thingTable = thingTable;
@@ -168,6 +171,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         this.cache = new ShellyChannelCache(this);
         this.channelDefinitions = new ShellyChannelDefinitions(messages);
         this.httpClient = httpClient;
+        this.stateDescriptionProvider = stateDescriptionProvider;
 
         // Create thing handler depending on device generation
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
@@ -361,7 +365,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     profile.isBlu, profile.alwaysOn, profile.hasBattery, apiConfig.getEnableCoIOT());
         }
 
-        if (profile.alwaysOn || !profile.isInitialized() && !isThingOnline()) {
+        // An OFFLINE thing stays OFFLINE until the reconnect below succeeds, otherwise an unreachable device would
+        // flip-flop between OFFLINE and ONLINE/CONFIGURATION_PENDING on every poll cycle
+        if (!isThingOffline() && (profile.alwaysOn || !profile.isInitialized() && !isThingOnline())) {
             ThingStatusDetail detail = getThingStatusDetail();
             if (detail != ThingStatusDetail.DUTY_CYCLE) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
@@ -410,23 +416,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             // New Shelly devices might use a different endpoint for the CoAP listener
             tmpPrf.coiotEndpoint = tmpPrf.device.coiot;
         }
-        if (tmpPrf.settings.sleepMode != null && !tmpPrf.isTRV) {
-            // Sensor, usually 12h, H&T in USB mode 10min
-            tmpPrf.updatePeriod = "m".equalsIgnoreCase(getString(tmpPrf.settings.sleepMode.unit))
-                    ? tmpPrf.settings.sleepMode.period * 60 // minutes
-                    : tmpPrf.settings.sleepMode.period * 3600; // hours
-            if (tmpPrf.isSmoke) {
-                tmpPrf.updatePeriod += 1800; // for smoke sensor give 30min extra
-            } else {
-                tmpPrf.updatePeriod += 60; // give 1min extra
-            }
-        } else if (tmpPrf.settings.coiot != null && tmpPrf.settings.coiot.updatePeriod != null) {
-            // Derive from CoAP update interval, usually 2*15+10s=40sec -> 70sec
-            tmpPrf.updatePeriod = 2 * //
-                    Math.max(UPDATE_SETTINGS_INTERVAL_SECONDS, getInteger(tmpPrf.settings.coiot.updatePeriod)) + 10;
-        } else {
-            tmpPrf.updatePeriod = 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
-        }
+        tmpPrf.updateWatchdogPeriod();
 
         tmpPrf.status = api.getStatus(); // update thing properties
         tmpPrf.updateFromStatus(tmpPrf.status);
@@ -458,7 +448,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Must run after updateAllChannels(): dynamic per-device channels (e.g. RGBW2's
         // channel1..4) don't exist yet before that call, so migration rules matching them
         // would find nothing and the schema version would get stamped as up-to-date anyway.
-        ShellyChannelMigration.migrateChannels(this);
+        migrateChannels();
+
         postEvent(ALARM_TYPE_NONE, false);
 
         logger.debug("{}: Thing successfully initialized.", thingName);
@@ -467,6 +458,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // would race with that fresh read and can transiently show a stale/wrong value
         setThingOnline(false);
         return true; // success
+    }
+
+    protected void migrateChannels() {
+        ShellyChannelMigration.migrateChannels(this);
     }
 
     /**
@@ -674,6 +669,19 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
             skipUpdate++;
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
+                if ((scheduledUpdates == 0) && !profile.alwaysOn && profile.isInitialized()) {
+                    // Polling a sleeping device always fails, its wakeup push resets the watchdog instead. A missed
+                    // wakeup (flat battery, out of range) has to be detected here, as there is no failing poll.
+                    // A pending settings refresh waits for the next update requested by a wakeup.
+                    if (isWatchdogExpired()) {
+                        logger.debug("{}: Device missed its wakeup window, going offline", thingName);
+                        setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR,
+                                "offline.status-error-watchdog");
+                    } else {
+                        logger.trace("{}: Sleep device, skip periodic poll, waiting for next wakeup", thingName);
+                    }
+                    return;
+                }
                 ThingStatus thingStatus = getThing().getStatus();
                 if (!profile.isInitialized() || ((thingStatus == ThingStatus.OFFLINE))
                         || (getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING)) {
@@ -739,6 +747,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         // overloaded updateStatus() methods always call this so we clear the update marker flag by default here
         updateMarkerSet = false;
+        if (stopping) {
+            return;
+        }
         super.updateStatus(status, statusDetail, description);
     }
 
@@ -874,6 +885,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 // request 3 updates in a row (during the first 2+3*3 sec)
                 requestUpdates(profile.alwaysOn ? 3 : 1, !channelsCreated);
             }
+        } else if (!profile.alwaysOn && refreshSettings && scheduledUpdates == 0) {
+            // the poll queued by an earlier wakeup missed its window, retry on this one
+            requestUpdates(1, false);
         }
 
         // Restart watchdog when status update was successful (no exception)
@@ -887,7 +901,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         api.close(); // Gen2: disconnect WS/close http sessions
         watchdog = 0;
-        profile.initialized = false; // force full re-init (incl. asyncApiRequest) on next reconnect
+        if (profile.alwaysOn) {
+            // Force full re-init on next reconnect. Sleeping devices have no connection to re-establish, re-init
+            // would only flip them to CONFIGURATION_PENDING until their next wakeup.
+            profile.initialized = false;
+        }
         channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
     }
 
@@ -899,13 +917,25 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void restartWatchdog() {
         synchronized (this) {
-            watchdog = now();
+            double now = now();
+            if (lastReport > 0 && !ShellyDeviceProfile.isEventDriven(getThing().getThingTypeUID())
+                    && profile.learnWakeupInterval(now - lastReport)) {
+                logger.debug("{}: Device reports every {} sec, watchdog extended to {} sec", thingName,
+                        profile.learnedWakeupPeriod, profile.updatePeriod);
+            }
+            lastReport = now;
+            watchdog = now;
         }
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_HEARTBEAT, getTimestamp());
         logger.trace("{}: Watchdog restarted (expires in {} sec)", thingName, profile.updatePeriod);
     }
 
     private boolean isWatchdogExpired() {
+        if (ShellyDeviceProfile.isEventDriven(getThing().getThingTypeUID())) {
+            // Buttons/remotes only report on button events (BLU periodic beacons are opt-in and undocumented), so
+            // they can stay silent for days - never force them offline for a missed wakeup.
+            return false;
+        }
         double delta = now() - watchdog;
         if ((watchdog > 0) && (delta > profile.updatePeriod)) {
             stats.remainingWatchdog.set((long) delta);
@@ -1777,6 +1807,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         try {
             if (consumeRefreshSettings(forceRefresh)) {
                 profile = api.getDeviceProfile(thing.getThingTypeUID(), null);
+                profile.updateWatchdogPeriod();
                 if (!isThingOnline()) {
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
                 }

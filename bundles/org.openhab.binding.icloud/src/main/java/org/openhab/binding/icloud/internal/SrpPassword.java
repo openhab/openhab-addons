@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.util.encoders.Hex;
 
 /**
  * SrpPassword represents a password for SRP authentication.
@@ -73,13 +74,18 @@ public class SrpPassword {
      *
      * @return The encoded password as a byte array
      */
-    public byte[] encode() {
+    public byte[] encode(String protocol) {
         if (salt == null || iterations == null || keyLength == null) {
             throw new IllegalStateException("Encrypt info not set");
         }
+        byte[] passwordInput = switch (protocol) {
+            case "s2k" -> passwordHash;
+            case "s2k_fo" -> Hex.toHexString(passwordHash).getBytes(StandardCharsets.US_ASCII);
+            default -> throw new IllegalArgumentException("Unsupported password protocol: " + protocol);
+        };
         try {
             PKCS5S2ParametersGenerator gen = new PKCS5S2ParametersGenerator(new SHA256Digest());
-            gen.init(passwordHash, salt, iterations);
+            gen.init(passwordInput, salt, iterations);
             KeyParameter key = (KeyParameter) gen.generateDerivedParameters(keyLength * 8);
             return key.getKey();
         } catch (Exception e) {

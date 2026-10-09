@@ -110,7 +110,7 @@ public class BasicInformationCluster extends BaseCluster {
      * "Availability of Software Images"). Nodes may query this field to determine the currently running version of
      * software on another given Node.
      */
-    public Integer softwareVersion; // 9 uint32 R V
+    public Long softwareVersion; // 9 uint32 R V
     /**
      * This attribute shall contain a current human-readable representation for the software running on the Node. This
      * version information may be conveyed to users. The maximum length of the SoftwareVersionString attribute is 64
@@ -218,7 +218,7 @@ public class BasicInformationCluster extends BaseCluster {
      * Comparison of SpecificationVersion shall always include the total value over 32 bits, without masking reserved
      * parts.
      */
-    public Integer specificationVersion; // 21 uint32 R V
+    public Long specificationVersion; // 21 uint32 R V
     /**
      * Indicates the maximum number of elements in a single InvokeRequests list (see Section 8.8.2, "Invoke Request
      * Action") that the Node is able to process. Note that since this attribute may change over time, both increasing
@@ -232,7 +232,7 @@ public class BasicInformationCluster extends BaseCluster {
      * This attribute shall contain the current version number for the configuration of the Node. A larger value of
      * ConfigurationVersion shall indicate a newer configuration than a lower value.
      */
-    public Integer configurationVersion; // 24 uint32 R V
+    public Long configurationVersion; // 24 uint32 R V
 
     // Structs
     /**
@@ -244,9 +244,9 @@ public class BasicInformationCluster extends BaseCluster {
         /**
          * This field shall be set to the same value as the one available in the SoftwareVersion attribute.
          */
-        public Integer softwareVersion; // uint32
+        public Long softwareVersion; // uint32
 
-        public StartUp(Integer softwareVersion) {
+        public StartUp(Long softwareVersion) {
             this.softwareVersion = softwareVersion;
         }
     }
@@ -335,10 +335,40 @@ public class BasicInformationCluster extends BaseCluster {
          * Transaction".
          */
         public Integer subscriptionsPerFabric; // uint16
+        /**
+         * This field shall indicate the actual maximum number of concurrent Invoke interactions that can be processed
+         * simultaneously by the node before possibly returning a BUSY status code.
+         */
+        public Integer simultaneousInvocationsSupported; // uint16
+        /**
+         * This field shall indicate the actual minimum number of concurrent Write interactions that can be processed
+         * simultaneously by the node before possibly returning a BUSY status code.
+         */
+        public Integer simultaneousWritesSupported; // uint16
+        /**
+         * This field shall indicate the actual maximum number of read paths (i.e. the sum of lengths of the lists of
+         * AttributePathIB and EventPathIB in the action) which a node guarantees being able to process in any Read
+         * Request Action.
+         * This is related to Section 2.11.2.1, "Read Interaction Limits".
+         */
+        public Integer readPathsSupported; // uint16
+        /**
+         * This field shall indicate the actual maximum number of subscription paths (i.e. the sum of lengths of the
+         * lists of AttributePathIB and EventPathIB in the action) which a node guarantees being able to process in any
+         * Subscribe Request Action.
+         * This is related to Section 2.11.2.2, "Subscribe Interaction Limits".
+         */
+        public Integer subscribePathsSupported; // uint16
 
-        public CapabilityMinimaStruct(Integer caseSessionsPerFabric, Integer subscriptionsPerFabric) {
+        public CapabilityMinimaStruct(Integer caseSessionsPerFabric, Integer subscriptionsPerFabric,
+                Integer simultaneousInvocationsSupported, Integer simultaneousWritesSupported,
+                Integer readPathsSupported, Integer subscribePathsSupported) {
             this.caseSessionsPerFabric = caseSessionsPerFabric;
             this.subscriptionsPerFabric = subscriptionsPerFabric;
+            this.simultaneousInvocationsSupported = simultaneousInvocationsSupported;
+            this.simultaneousWritesSupported = simultaneousWritesSupported;
+            this.readPathsSupported = readPathsSupported;
+            this.subscribePathsSupported = subscribePathsSupported;
         }
     }
 

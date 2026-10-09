@@ -132,6 +132,14 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_TAMPER_ALARM = "tamperAlarm";
     public static final String CHANNEL_TOO_DARK_ALARM = "tooDarkAlarm";
     public static final String CHANNEL_STORAGE_ALARM = "storageAlarm";
+    public static final String CHANNEL_CAMERA_ONLINE = "cameraOnline";
+    public static final String CHANNEL_CAMERA_SLEEPING = "cameraSleeping";
+    public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
+    public static final String CHANNEL_BATTERY_LOW = "batteryLow";
+    public static final String CHANNEL_BATTERY_CHARGING = "batteryCharging";
+    public static final String CHANNEL_STORAGE_USAGE = "storageUsage";
+    public static final String CHANNEL_STORAGE_ERROR = "storageError";
+    public static final String CHANNEL_SPEAKER_VOLUME = "speakerVolume";
     public static final String CHANNEL_SCENE_CHANGE_ALARM = "sceneChangeAlarm";
     public static final String CHANNEL_TOO_BRIGHT_ALARM = "tooBrightAlarm";
     public static final String CHANNEL_TOO_BLURRY_ALARM = "tooBlurryAlarm";

@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link Pool} DTO for representing Ondilo pools.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 public class Pool {
     /*

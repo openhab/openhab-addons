@@ -60,7 +60,8 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        mockCluster.featureMap = new ThermostatCluster.FeatureMap(true, true, true, true, false, false, false);
+        mockCluster.featureMap = new ThermostatCluster.FeatureMap(true, true, true, true, false, false, false, false,
+                false);
         mockCluster.absMinHeatSetpointLimit = 500; // 5°C
         mockCluster.absMaxHeatSetpointLimit = 3000; // 30°C
         mockCluster.absMinCoolSetpointLimit = 1500; // 15°C
@@ -118,7 +119,8 @@ class ThermostatConverterTest extends BaseMatterConverterTest {
 
     @Test
     void testCreateChannelsWithRunningStateCoolingOnly() {
-        mockCluster.featureMap = new ThermostatCluster.FeatureMap(false, true, false, false, false, false, false);
+        mockCluster.featureMap = new ThermostatCluster.FeatureMap(false, true, false, false, false, false, false, false,
+                false);
         mockCluster.thermostatRunningState = new ThermostatCluster.RelayStateBitmap(false, false, false, false, false,
                 false, false);
         ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");

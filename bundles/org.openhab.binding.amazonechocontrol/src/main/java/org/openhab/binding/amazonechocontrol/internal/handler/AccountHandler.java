@@ -374,9 +374,7 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
                 }
                 try {
                     if (connection.isLoggedIn()) {
-                        if (connection.renewTokens()) {
-                            storeSession();
-                        }
+                        connection.renewTokens();
                     } else {
                         // read session data from property
                         String sessionStore = sessionStorage.get("sessionStorage");
@@ -414,11 +412,13 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
     }
 
     public void resetConnection(boolean newDevice) {
-        pushConnection.close();
-        connection.logout(newDevice);
-        sessionStorage.put("sessionStorage", null);
+        synchronized (synchronizeConnection) {
+            pushConnection.close();
+            connection.logout(newDevice);
+            sessionStorage.put("sessionStorage", null);
 
-        updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE);
+        }
     }
 
     // used to set a valid connection from the web proxy login

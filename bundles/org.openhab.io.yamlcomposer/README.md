@@ -2,12 +2,12 @@
 children:
   - ["doc/basics", "YAML Basics"]
   - ["doc/variables", "Variables"]
+  - ["doc/dynamic-sources", "Dynamic Sources"]
   - ["doc/conditionals", "Conditionals"]
   - ["doc/loops", "Loops"]
   - ["doc/include", "Include"]
   - ["doc/templates", "Templates"]
   - ["doc/packages", "Packages"]
-  - ["doc/dynamic-sources", "Dynamic Sources"]
   - ["doc/anchors", "Anchors and Aliases"]
   - ["doc/merge-keys", "Merge Keys"]
   - ["doc/deep-merge", "Deep Merge"]
@@ -29,6 +29,7 @@ Each feature addresses a different kind of reuse, composition, or abstraction to
 | Feature                                    | Purpose                                                   | Typical Use                                                                                                    |
 |--------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
 | **Variables and Substitution (`${..}`)**   | Insert dynamic values or evaluate expressions             | Build labels, topics, IDs, or computed values                                                                  |
+| **Dynamic Sources**                        | Query live openHAB Things & Items                         | Auto-generate items from registered Things; react to enable/disable state changes                              |
 | **Conditionals (`!if`)**                   | Conditionally include or exclude YAML blocks              | Enable or disable features when using packages or template flags                                               |
 | **Loops (`!for`)**                         | Generate repeated YAML blocks from a list or map          | Create multiple items, channels, or thing definitions from structured data                                     |
 | **Include (`!include`)**                   | Insert the contents of another file                       | Reuse YAML across files; parameterize reusable blocks                                                          |
@@ -37,11 +38,11 @@ Each feature addresses a different kind of reuse, composition, or abstraction to
 | **Anchors and Aliases (`&name`, `*name`)** | Define small, reusable YAML fragments                     | Static defaults, shared fields                                                                                 |
 | **Merge Keys (`<<:`)**                     | Combine mappings from multiple sources                    | Layer top-level defaults, override flat fields, compose shallow structures                                     |
 | **Deep Merge (`!deep <<:`)**               | Recursively merge nested mappings and list items          | Preserve nested configuration; append tags or lists; apply nested override layers                              |
-| **Dynamic Sources**                        | Query live openHAB Things & Items                         | Auto-generate items from registered Things; react to enable/disable state changes                              |
 
 Each feature has a dedicated documentation page:
 
 - [Variables and Substitution](doc/variables.md)
+- [Dynamic Sources](doc/dynamic-sources.md)
 - [Conditionals](doc/conditionals.md)
 - [Loops](doc/loops.md)
 - [Include](doc/include.md)

@@ -148,7 +148,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
      * Indicates the Thread Leader Partition Id for the Thread network to which the Node is joined. Null if not attached
      * to a Thread network.
      */
-    public Integer partitionId; // 9 uint32 R V
+    public Long partitionId; // 9 uint32 R V
     /**
      * Indicates the Thread Leader Weight used when operating in the Leader role. Null if not attached to a Thread
      * network.
@@ -213,184 +213,184 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
      * 1 for each MAC transmission request regardless of the amount of CCA failures, CSMA-CA attempts, or
      * retransmissions. This value shall only be reset upon a Node reboot.
      */
-    public Integer txTotalCount; // 22 uint32 R V
+    public Long txTotalCount; // 22 uint32 R V
     /**
      * Indicates the total number of unique unicast MAC frame transmission requests. The attribute shall only be
      * incremented by 1 for each unicast MAC transmission request regardless of the amount of CCA failures, CSMA-CA
      * attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
-    public Integer txUnicastCount; // 23 uint32 R V
+    public Long txUnicastCount; // 23 uint32 R V
     /**
      * Indicates the total number of unique broadcast MAC frame transmission requests. The attribute shall only be
      * incremented by 1 for each broadcast MAC transmission request regardless of the amount of CCA failures, CSMA-CA
      * attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
-    public Integer txBroadcastCount; // 24 uint32 R V
+    public Long txBroadcastCount; // 24 uint32 R V
     /**
      * Indicates the total number of unique MAC frame transmission requests with requested acknowledgment. The attribute
      * shall only be incremented by 1 for each MAC transmission request with requested acknowledgment regardless of the
      * amount of CCA failures, CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
-    public Integer txAckRequestedCount; // 25 uint32 R V
+    public Long txAckRequestedCount; // 25 uint32 R V
     /**
      * Indicates the total number of unique MAC frame transmission requests that were acked. The attribute shall only be
      * incremented by 1 for each MAC transmission request that is acked regardless of the amount of CCA failures,
      * CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
-    public Integer txAckedCount; // 26 uint32 R V
+    public Long txAckedCount; // 26 uint32 R V
     /**
      * Indicates the total number of unique MAC frame transmission requests without requested acknowledgment. The
      * attribute shall only be incremented by 1 for each MAC transmission request that is does not request
      * acknowledgement regardless of the amount of CCA failures, CSMA-CA attempts, or retransmissions.
      */
-    public Integer txNoAckRequestedCount; // 27 uint32 R V
+    public Long txNoAckRequestedCount; // 27 uint32 R V
     /**
      * Indicates the total number of unique MAC Data frame transmission requests. The attribute shall only be
      * incremented by 1 for each MAC Data frame transmission request regardless of the amount of CCA failures, CSMA-CA
      * attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
-    public Integer txDataCount; // 28 uint32 R V
+    public Long txDataCount; // 28 uint32 R V
     /**
      * Indicates the total number of unique MAC Data Poll frame transmission requests. The attribute shall only be
      * incremented by 1 for each MAC Data Poll frame transmission request regardless of the amount of CCA failures,
      * CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
-    public Integer txDataPollCount; // 29 uint32 R V
+    public Long txDataPollCount; // 29 uint32 R V
     /**
      * Indicates the total number of unique MAC Beacon frame transmission requests. The attribute shall only be
      * incremented by 1 for each MAC Beacon frame transmission request regardless of the amount of CCA failures, CSMA-CA
      * attempts, or retransmissions.
      */
-    public Integer txBeaconCount; // 30 uint32 R V
+    public Long txBeaconCount; // 30 uint32 R V
     /**
      * Indicates the total number of unique MAC Beacon Request frame transmission requests. The attribute shall only be
      * incremented by 1 for each MAC Beacon Request frame transmission request regardless of the amount of CCA failures,
      * CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
-    public Integer txBeaconRequestCount; // 31 uint32 R V
+    public Long txBeaconRequestCount; // 31 uint32 R V
     /**
      * Indicates the total number of unique MAC frame transmission requests that are not counted by any other attribute.
      * The attribute shall only be incremented by 1 for each MAC frame transmission request regardless of the amount of
      * CCA failures, CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
-    public Integer txOtherCount; // 32 uint32 R V
+    public Long txOtherCount; // 32 uint32 R V
     /**
      * Indicates the total number of MAC retransmission attempts. The attribute shall only be incremented by 1 for each
      * retransmission attempt that may be triggered by lack of acknowledgement, CSMA/CA failure, or other type of
      * transmission error. This value shall only be reset upon a Node reboot.
      */
-    public Integer txRetryCount; // 33 uint32 R V
+    public Long txRetryCount; // 33 uint32 R V
     /**
      * Indicates the total number of unique MAC transmission packets that meet maximal retry limit for direct packets.
      * The attribute shall only be incremented by 1 for each unique MAC transmission packets that meets the maximal
      * retry limit for direct packets. This value shall only be reset upon a Node reboot.
      */
-    public Integer txDirectMaxRetryExpiryCount; // 34 uint32 R V
+    public Long txDirectMaxRetryExpiryCount; // 34 uint32 R V
     /**
      * Indicates the total number of unique MAC transmission packets that meet maximal retry limit for indirect packets.
      * The attribute shall only be incremented by 1 for each unique MAC transmission packets that meets the maximal
      * retry limit for indirect packets. This value shall only be reset upon a Node reboot.
      */
-    public Integer txIndirectMaxRetryExpiryCount; // 35 uint32 R V
+    public Long txIndirectMaxRetryExpiryCount; // 35 uint32 R V
     /**
      * Indicates the total number of CCA failures. The TxErrCcaCount attribute shall only be incremented by 1 for each
      * instance of a CCA failure. This value shall only be reset upon a Node reboot.
      */
-    public Integer txErrCcaCount; // 36 uint32 R V
+    public Long txErrCcaCount; // 36 uint32 R V
     /**
      * Indicates the total number of unique MAC transmission request failures caused by an abort error. The attribute
      * shall only be incremented by 1 for each unique MAC transmission request failure caused by an abort error.
      */
-    public Integer txErrAbortCount; // 37 uint32 R V
+    public Long txErrAbortCount; // 37 uint32 R V
     /**
      * Indicates the total number of unique MAC transmission request failures caused by an error as the result of a busy
      * channel (a CSMA/CA fail). The attribute shall only be incremented by 1 for each unique MAC transmission request
      * failure caused by a busy channel such as a CSMA/CA failure.
      */
-    public Integer txErrBusyChannelCount; // 38 uint32 R V
+    public Long txErrBusyChannelCount; // 38 uint32 R V
     /**
      * Indicates the total number of received unique MAC frames. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxTotalCount; // 39 uint32 R V
+    public Long rxTotalCount; // 39 uint32 R V
     /**
      * Indicates the total number of received unique unicast MAC frames. This value shall only be reset upon a Node
      * reboot.
      */
-    public Integer rxUnicastCount; // 40 uint32 R V
+    public Long rxUnicastCount; // 40 uint32 R V
     /**
      * Indicates the total number of received unique broadcast MAC frames. This value shall only be reset upon a Node
      * reboot.
      */
-    public Integer rxBroadcastCount; // 41 uint32 R V
+    public Long rxBroadcastCount; // 41 uint32 R V
     /**
      * Indicates the total number of received unique MAC Data frames. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxDataCount; // 42 uint32 R V
+    public Long rxDataCount; // 42 uint32 R V
     /**
      * Indicates the total number of received unique MAC Data Poll frames. This value shall only be reset upon a Node
      * reboot.
      */
-    public Integer rxDataPollCount; // 43 uint32 R V
+    public Long rxDataPollCount; // 43 uint32 R V
     /**
      * Indicates the total number of received unique MAC Beacon frames. This value shall only be reset upon a Node
      * reboot.
      */
-    public Integer rxBeaconCount; // 44 uint32 R V
+    public Long rxBeaconCount; // 44 uint32 R V
     /**
      * Indicates the total number of received unique MAC Beacon Request frames. This value shall only be reset upon a
      * Node reboot.
      */
-    public Integer rxBeaconRequestCount; // 45 uint32 R V
+    public Long rxBeaconRequestCount; // 45 uint32 R V
     /**
      * Indicates the total number of received unique MAC frame requests that are not counted by any other attribute.
      * This value shall only be reset upon a Node reboot.
      */
-    public Integer rxOtherCount; // 46 uint32 R V
+    public Long rxOtherCount; // 46 uint32 R V
     /**
      * Indicates the total number of received unique MAC frame requests that have been dropped as a result of MAC
      * filtering. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxAddressFilteredCount; // 47 uint32 R V
+    public Long rxAddressFilteredCount; // 47 uint32 R V
     /**
      * Indicates the total number of received unique MAC frame requests that have been dropped as a result of a
      * destination address check. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxDestAddrFilteredCount; // 48 uint32 R V
+    public Long rxDestAddrFilteredCount; // 48 uint32 R V
     /**
      * Indicates the total number of received MAC frame requests that have been dropped as a result of being a duplicate
      * of a previously received MAC frame request. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxDuplicatedCount; // 49 uint32 R V
+    public Long rxDuplicatedCount; // 49 uint32 R V
     /**
      * Indicates the total number of received unique MAC frame requests that have been dropped as a result of missing or
      * malformed frame contents. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxErrNoFrameCount; // 50 uint32 R V
+    public Long rxErrNoFrameCount; // 50 uint32 R V
     /**
      * Indicates the total number of received unique MAC frame requests that have been dropped as a result of
      * originating from an unknown neighbor device. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxErrUnknownNeighborCount; // 51 uint32 R V
+    public Long rxErrUnknownNeighborCount; // 51 uint32 R V
     /**
      * Indicates the total number of received unique MAC frame requests that have been dropped as a result of containing
      * an invalid source address. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxErrInvalidSrcAddrCount; // 52 uint32 R V
+    public Long rxErrInvalidSrcAddrCount; // 52 uint32 R V
     /**
      * Indicates the total number of received unique MAC frame requests that have been dropped as a result of an error
      * with the security of the received frame. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxErrSecCount; // 53 uint32 R V
+    public Long rxErrSecCount; // 53 uint32 R V
     /**
      * Indicates the total number of received unique MAC frame requests that have been dropped as a result of an error
      * with the FCS of the received frame. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxErrFcsCount; // 54 uint32 R V
+    public Long rxErrFcsCount; // 54 uint32 R V
     /**
      * Indicates the total number of received unique MAC frame requests that have been dropped as a result of an error
      * that is not counted by any other attribute. This value shall only be reset upon a Node reboot.
      */
-    public Integer rxErrOtherCount; // 55 uint32 R V
+    public Long rxErrOtherCount; // 55 uint32 R V
     /**
      * Null when there is no dataset configured.
      */
@@ -402,7 +402,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     /**
      * Null when there is no dataset configured.
      */
-    public Integer delay; // 58 uint32 R V
+    public Long delay; // 58 uint32 R V
     /**
      * Indicates the current security policies for the Thread partition to which a Node is connected. Null when there is
      * no dataset configured.
@@ -480,7 +480,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
          * This field shall specify the duration of time, in seconds, since a frame has been received from the
          * neighboring Node.
          */
-        public Integer age; // uint32
+        public Long age; // uint32
         /**
          * This field shall specify the RLOC16 of the neighboring Node. The uint16 value is composed by taking the two
          * RLOC16 and treating the octet string as if it was encoding a big-endian integer. For example, octet string
@@ -491,12 +491,12 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
          * This field shall specify the number of link layer frames that have been received from the neighboring node.
          * This field shall be reset to 0 upon a reboot of the Node.
          */
-        public Integer linkFrameCounter; // uint32
+        public Long linkFrameCounter; // uint32
         /**
          * This field shall specify the number of Mesh Link Establishment frames that have been received from the
          * neighboring node. This field shall be reset to 0 upon a reboot of the Node.
          */
-        public Integer mleFrameCounter; // uint32
+        public Long mleFrameCounter; // uint32
         /**
          * This field shall specify the implementation specific mix of IEEE 802.15.4 PDU receive quality indicators,
          * scaled from 0 to 255.
@@ -544,8 +544,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
          */
         public Boolean isChild; // bool
 
-        public NeighborTableStruct(BigInteger extAddress, Integer age, Integer rloc16, Integer linkFrameCounter,
-                Integer mleFrameCounter, Integer lqi, Integer averageRssi, Integer lastRssi, Integer frameErrorRate,
+        public NeighborTableStruct(BigInteger extAddress, Long age, Integer rloc16, Long linkFrameCounter,
+                Long mleFrameCounter, Integer lqi, Integer averageRssi, Integer lastRssi, Integer frameErrorRate,
                 Integer messageErrorRate, Boolean rxOnWhenIdle, Boolean fullThreadDevice, Boolean fullNetworkData,
                 Boolean isChild) {
             this.extAddress = extAddress;

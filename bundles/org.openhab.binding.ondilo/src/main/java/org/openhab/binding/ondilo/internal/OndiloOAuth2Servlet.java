@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * The {@link OndiloHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author MikeTheTux - Initial contribution
+ * @author Michael Weger - Initial contribution
  */
 @Component(service = OndiloOAuth2Servlet.class, immediate = true)
 @NonNullByDefault

@@ -106,11 +106,11 @@ public class DoorLockCluster extends BaseCluster {
     /**
      * This attribute shall hold the number of door open events that have occurred since it was last zeroed.
      */
-    public Integer doorOpenEvents; // 4 uint32 RW VM
+    public Long doorOpenEvents; // 4 uint32 RW VM
     /**
      * This attribute shall hold the number of door closed events that have occurred since it was last zeroed.
      */
-    public Integer doorClosedEvents; // 5 uint32 RW VM
+    public Long doorClosedEvents; // 5 uint32 RW VM
     /**
      * This attribute shall hold the number of minutes the door has been open since the last time it transitioned from
      * closed to open.
@@ -187,7 +187,7 @@ public class DoorLockCluster extends BaseCluster {
      * If set, unlock operations from any source will be timed. For one time unlock with timeout use the specific
      * command.
      */
-    public Integer autoRelockTime; // 35 uint32 R[W] VM
+    public Long autoRelockTime; // 35 uint32 R[W] VM
     /**
      * Indicates the sound volume on a door lock as defined by SoundVolumeEnum.
      */
@@ -1522,8 +1522,8 @@ public class DoorLockCluster extends BaseCluster {
      * The associated UserType may be changed to ScheduleRestrictedUser by the lock when a Year Day schedule is set.
      * Return status shall be one of the following values:
      */
-    public static ClusterCommand setYearDaySchedule(Integer yearDayIndex, Integer userIndex, Integer localStartTime,
-            Integer localEndTime) {
+    public static ClusterCommand setYearDaySchedule(Integer yearDayIndex, Integer userIndex, Long localStartTime,
+            Long localEndTime) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (yearDayIndex != null) {
             map.put("yearDayIndex", yearDayIndex);
@@ -1574,7 +1574,7 @@ public class DoorLockCluster extends BaseCluster {
      * Mode.
      * Return status shall be one of the following values:
      */
-    public static ClusterCommand setHolidaySchedule(Integer holidayIndex, Integer localStartTime, Integer localEndTime,
+    public static ClusterCommand setHolidaySchedule(Integer holidayIndex, Long localStartTime, Long localEndTime,
             OperatingModeEnum operatingMode) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (holidayIndex != null) {
@@ -1626,7 +1626,7 @@ public class DoorLockCluster extends BaseCluster {
      * UserIndex points to an available slot.
      */
     public static ClusterCommand setUser(DataOperationTypeEnum operationType, Integer userIndex, String userName,
-            Integer userUniqueId, UserStatusEnum userStatus, UserTypeEnum userType, CredentialRuleEnum credentialRule) {
+            Long userUniqueId, UserStatusEnum userStatus, UserTypeEnum userType, CredentialRuleEnum credentialRule) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (operationType != null) {
             map.put("operationType", operationType);

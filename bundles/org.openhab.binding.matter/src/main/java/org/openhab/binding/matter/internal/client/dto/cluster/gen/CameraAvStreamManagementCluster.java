@@ -74,6 +74,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
     public static final String ATTRIBUTE_LOCAL_SNAPSHOT_RECORDING_ENABLED = "localSnapshotRecordingEnabled";
     public static final String ATTRIBUTE_STATUS_LIGHT_ENABLED = "statusLightEnabled";
     public static final String ATTRIBUTE_STATUS_LIGHT_BRIGHTNESS = "statusLightBrightness";
+    public static final String ATTRIBUTE_IMAGE_ROTATION_DISCRETE_ANGLES = "imageRotationDiscreteAngles";
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
@@ -87,7 +88,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
      * attribute shall be present, and a manufacturer specific value shall be present in each SnapshotCapabilities
      * MaxFrameRate entry that requires hardware resources to produce.
      */
-    public Integer maxEncodedPixelRate; // 1 uint32 R V
+    public Long maxEncodedPixelRate; // 1 uint32 R V
     /**
      * Indicates the set of video sensor parameters for the camera. These include the video sensor dimensions, its frame
      * rate and HDR capabilities.
@@ -118,7 +119,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
      * context for recording events. For devices which support more than one encoder, the device shall evenly allocate
      * this buffer space amongst all streams that utilize pre-roll content such as the Push AV Stream Transport Cluster.
      */
-    public Integer maxContentBufferSize; // 6 uint32 R V
+    public Long maxContentBufferSize; // 6 uint32 R V
     /**
      * Indicates the audio capabilities of the microphone in terms of the codec used, supported sample rates and the
      * number of channels.
@@ -142,7 +143,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
      * Indicates the maximum network bandwidth in bits per second that the device would consume for the transmission of
      * its media streams.
      */
-    public Integer maxNetworkBandwidth; // 11 uint32 R V
+    public Long maxNetworkBandwidth; // 11 uint32 R V
     /**
      * Indicates the current logical frame rate of the sensor in frames per second.
      */
@@ -278,6 +279,9 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
     public Boolean microphoneAgcEnabled; // 33 bool RW M
     /**
      * This attribute indicates the amount of clockwise rotation in degrees that the image has been subjected to.
+     * This attribute may be present if the underlying hardware allows for arbitrary angle rotation within the full 360
+     * degree range. If this attribute is not present, then discrete angle rotation may be supported via the
+     * ImageRotationDiscreteAngles. A value of 0 means no rotation has been applied.
      */
     public Integer imageRotation; // 34 uint16 RW M
     /**
@@ -310,6 +314,14 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
      * This attribute indicates the brightness level of the status light.
      */
     public ThreeLevelAutoEnum statusLightBrightness; // 40 ThreeLevelAutoEnum RW M
+    /**
+     * This attribute indicates the amount of clockwise rotation in specific angles of 0, 90, 180, and 270 degrees. This
+     * attribute is used by cameras that do not have the capability of full arbitrary rotation angles that can be set
+     * via the ImageRotation attribute. Note that the ImageFlipHorizontal and the ImageFlipVertical attributes only
+     * allow for a lateral inversion or mirror reflection of the image along the horizontal and/or vertical axes. A
+     * value of 0 means no rotation has been applied.
+     */
+    public Integer imageRotationDiscreteAngles; // 41 uint16 RW M
 
     // Structs
     /**
@@ -384,10 +396,10 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
          * This field shall indicate the minimum bitrate for a specific rate distortion trade-off point expressed as
          * bits per second.
          */
-        public Integer minBitRate; // uint32
+        public Long minBitRate; // uint32
 
         public RateDistortionTradeOffPointsStruct(VideoCodecEnum codec, VideoResolutionStruct resolution,
-                Integer minBitRate) {
+                Long minBitRate) {
             this.codec = codec;
             this.resolution = resolution;
             this.minBitRate = minBitRate;
@@ -453,7 +465,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
          * This field shall indicate the list of sample rates that are supported by the audio stream from the camera
          * expressed in Hz, e.g., (48000, 32000, 16000).
          */
-        public List<Integer> supportedSampleRates; // list
+        public List<Long> supportedSampleRates; // list
         /**
          * This field shall indicate the list of bit depths that are supported by the audio stream, e.g., (16-bit,
          * 24-bit).
@@ -461,7 +473,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
         public List<Integer> supportedBitDepths; // list
 
         public AudioCapabilitiesStruct(Integer maxNumberOfChannels, List<AudioCodecEnum> supportedCodecs,
-                List<Integer> supportedSampleRates, List<Integer> supportedBitDepths) {
+                List<Long> supportedSampleRates, List<Integer> supportedBitDepths) {
             this.maxNumberOfChannels = maxNumberOfChannels;
             this.supportedCodecs = supportedCodecs;
             this.supportedSampleRates = supportedSampleRates;
@@ -505,11 +517,11 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
         /**
          * This field shall indicate the minimum bitrate for the corresponding video stream in bits per second.
          */
-        public Integer minBitRate; // uint32
+        public Long minBitRate; // uint32
         /**
          * This field shall indicate the maximum bitrate for the corresponding video stream in bits per second.
          */
-        public Integer maxBitRate; // uint32
+        public Long maxBitRate; // uint32
         /**
          * This field shall indicate the duration in milliseconds before a regular key-frame shall be generated. A value
          * of 0 shall mean that no regular key-frames are generated. When using push transports with a stream, it is
@@ -536,7 +548,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
 
         public VideoStreamStruct(Integer videoStreamId, StreamUsageEnum streamUsage, VideoCodecEnum videoCodec,
                 Integer minFrameRate, Integer maxFrameRate, VideoResolutionStruct minResolution,
-                VideoResolutionStruct maxResolution, Integer minBitRate, Integer maxBitRate, Integer keyFrameInterval,
+                VideoResolutionStruct maxResolution, Long minBitRate, Long maxBitRate, Integer keyFrameInterval,
                 Boolean watermarkEnabled, Boolean osdEnabled, Integer referenceCount) {
             this.videoStreamId = videoStreamId;
             this.streamUsage = streamUsage;
@@ -579,11 +591,11 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
         /**
          * This field shall indicate the audio sample rate, in hertz (Hz).
          */
-        public Integer sampleRate; // uint32
+        public Long sampleRate; // uint32
         /**
          * This field shall indicate the target bit rate in bits per second of the audio stream.
          */
-        public Integer bitRate; // uint32
+        public Long bitRate; // uint32
         /**
          * This field shall indicate the bit depth (8, 16, 24 or 32 bits) of the audio stream. It represents the number
          * of bits of information used to represent each sample of the audio signal, and affects the resolution and
@@ -598,7 +610,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
         public Integer referenceCount; // uint8
 
         public AudioStreamStruct(Integer audioStreamId, StreamUsageEnum streamUsage, AudioCodecEnum audioCodec,
-                Integer channelCount, Integer sampleRate, Integer bitRate, Integer bitDepth, Integer referenceCount) {
+                Integer channelCount, Long sampleRate, Long bitRate, Integer bitDepth, Integer referenceCount) {
             this.audioStreamId = audioStreamId;
             this.streamUsage = streamUsage;
             this.audioCodec = audioCodec;
@@ -961,7 +973,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
      * This command shall allocate an audio stream on the camera and return an allocated audio stream identifier.
      */
     public static ClusterCommand audioStreamAllocate(StreamUsageEnum streamUsage, AudioCodecEnum audioCodec,
-            Integer channelCount, Integer sampleRate, Integer bitRate, Integer bitDepth) {
+            Integer channelCount, Long sampleRate, Long bitRate, Integer bitDepth) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (streamUsage != null) {
             map.put("streamUsage", streamUsage);
@@ -1000,7 +1012,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
      */
     public static ClusterCommand videoStreamAllocate(StreamUsageEnum streamUsage, VideoCodecEnum videoCodec,
             Integer minFrameRate, Integer maxFrameRate, VideoResolutionStruct minResolution,
-            VideoResolutionStruct maxResolution, Integer minBitRate, Integer maxBitRate, Integer keyFrameInterval,
+            VideoResolutionStruct maxResolution, Long minBitRate, Long maxBitRate, Integer keyFrameInterval,
             Boolean watermarkEnabled, Boolean osdEnabled) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (streamUsage != null) {
@@ -1203,6 +1215,7 @@ public class CameraAvStreamManagementCluster extends BaseCluster {
         str += "localSnapshotRecordingEnabled : " + localSnapshotRecordingEnabled + "\n";
         str += "statusLightEnabled : " + statusLightEnabled + "\n";
         str += "statusLightBrightness : " + statusLightBrightness + "\n";
+        str += "imageRotationDiscreteAngles : " + imageRotationDiscreteAngles + "\n";
         return str;
     }
 }

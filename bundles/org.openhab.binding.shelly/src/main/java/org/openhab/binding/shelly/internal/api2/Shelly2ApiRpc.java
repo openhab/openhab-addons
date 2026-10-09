@@ -534,7 +534,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             logger.debug("{}: Thing is shutting down, ignore WebSocket message", thingName);
             return;
         }
-        if (!t.isThingOnline() && t.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
+        // A sleeping device set OFFLINE by the watchdog can't be polled, its next wakeup push is the only recovery
+        boolean sleepDevice = !getProfile().alwaysOn;
+        if (!sleepDevice && !t.isThingOnline() && t.getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING) {
             logger.debug("{}: Thing is not in online state/connectable, ignore NotifyStatus", thingName);
             return;
         }
@@ -572,6 +574,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     logger.warn("{}: Device requires restart to activate changes", thingName);
                 }
                 status.uptime = params.sys.uptime;
+                if (params.sys.wakeupPeriod != null) {
+                    profile.updateWakeupPeriod(params.sys.wakeupPeriod / 60);
+                }
             }
             status.temperature = SHELLY_API_INVTEMP; // mark invalid
             updated |= fillDeviceStatus(status, message.params, true);
@@ -586,7 +591,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
 
             profile.status = status;
-            if (updated) {
+            // A wakeup without changed values still proves that a sleeping device is alive
+            if (updated || !profile.alwaysOn) {
                 getThing().restartWatchdog();
             }
         }
@@ -824,7 +830,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         status.discoverable = getBool(profile.settings.discoverable);
 
         if (ds.sys.wakeupPeriod != null) {
-            profile.settings.sleepMode.period = ds.sys.wakeupPeriod / 60;
+            profile.updateWakeupPeriod(ds.sys.wakeupPeriod / 60);
         }
 
         Shelly2DeviceStatusSysAvlUpdate avlUpdate = ds.sys.availableUpdates;

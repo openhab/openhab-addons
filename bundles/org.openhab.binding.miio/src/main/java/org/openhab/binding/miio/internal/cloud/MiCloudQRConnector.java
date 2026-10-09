@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.openhab.binding.miio.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,7 +111,7 @@ public class MiCloudQRConnector extends MiCloudConnector {
 
             this.sign = location;
             ContentResponse res = loginStep3(location);
-            logger.debug("login step 3 response: {}: {}", res, res.getContentAsString());
+            logger.debug("login step 3 response: {}: {}", res, Utils.sanitizeForLog(res.getContentAsString()));
 
             if (res.getStatus() == 200) {
                 return true;
@@ -162,7 +163,7 @@ public class MiCloudQRConnector extends MiCloudConnector {
             logger.debug("Xiaomi login step 1 login session request response code: {}", response.getStatus());
 
             String json = CloudUtil.parseJson(text);
-            logger.debug("Xiaomi login step 1 login session request response: {}", json);
+            logger.debug("Xiaomi login step 1 login session request response: {}", Utils.sanitizeForLog(json));
 
             JsonObject responseData = GSON.fromJson(json, JsonObject.class);
             if (responseData == null) {
@@ -234,11 +235,11 @@ public class MiCloudQRConnector extends MiCloudConnector {
             String location = CloudUtil.getJsonString(responseJson, "location", "");
             String code = CloudUtil.getJsonString(responseJson, "code", "");
             if (logger.isTraceEnabled()) {
-                logger.trace("Xiaomi login ssecurity: {}", this.ssecurity);
+                logger.trace("Xiaomi login ssecurity: {}", Utils.obfuscateToken(this.ssecurity));
                 logger.trace("Xiaomi login userId: {}", this.userId);
                 logger.trace("Xiaomi login cUserId: {}", cuserId);
-                logger.trace("Xiaomi login passToken: {}", passToken);
-                logger.trace("Xiaomi login location: {}", location);
+                logger.trace("Xiaomi login passToken: {}", Utils.obfuscateToken(passToken));
+                logger.trace("Xiaomi login location: {}", Utils.maskUrl(location));
                 logger.trace("Xiaomi login code: {}", code);
             }
             if (location.isEmpty()) {

@@ -37,14 +37,33 @@ public class GroupKeyManagementCluster extends BaseCluster {
     public static final String ATTRIBUTE_GROUP_TABLE = "groupTable";
     public static final String ATTRIBUTE_MAX_GROUPS_PER_FABRIC = "maxGroupsPerFabric";
     public static final String ATTRIBUTE_MAX_GROUP_KEYS_PER_FABRIC = "maxGroupKeysPerFabric";
+    public static final String ATTRIBUTE_GROUPCAST_ADOPTION = "groupcastAdoption";
 
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
+     * If the GCAST feature bit is set in the FeatureMap attribute, the following rules apply to the accessing Fabric:
+     * - When Groupcast is adopted (the GroupcastAdoption entry has GroupcastAdopted set to true):
+     * - This attribute shall be empty.
+     * - Any attempt to write to this attribute shall fail with an INVALID_IN_STATE status code.
+     * - Otherwise (Groupcast is not adopted or the entry is missing):
+     * - This attribute shall contain the Group Key Set mappings derived from the Groupcast cluster's Membership
+     * attribute (one mapping per group per fabric).
+     * - GroupKeyMapStruct entry updates shall cause the associated Groupcast cluster's Membership attribute (by
+     * GroupID) to be updated with the provided GroupKeySetID. If an entry is missing for a given GroupID in the
+     * GroupKeyMap, which exists in the Groupcast cluster's Membership attribute for a given fabric, then the Groupcast
+     * cluster's membership attribute shall use placeholder value 65535 for the KeySetID. While this KeySetID is
+     * technically valid, administrators SHOULD avoid allocating it for actual usage to avoid value aliasing for this
+     * field.
      * This attribute is a list of GroupKeyMapStruct entries. Each entry associates a logical Group Id with a particular
      * group key set.
      */
     public List<GroupKeyMapStruct> groupKeyMap; // 0 list RW F VM
     /**
+     * If the GCAST feature is set in the FeatureMap:
+     * - If the GroupcastAdoption attribute has an entry for the accessing Fabric and that entry has the
+     * GroupcastAdopted field set to true, then this field shall be empty.
+     * - Else this attribute shall contain the Group mappings computed in equivalence to the Groupcast cluster's
+     * Membership attribute (one mapping per group per fabric).
      * This attribute is a list of GroupInfoMapStruct entries. Each entry provides read-only information about how a
      * given logical Group ID maps to a particular set of endpoints, and a name for the group. The content of this
      * attribute reflects data managed via the Groups cluster (see [[AppClusters]](#ref_AppClusters)), and is in general
@@ -55,8 +74,11 @@ public class GroupKeyManagementCluster extends BaseCluster {
      */
     public List<GroupInfoMapStruct> groupTable; // 1 list R F V
     /**
-     * Indicates the maximum number of groups that this node supports per fabric. The value of this attribute shall be
-     * set to be no less than the required minimum supported groups as specified in Section 2.11.1.2, "Group Limits".
+     * If the Groupcast support is enabled (GCAST feature is set), this shall be set to 0 indicating group management is
+     * done using the Groupcast cluster and not the legacy Groups cluster.
+     * Indicates the maximum number of legacy groups that this node supports per fabric. For legacy usage, the value of
+     * this attribute shall be set to be no less than the required minimum supported groups as specified in Section
+     * 2.11.1.2, "Group Limits".
      * The length of the GroupKeyMap and GroupTable list attributes shall NOT exceed the value of the MaxGroupsPerFabric
      * attribute multiplied by the number of supported fabrics.
      */
@@ -67,6 +89,15 @@ public class GroupKeyManagementCluster extends BaseCluster {
      * Limits".
      */
     public Integer maxGroupKeysPerFabric; // 3 uint16 R V
+    /**
+     * Indicates whether the accessing fabric claims to have migrated to Groupcast.
+     * When a Fabric's entry has the GroupcastAdopted field set to true, the behavior of the GroupKeyMap and GroupTable
+     * attributes will change (see description of respective attributes).
+     * There shall NOT be more than 1 entry per fabric in this attribute.
+     * If a Fabric has not yet written an entry for themselves, the server shall act as if that Fabric had written an
+     * entry with GroupcastAdopted set to false, even if not present in the list.
+     */
+    public List<GroupcastAdoptionStruct> groupcastAdoption; // 4 list RW F A
 
     // Structs
     public static class GroupKeyMapStruct {
@@ -102,8 +133,10 @@ public class GroupKeyManagementCluster extends BaseCluster {
          */
         public GroupKeySecurityPolicyEnum groupKeySecurityPolicy; // GroupKeySecurityPolicyEnum
         /**
-         * This field, if not null, shall be the root credential used in the derivation of an operational group key for
-         * epoch slot 0 of the given group key set. If EpochKey0 is not null, EpochStartTime0 shall NOT be null.
+         * This field, if not null, shall be the InputKey used in the derivation of an OperationalGroupKey for epoch
+         * slot 0 of the given group key set. The derived OperationalGroupKey shall be persistently stored for the
+         * lifetime of the derived key; however, the InputKey itself shall NOT be stored. If EpochKey0 is not null,
+         * EpochStartTime0 shall NOT be null.
          */
         public OctetString epochKey0; // octstr
         /**
@@ -112,8 +145,10 @@ public class GroupKeyManagementCluster extends BaseCluster {
          */
         public BigInteger epochStartTime0; // epoch-us
         /**
-         * This field, if not null, shall be the root credential used in the derivation of an operational group key for
-         * epoch slot 1 of the given group key set. If EpochKey1 is not null, EpochStartTime1 shall NOT be null.
+         * This field, if not null, shall be the InputKey used in the derivation of an OperationalGroupKey for epoch
+         * slot 1 of the given group key set. The derived OperationalGroupKey shall be persistently stored for the
+         * lifetime of the derived key; however, the InputKey itself shall NOT be stored. If EpochKey1 is not null,
+         * EpochStartTime1 shall NOT be null.
          */
         public OctetString epochKey1; // octstr
         /**
@@ -122,25 +157,21 @@ public class GroupKeyManagementCluster extends BaseCluster {
          */
         public BigInteger epochStartTime1; // epoch-us
         /**
-         * This field, if not null, shall be the root credential used in the derivation of an operational group key for
-         * epoch slot 2 of the given group key set. If EpochKey2 is not null, EpochStartTime2 shall NOT be null.
+         * If the GCAST feature bit is set in the FeatureMap, this field shall be null, unless the GroupKeySetId is 0
+         * (the Identity Protection Key).
+         * This field, if not null, shall be the InputKey used in the derivation of an OperationalGroupKey for epoch
+         * slot 2 of the given group key set. The derived OperationalGroupKey shall be persistently stored for the
+         * lifetime of the derived key; however, the InputKey itself shall NOT be stored. If EpochKey2 is not null,
+         * EpochStartTime2 shall NOT be null.
          */
         public OctetString epochKey2; // octstr
         /**
+         * If the GCAST feature bit is set in the FeatureMap, this field shall be null, unless the GroupKeySetId is 0
+         * (the Identity Protection Key).
          * This field, if not null, shall define when EpochKey2 becomes valid as specified by Section 4.17.3, "Epoch
          * Keys". Units are absolute UTC time in microseconds encoded using the epoch-us representation.
          */
         public BigInteger epochStartTime2; // epoch-us
-        /**
-         * This field specifies how the IPv6 Multicast Address shall be formed for groups using this operational group
-         * key set.
-         * The PerGroupID method maximizes filtering of multicast messages, so that receiving nodes receive only
-         * multicast messages for groups to which they are subscribed.
-         * The AllNodes method minimizes the number of multicast addresses to which a receiver node needs to subscribe.
-         * > [!NOTE]
-         * > NOTE: Support for GroupKeyMulticastPolicy is provisional. Correct default behavior is that implied by value
-         * PerGroupID.
-         */
         public GroupKeyMulticastPolicyEnum groupKeyMulticastPolicy; // GroupKeyMulticastPolicyEnum
         public Integer fabricIndex; // FabricIndex
 
@@ -181,6 +212,19 @@ public class GroupKeyManagementCluster extends BaseCluster {
             this.groupId = groupId;
             this.endpoints = endpoints;
             this.groupName = groupName;
+            this.fabricIndex = fabricIndex;
+        }
+    }
+
+    public static class GroupcastAdoptionStruct {
+        /**
+         * This field shall indicate whether Groupcast was adopted by the associated Fabric's administrators.
+         */
+        public Boolean groupcastAdopted; // bool
+        public Integer fabricIndex; // FabricIndex
+
+        public GroupcastAdoptionStruct(Boolean groupcastAdopted, Integer fabricIndex) {
+            this.groupcastAdopted = groupcastAdopted;
             this.fabricIndex = fabricIndex;
         }
     }
@@ -236,12 +280,21 @@ public class GroupKeyManagementCluster extends BaseCluster {
     public static class FeatureMap {
         /**
          * 
-         * The ability to support CacheAndSync security policy and MCSP.
+         * The CacheAndSync security policy has been provisional since Matter v1.0.
          */
         public boolean cacheAndSync;
+        /**
+         * 
+         * When set, group management and group key mapping is done using the Section 11.27, "Groupcast Cluster".
+         * If the Groupcast cluster is present on the Root Node endpoint, then this feature bit shall be set.
+         * When this feature map bit is set, this cluster SHOULD be used solely for key management as the Groupcast
+         * cluster offers more direct and long-term supported methods of managing group key mapping.
+         */
+        public boolean groupcast;
 
-        public FeatureMap(boolean cacheAndSync) {
+        public FeatureMap(boolean cacheAndSync, boolean groupcast) {
             this.cacheAndSync = cacheAndSync;
+            this.groupcast = groupcast;
         }
     }
 
@@ -304,6 +357,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
         str += "groupTable : " + groupTable + "\n";
         str += "maxGroupsPerFabric : " + maxGroupsPerFabric + "\n";
         str += "maxGroupKeysPerFabric : " + maxGroupKeysPerFabric + "\n";
+        str += "groupcastAdoption : " + groupcastAdoption + "\n";
         return str;
     }
 }

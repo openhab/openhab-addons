@@ -81,13 +81,13 @@ public class ActionsCluster extends BaseCluster {
          * This field shall be set to the InvokeID which was provided to the most recent command referencing this
          * ActionID.
          */
-        public Integer invokeId; // uint32
+        public Long invokeId; // uint32
         /**
          * This field shall be set to state that the action has changed to.
          */
         public ActionStateEnum newState; // ActionStateEnum
 
-        public StateChanged(Integer actionId, Integer invokeId, ActionStateEnum newState) {
+        public StateChanged(Integer actionId, Long invokeId, ActionStateEnum newState) {
             this.actionId = actionId;
             this.invokeId = invokeId;
             this.newState = newState;
@@ -120,7 +120,7 @@ public class ActionsCluster extends BaseCluster {
          * This field shall be set to the InvokeID which was provided to the most recent command referencing this
          * ActionID.
          */
-        public Integer invokeId; // uint32
+        public Long invokeId; // uint32
         /**
          * This field shall be set to state that the action is in at the time of generating the event.
          */
@@ -130,7 +130,7 @@ public class ActionsCluster extends BaseCluster {
          */
         public ActionErrorEnum error; // ActionErrorEnum
 
-        public ActionFailed(Integer actionId, Integer invokeId, ActionStateEnum newState, ActionErrorEnum error) {
+        public ActionFailed(Integer actionId, Long invokeId, ActionStateEnum newState, ActionErrorEnum error) {
             this.actionId = actionId;
             this.invokeId = invokeId;
             this.newState = newState;
@@ -378,7 +378,7 @@ public class ActionsCluster extends BaseCluster {
      * Afterwards, the action's state shall be Inactive.
      * Example: recall a scene on a number of lights.
      */
-    public static ClusterCommand instantAction(Integer actionId, Integer invokeId) {
+    public static ClusterCommand instantAction(Integer actionId, Long invokeId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -399,8 +399,7 @@ public class ActionsCluster extends BaseCluster {
      * the action's state shall be Inactive.
      * Example: recall a scene on a number of lights, with a specified transition time.
      */
-    public static ClusterCommand instantActionWithTransition(Integer actionId, Integer invokeId,
-            Integer transitionTime) {
+    public static ClusterCommand instantActionWithTransition(Integer actionId, Long invokeId, Integer transitionTime) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -423,7 +422,7 @@ public class ActionsCluster extends BaseCluster {
      * Example: start a sequence of events such as a wake-up experience involving lights moving through several
      * brightness/color combinations and the window covering gradually opening.
      */
-    public static ClusterCommand startAction(Integer actionId, Integer invokeId) {
+    public static ClusterCommand startAction(Integer actionId, Long invokeId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -442,7 +441,7 @@ public class ActionsCluster extends BaseCluster {
      * Example: start a dynamic lighting pattern (such as gradually rotating the colors around the setpoints of the
      * scene) on a set of lights for 1 hour (Duration=3600).
      */
-    public static ClusterCommand startActionWithDuration(Integer actionId, Integer invokeId, Integer duration) {
+    public static ClusterCommand startActionWithDuration(Integer actionId, Long invokeId, Long duration) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -462,7 +461,7 @@ public class ActionsCluster extends BaseCluster {
      * Inactive.
      * Example: stop a dynamic lighting pattern which was previously started with StartAction.
      */
-    public static ClusterCommand stopAction(Integer actionId, Integer invokeId) {
+    public static ClusterCommand stopAction(Integer actionId, Long invokeId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -479,7 +478,7 @@ public class ActionsCluster extends BaseCluster {
      * Example: pause a dynamic lighting effect (the lights stay at their current color) which was previously started
      * with StartAction.
      */
-    public static ClusterCommand pauseAction(Integer actionId, Integer invokeId) {
+    public static ClusterCommand pauseAction(Integer actionId, Long invokeId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -500,7 +499,7 @@ public class ActionsCluster extends BaseCluster {
      * differently in the implementation of the action (e.g. a Pause would be automatically resumed after some hours or
      * during a nightly reset, while an Disable would remain in effect until explicitly enabled again).
      */
-    public static ClusterCommand pauseActionWithDuration(Integer actionId, Integer invokeId, Integer duration) {
+    public static ClusterCommand pauseActionWithDuration(Integer actionId, Long invokeId, Long duration) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -522,7 +521,7 @@ public class ActionsCluster extends BaseCluster {
      * Example: resume a dynamic lighting effect (the lights' colors will change gradually, continuing from the point
      * they were paused).
      */
-    public static ClusterCommand resumeAction(Integer actionId, Integer invokeId) {
+    public static ClusterCommand resumeAction(Integer actionId, Long invokeId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -538,7 +537,7 @@ public class ActionsCluster extends BaseCluster {
      * This command enables a certain action or automation. Afterwards, the action's state shall be Active.
      * Example: enable a motion sensor to control the lights in an area.
      */
-    public static ClusterCommand enableAction(Integer actionId, Integer invokeId) {
+    public static ClusterCommand enableAction(Integer actionId, Long invokeId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -557,7 +556,7 @@ public class ActionsCluster extends BaseCluster {
      * is used to indicated the length of your absence from home. After that period, the presence mimicking behavior
      * will no longer control these lights.
      */
-    public static ClusterCommand enableActionWithDuration(Integer actionId, Integer invokeId, Integer duration) {
+    public static ClusterCommand enableActionWithDuration(Integer actionId, Long invokeId, Long duration) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -576,7 +575,7 @@ public class ActionsCluster extends BaseCluster {
      * This command disables a certain action or automation, and shall change the action's state to Inactive.
      * Example: disable a motion sensor to no longer control the lights in an area.
      */
-    public static ClusterCommand disableAction(Integer actionId, Integer invokeId) {
+    public static ClusterCommand disableAction(Integer actionId, Long invokeId) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);
@@ -597,7 +596,7 @@ public class ActionsCluster extends BaseCluster {
      * on in the morning while you're not at home). After this period, the wakeup experience will control the lights as
      * before.
      */
-    public static ClusterCommand disableActionWithDuration(Integer actionId, Integer invokeId, Integer duration) {
+    public static ClusterCommand disableActionWithDuration(Integer actionId, Long invokeId, Long duration) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (actionId != null) {
             map.put("actionId", actionId);

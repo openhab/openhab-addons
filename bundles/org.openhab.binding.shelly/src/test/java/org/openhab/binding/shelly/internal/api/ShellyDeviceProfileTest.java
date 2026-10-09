@@ -13,17 +13,10 @@
 package org.openhab.binding.shelly.internal.api;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.MatcherAssert.*;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.*;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_ACTIVATE;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_CYCLE;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_DIM;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_DUAL_DIM;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_EDGE;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_MOMENTARY;
-import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_BTNT_TOGGLE;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +29,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySensorSleepMode;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
@@ -148,6 +143,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSPLUGPM, true, false), //
                 Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
 
                 // Shelly Mini series
@@ -892,5 +888,79 @@ public class ShellyDeviceProfileTest {
 
         assertThat(profile.getButtonType(0), is(equalTo(SHELLY_BTNT_MOMENTARY)));
         assertThat(profile.getButtonType(1), is(equalTo(SHELLY_BTNT_EDGE)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForWatchdogPeriod")
+    void updateWatchdogPeriodDerivesTimeoutFromWakeupPeriod(ThingTypeUID thingTypeUID, int period, String unit,
+            int expected) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        if (period > 0) {
+            profile.settings.sleepMode = sleepMode(period, unit);
+        }
+
+        profile.updateWatchdogPeriod();
+
+        assertThat(profile.updatePeriod, is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForWatchdogPeriod() {
+        int unknown = (int) Math.round(ShellyDeviceProfile.MAX_WAKEUP_PERIOD_SECONDS * 1.1) + 60;
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, 10, "m", (int) Math.round(10 * 60 * 1.1) + 60), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, 12, "h", (int) Math.round(12 * 3600 * 1.1) + 60 + 1800), //
+                Arguments.of(THING_TYPE_SHELLYHT, 0, "", unknown), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, 0, "", unknown + 1800), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, 0, "", 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10), //
+                Arguments.of(THING_TYPE_SHELLYTRV, 0, "", 2 * UPDATE_SETTINGS_INTERVAL_SECONDS + 10));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideEventDrivenDevices")
+    void isEventDrivenCoversButtonsAndRemotesButNotPeriodicDevices(ThingTypeUID thingTypeUID, boolean expected) {
+        assertThat(ShellyDeviceProfile.isEventDriven(thingTypeUID), is(equalTo(expected)));
+    }
+
+    private static Stream<Arguments> provideEventDrivenDevices() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYBUTTON1, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUWALLSWITCH4, true), //
+                Arguments.of(THING_TYPE_SHELLYBLURCBUTTON4, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUREMOTE, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, false), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, false));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForLearnWakeupInterval")
+    void learnWakeupIntervalExtendsWatchdogOnlyForPlausiblyLongerSilence(ThingTypeUID thingTypeUID, int silence,
+            int expected) {
+        ShellyDeviceProfile profile = new ShellyDeviceProfile(thingTypeUID);
+        profile.settings.sleepMode = sleepMode(1, "h");
+        profile.updateWatchdogPeriod();
+        int before = profile.updatePeriod;
+
+        boolean extended = profile.learnWakeupInterval(silence);
+
+        assertThat(extended, is(expected > 0));
+        assertThat(profile.updatePeriod, is(equalTo(expected > 0 ? expected : before)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForLearnWakeupInterval() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYHT, 6 * 3600, (int) Math.round(6 * 3600 * 1.1) + 60), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, 5 * 3600, (int) Math.round(5 * 3600 * 1.1) + 60 + 1800), //
+                Arguments.of(THING_TYPE_SHELLYHT, 600, 0), //
+                Arguments.of(THING_TYPE_SHELLYHT, ShellyDeviceProfile.MAX_WAKEUP_PERIOD_SECONDS + 1, 0), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, 3 * 3600, 0), //
+                Arguments.of(THING_TYPE_SHELLYTRV, 3 * 3600, 0));
+    }
+
+    private static ShellySensorSleepMode sleepMode(int period, String unit) {
+        ShellySensorSleepMode sleepMode = new ShellySensorSleepMode();
+        sleepMode.period = period;
+        sleepMode.unit = unit;
+        return sleepMode;
     }
 }

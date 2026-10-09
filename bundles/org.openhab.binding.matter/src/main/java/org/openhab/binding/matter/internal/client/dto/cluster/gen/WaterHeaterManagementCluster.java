@@ -123,7 +123,7 @@ public class WaterHeaterManagementCluster extends BaseCluster {
         /**
          * This field shall indicate the time period, in seconds, for which the boost state is activated.
          */
-        public Integer duration; // elapsed-s
+        public Long duration; // elapsed-s
         /**
          * This field shall indicate whether the boost state shall be automatically canceled once the hot water has
          * reached either:
@@ -162,7 +162,7 @@ public class WaterHeaterManagementCluster extends BaseCluster {
          */
         public Integer targetReheat; // percent
 
-        public WaterHeaterBoostInfoStruct(Integer duration, Boolean oneShot, Boolean emergencyBoost,
+        public WaterHeaterBoostInfoStruct(Long duration, Boolean oneShot, Boolean emergencyBoost,
                 Integer temporarySetpoint, Integer targetPercentage, Integer targetReheat) {
             this.duration = duration;
             this.oneShot = oneShot;

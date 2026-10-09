@@ -206,13 +206,15 @@ function matterNativeTypeToJavaNativeType(field: AnyElement) {
         case "uint8":
         case "uint16":
         case "uint24":
-        case "uint32":
         case "int8":
         case "int16":
         case "int24":
         case "int32":
         case "status":
             return "Integer";
+        // does not fit a signed 32 bit Integer
+        case "uint32":
+            return "Long";
         case "uint40":
         case "uint48":
         case "uint56":

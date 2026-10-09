@@ -114,7 +114,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * "Availability of Software Images"). Nodes may query this field to determine the currently running version of
      * software on another given Node.
      */
-    public Integer softwareVersion; // 9 uint32 R V
+    public Long softwareVersion; // 9 uint32 R V
     /**
      * This attribute shall contain a current human-readable representation for the software running on the Node. This
      * version information may be conveyed to users. The maximum length of the SoftwareVersionString attribute is 64
@@ -222,7 +222,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * Comparison of SpecificationVersion shall always include the total value over 32 bits, without masking reserved
      * parts.
      */
-    public Integer specificationVersion; // 21 uint32 R V
+    public Long specificationVersion; // 21 uint32 R V
     /**
      * Indicates the maximum number of elements in a single InvokeRequests list (see Section 8.8.2, "Invoke Request
      * Action") that the Node is able to process. Note that since this attribute may change over time, both increasing
@@ -236,7 +236,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * This attribute shall contain the current version number for the configuration of the Node. A larger value of
      * ConfigurationVersion shall indicate a newer configuration than a lower value.
      */
-    public Integer configurationVersion; // 24 uint32 R V
+    public Long configurationVersion; // 24 uint32 R V
     public FeatureMap featureMap; // 65532 FeatureMap
 
     // Structs
@@ -315,10 +315,40 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
          * Transaction".
          */
         public Integer subscriptionsPerFabric; // uint16
+        /**
+         * This field shall indicate the actual maximum number of concurrent Invoke interactions that can be processed
+         * simultaneously by the node before possibly returning a BUSY status code.
+         */
+        public Integer simultaneousInvocationsSupported; // uint16
+        /**
+         * This field shall indicate the actual minimum number of concurrent Write interactions that can be processed
+         * simultaneously by the node before possibly returning a BUSY status code.
+         */
+        public Integer simultaneousWritesSupported; // uint16
+        /**
+         * This field shall indicate the actual maximum number of read paths (i.e. the sum of lengths of the lists of
+         * AttributePathIB and EventPathIB in the action) which a node guarantees being able to process in any Read
+         * Request Action.
+         * This is related to Section 2.11.2.1, "Read Interaction Limits".
+         */
+        public Integer readPathsSupported; // uint16
+        /**
+         * This field shall indicate the actual maximum number of subscription paths (i.e. the sum of lengths of the
+         * lists of AttributePathIB and EventPathIB in the action) which a node guarantees being able to process in any
+         * Subscribe Request Action.
+         * This is related to Section 2.11.2.2, "Subscribe Interaction Limits".
+         */
+        public Integer subscribePathsSupported; // uint16
 
-        public CapabilityMinimaStruct(Integer caseSessionsPerFabric, Integer subscriptionsPerFabric) {
+        public CapabilityMinimaStruct(Integer caseSessionsPerFabric, Integer subscriptionsPerFabric,
+                Integer simultaneousInvocationsSupported, Integer simultaneousWritesSupported,
+                Integer readPathsSupported, Integer subscribePathsSupported) {
             this.caseSessionsPerFabric = caseSessionsPerFabric;
             this.subscriptionsPerFabric = subscriptionsPerFabric;
+            this.simultaneousInvocationsSupported = simultaneousInvocationsSupported;
+            this.simultaneousWritesSupported = simultaneousWritesSupported;
+            this.readPathsSupported = readPathsSupported;
+            this.subscribePathsSupported = subscribePathsSupported;
         }
     }
 
@@ -335,9 +365,9 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
          * If the bridged device is not a Matter Intermittently Connected Device, the implementation of this is
          * best-effort since it may interact with non-native protocol.
          */
-        public Integer promisedActiveDuration; // uint32
+        public Long promisedActiveDuration; // uint32
 
-        public ActiveChanged(Integer promisedActiveDuration) {
+        public ActiveChanged(Long promisedActiveDuration) {
             this.promisedActiveDuration = promisedActiveDuration;
         }
     }
@@ -462,7 +492,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * - The server shall only keep the bridged device active once for a request. (The server shall only consider the
      * operation performed if an associated ActiveChanged event was generated.)
      */
-    public static ClusterCommand keepActive(Integer stayActiveDuration, Integer timeoutMs) {
+    public static ClusterCommand keepActive(Long stayActiveDuration, Long timeoutMs) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (stayActiveDuration != null) {
             map.put("stayActiveDuration", stayActiveDuration);
