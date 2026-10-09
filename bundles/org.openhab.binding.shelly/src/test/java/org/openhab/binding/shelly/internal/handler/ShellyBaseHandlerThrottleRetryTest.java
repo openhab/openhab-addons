@@ -68,8 +68,9 @@ class ShellyBaseHandlerThrottleRetryTest {
         when(api.getStatus()).thenThrow(throttled());
         ShellyDeviceProfile profile = new ShellyDeviceProfile(THING_TYPE_SHELLYPLUS1PM);
         profile.initialized = true;
-        profile.alwaysOn = false;
+        profile.alwaysOn = true;
         Thing thing = mock(Thing.class);
+        when(thing.getThingTypeUID()).thenReturn(THING_TYPE_SHELLYPLUS1PM);
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
         when(thing.getStatusInfo()).thenReturn(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
 
