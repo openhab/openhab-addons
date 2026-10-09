@@ -118,8 +118,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
                     logger.error("Unexpected error");
                 }
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                            "Error occurred when starting polling.");
+                    updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Error occurred when starting polling.");
                 }
             }
         }

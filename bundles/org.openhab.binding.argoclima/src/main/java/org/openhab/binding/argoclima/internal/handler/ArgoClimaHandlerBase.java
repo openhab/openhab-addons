@@ -198,13 +198,13 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
                                                                                                                   // with
                                                                                                                   // updateStatus's
                                                                                                                   // logging)
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getLocalizedMessage());
             return;
         } catch (Exception e) {
             logger.debug("[{}] Failed to initialize Device API. Unknown Error: {}", getThing().getUID(),
                     e.getMessage()); // the non-i18nzed message is logged explicitly (not redundant with updateStatus's
                                      // logging)
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     i18nProvider.getText("thing-status.argoclima.handler-init-failure",
                             "Error while initializing Thing: {0}", e.getLocalizedMessage()));
             return;

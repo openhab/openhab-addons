@@ -105,7 +105,7 @@ public class PortalHandler extends BaseBridgeHandler {
             try {
                 login();
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "Error when loggin in. Check your username and password");
             }
         });

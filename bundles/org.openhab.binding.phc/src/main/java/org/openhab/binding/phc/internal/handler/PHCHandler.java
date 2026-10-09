@@ -161,8 +161,7 @@ public class PHCHandler extends BaseThingHandler {
             } else {
                 logger.debug("No available bridge handler for {}.", bridge.getUID());
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR,
-                        "No available bridge handler.");
+                updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "No available bridge handler.");
 
                 return null;
             }

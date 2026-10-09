@@ -97,8 +97,7 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
         LuxomBridgeHandler bridgeHandler = getBridgeHandler();
 
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR,
-                    "@text/status.bridge-handler-missing");
+            updateStatus(ThingStatusDetail.HANDLER_MISSING_ERROR, "@text/status.bridge-handler-missing");
             thingOfflineNotify();
         } else {
             bridgeHandler.sendCommands(commands);

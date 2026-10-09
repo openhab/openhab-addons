@@ -247,7 +247,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     private void updateChannels() {
         final TimetableLoader currentLoader = this.loader;
         if (currentLoader == null) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
+            this.updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
             return;
         }
         final GroupedThings groupedThings = this.groupThingsPerPosition();

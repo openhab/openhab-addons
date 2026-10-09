@@ -103,8 +103,7 @@ public class SmartMeterHandler extends BaseThingHandler {
             this.conformity = Conformity.valueOf(config.conformity);
             this.smlDevice = MeterDeviceFactory.getDevice(serialPortManagerSupplier, config.mode,
                     this.thing.getUID().getAsString(), port, pullSequence, baudrate, config.baudrateChangeDelay);
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
-                    "Waiting for messages from device");
+            updateStatus(ThingStatusDetail.HANDLER_CONFIGURATION_PENDING, "Waiting for messages from device");
 
             smlDevice.addValueChangeListener(channelTypeProvider);
 

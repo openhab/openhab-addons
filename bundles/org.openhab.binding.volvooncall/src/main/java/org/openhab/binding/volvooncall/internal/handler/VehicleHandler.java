@@ -143,7 +143,7 @@ public class VehicleHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                         startAutomaticRefresh(configuration.refresh, api);
                     } catch (VolvoOnCallException e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+                        updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
                     }
 
                 }

@@ -88,7 +88,7 @@ public class RS232Handler extends BaseBridgeHandler implements RadioRAFeedbackLi
         try {
             connection.open(portName, baud);
         } catch (RadioRAConnectionException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
             return;
         }
 

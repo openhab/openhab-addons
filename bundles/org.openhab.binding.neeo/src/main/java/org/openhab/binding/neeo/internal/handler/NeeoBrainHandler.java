@@ -240,8 +240,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
                     "Exception occurred connecting to brain: " + e.getMessage());
         } catch (InterruptedException e) {
             logger.debug("Initialization was interrupted", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Initialization was interrupted");
+            updateStatus(ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Initialization was interrupted");
         } finally {
             writerLock.unlock();
         }

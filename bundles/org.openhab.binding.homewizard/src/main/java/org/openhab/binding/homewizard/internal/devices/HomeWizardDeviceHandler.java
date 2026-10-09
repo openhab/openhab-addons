@@ -300,7 +300,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             }
 
             if (!supportedTypes.contains(payload.getProductType().toLowerCase(Locale.ROOT))) {
-                updateStatusIfCurrent(generation, ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                updateStatusIfCurrent(generation, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                         "@text/offline.comm-error-device-not-compatible");
                 return false;
             }
