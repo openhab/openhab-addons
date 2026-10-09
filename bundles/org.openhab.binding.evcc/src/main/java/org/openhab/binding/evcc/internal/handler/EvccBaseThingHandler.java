@@ -584,10 +584,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                     if (json.has("error")) {
                         logger.debug("Sending command was unsuccessful, got this error:\n {}",
                                 json.get("error").getAsString());
-                        updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR,
-                                json.get("error").getAsString());
+                        updateStatus(getThing().getStatus(), json.get("error").getAsString());
                     } else {
-                        updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR);
+                        updateStatus(getThing().getStatus());
                         logger.warn("evcc API error: HTTP {}", response.getStatus());
                     }
                 });

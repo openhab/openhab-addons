@@ -291,7 +291,7 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
                     currentValue = tempControlStatus.getControlValue();
                     updateState(currentChannelID, new PercentType(fixPercent(currentValue.intValue())));
                     if (controlState.equals(ControlStates.EMERGENCY)) {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "The communication with temperation sensor fails. Temperature control state emergency (temperature control though the control value) is active.");
                     }
                 }

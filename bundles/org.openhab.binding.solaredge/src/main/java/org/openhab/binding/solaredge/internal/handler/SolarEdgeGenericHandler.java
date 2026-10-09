@@ -172,7 +172,7 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
             synchronized (authorizationLock) {
                 setAuthorizationUrl(oAuthServlet.register(this, config.getOAuthClientId()));
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, authorizationDescription());
+            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, authorizationDescription());
         } else {
             oAuthServlet.unregister(this);
             synchronized (authorizationLock) {

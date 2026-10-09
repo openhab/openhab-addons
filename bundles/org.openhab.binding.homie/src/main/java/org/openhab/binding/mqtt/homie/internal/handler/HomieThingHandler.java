@@ -195,7 +195,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
     public void readyStateChanged(ReadyState state) {
         switch (state) {
             case alert:
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
                 break;
             case disconnected:
                 updateStatus(ThingStatus.OFFLINE);
@@ -210,7 +210,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case sleeping:
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.DUTY_CYCLE);
+                updateStatus(ThingStatusDetail.DUTY_CYCLE);
                 break;
             case unknown:
                 updateStatus(ThingStatusDetail.GONE, "Device did not publish a ready state");

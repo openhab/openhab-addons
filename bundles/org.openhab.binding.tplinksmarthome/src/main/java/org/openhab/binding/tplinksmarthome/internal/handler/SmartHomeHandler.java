@@ -205,7 +205,7 @@ public class SmartHomeHandler extends BaseThingHandler {
             } catch (final RuntimeException e) {
                 logger.debug("Obtaining new device data unexpectedly crashed. If this keeps happening please report: ",
                         e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return null;
             }
         }
