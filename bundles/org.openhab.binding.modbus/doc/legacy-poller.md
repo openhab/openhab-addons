@@ -1,19 +1,17 @@
 # Legacy `poller` + `data` Configuration
 
-> **Legacy only:** This page preserves the original `poller` bridge plus child
-> `data` Thing topology. New configurations should use
-> [`poller2`](../README.md#poller2-configuration). For an opt-in, review-first
-> conversion, see [Legacy Poller Migration](legacy-poller-migration.md).
+> **Legacy only:** This page preserves the original `poller` bridge plus child `data` Thing topology.
+> New configurations should use [`poller2`](../README.md#poller2-configuration).
+> For an opt-in, review-first conversion, see [Legacy Poller Migration](legacy-poller-migration.md).
 
-Legacy Things remain supported for existing installations. They are not part of
-`poller2`, which configures channels directly on its poller bridge.
+Legacy Things remain supported for existing installations.
+They are not part of `poller2`, which configures channels directly on its poller bridge.
 
 ## Topology
 
-A legacy endpoint (`tcp` or `serial`) contains one `poller` bridge per Modbus
-read request. Each `poller` contains one or more `data` Things that decode the
-returned bits or registers. A write-only `data` Thing can instead be a direct
-child of the endpoint.
+A legacy endpoint (`tcp` or `serial`) contains one `poller` bridge per Modbus read request.
+Each `poller` contains one or more `data` Things that decode the returned bits or registers.
+A write-only `data` Thing can instead be a direct child of the endpoint.
 
 ```java
 Bridge modbus:tcp:plant [ host="192.0.2.10", port=502, id=1 ] {
@@ -32,25 +30,22 @@ Bridge modbus:tcp:plant [ host="192.0.2.10", port=502, id=1 ] {
 | readable `data` | `readStart`, `readValueType` | `readTransform`, `updateUnchangedValuesEveryMillis` |
 | writable `data` | `writeStart`, `writeType`; `writeValueType` for holding registers | `writeTransform`, `writeMaxTries`, `writeMultipleEvenWithSingleRegisterOrCoil` |
 
-All Modbus addresses are zero-based data-frame addresses. For coils and discrete
-inputs use `readValueType="bit"`. For a bit within a holding/input register,
-use `X.Y`, where `Y=0` is the least-significant bit. A readable `data` address
-must be within the parent poller's requested range.
+All Modbus addresses are zero-based data-frame addresses.
+For coils and discrete inputs use `readValueType="bit"`.
+For a bit within a holding/input register, use `X.Y`, where `Y=0` is the least-significant bit.
+A readable `data` address must be within the parent poller's requested range.
 
-The legacy `data` Thing offers `number`, `switch`, `contact`, `dimmer`,
-`datetime`, `string`, and `rollershutter` channels, plus last read/write
-success/error diagnostics. Send `REFRESH` to a linked Item to request a poll;
-`cacheMillis` can serve a recent response instead of issuing a new request.
+The legacy `data` Thing offers `number`, `switch`, `contact`, `dimmer`, `datetime`, `string`, and `rollershutter` channels, plus last read/write success/error diagnostics.
+Send `REFRESH` to a linked Item to request a poll; `cacheMillis` can serve a recent response instead of issuing a new request.
 
 ## JSON write transformations (legacy `data` Things only)
 
-`poller2` does **not** support JSON-producing write transformations. Use its
-configured scalar writes or Thing actions instead.
+`poller2` does **not** support JSON-producing write transformations.
+Use its configured scalar writes or Thing actions instead.
 
-A legacy `data` Thing's `writeTransform` may return a JSON array of write
-requests. This bypasses that Thing's `writeStart`, `writeValueType`, and
-`writeType` settings. Each object requires `functionCode` (`5`, `6`, `15`, or
-`16`), `address` (zero-based), and `value` (an array; coils use `0` or `1`).
+A legacy `data` Thing's `writeTransform` may return a JSON array of write requests.
+This bypasses that Thing's `writeStart`, `writeValueType`, and `writeType` settings.
+Each object requires `functionCode` (`5`, `6`, `15`, or `16`), `address` (zero-based), and `value` (an array; coils use `0` or `1`).
 `maxTries` is optional and defaults to `3`.
 
 ```json
@@ -60,14 +55,11 @@ requests. This bypasses that Thing's `writeStart`, `writeValueType`, and
 ]
 ```
 
-An empty array (`[]`) suppresses writes. Treat JSON transforms as manual work
-when migrating: the migration preview reports them but does not generate or
-apply a `poller2` replacement.
+An empty array (`[]`) suppresses writes.
+Treat JSON transforms as manual work when migrating: the migration preview reports them but does not generate or apply a `poller2` replacement.
 
 ## Maintaining a legacy installation
 
-Keep each poll window small enough for the device and avoid ranges that include
-reserved registers. Verify values after any address or value-type change,
-including byte/word-order variants. For a staged migration, retain legacy
-Things and links through live comparison, then remove them only as a separate,
-backed-up cleanup step described in [Legacy Poller Migration](legacy-poller-migration.md).
+Keep each poll window small enough for the device and avoid ranges that include reserved registers.
+Verify values after any address or value-type change, including byte/word-order variants.
+For a staged migration, retain legacy Things and links through live comparison, then remove them only as a separate, backed-up cleanup step described in [Legacy Poller Migration](legacy-poller-migration.md).

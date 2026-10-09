@@ -65,9 +65,12 @@ Typically one defines either `tcp` or `serial` bridge, depending on the variant 
 
 ### `poller2` configuration
 
-`poller2` is the modern, channel-owned topology. Create it below a `tcp` or `serial` bridge; it performs one Modbus read request, and its channels expose values within that request. Use a separate `poller2` bridge when the Modbus function, address range, or refresh interval differs.
+`poller2` is the modern, channel-owned topology.
+Create it below a `tcp` or `serial` bridge; it performs one Modbus read request, and its channels expose values within that request.
+Use a separate `poller2` bridge when the Modbus function, address range, or refresh interval differs.
 
-Use Main UI to create the bridge and custom channels, or use the native YAML syntax below. These are configuration examples, not UI evidence.
+Use Main UI to create the bridge and custom channels, or use the native YAML syntax below.
+These are configuration examples, not UI evidence.
 
 ```yaml
 version: 1
@@ -170,17 +173,30 @@ things:
           length: 2
 ```
 
-A channel's `itemType` selects the Item type it accepts. `itemDimension` is optional and turns, for example, `Number` into `Number:Temperature`. The binding assigns generated ChannelTypes so these channels appear as ordinary typed channel metadata in Main UI. **Do not add a YAML `type:` field or configure a generated ChannelType identifier.**
+A channel's `itemType` selects the Item type it accepts.
+`itemDimension` is optional and turns, for example, `Number` into `Number:Temperature`.
+The binding assigns generated ChannelTypes so these channels appear as ordinary typed channel metadata in Main UI.
+**Do not add a YAML `type:` field or configure a generated ChannelType identifier.**
 
-For a coil or discrete-input pollers, channels use `address` and `valueType: bit`. For a raw register channel, use `valueType: raw` with `address` and a positive integer `length`. A channel can write only when its poller type is `holding` or `coil`: set `writeStart`; holding-register writes also require `writeValueType`, while coil writes use the bit value type. Optional `readTransform`, `writeTransform`, and `writeMultipleEvenWithSingleRegisterOrCoil` follow the existing transformation and write behavior described later in this document.
+For a coil or discrete-input pollers, channels use `address` and `valueType: bit`.
+For a raw register channel, use `valueType: raw` with `address` and a positive integer `length`.
+A channel can write only when its poller type is `holding` or `coil`: set `writeStart`; holding-register writes also require `writeValueType`, while coil writes use the bit value type.
+Optional `readTransform`, `writeTransform`, and `writeMultipleEvenWithSingleRegisterOrCoil` follow the existing transformation and write behavior described later in this document.
 
 ### `poller2` coexistence and timing boundaries
 
-Multiple `poller2` bridges can be children of the same `tcp` or `serial` bridge, including when their read ranges overlap. They use that endpoint bridge's communication interface; a completed read is delivered only to the poller that submitted it. A read failure changes the failing poller's status and a later successful response recovers that poller without changing a sibling poller's status.
+Multiple `poller2` bridges can be children of the same `tcp` or `serial` bridge, including when their read ranges overlap.
+They use that endpoint bridge's communication interface; a completed read is delivered only to the poller that submitted it.
+A read failure changes the failing poller's status and a later successful response recovers that poller without changing a sibling poller's status.
 
-`poller2` can also remain alongside the legacy `poller` + `data` topology while migrating. Configure the endpoint's timing and connection settings for the combined transaction load: `timeBetweenTransactionsMillis` is the minimum delay between consecutive Modbus transactions, `connectMaxTries` controls connection attempts, and each poller's `maxTries` controls attempts for its own read request. The endpoint does not promise a fixed ordering or schedule when several pollers are due at the same time. For serial endpoints, automatic reconnect is disabled; account for the device's serial timing and `receiveTimeoutMillis`.
+`poller2` can also remain alongside the legacy `poller` + `data` topology while migrating.
+Configure the endpoint's timing and connection settings for the combined transaction load: `timeBetweenTransactionsMillis` is the minimum delay between consecutive Modbus transactions, `connectMaxTries` controls connection attempts, and each poller's `maxTries` controls attempts for its own read request.
+The endpoint does not promise a fixed ordering or schedule when several pollers are due at the same time.
+For serial endpoints, automatic reconnect is disabled; account for the device's serial timing and `receiveTimeoutMillis`.
 
-These compatibility statements cover pollers managed by this binding under one endpoint bridge. They do not establish coordination with another client or integration that talks to the same device, and they do not establish safe concurrent writes to overlapping device addresses. Keep write ownership and device-specific write rules explicit.
+These compatibility statements cover pollers managed by this binding under one endpoint bridge.
+They do not establish coordination with another client or integration that talks to the same device, and they do not establish safe concurrent writes to overlapping device addresses.
+Keep write ownership and device-specific write rules explicit.
 
 #### Poller settings
 
@@ -195,7 +211,9 @@ These compatibility statements cover pollers managed by this binding under one e
 
 #### Channel settings, addressing, and failures
 
-All addresses are Modbus data-frame addresses: zero-based values sent to the device unchanged. A device manual's `40001`, `30001`, `00001`, or `10001` notation commonly labels the first address as `0`; confirm the manufacturer's convention before configuring it. A channel must fit completely within the poller's inclusive `start` through `start + length - 1` window.
+All addresses are Modbus data-frame addresses: zero-based values sent to the device unchanged.
+A device manual's `40001`, `30001`, `00001`, or `10001` notation commonly labels the first address as `0`; confirm the manufacturer's convention before configuring it.
+A channel must fit completely within the poller's inclusive `start` through `start + length - 1` window.
 
 | Poller type | Required channel configuration | Notes |
 | --- | --- | --- |
@@ -203,17 +221,29 @@ All addresses are Modbus data-frame addresses: zero-based values sent to the dev
 | `coil` or `discrete` | `address` (text); `valueType: bit` is optional but recommended | Address is an integer only; `X.Y` is not valid. |
 | `holding` or `input` raw data | `address`, `valueType: raw`, and positive integer `length` | Address is an integer and the complete raw range must be in the poll window. |
 
-Set `errorPolicy: keepLast` on numeric or raw register channels to retain their most recently successful state after a failed read. The default `errorPolicy: undef` publishes `UNDEF`. Coil and discrete channels publish `UNDEF` on a failed read.
+Set `errorPolicy: keepLast` on numeric or raw register channels to retain their most recently successful state after a failed read.
+The default `errorPolicy: undef` publishes `UNDEF`.
+Coil and discrete channels publish `UNDEF` on a failed read.
 
 #### Raw hexadecimal data and BIN2JSON
 
-A `raw` register channel publishes contiguous registers as uppercase hexadecimal, four characters per register, in register order. For example, registers `0x1234` and `0xABCD` produce the `String` state `1234ABCD`. This is suitable input for the [BIN2JSON transformation](https://www.openhab.org/addons/transformations/bin2json/): link the raw `String` channel to a `String` Item and apply the transformation in the Item link or profile according to the BIN2JSON add-on documentation. `raw` is read-only; it does not decode a number or write registers itself.
+A `raw` register channel publishes contiguous registers as uppercase hexadecimal, four characters per register, in register order.
+For example, registers `0x1234` and `0xABCD` produce the `String` state `1234ABCD`.
+This is suitable input for the [BIN2JSON transformation](https://www.openhab.org/addons/transformations/bin2json/): link the raw `String` channel to a `String` Item and apply the transformation in the Item link or profile according to the BIN2JSON add-on documentation.
+`raw` is read-only; it does not decode a number or write registers itself.
 
 #### Writes and failure behavior
 
-A configured `writeStart` makes a channel commandable only on `holding` or `coil` pollers. Holding-register writes require `writeValueType`; a holding bit overlay uses `writeStart: "X.Y"` with `writeValueType: bit` (`Y` is 0–15). The binding needs a successful poll of that same register before it can preserve the other bits, so command it only after the poller has obtained a valid value. Coil writes use the bit value type and do not accept a bit sub-index. `input` and `discrete` pollers are read-only.
+A configured `writeStart` makes a channel commandable only on `holding` or `coil` pollers.
+Holding-register writes require `writeValueType`; a holding bit overlay uses `writeStart: "X.Y"` with `writeValueType: bit` (`Y` is 0–15).
+The binding needs a successful poll of that same register before it can preserve the other bits, so command it only after the poller has obtained a valid value.
+Coil writes use the bit value type and do not accept a bit sub-index.
+`input` and `discrete` pollers are read-only.
 
-`writeMaxTries` defaults to `3` and must be at least `1`. Set `writeMultipleEvenWithSingleRegisterOrCoil: true` only when the device requires FC16 for a single holding register or FC15 for a single coil; the default uses FC06 or FC05. `readTransform` and `writeTransform` accept the same ordinary transformation syntax used by the binding. JSON-producing write transforms are legacy `data`-Thing functionality; see [the legacy reference](doc/legacy-poller.md#json-write-transformations-legacy-data-things-only).
+`writeMaxTries` defaults to `3` and must be at least `1`.
+Set `writeMultipleEvenWithSingleRegisterOrCoil: true` only when the device requires FC16 for a single holding register or FC15 for a single coil; the default uses FC06 or FC05.
+`readTransform` and `writeTransform` accept the same ordinary transformation syntax used by the binding.
+JSON-producing write transforms are legacy `data`-Thing functionality; see [the legacy reference](doc/legacy-poller.md#json-write-transformations-legacy-data-things-only).
 
 #### Thing actions
 
@@ -230,11 +260,16 @@ coilActions.writeCoil("pump-enable", true)
 coilActions.writeCoil("pump-enable", true, true) // request FC15 for this one write
 ```
 
-The action returns whether it was accepted for asynchronous execution; it is not a device-write success confirmation. Use an existing configured channel ID with the matching type. A later successful poll reconciles the channel state; failed writes put the Thing offline with a communication error.
+The action returns whether it was accepted for asynchronous execution; it is not a device-write success confirmation.
+Use an existing configured channel ID with the matching type.
+A later successful poll reconciles the channel state; failed writes put the Thing offline with a communication error.
 
 #### Migration from legacy `poller` + `data`
 
-New work should use `poller2`. Existing legacy configurations remain supported and are not removed by migration. Follow [Legacy Poller Migration](doc/legacy-poller-migration.md) to back up/export first, create a preview, review its YAML and manual-work notices, apply only the reviewed preview identity, verify live device values and commands, then either roll back generated targets or clean up legacy configuration separately. The [legacy-only reference](doc/legacy-poller.md) preserves `poller`/`data` and JSON-write-transform configuration details.
+New work should use `poller2`.
+Existing legacy configurations remain supported and are not removed by migration.
+Follow [Legacy Poller Migration](doc/legacy-poller-migration.md) to back up/export first, create a preview, review its YAML and manual-work notices, apply only the reviewed preview identity, verify live device values and commands, then either roll back generated targets or clean up legacy configuration separately.
+The [legacy-only reference](doc/legacy-poller.md) preserves `poller`/`data` and JSON-write-transform configuration details.
 
 ## Binding Configuration
 
@@ -338,7 +373,8 @@ With low baud rates and/or long read requests (that is, many items polled), ther
 
 ### Legacy configuration
 
-The original `poller` + `data` configuration, its channels, and its examples are documented only in the [legacy reference](doc/legacy-poller.md). New configurations should use [`poller2`](#poller2-configuration).
+The original `poller` + `data` configuration, its channels, and its examples are documented only in the [legacy reference](doc/legacy-poller.md).
+New configurations should use [`poller2`](#poller2-configuration).
 
 ### Discovery
 
@@ -463,13 +499,15 @@ If you get strange values using the `int32`, `uint32`, `float32`, `int64`, or `u
 
 ### Legacy operation and transformations
 
-Legacy `poller`/`data` refresh behavior, data-channel conversion, JSON writes, and the associated examples are retained in the [legacy reference](doc/legacy-poller.md). For `poller2`, use the channel settings above, send `REFRESH` to a linked Item for an on-demand poll, and use scalar configured writes or [Thing actions](#thing-actions).
+Legacy `poller`/`data` refresh behavior, data-channel conversion, JSON writes, and the associated examples are retained in the [legacy reference](doc/legacy-poller.md).
+For `poller2`, use the channel settings above, send `REFRESH` to a linked Item for an on-demand poll, and use scalar configured writes or [Thing actions](#thing-actions).
 
 ## Full Examples
 
 Things can be configured in the UI, or using a `things` file like here.
 
-Legacy `poller` + `data` examples are in the [legacy reference](doc/legacy-poller.md). Native YAML `poller2` examples are in the [configuration section](#poller2-configuration).
+Legacy `poller` + `data` examples are in the [legacy reference](doc/legacy-poller.md).
+Native YAML `poller2` examples are in the [configuration section](#poller2-configuration).
 
 ## Troubleshooting
 
@@ -490,7 +528,9 @@ Turn your poller Thing into multiple things to cover smaller ranges to work arou
 
 ## Changes From Modbus 1.x Binding
 
-The 1.x binding configuration model is not directly compatible with Thing-based configuration. Convert addresses to zero-based data-frame addresses, preserve device byte/word order, and configure the resulting endpoint and `poller2` channels as described above. Back up the old configuration and validate each live value and command before removing it.
+The 1.x binding configuration model is not directly compatible with Thing-based configuration.
+Convert addresses to zero-based data-frame addresses, preserve device byte/word order, and configure the resulting endpoint and `poller2` channels as described above.
+Back up the old configuration and validate each live value and command before removing it.
 
 ## Troubleshooting Tips
 
