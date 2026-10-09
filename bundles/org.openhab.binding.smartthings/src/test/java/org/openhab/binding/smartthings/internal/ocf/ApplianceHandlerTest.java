@@ -151,6 +151,22 @@ class ApplianceHandlerTest {
     }
 
     @Test
+    void publishesCapabilityDescriptionOnDynamicChannels() throws Exception {
+        transport.identity = json("{\"di\":\"" + DEVICE_ID + "\",\"rt\":[\"oic.d.dehumidifier\"]}");
+        transport.batch = json("""
+                [{"href":"/mode/vs/0","rep":{"x.com.samsung.da.modes":["Auto"],
+                 "x.com.samsung.da.supportedModes":["Auto","Sleep"],
+                 "x.com.samsung.da.modesName":["Automatic","Sleep Mode"]}},
+                 {"href":"/remotectrl/0","rep":{"value":true}}]
+                """);
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+
+        assertEquals("Operating Mode reported by the appliance. Supported command values (display names): "
+                + "Auto (Automatic), Sleep (Sleep Mode).", channel(handler, "Operating Mode").getDescription());
+    }
+
+    @Test
     void refreshOnlyReadsAndUnchangedChannelsAreNotRebuilt() throws Exception {
         ApplianceHandler handler = initialize();
         awaitStatus(ThingStatus.ONLINE);
@@ -162,7 +178,7 @@ class ApplianceHandlerTest {
     }
 
     @Test
-    void refreshesDescriptionsWithoutRebuildingChannelsAndClearsThemOnDisposal() throws Exception {
+    void refreshesChannelDescriptionsAndClearsStateDescriptionsOnDisposal() throws Exception {
         transport.batch = json("""
                 [{"href":"/mode/vs/0","rep":{"x.com.samsung.da.modes":"Auto",
                   "x.com.samsung.da.supportedModes":["Auto","Sleep"]}}]
@@ -176,7 +192,10 @@ class ApplianceHandlerTest {
                 """);
         handler.handleCommand(mode.getUID(), RefreshType.REFRESH);
         awaitStatus(ThingStatus.ONLINE);
-        assertEquals(1, changes.size());
+        assertEquals(2, changes.size());
+        Channel refreshedMode = channel(handler, "Operating Mode");
+        assertEquals(mode.getUID(), refreshedMode.getUID());
+        assertTrue(refreshedMode.getDescription().contains("Auto, Sleep, Turbo"));
         assertEquals(3, descriptionProvider.getStateDescription(mode, null, null).getOptions().size());
         handler.dispose();
         assertNull(descriptionProvider.getStateDescription(mode, null, null));

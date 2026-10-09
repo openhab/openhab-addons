@@ -124,8 +124,10 @@ Changing the host alone does not authorize a different appliance identity.
 ### Channels
 
 Channels are created from authenticated resource representations rather than a fixed SmartThings capability list.
-Their identifiers are derived deterministically from the resource path and field, so reconnecting does not rename channels.
-Use the channels displayed on the Thing's Channels tab when linking Items.
+Their identifiers are concise, readable names derived from the resource path and the final field name (for example,
+`mode-vs-0-modes`). If names collide, a deterministic numeric suffix distinguishes them. Use the channels displayed on
+the Thing's Channels tab when linking Items; these identifiers replace the previous long IDs, so existing Items may need
+to be relinked.
 
 Depending on the appliance's advertised capabilities, the following resources are recognized:
 
@@ -143,12 +145,11 @@ Depending on the appliance's advertised capabilities, the following resources ar
 The resource paths can vary by appliance; channels are derived from the resources actually returned.
 Do not send guessed or unsupported modes.
 Not every model exposes every setting or permits every write.
-Temperatures use device-reported units; setpoints and other commands are checked against the device's live capabilities, limits, and increments.
+Temperatures use device-reported units; setpoints and other commands are checked against the device's live capabilities, limits, and increments. Dynamic channel descriptions list advertised mode command values from `x.com.samsung.da.supportedModes` and include matching display names from `x.com.samsung.da.modesName` when available. Target-temperature descriptions include the validated range, unit, and increment. For confirmed air purifiers, Fan Speed commands are restricted to integers from 0 to 4; this is an implementation constraint, not a device-advertised range.
 No generic temperature range, fan scale, or fixed mode choices are assumed.
 The channels expose appliance-specific state and command descriptions: advertised mode choices, supported switch and fan commands, and temperature units, limits, and increments.
 These descriptions are refreshed alongside resource readings; read-only channels expose no command choices.
-Other known appliance resources are mapped to appropriately typed channels; unknown non-security resources are available as read-only JSON diagnostics.
-Security resources are never exposed as diagnostic channels.
+Known appliance resources are mapped to appropriately typed channels. Unknown resources remain cached internally but do not create generic `Resource ...` channels; security resources are excluded from the cache and never exposed.
 
 The binding polls `/device/0`, requests the batch interface only when necessary, and reads linked resource stubs individually.
 Partial representations preserve previously received fields rather than turning missing readings into zero or empty states.
