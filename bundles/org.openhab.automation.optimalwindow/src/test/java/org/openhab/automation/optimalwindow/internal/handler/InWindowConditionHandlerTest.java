@@ -21,12 +21,14 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.automation.optimalwindow.internal.OptimalWindowConstants;
 import org.openhab.automation.optimalwindow.internal.calc.ForecastSource;
 import org.openhab.automation.optimalwindow.internal.calc.WindowCalculator;
+import org.openhab.automation.optimalwindow.internal.calc.WindowConfiguration;
 import org.openhab.core.automation.Condition;
 import org.openhab.core.automation.util.ModuleBuilder;
 import org.openhab.core.config.core.Configuration;
@@ -50,11 +52,18 @@ public class InWindowConditionHandlerTest {
     };
 
     private static boolean satisfiedAt(ForecastSource source, ZonedDateTime time) {
+        return satisfiedAt(
+                new WindowTracker(new WindowCalculator(source),
+                        WindowConfiguration.from(new Configuration(Map.of("forecastItem", "Price", "length", "2h")))),
+                time);
+    }
+
+    private static boolean satisfiedAt(WindowTracker tracker, ZonedDateTime time) {
         Condition condition = ModuleBuilder.createCondition().withId("1")
                 .withTypeUID(OptimalWindowConstants.CONDITION_TYPE_ID)
                 .withConfiguration(new Configuration(Map.of("forecastItem", "Price", "length", "2h"))).build();
-        return new InWindowConditionHandler(condition, new WindowCalculator(source), () -> ZONE,
-                Clock.fixed(time.toInstant(), ZONE)).isSatisfied(Map.of());
+        return new InWindowConditionHandler(condition, tracker, () -> ZONE, Clock.fixed(time.toInstant(), ZONE))
+                .isSatisfied(Map.of());
     }
 
     @Test
@@ -67,6 +76,25 @@ public class InWindowConditionHandlerTest {
     void notSatisfiedOutsideWindow() {
         assertFalse(satisfiedAt(CHEAP_FROM_2_TO_4, DAY.plusHours(1)));
         assertFalse(satisfiedAt(CHEAP_FROM_2_TO_4, DAY.plusHours(4)));
+    }
+
+    @Test
+    void startedWindowIsKeptWhenForecastChanges() {
+        SortedMap<Instant, Double> cheapFrom10To12 = new TreeMap<>();
+        for (int hour = 0; hour < 48; hour++) {
+            cheapFrom10To12.put(DAY.plusHours(hour).toInstant(), hour >= 10 && hour < 12 ? 5.0 : 20.0);
+        }
+        AtomicBoolean changed = new AtomicBoolean();
+        ForecastSource source = (item, service, begin, end) -> changed.get() ? cheapFrom10To12
+                : CHEAP_FROM_2_TO_4.getValues(item, service, begin, end);
+        WindowTracker tracker = new WindowTracker(new WindowCalculator(source),
+                WindowConfiguration.from(new Configuration(Map.of("forecastItem", "Price", "length", "2h"))));
+
+        assertTrue(satisfiedAt(tracker, DAY.plusHours(2)));
+        // new forecast values make 10:00 - 12:00 cheaper, but the running window is kept like by the trigger
+        changed.set(true);
+        tracker.forecastUpdated();
+        assertTrue(satisfiedAt(tracker, DAY.plusHours(3)));
     }
 
     @Test

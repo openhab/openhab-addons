@@ -16,14 +16,17 @@ import static org.openhab.automation.optimalwindow.internal.OptimalWindowConstan
 
 import java.time.Clock;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.optimalwindow.internal.calc.WindowCalculator;
+import org.openhab.automation.optimalwindow.internal.calc.WindowConfiguration;
 import org.openhab.automation.optimalwindow.internal.handler.InWindowConditionHandler;
 import org.openhab.automation.optimalwindow.internal.handler.PersistenceForecastSource;
+import org.openhab.automation.optimalwindow.internal.handler.WindowTracker;
 import org.openhab.automation.optimalwindow.internal.handler.WindowTriggerHandler;
 import org.openhab.core.automation.Condition;
 import org.openhab.core.automation.Module;
@@ -42,7 +45,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Creates the handlers of the Optimal Window automation, and tells the trigger handlers when their forecast item
+ * Creates the handlers of the Optimal Window automation, and tells their {@link WindowTracker} when the forecast item
  * received a new time series.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
@@ -58,7 +61,7 @@ public class OptimalWindowModuleHandlerFactory extends BaseModuleHandlerFactory 
     private final EventPublisher eventPublisher;
     private final TimeZoneProvider timeZoneProvider;
     private final WindowCalculator calculator;
-    private final Set<WindowTriggerHandler> triggerHandlers = new CopyOnWriteArraySet<>();
+    private final Map<ModuleHandler, WindowTracker> trackers = new ConcurrentHashMap<>();
 
     @Activate
     public OptimalWindowModuleHandlerFactory(@Reference EventPublisher eventPublisher,
@@ -78,8 +81,8 @@ public class OptimalWindowModuleHandlerFactory extends BaseModuleHandlerFactory 
     public void receive(Event event) {
         if (event instanceof ItemTimeSeriesUpdatedEvent timeSeriesEvent) {
             String itemName = timeSeriesEvent.getItemName();
-            triggerHandlers.stream().filter(h -> h.getForecastItem().equals(itemName))
-                    .forEach(WindowTriggerHandler::forecastUpdated);
+            trackers.values().stream().filter(tracker -> tracker.getForecastItem().equals(itemName))
+                    .forEach(WindowTracker::forecastUpdated);
         }
     }
 
@@ -90,24 +93,23 @@ public class OptimalWindowModuleHandlerFactory extends BaseModuleHandlerFactory 
 
     @Override
     protected @Nullable ModuleHandler internalCreate(Module module, String ruleUID) {
-        return switch (module.getTypeUID()) {
-            case TRIGGER_TYPE_ID -> {
-                WindowTriggerHandler handler = new WindowTriggerHandler((Trigger) module, calculator, eventPublisher,
-                        timeZoneProvider::getTimeZone, Clock.systemUTC());
-                triggerHandlers.add(handler);
-                yield handler;
-            }
-            case CONDITION_TYPE_ID -> new InWindowConditionHandler((Condition) module, calculator,
-                    timeZoneProvider::getTimeZone, Clock.systemUTC());
-            default -> null;
-        };
+        String type = module.getTypeUID();
+        if (!TYPES.contains(type)) {
+            return null;
+        }
+        WindowTracker tracker = new WindowTracker(calculator, WindowConfiguration.from(module.getConfiguration()));
+        ModuleHandler handler = TRIGGER_TYPE_ID.equals(type)
+                ? new WindowTriggerHandler((Trigger) module, tracker, eventPublisher, timeZoneProvider::getTimeZone,
+                        Clock.systemUTC())
+                : new InWindowConditionHandler((Condition) module, tracker, timeZoneProvider::getTimeZone,
+                        Clock.systemUTC());
+        trackers.put(handler, tracker);
+        return handler;
     }
 
     @Override
     public void ungetHandler(Module module, String ruleUID, ModuleHandler handler) {
-        if (handler instanceof WindowTriggerHandler triggerHandler) {
-            triggerHandlers.remove(triggerHandler);
-        }
+        trackers.remove(handler);
         super.ungetHandler(module, ruleUID, handler);
     }
 }
