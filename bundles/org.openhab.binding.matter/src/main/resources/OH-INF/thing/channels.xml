@@ -595,6 +595,25 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
+	<channel-type id="doorlock-soundvolume">
+		<item-type>Number</item-type>
+		<label>Door Lock Sound Volume</label>
+		<description>Sets the sound volume of the door lock</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Silent</option>
+				<option value="1">Low</option>
+				<option value="3">Medium</option>
+				<option value="2">High</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
 	<channel-type id="doorlock-alarm">
 		<kind>trigger</kind>
 		<label>Door Lock Alarm</label>
