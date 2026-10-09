@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="hager-flow-storage-index">
+		<item-type>Number</item-type>
+		<label>Storage Index</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-storage-dcdc-status">
+		<item-type>Switch</item-type>
+		<label>Storage DCDC status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-storage-bat-status">
+		<item-type>Switch</item-type>
+		<label>Storage Bat Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-storage-battery-state-of-charge">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery State of Charge</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

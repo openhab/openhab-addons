@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="hager-flow-sgready-index">
+		<item-type>Number</item-type>
+		<label>SGReady index</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-sgready-name">
+		<item-type>String</item-type>
+		<label>SGReady Name</label>
+	</channel-type>
+	<channel-type id="hager-flow-sgready-active">
+		<item-type>String</item-type>
+		<label>SGReady active</label>
+		<description>Possible values: Inactive, active.</description>
+	</channel-type>
+	<channel-type id="hager-flow-sgready-working">
+		<item-type>Switch</item-type>
+		<label>SGReady working</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="hager-flow-sgready-status">
+		<item-type>String</item-type>
+		<label>SGReady status</label>
+		<description>Possible values: STATE_1_BLOCK, STATE_2_NORMAL, STATE_3_GO, STATE_4_FORCE_GO.</description>
+	</channel-type>
+</thing:thing-descriptions>
