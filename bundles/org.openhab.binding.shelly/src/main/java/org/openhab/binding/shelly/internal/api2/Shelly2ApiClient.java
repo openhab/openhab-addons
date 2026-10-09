@@ -500,28 +500,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             ShellyApiResult res = e.getApiResult();
             String auth = getString(res.authChallenge);
             if (res.isHttpAccessUnauthorized() && !auth.isEmpty()) {
-                String[] options = auth.split(",");
-                Shelly2AuthChallenge authInfo = new Shelly2AuthChallenge();
-                for (String o : options) {
-                    String key = substringBefore(o, "=").stripLeading().trim();
-                    String value = substringAfter(o, "=").replace("\"", "").trim();
-                    switch (key) {
-                        case "Digest qop":
-                            authInfo.authType = SHELLY2_AUTHTTYPE_DIGEST;
-                            break;
-                        case "realm":
-                            authInfo.realm = value;
-                            break;
-                        case "nonce":
-                            // authInfo.nonce = Long.parseLong(value, 16);
-                            authInfo.nonce = value;
-                            break;
-                        case "algorithm":
-                            authInfo.algorithm = value;
-                            break;
-                    }
-                }
-                json = httpPost(authInfo, gson.toJson(req));
+                json = httpPost(parseAuthChallenge(auth), gson.toJson(req));
             } else {
                 throw e;
             }
@@ -545,6 +524,29 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             }
             return result;
         }
+    }
+
+    protected static Shelly2AuthChallenge parseAuthChallenge(String header) {
+        Shelly2AuthChallenge challenge = new Shelly2AuthChallenge();
+        for (String o : header.split(",")) {
+            String key = substringBefore(o, "=").stripLeading().trim();
+            String value = substringAfter(o, "=").replace("\"", "").trim();
+            switch (key) {
+                case "Digest qop":
+                    challenge.authType = SHELLY2_AUTHTTYPE_DIGEST;
+                    break;
+                case "realm":
+                    challenge.realm = value;
+                    break;
+                case "nonce":
+                    challenge.nonce = value;
+                    break;
+                case "algorithm":
+                    challenge.algorithm = value;
+                    break;
+            }
+        }
+        return challenge;
     }
 
     @Override

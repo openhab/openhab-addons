@@ -92,6 +92,10 @@ public class ShellyApiResult {
         return response.toLowerCase(Locale.ROOT).contains("not calibrated");
     }
 
+    public boolean isHttpTooManyRequests() {
+        return httpCode == TOO_MANY_REQUESTS_429;
+    }
+
     public ShellyApiResultBuilder modify() {
         return new ShellyApiResultBuilder(this);
     }
