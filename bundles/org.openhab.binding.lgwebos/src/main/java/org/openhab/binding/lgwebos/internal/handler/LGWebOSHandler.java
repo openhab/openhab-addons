@@ -132,8 +132,7 @@ public class LGWebOSHandler extends BaseThingHandler
         logger.trace("Handler initialized with config {}", c);
         String host = c.getHost();
         if (host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-unknown-host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-host");
             return;
         }
 
@@ -331,7 +330,7 @@ public class LGWebOSHandler extends BaseThingHandler
             case CONNECTING:
             case REGISTERING:
             case REGISTERED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         String.format("@text/offline.comm-error-connexion-failed [ \"%s\" ]", error));
                 break;
         }

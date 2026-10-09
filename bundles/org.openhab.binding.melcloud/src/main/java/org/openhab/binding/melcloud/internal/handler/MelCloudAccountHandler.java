@@ -107,11 +107,11 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
             devices = connection.fetchDeviceList();
             updateStatus(ThingStatus.ONLINE);
         } catch (MelCloudLoginException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             loginCredentialError = true;
             throw e;
         } catch (MelCloudCommException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             throw e;
         }
     }

@@ -38,7 +38,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
@@ -102,7 +101,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
         this.getThing().getChannels().forEach(c -> {
             if (isLinked(c.getUID()) && !addListener(c)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Wrong channel configuration");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Wrong channel configuration");
             }
         });
     }

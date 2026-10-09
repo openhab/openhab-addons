@@ -117,10 +117,10 @@ public class ChannelHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-file-available"));
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

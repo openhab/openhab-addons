@@ -1573,20 +1573,20 @@ public class IpCameraHandler extends BaseThingHandler {
         } else if (!rtspUri.isEmpty()) {
             snapshotIsFfmpeg();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Camera failed to report a valid Snaphot and/or RTSP URL. Check user/pass is correct, or use the advanced configs to manually provide a URL.");
         }
     }
 
     public void cameraConfigError(String reason) {
         // won't try to reconnect again due to a config error being the cause.
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, reason);
         dispose();
     }
 
     public void cameraCommunicationError(String reason) {
         // will try to reconnect again as camera may be rebooting.
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
         if (isOnline.get()) { // if already offline dont try reconnecting in 6 seconds, we want 30sec wait.
             resetAndRetryConnecting();
         }

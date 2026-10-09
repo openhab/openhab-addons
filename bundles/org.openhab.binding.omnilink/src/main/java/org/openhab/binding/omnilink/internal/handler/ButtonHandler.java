@@ -61,7 +61,7 @@ public class ButtonHandler extends AbstractOmnilinkHandler {
             updateChannels();
             updateButtonProperties(bridgeHandler);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing Button!");
         }
     }

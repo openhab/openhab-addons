@@ -98,7 +98,7 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
                     impactedModules.add(new ImpactedModule(thingUID, impactedModuleUID.getGroup()));
                 }
             } catch (RuntimeException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return;
             }
 

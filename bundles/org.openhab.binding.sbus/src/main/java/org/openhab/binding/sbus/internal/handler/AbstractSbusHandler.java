@@ -61,13 +61,13 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.device.no-bridge");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.device.no-bridge");
             return;
         }
 
         SbusBridgeHandler bridgeHandler = (SbusBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null || bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 

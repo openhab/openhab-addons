@@ -106,7 +106,7 @@ public class EndpointHandler extends MatterBaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     getTranslation(THING_STATUS_DETAIL_ENDPOINT_THING_NOT_REACHABLE));
         }
         updateRootProperties(endpoint);

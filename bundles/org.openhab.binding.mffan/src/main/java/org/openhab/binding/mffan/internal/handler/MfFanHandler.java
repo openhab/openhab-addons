@@ -70,7 +70,7 @@ public class MfFanHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         this.config = getConfigAs(MfFanConfiguration.class);
         if (!MfFanConfiguration.validateConfig(this.config)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid configuration detected.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid configuration detected.");
             return;
         }
         this.api = new FanRestApi(this.config.getIpAddress(), this.httpClientFactory);
@@ -128,7 +128,7 @@ public class MfFanHandler extends BaseThingHandler {
                 MfFanHandler.this.logger.warn("Skipping command. Unidentified channel id '{}'", channelUID.getId());
             }
         } catch (@SuppressWarnings("unused") RestApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, String
                     .format("Could not control device at IP address %s", MfFanHandler.this.config.getIpAddress()));
         }
     }
@@ -137,7 +137,7 @@ public class MfFanHandler extends BaseThingHandler {
         try {
             update(MfFanHandler.this.api.getShadowBuffer());
         } catch (@SuppressWarnings("unused") RestApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, String
                     .format("Could not control device at IP address %s", MfFanHandler.this.config.getIpAddress()));
         }
     }
@@ -155,7 +155,7 @@ public class MfFanHandler extends BaseThingHandler {
             updateState(MfFanBindingConstants.CHANNEL_LIGHT_INTENSITY, new DecimalType(dto.getLightBrightness()));
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Null shadow buffer returned.");
         }
     }

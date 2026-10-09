@@ -72,10 +72,9 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
             activateButtonDiscoveryService();
             initThingStatus();
         } catch (UnknownHostException ignored) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname wrong or unknown!");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Hostname wrong or unknown!");
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error connecting to flicd: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Error connecting to flicd: " + e.getMessage());
             dispose();
             scheduleReinitialize();
         }
@@ -117,7 +116,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
     }
 
     private void onClientFailure() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                 "flicd client terminated, probably flicd is not reachable anymore.");
         dispose();
         scheduleReinitialize();
@@ -127,7 +126,7 @@ public class FlicDaemonBridgeHandler extends BaseBridgeHandler {
         if (!flicClientFuture.isDone()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "flicd client could not be started, probably flicd is not reachable.");
         }
     }

@@ -136,17 +136,17 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
 
         this.config = getConfigAs(SmartherBridgeConfiguration.class);
         if (StringUtil.isBlank(config.getSubscriptionKey())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'Subscription Key' property is not set or empty. If you have an older thing please recreate it.");
             return;
         }
         if (StringUtil.isBlank(config.getClientId())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'Client Id' property is not set or empty. If you have an older thing please recreate it.");
             return;
         }
         if (StringUtil.isBlank(config.getClientSecret())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The 'Client Secret' property is not set or empty. If you have an older thing please recreate it.");
             return;
         }
@@ -358,7 +358,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             return true;
         } catch (SmartherAuthorizationException e) {
             logger.warn("Bridge[{}] Authorization error during polling: {}", thing.getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (RuntimeException e) {
             // All other exceptions apart from Authorization and Gateway issues
             logger.warn("Bridge[{}] Unexpected error during polling, please report if this keeps occurring: ",
@@ -582,7 +582,7 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
         } catch (OAuthResponseException e) {
             throw new SmartherAuthorizationException(e.toString(), e);
         } catch (OAuthException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw new SmartherGatewayException(e.getMessage(), e);
         }
     }

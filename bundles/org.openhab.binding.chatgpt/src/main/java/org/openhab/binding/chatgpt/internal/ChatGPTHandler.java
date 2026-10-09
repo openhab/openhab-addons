@@ -134,8 +134,7 @@ public class ChatGPTHandler extends BaseThingHandler {
                     processChatResponse(channelUID, response);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (ChatGPTApiException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
                     logger.debug("Request to OpenAI failed: {}", e.getMessage(), e);
                 }
             }
@@ -195,21 +194,18 @@ public class ChatGPTHandler extends BaseThingHandler {
         String apiKey = c.apiKey;
 
         if (apiKey.isBlank() && isTokenRequiredEndpoint(baseUrl)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error");
             return;
         }
 
         if (!isValidTimeout(c.requestTimeout)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/requestTimeout.configuration-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/requestTimeout.configuration-error");
             return;
         }
         if (thing.getChannels().stream()
                 .map(channel -> channel.getConfiguration().as(ChatGPTChannelConfiguration.class))
                 .anyMatch(config -> !isValidTimeout(config.requestTimeout))) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/requestTimeout.configuration-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/requestTimeout.configuration-error");
             return;
         }
 
@@ -228,12 +224,10 @@ public class ChatGPTHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                     this.models = List.copyOf(apiModels);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
                 }
             } catch (ChatGPTApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.communication-error");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
                 logger.debug("Fetching models failed: {}", e.getMessage(), e);
             }
         });

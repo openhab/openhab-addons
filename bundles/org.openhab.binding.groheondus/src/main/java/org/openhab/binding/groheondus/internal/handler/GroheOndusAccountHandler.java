@@ -92,8 +92,7 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
     private void login() {
         GroheOndusAccountConfiguration config = getConfigAs(GroheOndusAccountConfiguration.class);
         if (config.username.isBlank() || config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.login.missing.credentials");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.login.missing.credentials");
         } else {
             // Config appears to be ok, lets try
             try {
@@ -146,11 +145,11 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
             } catch (LoginException e) {
                 logger.debug("Grohe api login failed", e);
                 this.authorizationHeader = null;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.login.failed");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.login.failed");
             } catch (IOException e) {
                 logger.debug("Communication error while logging into the grohe api", e);
                 this.authorizationHeader = null;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
 
                 // Cleanup and retry
                 this.storage.remove(STORAGE_KEY_REFRESH_TOKEN);

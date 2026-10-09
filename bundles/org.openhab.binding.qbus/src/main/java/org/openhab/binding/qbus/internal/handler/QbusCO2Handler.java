@@ -94,8 +94,7 @@ public class QbusCO2Handler extends QbusGlobalHandler {
                 if (qBridgeHandler.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                            "Bridge offline for CO2 ID " + this.co2Id);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Bridge offline for CO2 ID " + this.co2Id);
                 }
             }
         });

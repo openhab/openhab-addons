@@ -54,7 +54,7 @@ public abstract class ChildThingHandler<BridgeHandlerType extends BridgeHandler>
             BridgeHandler bridgeHandlerUncasted = getBridge().getHandler();
             bridgeHandler = (BridgeHandlerType) bridgeHandlerUncasted;
         } catch (ClassCastException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge Type is invalid.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge Type is invalid.");
         }
     }
 
@@ -73,7 +73,7 @@ public abstract class ChildThingHandler<BridgeHandlerType extends BridgeHandler>
                 bridgeValid = true;
             } else {
                 bridgeValid = false;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                         "Bridge in unsupported status: " + getBridge().getStatus());
             }
         } else {

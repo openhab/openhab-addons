@@ -447,8 +447,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
 
         logger.debug("{}: Initializing Samsung TV handler for uid '{}'", host, getThing().getUID());
         if (host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "host ip address or name is blank");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "host ip address or name is blank");
             return;
         }
 

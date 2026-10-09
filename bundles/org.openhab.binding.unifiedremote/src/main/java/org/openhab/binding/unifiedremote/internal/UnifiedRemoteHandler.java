@@ -72,20 +72,19 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
                         return;
                 }
                 if (isErrorResponse(response)) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Session expired");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Session expired");
                     urConnection.authenticate();
                     updateStatus(ThingStatus.ONLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection not initialized");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Connection not initialized");
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             if (isThingOfflineException(e)) {
                 // we assume thing is offline
                 updateStatus(ThingStatus.OFFLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unexpected exception: " + e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unexpected exception: " + e.getMessage());
             }
         }
     }
@@ -116,7 +115,7 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } else if (status == ThingStatus.ONLINE) {
                     if (isErrorResponse(urConnection.keepAlive())) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Keep alive failed");
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Keep alive failed");
                     }
                 }
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -124,8 +123,7 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
                     // we assume thing is offline
                     updateStatus(ThingStatus.OFFLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unexpected exception: " + e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unexpected exception: " + e.getMessage());
                 }
             }
         }, 0, 40, TimeUnit.SECONDS);

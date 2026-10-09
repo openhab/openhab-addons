@@ -361,24 +361,21 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             logger.debug("AuthenticationException when initializing Ring Account handler{}", ex.getMessage());
             String message = ex.getMessage();
             if ((message != null) && message.startsWith("Two factor")) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             }
         } catch (JsonParseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.invalid-response");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.invalid-response");
         }
         logger.debug("doLogin RT: {}", getRefreshTokenFromFile());
         try {
             refreshRegistry(true);
             updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException ae) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.auth-exception");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.auth-exception");
         } catch (JsonParseException pe1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "JsonParseException response from ring.com");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "JsonParseException response from ring.com");
         }
     }
 
@@ -458,15 +455,14 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     logger.debug("AuthenticationException when initializing Ring Account handler {}", ex.getMessage());
                     String message = ex.getMessage();
                     if ((message != null) && message.startsWith("Two factor")) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getMessage());
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
                     }
                 } catch (JsonParseException e) {
                     logger.debug("Invalid response from api.ring.com when initializing Ring Account handler {}",
                             e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Invalid response from api.ring.com");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Invalid response from api.ring.com");
                 }
             });
         } else {
@@ -739,12 +735,10 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     logger.warn(
                             "Communication or authentication failure during minuteTick recovery. Preserving token. Reason: {}",
                             ex.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "API Error - Will retry on next tick.");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "API Error - Will retry on next tick.");
                 } catch (JsonParseException e1) {
                     logger.debug("RestClient reported JsonParseException trying to get tokens: {}", e1.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.comm-error.api-error");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.api-error");
                 }
             }
         }
@@ -812,8 +806,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 logger.debug("AccountHandler - eventTick - lastEvents null");
             }
         } catch (AuthenticationException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "AuthenticationException response from ring.com");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "AuthenticationException response from ring.com");
             logger.debug(
                     "RestClient reported AuthenticationException from api.ring.com when retrying refreshRegistry for the second time: {}",
                     ex.getMessage());
@@ -832,8 +825,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException e) {
             logger.warn("Failed to refresh Ring token. Network error or token revoked: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.token-api-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.token-api-error");
         }
     }
 
@@ -910,8 +902,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         try {
             return restClient.getSnapshotTimestamp(id, tokens);
         } catch (AuthenticationException ae) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.invalid-response");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.invalid-response");
             return -1;
         }
     }
@@ -921,8 +912,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         try {
             return restClient.getSnapshot(id, tokens);
         } catch (AuthenticationException ae) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.auth-exception");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.auth-exception");
         }
         return new byte[0];
     }
@@ -943,8 +933,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             logger.debug("sending url {} to Ring API", url);
             restClient.sendCommand(url, tokens);
         } catch (AuthenticationException ae) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.invalid-response");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.invalid-response");
         }
     }
 
@@ -954,8 +943,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             logger.trace("sending url {} with payload {} to Ring API", url, payload);
             restClient.sendCommand(url, httpMethod, payload, tokens);
         } catch (AuthenticationException ae) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.invalid-response");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.invalid-response");
         }
     }
 

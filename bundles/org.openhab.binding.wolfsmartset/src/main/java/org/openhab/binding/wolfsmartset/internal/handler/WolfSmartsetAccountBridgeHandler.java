@@ -103,7 +103,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
         discoveryEnabled = booleanValue == null ? false : booleanValue.booleanValue();
         logger.debug("AccountBridge: System and unit discovery is {}", discoveryEnabled ? "enabled" : "disabled");
         if (username.trim().isEmpty() || password.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing username or password");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Missing username or password");
         } else {
             try {
                 api = new WolfSmartsetApi(username, password, httpClient, scheduler);
@@ -111,7 +111,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
                 scheduleRefreshJob();
             } catch (WolfSmartsetCloudException e) {
                 logger.error("unable to create wolf smartset api", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             }
         }
     }
@@ -199,7 +199,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Authorization failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Authorization failed");
             }
         }
 
@@ -223,8 +223,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
                             }
                         }
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Failed to update system states");
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update system states");
                     }
 
                     for (var systemHandler : systemHandlers.values()) {
@@ -260,7 +259,7 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
                     }
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Authorization failed");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Authorization failed");
             }
         }
     }

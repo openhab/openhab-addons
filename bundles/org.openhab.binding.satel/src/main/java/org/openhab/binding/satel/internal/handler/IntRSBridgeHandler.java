@@ -64,7 +64,7 @@ public class IntRSBridgeHandler extends SatelBridgeHandler {
                     config.hasExtCommandsSupport());
             super.initialize(satelModule);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Cannot connect to Satel INT-RS module. Serial port is not set.");
         }
     }

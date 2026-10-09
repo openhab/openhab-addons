@@ -318,7 +318,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
 
     public void deviceInclusion() {
         if (previousOnline && socket != null) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Inclusion");
+            updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "Inclusion");
             logger.debug("Start MAX! inclusion mode for 60 seconds");
             try {
                 socket.setSoTimeout(80000);
@@ -525,7 +525,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     public void onConnectionLost() {
         logger.debug("Bridge connection lost. Updating thing status to OFFLINE.");
         previousOnline = false;
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
         clearDeviceList();
     }
 

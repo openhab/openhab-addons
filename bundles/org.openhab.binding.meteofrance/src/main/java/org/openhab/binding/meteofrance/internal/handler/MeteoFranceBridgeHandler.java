@@ -86,8 +86,7 @@ public class MeteoFranceBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initializing Meteo-France API bridge handler.");
         BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
         if (config.apikey.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-unknown-apikey");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-unknown-apikey");
             return;
         }
         header.put("apikey", config.apikey);
@@ -113,16 +112,16 @@ public class MeteoFranceBridgeHandler extends BaseBridgeHandler {
 
             VigilanceEnCours vigilance = deserializer.deserialize(MeteoFrance.VigilanceEnCours.class, answer);
             if (vigilance.code() != 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, vigilance.message());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, vigilance.message());
             } else {
                 updateStatus(ThingStatus.ONLINE);
                 return vigilance;
             }
         } catch (MeteoFranceException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception deserializing API answer: %s".formatted(e.getMessage()));
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return null;
     }
@@ -169,10 +168,10 @@ public class MeteoFranceBridgeHandler extends BaseBridgeHandler {
 
             return deserializer.deserialize(RainForecast.class, answer);
         } catch (MeteoFranceException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception deserializing API answer: %s".formatted(e.getMessage()));
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return null;
     }

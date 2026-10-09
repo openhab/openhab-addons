@@ -152,13 +152,13 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                 if (bridgeStatus == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         } catch (RFXComInvalidParameterException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 

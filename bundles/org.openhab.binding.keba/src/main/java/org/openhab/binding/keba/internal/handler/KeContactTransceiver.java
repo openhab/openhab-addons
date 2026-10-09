@@ -201,7 +201,7 @@ public class KeContactTransceiver {
                 return buffers.remove(handler);
             } catch (UnsupportedEncodingException | InterruptedException e) {
                 Thread.currentThread().interrupt();
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } finally {
                 handlerLock.unlock();
             }
@@ -414,7 +414,7 @@ public class KeContactTransceiver {
             try {
                 datagramChannel = DatagramChannel.open();
             } catch (Exception e2) {
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "An exception occurred while opening a datagram channel");
             }
 
@@ -424,7 +424,7 @@ public class KeContactTransceiver {
                 try {
                     datagramChannel.configureBlocking(false);
                 } catch (IOException e2) {
-                    handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "An exception occurred while configuring a datagram channel");
                 }
 
@@ -434,7 +434,7 @@ public class KeContactTransceiver {
                     try {
                         datagramChannel.register(selector, interestSet);
                     } catch (ClosedChannelException e1) {
-                        handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "An exception occurred while registering a selector");
                     }
 
@@ -450,13 +450,13 @@ public class KeContactTransceiver {
                     } catch (Exception e) {
                         logger.debug("An exception occurred while connecting connecting to '{}:{}' : {}",
                                 new Object[] { ipAddress, LISTENER_PORT_NUMBER, e.getMessage() });
-                        handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "An exception occurred while connecting");
                     }
                 }
             }
         } else {
-            handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            handler.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     handler.getThing().getStatusInfo().getDescription());
         }
     }
@@ -474,7 +474,7 @@ public class KeContactTransceiver {
                 } catch (Exception e) {
                     logger.debug("An exception occurred while closing the datagramchannel for '{}': {}",
                             handler.getThing().getUID(), e.getMessage());
-                    handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    handler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "An exception occurred while closing the datagramchannel");
                 }
             }

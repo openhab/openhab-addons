@@ -109,12 +109,12 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                 bridgeHandler = localBridgeHandler;
                 channelHandlerFactory = localBridgeHandler.getChannelHandlerFactory();
             } else {
-                updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 return;
             }
         } else {
             logger.warn("No Bridge set within child handler");
-            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -127,7 +127,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
                 scheduleImmediatelyHandleDynamicStatesSignedIn();
             }
         } catch (HeosNotConnectedException e) {
-            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -141,7 +141,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
         failureCount++;
 
         if (failureCount > FAILURE_COUNT_LIMIT) {
-            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to handle command: " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Failed to handle command: " + e.getMessage());
         }
     }
 
@@ -213,7 +213,7 @@ public abstract class HeosThingBaseHandler extends BaseThingHandler implements H
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (ThingStatus.OFFLINE.equals(bridgeStatusInfo.getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())) {
             updateStatus(ThingStatus.ONLINE);
         } else if (ThingStatus.UNINITIALIZED.equals(bridgeStatusInfo.getStatus())) {

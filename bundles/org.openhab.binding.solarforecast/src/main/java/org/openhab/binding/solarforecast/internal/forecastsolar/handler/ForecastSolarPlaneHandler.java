@@ -135,7 +135,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     }
 
     protected void configErrorStatus(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
     }
 
     @Override
@@ -207,9 +207,9 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             int responseStatus = cr.getStatus();
             handleResponse(responseStatus, cr.getContentAsString());
         } catch (ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             Thread.currentThread().interrupt();
         }
     }
@@ -229,11 +229,11 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
             // special handling for 429 response: https://doc.forecast.solar/facing429
             // bridge shall "calm down" until at least one hour is expired
             bridge().calmDown();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/solarforecast.plane.status.http-status [\"" + responseStatus + "\"]");
         } else {
             logger.trace("Call failed with status {}. Response: {}", responseStatus, forecastContent);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/solarforecast.plane.status.http-status [\"" + responseStatus + "\"]");
         }
     }

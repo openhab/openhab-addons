@@ -80,8 +80,7 @@ public class WebscrapeHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             } catch (Exception e) {
                 logger.debug("Error refreshing source '{}'", getThing().getUID(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        e.getClass().getName() + ":" + e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getClass().getName() + ":" + e.getMessage());
             }
         }, 0, config.refreshInterval, TimeUnit.SECONDS);
     }

@@ -70,7 +70,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
         ConfigurationLevel configLevel = localConfig.check();
 
         if (configLevel != ConfigurationLevel.COMPLETED) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configLevel.message);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configLevel.message);
             return;
         }
 

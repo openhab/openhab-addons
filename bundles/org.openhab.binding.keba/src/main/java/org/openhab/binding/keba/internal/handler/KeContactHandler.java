@@ -115,11 +115,10 @@ public class KeContactHandler extends BaseThingHandler {
                             TimeUnit.SECONDS);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "IP address or port number not set");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "IP address or port number not set");
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception during initialization of binding: " + e.toString());
         }
     }
@@ -183,7 +182,7 @@ public class KeContactHandler extends BaseThingHandler {
             long stamp = System.currentTimeMillis();
             if (!isKebaReachable()) {
                 logger.debug("isKebaReachable() timed out after '{}' milliseconds", System.currentTimeMillis() - stamp);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "A timeout occurred while polling the charging station");
             } else {
                 ByteBuffer response = cache.get(CACHE_REPORT_1);
@@ -226,8 +225,7 @@ public class KeContactHandler extends BaseThingHandler {
         } catch (IOException e) {
             logger.debug("An error occurred while polling the KEBA KeContact '{}': {}", getThing().getUID(),
                     e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "An error occurred while polling the charging station");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "An error occurred while polling the charging station");
         } catch (InterruptedException e) {
             logger.debug("Polling job has been interrupted for handler of thing '{}'.", getThing().getUID());
         }

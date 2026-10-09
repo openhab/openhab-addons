@@ -64,8 +64,7 @@ public class HaywardColorLogicHandler extends HaywardThingHandler {
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (HaywardException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to set ColorLogixHandler StateDescriptions");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to set ColorLogixHandler StateDescriptions");
         }
     }
 

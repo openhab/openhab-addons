@@ -64,7 +64,7 @@ public class Lib485BridgeHandler extends DmxBridgeHandler {
                     } catch (IOException e) {
                         logger.debug("Could not connect to {} in {}: {}", receiverNode, this.thing.getUID(),
                                 e.getMessage());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "could not connect to " + receiverNode.toString());
                         return;
                     }
@@ -73,7 +73,7 @@ public class Lib485BridgeHandler extends DmxBridgeHandler {
                 if (socket.isConnected()) {
                     receiverNodes.put(receiverNode, socket);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                     receiverNodes.put(receiverNode, null);
                     return;
                 }
@@ -141,13 +141,13 @@ public class Lib485BridgeHandler extends DmxBridgeHandler {
                     logger.debug("sending to {} for {}", receiverNode, this.thing.getUID());
                 }
             } catch (IllegalArgumentException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return;
             }
         }
         super.updateConfiguration();
 
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE);
+        updateStatus(ThingStatus.UNKNOWN);
 
         logger.debug("updated configuration for Lib485 bridge {}", this.thing.getUID());
     }

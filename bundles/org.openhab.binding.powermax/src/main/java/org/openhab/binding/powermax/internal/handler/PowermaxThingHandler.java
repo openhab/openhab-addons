@@ -112,10 +112,10 @@ public class PowermaxThingHandler extends BaseThingHandler implements PowermaxPa
                     powermaxBridgeHandler.registerPanelSettingsListener(this);
                     onPanelSettingsUpdated(powermaxBridgeHandler.getPanelSettings());
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 setAllChannelsOffline();
                 logger.debug("Set handler status to OFFLINE for thing {} (bridge OFFLINE)", getThing().getUID());
             }

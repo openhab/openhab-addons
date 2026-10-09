@@ -226,7 +226,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
     @Override
     public void onDeviceGone(ThingUID thingUID) {
         if (thing.getUID().equals(thingUID)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Device not present in response");
+            updateStatus(ThingStatusDetail.GONE, "Device not present in response");
         }
     }
 

@@ -114,10 +114,10 @@ public class LIRCBridgeHandler extends BaseBridgeHandler {
             }
         } catch (UnknownHostException e) {
             logger.error("Connection to LIRC failed: unknown host");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown Host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Unknown Host");
         } catch (IOException e) {
             logger.error("Connection to LIRC failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -193,7 +193,7 @@ public class LIRCBridgeHandler extends BaseBridgeHandler {
         @Override
         public void errorOccurred(String error) {
             logger.error("Error occurred: {}", error);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, error);
         }
     }
 }

@@ -141,7 +141,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
                     .toString();
 
             if (oAuthServiceHandleFallback == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         I18NKeys.BRIDGE_STATUS_DESCRIPTION_EMAIL_NOT_CONFIGURED);
                 return;
             }
@@ -153,7 +153,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
                 logger.warn("Using legacy OAuth service handle, please re-authorize to migrate");
             } catch (OAuthException e2) {
                 logger.debug("Could not initialize Miele Cloud bridge.", e2);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCOUNT_NOT_AUTHORIZED);
                 // When the authorization takes place a new initialization will be triggered. Therefore, we can leave
                 // the bridge in this state.
@@ -296,7 +296,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
             case TIMEOUT:
             case TOO_MANY_RERQUESTS:
             case SSE_STREAM_ENDED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 break;
 
             case SERVER_ERROR:
@@ -316,7 +316,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
         } catch (OAuthException e) {
             logger.debug("Failed to refresh OAuth token!", e);
             getWebservice().disconnectSse();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_REFRESH_FAILED);
         }
     }

@@ -45,7 +45,7 @@ public abstract class LutronHandler extends BaseThingHandler {
         if (th instanceof RS232Handler handler) {
             return handler;
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not properly configured.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not properly configured.");
             return null;
         }
     }

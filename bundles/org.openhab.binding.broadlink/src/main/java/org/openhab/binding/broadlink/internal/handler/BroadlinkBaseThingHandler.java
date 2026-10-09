@@ -98,8 +98,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
         // Validate whether the configuration makes any sense
         if (thingConfig.isValidConfiguration().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    thingConfig.isValidConfiguration());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, thingConfig.isValidConfiguration());
             return;
         }
         count = (new Random()).nextInt(65535);
@@ -222,7 +221,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     public void updateItemStatus() {
         if ((thingConfig.getIpAddress().length() == 0) && (thingConfig.getMacAddressAsString().length() == 0)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Neither an IP address or MAC address has been defined.");
         } else {
             int tries = 0;
@@ -237,7 +236,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                     updateStatus(ThingStatus.ONLINE);
                     return;
                 } catch (BroadlinkHostNotReachableException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     if (!thingConfig.isStaticIp()) {
                         logger.debug("Dynamic IP device not found at {}, will search...", thingConfig.getIpAddress());
                         DeviceRediscoveryAgent dra = new DeviceRediscoveryAgent(thingConfig, this);
@@ -245,7 +244,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                         logger.debug("Asynchronous dynamic IP device search initiated...");
                     }
                 } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "Cannot establish a communication channel with the device: " + e.getMessage());
                 } catch (BroadlinkAuthenticationException e) {
                     logger.debug("Authentication exception: {}", e.getMessage());

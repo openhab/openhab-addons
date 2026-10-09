@@ -94,12 +94,12 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
         logger.debug("Serial Port: {}, 9600 baud, PollPeriod: {}", config.serialPort, config.pollPeriod);
 
         if (config.serialPort.length() < 1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set!");
             return;
         } else {
             SerialPortIdentifier portId = serialPortManager.getIdentifier(config.serialPort);
             if (portId == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "Port " + config.serialPort + " is not known!");
                 serialPort = null;
             } else {
@@ -118,7 +118,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
         // parse ports and if the port is found, initialize the reader
         SerialPortIdentifier portId = serialPortManager.getIdentifier(config.serialPort);
         if (portId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "Port " + config.serialPort + " is not known!");
             serialPort = null;
 
@@ -155,14 +155,14 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                 serialPort = serial;
                 updateStatus(ThingStatus.UNKNOWN);
             } catch (final IOException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error!");
             } catch (PortInUseException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use!");
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use!");
             } catch (TooManyListenersException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "Cannot attach listener to port!");
             } catch (UnsupportedCommOperationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "Serial port does not support the RS485 parameters of the Helios remote protocol.");
             }
         }

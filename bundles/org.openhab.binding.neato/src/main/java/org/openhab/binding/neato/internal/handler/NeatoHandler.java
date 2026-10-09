@@ -75,7 +75,7 @@ public class NeatoHandler extends BaseThingHandler {
             mrRobot.sendCommand(command.toString());
         } catch (NeatoCommunicationException e) {
             logger.debug("Error while processing command from openHAB.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         this.refreshStateAndUpdate();
     }
@@ -121,7 +121,7 @@ public class NeatoHandler extends BaseThingHandler {
                 publishChannels();
             } catch (NeatoCommunicationException | CouldNotFindRobotException e) {
                 logger.debug("Error when refreshing state.", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

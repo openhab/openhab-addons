@@ -156,9 +156,9 @@ public class EaseeChargerHandler extends EaseeBaseThingHandler {
      */
     public void setOnline(boolean isOnline) {
         if (isOnline) {
-            super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            super.updateStatus(ThingStatus.ONLINE);
         } else {
-            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_NO_CONNECTION);
+            super.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, STATUS_NO_CONNECTION);
         }
     }
 

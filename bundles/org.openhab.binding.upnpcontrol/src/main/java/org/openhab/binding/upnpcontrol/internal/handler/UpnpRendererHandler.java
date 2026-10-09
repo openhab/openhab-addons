@@ -186,7 +186,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             favoriteSelectChannelUID = favoriteSelectChannel.getUID();
         } else {
             String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", FAVORITE_SELECT);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
         Channel playlistSelectChannel = thing.getChannel(PLAYLIST_SELECT);
@@ -194,7 +194,7 @@ public class UpnpRendererHandler extends UpnpHandler {
             playlistSelectChannelUID = playlistSelectChannel.getUID();
         } else {
             String msg = String.format("@text/offline.channel-undefined [ \"%s\" ]", PLAYLIST_SELECT);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             return;
         }
 
@@ -220,7 +220,7 @@ public class UpnpRendererHandler extends UpnpHandler {
         synchronized (jobLock) {
             if (!upnpIOService.isRegistered(this)) {
                 String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
 
@@ -230,7 +230,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                 getCurrentConnectionInfo();
                 if (!checkForConnectionIds()) {
                     String msg = String.format("@text/offline.no-connection-ids [ \"%s\" ]", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, msg);
                     return;
                 }
 

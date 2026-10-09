@@ -115,7 +115,7 @@ public class DigiplexZoneHandler extends BaseThingHandler {
     public void initialize() {
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         this.bridgeHandler = (DigiplexBridgeHandler) bridge.getHandler();

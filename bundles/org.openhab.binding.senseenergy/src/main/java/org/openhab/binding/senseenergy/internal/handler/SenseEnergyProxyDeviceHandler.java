@@ -95,7 +95,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
             try {
                 powerLevels.parse(config.powerLevels);
             } catch (IllegalArgumentException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid power level entry");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid power level entry");
                 return;
             }
             String pretty = powerLevels.toString();
@@ -219,7 +219,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             goOnline();
         }
@@ -228,8 +228,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
     public boolean checkBridgeStatus() {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.bridge-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");
             return false;
         }
 
@@ -240,7 +239,7 @@ public class SenseEnergyProxyDeviceHandler extends BaseThingHandler {
         }
 
         if (bridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return false;
         }
 

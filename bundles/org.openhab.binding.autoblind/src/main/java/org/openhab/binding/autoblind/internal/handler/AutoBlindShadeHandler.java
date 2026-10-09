@@ -64,7 +64,7 @@ public class AutoBlindShadeHandler extends BaseThingHandler {
         AutoBlindShadeConfiguration config = getConfigAs(AutoBlindShadeConfiguration.class);
         Integer uid = config.peripheralUid;
         if (uid == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-peripheral-uid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-peripheral-uid");
             return;
         }
         peripheralUid = uid;

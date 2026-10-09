@@ -45,7 +45,7 @@ public class HwDimmerHandler extends BaseThingHandler {
 
         address = config.getAddress();
         if (address == null || address.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Address not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Address not set");
             return;
         }
 
@@ -53,7 +53,7 @@ public class HwDimmerHandler extends BaseThingHandler {
         defaultLevel = config.getDefaultLevel();
 
         if (getThing().getBridgeUID() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
             return;
         }
 

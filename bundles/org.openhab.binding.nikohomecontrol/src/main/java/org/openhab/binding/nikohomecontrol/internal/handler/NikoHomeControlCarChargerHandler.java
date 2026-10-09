@@ -171,7 +171,7 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
 
         NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-bridge-handler");
             return;
         }
@@ -195,15 +195,13 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
         }
 
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
             return;
         }
 
         NhcCarCharger nhcCarCharger = nhcComm.getCarChargerDevices().get(deviceId);
         if (nhcCarCharger == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.deviceId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.deviceId");
             return;
         }
 
@@ -218,8 +216,7 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
         try {
             LocalDateTime.parse(startDate);
         } catch (DateTimeParseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.meterStartDate");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.meterStartDate");
             return;
         }
 

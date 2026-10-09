@@ -75,8 +75,7 @@ public class OpenUVReportHandler extends BaseThingHandler {
         ReportConfiguration config = getConfigAs(ReportConfiguration.class);
 
         if (config.refresh < 3) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-invalid-refresh");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-invalid-refresh");
         } else {
             Bridge bridge = getBridge();
             if (bridge == null) {

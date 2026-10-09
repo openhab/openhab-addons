@@ -275,23 +275,21 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
                     if (deviceOptional.isPresent()) {
                         DeviceDTO device = deviceOptional.get();
                         if (device.isReachable() != null && !device.isReachable()) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/error.notReachable");
+                            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.notReachable");
                         } else {
                             updateStatus(ThingStatus.ONLINE);
                         }
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/error.deviceNotFound");
+                        updateStatus(ThingStatusDetail.GONE, "@text/error.deviceNotFound");
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/error.bridgeHandlerMissing");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridgeHandlerMissing");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.deviceIdUnknown");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.deviceIdUnknown");
         }
     }
 
@@ -615,7 +613,7 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             if (reachable) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.notReachable");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.notReachable");
                 return false;
             }
         }

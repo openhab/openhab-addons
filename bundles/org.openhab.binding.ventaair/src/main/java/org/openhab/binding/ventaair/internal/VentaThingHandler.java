@@ -143,7 +143,7 @@ public class VentaThingHandler extends BaseThingHandler {
 
         String configErrorMessage;
         if ((configErrorMessage = validateConfig()) != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configErrorMessage);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, configErrorMessage);
             return;
         }
 
@@ -177,7 +177,7 @@ public class VentaThingHandler extends BaseThingHandler {
             try {
                 localCommunicator.sendActionToDevice(action);
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 return;
             }
             localCommunicator.pollDataFromDevice();
@@ -335,7 +335,7 @@ public class VentaThingHandler extends BaseThingHandler {
          * Method to inform the handler about a communication issue
          */
         public void communicationProblem() {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 }

@@ -170,7 +170,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
             logger.debug("[{}] {}", getThing().getUID().getId(), ex.getMessage()); // the non-i18nzed message is logged
                                                                                    // explicitly (not redundant with
                                                                                    // updateStatus's logging)
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, ex.getLocalizedMessage());
             return;
         }
         logger.debug("[{}] Running with config: {}", getThing().getUID(), config.get().toString());
@@ -179,7 +179,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
         if (!configValidationError.isEmpty()) {
             var message = i18nProvider.getText("thing-status.argoclima.invalid-config",
                     "Invalid thing configuration. {0}", configValidationError);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
             return;
         }
 
@@ -575,7 +575,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
                             "Polling for device-side update failed. Unable to communicate with HVAC device for past {0} refresh cycles. Last error: {1}",
                             ArgoClimaBindingConstants.MAX_API_RETRIES, e.getLocalizedMessage());
 
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
                     // Not resetting the counter here (will track every failure till we reinitialize & poll successfully
                 }
             }
@@ -669,7 +669,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
         if (getThing().getStatus() != ThingStatus.OFFLINE) {
             // Update to offline. If offline already, let's not update the reason not to flood framework with boring
             // updates (first error wins user's attention)
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
     }
 
@@ -813,7 +813,7 @@ public abstract class ArgoClimaHandlerBase<ConfigT extends ArgoClimaConfiguratio
                                                                                   // values upon abort
 
                 // The device wasn't nice with us, so we're going to consider it offline
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, i18nProvider.getText(
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, i18nProvider.getText(
                         "thing-status.argoclima.confirmation-not-received",
                         "Could not control HVAC device. Command(s): {0} were not confirmed by the device within {1} s",
                         valuesToUpdate.isEmpty() ? "REFRESH" : valuesToUpdate.toString(), maxWorkTime.toSeconds()));

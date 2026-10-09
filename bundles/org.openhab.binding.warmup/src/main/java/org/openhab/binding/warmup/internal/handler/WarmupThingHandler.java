@@ -72,7 +72,7 @@ public class WarmupThingHandler extends BaseThingHandler {
         final Bridge bridge = getBridge();
 
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return null;
         } else {
             return (MyWarmupAccountHandler) bridge.getHandler();

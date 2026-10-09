@@ -121,7 +121,7 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
 
                 logger.debug("initializeThingHandler(): Thing Handler Initialized - {}", thing.getUID());
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 logger.debug("initializeThingHandler(): Thing '{}' is set to OFFLINE because bridge is OFFLINE",
                         thing.getUID());
             }

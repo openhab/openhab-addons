@@ -558,7 +558,7 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
     @Override
     public void connectionError(String ip, String errorMsg) {
         logger.debug("Connection error occurred to Onkyo Receiver @{}", ip);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
     }
 
     private State convertDeviceValueToOpenHabState(String data, Class<?> classToConvert) {

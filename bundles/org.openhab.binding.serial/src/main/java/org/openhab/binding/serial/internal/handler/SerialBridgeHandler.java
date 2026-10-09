@@ -63,14 +63,14 @@ public class SerialBridgeHandler extends CommonBridgeHandler implements SerialPo
 
         final String port = config.serialPort;
         if (port == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set");
             return;
         }
 
         // parse ports and if the port is found, initialize the reader
         final SerialPortIdentifier portId = serialPortManager.getIdentifier(port);
         if (portId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port is not known");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port is not known");
             return;
         }
 
@@ -92,14 +92,14 @@ public class SerialBridgeHandler extends CommonBridgeHandler implements SerialPo
 
             updateStatus(ThingStatus.ONLINE);
         } catch (final IOException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error");
         } catch (final PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use");
         } catch (final TooManyListenersException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Cannot attach listener to port");
         } catch (final UnsupportedCommOperationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Unsupported port parameters: " + e.getMessage());
         }
     }

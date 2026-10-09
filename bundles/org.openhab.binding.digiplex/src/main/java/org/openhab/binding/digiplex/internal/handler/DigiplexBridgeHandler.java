@@ -110,7 +110,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
 
         SerialPortIdentifier portId = serialPortManager.getIdentifier(config.port);
         if (portId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "No such port: " + config.port);
             return;
         }
@@ -122,7 +122,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
             OutputStream outputStream = serialPort.getOutputStream();
 
             if (inputStream == null || outputStream == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "Input/Output stream null");
                 return;
             }
@@ -141,10 +141,10 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
 
             updateStatus(ThingStatus.ONLINE);
         } catch (PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Port in use: " + config.port);
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Communication error: " + e.getMessage());
         }
     }
@@ -253,7 +253,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
     }
 
     public void handleCommunicationError() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         if (reinitializeTask == null) {
             reinitializeTask = scheduler.schedule(() -> {
                 logger.info("Reconnecting to PRT3 device...");
@@ -284,7 +284,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
             if (response.success) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
 

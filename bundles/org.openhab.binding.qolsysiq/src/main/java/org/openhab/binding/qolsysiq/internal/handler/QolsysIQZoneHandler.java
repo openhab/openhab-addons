@@ -107,12 +107,12 @@ public class QolsysIQZoneHandler extends BaseThingHandler {
         BridgeHandler handler = bridge == null ? null : bridge.getHandler();
         if (bridge != null && handler instanceof QolsysIQPartitionHandler partitionHandler) {
             if (handler.getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 return;
             }
             Zone z = partitionHandler.getZone(getZoneId());
             if (z == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Zone not found in partition");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Zone not found in partition");
                 return;
             }
             updateZone(z);

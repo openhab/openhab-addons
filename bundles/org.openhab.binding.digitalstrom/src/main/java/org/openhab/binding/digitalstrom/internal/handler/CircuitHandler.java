@@ -87,7 +87,7 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge is missing!");
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "dSID is missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "dSID is missing");
         }
     }
 
@@ -134,8 +134,7 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
             if (dSID != null) {
                 if (getDssBridgeHandler() != null) {
                     if (circuit == null) {
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                                "waiting for listener registration");
+                        updateStatus(ThingStatusDetail.CONFIGURATION_PENDING, "waiting for listener registration");
                         dssBridgeHandler.registerDeviceStatusListener(this);
                     } else {
                         updateStatus(ThingStatus.ONLINE);
@@ -144,11 +143,11 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
                     updateStatus(ThingStatus.OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No dSID is set!");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No dSID is set!");
             }
         }
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         logger.debug("Set status to {}", getThing().getStatusInfo());
     }

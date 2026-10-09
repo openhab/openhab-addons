@@ -137,7 +137,7 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
 
             scheduler.execute(() -> completeInitAsync());
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/conf-error-no-bridge");
         }
     }
 

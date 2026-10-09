@@ -119,7 +119,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                 }
                 updateStatus(ThingStatus.ONLINE); // set it back online, maybe it was offline before
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     };
@@ -138,7 +138,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
 
         if (ip == null || pin == null || pin.isEmpty() || port.intValue() == 0) {
             // configuration incomplete
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration incomplete");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Configuration incomplete");
         } else {
             radio = new FrontierSiliconRadio(ip, port.intValue(), pin, httpClient);
             logger.debug("Initializing connection to {}:{}", ip, port);
@@ -169,7 +169,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         updateRunnable.run();
                     }
                 } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         });
@@ -192,7 +192,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
             // connection to radio is not initialized, log ignored command and set status, if it is not already offline
             logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(), command);
             if (ThingStatus.ONLINE.equals(getThing().getStatus())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
             }
             return;
         }
@@ -251,7 +251,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             // set device state to offline
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }

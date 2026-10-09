@@ -127,8 +127,7 @@ public abstract class TariffHandler<T extends Tariff> extends BaseThingHandler {
             logger.debug("Scheduling next {} update in {} minutes", thingUID, delay);
             refreshJob = Optional.of(scheduler.schedule(this::updateData, delay, TimeUnit.MINUTES));
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to access %s".formatted(url));
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Unable to access %s".formatted(url));
         }
     }
 

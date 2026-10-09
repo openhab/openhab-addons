@@ -189,7 +189,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
 
         // check thing configuration
         if (StringUtils.isBlank(configuration.address) || StringUtils.isBlank(configuration.haId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error");
             return;
         }
 
@@ -216,7 +216,7 @@ public class BaseHomeConnectDirectHandler extends BaseThingHandler implements We
                         featureMappingService.getFeatureMapping());
                 this.featureMappingService = featureMappingService;
             } catch (ParseException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.profile-parse-error [\"" + e.getMessage() + "\"]");
                 scheduleReconnect();
                 return;

@@ -73,7 +73,7 @@ public class TempSensorHandler extends AbstractOmnilinkStatusHandler<ExtendedAux
         if (bridgeHandler != null) {
             updateTempSensorProperties(bridgeHandler);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing Temperature Sensor!");
         }
     }

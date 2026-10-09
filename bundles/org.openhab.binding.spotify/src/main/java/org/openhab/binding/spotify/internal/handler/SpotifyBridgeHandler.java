@@ -281,7 +281,7 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             startPolling();
             return user;
         } catch (RuntimeException | OAuthException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw new SpotifyException(e.getMessage(), e);
         } catch (final OAuthResponseException e) {
             throw new SpotifyAuthorizationException(e.getMessage(), e);
@@ -424,13 +424,13 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             } catch (final SpotifyAuthorizationException e) {
                 logger.debug("Authorization error during polling: ", e);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 cancelSchedulers();
                 devicesCache.invalidateValue();
             } catch (final SpotifyException e) {
                 logger.info("Spotify returned an error during polling: {}", e.getMessage());
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (final RuntimeException e) {
                 // This only should catch RuntimeException as the apiCall don't throw other exceptions.
                 logger.info("Unexpected error during polling status, please report if this keeps occurring: ", e);

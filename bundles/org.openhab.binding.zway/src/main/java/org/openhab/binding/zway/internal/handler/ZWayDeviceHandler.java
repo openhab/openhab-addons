@@ -200,7 +200,7 @@ public abstract class ZWayDeviceHandler extends BaseThingHandler {
         logger.debug("Z-Way bridge status changed: {}", bridgeStatusInfo);
 
         if (bridgeStatusInfo.getStatus().equals(ThingStatus.OFFLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge status is offline.");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "Bridge status is offline.");
         } else if (bridgeStatusInfo.getStatus().equals(ThingStatus.ONLINE)) {
             // Initialize thing, if all OK the status of device thing will be ONLINE
 

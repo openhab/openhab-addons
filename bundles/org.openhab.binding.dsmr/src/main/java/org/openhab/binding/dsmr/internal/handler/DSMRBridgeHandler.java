@@ -170,7 +170,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements P1TelegramLi
     private boolean validateSmartyMeterConfiguration(final DSMRDeviceConfiguration deviceConfig) {
         final boolean valid;
         if (deviceConfig.decryptionKey == null || deviceConfig.decryptionKey.length() != 32) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/addon.dsmr.error.configuration.invalidsmartykey");
             valid = false;
         } else if (!validDecryptionKey(deviceConfig.decryptionKey, CONFIGURATION_DECRYPTION_KEY)
@@ -187,7 +187,7 @@ public class DSMRBridgeHandler extends BaseBridgeHandler implements P1TelegramLi
             HexUtils.hexToBytes(key);
             return true;
         } catch (final IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/addon.dsmr.error.configuration.invalid." + message + " [" + e.getMessage() + "]");
         }
         return false;

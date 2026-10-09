@@ -99,12 +99,12 @@ public class FineOffsetSensorHandler extends BaseThingHandler {
         if (sensorDevice == null) {
             // this only happens, if sensor data was read out correctly from the gateway, but the things' device
             // (sensor) is no longer part of the paired sensors
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+            updateStatus(ThingStatusDetail.GONE);
             getThing().getChannels().forEach(c -> updateState(c.getUID(), UnDefType.UNDEF));
             return;
         }
         if (sensorDevice.getSignal() == 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         } else {
             updateStatus(ThingStatus.ONLINE);
         }

@@ -69,7 +69,7 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedAudi
         if (bridgeHandler != null) {
             updateAudioZoneProperties(bridgeHandler);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing Audio Zone!");
         }
     }

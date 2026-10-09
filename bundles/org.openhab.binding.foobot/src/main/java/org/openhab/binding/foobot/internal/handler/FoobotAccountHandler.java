@@ -110,7 +110,7 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
                     "Parameter%s [%s] %s mandatory and must be configured and not be empty", oneParam ? "" : "s",
                     String.join(", ", missingParams), oneParam ? "is" : "are");
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
             return;
         }
         this.username = username;
@@ -176,7 +176,7 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
                         .ifPresent(fh -> fh.handleUpdateProperties(d));
             });
         } catch (FoobotApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         return footbotHandlers;
     }
@@ -199,7 +199,7 @@ public class FoobotAccountHandler extends BaseBridgeHandler {
                 getDeviceList().stream().filter(d -> d.getUuid().equals(uuid)).findAny()
                         .ifPresent(fd -> handler.handleUpdateProperties(fd));
             } catch (FoobotApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

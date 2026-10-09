@@ -86,12 +86,11 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
         logger.debug("Initializing Rachio Valve Thing '{}', configured valveId='{}'", getThing().getUID(), valveId);
 
         if (valveId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nText("thing-status.rachio.valve.missing-valve-id"));
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, i18nText("thing-status.rachio.valve.missing-valve-id"));
             return;
         }
         if (!initializeCloudHandler()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
         scheduleHandlerTask(generation, () -> refreshValve(valveId, true, generation));
@@ -103,7 +102,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
         RachioBridgeHandler handler = cloudHandler;
         RachioValve currentValve = valve;
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -184,7 +183,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.debug("{}: {}", thingId, errorMessage);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.valve.command-failed", errorMessage));
             }
         }
@@ -214,7 +213,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
         }
         RachioBridgeHandler handler = cloudHandler;
         if (handler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return false;
         }
 
@@ -228,8 +227,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
             valve = loadedValve;
             RachioValve currentValve = loadedValve;
             if (currentValve.id.isBlank()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        i18nText("thing-status.rachio.valve.not-found"));
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, i18nText("thing-status.rachio.valve.not-found"));
                 return false;
             }
             thingId = currentValve.getThingName();
@@ -278,7 +276,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
             String reason = exceptionMessage(e);
             logger.debug("{}: Unable to load Rachio Valve '{}': {}", thingId, valveId, reason);
             if (isHandlerLifecycleCurrent(generation) && isSameInstance(cloudHandler, handler)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         i18nText("thing-status.rachio.valve.load-failed", valveId, reason));
             }
             return false;
@@ -570,8 +568,7 @@ public class RachioValveHandler extends AbstractRachioThingHandler implements Ra
         if (updatedValve == null) {
             nextPlannedRun = null;
             nextSkippedRun = null;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    i18nText("thing-status.rachio.valve.not-in-poll"));
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, i18nText("thing-status.rachio.valve.not-in-poll"));
             return;
         }
         thingId = updatedValve.getThingName();

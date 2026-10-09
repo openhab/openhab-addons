@@ -118,7 +118,7 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
             }
             startAutomaticRefresh();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         }
     }
 
@@ -193,7 +193,7 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
                     logger.debug("Skipping refresh for bridge '{}' because another request is still in progress.",
                             getThing().getUID().getId());
                 } catch (FroniusCommunicationException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 }
             };
 

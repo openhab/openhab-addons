@@ -36,7 +36,6 @@ import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
@@ -104,8 +103,7 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
 
         config = getConfigAs(LinkyBridgeWebConfiguration.class);
         if (!Objects.requireNonNull(config).seemsValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-mandatory-settings");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-mandatory-settings");
         }
     }
 

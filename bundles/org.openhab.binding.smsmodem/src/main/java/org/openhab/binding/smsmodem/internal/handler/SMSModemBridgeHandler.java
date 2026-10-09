@@ -182,9 +182,9 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
         } catch (ModemConfigurationException e) {
             String message = e.getMessage();
             if (e.getCause() != null && e.getCause() instanceof IOException) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
             }
         }
     }
@@ -336,7 +336,7 @@ public class SMSModemBridgeHandler extends BaseBridgeHandler
                 if (finalModem != null) {
                     finalDescription = finalModem.getDescription();
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "SMSLib reported an error on the underlying modem " + finalDescription);
                 break;
             case Started:

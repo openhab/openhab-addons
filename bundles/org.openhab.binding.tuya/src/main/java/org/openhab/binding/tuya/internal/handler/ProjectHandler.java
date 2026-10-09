@@ -64,7 +64,7 @@ public class ProjectHandler extends BaseThingHandler implements ApiStatusCallbac
         ProjectConfiguration config = getConfigAs(ProjectConfiguration.class);
 
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
 
@@ -80,7 +80,7 @@ public class ProjectHandler extends BaseThingHandler implements ApiStatusCallbac
         if (!status) {
             stopApiConnectFuture();
             apiConnectFuture = scheduler.schedule(api::login, 60, TimeUnit.SECONDS);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         } else {
             stopApiConnectFuture();
 

@@ -125,13 +125,12 @@ public class PortalHandler extends BaseBridgeHandler {
         String payload = gson.toJson(new LoginRequest(config.username, config.password));
         String response = sendPost(LOGIN_URL, payload);
         if (response == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Invalid response from SEMS portal");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Invalid response from SEMS portal");
             return;
         }
         LoginResponse loginResponse = gson.fromJson(response, LoginResponse.class);
         if (loginResponse == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Check username / password");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Check username / password");
             return;
         }
         if (loginResponse.isOk()) {
@@ -142,8 +141,7 @@ public class PortalHandler extends BaseBridgeHandler {
             loggedIn = true;
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Check username / password");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Check username / password");
         }
     }
 

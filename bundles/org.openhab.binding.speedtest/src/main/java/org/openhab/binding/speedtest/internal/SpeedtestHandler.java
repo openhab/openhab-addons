@@ -281,7 +281,7 @@ public class SpeedtestHandler extends BaseThingHandler {
                 logger.debug("Speedtest Version: {}", versionLine);
                 return true;
             } else {
-                updateStatusIfCurrent(currentInitId, ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatusIfCurrent(currentInitId, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.configuration-error.type");
                 return false;
             }
@@ -610,14 +610,12 @@ public class SpeedtestHandler extends BaseThingHandler {
     public boolean checkConfig(String execPath) {
         File file = new File(execPath);
         if (!checkFileExists(file)) { // Check if entered path exists
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.file");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.file");
             return false;
         }
 
         if (!checkFileExecutable(file)) { // Check if speedtest is executable
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.exec");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.exec");
             return false;
         }
         return true;

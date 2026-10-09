@@ -30,7 +30,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -72,7 +71,7 @@ public class KeypadHandler extends ADThingHandler {
         }
 
         if (addressMaskLong < 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid addressMask setting");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid addressMask setting");
             return;
         }
         // If 1 and only 1 device is set in the addressMask parameter, use that device number as the sending address

@@ -101,7 +101,7 @@ public class QbusThermostatHandler extends QbusGlobalHandler {
                 if (qBridgeHandler.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                             "Bridge offline for THERMOSTAT ID " + this.thermostatId);
                 }
             }

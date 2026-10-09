@@ -54,12 +54,12 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
         logger.debug("Initializing device state for Switch {}", getAddress());
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/status.awaiting-initial-response");
             ping(); // handleUpdate() will set thing status to online when response arrives
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

@@ -102,8 +102,7 @@ public class BigAssFanHandler extends BaseThingHandler {
 
         if (!configuration.isValid()) {
             logger.debug("BigAssFanHandler config of {} is invalid. Check configuration", thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid BigAssFan config. Check configuration.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Invalid BigAssFan config. Check configuration.");
             return;
         }
 

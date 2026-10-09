@@ -54,7 +54,7 @@ public class MeteoBlueBridgeHandler extends BaseBridgeHandler {
         MeteoBlueBridgeConfig config = getConfigAs(MeteoBlueBridgeConfig.class);
         String apiKeyTemp = config.getApiKey();
         if (apiKeyTemp == null || apiKeyTemp.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "Cannot initialize meteoblue bridge. No apiKey provided.");
             return;
         }
@@ -83,7 +83,7 @@ public class MeteoBlueBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.trace("HealthCheck failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "HealthCheck failed");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "HealthCheck failed");
         }
     }
 }

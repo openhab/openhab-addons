@@ -138,8 +138,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             final SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(config.serialport);
             logger.debug("portIdentifier = {}", portIdentifier);
             if (portIdentifier == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        ERROR_OFFLINE_SERIAL_NOT_FOUND);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ERROR_OFFLINE_SERIAL_NOT_FOUND);
                 return;
             }
             logger.debug("Opening portIdentifier");
@@ -169,11 +168,9 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
 
             logger.debug("Connected to serial port '{}'", config.serialport);
         } catch (PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    ERROR_OFFLINE_SERIAL_INUSE);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ERROR_OFFLINE_SERIAL_INUSE);
         } catch (UnsupportedCommOperationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    ERROR_OFFLINE_SERIAL_UNSUPPORTED);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, ERROR_OFFLINE_SERIAL_UNSUPPORTED);
         }
     }
 

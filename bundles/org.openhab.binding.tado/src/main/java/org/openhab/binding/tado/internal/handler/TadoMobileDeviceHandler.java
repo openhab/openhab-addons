@@ -68,8 +68,8 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
     public void initialize() {
         configuration = getConfigAs(TadoMobileDeviceConfig.class);
         if (configuration.refreshInterval <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone "
-                    + configuration.id + " of home " + getHomeId() + " must be greater than zero");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Refresh interval of zone " + configuration.id
+                    + " of home " + getHomeId() + " must be greater than zero");
             return;
         }
 
@@ -87,12 +87,12 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
                 updateProperty(TadoBindingConstants.PROPERTY_MOBILE_DEVICE_NAME, device.getName());
 
                 if (!device.getSettings().isGeoTrackingEnabled()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "Geotracking is disabled on mobile device " + device.getName());
                     return;
                 }
             } catch (IOException | ApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not connect to server due to " + e.getMessage());
                 cancelScheduledStateUpdate();
                 return;
@@ -101,7 +101,7 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
             scheduleZoneStateUpdate();
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             cancelScheduledStateUpdate();
         }
     }
@@ -126,15 +126,14 @@ public class TadoMobileDeviceHandler extends BaseHomeThingHandler {
             device = getApi().listMobileDevices(getHomeId()).stream().filter(m -> m.getId() == configuration.id)
                     .findFirst().orElse(null);
         } catch (IOException | ApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not connect to server due to " + e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Could not connect to server due to " + e.getMessage());
             throw e;
         }
 
         if (device == null) {
             String message = "Mobile device with id " + configuration.id + " unknown or does not belong to home "
                     + getHomeId();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, message);
             throw new IOException(message);
         }
 

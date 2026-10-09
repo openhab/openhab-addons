@@ -119,8 +119,7 @@ abstract class EnphaseDeviceHandler extends BaseThingHandler {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        messageTranslator.translate(ERROR_NODATA));
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, messageTranslator.translate(ERROR_NODATA));
             }
         }
     }
@@ -138,7 +137,7 @@ abstract class EnphaseDeviceHandler extends BaseThingHandler {
     public void initialize() {
         serialNumber = (String) getConfig().get(EnphaseBindingConstants.CONFIG_SERIAL_NUMBER);
         if (!EnphaseBindingConstants.isValidSerial(serialNumber)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial Number is not valid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Serial Number is not valid");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
         }

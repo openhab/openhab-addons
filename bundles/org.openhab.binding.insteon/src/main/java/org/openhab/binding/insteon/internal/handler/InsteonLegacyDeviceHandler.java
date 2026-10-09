@@ -86,7 +86,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                 String msg = "An Insteon network bridge has not been selected for this device.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
 
@@ -95,7 +95,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                 String msg = "Insteon device configuration is null.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
 
@@ -105,7 +105,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                         + "' is invalid. It must be in the format 'AB.CD.EF' or 'H.U' (X10).";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
 
@@ -114,7 +114,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                 String msg = "Unable to start Insteon device, invalid product key '" + productKey + "'.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
 
@@ -129,7 +129,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                     String msg = "The device configuration parameter is not valid JSON.";
                     logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                     return;
                 }
             } else {
@@ -141,7 +141,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                 String msg = "A device already exists with the address '" + address + "'.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
 
@@ -151,7 +151,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                         + address + "'.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
 
@@ -160,7 +160,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                 String msg = "Unable to get thing handler callback.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
 
@@ -236,7 +236,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                                             + " must be an array of integers in the device configuration parameter.";
                                     logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
-                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                                     return;
                                 }
                             }
@@ -294,7 +294,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
                 String msg = "Product key '" + productKey
@@ -302,7 +302,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
 
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
         });
     }
@@ -475,7 +475,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
     public void deviceNotLinked() {
         String msg = "device with the address '" + config.getAddress()
                 + "' was not found in the modem database. Did you forget to link?";
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
 
         deviceLinked = false;
     }

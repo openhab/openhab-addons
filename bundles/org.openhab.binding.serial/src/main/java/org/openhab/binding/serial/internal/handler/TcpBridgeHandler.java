@@ -63,13 +63,13 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
 
         final String address = config.address;
         if (address.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Address must be set");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Address must be set");
             return;
         }
 
         final int port = config.port;
         if (port <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set");
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port must be set");
             return;
         }
 
@@ -94,9 +94,9 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
             // we have to trigger a read periodical.
             waitForData();
         } catch (final IllegalArgumentException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, ex.getMessage());
         } catch (final IOException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error");
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "I/O error");
             handleIOException(ex);
         }
     }
@@ -183,7 +183,7 @@ public class TcpBridgeHandler extends CommonBridgeHandler {
      */
     @Override
     protected void handleIOException(IOException e) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+        updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         dispose();
         super.handleIOException(e);
         tryToReconnect();

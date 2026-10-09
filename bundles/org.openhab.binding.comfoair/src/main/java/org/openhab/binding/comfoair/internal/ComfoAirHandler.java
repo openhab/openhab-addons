@@ -106,7 +106,7 @@ public class ComfoAirHandler extends BaseThingHandler {
         String serialPort = this.config.serialPort;
 
         if (serialPort.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port is not configured.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Serial port is not configured.");
             return;
         } else {
             ComfoAirSerialConnector comfoAirConnector = new ComfoAirSerialConnector(serialPortManager, serialPort,
@@ -140,13 +140,13 @@ public class ComfoAirHandler extends BaseThingHandler {
                     }, 0, (this.config.refreshInterval > 0) ? this.config.refreshInterval
                             : DEFAULT_REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             } catch (ComfoAirSerialException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 

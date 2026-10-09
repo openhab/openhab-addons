@@ -88,7 +88,7 @@ public class RdsHandler extends BaseThingHandler {
         RdsConfiguration config = this.config = getConfigAs(RdsConfiguration.class);
 
         if (config.plantId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing Plant Id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "missing Plant Id");
             return;
         }
 
@@ -98,13 +98,13 @@ public class RdsHandler extends BaseThingHandler {
             RdsCloudHandler cloud = getCloudHandler();
 
             if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "cloud server offline");
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "cloud server offline");
                 return;
             }
 
             initializePolling();
         } catch (RdsCloudException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing cloud server handler");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "missing cloud server handler");
             return;
         }
     }
@@ -130,7 +130,7 @@ public class RdsHandler extends BaseThingHandler {
 
             startFastPollingBurst();
         } catch (RdsCloudException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             logger.warn(LOG_SYSTEM_EXCEPTION, "initializePolling()", e.getClass().getName(), e.getMessage());
         }
     }
@@ -199,7 +199,7 @@ public class RdsHandler extends BaseThingHandler {
             RdsCloudHandler cloud = getCloudHandler();
 
             if (cloud.getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "cloud server offline");
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "cloud server offline");
                 return;
             }
 
@@ -210,21 +210,20 @@ public class RdsHandler extends BaseThingHandler {
 
             if (points == null) {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing data points");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "missing data points");
                 }
                 throw new RdsCloudException("missing data points");
             }
 
             if (!points.isOnline()) {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "cloud server reports device offline");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "cloud server reports device offline");
                 }
                 return;
             }
 
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.ONLINE);
             }
 
             for (ChannelMap channel : CHAN_MAP) {

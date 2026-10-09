@@ -22,7 +22,6 @@ import org.openhab.binding.regoheatpump.internal.protocol.SerialRegoConnection;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
 /**
@@ -46,8 +45,7 @@ public class SerialHusdataHandler extends HusdataHandler {
         String portName = (String) getConfig().get(RegoHeatPumpBindingConstants.PORT_NAME);
         serialPortIdentifier = serialPortManager.getIdentifier(portName);
         if (serialPortIdentifier == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Serial port does not exist: " + portName);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Serial port does not exist: " + portName);
         } else {
             super.initialize();
         }

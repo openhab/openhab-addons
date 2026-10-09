@@ -92,7 +92,7 @@ public class ThermostatHandler extends AbstractOmnilinkStatusHandler<ExtendedThe
         if (bridgeHandler != null) {
             updateThermostatProperties(bridgeHandler);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing Thermostat!");
         }
     }

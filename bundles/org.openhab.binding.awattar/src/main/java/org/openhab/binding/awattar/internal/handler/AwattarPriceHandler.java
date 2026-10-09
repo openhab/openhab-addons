@@ -122,18 +122,17 @@ public class AwattarPriceHandler extends BaseThingHandler {
         State state = UnDefType.UNDEF;
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
             return;
         }
         AwattarBridgeHandler bridgeHandler = (AwattarBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.missing");
             return;
         }
         String group = channelUID.getGroupId();
         if (group == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.channelgroup.missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.channelgroup.missing");
             return;
         }
 

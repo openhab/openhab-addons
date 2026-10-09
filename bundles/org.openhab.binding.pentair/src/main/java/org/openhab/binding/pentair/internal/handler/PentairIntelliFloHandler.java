@@ -151,8 +151,7 @@ public class PentairIntelliFloHandler extends PentairBaseThingHandler {
         PentairBaseBridgeHandler bridgeHandler = getBridgeHandler();
 
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.bridge-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.bridge-missing");
             return true;
         }
 

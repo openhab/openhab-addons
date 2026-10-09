@@ -69,7 +69,7 @@ public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<
         if (bridgeHandler != null) {
             updateAreaProperties();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing Area!");
         }
     }

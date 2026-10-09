@@ -205,7 +205,7 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
         } catch (PlugwiseInitializationException e) {
             communicationHandler.stop();
             communicationHandler.removeMessageListener(this);
-            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -231,7 +231,7 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
         } catch (IOException e) {
             communicationHandler.stop();
             communicationHandler.removeMessageListener(this);
-            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

@@ -212,7 +212,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                     String msg = String.format(
                             "Zone not set or invalid zone name used: '%s'. It needs to be on of: '%s'",
                             zoneConfig.getZoneValue(), Arrays.toString(Zone.values()));
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, msg);
                     logger.info("{}", msg);
                 } else {
                     if (zoneControl == null) {
@@ -241,7 +241,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                     updateStatus(ThingStatus.ONLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 zoneControl = null;
                 zoneAvailableInputs = null;
             }
@@ -498,7 +498,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                     logger.warn("Channel {} not supported!", id);
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (ReceivedMessageParseException e) {
             // Some AVRs send unexpected responses. We log parser exceptions therefore.
             logger.debug("Parse error!", e);
@@ -820,7 +820,7 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                 stateUpdatable.update();
             } catch (IOException e) {
                 logger.debug("State update error. Changing thing to offline", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (ReceivedMessageParseException e) {
                 String message = e.getMessage();
                 updateProperty(PROPERTY_LAST_PARSE_ERROR, message != null ? message : "");

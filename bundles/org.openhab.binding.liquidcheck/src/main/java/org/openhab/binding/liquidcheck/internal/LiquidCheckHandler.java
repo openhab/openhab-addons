@@ -164,7 +164,7 @@ public class LiquidCheckHandler extends BaseThingHandler {
                     logger.debug("Json is null");
                 }
             } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

@@ -94,8 +94,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         numChannels = config.numChannels;
 
         if (hostName.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error-hostname");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error-hostname");
             return;
         }
 
@@ -259,7 +258,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
             logger.trace("Response: {}", contentResponse.getContentAsString());
 
             if (contentResponse.getStatus() != OK_200) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/offline.communication-error.http-failure [\"" + contentResponse.getStatus() + "\"]");
                 return BLANK;
             }
@@ -269,7 +268,7 @@ public class TasmotaPlugHandler extends BaseThingHandler {
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Error executing Tasmota GET request: '{}{}', {}", plugHost, maskPassword(url),
                     e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         } catch (InterruptedException e) {
             logger.debug("InterruptedException executing Tasmota GET request: '{}{}', {}", plugHost, maskPassword(url),
                     e.getMessage());

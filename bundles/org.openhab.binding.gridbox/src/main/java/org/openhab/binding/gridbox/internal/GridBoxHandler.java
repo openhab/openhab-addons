@@ -130,14 +130,12 @@ public class GridBoxHandler extends BaseThingHandler {
         config = getConfigAs(GridBoxConfiguration.class);
         String email = config.email;
         if (email == null || email.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.noemail");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.noemail");
             return;
         }
         String password = config.password;
         if (password == null || password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.nopassword");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.nopassword");
             return;
         }
 
@@ -159,13 +157,11 @@ public class GridBoxHandler extends BaseThingHandler {
             updateScheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshInterval,
                     TimeUnit.SECONDS);
         } catch (GridBoxApiAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.credentialsinvalid");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.credentialsinvalid");
         } catch (IOException | InterruptedException e) {
             updateStatusAndTryToReconnect();
         } catch (GridBoxApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.initializeinvalid");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error.initializeinvalid");
         }
     }
 
@@ -203,11 +199,10 @@ public class GridBoxHandler extends BaseThingHandler {
 
     private void updateStatusAndTryToReconnect() {
         if (reConnectAttempts > MAX_NUMBER_OF_RECONNECT_ATTEMPTS) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.connectionfinallylost");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error.connectionlost");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error.connectionlost");
             scheduler.schedule(this::initialize, getDelayUntilNextConnectionAttempt(), TimeUnit.SECONDS);
         }
     }

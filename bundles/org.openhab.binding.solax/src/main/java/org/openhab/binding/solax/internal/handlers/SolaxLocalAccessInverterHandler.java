@@ -27,7 +27,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,12 +65,12 @@ public class SolaxLocalAccessInverterHandler extends SolaxLocalAccessAbstractHan
                 updateProperties(genericInverterData);
             } else {
                 cancelSchedule();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.configuration-error.parser-not-implemented [\"" + inverterType.name() + "\"]");
             }
         } catch (JsonParseException e) {
             logger.debug("Unable to deserialize from JSON.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

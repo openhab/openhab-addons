@@ -36,7 +36,6 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -108,13 +107,13 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
     @Override
     protected Measurement getLastDataPoint(Appliance appliance) {
         if (getOndusService() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
             return new Measurement();
         }
 
         ApplianceData applianceData = getApplianceData(appliance);
         if (applianceData == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
             return new Measurement();
         }
         List<Measurement> measurementList = applianceData.getData().getMeasurement();
@@ -125,7 +124,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
     private @Nullable Integer getBatteryStatus(Appliance appliance) {
         OndusService ondusService = getOndusService();
         if (ondusService == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
             return null;
         }
 
@@ -133,7 +132,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
         try {
             applianceStatusOptional = ondusService.applianceStatus(appliance);
             if (applianceStatusOptional.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
                 return null;
             }
 
@@ -158,13 +157,12 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
             BaseApplianceData applianceData = service.applianceData(appliance, twoDaysAgo, tomorrow).orElse(null);
             if (applianceData != null) {
                 if (applianceData.getType() != Appliance.TYPE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.notsense");
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.notsense");
                     return null;
                 }
                 return (ApplianceData) applianceData;
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/error.failedtoloaddata");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.failedtoloaddata");
             }
         } catch (IOException e) {
             logger.debug("Could not load appliance data for {}", thing.getUID(), e);

@@ -109,7 +109,7 @@ public class EnergyForecastHandler extends BaseThingHandler {
     }
 
     private void configError(String reason) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, reason);
     }
 
     @Override
@@ -216,15 +216,15 @@ public class EnergyForecastHandler extends BaseThingHandler {
             } else {
                 String reason = response.getReason();
                 String statusMessage = "HTTP " + status + (!reason.isEmpty() ? " " + reason : "");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMessage);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, statusMessage);
                 return false;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // restore interrupt status
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return false;
         } catch (ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return false;
         }
     }

@@ -88,7 +88,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         try {
             data = HttpUtil.executeUrl("GET", url, KVVBindingConstants.TIMEOUT_IN_SECONDS * 1000);
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect to KVV API");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect to KVV API");
             logger.debug("Failed to get departures from '{}'", url, e);
             this.wasOffline = true;
             return null;
@@ -98,7 +98,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         try {
             result = new Gson().fromJson(data, DepartureResult.class);
         } catch (JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect to KVV API");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect to KVV API");
             logger.debug("Failed to parse departure data", e);
             logger.debug("Server returned '{}'", data);
             this.wasOffline = true;

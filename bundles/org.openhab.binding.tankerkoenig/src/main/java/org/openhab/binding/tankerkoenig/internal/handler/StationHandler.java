@@ -77,7 +77,7 @@ public class StationHandler extends BaseThingHandler {
         setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
         Bridge b = getBridge();
         if (b == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                     "Could not find bridge (tankerkoenig config). Did you select one?");
             return;
         }
@@ -86,7 +86,7 @@ public class StationHandler extends BaseThingHandler {
         setApiKey(handler.getApiKey());
         setModeOpeningTime(handler.isModeOpeningTime());
         if (b.getThings().size() > 10) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "The limitation of station things for one tankerkoenig webservice (the bridge) is limited to 10.");
             return;
         }
@@ -117,7 +117,7 @@ public class StationHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         logger.debug("Bridge Status updated to {} for device: {}", bridgeStatusInfo.getStatus(), getThing().getUID());
         if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, bridgeStatusInfo.getDescription());
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, bridgeStatusInfo.getDescription());
         }
     }
 
@@ -187,7 +187,7 @@ public class StationHandler extends BaseThingHandler {
             handler.updateStatus(ThingStatus.ONLINE);
             logger.debug("updateDetailData openingTimes: {}", openingTimes);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, result.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, result.getMessage());
         }
     }
 

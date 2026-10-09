@@ -73,20 +73,19 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         try {
             address = new BluetoothAddress(getConfig().get(BluetoothBindingConstants.CONFIGURATION_ADDRESS).toString());
         } catch (IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
             return;
         }
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Not associated with any bridge");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Not associated with any bridge");
             return;
         }
 
         BridgeHandler bridgeHandler = bridge.getHandler();
         if (!(bridgeHandler instanceof BluetoothAdapter)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Associated with an unsupported bridge");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Associated with an unsupported bridge");
             return;
         }
 
@@ -210,7 +209,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         if (receivedSignal) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 

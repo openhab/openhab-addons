@@ -108,7 +108,7 @@ public class TapoCameraHandler extends BaseThingHandler {
     public void initialize() {
         TapoCameraConfiguration config = TapoCameraConfiguration.from(thing);
         if (config.ipAddress().isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "ipAddress must be set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "ipAddress must be set");
             return;
         }
         if (!originalChannelsInitialized) {
@@ -120,7 +120,7 @@ public class TapoCameraHandler extends BaseThingHandler {
             api = createApi(config);
         } catch (IllegalStateException e) {
             LOGGER.debug("{}: cannot create camera api", thing.getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return;
         }
         int pollingInterval = config.pollingInterval();
@@ -265,15 +265,14 @@ public class TapoCameraHandler extends BaseThingHandler {
 
     private void offlineFromCause(TapoCameraApiException e) {
         switch (e.getErrorCode()) {
-            case ERROR_AUTH_FAILURE ->
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            case ERROR_AUTH_FAILURE -> updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             case 0 -> {
                 LOGGER.debug("{}: communication problem: {}", thing.getUID(), e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
             default -> {
                 LOGGER.debug("{}: request failed (error {}): {}", thing.getUID(), e.getErrorCode(), e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
     }

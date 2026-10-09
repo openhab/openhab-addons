@@ -88,32 +88,31 @@ public class DeviceHandler extends BaseThingHandler {
         dsn = (String) getConfig().get(DSN);
 
         if ("".equals(dsn)) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "@text/device-handler.initialize.errors.no-dsn [\"" + DSN + "\"]");
+            updateStatus(CONFIGURATION_ERROR, "@text/device-handler.initialize.errors.no-dsn [\"" + DSN + "\"]");
             return;
         }
 
         try {
             var device = this.cloudApi.findDevice(dsn);
             if (device.isEmpty()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                updateStatus(COMMUNICATION_ERROR,
                         "@text/device-handler.initialize.errors.dsn-not-found [\"" + dsn + "\"]");
                 return;
             }
             if (!device.get().connected()) {
-                updateStatus(OFFLINE, COMMUNICATION_ERROR,
+                updateStatus(COMMUNICATION_ERROR,
                         "@text/device-handler.initialize.errors.dsn-not-connected [\"" + dsn + "\"]");
                 return;
             }
             var channels = findDeviceProperties().stream().map(this::buildChannel).toList();
             if (channels.isEmpty()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                updateStatus(CONFIGURATION_ERROR,
                         "@text/device-handler.initialize.errors.no-channels [\"" + dsn + "\"]");
                 return;
             }
             updateChannels(channels);
         } catch (Exception e) {
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, "@text/device-handler.initialize.errors.general-error");
+            updateStatus(COMMUNICATION_ERROR, "@text/device-handler.initialize.errors.general-error");
             return;
         }
 
@@ -229,7 +228,7 @@ public class DeviceHandler extends BaseThingHandler {
             }
         } catch (AuthSalusApiException | SalusApiException e) {
             logger.debug("Error while handling command `{}` on channel `{}`", command, channelUID, e);
-            updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
+            updateStatus(COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 

@@ -63,7 +63,7 @@ public class SerialBridgeHandler extends ADBridgeHandler {
         discovery = config.discovery;
 
         if (config.serialPort.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no serial port configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "no serial port configured");
             return;
         }
 
@@ -74,8 +74,7 @@ public class SerialBridgeHandler extends ADBridgeHandler {
         portIdentifier = serialPortManager.getIdentifier(config.serialPort);
         if (portIdentifier == null) {
             logger.debug("Serial Error: Port {} does not exist.", config.serialPort);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configured serial port does not exist");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Configured serial port does not exist");
             return;
         }
 
@@ -104,10 +103,10 @@ public class SerialBridgeHandler extends ADBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (PortInUseException e) {
             logger.debug("Cannot open serial port: {}, it is already in use", config.serialPort);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Serial port already in use");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Serial port already in use");
         } catch (UnsupportedCommOperationException | IOException | IllegalStateException e) {
             logger.debug("Error connecting to serial port: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

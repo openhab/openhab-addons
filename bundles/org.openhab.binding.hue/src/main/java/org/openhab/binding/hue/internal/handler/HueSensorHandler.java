@@ -95,14 +95,13 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
                     initializeProperties(bridgeHandler.getSensorById(sensorId));
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-sensor-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-no-sensor-id");
         }
     }
 
@@ -174,8 +173,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         final FullSensor sensor = lastFullSensor;
         if (sensor == null) {
             logger.debug("Hue sensor not known on bridge. Cannot handle command.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-wrong-sensor-id");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-wrong-sensor-id");
             return;
         }
 
@@ -213,8 +211,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
             final FullSensor sensor = lastFullSensor;
             if (sensor == null) {
                 logger.debug("Hue sensor not known on bridge. Cannot handle configuration update.");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.conf-error-wrong-sensor-id");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-wrong-sensor-id");
                 return;
             }
 
@@ -332,7 +329,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
 
     @Override
     public void onSensorGone() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.conf-error-wrong-sensor-id");
+        updateStatus(ThingStatusDetail.GONE, "@text/offline.conf-error-wrong-sensor-id");
     }
 
     @Override

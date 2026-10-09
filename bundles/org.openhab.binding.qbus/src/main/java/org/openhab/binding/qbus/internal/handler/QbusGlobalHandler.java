@@ -86,10 +86,10 @@ public abstract class QbusGlobalHandler extends BaseThingHandler {
             qComm.restartCommunication();
         } catch (InterruptedException e) {
             String message = e.toString();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         } catch (IOException e) {
             String message = e.toString();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
 
         QbusBridgeHandler qBridgeHandler = getBridgeHandler(type, globalId);

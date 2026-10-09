@@ -107,7 +107,7 @@ public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
             energyUpdate.energyPoll();
             connectionManager.sendCommand(energyUpdate, this);
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -118,11 +118,11 @@ public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
             // If we reach here, the device is online.
             updateStatus(ThingStatus.ONLINE);
         } catch (MideaAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (MideaConnectionException | MideaException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -133,11 +133,11 @@ public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
             humidityUpdate();
             energyUpdate();
         } catch (MideaAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } catch (MideaConnectionException | MideaException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -147,7 +147,7 @@ public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
             humidityUpdate.humidityPoll();
             connectionManager.sendCommand(humidityUpdate, this);
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
@@ -194,9 +194,9 @@ public class MideaACHandler extends AbstractMideaHandler implements ACCallback {
                 connectionManager.sendCommand(ACCommandHelper.handleMaximumHumidity(command, lastresponse), this);
             }
         } catch (MideaConnectionException | MideaAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (MideaException | IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

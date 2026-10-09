@@ -71,7 +71,7 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
     public void initialize() {
         AutoBlindHubConfiguration config = getConfigAs(AutoBlindHubConfiguration.class);
         if (config.host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-host");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-host");
             return;
         }
         String host = config.host;
@@ -87,7 +87,7 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
                 }
                 RegistrationResponse reg = client.register();
                 if (reg.error != 0) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/comm-error-hub-error [\"" + reg.error + "\"]");
                     return;
                 }
@@ -105,9 +105,9 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
                 pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 5, pollingInterval, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (TimeoutException | ExecutionException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
     }
@@ -171,10 +171,10 @@ public class AutoBlindHubHandler extends BaseBridgeHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("Poll failed: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Poll failed: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

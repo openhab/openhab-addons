@@ -113,8 +113,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         try {
             region = Region.valueOf(regionStr);
         } catch (final IllegalArgumentException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/account-handler.initialize.unsupported-region");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/account-handler.initialize.unsupported-region");
             return;
         }
 
@@ -122,8 +121,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         final String username = config.username;
         final String password = config.password;
         if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/account-handler.initialize.missing-credentials");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/account-handler.initialize.missing-credentials");
             return;
         }
 
@@ -134,13 +132,12 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
             try {
                 brand = Brand.valueOf(configuredBrand.toUpperCase(Locale.ROOT));
             } catch (final IllegalArgumentException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/account-handler.initialize.unsupported-brand");
                 return;
             }
         } else if (region != Region.US) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/account-handler.initialize.brand-required");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/account-handler.initialize.brand-required");
             return;
         } else {
             brand = Brand.UNKNOWN;
@@ -181,13 +178,12 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                     logger.debug("Bluelink login successful");
                     setOnline(bluelinkApi);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/account-handler.login.login-failed");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/account-handler.login.login-failed");
                 }
             });
         } catch (final RetryableRequestException e) {
             updateIfCurrent(generation, () -> {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription());
                 loginTask = scheduler.schedule(this::login, LOGIN_RETRY_DELAY.toSeconds(), TimeUnit.SECONDS);
             });
         } catch (final LoginRejectedException e) {
@@ -200,8 +196,8 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                                 : e.getStatusDescription());
             });
         } catch (final BluelinkApiException e) {
-            updateIfCurrent(generation, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    e.getStatusDescription()));
+            updateIfCurrent(generation,
+                    () -> updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getStatusDescription()));
         }
     }
 

@@ -107,7 +107,7 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
                     getThing().getUID());
             // we do not set online status here, it will be set only when data is received
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 

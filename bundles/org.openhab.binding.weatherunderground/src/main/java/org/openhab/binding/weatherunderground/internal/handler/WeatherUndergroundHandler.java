@@ -256,10 +256,10 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
                     startAutomaticRefresh();
                 } else {
                     logger.debug("Setting thing '{}' to OFFLINE: {}", getThing().getUID(), errors);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, statusDescr);
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, statusDescr);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
@@ -616,7 +616,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
             weatherData = result;
         } else {
             logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", getThing().getUID(), error, errorDetail);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, statusDescr);
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, statusDescr);
             weatherData = null;
         }
 

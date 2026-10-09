@@ -172,7 +172,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
     public void initialize() {
         deviceId = Objects.requireNonNullElse((String) getConfig().get(DEVICE_PROPERTY_ID), "");
         if (deviceId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "id not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "id not set");
             return;
         }
 
@@ -181,7 +181,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
             accountHandler.addSmartHomeDeviceHandler(this);
             setDeviceAndUpdateThingState(accountHandler, smartHomeBaseDevice);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridgehandler not found");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Bridgehandler not found");
         }
     }
 
@@ -279,7 +279,7 @@ public class SmartHomeDeviceHandler extends BaseThingHandler {
                     } catch (RuntimeException e) {
                         // We catch all exceptions, otherwise all other things are not updated!
                         logger.debug("Updating states failed", e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 "RuntimeException while processing updates");
                     }
                 }

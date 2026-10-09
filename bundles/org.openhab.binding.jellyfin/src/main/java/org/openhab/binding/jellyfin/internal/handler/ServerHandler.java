@@ -809,7 +809,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                         this.apiClient.authenticateWithToken(this.configuration.token);
                     case DISCOVERED, NEEDS_AUTHENTICATION ->
                         // No token, set offline with configuration error
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                                 "@text/error.configuration.no-access-token");
                     default -> {
                         // No specific authentication action for other states

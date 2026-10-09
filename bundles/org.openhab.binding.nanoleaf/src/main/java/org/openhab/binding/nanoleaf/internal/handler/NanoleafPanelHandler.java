@@ -122,12 +122,10 @@ public class NanoleafPanelHandler extends BaseThingHandler implements NanoleafPa
         } catch (NanoleafUnauthorizedException nae) {
             logger.warn("Authorization for command {} for channelUID {} failed: {}", command, channelUID,
                     nae.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.invalidToken");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.invalidToken");
         } catch (NanoleafException ne) {
             logger.warn("Handling command {} for channelUID {} failed: {}", command, channelUID, ne.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.communication");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.nanoleaf.controller.communication");
         }
     }
 

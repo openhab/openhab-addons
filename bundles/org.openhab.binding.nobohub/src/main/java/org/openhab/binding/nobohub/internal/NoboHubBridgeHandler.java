@@ -93,7 +93,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
                     ht.getConnection().refreshAll();
                 }
             } catch (NoboCommunicationException noboEx) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/message.bridge.status.failed [\"" + noboEx.getMessage() + "\"]");
             }
 
@@ -133,14 +133,13 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
 
         String serialNumber = config.serialNumber;
         if (null == serialNumber) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/message.missing.serial");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/message.missing.serial");
             return;
         }
 
         String hostName = config.hostName;
         if (null == hostName || hostName.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/message.bridge.missing.hostname");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/message.bridge.missing.hostname");
             return;
         }
 
@@ -174,12 +173,11 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     logger.debug("HubCommunicationThread is not connected anymore, setting to OFFLINE");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/message.bridge.connection.failed");
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/message.bridge.connection.failed");
                 }
             } catch (NoboCommunicationException commEx) {
                 logger.debug("HubCommunicationThread failed, exiting thread");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, commEx.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, commEx.getMessage());
             }
         });
     }
@@ -401,7 +399,7 @@ public class NoboHubBridgeHandler extends BaseBridgeHandler {
                 ht.getConnection().refreshAll();
             }
         } catch (NoboCommunicationException noboEx) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/message.bridge.status.failed [\"" + noboEx.getMessage() + "\"]");
         }
     }

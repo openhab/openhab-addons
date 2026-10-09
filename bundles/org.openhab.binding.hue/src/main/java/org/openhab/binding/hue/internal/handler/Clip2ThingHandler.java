@@ -818,8 +818,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
         String resourceId = config.resourceId;
         if (resourceId.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.api2.conf-error.resource-id-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.resource-id-missing");
             return;
         }
         thisResource.setId(resourceId);
@@ -989,8 +988,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     .ifPresentOrElse(r -> onResource(r), () -> {
                         if (resourceType == thisResource.getType()) {
                             logger.debug("{} -> onResourcesList() configuration error: unknown resourceId", resourceId);
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
-                                    "@text/offline.api2.gone.resource-id-unknown");
+                            updateStatus(ThingStatusDetail.GONE, "@text/offline.api2.gone.resource-id-unknown");
                         }
                     });
         }
@@ -1357,7 +1355,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (statusInfo.getStatus() != ThingStatus.OFFLINE
                         || statusInfo.getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR
                         || !description.equals(statusInfo.getDescription())) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, description);
                     supportedChannelIdSet.forEach(channelId -> updateState(channelId, UnDefType.UNDEF));
                 }
                 return;
@@ -1365,7 +1363,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             String fwState = thing.getProperties().get(PROPERTY_FIRMWARE_UPDATE_STATE);
             if (UpdateStatusV2.INSTALLING.toString().equals(fwState)) {
                 // firmware update still in progress; remain OFFLINE(FIRMWARE_UPDATING)
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
+                updateStatus(ThingStatusDetail.FIRMWARE_UPDATING);
                 return;
             }
             if (thing.getStatus() != ThingStatus.ONLINE) {
@@ -1403,11 +1401,10 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateDependenciesDone = true;
             } catch (ApiException e) {
                 logger.debug("{} -> updateDependencies() {}", resourceId, e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (AssetNotLoadedException e) {
                 logger.debug("{} -> updateDependencies() {}", resourceId, e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.api2.conf-error.assets-not-loaded");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.api2.conf-error.assets-not-loaded");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -1818,7 +1815,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 return;
             }
             if (status == UpdateStatusV2.INSTALLING) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING);
+                updateStatus(ThingStatusDetail.FIRMWARE_UPDATING);
             } else {
                 // the updateStatus() override below takes care of setting the status detail and description
                 updateStatus(ThingStatus.ONLINE);
@@ -1841,7 +1838,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
             if (status != null) {
                 switch (status) {
                     case INSTALLING:
-                        super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
+                        super.updateStatus(ThingStatusDetail.FIRMWARE_UPDATING, status.i18nKey());
                         return;
                     case READY_TO_INSTALL:
                         super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.i18nKey());

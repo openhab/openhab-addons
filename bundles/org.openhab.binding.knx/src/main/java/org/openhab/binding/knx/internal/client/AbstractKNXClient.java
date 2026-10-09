@@ -425,7 +425,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
         if (!link.isOpen() && CloseEvent.USER_REQUEST != closeEvent.getInitiator()) {
             final String reason = closeEvent.getReason();
-            statusUpdateCallback.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            statusUpdateCallback.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     KNXTranslationProvider.I18N.get(reason));
             logger.debug("KNX link has been lost (reason: {} on object {})", closeEvent.getReason(),
                     closeEvent.getSource().toString());

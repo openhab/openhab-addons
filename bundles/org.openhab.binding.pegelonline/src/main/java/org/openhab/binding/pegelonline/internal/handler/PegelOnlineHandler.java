@@ -89,12 +89,12 @@ public class PegelOnlineHandler extends BaseThingHandler {
         stationUUID = config.uuid;
         if (!config.uuidCheck()) {
             String description = "@text/pegelonline.handler.status.uuid [\"" + stationUUID + "\"]";
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, description);
             return;
         }
         if (!config.warningCheck()) {
             String description = "@text/pegelonline.handler.status.warning";
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, description);
             return;
         }
         warnMap = config.getWarnings();
@@ -131,19 +131,19 @@ public class PegelOnlineHandler extends BaseThingHandler {
                     updateChannels(measureDto);
                 } else {
                     String description = "@text/pegelonline.handler.status.json-error [\"" + content + "\"]";
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, description);
                 }
             } else if (responseStatus == 404) {
                 // 404 respoonse shows station isn't found
                 String description = "@text/pegelonline.handler.status.uuid-not-found [\"" + stationUUID + "\"]";
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, description);
             } else {
                 String description = "@text/pegelonline.handler.status.http-status [\"" + responseStatus + "\"]";
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, description);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             String description = "@text/pegelonline.handler.status.http-exception [\"" + e.getMessage() + "\"]";
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, description);
         }
     }
 

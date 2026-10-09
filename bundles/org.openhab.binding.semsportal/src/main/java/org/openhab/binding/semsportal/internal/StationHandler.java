@@ -69,7 +69,7 @@ public class StationHandler extends BaseThingHandler {
 
     private void updateChannelState(ChannelUID channelUID) {
         if (!isPortalOK()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                     "Unable to update station info. Check Bridge status for details.");
             return;
         }
@@ -129,7 +129,7 @@ public class StationHandler extends BaseThingHandler {
 
     private void updateStation() {
         if (!isPortalOK()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE,
                     "Unable to update station info. Check Bridge status for details.");
             return;
         }
@@ -145,9 +145,9 @@ public class StationHandler extends BaseThingHandler {
                 }
                 updateAllChannels();
             } catch (CommunicationException commEx) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, commEx.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, commEx.getMessage());
             } catch (ConfigurationException confEx) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, confEx.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, confEx.getMessage());
             }
         } else {
             logger.debug("Unable to find portal for thing {}", getThing().getUID());

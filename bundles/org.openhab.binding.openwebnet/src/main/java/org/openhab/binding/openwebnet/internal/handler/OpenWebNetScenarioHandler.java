@@ -369,7 +369,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
                     send(CENPlusScenario.requestStatus(w.value()));
                 } catch (OWNException e) {
                     logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
         } else {

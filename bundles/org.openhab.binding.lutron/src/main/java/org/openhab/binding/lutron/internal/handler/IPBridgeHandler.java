@@ -146,14 +146,14 @@ public class IPBridgeHandler extends LutronBridgeHandler {
 
     private boolean validConfiguration(IPBridgeConfig config) {
         if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge configuration missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "bridge configuration missing");
 
             return false;
         }
 
         String ipAddress = config.ipAddress;
         if (ipAddress == null || ipAddress.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
 
             return false;
         }
@@ -175,18 +175,18 @@ public class IPBridgeHandler extends LutronBridgeHandler {
 
         try {
             if (!login(config)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "invalid username/password");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "invalid username/password");
 
                 return;
             }
         } catch (LutronSafemodeException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "main repeater is in safe mode");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "main repeater is in safe mode");
             disconnect();
             scheduleConnectRetry(reconnectInterval); // Possibly a temporary problem. Try again later.
 
             return;
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             disconnect();
             scheduleConnectRetry(reconnectInterval); // Possibly a temporary problem. Try again later.
 
@@ -235,7 +235,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
                     session.writeLine(command.toString());
                 } catch (IOException e) {
                     logger.warn("Communication error, will try to reconnect. Error: {}", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR);
 
                     sendQueue.add(command); // Requeue command
 
@@ -284,7 +284,7 @@ public class IPBridgeHandler extends LutronBridgeHandler {
     private synchronized void reconnect() {
         logger.debug("Keepalive timeout, attempting to reconnect to the bridge");
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE);
+        updateStatus(ThingStatusDetail.DUTY_CYCLE);
         disconnect();
         connect();
     }

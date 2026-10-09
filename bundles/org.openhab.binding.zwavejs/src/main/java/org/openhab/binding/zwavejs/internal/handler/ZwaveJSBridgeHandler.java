@@ -94,8 +94,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
         ZwaveJSBridgeConfiguration config = getConfigAs(ZwaveJSBridgeConfiguration.class);
 
         if (!config.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.hostname-or-port");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.hostname-or-port");
             return;
         }
 
@@ -116,7 +115,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             // the thing is set to online when the response/events are received
             stopInitialConnectionJob();
         } catch (CommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -392,7 +391,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
 
     @Override
     public void onConnectionError(String message) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, message);
     }
 
     public void startInclusion() {

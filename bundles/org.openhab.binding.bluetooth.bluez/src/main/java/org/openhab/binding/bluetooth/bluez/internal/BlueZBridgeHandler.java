@@ -106,7 +106,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             this.adapterAddress = new BluetoothAddress(addr.toUpperCase());
         } else {
             // If configuration does not contain adapter address to use, exit with error.
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "address not set");
             return;
         }
         this.lazyScan = configuration.lazyScan;
@@ -155,12 +155,12 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             if (localAddress != null) {
                 localAdapter = adapter = deviceManager.getAdapter(localAddress);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No adapter address provided");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No adapter address provided");
                 return null;
             }
         }
         if (localAdapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                     "Native adapter could not be found for address '" + adapterAddress + "'");
             return null;
         }
@@ -197,8 +197,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             // first check if the device manager is ready
             DeviceManagerWrapper deviceManager = deviceManagerFactory.getDeviceManager();
             if (deviceManager == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Bluez DeviceManager not available yet.");
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Bluez DeviceManager not available yet.");
                 return;
             }
 
@@ -233,7 +232,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
             // don't know what kind of exception the bluez library might throw at us so lets catch them here so our
             // scheduler loop doesn't get terminated
             logger.warn("Unknown exception", ex);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
     }
 
@@ -332,7 +331,7 @@ public class BlueZBridgeHandler extends AbstractBluetoothBridgeHandler<BlueZBlue
         // per-device InterfacesRemoved before removing the adapter, so the devices would otherwise
         // stay stuck believing they are still connected.
         forEachDevice(BlueZBluetoothDevice::resetForRemoval);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Adapter removed");
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Adapter removed");
     }
 
     @Override

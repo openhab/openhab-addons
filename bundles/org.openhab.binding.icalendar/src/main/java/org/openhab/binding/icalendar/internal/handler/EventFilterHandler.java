@@ -78,7 +78,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             updateStates();
         } else {
@@ -105,8 +105,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
     public void initialize() {
         Bridge iCalendarBridge = getBridge();
         if (iCalendarBridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "This thing requires a bridge configured to work.");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "This thing requires a bridge configured to work.");
             return;
         }
 
@@ -121,7 +120,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
 
         updateChannelSet(config);
         if (iCalendarBridge.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -358,7 +357,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
 
                 eventTimeFilter = selectEventTimeFilterByConfigValue(config.datetimeMode);
             } catch (ConfigBrokenException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return;
             }
 
@@ -381,8 +380,7 @@ public class EventFilterHandler extends BaseThingHandler implements CalendarUpda
                 }
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Calendar has not been retrieved yet.");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Calendar has not been retrieved yet.");
         }
 
         int refreshTime = DEFAULT_FILTER_REFRESH;

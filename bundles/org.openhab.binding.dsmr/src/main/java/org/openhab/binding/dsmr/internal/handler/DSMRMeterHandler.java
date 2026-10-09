@@ -109,7 +109,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
             logger.warn(
                     "{} could not be initialized due to an invalid meterType {}. Delete this Thing if the problem persists.",
                     getThing(), getThing().getThingTypeUID().getId().toUpperCase());
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/addon.dsmr.error.configuration.invalidmetertype");
             return;
         }

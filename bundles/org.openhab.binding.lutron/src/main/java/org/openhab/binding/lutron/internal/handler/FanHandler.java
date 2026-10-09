@@ -63,7 +63,7 @@ public class FanHandler extends LutronHandler {
     public void initialize() {
         config = getConfigAs(FanConfig.class);
         if (config.integrationId <= 0) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
             return;
         }
         logger.debug("Initializing Fan handler for integration ID {}", getIntegrationId());
@@ -76,13 +76,13 @@ public class FanHandler extends LutronHandler {
         logger.debug("Initializing device state for Fan {}", getIntegrationId());
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
             queryOutput(TargetType.FAN, OutputCommand.ACTION_ZONELEVEL);
             // handleUpdate() will set thing status to online when response arrives
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

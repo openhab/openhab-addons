@@ -119,11 +119,11 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
     public void modbusInitialize() {
         AnkerSolixConfiguration localConfig = getConfigAs(AnkerSolixConfiguration.class);
         if (localConfig.pollInterval < 500) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_INVALID_POLL_INTERVAL);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, STATUS_INVALID_POLL_INTERVAL);
             return;
         }
         if (localConfig.maxTries < 1) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_INVALID_MAX_TRIES);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, STATUS_INVALID_MAX_TRIES);
             return;
         }
 
@@ -215,7 +215,7 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
         Exception cause = failure.getCause();
         logger.debug("Failed to read Anker SOLIX registers: {}", cause.getMessage());
         if (!range.optional()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_READ_FAILED);
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, STATUS_READ_FAILED);
             return;
         }
         // only back off on an explicit "illegal data address" protocol response: the device answered and rejected
@@ -267,7 +267,7 @@ public abstract class AbstractAnkerSolixHandler extends BaseModbusThingHandler {
     private void handleWriteFailure(AsyncModbusFailure<?> failure, String operation) {
         String message = String.valueOf(failure.getCause().getMessage());
         logger.warn("{} failed: {}", operation, message);
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_WRITE_FAILED);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, STATUS_WRITE_FAILED);
     }
 
     protected void updateThingProperty(String propertyName, @Nullable String value) {

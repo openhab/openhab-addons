@@ -59,9 +59,9 @@ public interface HandlerUtils {
                     return clazz.cast(bridgeHandler);
                 }
             }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "");
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
         return null;
     }

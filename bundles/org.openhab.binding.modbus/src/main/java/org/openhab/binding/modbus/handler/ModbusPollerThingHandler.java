@@ -89,7 +89,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             if (result.failure != null) {
                 Exception error = result.failure.getCause();
                 assert error != null;
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                         String.format("Error with read: %s: %s", error.getClass().getName(), error.getMessage()));
             } else {
                 resetCommunicationError();
@@ -249,7 +249,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             config = getConfigAs(ModbusPollerConfiguration.class);
             String type = config.getType();
             if (!ModbusBindingConstantsInternal.READ_FUNCTION_CODES.containsKey(type)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                         String.format("No function code found for type='%s'. Was expecting one of: %s", type,
                                 String.join(", ", SORTED_READ_FUNCTION_CODES)));
                 return;
@@ -259,7 +259,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                 case READ_INPUT_REGISTERS:
                 case READ_MULTIPLE_REGISTERS:
                     if (config.getLength() > ModbusConstants.MAX_REGISTERS_READ_COUNT) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                                 "Maximum of %d registers can be polled at once due to protocol limitations. Length %d is out of bounds.",
                                 ModbusConstants.MAX_REGISTERS_READ_COUNT, config.getLength()));
                         return;
@@ -268,7 +268,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                 case READ_COILS:
                 case READ_INPUT_DISCRETES:
                     if (config.getLength() > ModbusConstants.MAX_BITS_READ_COUNT) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                        updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                                 "Maximum of %d coils/discrete inputs can be polled at once due to protocol limitations. Length %d is out of bounds.",
                                 ModbusConstants.MAX_BITS_READ_COUNT, config.getLength()));
                         return;
@@ -279,7 +279,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             registerPollTask();
         } catch (EndpointNotInitializedException e) {
             logger.debug("Exception during initialization", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, String
                     .format("Exception during initialization: %s (%s)", e.getMessage(), e.getClass().getSimpleName()));
         } finally {
             logger.trace("initialize() of thing {} '{}' finished", thing.getUID(), thing.getLabel());
@@ -328,22 +328,22 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     private synchronized void registerPollTask() throws EndpointNotInitializedException {
         logger.trace("registerPollTask()");
         if (pollTask != null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR);
             logger.debug("pollTask should be unregistered before registering a new one!");
             return;
         }
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, String.format("Bridge '%s' is offline",
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, String.format("Bridge '%s' is offline",
                     Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>")));
             logger.debug("No bridge handler available -- aborting init for {}", this);
             return;
         }
         ModbusCommunicationInterface localComms = slaveEndpointThingHandler.getCommunicationInterface();
         if (localComms == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, String.format(
-                    "Bridge '%s' not completely initialized", Optional.ofNullable(getBridge()).map(b -> b.getLabel())));
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE, String.format("Bridge '%s' not completely initialized",
+                    Optional.ofNullable(getBridge()).map(b -> b.getLabel())));
             logger.debug("Bridge not initialized fully (no communication interface) -- aborting init for {}", this);
             return;
         }

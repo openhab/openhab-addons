@@ -156,15 +156,14 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         String ipAddress = config.ipAddress.trim();
         if (ipAddress.isEmpty()) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            this.updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-empty-ip");
             return;
         }
 
         String password = config.password.trim();
         if (password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-empty-password");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error-empty-password");
             return;
         }
 
@@ -174,7 +173,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             factory = new BoschSslUtil(ipAddress).getSslContextFactory();
         } catch (PairingFailedException e) {
             logger.debug("Error while obtaining SSL context factory.", e);
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+            this.updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-ssl");
             return;
         }
@@ -186,7 +185,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         try {
             localHttpClient.start();
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     String.format("Could not create http connection to controller: %s", e.getMessage()));
             return;
         }
@@ -274,7 +273,7 @@ public class BridgeHandler extends BaseBridgeHandler {
                 this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
                         "@text/offline.conf-error-pairing");
                 if (!httpClient.doPairing()) {
-                    this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    this.updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                             "@text/offline.conf-error-pairing");
                 }
                 // restart initial access - needed also in case of successful pairing to check access again
@@ -284,7 +283,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
             // SHC is online and access should possible
             if (!checkBridgeAccess()) {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                this.updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "@text/offline.not-reachable");
                 // restart initial access
                 scheduleInitialAccess(httpClient);
@@ -754,7 +753,7 @@ public class BridgeHandler extends BaseBridgeHandler {
         @Nullable
         BoschHttpClient localHttpClient = this.httpClient;
         if (localHttpClient == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+            updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "@text/offline.long-polling-failed.http-client-null");
             return;
         }

@@ -130,7 +130,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.UNKNOWN);
             updateBridgeStatus();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "A harmony device thing must be configured with a device name OR a postive device id");
         }
     }
@@ -160,12 +160,11 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
         if (bridgeOnline && hubHandler != null && !thingOnline) {
             updateStatus(ThingStatus.ONLINE);
             hubHandler.getConfigFuture().thenAcceptAsync(this::updateButtonPressChannel, scheduler).exceptionally(e -> {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Getting config failed: " + e.getMessage());
+                updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Getting config failed: " + e.getMessage());
                 return null;
             });
         } else if (!bridgeOnline || hubHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

@@ -89,10 +89,10 @@ public class BoschAccountHandler extends BaseBridgeHandler implements Authorizat
                 authorizationController.getAccessToken();
                 updateStatus(ThingStatus.ONLINE);
             } catch (OAuthException | OAuthResponseException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.conf-error.oauth2-unauthorized");
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                updateStatus(ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                         "@text/offline.comm-error.oauth2-authorization-failed");
             }
         });
@@ -139,10 +139,9 @@ public class BoschAccountHandler extends BaseBridgeHandler implements Authorizat
     public void onFailedAuthorization(Throwable throwable) {
         logger.debug("Authorization failure", throwable);
         if (throwable instanceof IndegoAuthenticationException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.authentication-failure");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.comm-error.authentication-failure");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, throwable.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, throwable.getMessage());
         }
     }
 

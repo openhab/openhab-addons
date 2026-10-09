@@ -146,7 +146,7 @@ public class OndiloHandler extends BaseThingHandler {
             this.lastRecommendation = null;
 
             if (configPoolId == 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, I18N_ID_INVALID);
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, I18N_ID_INVALID);
                 return;
             } else {
                 ondiloId.set(String.valueOf(configPoolId));

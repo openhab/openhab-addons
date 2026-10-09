@@ -89,7 +89,7 @@ public class NikoHomeControlAlarmHandler extends NikoHomeControlBaseHandler impl
 
         NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.invalid-bridge-handler");
             return;
         }
@@ -113,15 +113,13 @@ public class NikoHomeControlAlarmHandler extends NikoHomeControlBaseHandler impl
         }
 
         if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/offline.communication-error");
             return;
         }
 
         NhcAlarm nhcAlarm = nhcComm.getAlarmDevices().get(deviceId);
         if (nhcAlarm == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.deviceId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.configuration-error.deviceId");
             return;
         }
 

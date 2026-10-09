@@ -110,7 +110,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
         if (lcBridge.getStatus() == ThingStatus.OFFLINE) {
             if (!ThingStatusDetail.COMMUNICATION_ERROR.equals(lcBridge.getStatusInfo().getStatusDetail())) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
                 return;
             }
         }
@@ -153,11 +153,11 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
                 if (lcHvacConnector.getErrorSource() == ErrorSource.ErrorBridge) {
                     if (bridgeHandler != null) {
-                        bridgeHandler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        bridgeHandler.updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                                 String.format("Communication ErrorRate to gateway is too high: %f", errorRate));
                     }
                 } else if (lcHvacConnector.getErrorSource() == ErrorSource.ErrorThings) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatusDetail.COMMUNICATION_ERROR,
                             String.format("Communication ErrorRate to thing is too high: %f", errorRate));
                 }
             } else {

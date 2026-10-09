@@ -72,7 +72,7 @@ public class CcoHandler extends LutronHandler {
         Number id = (Number) getThing().getConfiguration().get(INTEGRATION_ID);
 
         if (id == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId");
             return;
         }
         integrationId = id.intValue();
@@ -118,13 +118,13 @@ public class CcoHandler extends LutronHandler {
         logger.debug("Initializing device state for CCO {}", integrationId);
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
             queryOutput(TargetType.CCO, OutputCommand.ACTION_STATE);
             // handleUpdate() will set thing status to online when response arrives
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 

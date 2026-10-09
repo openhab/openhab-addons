@@ -85,7 +85,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
                         }
                     });
                 } catch (DateTimeException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    updateStatus(ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.site.status.timezone" + " [\"" + configuration.timeZone + "\"]");
                     return;
                 }
@@ -94,8 +94,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             refreshJob = sequentialScheduler.scheduleWithFixedDelay(this::updateData, 0, REFRESH_ACTUAL_INTERVAL,
                     TimeUnit.MINUTES);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/solarforecast.site.status.api-key-missing");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/solarforecast.site.status.api-key-missing");
         }
     }
 

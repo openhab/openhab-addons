@@ -178,7 +178,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 scheduleRestartClient(false);
             } catch (IOException | OAuthException | OAuthResponseException e) {
                 logger.debug("Error fetching access tokens. Please check your credentials. Detail: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.connect");
+                updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.connect");
             }
         }, 0, TimeUnit.SECONDS);
     }
@@ -891,23 +891,23 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
             refreshAccessToken();
         } else if (e instanceof ControllerOfflineException) {
             logger.debug("LIVISI SmartHome Controller is offline.");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof AuthenticationException) {
             logger.debug("OAuthenticaton error, refreshing tokens: {}", e.getMessage());
             refreshAccessToken();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         } else if (e instanceof ApiException) {
             logger.warn("Unexpected API error: {}", e.getMessage());
             logger.debug("Unexpected API error", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof TimeoutException) {
             logger.debug("WebSocket timeout: {}", e.getMessage());
         } else if (e instanceof SocketTimeoutException) {
             logger.debug("Socket timeout: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof IOException) {
             logger.debug("IOException occurred", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof InterruptedException) {
             isReinitialize = false;
             Thread.currentThread().interrupt();

@@ -135,8 +135,7 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "No host defined");
             return;
         } else if (config.port < 0 || config.port > 0xFFFF) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Port should be between 0 and 65536");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "Port should be between 0 and 65536");
             return;
         }
         scheduledFuture = scheduler.scheduleWithFixedDelay(this::checkOrstartWebsocket, 0, POLL_FREQUENCY_SEC,
@@ -201,7 +200,7 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
     @Override
     public void connectionLost(String reason) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, reason);
     }
 
     @Override

@@ -125,8 +125,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
     private void pollDryChannelsDevice() {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.device.adapter-not-initialized");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.device.adapter-not-initialized");
             return;
         }
 
@@ -137,7 +136,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
             updateChannelStatesFromStatuses(contactStates);
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.read-state");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.read-state");
             logger.warn("Error polling contact device {}: {}", getThing().getUID(), e.getMessage());
         }
     }
@@ -220,8 +219,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
     private void pollNineInOneDevice() {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.device.adapter-not-initialized");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.device.adapter-not-initialized");
             return;
         }
 
@@ -234,8 +232,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.device.communication");
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.communication");
             logger.warn("Error polling 9-in-1 contact sensor {}: {}", getThing().getUID(), e.getMessage());
         }
     }

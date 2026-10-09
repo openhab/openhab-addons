@@ -56,8 +56,7 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
         // Get configuration using the config class
         SbusBridgeConfig config = getConfigAs(SbusBridgeConfig.class);
         if (config.host.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.bridge.host-not-configured");
+            updateStatus(ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.bridge.host-not-configured");
             return;
         }
         try {
@@ -67,7 +66,7 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
             logger.debug("SBUS bridge initialized with timeout: {}ms", config.timeout);
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 

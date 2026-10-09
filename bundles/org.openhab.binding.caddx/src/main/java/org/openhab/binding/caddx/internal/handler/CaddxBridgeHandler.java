@@ -132,8 +132,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             communicator = new CaddxCommunicator(getThing().getUID().getAsString(), portManager, protocol,
                     serialPortName, baudRate);
         } catch (IOException | TooManyListenersException | UnsupportedCommOperationException | PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication cannot be initialized. " + e.toString());
+            updateStatus(ThingStatusDetail.COMMUNICATION_ERROR, "Communication cannot be initialized. " + e.toString());
 
             return;
         }
