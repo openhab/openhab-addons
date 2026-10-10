@@ -61,6 +61,7 @@ public class RefreshCapability extends Capability {
     @Override
     public void dispose() {
         stopJob();
+        expiring = false;
         super.dispose();
     }
 
@@ -82,15 +83,20 @@ public class RefreshCapability extends Capability {
         return dataValidity;
     }
 
+    protected boolean isRetrying() {
+        return false;
+    }
+
     private void proceedWithUpdate() {
         Duration delay;
         handler.proceedWithUpdate();
+        expiring = false;
         if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler
                 && !ThingStatus.ONLINE.equals(accountHandler.getThing().getStatus())) {
             delay = accountHandler.getIdleTime();
             delay = delay != null ? delay.plus(ASAP) : OFFLINE_DELAY;
             logger.debug("Bridge is not ONLINE, will wait for him to come-back in {}", delay);
-        } else if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus())) {
+        } else if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus()) && !isRetrying()) {
             delay = OFFLINE_DELAY;
             logger.debug("Thing '{}' is not ONLINE, special refresh interval {} used", thingUID, delay);
         } else {
