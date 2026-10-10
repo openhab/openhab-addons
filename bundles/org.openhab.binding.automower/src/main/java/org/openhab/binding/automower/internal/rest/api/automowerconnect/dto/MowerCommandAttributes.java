@@ -18,6 +18,7 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 public class MowerCommandAttributes {
     private Long duration;
     private Long workAreaId;
+    private Long externalReason;
 
     public Long getDuration() {
         return duration;
@@ -25,6 +26,14 @@ public class MowerCommandAttributes {
 
     public void setDuration(Long duration) {
         this.duration = duration;
+    }
+
+    public Long getExternalReason() {
+        return externalReason;
+    }
+
+    public void setExternalReason(Long externalReason) {
+        this.externalReason = externalReason;
     }
 
     public Long getWorkAreaId() {

@@ -49,10 +49,17 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class AutomowerConnectApi extends HusqvarnaApi {
 
+    private static final int DEFAULT_REQUEST_TIMEOUT_S = 30;
     private final Logger logger = LoggerFactory.getLogger(AutomowerConnectApi.class);
+    private final int requestTimeoutS;
 
     public AutomowerConnectApi(HttpClient httpClient) {
+        this(httpClient, null);
+    }
+
+    public AutomowerConnectApi(HttpClient httpClient, @Nullable Integer requestTimeoutS) {
         super(httpClient);
+        this.requestTimeoutS = requestTimeoutS == null ? DEFAULT_REQUEST_TIMEOUT_S : requestTimeoutS;
     }
 
     @Override
@@ -190,7 +197,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
 
     private ContentResponse executeRequest(String appKey, String token, final Request request)
             throws AutomowerCommunicationException {
-        request.timeout(10, TimeUnit.SECONDS);
+        request.timeout(requestTimeoutS, TimeUnit.SECONDS);
 
         request.header("Authorization-Provider", "husqvarna");
         request.header("Authorization", "Bearer " + token);

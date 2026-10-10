@@ -80,7 +80,7 @@ public class AutomowerWebSocketAdapter {
             String subscribeAllMessage = "{\"type\":\"subscribe\",\"topics\":[\"*\"]}";
             session.getRemote().sendString(subscribeAllMessage);
             logger.debug("Sent subscription message to subscribe to all topics");
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.error("Failed to send subscription message: {}", e.getMessage());
         }
 
@@ -124,7 +124,7 @@ public class AutomowerWebSocketAdapter {
             } else {
                 logger.trace("Received empty message from WebSocket");
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.error("Failed to process WebSocket message: {}", e.getMessage());
         }
     }
@@ -141,12 +141,8 @@ public class AutomowerWebSocketAdapter {
         }
 
         if (!handler.isClosing()) {
-            try {
-                logger.debug("Reconnecting to Husqvarna Webservice ()");
-                handler.connectWebSocket(this);
-            } catch (Exception e) {
-                logger.error("Failed to restart WebSocket client: {}", e.getMessage());
-            }
+            logger.debug("Reconnecting to Husqvarna Webservice");
+            handler.connectWebSocket(this);
         }
     }
 
