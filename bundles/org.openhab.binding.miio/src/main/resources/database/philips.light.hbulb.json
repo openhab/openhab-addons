@@ -1,8 +1,7 @@
 {
 	"deviceMapping": {
 		"id": [
-			"philips.light.candle",
-			"philips.light.candle2"
+			"philips.light.hbulb"
 		],
 		"channels": [
 			{
@@ -20,7 +19,7 @@
 				"category": "switch"
 			},
 			{
-				"property": "bright",
+				"property": "bri",
 				"friendlyName": "Brightness",
 				"channel": "brightness",
 				"type": "Dimmer",
@@ -46,43 +45,6 @@
 				"tags": [
 					"Control",
 					"Brightness"
-				]
-			},
-			{
-				"property": "cct",
-				"friendlyName": "Correlated Color Temperature",
-				"channel": "cct",
-				"type": "Dimmer",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "set_cct",
-						"parameterType": "NUMBER"
-					}
-				],
-				"category": "colorlight",
-				"tags": [
-					"Control",
-					"ColorTemperature"
-				]
-			},
-			{
-				"property": "snm",
-				"friendlyName": "Scene",
-				"channel": "scene",
-				"type": "Number",
-				"refresh": true,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "apply_scene",
-						"parameterType": "NUMBER"
-					}
-				],
-				"tags": [
-					"Control",
-					"Mode"
 				]
 			},
 			{
@@ -130,21 +92,6 @@
 					"Duration"
 				],
 				"readmeComment": "Turns the light off after the set time, 0 cancels the timer"
-			},
-			{
-				"property": "",
-				"friendlyName": "Toggle",
-				"channel": "toggle",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "toggle",
-						"parameterType": "EMPTY"
-					}
-				],
-				"category": "switch"
 			}
 		]
 	}

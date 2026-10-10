@@ -3,10 +3,7 @@
 		"id": [
 			"philips.light.bulb",
 			"philips.light.downlight",
-			"philips.light.virtual",
-			"philips.light.zysread",
-			"philips.light.zystrip",
-			"philips.light.hbulb"
+			"philips.light.virtual"
 		],
 		"channels": [
 			{
@@ -21,10 +18,7 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "bright",
@@ -52,7 +46,7 @@
 				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Brightness"
 				]
 			},
 			{
@@ -67,6 +61,11 @@
 						"command": "set_cct",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"ColorTemperature"
 				]
 			},
 			{
@@ -81,19 +80,29 @@
 						"command": "apply_scene",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
 				]
 			},
 			{
 				"property": "dv",
-				"friendlyName": "DV",
+				"friendlyName": "Delay Off Countdown",
 				"channel": "dv",
-				"type": "Number",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"parameterType": "EMPTY"
-					}
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
 				]
 			},
 			{
@@ -108,13 +117,21 @@
 						"command": "switch_the_scene",
 						"parameterType": "EMPTY"
 					}
-				]
+				],
+				"category": "switch"
 			},
 			{
 				"property": "",
 				"friendlyName": "Delay Off",
 				"channel": "delayoff",
-				"type": "Switch",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 21600,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": false,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -122,7 +139,13 @@
 						"command": "delay_off",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Turns the light off after the set time, 0 cancels the timer"
 			}
 		]
 	}

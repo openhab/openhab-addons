@@ -16,10 +16,7 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "bright",
@@ -47,7 +44,7 @@
 				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Brightness"
 				]
 			},
 			{
@@ -62,33 +59,124 @@
 						"command": "apply_scene",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
 				]
 			},
 			{
 				"property": "flm",
 				"friendlyName": "Follow Me",
 				"channel": "flm",
-				"type": "Number",
+				"type": "Switch",
 				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "enable_flm",
+						"parameterType": "ONOFFNUMBER"
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Turns the lamp on automatically based on ambient light and desk vibration"
+			},
+			{
+				"property": "flmv",
+				"friendlyName": "Follow Me Sensitivity",
+				"channel": "flmv",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "High"
+						}
+					]
+				},
+				"refresh": true,
+				"ChannelGroup": "actions",
 				"actions": [
 					{
 						"command": "set_flmvalue",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"tags": [
+					"Control"
+				],
+				"readmeComment": "Value mapping `[\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
 			},
 			{
-				"property": "dv",
-				"friendlyName": "DV",
-				"channel": "dv",
-				"type": "Number",
+				"property": "chl",
+				"friendlyName": "Child Lock",
+				"channel": "chl",
+				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
 					{
-						"parameterType": "EMPTY"
+						"command": "enable_chl",
+						"parameterType": "ONOFFNUMBER"
 					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
 				]
+			},
+			{
+				"property": "dv",
+				"friendlyName": "Delay Off Countdown",
+				"channel": "dv",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [],
+				"category": "time",
+				"tags": [
+					"Status",
+					"Duration"
+				]
+			},
+			{
+				"property": "",
+				"friendlyName": "Delay Off",
+				"channel": "delayoff",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 21600,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "delay_off",
+						"parameterType": "NUMBER"
+					}
+				],
+				"category": "time",
+				"tags": [
+					"Setpoint",
+					"Duration"
+				],
+				"readmeComment": "Turns the light off after the set time, 0 cancels the timer"
 			}
 		]
 	}

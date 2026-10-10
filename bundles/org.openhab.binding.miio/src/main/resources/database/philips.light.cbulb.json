@@ -18,10 +18,7 @@
 						"parameterType": "ONOFF"
 					}
 				],
-				"category": "switch",
-				"tags": [
-					"Switch"
-				]
+				"category": "switch"
 			},
 			{
 				"property": "bright",
@@ -49,7 +46,7 @@
 				"category": "light",
 				"tags": [
 					"Control",
-					"Light"
+					"Brightness"
 				]
 			},
 			{
@@ -64,6 +61,11 @@
 						"command": "set_cct",
 						"parameterType": "NUMBER"
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"ColorTemperature"
 				]
 			},
 			{
@@ -78,6 +80,10 @@
 						"command": "apply_scene",
 						"parameterType": "NUMBER"
 					}
+				],
+				"tags": [
+					"Control",
+					"Mode"
 				]
 			},
 			{
@@ -92,6 +98,11 @@
 						"command": "set_cid",
 						"parameterType": "COLOR"
 					}
+				],
+				"category": "colorlight",
+				"tags": [
+					"Control",
+					"Color"
 				]
 			},
 			{
@@ -106,11 +117,12 @@
 						"command": "switch_the_scene",
 						"parameterType": "EMPTY"
 					}
-				]
+				],
+				"category": "switch"
 			},
 			{
-				"property": "get_switch_en",
-				"friendlyName": "Switch Enabled",
+				"property": "",
+				"friendlyName": "Wall Switch Enabled",
 				"channel": "switch_en",
 				"type": "Switch",
 				"refresh": false,
@@ -118,23 +130,14 @@
 				"actions": [
 					{
 						"command": "set_switch_en",
-						"parameterType": "NUMBER"
+						"parameterType": "ONOFFNUMBER"
 					}
-				]
-			},
-			{
-				"property": "",
-				"friendlyName": "Delay Off",
-				"channel": "delayoff",
-				"type": "Switch",
-				"refresh": false,
-				"ChannelGroup": "actions",
-				"actions": [
-					{
-						"command": "delay_off",
-						"parameterType": "NUMBER"
-					}
-				]
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				],
+				"readmeComment": "Enables switching between scenes with the wall switch"
 			}
 		]
 	}

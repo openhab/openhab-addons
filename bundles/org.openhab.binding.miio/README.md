@@ -2948,13 +2948,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
-| sw                         | Switch               | Switch                                   |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
 | bl                         | Switch               | Night Light                              |            |
 | ms                         | Switch               | MiBand Notifications                     |            |
 | ac                         | Switch               | Auto Ambiance                            |            |
-| delayoff                   | Switch               | Delay Off                                |            |
 | mb                         | Switch               | MiBand                                   |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Philips Zhirui Ceiling Lamp Bedroom 28W (<a name="philips-light-bceiling2">philips.light.bceiling2</a>) Channels
 
@@ -2964,13 +2964,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
-| sw                         | Switch               | Switch                                   |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
 | bl                         | Switch               | Night Light                              |            |
 | ms                         | Switch               | MiBand Notifications                     |            |
 | ac                         | Switch               | Auto Ambiance                            |            |
-| delayoff                   | Switch               | Delay Off                                |            |
 | mb                         | Switch               | MiBand                                   |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Philips ZhiRui E27 bulb (<a name="philips-light-bulb">philips.light.bulb</a>) Channels
 
@@ -2980,9 +2980,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
 | switchscene                | Switch               | Switch Scene                             |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Philips ZhiRui E14 Candle Lamp Frosted version (<a name="philips-light-candle">philips.light.candle</a>) Channels
 
@@ -2992,7 +2992,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 | toggle                     | Switch               | Toggle                                   |            |
 
 ### Philips ZhiRui E14 Candle Lamp Crystal version (<a name="philips-light-candle2">philips.light.candle2</a>) Channels
@@ -3003,7 +3004,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 | toggle                     | Switch               | Toggle                                   |            |
 
 ### Mijia Philips Color Bulb (<a name="philips-light-cbulb">philips.light.cbulb</a>) Channels
@@ -3016,8 +3018,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | scene                      | Number               | Scene                                    |            |
 | cid                        | Color                | Color                                    |            |
 | switchscene                | Switch               | Switch Scene                             |            |
-| switch_en                  | Switch               | Switch Enabled                           |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
 
 ### Philips Light (<a name="philips-light-cbulbs">philips.light.cbulbs</a>) Channels
 
@@ -3029,8 +3030,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | scene                      | Number               | Scene                                    |            |
 | cid                        | Color                | Color                                    |            |
 | switchscene                | Switch               | Switch Scene                             |            |
-| switch_en                  | Switch               | Switch Enabled                           |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
 
 ### Philips Connected Ceiling (<a name="philips-light-ceiling">philips.light.ceiling</a>) Channels
 
@@ -3040,6 +3040,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
+| bl                         | Switch               | Night Light                              |            |
+| ms                         | Switch               | MiBand Notifications                     |            |
+| ac                         | Switch               | Auto Ambiance                            |            |
+| mb                         | Switch               | MiBand                                   |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 | switchscene                | Switch               | Switch Scene                             |            |
 | toggle                     | Switch               | Toggle                                   |            |
 
@@ -3053,8 +3060,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | scene                      | Number               | Scene                                    |            |
 | cid                        | Color                | Color                                    |            |
 | switchscene                | Switch               | Switch Scene                             |            |
-| switch_en                  | Switch               | Switch Enabled                           |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
 
 ### ZhiRui Dimmable Downlight (<a name="philips-light-dlight">philips.light.dlight</a>) Channels
 
@@ -3080,9 +3086,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
 | switchscene                | Switch               | Switch Scene                             |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Philips Wi-Fi bulb E27 White (<a name="philips-light-hbulb">philips.light.hbulb</a>) Channels
 
@@ -3090,11 +3096,8 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | brightness                 | Dimmer               | Brightness                               |            |
-| cct                        | Dimmer               | Correlated Color Temperature             |            |
-| scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
-| switchscene                | Switch               | Switch Scene                             |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Philips ZhiYi Ceiling Lamp FL 40W (<a name="philips-light-lnblight1">philips.light.lnblight1</a>) Channels
 
@@ -3104,13 +3107,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
-| sw                         | Switch               | Switch                                   |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
 | bl                         | Switch               | Night Light                              |            |
 | ms                         | Switch               | MiBand Notifications                     |            |
 | ac                         | Switch               | Auto Ambiance                            |            |
-| delayoff                   | Switch               | Delay Off                                |            |
 | mb                         | Switch               | MiBand                                   |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Philips ZhiYi Ceiling Lamp FL 28W (<a name="philips-light-lnblight2">philips.light.lnblight2</a>) Channels
 
@@ -3120,13 +3123,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
-| sw                         | Switch               | Switch                                   |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
 | bl                         | Switch               | Night Light                              |            |
 | ms                         | Switch               | MiBand Notifications                     |            |
 | ac                         | Switch               | Auto Ambiance                            |            |
-| delayoff                   | Switch               | Delay Off                                |            |
 | mb                         | Switch               | MiBand                                   |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Philips ZhiYi Ceiling Lamp FL 80W (<a name="philips-light-lnlrlight">philips.light.lnlrlight</a>) Channels
 
@@ -3136,13 +3139,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
-| sw                         | Switch               | Switch                                   |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
 | bl                         | Switch               | Night Light                              |            |
 | ms                         | Switch               | MiBand Notifications                     |            |
 | ac                         | Switch               | Auto Ambiance                            |            |
-| delayoff                   | Switch               | Delay Off                                |            |
 | mb                         | Switch               | MiBand                                   |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Philips Zhirui Ceiling Lamp Living room 80W (<a name="philips-light-lrceiling">philips.light.lrceiling</a>) Channels
 
@@ -3152,13 +3155,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
-| sw                         | Switch               | Switch                                   |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
 | bl                         | Switch               | Night Light                              |            |
 | ms                         | Switch               | MiBand Notifications                     |            |
 | ac                         | Switch               | Auto Ambiance                            |            |
-| delayoff                   | Switch               | Delay Off                                |            |
 | mb                         | Switch               | MiBand                                   |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Zhirui Ceiling Lamp Nordic 80W (<a name="philips-light-mceil">philips.light.mceil</a>) Channels
 
@@ -3224,9 +3227,10 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
+| bl                         | Switch               | Night Light                              |            |
+| ms                         | Switch               | MiBand Notifications                     |            |
+| mb                         | Switch               | MiBand                                   |            |
 | gonight                    | Switch               | Go Night                                 |            |
-| delayoff                   | Switch               | Delay Off                                |            |
 | toggle                     | Switch               | Toggle                                   |            |
 
 ### Zhirui Ceiling Lamp Black 80W (<a name="philips-light-obceil">philips.light.obceil</a>) Channels
@@ -3284,8 +3288,11 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | power                      | Switch               | Power                                    |            |
 | brightness                 | Dimmer               | Brightness                               |            |
 | scene                      | Number               | Scene                                    |            |
-| flm                        | Number               | Follow Me                                |            |
-| dv                         | Number               | DV                                       |            |
+| flm                        | Switch               | Follow Me                                | Turns the lamp on automatically based on ambient light and desk vibration |
+| flmv                       | Number               | Follow Me Sensitivity                    | Value mapping `["2"="Medium","3"="High"]` |
+| chl                        | Switch               | Child Lock                               |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Zhirui Ceiling Lamp Starry 80W (<a name="philips-light-sceil">philips.light.sceil</a>) Channels
 
@@ -3341,11 +3348,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | brightness                 | Dimmer               | Brightness                               |            |
+| scene                      | Number               | Scene                                    |            |
 | ambientPower               | Switch               | Ambient Power                            |            |
 | ambientBrightness          | Number               | Ambient Brightness                       |            |
-| illumination               | Number               | Ambient Illumination                     |            |
 | eyecare                    | Switch               | Eyecare                                  |            |
+| notifyuser                 | Switch               | Eye Fatigue Reminder                     |            |
 | bl                         | Switch               | Night Light                              |            |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Mijia Philips Desk Lamp 2S (<a name="philips-light-sread2">philips.light.sread2</a>) Channels
 
@@ -3353,11 +3362,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | brightness                 | Dimmer               | Brightness                               |            |
+| scene                      | Number               | Scene                                    |            |
 | ambientPower               | Switch               | Ambient Power                            |            |
 | ambientBrightness          | Number               | Ambient Brightness                       |            |
-| illumination               | Number               | Ambient Illumination                     |            |
 | eyecare                    | Switch               | Eyecare                                  |            |
+| notifyuser                 | Switch               | Eye Fatigue Reminder                     |            |
 | bl                         | Switch               | Night Light                              |            |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Philips Connected Lights (<a name="philips-light-virtual">philips.light.virtual</a>) Channels
 
@@ -3367,9 +3378,9 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
 | switchscene                | Switch               | Switch Scene                             |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Zhirui Ceiling Lamp Gorgeous 80W (<a name="philips-light-xzceil">philips.light.xzceil</a>) Channels
 
@@ -3427,6 +3438,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
+| bl                         | Switch               | Night Light                              |            |
+| ms                         | Switch               | MiBand Notifications                     |            |
+| ac                         | Switch               | Auto Ambiance                            |            |
+| mb                         | Switch               | MiBand                                   |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 | switchscene                | Switch               | Switch Scene                             |            |
 | toggle                     | Switch               | Toggle                                   |            |
 
@@ -3436,11 +3454,13 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 |----------------------------|----------------------|------------------------------------------|------------|
 | power                      | Switch               | Power                                    |            |
 | brightness                 | Dimmer               | Brightness                               |            |
-| cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
-| switchscene                | Switch               | Switch Scene                             |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| ambientPower               | Switch               | Ambient Power                            |            |
+| ambientBrightness          | Number               | Ambient Brightness                       |            |
+| eyecare                    | Switch               | Eyecare                                  |            |
+| notifyuser                 | Switch               | Eye Fatigue Reminder                     |            |
+| bl                         | Switch               | Night Light                              |            |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 
 ### Philips ZhiYi Strip (<a name="philips-light-zystrip">philips.light.zystrip</a>) Channels
 
@@ -3450,9 +3470,15 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness                 | Dimmer               | Brightness                               |            |
 | cct                        | Dimmer               | Correlated Color Temperature             |            |
 | scene                      | Number               | Scene                                    |            |
-| dv                         | Number               | DV                                       |            |
+| dv                         | Number:Time          | Delay Off Countdown                      |            |
+| bl                         | Switch               | Night Light                              |            |
+| ms                         | Switch               | MiBand Notifications                     |            |
+| ac                         | Switch               | Auto Ambiance                            |            |
+| mb                         | Switch               | MiBand                                   |            |
+| switch_en                  | Switch               | Wall Switch Enabled                      | Enables switching between scenes with the wall switch |
+| delayoff                   | Number:Time          | Delay Off                                | Turns the light off after the set time, 0 cancels the timer |
 | switchscene                | Switch               | Switch Scene                             |            |
-| delayoff                   | Switch               | Delay Off                                |            |
+| toggle                     | Switch               | Toggle                                   |            |
 
 ### CHINGMI Smart Power Strip v1 (<a name="qmi-powerstrip-v1">qmi.powerstrip.v1</a>) Channels
 
@@ -9629,13 +9655,13 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
-Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
 Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Philips Zhirui Ceiling Lamp Bedroom 28W (philips.light.bceiling2) item file lines
@@ -9648,13 +9674,13 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
-Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
 Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Philips ZhiRui E27 bulb (philips.light.bulb) item file lines
@@ -9667,9 +9693,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Philips ZhiRui E14 Candle Lamp Frosted version (philips.light.candle) item file lines
@@ -9682,7 +9708,8 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
@@ -9696,7 +9723,8 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
@@ -9712,8 +9740,7 @@ Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:c
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Color cid "Color" (G_light) {channel="miio:basic:light:cid"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch switch_en "Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
 ```
 
 ### Philips Light (philips.light.cbulbs) item file lines
@@ -9728,8 +9755,7 @@ Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:c
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Color cid "Color" (G_light) {channel="miio:basic:light:cid"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch switch_en "Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
 ```
 
 ### Philips Connected Ceiling (philips.light.ceiling) item file lines
@@ -9742,6 +9768,13 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
+Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
+Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
@@ -9758,8 +9791,7 @@ Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:c
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Color cid "Color" (G_light) {channel="miio:basic:light:cid"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch switch_en "Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
 ```
 
 ### ZhiRui Dimmable Downlight (philips.light.dlight) item file lines
@@ -9791,9 +9823,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Philips Wi-Fi bulb E27 White (philips.light.hbulb) item file lines
@@ -9804,11 +9836,8 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Philips Wi-Fi bulb E27 White" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
-Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
-Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Philips ZhiYi Ceiling Lamp FL 40W (philips.light.lnblight1) item file lines
@@ -9821,13 +9850,13 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
-Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
 Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Philips ZhiYi Ceiling Lamp FL 28W (philips.light.lnblight2) item file lines
@@ -9840,13 +9869,13 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
-Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
 Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Philips ZhiYi Ceiling Lamp FL 80W (philips.light.lnlrlight) item file lines
@@ -9859,13 +9888,13 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
-Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
 Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Philips Zhirui Ceiling Lamp Living room 80W (philips.light.lrceiling) item file lines
@@ -9878,13 +9907,13 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
-Switch sw "Switch" (G_light) {channel="miio:basic:light:sw"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
 Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
 Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Zhirui Ceiling Lamp Nordic 80W (philips.light.mceil) item file lines
@@ -9965,9 +9994,10 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
+Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
 Switch gonight "Go Night" (G_light) {channel="miio:basic:light:gonight"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
@@ -10037,8 +10067,11 @@ Group G_light "Mijia Philips Study Desk Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number flm "Follow Me" (G_light) {channel="miio:basic:light:flm"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch flm "Follow Me" (G_light) {channel="miio:basic:light:flm"}
+Number flmv "Follow Me Sensitivity" (G_light) {channel="miio:basic:light:flmv"}
+Switch chl "Child Lock" (G_light) {channel="miio:basic:light:chl"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Zhirui Ceiling Lamp Starry 80W (philips.light.sceil) item file lines
@@ -10106,11 +10139,13 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Philips EyeCare Connected Desk Lamp gen2." <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
 Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
-Number illumination "Ambient Illumination" (G_light) {channel="miio:basic:light:illumination"}
 Switch eyecare "Eyecare" (G_light) {channel="miio:basic:light:eyecare"}
+Switch notifyuser "Eye Fatigue Reminder" (G_light) {channel="miio:basic:light:notifyuser"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Mijia Philips Desk Lamp 2S (philips.light.sread2) item file lines
@@ -10121,11 +10156,13 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Mijia Philips Desk Lamp 2S" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
 Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
 Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
-Number illumination "Ambient Illumination" (G_light) {channel="miio:basic:light:illumination"}
 Switch eyecare "Eyecare" (G_light) {channel="miio:basic:light:eyecare"}
+Switch notifyuser "Eye Fatigue Reminder" (G_light) {channel="miio:basic:light:notifyuser"}
 Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Philips Connected Lights (philips.light.virtual) item file lines
@@ -10138,9 +10175,9 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Zhirui Ceiling Lamp Gorgeous 80W (philips.light.xzceil) item file lines
@@ -10210,6 +10247,13 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
+Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
+Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
 Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
@@ -10222,11 +10266,13 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 Group G_light "Philips ZhiYi Desk Lamp" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
-Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
-Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch ambientPower "Ambient Power" (G_light) {channel="miio:basic:light:ambientPower"}
+Number ambientBrightness "Ambient Brightness" (G_light) {channel="miio:basic:light:ambientBrightness"}
+Switch eyecare "Eyecare" (G_light) {channel="miio:basic:light:eyecare"}
+Switch notifyuser "Eye Fatigue Reminder" (G_light) {channel="miio:basic:light:notifyuser"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 ```
 
 ### Philips ZhiYi Strip (philips.light.zystrip) item file lines
@@ -10239,9 +10285,15 @@ Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
 Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
-Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Number:Time dv "Delay Off Countdown" (G_light) {channel="miio:basic:light:dv"}
+Switch bl "Night Light" (G_light) {channel="miio:basic:light:bl"}
+Switch ms "MiBand Notifications" (G_light) {channel="miio:basic:light:ms"}
+Switch ac "Auto Ambiance" (G_light) {channel="miio:basic:light:ac"}
+Switch mb "MiBand" (G_light) {channel="miio:basic:light:mb"}
+Switch switch_en "Wall Switch Enabled" (G_light) {channel="miio:basic:light:switch_en"}
+Number:Time delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
 Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
-Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+Switch toggle "Toggle" (G_light) {channel="miio:basic:light:toggle"}
 ```
 
 ### CHINGMI Smart Power Strip v1 (qmi.powerstrip.v1) item file lines
