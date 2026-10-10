@@ -27,10 +27,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiLightUtil.ShellyLightApiComponent;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
@@ -114,6 +117,9 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+
 /**
  * {@link Shelly2ApiClient} Low level part of the RPC API
  *
@@ -131,6 +137,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
     private static final String RPC_SRC_PREFIX = "ohshelly-";
     private static final AtomicInteger REQUEST_ID = new AtomicInteger(1);
+    private static final Pattern AUTH_PARAM = Pattern.compile("(\\w+)\\s*=\\s*(?:\"([^\"]*)\"|([^,\\s]*))");
 
     public Shelly2ApiClient(String thingName, ShellyApiConfiguration config, ShellyThingInterface thing) {
         super(thingName, config, thing);
@@ -535,13 +542,15 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
 
     protected static Shelly2AuthChallenge parseAuthChallenge(String header) {
         Shelly2AuthChallenge challenge = new Shelly2AuthChallenge();
-        for (String o : header.split(",")) {
-            String key = substringBefore(o, "=").stripLeading().trim();
-            String value = substringAfter(o, "=").replace("\"", "").trim();
-            switch (key) {
-                case "Digest qop":
-                    challenge.authType = SHELLY2_AUTHTTYPE_DIGEST;
-                    break;
+        // The parameter order differs between devices (e.g. "Digest qop=..., realm=..." vs.
+        // "Digest realm=..., qop=...", and the scheme is attached to the first parameter), so match by name.
+        if (header.stripLeading().regionMatches(true, 0, HTTP_AUTH_TYPE_DIGEST, 0, HTTP_AUTH_TYPE_DIGEST.length())) {
+            challenge.authType = SHELLY2_AUTHTTYPE_DIGEST;
+        }
+        Matcher matcher = AUTH_PARAM.matcher(header);
+        while (matcher.find()) {
+            String value = matcher.group(2) != null ? matcher.group(2) : matcher.group(3);
+            switch (matcher.group(1).toLowerCase(Locale.ROOT)) {
                 case "realm":
                     challenge.realm = value;
                     break;
@@ -554,6 +563,38 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             }
         }
         return challenge;
+    }
+
+    /**
+     * Challenge in the body of a 401 response, which the Wall Display sends as
+     * <code>{"code":401,"message":"{\"auth_type\":\"digest\",\"nonce\":1791588805,...}"}</code>. It is the
+     * challenge for the "auth" object of an RPC message, and the nonce differs from the one in the
+     * WWW-Authenticate header.
+     *
+     * @param body response body
+     * @return the challenge, or null if the body has none (the other devices wrap it in an "error" object)
+     */
+    protected static @Nullable Shelly2AuthChallenge parseBodyAuthChallenge(@Nullable String body) {
+        if (body == null || !body.startsWith("{")) {
+            return null;
+        }
+        try {
+            Gson parser = new Gson();
+            Shelly2BodyError error = parser.fromJson(body, Shelly2BodyError.class);
+            String message = error != null ? error.message : null;
+            if (error == null || error.code == null || error.code != HttpStatus.UNAUTHORIZED_401 || message == null) {
+                return null;
+            }
+            Shelly2AuthChallenge challenge = parser.fromJson(message, Shelly2AuthChallenge.class);
+            return challenge != null && challenge.nonce != null && challenge.realm != null ? challenge : null;
+        } catch (JsonParseException e) {
+            return null;
+        }
+    }
+
+    private static class Shelly2BodyError {
+        public @Nullable Integer code;
+        public @Nullable String message;
     }
 
     @Override
