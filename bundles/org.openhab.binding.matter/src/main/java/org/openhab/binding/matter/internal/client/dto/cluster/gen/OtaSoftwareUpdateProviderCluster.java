@@ -134,7 +134,7 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
      * Upon receipt, this command shall trigger an attempt to find an updated Software Image by the OTA Provider to
      * match the OTA Requestor's constraints provided in the payload fields.
      */
-    public static ClusterCommand queryImage(Integer vendorId, Integer productId, Integer softwareVersion,
+    public static ClusterCommand queryImage(Integer vendorId, Integer productId, Long softwareVersion,
             List<DownloadProtocolEnum> protocolsSupported, Integer hardwareVersion, String location,
             Boolean requestorCanConsent, OctetString metadataForProvider) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -168,7 +168,7 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     /**
      * This command requests the specified version be installed on the device.
      */
-    public static ClusterCommand applyUpdateRequest(OctetString updateToken, Integer newVersion) {
+    public static ClusterCommand applyUpdateRequest(OctetString updateToken, Long newVersion) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (updateToken != null) {
             map.put("updateToken", updateToken);
@@ -182,7 +182,7 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     /**
      * This command tells the Provider that the specified update has been applied.
      */
-    public static ClusterCommand notifyUpdateApplied(OctetString updateToken, Integer softwareVersion) {
+    public static ClusterCommand notifyUpdateApplied(OctetString updateToken, Long softwareVersion) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (updateToken != null) {
             map.put("updateToken", updateToken);

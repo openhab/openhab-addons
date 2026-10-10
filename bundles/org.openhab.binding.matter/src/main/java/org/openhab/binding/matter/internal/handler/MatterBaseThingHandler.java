@@ -104,6 +104,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     protected Map<Integer, DeviceType> devices = new HashMap<>();
     protected @Nullable MatterControllerClient cachedClient;
     private int currentFabricIndex = 0;
+    private static final int FIRST_POLL_DELAY_SECONDS = 15;
     private @Nullable ScheduledFuture<?> pollingTask;
 
     public MatterBaseThingHandler(Thing thing, BaseThingHandlerFactory thingHandlerFactory,
@@ -327,6 +328,24 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     }
 
     /**
+     * Read several attributes of a cluster from the device in a single request.
+     *
+     * @param type The class of the cluster, only the requested attributes are set.
+     * @param endpointId The endpoint ID.
+     * @param clusterName The cluster name.
+     * @param attributeNames The attributes to read.
+     * @return a future that completes with the cluster, or exceptionally when the read or deserialization fails
+     */
+    public <T extends BaseCluster> CompletableFuture<T> readAttributes(Class<T> type, Integer endpointId,
+            String clusterName, List<String> attributeNames) {
+        MatterControllerClient ws = getClient();
+        if (ws != null) {
+            return ws.clusterReadAttributes(type, getNodeId(), endpointId, clusterName, attributeNames);
+        }
+        return CompletableFuture.failedFuture(new IllegalStateException("Client is null"));
+    }
+
+    /**
      * Read a cluster from the MatterControllerClient.
      *
      * @param <T> The type of the cluster to read.
@@ -398,8 +417,8 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
      * @param value The value of the attribute.
      */
     public void updateClusterAttributeProperty(String clusterName, String attributeName, @Nullable Object value) {
-        getThing().setProperties(updateClusterAttributeProperty(new HashMap<>(getThing().getProperties()), clusterName,
-                attributeName, value));
+        // Updates a single key, so concurrent updates of different attributes cannot overwrite each other
+        getThing().setProperty(clusterName + "-" + attributeName, value != null ? value.toString() : null);
     }
 
     public synchronized void updateConfiguration(Map<String, Object> entries) {
@@ -660,18 +679,24 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
      * Start polling the device for updates if needed
      */
     private synchronized void startPolling() {
-        stopPolling();
+        ScheduledFuture<?> pollingTask = this.pollingTask;
+        // status updates repeat while online, which must not keep pushing the first poll out
+        if (pollingTask != null && !pollingTask.isDone()) {
+            return;
+        }
         Integer pollInterval = getPollInterval();
         if (pollInterval > 0) {
-            pollingTask = scheduler.scheduleWithFixedDelay(() -> {
+            // The first poll runs shortly after coming online, as the initial values come from the controller's cache
+            // and can be hours old. It waits a little so it does not compete with the reads made while connecting.
+            this.pollingTask = scheduler.scheduleWithFixedDelay(() -> {
                 if (getThing().getStatus() == ThingStatus.ONLINE) {
                     devices.values().forEach(deviceType -> deviceType.pollClusters());
                 }
-            }, pollInterval, pollInterval, TimeUnit.SECONDS);
+            }, Math.min(FIRST_POLL_DELAY_SECONDS, pollInterval), pollInterval, TimeUnit.SECONDS);
         }
     }
 
-    public void stopPolling() {
+    public synchronized void stopPolling() {
         ScheduledFuture<?> pollingTask = this.pollingTask;
         if (pollingTask != null) {
             pollingTask.cancel(true);

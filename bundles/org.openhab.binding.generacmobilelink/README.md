@@ -30,6 +30,12 @@ The MobileLink account bridge must be added manually. Once added, generator thin
 | password        | The password used to login to the MobileLink service                               |
 | refreshInterval | The frequency to poll for generator updates, minimum duration is 30 seconds        |
 
+**MobileLink accounts must have been migrated to the current Generac/ecobee login.**
+If you have not logged in to the MobileLink app or website recently, do so once before configuring the binding.
+Accounts with multi-factor authentication enabled are not supported.
+If the login asks for a captcha, the bridge goes offline and stops retrying.
+Log in once through the MobileLink app or website, then disable and re-enable the bridge.
+
 ## Channels
 
 ### Generator Channels

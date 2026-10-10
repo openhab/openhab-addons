@@ -41,6 +41,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLi
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLightChannel;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.handler.LightModelAccessor.LightModels;
+import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -48,6 +49,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
@@ -1159,5 +1161,154 @@ class ShellyLightHandlerLightModelTest {
             )
         // @formatter:on
         );
+    }
+
+    private static ChannelUID createChannelUID(ThingTypeUID thingTypeUID, String group, String channel) {
+        return new ChannelUID(new ChannelGroupUID(new ThingUID(thingTypeUID, "test"), group), channel);
+    }
+
+    private static ShellyTestLightHandler createGen2ProRgbwwPmHandler() {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPRORGBWWPM);
+        handler.profile.device.profile = SHELLY2_PROFILE_RGBCCT;
+        handler.profile.isGen2 = true;
+        handler.profile.isRGBW2 = true;
+        handler.profile.inColor = true;
+        return handler;
+    }
+
+    @Test
+    void isMainLightIsTrueOnlyForChannelGroupSuffixZero() {
+        ShellyTestLightHandler handler = createGen2ProRgbwwPmHandler();
+        assertTrue(ShellyLightModel.create(handler, 0, handler.profile, DIM_STEPSIZE).isMainLight());
+        assertFalse(ShellyLightModel.create(handler, 1, handler.profile, DIM_STEPSIZE).isMainLight());
+    }
+
+    @Test
+    void gen2RgbwwPmColorModeBrightnessCommandIsSentToDevice() throws Exception {
+        ShellyTestLightHandler handler = createGen2ProRgbwwPmHandler();
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
+        doNothing().when(api).setLightParms(anyInt(), anyMap());
+
+        boolean handled = handler.handleDeviceCommand(
+                createChannelUID(THING_TYPE_SHELLYPRORGBWWPM, CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_BRIGHTNESS),
+                new PercentType(40));
+        assertTrue(handled);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, String>> parmsCaptor = ArgumentCaptor
+                .forClass((Class<Map<String, String>>) (Class<?>) Map.class);
+        verify(api).setLightParms(eq(0), parmsCaptor.capture());
+        assertEquals("40", parmsCaptor.getValue().get(SHELLY_COLOR_BRIGHTNESS));
+    }
+
+    @Test
+    void gen1ColorModeBrightnessCommandIsNotSentAsBrightness() throws Exception {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYBULB);
+        Shelly1HttpApi api = (Shelly1HttpApi) getField(handler, ShellyBaseHandler.class, "api");
+        assertNotNull(api);
+        doNothing().when(api).setLightParms(anyInt(), anyMap());
+
+        handler.handleDeviceCommand(
+                createChannelUID(THING_TYPE_SHELLYBULB, CHANNEL_GROUP_WHITE_CONTROL, CHANNEL_BRIGHTNESS),
+                new PercentType(40));
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, String>> parmsCaptor = ArgumentCaptor
+                .forClass((Class<Map<String, String>>) (Class<?>) Map.class);
+        verify(api, atLeast(0)).setLightParms(anyInt(), parmsCaptor.capture());
+        parmsCaptor.getAllValues().forEach(parms -> assertFalse(parms.containsKey(SHELLY_COLOR_BRIGHTNESS),
+                "Gen1 color mode must use gain, not brightness"));
+    }
+
+    @Test
+    void secondaryLightModelDoesNotOverwriteControlGroupOnForcedUpdate() throws Exception {
+        ShellyTestLightHandler handler = createGen2ProRgbwwPmHandler();
+        handler.profile.device.profile = SHELLY2_PROFILE_RGBCCT; // model 0 = COLOR, model 1 = WHITE
+
+        ShellyLightModel main = ShellyLightModel.create(handler, 0, handler.profile, DIM_STEPSIZE);
+        ShellyLightModel secondary = ShellyLightModel.create(handler, 1, handler.profile, DIM_STEPSIZE);
+        handler.lightModels.put(0, main);
+        handler.lightModels.put(1, secondary);
+
+        // main light writes its state to the control group (positive control)
+        try (LightModels models = handler.acquire()) {
+            models.setForceChannelUpdates(true);
+            main.setRGBX(new int[] { 0, 0, 128 });
+            main.setBrightness(40);
+            main.setOnOff(true);
+        }
+        Map<String, State> updates = handler.getChannelUpdates();
+        assertEquals(new PercentType(40), updates.get("control#brightness"));
+        assertEquals(OnOffType.ON, updates.get("control#mode"));
+
+        // forced update of the secondary model alone must not touch the control group
+        updates.clear();
+        handler.updateChannelsFromLightModel(secondary, true);
+
+        assertTrue(updates.keySet().stream().noneMatch(key -> key.startsWith("control#")),
+                "secondary light model must not update the control group, but updated: " + updates.keySet());
+        assertEquals(PercentType.ZERO, updates.get("light1#brightness"));
+    }
+
+    private static ShellyTestLightHandler createGen2PlusRgbwPmHandler() {
+        ShellyTestLightHandler handler = ShellyTestLightHandler.create(THING_TYPE_SHELLYPLUSRGBWPM);
+        handler.profile.device.profile = SHELLY2_PROFILE_RGBW;
+        handler.profile.isGen2 = true;
+        handler.profile.isRGBW2 = true;
+        handler.profile.inColor = true;
+        return handler;
+    }
+
+    @Test
+    void rgbwPmControllerCreatesExpectedChannels() throws Exception {
+        ShellyTestLightHandler handler = createGen2PlusRgbwPmHandler();
+
+        handler.profile.settings.lights = new ArrayList<>();
+        Objects.requireNonNull(handler.profile.settings.lights).add(new ShellySettingsRgbwLight());
+
+        ShellyStatusLightChannel dto = lightChannel(true, 10, 20, 30, 40, null, 50, null, null, null);
+
+        Map<String, Channel> created = ShellyChannelDefinitions.createLightChannels(handler.getThing(), handler.profile,
+                dto, 0);
+
+        List<String> channelIds = created.values().stream()
+                .map(c -> c.getUID().getGroupId() + "#" + c.getUID().getIdWithoutGroup()).toList();
+
+        assertTrue(channelIds.contains("control#power"), "missing control#power: " + channelIds);
+        assertTrue(channelIds.contains("control#brightness"), "missing control#brightness: " + channelIds);
+        assertTrue(channelIds.contains("color#hsb"), "missing color#hsb: " + channelIds);
+        assertTrue(channelIds.contains("color#red"), "missing color#red: " + channelIds);
+        assertTrue(channelIds.contains("color#green"), "missing color#green: " + channelIds);
+        assertTrue(channelIds.contains("color#blue"), "missing color#blue: " + channelIds);
+        assertTrue(channelIds.contains("color#white"), "missing color#white: " + channelIds);
+        assertTrue(channelIds.contains("color#full"), "missing color#full: " + channelIds);
+    }
+
+    @Test
+    void rgbwPmControllerUpdatesControlBrightness() throws Exception {
+        ShellyTestLightHandler handler = createGen2PlusRgbwPmHandler();
+
+        ShellyLightModel main = ShellyLightModel.create(handler, 0, handler.profile, DIM_STEPSIZE);
+        handler.lightModels.put(0, main);
+
+        try (LightModels models = handler.acquire()) {
+            models.setForceChannelUpdates(true);
+            main.setRGBX(new int[] { 10, 20, 30, 40 });
+            main.setBrightness(65);
+            main.setOnOff(true);
+        }
+
+        Map<String, State> updates = handler.getChannelUpdates();
+        assertEquals(new PercentType(65), updates.get("control#brightness"));
+
+        // change brightness again; control#brightness must follow
+        updates.clear();
+        try (LightModels models = handler.acquire()) {
+            models.setForceChannelUpdates(true);
+            main.setBrightness(25);
+        }
+
+        assertEquals(new PercentType(25), updates.get("control#brightness"));
     }
 }

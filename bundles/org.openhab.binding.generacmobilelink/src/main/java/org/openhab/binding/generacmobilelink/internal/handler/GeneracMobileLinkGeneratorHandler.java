@@ -89,15 +89,15 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
         updateState(CHANNEL_HAS_MAINTENANCE_ALERT, OnOffType.from(apparatusDetail.hasMaintenanceAlert));
         updateState(CHANNEL_LAST_SEEN, new DateTimeType(apparatusDetail.lastSeen));
         updateState(CHANNEL_CONNECTION_TIME, new DateTimeType(apparatusDetail.connectionTimestamp));
-        Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 70).findFirst().ifPresent(p -> {
+        Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 71).findFirst().ifPresent(p -> {
             try {
-                updateState(CHANNEL_RUN_HOURS, new QuantityType<>(Integer.parseInt(p.value), Units.HOUR));
+                updateState(CHANNEL_RUN_HOURS, new QuantityType<>(Float.parseFloat(p.value), Units.HOUR));
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse runHours {}", p.value);
                 updateState(CHANNEL_RUN_HOURS, UnDefType.UNDEF);
             }
         });
-        Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 69).findFirst().ifPresent(p -> {
+        Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 70).findFirst().ifPresent(p -> {
             try {
                 updateState(CHANNEL_BATTERY_VOLTAGE, new QuantityType<>(Float.parseFloat(p.value), Units.VOLT));
             } catch (NumberFormatException e) {
@@ -105,7 +105,7 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
                 updateState(CHANNEL_BATTERY_VOLTAGE, UnDefType.UNDEF);
             }
         });
-        Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 31).findFirst().ifPresent(p -> {
+        Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 32).findFirst().ifPresent(p -> {
             try {
                 updateState(CHANNEL_HOURS_OF_PROTECTION, new QuantityType<>(Float.parseFloat(p.value), Units.HOUR));
             } catch (NumberFormatException e) {

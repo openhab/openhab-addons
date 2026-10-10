@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * @author MikeTheTux - Initial contribution
  */
@@ -22,7 +24,8 @@ public class Statistics {
     private int numberOfCollisions;
     private long totalChargingTime;
     private long totalCuttingTime;
-    private long totalDriveDistance; // docu states totalDrivenDistance which does not work
+    @SerializedName(value = "totalDriveDistance", alternate = "totalDrivenDistance")
+    private long totalDriveDistance;
     private long totalRunningTime;
     private long totalSearchingTime;
     private long upTime;

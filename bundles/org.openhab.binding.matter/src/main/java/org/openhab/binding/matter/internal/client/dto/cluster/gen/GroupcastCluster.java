@@ -129,12 +129,12 @@ public class GroupcastCluster extends BaseCluster {
         /**
          * This field, if present, shall be set to the concrete path's cluster ID derived from the processed request.
          */
-        public Integer clusterId; // cluster-id
+        public Long clusterId; // cluster-id
         /**
          * This field, if present, shall be set to the concrete path's element ID (Command ID or Attribute ID) derived
          * from the processed request.
          */
-        public Integer elementId; // uint32
+        public Long elementId; // uint32
         /**
          * This field, if present, shall indicate whether the Groupcast sender was allowed to invoke the command by
          * Access Control, in this Node. The value shall be set to true if the request was allowed, and false otherwise.
@@ -148,7 +148,7 @@ public class GroupcastCluster extends BaseCluster {
         public Integer fabricIndex; // FabricIndex
 
         public GroupcastTesting(OctetString sourceIpAddress, OctetString destinationIpAddress, Integer groupId,
-                Integer endpointId, Integer clusterId, Integer elementId, Boolean accessAllowed,
+                Integer endpointId, Long clusterId, Long elementId, Boolean accessAllowed,
                 GroupcastTestResultEnum groupcastTestResult, Integer fabricIndex) {
             this.sourceIpAddress = sourceIpAddress;
             this.destinationIpAddress = destinationIpAddress;

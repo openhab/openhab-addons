@@ -319,7 +319,7 @@ public class ThermostatCluster extends BaseCluster {
     /**
      * Indicates the time in UTC at which the SetpointChangeAmount attribute change was recorded.
      */
-    public Integer setpointChangeSourceTimestamp; // 50 epoch-s R V
+    public Long setpointChangeSourceTimestamp; // 50 epoch-s R V
     /**
      * Indicates the delta between the Calculated Local Temperature and the OccupiedHeatingSetpoint or
      * UnoccupiedHeatingSetpoint attributes at which the Thermostat server will operate in emergency heat mode.
@@ -552,7 +552,7 @@ public class ThermostatCluster extends BaseCluster {
      * If the TemperatureSetpointHold is set to SetpointHoldOff, this attribute shall be set to null indicating there is
      * no hold on the Thermostat.
      */
-    public Integer setpointHoldExpiryTimestamp; // 82 epoch-s R V
+    public Long setpointHoldExpiryTimestamp; // 82 epoch-s R V
     /**
      * Indicates the maximum number of entries supported by the ThermostatSuggestions attribute.
      */
@@ -1057,14 +1057,14 @@ public class ThermostatCluster extends BaseCluster {
         /**
          * This field shall indicate the UTC timestamp at which the suggestion shall take effect.
          */
-        public Integer effectiveTime; // epoch-s
+        public Long effectiveTime; // epoch-s
         /**
          * This field shall indicate the UTC timestamp at which the suggestion shall expire.
          */
-        public Integer expirationTime; // epoch-s
+        public Long expirationTime; // epoch-s
 
-        public ThermostatSuggestionStruct(Integer uniqueId, OctetString presetHandle, Integer effectiveTime,
-                Integer expirationTime) {
+        public ThermostatSuggestionStruct(Integer uniqueId, OctetString presetHandle, Long effectiveTime,
+                Long expirationTime) {
             this.uniqueId = uniqueId;
             this.presetHandle = presetHandle;
             this.effectiveTime = effectiveTime;
@@ -1694,7 +1694,7 @@ public class ThermostatCluster extends BaseCluster {
     /**
      * This command will add a new suggestion based on the specified values.
      */
-    public static ClusterCommand addThermostatSuggestion(OctetString presetHandle, Integer effectiveTime,
+    public static ClusterCommand addThermostatSuggestion(OctetString presetHandle, Long effectiveTime,
             Integer expirationInMinutes) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (presetHandle != null) {
@@ -1720,7 +1720,7 @@ public class ThermostatCluster extends BaseCluster {
         return new ClusterCommand("removeThermostatSuggestion", map);
     }
 
-    public static ClusterCommand atomicRequest(Integer requestType, List<Integer> attributeRequests, Integer timeout) {
+    public static ClusterCommand atomicRequest(Integer requestType, List<Long> attributeRequests, Integer timeout) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (requestType != null) {
             map.put("requestType", requestType);

@@ -314,11 +314,11 @@ public class AccessControlCluster extends BaseCluster {
     }
 
     public static class AccessControlTargetStruct {
-        public Integer cluster; // cluster-id
+        public Long cluster; // cluster-id
         public Integer endpoint; // endpoint-no
-        public Integer deviceType; // devtype-id
+        public Long deviceType; // devtype-id
 
-        public AccessControlTargetStruct(Integer cluster, Integer endpoint, Integer deviceType) {
+        public AccessControlTargetStruct(Long cluster, Integer endpoint, Long deviceType) {
             this.cluster = cluster;
             this.endpoint = endpoint;
             this.deviceType = deviceType;
@@ -448,9 +448,9 @@ public class AccessControlCluster extends BaseCluster {
          * A null value shall indicate the wildcard value for the given value of Type (i.e. all elements associated with
          * the Type under the associated endpoint and cluster for the containing AccessRestrictionEntryStruct).
          */
-        public Integer id; // uint32
+        public Long id; // uint32
 
-        public AccessRestrictionStruct(AccessRestrictionTypeEnum type, Integer id) {
+        public AccessRestrictionStruct(AccessRestrictionTypeEnum type, Long id) {
             this.type = type;
             this.id = id;
         }
@@ -469,7 +469,7 @@ public class AccessControlCluster extends BaseCluster {
          * This field shall indicate the cluster having associated access restrictions under the entry's Endpoint,
          * scoped to the associated fabric of the list containing the entry.
          */
-        public Integer cluster; // cluster-id
+        public Long cluster; // cluster-id
         /**
          * This field shall indicate the set of restrictions applying to the Cluster under the given Endpoint, scoped to
          * the associated fabric of the list containing the entry.
@@ -478,8 +478,8 @@ public class AccessControlCluster extends BaseCluster {
         public List<AccessRestrictionStruct> restrictions; // list
         public Integer fabricIndex; // FabricIndex
 
-        public AccessRestrictionEntryStruct(Integer endpoint, Integer cluster,
-                List<AccessRestrictionStruct> restrictions, Integer fabricIndex) {
+        public AccessRestrictionEntryStruct(Integer endpoint, Long cluster, List<AccessRestrictionStruct> restrictions,
+                Integer fabricIndex) {
             this.endpoint = endpoint;
             this.cluster = cluster;
             this.restrictions = restrictions;
@@ -500,7 +500,7 @@ public class AccessControlCluster extends BaseCluster {
          * This field shall indicate the cluster having associated access restrictions under the entry's Endpoint,
          * scoped to the associated fabric of the list containing the entry.
          */
-        public Integer cluster; // cluster-id
+        public Long cluster; // cluster-id
         /**
          * This field shall indicate the set of restrictions applying to the Cluster under the given Endpoint, scoped to
          * the associated fabric of the list containing the entry.
@@ -508,7 +508,7 @@ public class AccessControlCluster extends BaseCluster {
          */
         public List<AccessRestrictionStruct> restrictions; // list
 
-        public CommissioningAccessRestrictionEntryStruct(Integer endpoint, Integer cluster,
+        public CommissioningAccessRestrictionEntryStruct(Integer endpoint, Long cluster,
                 List<AccessRestrictionStruct> restrictions) {
             this.endpoint = endpoint;
             this.cluster = cluster;
