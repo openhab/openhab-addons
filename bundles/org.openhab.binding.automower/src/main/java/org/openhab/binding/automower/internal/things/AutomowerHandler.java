@@ -391,14 +391,17 @@ public class AutomowerHandler extends BaseThingHandler {
     public void updateAutomowerStateViaREST(Mower mower) {
         this.lastQueryTime = ZonedDateTime.now(timeZoneProvider.getTimeZone());
         if (isValidResult(mower)) {
+            Metadata metadata = mower.getAttributes().getMetadata();
+            metadata.setStatusTimestamp(convertEpochSecondsToMillis(metadata.getStatusTimestamp()));
+            MowerApp mowerApp = mower.getAttributes().getMower();
+            mowerApp.setErrorCodeTimestamp(convertEpochSecondsToMillis(mowerApp.getErrorCodeTimestamp()));
             Planner planner = mower.getAttributes().getPlanner();
-            // REST uses epoch seconds for planner timestamps; WebSocket events already use milliseconds.
-            planner.setNextStartTimestamp(convertRestPlannerTimestampToMillis(planner.getNextStartTimestamp()));
+            planner.setNextStartTimestamp(convertEpochSecondsToMillis(planner.getNextStartTimestamp()));
         }
         updateAutomowerState(mower);
     }
 
-    static long convertRestPlannerTimestampToMillis(long timestampSeconds) {
+    static long convertEpochSecondsToMillis(long timestampSeconds) {
         return TimeUnit.SECONDS.toMillis(timestampSeconds);
     }
 
@@ -1249,8 +1252,13 @@ public class AutomowerHandler extends BaseThingHandler {
             }
         }
 
-        updateState(CHANNEL_STATUS_LAST_UPDATE, new DateTimeType(
-                toZonedDateTime(mower.getAttributes().getMetadata().getStatusTimestamp(), ZoneId.of("UTC"))));
+        long statusTimestamp = mower.getAttributes().getMetadata().getStatusTimestamp();
+        if (statusTimestamp == 0L) {
+            updateState(CHANNEL_STATUS_LAST_UPDATE, UnDefType.NULL);
+        } else {
+            updateState(CHANNEL_STATUS_LAST_UPDATE,
+                    new DateTimeType(toZonedDateTime(statusTimestamp, ZoneId.of("UTC"))));
+        }
         ZonedDateTime lastQuery = this.lastQueryTime;
         if (lastQuery != null) {
             updateState(CHANNEL_STATUS_LAST_POLL_UPDATE, new DateTimeType(lastQuery));
@@ -1788,7 +1796,8 @@ public class AutomowerHandler extends BaseThingHandler {
                     mowerApp.setIsErrorConfirmable(mowerObj.get("isErrorConfirmable").getAsBoolean());
                 }
                 if (mowerObj.has("errorCodeTimestamp")) {
-                    mowerApp.setErrorCodeTimestamp(mowerObj.get("errorCodeTimestamp").getAsLong());
+                    mowerApp.setErrorCodeTimestamp(
+                            convertEpochSecondsToMillis(mowerObj.get("errorCodeTimestamp").getAsLong()));
                 }
                 if (mowerObj.has("workAreaId")) {
                     mowerApp.setWorkAreaId(mowerObj.get("workAreaId").getAsLong());

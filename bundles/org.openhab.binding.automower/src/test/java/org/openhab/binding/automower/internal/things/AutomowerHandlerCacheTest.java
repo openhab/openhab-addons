@@ -69,11 +69,16 @@ class AutomowerHandlerCacheTest {
         TestContext context = createContext(false, false);
         try {
             long timestampSeconds = System.currentTimeMillis() / 1000 + 3600;
+            context.mower.getAttributes().getMetadata().setStatusTimestamp(timestampSeconds);
+            context.mower.getAttributes().getMower().setErrorCodeTimestamp(timestampSeconds);
             context.mower.getAttributes().getPlanner().setNextStartTimestamp(timestampSeconds);
 
             context.handler.updateAutomowerStateViaREST(context.mower);
 
-            assertEquals(timestampSeconds * 1000, context.mower.getAttributes().getPlanner().getNextStartTimestamp());
+            long timestampMillis = timestampSeconds * 1000;
+            assertEquals(timestampMillis, context.mower.getAttributes().getMetadata().getStatusTimestamp());
+            assertEquals(timestampMillis, context.mower.getAttributes().getMower().getErrorCodeTimestamp());
+            assertEquals(timestampMillis, context.mower.getAttributes().getPlanner().getNextStartTimestamp());
         } finally {
             context.handler.dispose();
         }

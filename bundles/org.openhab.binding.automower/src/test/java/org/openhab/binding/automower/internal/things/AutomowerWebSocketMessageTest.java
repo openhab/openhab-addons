@@ -144,7 +144,7 @@ class AutomowerWebSocketMessageTest {
                 mowerApp.getState());
         assertEquals(123, mowerApp.getErrorCode());
         assertEquals(true, mowerApp.getIsErrorConfirmable());
-        assertEquals(1720000000L, mowerApp.getErrorCodeTimestamp());
+        assertEquals(1720000000000L, mowerApp.getErrorCodeTimestamp());
         assertEquals(17746L, mowerApp.getWorkAreaId());
     }
 
