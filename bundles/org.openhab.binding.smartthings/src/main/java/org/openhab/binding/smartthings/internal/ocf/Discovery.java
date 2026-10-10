@@ -17,8 +17,10 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,7 @@ import org.eclipse.californium.core.config.CoapConfig;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.elements.EndpointContext;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.Thing;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -40,7 +43,14 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public final class Discovery {
-    public record Descriptor(String deviceId, String name, int securePort) {
+    public record Descriptor(String deviceId, String name, int securePort, Map<String, String> properties) {
+        public Descriptor(String deviceId, String name, int securePort) {
+            this(deviceId, name, securePort, Map.of());
+        }
+
+        public Descriptor {
+            properties = Map.copyOf(properties);
+        }
     }
 
     private Discovery() {
@@ -101,7 +111,11 @@ public final class Discovery {
                 JsonElement device = get(endpoint, host, port, "/oic/d", "", deadline, 0);
                 Descriptor descriptor = descriptor(resources, device, host);
                 if (samsungOnly) {
-                    verifySamsung(get(endpoint, host, port, "/oic/p", "", deadline, 0), descriptor.deviceId());
+                    Map<String, String> properties = new LinkedHashMap<>(descriptor.properties());
+                    properties.putAll(
+                            verifySamsung(get(endpoint, host, port, "/oic/p", "", deadline, 0), descriptor.deviceId()));
+                    descriptor = new Descriptor(descriptor.deviceId(), descriptor.name(), descriptor.securePort(),
+                            properties);
                 }
                 return descriptor;
             } catch (IOException e) {
@@ -169,6 +183,14 @@ public final class Discovery {
             if (deviceId.isEmpty()) {
                 throw new IOException("No appliance identity was advertised");
             }
+            Map<String, String> properties = new LinkedHashMap<>();
+            Set<String> deviceTypes = new LinkedHashSet<>();
+            for (JsonObject representation : devices) {
+                addDeviceTypes(representation.get("rt"), deviceTypes);
+            }
+            if (!deviceTypes.isEmpty()) {
+                properties.put("deviceType", String.join(", ", deviceTypes));
+            }
             Set<Integer> securePorts = new LinkedHashSet<>();
             for (JsonObject listing : objects(resources)) {
                 if (listing.has("di") && !deviceId.equalsIgnoreCase(string(listing, "di"))) {
@@ -185,14 +207,15 @@ public final class Discovery {
             if (securePorts.size() != 1) {
                 throw new IOException("No unique secure appliance endpoint was advertised");
             }
-            return new Descriptor(deviceId, name, securePorts.iterator().next());
+            return new Descriptor(deviceId, name, securePorts.iterator().next(), properties);
         } catch (IllegalArgumentException | IllegalStateException | ArithmeticException e) {
             throw new IOException("Invalid appliance discovery representation");
         }
     }
 
-    static void verifySamsung(JsonElement platform, String deviceId) throws IOException {
+    static Map<String, String> verifySamsung(JsonElement platform, String deviceId) throws IOException {
         boolean found = false;
+        Map<String, String> properties = new LinkedHashMap<>();
         try {
             for (JsonObject representation : objects(platform)) {
                 // A platform UUID (pi) is distinct from the device UUID (di).
@@ -206,13 +229,49 @@ public final class Discovery {
                         throw new IOException("Not a Samsung appliance");
                     }
                     found = true;
+                    properties.put(Thing.PROPERTY_VENDOR, manufacturer);
                 }
+                addOptionalProperty(representation, "mnmo", Thing.PROPERTY_MODEL_ID, properties);
+                addOptionalProperty(representation, "mnfv", Thing.PROPERTY_FIRMWARE_VERSION, properties);
+                addOptionalProperty(representation, "mnhw", Thing.PROPERTY_HARDWARE_VERSION, properties);
             }
         } catch (IllegalArgumentException | IllegalStateException e) {
             throw new IOException("Invalid appliance platform representation");
         }
         if (!found) {
             throw new IOException("No Samsung manufacturer was advertised");
+        }
+        return properties;
+    }
+
+    private static void addOptionalProperty(JsonObject representation, String key, String property,
+            Map<String, String> properties) {
+        JsonElement value = representation.get(key);
+        if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+            String text = value.getAsString().trim();
+            if (!text.isEmpty()) {
+                properties.put(property, text);
+            }
+        }
+    }
+
+    private static void addDeviceTypes(JsonElement value, Set<String> deviceTypes) {
+        if (value == null) {
+            return;
+        }
+        if (value.isJsonArray()) {
+            value.getAsJsonArray().forEach(type -> addDeviceType(type, deviceTypes));
+        } else {
+            addDeviceType(value, deviceTypes);
+        }
+    }
+
+    private static void addDeviceType(JsonElement value, Set<String> deviceTypes) {
+        if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+            String type = value.getAsString().trim();
+            if (type.startsWith("oic.d.")) {
+                deviceTypes.add(type);
+            }
         }
     }
 

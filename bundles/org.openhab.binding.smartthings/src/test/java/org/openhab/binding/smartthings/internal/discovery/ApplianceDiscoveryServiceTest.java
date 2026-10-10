@@ -40,6 +40,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.ScanListener;
 import org.openhab.core.net.CidrAddress;
 import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.thing.Thing;
 
 /**
  * Manual discovery, stable results and cancellation across bounded concurrent scans.
@@ -267,7 +268,10 @@ class ApplianceDiscoveryServiceTest {
         var current = create(Map.of("discoverySubnet", "10.0.0.50/32"), (host, timeout) -> {
             assertEquals(3, timeout);
             assertEquals("10.0.0.50", host.getHostAddress());
-            return descriptor(IDENTITY);
+            return new Discovery.Descriptor(IDENTITY, "Samsung Appliance", 49155,
+                    Map.of("deviceType", "oic.d.airconditioner", Thing.PROPERTY_VENDOR, "Samsung",
+                            Thing.PROPERTY_MODEL_ID, "ACME-100", Thing.PROPERTY_FIRMWARE_VERSION, "1.2.3",
+                            Thing.PROPERTY_HARDWARE_VERSION, "R1"));
         });
         for (int i = 0; i < 2; i++) {
             Completion completion = new Completion();
@@ -280,7 +284,11 @@ class ApplianceDiscoveryServiceTest {
         DiscoveryResult result = results.getFirst();
         assertEquals("smartthings:appliance:" + IDENTITY, result.getThingUID().toString());
         assertEquals("deviceId", result.getRepresentationProperty());
-        assertEquals(Map.of("host", "10.0.0.50", "port", 49155, "deviceId", IDENTITY), result.getProperties());
+        assertEquals(
+                Map.of("host", "10.0.0.50", "port", 49155, "deviceId", IDENTITY, "deviceType", "oic.d.airconditioner",
+                        Thing.PROPERTY_VENDOR, "Samsung", Thing.PROPERTY_MODEL_ID, "ACME-100",
+                        Thing.PROPERTY_FIRMWARE_VERSION, "1.2.3", Thing.PROPERTY_HARDWARE_VERSION, "R1"),
+                result.getProperties());
         assertEquals("Samsung Appliance", result.getLabel());
     }
 

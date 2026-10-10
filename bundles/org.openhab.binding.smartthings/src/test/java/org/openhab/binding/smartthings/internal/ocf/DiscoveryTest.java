@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +33,7 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.openhab.core.thing.Thing;
 
 import com.google.gson.JsonParser;
 
@@ -59,6 +61,17 @@ class DiscoveryTest {
         assertEquals(49155, descriptor.securePort());
         assertEquals(IDENTITY, descriptor.deviceId());
         assertEquals("Samsung Room A/C", descriptor.name());
+        assertEquals("oic.d.airconditioner", descriptor.properties().get("deviceType"));
+    }
+
+    @Test
+    void ignoresMalformedOptionalDeviceTypes() throws Exception {
+        var descriptor = Discovery.descriptor(JsonParser.parseString("""
+                {"links":[{"eps":[{"ep":"coaps://192.0.2.10:49155"}]}]}
+                """), JsonParser.parseString("""
+                {"di":"12345678-1234-5678-9abc-123456789abc","rt":[false,42]}
+                """), host);
+        assertTrue(descriptor.properties().isEmpty());
     }
 
     @Test
@@ -111,8 +124,18 @@ class DiscoveryTest {
                             "{\"mnmn\":\"" + manufacturer + "\",\"pi\":\"87654321-4321-6789-abcd-987654321abc\"}"),
                     IDENTITY);
         }
-        Discovery.verifySamsung(
-                JsonParser.parseString("[{\"di\":\"" + IDENTITY + "\",\"mnmn\":\"Samsung Electronics\"}]"), IDENTITY);
+        var properties = Discovery.verifySamsung(JsonParser.parseString("""
+                {"mnmn":"Samsung Electronics","mnmo":"ACME-100","mnfv":"1.2.3","mnhw":"R1"}
+                """), IDENTITY);
+        assertEquals("Samsung Electronics", properties.get(Thing.PROPERTY_VENDOR));
+        assertEquals("ACME-100", properties.get(Thing.PROPERTY_MODEL_ID));
+        assertEquals("1.2.3", properties.get(Thing.PROPERTY_FIRMWARE_VERSION));
+        assertEquals("R1", properties.get(Thing.PROPERTY_HARDWARE_VERSION));
+        assertEquals(Map.of(Thing.PROPERTY_VENDOR, "Samsung Electronics", Thing.PROPERTY_MODEL_ID, "ACME-100",
+                Thing.PROPERTY_FIRMWARE_VERSION, "1.2.3", Thing.PROPERTY_HARDWARE_VERSION, "R1"), properties);
+        assertEquals(Map.of(Thing.PROPERTY_VENDOR, "Samsung"), Discovery.verifySamsung(JsonParser.parseString("""
+                {"mnmn":"Samsung","mnmo":42,"mnfv":null,"mnhw":" "}
+                """), IDENTITY));
     }
 
     @Test

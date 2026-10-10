@@ -40,7 +40,9 @@ To override the default, use `192.168.1.0/24` to scan a different home subnet, o
 A full `/24` scan can take about three minutes; results appear when it completes.
 Cancelling, restarting, or changing the scan configuration discards incomplete results.
 
-Discovery fills in the appliance address, secure port, and expected device UUID.
+Discovery fills in the appliance address, secure port, and expected device UUID. When advertised, it also adds
+OCF device type and Samsung manufacturer, model, firmware, and hardware versions to the Thing properties.
+Optional metadata is omitted when the appliance does not provide it.
 It uses read-only, unauthenticated advertisements and does not pair the appliance, change its settings, or establish trust.
 The appliance must advertise a device UUID, a secure port, and Samsung manufacturer information.
 Some firmware does not provide this information; if your appliance is not found, try [manual Thing configuration](#thing-configuration).

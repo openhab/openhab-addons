@@ -253,9 +253,12 @@ public class ApplianceDiscoveryService extends AbstractDiscoveryService {
     }
 
     static DiscoveryResult result(String host, Discovery.Descriptor descriptor) {
-        return DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_APPLIANCE, descriptor.deviceId()))
-                .withLabel(descriptor.name()).withProperty("host", host).withProperty("port", descriptor.securePort())
-                .withProperty("deviceId", descriptor.deviceId()).withRepresentationProperty("deviceId").build();
+        DiscoveryResultBuilder builder = DiscoveryResultBuilder
+                .create(new ThingUID(THING_TYPE_APPLIANCE, descriptor.deviceId())).withLabel(descriptor.name())
+                .withProperty("host", host).withProperty("port", descriptor.securePort())
+                .withProperty("deviceId", descriptor.deviceId()).withRepresentationProperty("deviceId");
+        descriptor.properties().forEach(builder::withProperty);
+        return builder.build();
     }
 
     @Override
