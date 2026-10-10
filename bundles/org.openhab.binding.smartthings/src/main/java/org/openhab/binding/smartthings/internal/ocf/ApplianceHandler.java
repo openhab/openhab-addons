@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.LongSupplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,7 +49,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * Polling and capability-checked control of an authenticated Samsung OCF appliance.
+ * Event-driven state updates and capability-checked control of an authenticated Samsung OCF appliance.
  *
  * @author Kai Kreuzer - Initial contribution
  */
@@ -58,12 +59,15 @@ public class ApplianceHandler extends BaseThingHandler {
     private static final String COLLECTION = "/device/0";
     private static final String DEVICE_ID_PROPERTY = "deviceId";
     private static final int MAX_PENDING_COMMANDS = 16;
+    private static final int MAX_PENDING_NOTIFICATIONS = 128;
+    private static final int MAX_OBSERVATION_RETRY_SECONDS = 300;
     private final Logger logger = LoggerFactory.getLogger(ApplianceHandler.class);
     private final Object lifecycle = new Object();
     private final ReentrantLock io = new ReentrantLock();
     private final TransportFactory transportFactory;
     private final ApplianceDescriptionProvider descriptionProvider;
     private final ScheduledExecutorService executor;
+    private final LongSupplier nanoTime;
     private volatile @Nullable Session session;
     private long generation;
 
@@ -75,10 +79,63 @@ public class ApplianceHandler extends BaseThingHandler {
     private record PendingCommand(String channel, Command command) {
     }
 
+    private record Notification(Observation observation, JsonElement payload) {
+    }
+
+    private final class Observation implements Transport.Listener {
+        final Session owner;
+        final String href;
+        Transport.@Nullable Subscription subscription;
+        final long started;
+        boolean established;
+        boolean failed;
+        int failures;
+        long retryAt;
+
+        Observation(Session owner, String href, int failures) {
+            this.owner = owner;
+            this.href = href;
+            this.failures = failures;
+            started = nanoTime.getAsLong();
+        }
+
+        @Override
+        public void onUpdate(JsonElement representation) {
+            synchronized (lifecycle) {
+                if (!isActive(owner) || !equals(owner.observations.get(href)) || failed) {
+                    return;
+                }
+                if (owner.notifications.size() >= MAX_PENDING_NOTIFICATIONS) {
+                    onFailure();
+                    return;
+                }
+                owner.notifications.addLast(new Notification(this, representation));
+                startWorker(owner);
+            }
+        }
+
+        @Override
+        public void onFailure() {
+            synchronized (lifecycle) {
+                if (isActive(owner) && equals(owner.observations.get(href)) && !failed) {
+                    failed = true;
+                    failures = Math.min(failures + 1, 6);
+                    long delay = Math.min((long) owner.configuration.refreshInterval << (failures - 1),
+                            Math.max(owner.configuration.refreshInterval, MAX_OBSERVATION_RETRY_SECONDS));
+                    retryAt = nanoTime.getAsLong() + TimeUnit.SECONDS.toNanos(delay);
+                    owner.notifications.removeIf(notification -> notification.observation().equals(this));
+                    schedulePoll(owner);
+                }
+            }
+        }
+    }
+
     private static final class Session {
         final ApplianceConfiguration configuration;
         final Resources resources = new Resources();
         final ArrayDeque<PendingCommand> commands = new ArrayDeque<>();
+        final ArrayDeque<Notification> notifications = new ArrayDeque<>();
+        final Map<String, Observation> observations = new HashMap<>();
         @Nullable
         UUID identity;
         volatile @Nullable Transport transport;
@@ -88,6 +145,7 @@ public class ApplianceHandler extends BaseThingHandler {
         ScheduledFuture<?> worker;
         boolean running;
         boolean refresh = true;
+        boolean fallback;
 
         Session(ApplianceConfiguration configuration, @Nullable UUID identity) {
             this.configuration = configuration;
@@ -104,14 +162,16 @@ public class ApplianceHandler extends BaseThingHandler {
         this.transportFactory = CoapTransport::new;
         this.descriptionProvider = descriptionProvider;
         this.executor = scheduler;
+        this.nanoTime = System::nanoTime;
     }
 
     ApplianceHandler(Thing thing, TransportFactory transportFactory, ScheduledExecutorService executor,
-            ApplianceDescriptionProvider descriptionProvider) {
+            ApplianceDescriptionProvider descriptionProvider, LongSupplier nanoTime) {
         super(thing);
         this.transportFactory = transportFactory;
         this.descriptionProvider = descriptionProvider;
         this.executor = executor;
+        this.nanoTime = nanoTime;
     }
 
     @Override
@@ -159,6 +219,8 @@ public class ApplianceHandler extends BaseThingHandler {
             descriptionProvider.retainDescriptions(getThing().getUID(), Set.of());
             if (previous != null) {
                 previous.commands.clear();
+                previous.notifications.clear();
+                previous.observations.clear();
                 if (previous.poll != null) {
                     previous.poll.cancel(false);
                 }
@@ -204,15 +266,20 @@ public class ApplianceHandler extends BaseThingHandler {
     private void runWorker(Session current) {
         while (true) {
             PendingCommand pending;
+            Notification notification;
             boolean refresh;
+            boolean fallback;
             synchronized (lifecycle) {
                 if (!isActive(current)) {
                     return;
                 }
-                refresh = current.refresh;
+                fallback = current.fallback && !current.refresh;
+                refresh = current.refresh || current.fallback;
                 current.refresh = false;
+                current.fallback = false;
                 pending = refresh ? null : current.commands.pollFirst();
-                if (!refresh && pending == null) {
+                notification = refresh || pending != null ? null : current.notifications.pollFirst();
+                if (!refresh && pending == null && notification == null) {
                     current.running = false;
                     current.worker = null;
                     return;
@@ -234,9 +301,14 @@ public class ApplianceHandler extends BaseThingHandler {
                         }
                     }
                     if (refresh) {
-                        readResources(current, transport, current.resources);
+                        if (!fallback || !pollFallback(current, transport)) {
+                            readResources(current, transport, current.resources);
+                        }
+                        subscribe(current, transport);
                     } else if (pending != null) {
                         sendCommand(current, transport, pending);
+                    } else if (notification != null && !applyNotification(current, notification)) {
+                        continue;
                     }
                 } finally {
                     io.unlock();
@@ -268,19 +340,145 @@ public class ApplianceHandler extends BaseThingHandler {
         }
     }
 
+    private void subscribe(Session current, Transport transport) {
+        for (Map.Entry<String, JsonObject> entry : current.resources.snapshot().entrySet()) {
+            String href = entry.getKey();
+            if (IDENTITY.equals(href) || COLLECTION.equals(href) || isSecurityResource(href)
+                    || isStub(entry.getValue())) {
+                continue;
+            }
+            Observation observation;
+            Observation previous;
+            synchronized (lifecycle) {
+                if (!isActive(current)) {
+                    return;
+                }
+                previous = current.observations.get(href);
+                if (previous != null && (!previous.failed || nanoTime.getAsLong() - previous.retryAt < 0)) {
+                    continue;
+                }
+                observation = new Observation(current, href, previous == null ? 0 : previous.failures);
+                current.observations.put(href, observation);
+            }
+            if (previous != null && previous.subscription != null) {
+                previous.subscription.close();
+            }
+            try {
+                Transport.Subscription subscription = transport.observe(href, observation);
+                synchronized (lifecycle) {
+                    observation.subscription = subscription;
+                }
+                if (!isActive(current)) {
+                    subscription.close();
+                    return;
+                }
+            } catch (IOException e) {
+                observation.onFailure();
+                logger.debug("Appliance resource observation unavailable; retaining fallback polling");
+            }
+        }
+    }
+
+    private boolean applyNotification(Session current, Notification notification) {
+        Observation observation = notification.observation();
+        synchronized (lifecycle) {
+            if (!isActive(current) || !observation.equals(current.observations.get(observation.href))
+                    || observation.failed) {
+                return false;
+            }
+            try {
+                current.resources.update(observation.href, notification.payload());
+                // A successful initial response alone does not prove that push delivery has recovered.
+                if (observation.established) {
+                    observation.failures = 0;
+                }
+                observation.established = true;
+                schedulePoll(current);
+                return true;
+            } catch (IOException | IllegalArgumentException e) {
+                observation.onFailure();
+                logger.debug("Malformed appliance notification; retaining fallback polling");
+                return false;
+            }
+        }
+    }
+
+    private boolean pollFallback(Session current, Transport transport) throws IOException {
+        List<Observation> affected;
+        synchronized (lifecycle) {
+            if (current.observations.isEmpty()) {
+                return false;
+            }
+            // Drain initial responses before deciding which registrations have timed out.
+            Notification notification;
+            while ((notification = current.notifications.pollFirst()) != null) {
+                applyNotification(current, notification);
+            }
+            affected = current.observations.values().stream()
+                    .filter(observation -> !observation.established || observation.failed).toList();
+            for (Observation observation : affected) {
+                if (!observation.failed && nanoTime.getAsLong() - observation.started >= TimeUnit.SECONDS
+                        .toNanos(current.configuration.timeout)) {
+                    observation.onFailure();
+                }
+            }
+        }
+        boolean readFailed = false;
+        boolean received = false;
+        for (Observation observation : affected) {
+            if (!isActive(current)) {
+                return true;
+            }
+            Transport.Subscription subscription;
+            synchronized (lifecycle) {
+                subscription = observation.failed ? observation.subscription : null;
+                if (subscription != null) {
+                    observation.subscription = null;
+                }
+            }
+            if (subscription != null) {
+                subscription.close();
+            }
+            try {
+                mergeReadResponse(current, current.resources, observation.href, transport.get(observation.href));
+                received = true;
+            } catch (IOException e) {
+                readFailed = true;
+                logger.debug("Appliance fallback resource read unavailable");
+            }
+        }
+        if (!received && readFailed) {
+            // An optional resource may be unavailable while the authenticated connection is still healthy.
+            verifyIdentity(current, transport.get(IDENTITY));
+        }
+        return true;
+    }
+
+    private void mergeReadResponse(Session current, Resources resources, String href, JsonElement payload)
+            throws IOException {
+        synchronized (lifecycle) {
+            // Merge queued partial events first so they cannot subsequently overwrite a newer readback.
+            Notification notification;
+            while ((notification = current.notifications.pollFirst()) != null) {
+                applyNotification(current, notification);
+            }
+            resources.update(href, payload);
+        }
+    }
+
     private void readResources(Session current, Transport transport, Resources resources) throws IOException {
         JsonElement identity = transport.get(IDENTITY);
         verifyIdentity(current, identity);
-        resources.update(IDENTITY, identity);
+        mergeReadResponse(current, resources, IDENTITY, identity);
         JsonElement payload = transport.get(COLLECTION);
         Resources received = new Resources();
         received.update(COLLECTION, payload);
-        resources.update(COLLECTION, payload);
+        mergeReadResponse(current, resources, COLLECTION, payload);
         if (!hasBatchRepresentation(payload)) {
             try {
                 JsonElement batch = transport.get(COLLECTION + "?if=oic.if.b");
                 received.update(COLLECTION, batch);
-                resources.update(COLLECTION, batch);
+                mergeReadResponse(current, resources, COLLECTION, batch);
             } catch (IOException e) {
                 // Some appliances expose only collection links, which can still be hydrated individually.
                 logger.debug("Appliance batch interface unavailable; reading linked resources instead");
@@ -300,7 +498,7 @@ public class ApplianceHandler extends BaseThingHandler {
                 try {
                     JsonElement representation = transport.get(href);
                     received.update(href, representation);
-                    resources.update(href, representation);
+                    mergeReadResponse(current, resources, href, representation);
                 } catch (IOException e) {
                     // Optional enrichment must not invalidate a successful baseline batch read.
                     logger.debug("A linked appliance resource could not be read");
@@ -369,7 +567,7 @@ public class ApplianceHandler extends BaseThingHandler {
                 try {
                     JsonElement payload = transport.get(href);
                     live.update(href, payload);
-                    current.resources.update(href, payload);
+                    mergeReadResponse(current, current.resources, href, payload);
                 } catch (IOException e) {
                     if (href.equals(previous.href()) || href.endsWith("/remotectrl/0")
                             || href.endsWith("/remotectrl/vs/0") || previous.itemType().equals("Number:Temperature")
@@ -395,7 +593,7 @@ public class ApplianceHandler extends BaseThingHandler {
         // POST is never retried: a failed acknowledgement may still mean the appliance applied the write.
         transport.post(point.href(), fields);
         if (isActive(current)) {
-            current.resources.update(point.href(), transport.get(point.href()));
+            mergeReadResponse(current, current.resources, point.href(), transport.get(point.href()));
         }
     }
 
@@ -457,23 +655,43 @@ public class ApplianceHandler extends BaseThingHandler {
     }
 
     private void failure(Session current, ThingStatusDetail detail, String message) {
+        Transport transport;
         synchronized (lifecycle) {
-            if (isActive(current)) {
-                updateStatus(ThingStatus.OFFLINE, detail, message);
+            if (!isActive(current)) {
+                return;
             }
+            transport = current.transport;
+            current.transport = null;
+            current.observations.clear();
+            current.notifications.clear();
+            schedulePoll(current);
+            updateStatus(ThingStatus.OFFLINE, detail, message);
+        }
+        if (transport != null) {
+            transport.close();
         }
     }
 
     private void schedulePoll(Session current) {
         synchronized (lifecycle) {
             if (isActive(current)) {
-                if (current.poll != null) {
-                    current.poll.cancel(false);
+                boolean observed = !current.observations.isEmpty() && current.observations.values().stream()
+                        .allMatch(observation -> observation.established && !observation.failed);
+                if (observed) {
+                    if (current.poll != null) {
+                        current.poll.cancel(false);
+                        current.poll = null;
+                    }
+                    return;
+                }
+                if (current.poll != null && !current.poll.isDone()) {
+                    return;
                 }
                 current.poll = executor.schedule(() -> {
                     synchronized (lifecycle) {
                         if (isActive(current)) {
-                            current.refresh = true;
+                            current.poll = null;
+                            current.fallback = true;
                             startWorker(current);
                         }
                     }

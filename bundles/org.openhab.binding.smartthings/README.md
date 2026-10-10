@@ -107,7 +107,7 @@ Never publish your key store, passwords, OwnerPSK, or owner UUID in logs, suppor
 | `host`              | —       | Required appliance IP address or host name.                                                           |
 | `port`              | `0`     | Secure CoAP port; `0` discovers the advertised port from this host.                                    |
 | `clientPort`         | `0`     | Client UDP port; `0` selects a deterministic stable port. Override if multiple Things conflict.        |
-| `refreshInterval`   | `60`    | Poll delay in seconds, minimum `10`.                                                                  |
+| `refreshInterval`   | `60`    | Fallback poll delay in seconds, minimum `10`; used when resource subscriptions are unavailable.       |
 | `timeout`           | `12`    | Per-request timeout in seconds, from `1` to `60`.                                                      |
 | `deviceId`          | —       | Optional expected appliance UUID, checked against authenticated `/oic/d`.                             |
 | `keyStore`          | —       | Optional imported client PKCS12 path; empty generates a persistent identity.                                                 |
@@ -153,13 +153,19 @@ The channels expose appliance-specific state and command descriptions: advertise
 These descriptions are refreshed alongside resource readings; read-only channels expose no command choices.
 Known appliance resources are mapped to appropriately typed channels. Unknown resources remain cached internally but do not create generic `Resource ...` channels; security resources are excluded from the cache and never exposed.
 
-The binding polls `/device/0`, requests the batch interface only when necessary, and reads linked resource stubs individually.
+The binding initially reads `/device/0`, requests the batch interface only when necessary, and reads linked resource stubs individually.
+It then subscribes to resource changes using CoAP Observe over the authenticated DTLS connection, updating channel states as notifications arrive.
+Periodic polling stops once subscriptions for all successfully read resources are established. If any subscription is pending, unsupported, malformed, or fails, polling continues at `refreshInterval` only for the affected resources; healthy subscriptions continue delivering immediate updates without redundant reads or re-registration.
+Failed subscriptions are retried with exponential backoff, starting at `refreshInterval` and capped at five minutes (or `refreshInterval` if longer). Repeated initial registration responses alone do not reset the backoff; subsequent notifications do.
+Registrations without an initial valid response expire after `timeout` and are canceled and retried during fallback polling. An unchanged resource is not considered failed merely because it sends no subsequent notifications.
+If fallback reads fail, an authenticated identity read distinguishes an unavailable resource from a failed connection. Explicit `REFRESH` still performs a full resource refresh.
+Subscriptions are automatically renewed according to the device's notification Max-Age and are canceled when the Thing is disposed or reinitialized.
 Partial representations preserve previously received fields rather than turning missing readings into zero or empty states.
 `REFRESH` only reads; it does not write to the appliance.
 Every write is serialized, revalidates live capabilities and Remote Control, and is followed by a readback instead of an optimistic state update.
 A failed POST is not retried automatically because the appliance may already have applied it.
-Some appliances acknowledge a write before their readings change; an immediate readback may still show the previous value until a subsequent poll.
-Communication failures set the Thing offline, and subsequent polls can restore it online.
+Some appliances acknowledge a write before their readings change; an immediate readback may still show the previous value until a subsequent notification or fallback poll.
+Communication failures set the Thing offline, cancel subscriptions, and enable fallback polling to reauthenticate and restore it online.
 
 For troubleshooting, first check network reachability, the advertised port, identity storage permissions, any imported credentials or certificate pin, and the appliance's Remote Control setting.
 Do not share credentials or bypass DTLS verification.

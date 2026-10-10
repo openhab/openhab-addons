@@ -20,9 +20,11 @@ import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstan
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -31,6 +33,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
@@ -108,7 +111,8 @@ class ApplianceHandlerTest {
             afterThingUpdate.run();
             return null;
         }).when(callback).thingUpdated(any());
-        ApplianceHandler handler = new ApplianceHandler(thing, config -> transport, executor, descriptionProvider);
+        ApplianceHandler handler = new ApplianceHandler(thing, config -> transport, executor, descriptionProvider,
+                executor.nanoTime::get);
         handlers.add(handler);
         handler.setCallback(callback);
         assertTimeoutPreemptively(Duration.ofSeconds(2), handler::initialize);
@@ -148,6 +152,369 @@ class ApplianceHandlerTest {
         assertFalse(handler.getThing().getProperties().containsKey("ownerId"));
         assertEquals(List.of("/oic/d", "/device/0"), transport.reads);
         assertEquals(1, changes.size());
+    }
+
+    @Test
+    void observationsPublishImmediatelyWithoutPollingAndRetainPartialFields() throws Exception {
+        transport.observe = true;
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(2, transport.listeners.size());
+        transport.listeners.get("/power/0").onUpdate(json("{\"value\":false}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(OnOffType.OFF, states.get(channel(handler, "Power").getUID().getId()));
+        transport.listeners.get("/remotectrl/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        assertFalse(executor.hasActivePoll());
+        transport.listeners.get("/power/0").onUpdate(json("{\"rt\":[\"oic.r.switch.binary\"]}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(OnOffType.OFF, states.get(channel(handler, "Power").getUID().getId()));
+        assertEquals(List.of("/oic/d", "/device/0"), transport.reads);
+    }
+
+    @Test
+    void observationFailureRestoresPollingAndRetriesSubscriptions() throws Exception {
+        transport.observe = true;
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        Transport.Listener old = transport.listeners.get("/power/0");
+        old.onUpdate(json("{\"value\":true}"));
+        transport.listeners.get("/remotectrl/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        assertFalse(executor.hasActivePoll());
+        old.onFailure();
+        assertTrue(executor.hasActivePoll());
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertNotSame(old, transport.listeners.get("/power/0"));
+        assertEquals(1, transport.subscriptionsClosed.get());
+        old.onUpdate(json("{\"value\":false}"));
+        executor.awaitWorkers();
+        assertEquals(OnOffType.ON, states.get(channel(handler, "Power").getUID().getId()));
+        transport.listeners.get("/power/0").onUpdate(json("{\"value\":false}"));
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        assertFalse(executor.hasActivePoll());
+    }
+
+    @Test
+    void repeatedFailuresBackOffEvenWhenInitialRegistrationSucceeds() throws Exception {
+        transport.observe = true;
+        initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        transport.listeners.get("/power/0").onUpdate(json("{\"value\":true}"));
+        transport.listeners.get("/remotectrl/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        awaitStatus(ThingStatus.ONLINE);
+        transport.listeners.get("/power/0").onFailure();
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        Transport.Listener replacement = transport.listeners.get("/power/0");
+        replacement.onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        replacement.onFailure();
+        replacement.onFailure();
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertSame(replacement, transport.listeners.get("/power/0"));
+        assertEquals(2, transport.observeAttempts.get("/power/0").get());
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertNotSame(replacement, transport.listeners.get("/power/0"));
+        assertEquals(3, transport.observeAttempts.get("/power/0").get());
+        assertEquals(2, transport.subscriptionsClosed.get());
+        Transport.Listener recovered = transport.listeners.get("/power/0");
+        recovered.onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        recovered.onUpdate(json("{\"value\":false}"));
+        awaitStatus(ThingStatus.ONLINE);
+        recovered.onFailure();
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(4, transport.observeAttempts.get("/power/0").get());
+        assertEquals(1, transport.observeAttempts.get("/remotectrl/0").get());
+        assertEquals(1, Collections.frequency(transport.reads, "/device/0"));
+        assertEquals(0, Collections.frequency(transport.reads, "/remotectrl/0"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 10, 60, 600 })
+    void unsupportedSubscriptionsBackOffWithABoundedDelayWhilePollingContinues(int interval) throws Exception {
+        transport.observe = true;
+        transport.unobserved = "/remotectrl/0";
+        initialize(Map.of("refreshInterval", interval), Map.of());
+        awaitStatus(ThingStatus.ONLINE);
+        transport.listeners.get("/power/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        int attempts = 1;
+        int polls = 0;
+        for (int retry = 0; retry < 7; retry++) {
+            int delay = Math.min(interval << retry, Math.max(interval, 300));
+            for (int elapsed = interval; elapsed <= delay; elapsed += interval) {
+                executor.firePoll();
+                awaitStatus(ThingStatus.ONLINE);
+                polls++;
+                assertEquals(attempts + (elapsed == delay ? 1 : 0),
+                        transport.observeAttempts.get("/remotectrl/0").get());
+            }
+            attempts++;
+        }
+        assertEquals(polls, Collections.frequency(transport.reads, "/remotectrl/0"));
+        assertEquals(0, Collections.frequency(transport.reads, "/power/0"));
+        assertEquals(1, transport.observeAttempts.get("/power/0").get());
+    }
+
+    @Test
+    void pendingRegistrationsExpireAndRecoverWithoutLateUpdates() throws Exception {
+        transport.observe = true;
+        ApplianceHandler handler = initialize(Map.of("timeout", 1), Map.of());
+        awaitStatus(ThingStatus.ONLINE);
+        Transport.Listener pending = transport.listeners.get("/power/0");
+        transport.power = false;
+        transport.listeners.get("/remotectrl/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(1, transport.subscriptionsClosed.get());
+        assertEquals(OnOffType.OFF, states.get(channel(handler, "Power").getUID().getId()));
+        pending.onUpdate(json("{\"value\":true}"));
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertNotSame(pending, transport.listeners.get("/power/0"));
+        assertEquals(OnOffType.OFF, states.get(channel(handler, "Power").getUID().getId()));
+        transport.listeners.get("/power/0").onUpdate(json("{\"value\":false}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertFalse(executor.hasActivePoll());
+    }
+
+    @Test
+    void simultaneousFailuresPreserveHealthyPushesAndCoalesceFallbackReads() throws Exception {
+        transport.observe = true;
+        StringBuilder batch = new StringBuilder("[{\"href\":\"/power/0\",\"rep\":{\"value\":true}}");
+        for (int index = 0; index < 17; index++) {
+            batch.append(",{\"href\":\"/optional/").append(index).append("\",\"rep\":{\"value\":true}}");
+        }
+        transport.batch = json(batch.append(']').toString());
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        for (Transport.Listener listener : transport.listeners.values()) {
+            listener.onUpdate(json("{\"value\":true}"));
+        }
+        for (int index = 0; index < 18; index++) {
+            awaitStatus(ThingStatus.ONLINE);
+        }
+        Transport.Listener power = transport.listeners.get("/power/0");
+        for (int index = 0; index < 17; index++) {
+            transport.listeners.get("/optional/" + index).onFailure();
+        }
+        power.onUpdate(json("{\"value\":false}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(OnOffType.OFF, states.get(channel(handler, "Power").getUID().getId()));
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(17, transport.subscriptionsClosed.get());
+        assertEquals(19, transport.reads.size());
+        assertSame(power, transport.listeners.get("/power/0"));
+        assertEquals(OnOffType.OFF, states.get(channel(handler, "Power").getUID().getId()));
+        for (int index = 0; index < 17; index++) {
+            String href = "/optional/" + index;
+            assertEquals(2, transport.observeAttempts.get(href).get());
+            assertEquals(1, Collections.frequency(transport.reads, href));
+            transport.listeners.get(href).onUpdate(json("{\"value\":true}"));
+        }
+        for (int index = 0; index < 17; index++) {
+            awaitStatus(ThingStatus.ONLINE);
+        }
+        assertFalse(executor.hasActivePoll());
+    }
+
+    @Test
+    void unavailableOptionalFallbackResourceDoesNotDiscardHealthySubscriptions() throws Exception {
+        transport.observe = true;
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        Transport.Listener power = transport.listeners.get("/power/0");
+        power.onUpdate(json("{\"value\":true}"));
+        transport.listeners.get("/remotectrl/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        awaitStatus(ThingStatus.ONLINE);
+        transport.unavailable = "/remotectrl/0";
+        transport.listeners.get("/remotectrl/0").onFailure();
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertSame(power, transport.listeners.get("/power/0"));
+        assertEquals(2, Collections.frequency(transport.reads, "/oic/d"));
+        assertFalse(statuses.stream().anyMatch(status -> status.getStatus() == ThingStatus.OFFLINE));
+        power.onUpdate(json("{\"value\":false}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(OnOffType.OFF, states.get(channel(handler, "Power").getUID().getId()));
+    }
+
+    @Test
+    void failedFallbackConnectionReauthenticatesAndReestablishesSubscriptions() throws Exception {
+        transport.observe = true;
+        initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        Transport.Listener old = transport.listeners.get("/power/0");
+        old.onUpdate(json("{\"value\":true}"));
+        transport.listeners.get("/remotectrl/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        awaitStatus(ThingStatus.ONLINE);
+        old.onFailure();
+        transport.failRead = true;
+        executor.firePoll();
+        awaitStatus(ThingStatus.OFFLINE);
+        assertTrue(transport.closed.await(WAIT_SECONDS, TimeUnit.SECONDS));
+        transport.failRead = false;
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertNotSame(old, transport.listeners.get("/power/0"));
+        assertEquals(2, Collections.frequency(transport.reads, "/device/0"));
+        transport.listeners.get("/power/0").onUpdate(json("{\"value\":false}"));
+        transport.listeners.get("/remotectrl/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        awaitStatus(ThingStatus.ONLINE);
+        assertFalse(executor.hasActivePoll());
+    }
+
+    @Test
+    void explicitRefreshDoesNotBypassSubscriptionBackoff() throws Exception {
+        transport.observe = true;
+        transport.unobserved = "/remotectrl/0";
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        transport.listeners.get("/power/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        handler.handleCommand(channel(handler, "Power").getUID(), RefreshType.REFRESH);
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(2, Collections.frequency(transport.reads, "/device/0"));
+        assertEquals(1, transport.observeAttempts.get("/remotectrl/0").get());
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(2, transport.observeAttempts.get("/remotectrl/0").get());
+    }
+
+    @Test
+    void malformedNotificationsAndPendingSubscriptionsKeepFallbackPolling() throws Exception {
+        transport.observe = true;
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        assertTrue(executor.hasActivePoll());
+        transport.listeners.get("/power/0").onUpdate(json("[42]"));
+        executor.awaitWorkers();
+        assertTrue(executor.hasActivePoll());
+        assertEquals(OnOffType.ON, states.get(channel(handler, "Power").getUID().getId()));
+        assertFalse(statuses.stream().anyMatch(status -> status.getStatus() == ThingStatus.OFFLINE));
+    }
+
+    @Test
+    void queuedNotificationsCannotOverwriteANewerCommandReadback() throws Exception {
+        transport.observe = true;
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        ChannelUID power = channel(handler, "Power").getUID();
+        transport.blockReadback = true;
+        handler.handleCommand(power, OnOffType.ON);
+        assertTrue(transport.entered.await(WAIT_SECONDS, TimeUnit.SECONDS));
+        transport.listeners.get("/power/0").onUpdate(json("{\"value\":false}"));
+        transport.release.countDown();
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        assertEquals(OnOffType.ON, states.get(power.getId()));
+        verify(callback, never()).stateUpdated(eq(power), eq(OnOffType.OFF));
+    }
+
+    @Test
+    void unreadOptionalLinksDoNotPreventHealthySubscriptionsFromStoppingPolling() throws Exception {
+        transport.observe = true;
+        transport.batch = json("""
+                [{"href":"/power/0","rep":{"value":true}},
+                 {"href":"/remotectrl/0","rep":{"value":true}},
+                 {"href":"/optional/0"}]
+                """);
+        initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(2, transport.listeners.size());
+        assertTrue(transport.reads.contains("/optional/0"));
+        transport.listeners.get("/power/0").onUpdate(json("{\"value\":true}"));
+        transport.listeners.get("/remotectrl/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        awaitStatus(ThingStatus.ONLINE);
+        assertFalse(executor.hasActivePoll());
+    }
+
+    @Test
+    void notificationsDoNotPostponePollingForUnsupportedResources() throws Exception {
+        transport.observe = true;
+        transport.unobserved = "/remotectrl/0";
+        initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        Transport.Listener power = transport.listeners.get("/power/0");
+        power.onUpdate(json("{\"value\":false}"));
+        awaitStatus(ThingStatus.ONLINE);
+        power.onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        int reads = transport.reads.size();
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        assertTrue(transport.reads.size() > reads);
+        assertSame(power, transport.listeners.get("/power/0"));
+    }
+
+    @Test
+    void communicationFailureInvalidatesObservationsAndRecoversWithNewOnes() throws Exception {
+        transport.observe = true;
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        ChannelUID power = channel(handler, "Power").getUID();
+        Transport.Listener previous = transport.listeners.get("/power/0");
+        previous.onUpdate(json("{\"value\":true}"));
+        transport.listeners.get("/remotectrl/0").onUpdate(json("{\"value\":true}"));
+        awaitStatus(ThingStatus.ONLINE);
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        transport.failRead = true;
+        handler.handleCommand(power, RefreshType.REFRESH);
+        awaitStatus(ThingStatus.OFFLINE);
+        assertTrue(transport.closed.await(WAIT_SECONDS, TimeUnit.SECONDS));
+        previous.onUpdate(json("{\"value\":false}"));
+        previous.onFailure();
+        executor.awaitWorkers();
+        verify(callback, never()).stateUpdated(eq(power), eq(OnOffType.OFF));
+        transport.failRead = false;
+        executor.firePoll();
+        awaitStatus(ThingStatus.ONLINE);
+        Transport.Listener recovered = transport.listeners.get("/power/0");
+        assertNotSame(previous, recovered);
+        recovered.onUpdate(json("{\"value\":false}"));
+        awaitStatus(ThingStatus.ONLINE);
+        assertEquals(OnOffType.OFF, states.get(power.getId()));
+    }
+
+    @Test
+    void lateNotificationsAfterDisposalOrReinitializationAreIgnored() throws Exception {
+        transport.observe = true;
+        ApplianceHandler handler = initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        Transport.Listener old = transport.listeners.get("/power/0");
+        handler.initialize();
+        awaitStatus(ThingStatus.ONLINE);
+        executor.awaitWorkers();
+        old.onUpdate(json("{\"value\":false}"));
+        old.onFailure();
+        executor.awaitWorkers();
+        assertEquals(OnOffType.ON, states.get(channel(handler, "Power").getUID().getId()));
+        Transport.Listener current = transport.listeners.get("/power/0");
+        handler.dispose();
+        current.onUpdate(json("{\"value\":false}"));
+        current.onFailure();
+        executor.awaitWorkers();
+        assertEquals(OnOffType.ON, states.get(channel(handler, "Power").getUID().getId()));
+        assertFalse(executor.hasActivePoll());
     }
 
     @Test
@@ -586,6 +953,11 @@ class ApplianceHandlerTest {
         final CountDownLatch closed = new CountDownLatch(1);
         final AtomicInteger active = new AtomicInteger();
         final AtomicInteger maximumActive = new AtomicInteger();
+        final Map<String, Listener> listeners = new ConcurrentHashMap<>();
+        final Map<String, AtomicInteger> observeAttempts = new ConcurrentHashMap<>();
+        final AtomicInteger subscriptionsClosed = new AtomicInteger();
+        volatile boolean observe;
+        volatile String unobserved = "";
         volatile boolean failRead;
         volatile boolean failPost;
         volatile boolean failBatch;
@@ -635,7 +1007,15 @@ class ApplianceHandlerTest {
                     case "/device/0?if=oic.if.b" -> batchInterface.deepCopy();
                     case "/power/0" -> json("{\"value\":" + power + "}");
                     case "/remotectrl/0" -> json("{\"value\":" + remote + "}");
-                    default -> throw new IOException("Unexpected test resource");
+                    default -> {
+                        for (JsonElement element : batch.getAsJsonArray()) {
+                            JsonObject resource = element.getAsJsonObject();
+                            if (path.equals(resource.get("href").getAsString()) && resource.has("rep")) {
+                                yield resource.get("rep").deepCopy();
+                            }
+                        }
+                        throw new IOException("Unexpected test resource");
+                    }
                 };
             } finally {
                 active.decrementAndGet();
@@ -659,6 +1039,16 @@ class ApplianceHandlerTest {
         }
 
         @Override
+        public Subscription observe(String href, Listener listener) throws IOException {
+            observeAttempts.computeIfAbsent(href, ignored -> new AtomicInteger()).incrementAndGet();
+            if (!observe || href.equals(unobserved)) {
+                throw new IOException("Test appliance does not support Observe");
+            }
+            listeners.put(href, listener);
+            return subscriptionsClosed::incrementAndGet;
+        }
+
+        @Override
         public void close() {
             closed.countDown();
         }
@@ -675,11 +1065,13 @@ class ApplianceHandlerTest {
         }
     }
 
-    private record Poll(Runnable task, ScheduledFuture<?> future) {
+    private record Poll(Runnable task, ScheduledFuture<?> future, long due) {
     }
 
     private static final class ControlledScheduler extends ScheduledThreadPoolExecutor {
         private final BlockingQueue<Poll> polls = new LinkedBlockingQueue<>();
+        private final List<ScheduledFuture<?>> workers = new ArrayList<>();
+        private final AtomicLong nanoTime = new AtomicLong();
 
         ControlledScheduler() {
             super(3, task -> {
@@ -693,17 +1085,27 @@ class ApplianceHandlerTest {
         @NonNullByDefault({})
         public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
             if (delay == 0) {
-                return super.schedule(command, delay, unit);
+                synchronized (workers) {
+                    ScheduledFuture<?> future = super.schedule(command, delay, unit);
+                    workers.add(future);
+                    return future;
+                }
             }
             ScheduledFuture<?> future = super.schedule(command, 1, TimeUnit.DAYS);
-            polls.add(new Poll(command, future));
+            polls.add(new Poll(command, future, nanoTime.get() + unit.toNanos(delay)));
             return future;
         }
 
-        void firePoll() throws InterruptedException {
-            Poll poll = polls.poll(WAIT_SECONDS, TimeUnit.SECONDS);
-            assertNotNull(poll);
+        void firePoll() throws Exception {
+            // Finish timer scheduling before advancing virtual time or canceling the next poll.
+            awaitWorkers();
+            Poll poll;
+            do {
+                poll = polls.poll(WAIT_SECONDS, TimeUnit.SECONDS);
+                assertNotNull(poll);
+            } while (poll.future().isCancelled());
             poll.future().cancel(false);
+            nanoTime.accumulateAndGet(poll.due(), Math::max);
             execute(poll.task());
         }
 
@@ -712,9 +1114,20 @@ class ApplianceHandlerTest {
         }
 
         void awaitWorkers() throws Exception {
-            for (int index = 0; index < 3; index++) {
-                submit(() -> {
-                }).get(WAIT_SECONDS, TimeUnit.SECONDS);
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(WAIT_SECONDS);
+            while (true) {
+                ScheduledFuture<?> future;
+                synchronized (workers) {
+                    if (workers.isEmpty()) {
+                        return;
+                    }
+                    future = workers.removeFirst();
+                }
+                try {
+                    future.get(Math.max(1, deadline - System.nanoTime()), TimeUnit.NANOSECONDS);
+                } catch (CancellationException e) {
+                    continue;
+                }
             }
         }
     }

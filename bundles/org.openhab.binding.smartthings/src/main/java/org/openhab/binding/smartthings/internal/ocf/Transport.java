@@ -30,6 +30,20 @@ interface Transport extends AutoCloseable {
 
     void post(String href, JsonObject fields) throws IOException;
 
+    interface Listener {
+        void onUpdate(JsonElement representation);
+
+        void onFailure();
+    }
+
+    @FunctionalInterface
+    interface Subscription extends AutoCloseable {
+        @Override
+        void close();
+    }
+
+    Subscription observe(String href, Listener listener) throws IOException;
+
     @Override
     void close();
 }

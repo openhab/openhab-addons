@@ -32,8 +32,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.eclipse.californium.core.CoapClient;
+import org.eclipse.californium.core.CoapHandler;
+import org.eclipse.californium.core.CoapObserveRelation;
+import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
@@ -72,7 +78,79 @@ final class CoapTransport implements Transport {
     private final Endpoint endpoint;
     private final Object lifecycle = new Object();
     private final Set<Request> pending = new HashSet<>();
-    private boolean closed;
+    private final Set<Observation> observations = new HashSet<>();
+    // Californium requires a concrete executor for Observe re-registration; openHAB returns an executor wrapper.
+    private final ScheduledThreadPoolExecutor observeScheduler = new ScheduledThreadPoolExecutor(1,
+            Thread.ofPlatform().daemon().name("smartthings-ocf-observe-", 0).factory());
+    private volatile boolean closed;
+
+    private final class Observation implements Subscription, CoapHandler {
+        private final Listener listener;
+        private final AtomicBoolean canceled = new AtomicBoolean();
+        private volatile @Nullable CoapObserveRelation relation;
+
+        Observation(Listener listener) {
+            this.listener = listener;
+        }
+
+        void start(Request request) {
+            CoapClient client = new CoapClient().setEndpoint(endpoint);
+            ScheduledExecutorService executor = scheduler();
+            observeScheduler.setRemoveOnCancelPolicy(true);
+            client.setExecutors(executor, observeScheduler, true);
+            CoapObserveRelation created = client.observe(request, this);
+            relation = created;
+            if (canceled.get()) {
+                created.reactiveCancel();
+            }
+        }
+
+        @Override
+        public void onLoad(@Nullable CoapResponse response) {
+            if (closed || canceled.get()) {
+                return;
+            }
+            try {
+                if (response == null) {
+                    throw new IOException("Appliance observation unavailable");
+                }
+                Response message = response.advanced();
+                if (!message.isSuccess() || !message.getOptions().hasObserve()
+                        || message.getPayloadSize() > Cbor.MAX_BODY_SIZE) {
+                    throw new IOException("Appliance observation unavailable");
+                }
+                listener.onUpdate(representation(message));
+            } catch (IOException e) {
+                onError();
+            }
+        }
+
+        @Override
+        public void onError() {
+            if (cancel() && !closed) {
+                listener.onFailure();
+            }
+        }
+
+        @Override
+        public void close() {
+            cancel();
+        }
+
+        private boolean cancel() {
+            if (canceled.compareAndSet(false, true)) {
+                CoapObserveRelation current = relation;
+                if (current != null) {
+                    current.reactiveCancel();
+                }
+                synchronized (lifecycle) {
+                    observations.remove(this);
+                }
+                return true;
+            }
+            return false;
+        }
+    }
 
     CoapTransport(ApplianceConfiguration config) throws IOException {
         try {
@@ -232,6 +310,29 @@ final class CoapTransport implements Transport {
         exchange(request);
     }
 
+    @Override
+    public Subscription observe(String href, Listener listener) throws IOException {
+        Request request = Request.newGet().setURI(resourceUri(host, port, href)).setObserve();
+        request.getOptions().setAccept(MediaTypeRegistry.APPLICATION_CBOR);
+        Observation observation = new Observation(listener);
+        synchronized (lifecycle) {
+            if (closed) {
+                throw new IOException("Appliance transport is closed");
+            }
+            observations.add(observation);
+        }
+        try {
+            observation.start(request);
+            return observation;
+        } catch (RuntimeException e) {
+            observation.close();
+            // A failed send may already have registered Californium's notification listener.
+            request.setSendError(e);
+            request.cancel();
+            throw new IOException("Cannot subscribe to appliance resource");
+        }
+    }
+
     static URI resourceUri(InetAddress host, int port, String path) throws IOException {
         try {
             URI relative = new URI(path);
@@ -306,15 +407,19 @@ final class CoapTransport implements Transport {
     @Override
     public void close() {
         List<Request> requests;
+        List<Observation> subscriptions;
         synchronized (lifecycle) {
             if (closed) {
                 return;
             }
             closed = true;
             requests = List.copyOf(pending);
+            subscriptions = List.copyOf(observations);
         }
+        subscriptions.forEach(Observation::close);
         requests.forEach(Request::cancel);
         // Endpoint destruction owns connector shutdown; the shared openHAB executors remain available.
+        observeScheduler.shutdownNow();
         endpoint.destroy();
     }
 }

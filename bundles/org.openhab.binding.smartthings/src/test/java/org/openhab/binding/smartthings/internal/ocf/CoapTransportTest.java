@@ -26,21 +26,26 @@ import java.util.HexFormat;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 import org.eclipse.californium.core.coap.Request;
 import org.eclipse.californium.core.coap.Response;
+import org.eclipse.californium.core.coap.Token;
 import org.eclipse.californium.core.config.CoapConfig;
 import org.eclipse.californium.core.network.Endpoint;
+import org.eclipse.californium.core.observe.NotificationListener;
 import org.eclipse.californium.scandium.config.DtlsConfig;
 import org.eclipse.californium.scandium.config.DtlsConfig.DtlsRole;
 import org.eclipse.californium.scandium.dtls.cipher.CipherSuite;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -259,6 +264,165 @@ class CoapTransportTest {
             assertFalse(failure.toString().contains("secretcredential"));
             assertNull(failure.getCause());
         }
+    }
+
+    @Test
+    void observesCborResourcesAndCancelsWithoutOwningTheSharedEndpoint() throws Exception {
+        Endpoint endpoint = mock(Endpoint.class);
+        when(endpoint.getConfig()).thenReturn(CoapTransport.networkConfiguration());
+        AtomicReference<Request> request = new AtomicReference<>();
+        AtomicReference<NotificationListener> notifications = new AtomicReference<>();
+        doAnswer(invocation -> {
+            notifications.set(invocation.getArgument(0));
+            return null;
+        }).when(endpoint).addNotificationListener(any());
+        doAnswer(invocation -> {
+            Request sent = invocation.getArgument(0);
+            sent.setToken(new Token(new byte[] { 1 }));
+            request.set(sent);
+            return null;
+        }).when(endpoint).sendRequest(any());
+        LinkedBlockingQueue<JsonElement> updates = new LinkedBlockingQueue<>();
+        AtomicInteger failures = new AtomicInteger();
+        try (CoapTransport transport = new CoapTransport(host, 49155, 1000, endpoint)) {
+            Transport.Subscription subscription = transport.observe("/power/0", new Transport.Listener() {
+                @Override
+                public void onUpdate(JsonElement payload) {
+                    updates.add(payload);
+                }
+
+                @Override
+                public void onFailure() {
+                    failures.incrementAndGet();
+                }
+            });
+            assertEquals(0, request.get().getOptions().getObserve());
+            assertEquals(MediaTypeRegistry.APPLICATION_CBOR, request.get().getOptions().getAccept());
+            assertEquals(CoapTransport.resourceUri(host, 49155, "/power/0").toString(), request.get().getURI());
+            Response initial = notification(true, 0);
+            initial.setToken(request.get().getToken());
+            request.get().setResponse(initial);
+            assertEquals(JsonParser.parseString("{\"value\":true}"), updates.poll(5, TimeUnit.SECONDS));
+            Response changed = notification(false, 1);
+            changed.setToken(request.get().getToken());
+            notifications.get().onNotification(request.get(), changed);
+            assertEquals(JsonParser.parseString("{\"value\":false}"), updates.poll(5, TimeUnit.SECONDS));
+            subscription.close();
+            subscription.close();
+            assertTrue(request.get().isCanceled());
+            assertEquals(0, failures.get());
+            verify(endpoint, times(1)).removeNotificationListener(any());
+            verify(endpoint, never()).destroy();
+        }
+        verify(endpoint, times(1)).destroy();
+    }
+
+    @Test
+    void unsupportedInvalidAndFailedObservationsSignalFallback() throws Exception {
+        Response malformed = notification(true, 0);
+        malformed.setPayload(new byte[] { (byte) 0xff });
+        for (Response response : List.of(new Response(ResponseCode.UNAUTHORIZED), new Response(ResponseCode.CONTENT),
+                oversized(), malformed)) {
+            Endpoint endpoint = mock(Endpoint.class);
+            when(endpoint.getConfig()).thenReturn(CoapTransport.networkConfiguration());
+            AtomicReference<Request> request = new AtomicReference<>();
+            doAnswer(invocation -> {
+                request.set(invocation.getArgument(0));
+                return null;
+            }).when(endpoint).sendRequest(any());
+            CountDownLatch failed = new CountDownLatch(1);
+            try (CoapTransport transport = new CoapTransport(host, 49155, 1000, endpoint)) {
+                transport.observe("/power/0", new Transport.Listener() {
+                    @Override
+                    public void onUpdate(JsonElement payload) {
+                        fail("Invalid observation must not publish a state");
+                    }
+
+                    @Override
+                    public void onFailure() {
+                        failed.countDown();
+                    }
+                });
+                request.get().setResponse(response);
+                assertTrue(failed.await(5, TimeUnit.SECONDS));
+                verify(endpoint).removeNotificationListener(any());
+            }
+        }
+    }
+
+    @Test
+    void closeCancelsPendingObservationAndRejectsNewSubscriptions() throws Exception {
+        Endpoint endpoint = mock(Endpoint.class);
+        when(endpoint.getConfig()).thenReturn(CoapTransport.networkConfiguration());
+        AtomicReference<Request> request = new AtomicReference<>();
+        doAnswer(invocation -> {
+            request.set(invocation.getArgument(0));
+            return null;
+        }).when(endpoint).sendRequest(any());
+        Transport.Listener listener = mock(Transport.Listener.class);
+        CoapTransport transport = new CoapTransport(host, 49155, 1000, endpoint);
+        transport.observe("/power/0", listener);
+        transport.close();
+        transport.close();
+        assertTrue(request.get().isCanceled());
+        assertThrows(IOException.class, () -> transport.observe("/power/0", listener));
+        verify(endpoint).removeNotificationListener(any());
+        verify(endpoint).destroy();
+        verifyNoInteractions(listener);
+    }
+
+    @Test
+    void failedObservationStartRemovesItsListenerAndCancelsRequest() throws Exception {
+        Endpoint endpoint = mock(Endpoint.class);
+        when(endpoint.getConfig()).thenReturn(CoapTransport.networkConfiguration());
+        AtomicReference<Request> request = new AtomicReference<>();
+        doAnswer(invocation -> {
+            request.set(invocation.getArgument(0));
+            throw new IllegalStateException("private-credential");
+        }).when(endpoint).sendRequest(any());
+        Transport.Listener listener = mock(Transport.Listener.class);
+        try (CoapTransport transport = new CoapTransport(host, 49155, 1000, endpoint)) {
+            IOException failure = assertThrows(IOException.class, () -> transport.observe("/power/0", listener));
+            assertFalse(failure.toString().contains("private-credential"));
+            assertNull(failure.getCause());
+            assertTrue(request.get().isCanceled());
+            verify(endpoint).removeNotificationListener(any());
+        }
+    }
+
+    @Test
+    void observationTimeoutSignalsFailureAndCancelsRenewal() throws Exception {
+        Endpoint endpoint = mock(Endpoint.class);
+        when(endpoint.getConfig()).thenReturn(CoapTransport.networkConfiguration());
+        AtomicReference<Request> request = new AtomicReference<>();
+        doAnswer(invocation -> {
+            request.set(invocation.getArgument(0));
+            return null;
+        }).when(endpoint).sendRequest(any());
+        CountDownLatch failed = new CountDownLatch(1);
+        try (CoapTransport transport = new CoapTransport(host, 49155, 1000, endpoint)) {
+            transport.observe("/power/0", new Transport.Listener() {
+                @Override
+                public void onUpdate(JsonElement payload) {
+                    fail("Timed-out request must not publish state");
+                }
+
+                @Override
+                public void onFailure() {
+                    failed.countDown();
+                }
+            });
+            request.get().setTimedOut(true);
+            assertTrue(failed.await(5, TimeUnit.SECONDS));
+            verify(endpoint).removeNotificationListener(any());
+        }
+    }
+
+    private static Response notification(boolean value, int sequence) throws IOException {
+        Response response = new Response(ResponseCode.CONTENT);
+        response.getOptions().setContentFormat(MediaTypeRegistry.APPLICATION_CBOR).setObserve(sequence);
+        response.setPayload(Cbor.encode(JsonParser.parseString("{\"value\":" + value + "}")));
+        return response;
     }
 
     private static Response oversized() {
