@@ -12,23 +12,22 @@
  */
 package org.openhab.binding.windhager.internal;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.net.URISyntaxException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.Authentication;
+import org.eclipse.jetty.client.api.AuthenticationStore;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.DigestAuthentication;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,34 +43,30 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class WindhagerConnector {
 
-    private static final String API_DOCS_PATH = "api-docs/";
     private static final String DATAPOINT_API_PATH = "api/1.0/datapoint/";
-    private static final Pattern DIGEST_PARAMETER_PATTERN = Pattern.compile("(\\w+)=((?:\"[^\"]*\")|(?:[^,\\s]+))");
+    private static final int REQUEST_TIMEOUT_SECONDS = 10;
 
     private final Logger logger = LoggerFactory.getLogger(WindhagerConnector.class);
 
-    private final String hostname;
-    private final int port;
-    private final String username;
-    private final String password;
     private final HttpClient httpClient;
+    private final URI serverUri;
+    private final DigestAuthentication authentication;
 
-    public WindhagerConnector(String hostname, int port, String username, String password) {
-        this.hostname = hostname;
-        this.port = port;
-        this.username = username;
-        this.password = password;
-        this.httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+    public WindhagerConnector(HttpClient httpClient, String hostname, int port, String username, String password)
+            throws URISyntaxException {
+        this.httpClient = httpClient;
+        this.serverUri = new URI("http", null, hostname, port, "/", null, null);
+        this.authentication = new DigestAuthentication(serverUri, Authentication.ANY_REALM, username, password);
+        httpClient.getAuthenticationStore().addAuthentication(authentication);
     }
 
-    /**
-     * Establishes a connection to the BioWin webserver and validates that it answers successfully.
-     *
-     * @return true if the webserver responds successfully, false otherwise
-     */
-    public boolean connect() {
-        HttpResponse<String> response = sendRequest(API_DOCS_PATH);
-        return response != null && response.statusCode() >= 200 && response.statusCode() < 400;
+    public void dispose() {
+        AuthenticationStore authenticationStore = httpClient.getAuthenticationStore();
+        var authenticationResult = authenticationStore.findAuthenticationResult(serverUri);
+        if (authenticationResult != null) {
+            authenticationStore.removeAuthenticationResult(authenticationResult);
+        }
+        authenticationStore.removeAuthentication(authentication);
     }
 
     /**
@@ -80,48 +75,51 @@ public class WindhagerConnector {
      * @param oid the BioWin OID, for example {@code 1/60/0/23/103/0}
      * @return the parsed value, or {@code null} if the request fails or the response is not numeric
      */
-    public @Nullable BigDecimal readValue(String oid) {
+    public ValueReadResult readValue(String oid) {
         if (oid.isBlank()) {
-            return null;
+            return new ValueReadResult(null, false);
         }
 
-        HttpResponse<String> response = sendRequest(DATAPOINT_API_PATH + normalizeOid(oid));
-        if (response == null || response.statusCode() < 200 || response.statusCode() >= 300) {
-            return null;
+        ContentResponse response = sendRequest(DATAPOINT_API_PATH + normalizeOid(oid));
+        if (response == null) {
+            return new ValueReadResult(null, true);
+        }
+        if (response.getStatus() == HttpStatus.UNAUTHORIZED_401 || response.getStatus() >= 500) {
+            return new ValueReadResult(null, true);
+        }
+        if (!HttpStatus.isSuccess(response.getStatus())) {
+            return new ValueReadResult(null, false);
         }
 
         try {
-            return new BigDecimal(readValueElement(response.body()).getAsString());
+            return new ValueReadResult(new BigDecimal(readValueElement(response.getContentAsString()).getAsString()),
+                    false);
         } catch (RuntimeException e) {
             logger.debug("BioWin returned a non-numeric value for oid {}", oid);
-            return null;
+            return new ValueReadResult(null, false);
         }
     }
 
-    private @Nullable HttpResponse<String> sendRequest(String oid) {
-        String normalizedPath = oid.isBlank() ? "" : "/" + oid.replaceFirst("^/+", "");
-        URI uri = URI.create("http://" + hostname + ":" + port + normalizedPath);
-
+    private @Nullable ContentResponse sendRequest(String relativePath) {
         try {
-            HttpResponse<String> response = sendRequest(uri, null);
-            if (response != null && response.statusCode() == 401) {
-                var challengeHeader = response.headers().firstValue("WWW-Authenticate");
-                if (challengeHeader.isPresent()) {
-                    // BioWin protects its API with HTTP Digest authentication.
-                    String authorization = createDigestAuthorization(challengeHeader.get(), uri, "GET");
-                    if (authorization != null) {
-                        response = sendRequest(uri, authorization);
-                    }
-                }
-            }
-            return response;
+            URI uri = createRequestUri(relativePath);
+            return httpClient.newRequest(uri).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .send();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            logger.debug("Interrupted while requesting BioWin oid {}", oid);
-        } catch (Exception e) {
-            logger.debug("Unable to request BioWin oid {}: {}", oid, e.getMessage());
+            logger.debug("Interrupted while requesting BioWin path {}", relativePath);
+        } catch (ExecutionException | TimeoutException | URISyntaxException | IllegalArgumentException e) {
+            logger.debug("Unable to request BioWin path {}: {}", relativePath, e.getMessage());
         }
         return null;
+    }
+
+    private URI createRequestUri(String relativePath) throws URISyntaxException {
+        if (!relativePath.startsWith(DATAPOINT_API_PATH)) {
+            throw new URISyntaxException(relativePath, "Unexpected BioWin API path");
+        }
+        String path = "/" + relativePath;
+        return new URI(serverUri.getScheme(), null, serverUri.getHost(), serverUri.getPort(), path, null, null);
     }
 
     private static JsonElement readValueElement(String body) {
@@ -137,90 +135,6 @@ public class WindhagerConnector {
         return oid.replaceFirst("^/+", "");
     }
 
-    private @Nullable HttpResponse<String> sendRequest(URI uri, @Nullable String authorization)
-            throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(10)).GET();
-        if (authorization != null) {
-            requestBuilder.header("Authorization", authorization);
-        }
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-    }
-
-    private @Nullable String createDigestAuthorization(String challenge, URI uri, String method) {
-        if (!challenge.regionMatches(true, 0, "Digest", 0, "Digest".length())) {
-            return null;
-        }
-
-        Map<String, String> parameters = parseDigestParameters(challenge.substring("Digest".length()));
-        String realm = parameters.get("realm");
-        String nonce = parameters.get("nonce");
-        if (realm == null || nonce == null) {
-            return null;
-        }
-
-        String qop = selectQop(parameters.get("qop"));
-        String cnonce = randomToken();
-        String nonceCount = "00000001";
-        String ha1 = md5Hex(username + ":" + realm + ":" + password);
-        String requestPath = uri.getRawPath().isEmpty() ? "/" : uri.getRawPath();
-        String ha2 = md5Hex(method + ":" + requestPath);
-        String response = qop == null ? md5Hex(ha1 + ":" + nonce + ":" + ha2)
-                : md5Hex(ha1 + ":" + nonce + ":" + nonceCount + ":" + cnonce + ":" + qop + ":" + ha2);
-
-        StringBuilder authorization = new StringBuilder("Digest username=\"").append(escape(username))
-                .append("\", realm=\"").append(escape(realm)).append("\", nonce=\"").append(escape(nonce))
-                .append("\", uri=\"").append(escape(requestPath)).append("\", response=\"").append(response)
-                .append("\"");
-        if (qop != null) {
-            authorization.append(", qop=").append(qop).append(", nc=").append(nonceCount).append(", cnonce=\"")
-                    .append(cnonce).append("\"");
-        }
-        return authorization.toString();
-    }
-
-    private static Map<String, String> parseDigestParameters(String challenge) {
-        Map<String, String> parameters = new HashMap<>();
-        Matcher matcher = DIGEST_PARAMETER_PATTERN.matcher(challenge);
-        while (matcher.find()) {
-            String value = matcher.group(2);
-            if (value.startsWith("\"") && value.endsWith("\"")) {
-                value = value.substring(1, value.length() - 1);
-            }
-            parameters.put(matcher.group(1).toLowerCase(), value);
-        }
-        return parameters;
-    }
-
-    private static @Nullable String selectQop(@Nullable String qop) {
-        if (qop == null) {
-            return null;
-        }
-        for (String option : qop.split(",")) {
-            if ("auth".equalsIgnoreCase(option.trim())) {
-                return "auth";
-            }
-        }
-        return null;
-    }
-
-    private static String randomToken() {
-        return Long.toHexString(System.nanoTime());
-    }
-
-    private static String md5Hex(String value) {
-        try {
-            byte[] digest = MessageDigest.getInstance("MD5").digest(value.getBytes(StandardCharsets.UTF_8));
-            StringBuilder result = new StringBuilder(digest.length * 2);
-            for (byte item : digest) {
-                result.append(String.format("%02x", item & 0xff));
-            }
-            return result.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("MD5 is required for HTTP Digest authentication", e);
-        }
-    }
-
-    private static String escape(String value) {
-        return value.replace("\\", "\\\\").replace("\"", "\\\"");
+    public record ValueReadResult(@Nullable BigDecimal value, boolean communicationFailure) {
     }
 }

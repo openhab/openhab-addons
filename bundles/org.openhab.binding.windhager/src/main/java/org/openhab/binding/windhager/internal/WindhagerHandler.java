@@ -14,6 +14,7 @@ package org.openhab.binding.windhager.internal;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -31,6 +33,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,55 +48,63 @@ public class WindhagerHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WindhagerHandler.class);
 
-    private @Nullable WindhagerConfiguration config;
     private @Nullable WindhagerConnector connector;
     private final Map<Integer, ScheduledFuture<?>> refreshJobs = new HashMap<>();
+    private final Object lifecycleLock = new Object();
+    private final HttpClient httpClient;
+    private @Nullable ScheduledFuture<?> initializationJob;
+    private volatile boolean disposed;
 
-    public WindhagerHandler(Thing thing) {
+    public WindhagerHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            refreshChannel(channelUID);
+            Channel channel = getThing().getChannel(channelUID.getId());
+            if (channel != null) {
+                refreshChannels(List.of(channel));
+            }
         }
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(WindhagerConfiguration.class);
+        WindhagerConfiguration config = getConfigAs(WindhagerConfiguration.class);
 
         if (config.hostname.isBlank() || config.username.isBlank() || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Hostname, username and password must be configured.");
+            stopHttpClient();
             return;
         }
 
-        connector = new WindhagerConnector(config.hostname, config.port, config.username, config.password);
+        @Nullable
+        Map<Integer, List<Channel>> channelsByRefreshInterval = getConfiguredChannels();
+        if (channelsByRefreshInterval == null) {
+            stopHttpClient();
+            return;
+        }
+        if (channelsByRefreshInterval.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "At least one channel with a configured oid must be defined.");
+            stopHttpClient();
+            return;
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.execute(() -> {
-            boolean thingReachable = connector.connect();
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-                scheduleChannelRefresh();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Could not connect to the BioWin webserver.");
+        synchronized (lifecycleLock) {
+            if (!disposed) {
+                initializationJob = scheduler.schedule(() -> initializeClient(config, channelsByRefreshInterval), 0,
+                        TimeUnit.SECONDS);
             }
-        });
+        }
     }
 
-    private void scheduleChannelRefresh() {
-        WindhagerConnector localConnector = connector;
-        if (localConnector == null) {
-            return;
-        }
-
+    private @Nullable Map<Integer, List<Channel>> getConfiguredChannels() {
         Map<Integer, List<Channel>> channelsByRefreshInterval = new HashMap<>();
-        boolean hasUsableChannel = false;
         for (Channel channel : getThing().getChannels()) {
             WindhagerChannelConfiguration channelConfig = channel.getConfiguration()
                     .as(WindhagerChannelConfiguration.class);
@@ -104,62 +115,138 @@ public class WindhagerHandler extends BaseThingHandler {
             if (channelConfig.refreshInterval < 1) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Channel refresh interval must be configured.");
-                return;
+                return null;
             }
 
-            hasUsableChannel = true;
-            channelsByRefreshInterval.computeIfAbsent(channelConfig.refreshInterval, key -> new ArrayList<>())
-                    .add(channel);
+            List<Channel> channels = channelsByRefreshInterval.get(channelConfig.refreshInterval);
+            if (channels == null) {
+                channels = new ArrayList<>();
+                channelsByRefreshInterval.put(channelConfig.refreshInterval, channels);
+            }
+            channels.add(channel);
         }
+        channelsByRefreshInterval.replaceAll((interval, channels) -> List.copyOf(channels));
+        return Collections.unmodifiableMap(channelsByRefreshInterval);
+    }
 
-        if (!hasUsableChannel) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "At least one channel with a configured oid must be defined.");
+    private void initializeClient(WindhagerConfiguration config,
+            Map<Integer, List<Channel>> channelsByRefreshInterval) {
+        if (disposed) {
             return;
         }
 
-        for (Map.Entry<Integer, List<Channel>> entry : channelsByRefreshInterval.entrySet()) {
-            int refreshInterval = entry.getKey();
-            List<Channel> channels = entry.getValue();
-            ScheduledFuture<?> existingJob = refreshJobs.get(refreshInterval);
-            if (existingJob != null && !existingJob.isCancelled()) {
-                continue;
+        WindhagerConnector localConnector;
+        try {
+            localConnector = new WindhagerConnector(httpClient, config.hostname, config.port, config.username,
+                    config.password);
+        } catch (java.net.URISyntaxException | IllegalArgumentException e) {
+            if (!disposed) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "The configured BioWin hostname is invalid.");
             }
+            logger.debug("Invalid BioWin server URI", e);
+            stopHttpClient();
+            return;
+        }
 
-            logger.info("Scheduling {} channel(s) with refresh interval {} seconds", channels.size(), refreshInterval);
-            ScheduledFuture<?> job = scheduler.scheduleWithFixedDelay(() -> {
-                for (Channel channel : channels) {
-                    refreshChannel(channel.getUID());
-                }
-            }, 0, refreshInterval, TimeUnit.SECONDS);
-            refreshJobs.put(refreshInterval, job);
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            localConnector.dispose();
+            stopHttpClient();
+            if (!disposed) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not initialize the BioWin webserver connection.");
+            }
+            logger.debug("Could not start the BioWin HTTP client", e);
+            return;
+        }
+
+        synchronized (lifecycleLock) {
+            if (disposed) {
+                localConnector.dispose();
+                stopHttpClient();
+                return;
+            }
+            connector = localConnector;
+            for (Map.Entry<Integer, List<Channel>> entry : channelsByRefreshInterval.entrySet()) {
+                int refreshInterval = entry.getKey();
+                List<Channel> channels = entry.getValue();
+                logger.info("Scheduling {} channel(s) with refresh interval {} seconds", channels.size(),
+                        refreshInterval);
+                ScheduledFuture<?> job = scheduler.scheduleWithFixedDelay(() -> refreshChannels(channels), 0,
+                        refreshInterval, TimeUnit.SECONDS);
+                refreshJobs.put(refreshInterval, job);
+            }
         }
     }
 
-    private void refreshChannel(ChannelUID channelUID) {
+    private void refreshChannels(List<Channel> channels) {
         WindhagerConnector localConnector = connector;
-        Channel channel = getThing().getChannel(channelUID.getId());
-        if (localConnector == null || channel == null) {
+        if (disposed || localConnector == null) {
             return;
         }
 
+        boolean communicationFailure = false;
+        for (Channel channel : channels) {
+            communicationFailure |= refreshChannel(localConnector, channel);
+        }
+        if (!disposed) {
+            if (communicationFailure) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not communicate with the BioWin webserver.");
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }
+    }
+
+    private boolean refreshChannel(WindhagerConnector localConnector, Channel channel) {
         WindhagerChannelConfiguration channelConfig = channel.getConfiguration()
                 .as(WindhagerChannelConfiguration.class);
 
-        BigDecimal value = localConnector.readValue(channelConfig.oid);
-        if (value != null) {
-            updateState(channelUID, new DecimalType(value));
-        } else {
-            logger.debug("Could not read configured BioWin oid {}", channelConfig.oid);
+        WindhagerConnector.ValueReadResult result = localConnector.readValue(channelConfig.oid);
+        if (disposed) {
+            return result.communicationFailure();
         }
+        BigDecimal value = result.value();
+        if (value == null) {
+            updateState(channel.getUID(), UnDefType.UNDEF);
+        } else {
+            updateState(channel.getUID(), new DecimalType(value));
+        }
+        return result.communicationFailure();
     }
 
     @Override
     public void dispose() {
-        for (ScheduledFuture<?> job : refreshJobs.values()) {
-            job.cancel(true);
+        WindhagerConnector localConnector;
+        synchronized (lifecycleLock) {
+            disposed = true;
+            ScheduledFuture<?> localInitializationJob = initializationJob;
+            if (localInitializationJob != null) {
+                localInitializationJob.cancel(true);
+                initializationJob = null;
+            }
+            for (ScheduledFuture<?> job : refreshJobs.values()) {
+                job.cancel(true);
+            }
+            refreshJobs.clear();
+            localConnector = connector;
+            connector = null;
         }
-        refreshJobs.clear();
+        if (localConnector != null) {
+            localConnector.dispose();
+        }
+        stopHttpClient();
         super.dispose();
+    }
+
+    private void stopHttpClient() {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Could not stop the BioWin HTTP client", e);
+        }
     }
 }
